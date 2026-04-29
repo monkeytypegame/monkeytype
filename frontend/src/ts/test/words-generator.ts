@@ -22,6 +22,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
@@ -597,10 +598,10 @@ let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
-  words: string[];
-  sectionIndexes: number[];
+  words: TestWords.Word[];
   hasTab: boolean;
   hasNewline: boolean;
+  hasNumbers: boolean;
   allRightToLeft?: boolean;
   allLigatures?: boolean;
 };
@@ -621,9 +622,9 @@ export async function generateWords(
   currentLanguage = language;
   const ret: GenerateWordsReturn = {
     words: [],
-    sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    hasNumbers: false,
     allRightToLeft: language.rightToLeft,
     allLigatures: language.ligatures ?? false,
   };
@@ -674,6 +675,14 @@ export async function generateWords(
 
   console.debug("Wordset", currentWordset);
 
+  // set direction varaibles here in order to use them in getNextWord()
+  // and before returning because of limit === 0 (for zen mode)
+  const isLanguageRTL = ret.allRightToLeft ?? language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection"),
+  );
+
   if (limit === 0) {
     return ret;
   }
@@ -684,22 +693,22 @@ export async function generateWords(
     const nextWord = await getNextWord(
       i,
       limit,
-      Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? "",
+      Arrays.nthElementFromArray(ret.words, -1)?.text ?? "",
+      Arrays.nthElementFromArray(ret.words, -2)?.text ?? "",
     );
-    ret.words.push(nextWord.word);
-    ret.sectionIndexes.push(nextWord.sectionIndex);
+    ret.words.push(nextWord);
 
+    const generatedWordsLength = ret.words.length;
     if (customAndUsingPipeDelimiter) {
       //generate a given number of sections, make sure to not cut a section off
       const sectionFinishedAndOverLimit =
         currentSection.length === 0 && sectionIndex >= limit;
       //make sure we dont go over a hard limit, in cases where the sections are very large
-      const upperWordLimit = ret.words.length >= 100;
-      if (sectionFinishedAndOverLimit || upperWordLimit) {
+      const upperWordLimitReached = generatedWordsLength >= 100;
+      if (sectionFinishedAndOverLimit || upperWordLimitReached) {
         stop = true;
       }
-    } else if (ret.words.length >= limit) {
+    } else if (generatedWordsLength >= limit) {
       stop = true;
     }
     i++;
@@ -711,16 +720,9 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
-  ret.hasTab =
-    ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
-  ret.hasNewline =
-    ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+  ret.hasTab = currentWordset.words.some((w) => w.includes("\t"));
+  ret.hasNewline = currentWordset.words.some((w) => w.includes("\n"));
+  ret.hasNumbers = currentWordset.words.some((w) => /\d/g.test(w));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
@@ -730,12 +732,7 @@ export let sectionIndex = 0;
 export let currentSection: string[] = [];
 let sectionHistory: string[] = [];
 
-let previousGetNextWordReturns: GetNextWordReturn[] = [];
-
-type GetNextWordReturn = {
-  word: string;
-  sectionIndex: number;
-};
+let previousGetNextWordReturns: TestWords.Word[] = [];
 
 //generate next word
 export async function getNextWord(
@@ -743,7 +740,7 @@ export async function getNextWord(
   wordsBound: number,
   previousWord: string,
   previousWord2: string | undefined,
-): Promise<GetNextWordReturn> {
+): Promise<TestWords.Word> {
   console.debug("Getting next word", {
     isRepeated: TestState.isRepeated,
     currentWordset,
@@ -964,9 +961,17 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
+  let direction = Strings.getWordDirection(
+    randomWord,
+    TestState.isLanguageRightToLeft ? "rtl" : "ltr",
+  );
+  if (TestState.isDirectionReversed) {
+    direction = Strings.reverseDirection(direction);
+  }
   const ret = {
-    word: randomWord,
-    sectionIndex: sectionIndex,
+    text: randomWord,
+    direction,
+    sectionIndex,
   };
 
   previousGetNextWordReturns.push(ret);

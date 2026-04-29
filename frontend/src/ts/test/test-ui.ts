@@ -227,11 +227,8 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    TestWords.words.getCurrentText(),
-    TestState.isLanguageRightToLeft,
-    TestState.isDirectionReversed,
-  );
+  let wordDirection = TestWords.words.getCurrent()?.direction;
+  if (!wordDirection) return;
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -268,8 +265,8 @@ async function joinOverlappingHints(
     const sameTop =
       block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
 
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
+    const leftBlock = wordDirection === "ltr" ? hintBlock1 : hintBlock2;
+    const rightBlock = wordDirection === "ltr" ? hintBlock2 : hintBlock1;
 
     // block edge is offset half its width because of transform: translate(-50%)
     const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
@@ -284,7 +281,7 @@ async function joinOverlappingHints(
 
       const block1Letter1Pos =
         block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
+        (wordDirection === "ltr" ? 0 : block1Letter1.getOffsetWidth());
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left =
@@ -374,12 +371,16 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
-function buildWordHTML(word: string, wordIndex: number): string {
+type RequireOnly<T, K extends keyof T> = Required<Pick<T, K>> &
+  Partial<Omit<T, K>>;
+type WordTextWithDirection = RequireOnly<TestWords.Word, "text" | "direction">;
+
+function buildWordHTML(word: WordTextWithDirection, wordIndex: number): string {
   let newlineafter = false;
-  let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
+  let retval = `<div class='word ${word.direction}' data-wordindex='${wordIndex}'>`;
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  const chars = Strings.splitIntoCharacters(word);
+  const chars = Strings.splitIntoCharacters(word.text);
   for (const char of chars) {
     if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
@@ -502,7 +503,9 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += buildWordHTML(TestWords.words.getText(i), i);
+      const word = TestWords.words.get(i);
+      if (!word) continue;
+      wordsHTML += buildWordHTML(word, i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -511,7 +514,8 @@ function showWords(): void {
     initial: true,
   });
   updateWordWrapperClasses();
-  PaceCaret.resetCaretPosition();
+  Caret.resetPosition();
+  PaceCaret.resetPosition();
 }
 
 export function appendEmptyWordElement(
@@ -686,7 +690,7 @@ function updateWordsMargin(): void {
 }
 
 export function addWord(
-  word: string,
+  word: WordTextWithDirection,
   wordIndex = TestWords.words.length - 1,
 ): void {
   // if the current active word is the last word, we need to NOT use raf
@@ -1253,32 +1257,46 @@ export function setLigatures(isEnabled: boolean): void {
 }
 
 function buildWordLettersHTML(
-  charCount: number,
   input: string,
   corrected: string,
-  inputCharacters: string[],
-  wordCharacters: string[],
-  correctedCharacters: string[],
+  word: string,
   containsKorean: boolean,
 ): string {
+  const inputCharacters = Strings.splitIntoCharacters(input);
+  const correctedCharacters = Strings.splitIntoCharacters(corrected);
+  const wordCharacters = Strings.splitIntoCharacters(word);
+
+  const koreanCorrectedCharacters = Strings.splitIntoCharacters(
+    Hangul.assemble(corrected.split("")),
+  );
+
+  let loopCharCount;
+  if (Config.mode === "zen" || inputCharacters.length > wordCharacters.length) {
+    //input is longer - extra characters possible (loop over input)
+    loopCharCount = inputCharacters.length;
+  } else {
+    //input is shorter or equal (loop over word list)
+    loopCharCount = wordCharacters.length;
+  }
+
   let out = "";
-  for (let c = 0; c < charCount; c++) {
+  for (let c = 0; c < loopCharCount; c++) {
     let correctedChar;
     try {
       correctedChar = !containsKorean
         ? correctedCharacters[c]
-        : Hangul.assemble(corrected.split(""))[c];
+        : koreanCorrectedCharacters[c];
     } catch (e) {
       correctedChar = undefined;
     }
     let extraCorrected = "";
-    const historyWord: string = !containsKorean
-      ? corrected
-      : Hangul.assemble(corrected.split(""));
+    const historyChars = !containsKorean
+      ? correctedCharacters
+      : koreanCorrectedCharacters;
     if (
-      c + 1 === charCount &&
-      historyWord !== undefined &&
-      historyWord.length > input.length
+      c + 1 === loopCharCount &&
+      historyChars !== undefined &&
+      historyChars.length > input.length
     ) {
       extraCorrected = "extraCorrected";
     }
@@ -1326,7 +1344,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
-    const word = TestWords.words.getText(i) ?? "";
+    const word = TestWords.words.getText(i);
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =
@@ -1374,28 +1392,12 @@ async function loadWordsHistory(): Promise<boolean> {
         wordEl.setAttribute("input", input.replace(/ /g, "_"));
       }
 
-      const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word);
-      const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
-
-      let loop;
-      if (Config.mode === "zen" || input.length > word.length) {
-        //input is longer - extra characters possible (loop over input)
-        loop = inputCharacters.length;
-      } else {
-        //input is shorter or equal (loop over word list)
-        loop = wordCharacters.length;
-      }
-
       if (corrected === undefined) throw new Error("empty corrected word");
 
       wordEl.innerHTML = buildWordLettersHTML(
-        loop,
         input,
         corrected,
-        inputCharacters,
-        wordCharacters,
-        correctedCharacters,
+        word,
         containsKorean,
       );
     } catch (e) {
@@ -1753,7 +1755,9 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(TestInput.input.current.length),
+      Strings.splitIntoCharacters(TestWords.words.getCurrentText())[
+        TestInput.input.current.length
+      ] as string,
     );
   }
 

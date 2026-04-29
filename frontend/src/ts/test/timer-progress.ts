@@ -106,10 +106,7 @@ export function instantHide(): void {
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
-    return (
-      (TestWords.words.sectionIndexList[TestState.activeWordIndex] as number) -
-      1
-    );
+    return (TestWords.words.getCurrent()?.sectionIndex as number) - 1;
   } else {
     return TestInput.input.getHistory().length;
   }

@@ -64,10 +64,9 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
+    wordsHistory: TestWords.words
+      .getText()
+      .slice(0, TestInput.input.getHistory().length),
     inputHistory: TestInput.input.getHistory(),
   };
 
@@ -213,7 +212,7 @@ export function setLastSecondNotRound(): void {
 }
 
 export function calculateBurst(endTime: number = performance.now()): number {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestWords.words.koreanStatus;
   const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
@@ -247,7 +246,7 @@ export function removeAfkData(): void {
 }
 
 function getInputWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestWords.words.koreanStatus;
 
   let inputWords = [...TestInput.input.getHistory()];
 
@@ -263,12 +262,12 @@ function getInputWords(): string[] {
 }
 
 function getTargetWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestWords.words.koreanStatus;
 
   let targetWords = [
     ...(Config.mode === "zen"
       ? TestInput.input.getHistory()
-      : TestWords.words.list),
+      : TestWords.words.getText()),
   ];
 
   if (TestState.isActive) {

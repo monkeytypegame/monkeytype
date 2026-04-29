@@ -7,6 +7,7 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
+import { reverseDirection, type Direction } from "../utils/strings";
 
 type Settings = {
   wpm: number;
@@ -27,6 +28,8 @@ export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
+let testDirection: Direction;
+
 export function setLastTestWpm(wpm: number): void {
   if (
     !TestState.isPaceRepeat ||
@@ -36,7 +39,7 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-export function resetCaretPosition(): void {
+export function resetPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (Config.mode === "zen") return;
 
@@ -47,8 +50,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    testDirection,
+    zenWordDirection: undefined,
     animate: false,
   });
 }
@@ -127,6 +130,11 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
+
+  const langDirection = TestState.isLanguageRightToLeft ? "rtl" : "ltr";
+  testDirection = TestState.isDirectionReversed
+    ? reverseDirection(langDirection)
+    : langDirection;
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
@@ -153,8 +161,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      testDirection,
+      zenWordDirection: undefined,
       animate: true,
       animationOptions: {
         duration,
@@ -191,49 +199,57 @@ export function reset(): void {
 function incrementLetterIndex(): void {
   if (settings === null) return;
 
-  try {
-    settings.currentLetterIndex++;
-    if (
-      settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
-    ) {
-      //go to the next word
-      settings.currentLetterIndex = 0;
-      settings.currentWordIndex++;
-    }
-    if (!Config.blindMode) {
-      if (settings.correction < 0) {
-        while (settings.correction < 0) {
-          settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
-            //go to the previous word
-            settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
-            settings.currentWordIndex--;
-          }
-          settings.correction++;
-        }
-      } else if (settings.correction > 0) {
-        while (settings.correction > 0) {
-          settings.currentLetterIndex++;
-          if (
-            settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
-          ) {
-            //go to the next word
-            settings.currentLetterIndex = 0;
-            settings.currentWordIndex++;
-          }
-          settings.correction--;
-        }
-      }
-    }
-  } catch (e) {
+  const finish = (): void => {
     //out of words
     settings = null;
     console.log("pace caret out of words");
     caret.hide();
+  };
+
+  settings.currentLetterIndex++;
+
+  const currentWord = TestWords.words.get(settings.currentWordIndex);
+  if (currentWord === undefined) {
+    finish();
     return;
+  }
+
+  if (settings.currentLetterIndex > currentWord.text.length) {
+    //go to the next word
+    settings.currentLetterIndex = 0;
+    settings.currentWordIndex++;
+  }
+
+  if (Config.blindMode) return;
+
+  while (settings.correction < 0) {
+    settings.currentLetterIndex--;
+    if (settings.currentLetterIndex < 0) {
+      //go to the previous word
+      const previousWord = TestWords.words.get(settings.currentWordIndex - 1);
+      if (previousWord === undefined) {
+        finish();
+        return;
+      }
+      settings.currentLetterIndex = previousWord.text.length;
+      settings.currentWordIndex--;
+    }
+    settings.correction++;
+  }
+
+  while (settings.correction > 0) {
+    settings.currentLetterIndex++;
+    const currentWord = TestWords.words.get(settings.currentWordIndex);
+    if (currentWord === undefined) {
+      finish();
+      return;
+    }
+    if (settings.currentLetterIndex > currentWord.text.length) {
+      //go to the next word
+      settings.currentLetterIndex = 0;
+      settings.currentWordIndex++;
+    }
+    settings.correction--;
   }
 }
 

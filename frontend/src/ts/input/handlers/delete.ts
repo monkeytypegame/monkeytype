@@ -31,7 +31,7 @@ export function onDelete(inputType: DeleteInputType): void {
     beforeDeleteOnlyTabs &&
     allTabsCorrect
     // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-    //   TestWords.words.get(TestState.activeWordIndex - 1) ||
+    //   TestWords.words.getText(TestState.activeWordIndex - 1) ||
     //   Config.freedomMode)
   ) {
     setInputElementValue("");

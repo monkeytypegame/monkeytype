@@ -5,6 +5,14 @@ import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
+import {
+  getWordDirection,
+  reverseDirection,
+  splitIntoCharacters,
+  type Direction,
+} from "../utils/strings";
+
+let testDirection: Direction;
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -21,22 +29,39 @@ export function hide(): void {
 export function resetPosition(): void {
   caret.stopAllAnimations();
   caret.clearMargins();
+
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    testDirection,
+    zenWordDirection: Config.mode === "zen" ? testDirection : undefined,
     animate: false,
   });
 }
 
+export function init(): void {
+  const langDirection = TestState.isLanguageRightToLeft ? "rtl" : "ltr";
+  testDirection = TestState.isDirectionReversed
+    ? reverseDirection(langDirection)
+    : langDirection;
+}
+
 export function updatePosition(noAnim = false): void {
+  const inputWord = splitIntoCharacters(
+    TestInput.input.current + CompositionState.getData(),
+  );
+  const inputWordLength = inputWord.length;
+
+  const zenWordDirection =
+    Config.mode === "zen"
+      ? getWordDirection(inputWord[inputWordLength - 1], testDirection)
+      : undefined;
+
   caret.goTo({
     wordIndex: TestState.activeWordIndex,
-    letterIndex:
-      TestInput.input.current.length + CompositionState.getData().length,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    letterIndex: inputWordLength,
+    testDirection,
+    zenWordDirection,
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }
