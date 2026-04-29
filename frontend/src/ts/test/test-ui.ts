@@ -59,6 +59,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import * as TypedEffects from "./typed-effects";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -147,6 +148,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          TypedEffects.onWordTyped(previousActiveWord);
           Ligatures.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
@@ -495,6 +497,7 @@ function updateWordWrapperClasses(): void {
 }
 
 function showWords(): void {
+  TypedEffects.clear();
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
@@ -1939,6 +1942,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 }
 
 export function onTestFinish(): void {
+  TypedEffects.clear();
   Caret.hide();
   LiveSpeed.hide();
   LiveAcc.hide();
@@ -2083,6 +2087,9 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
+    if (key === "typedEffect" && newValue !== "fall") {
+      TypedEffects.clear();
+    }
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Ligatures.update(key, wordsEl);

@@ -182,7 +182,13 @@ export const HighlightModeSchema = z.enum([
 ]);
 export type HighlightMode = z.infer<typeof HighlightModeSchema>;
 
-export const TypedEffectSchema = z.enum(["keep", "hide", "fade", "dots"]);
+export const TypedEffectSchema = z.enum([
+  "keep",
+  "hide",
+  "fade",
+  "dots",
+  "fall",
+]);
 export type TypedEffect = z.infer<typeof TypedEffectSchema>;
 
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);

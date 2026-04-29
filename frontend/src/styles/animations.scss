@@ -173,3 +173,17 @@
     color: transparent;
   }
 }
+
+@keyframes typedEffectFall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--fall-x), 100vh) rotate(var(--fall-rotation));
+    opacity: 0;
+  }
+}

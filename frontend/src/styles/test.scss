@@ -528,6 +528,12 @@
     }
   }
 
+  &.typed-effect-fall {
+    .word.typed:not(.error) {
+      opacity: 0;
+    }
+  }
+
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
@@ -595,6 +601,15 @@
       }
     }
   }
+}
+
+.word.fall-clone {
+  animation: typedEffectFall 1s cubic-bezier(0.5, 0, 1, 1) forwards;
+  display: inline-block;
+  position: fixed;
+  margin: 0;
+  pointer-events: none;
+  z-index: 1000;
 }
 
 .word {
