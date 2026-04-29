@@ -52,7 +52,7 @@ export function memoizeAsync<P, Args extends unknown[], R>(
     const key = getKey ? getKey(...args) : (args[0] as P);
 
     const cached = cache.get(key);
-    if (cached) {
+    if (cached !== undefined) {
       return cached;
     }
 
