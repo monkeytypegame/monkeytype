@@ -175,6 +175,7 @@ type RestartOptions = {
   practiseMissed?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
+  skipInit?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -184,6 +185,7 @@ export function restart(options = {} as RestartOptions): void {
     noAnim: false,
     nosave: false,
     isQuickRestart: false,
+    skipInit: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -353,6 +355,12 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
+
+      if (options.skipInit) {
+        TestState.setTestRestarting(false);
+        return;
+      }
+
       const initResult = await init();
 
       if (!initResult) {
