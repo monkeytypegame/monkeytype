@@ -138,6 +138,7 @@ async function set(
 
 export async function clearPreview(applyTheme = true): Promise<void> {
   previewState = null;
+  debouncedPreview.cancel();
 
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
