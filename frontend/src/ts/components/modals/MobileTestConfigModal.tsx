@@ -106,7 +106,9 @@ export function MobileTestConfigModal(): JSXElement {
     if (value === "all") {
       return areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3]);
     }
-    if (value === "-2") return false;
+    if (value === "-2") {
+      return areUnsortedArraysEqual(getConfig.quoteLength, [-2]);
+    }
     if (value === "-3") {
       return areUnsortedArraysEqual(getConfig.quoteLength, [-3]);
     }

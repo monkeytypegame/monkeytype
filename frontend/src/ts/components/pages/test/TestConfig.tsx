@@ -348,6 +348,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         fa={{
           icon: "fa-search",
         }}
+        active={areUnsortedArraysEqual(getConfig.quoteLength, [-2])}
         onClick={() => {
           showModal("QuoteSearch");
         }}
