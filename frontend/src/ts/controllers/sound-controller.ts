@@ -19,24 +19,24 @@ import {
   ValidNotes,
 } from "../constants/sounds";
 
-async function gethowler(): Promise<typeof import("howler")> {
-  return import("howler");
+let howlerModulePromise: Promise<typeof import("howler")> | null = null;
+async function getHowlerModule(): Promise<typeof import("howler")> {
+  howlerModulePromise ??= import("howler");
+  return howlerModulePromise;
 }
 
-let isInit = false;
+let initPromise: Promise<void> | null = null;
 const loadedBundles: Set<PlaySoundOnClick> = new Set();
-const howlers: Record<string, Howl> = {};
+
+const howlers: Record<string, Promise<Howl>> = {};
 
 async function getHowl(src: string): Promise<Howl> {
-  const cached = howlers[src];
+  howlers[src] ??= (async () => {
+    const { Howl } = await getHowlerModule();
+    return new Howl({ src });
+  })();
 
-  if (cached !== undefined) return cached;
-
-  const Howl = (await gethowler()).Howl;
-  const howl = new Howl({ src });
-  howlers[src] = howl;
-
-  return howl;
+  return howlers[src];
 }
 
 type ErrorSounds = Record<
@@ -64,47 +64,47 @@ async function initFartReverb(): Promise<void> {
 }
 
 async function initErrorSound(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (errorSounds !== null) return;
   errorSounds = {
     1: [
       {
-        sounds: [new Howl({ src: "../sound/error1/error1_1.wav" })],
+        sounds: [await getHowl("../sound/error1/error1_1.wav")],
         counter: 0,
       },
     ],
     2: [
       {
-        sounds: [new Howl({ src: "../sound/error2/error2_1.wav" })],
+        sounds: [await getHowl("../sound/error2/error2_1.wav")],
         counter: 0,
       },
     ],
     3: [
       {
-        sounds: [new Howl({ src: "../sound/error3/error3_1.wav" })],
+        sounds: [await getHowl("../sound/error3/error3_1.wav")],
         counter: 0,
       },
     ],
     4: [
       {
-        sounds: [new Howl({ src: "../sound/error4/error4_1.wav" })],
+        sounds: [await getHowl("../sound/error4/error4_1.wav")],
         counter: 0,
       },
       {
-        sounds: [new Howl({ src: "../sound/error4/error4_2.wav" })],
+        sounds: [await getHowl("../sound/error4/error4_2.wav")],
         counter: 0,
       },
     ],
   };
-  Howler.volume(Config.soundVolume);
+  (await getHowlerModule()).Howler.volume(Config.soundVolume);
 }
 
 async function init(): Promise<void> {
-  if (!isInit) {
-    isInit = true;
-    const howler = await gethowler();
-    howler.Howler.volume(Config.soundVolume);
-  }
+  initPromise ??= (async () => {
+    const { Howler } = await getHowlerModule();
+    Howler.volume(Config.soundVolume);
+  })();
+
+  await initPromise;
 
   //preload sounds
   const clickId = Config.playSoundOnClick;
@@ -117,9 +117,7 @@ async function init(): Promise<void> {
 
     if (config === undefined) return;
 
-    await Promise.all(
-      config.flatMap((it) => it.sounds).map(async (it) => getHowl(it)),
-    );
+    await Promise.all(config.flatMap((it) => it.sounds).map(getHowl));
   }
 
   //preload error sounds
@@ -138,6 +136,7 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
 
   if ("validNotes" in config) {
     scaleConfigurations[clickId]?.preview();
+    return;
   }
 
   await init();
@@ -347,8 +346,8 @@ export async function playFartReverb(): Promise<void> {
 }
 
 export async function clearAllSounds(): Promise<void> {
-  const Howl = (await gethowler()).Howler;
-  Howl.stop();
+  const { Howler } = await getHowlerModule();
+  Howler.stop();
 }
 
 function playNote(options: {
@@ -441,8 +440,9 @@ export async function playError(): Promise<void> {
   soundToPlay.play();
 }
 
-function setVolume(val: number): void {
+async function setVolume(val: number): Promise<void> {
   try {
+    const { Howler } = await getHowlerModule();
     Howler.volume(val);
   } catch (e) {
     //
@@ -472,6 +472,6 @@ function extractScaleSounds(
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "playSoundOnClick" && newValue !== "off") void init();
   if (key === "soundVolume") {
-    setVolume(newValue);
+    void setVolume(newValue);
   }
 });
