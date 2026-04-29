@@ -2085,7 +2085,7 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
-    if (key === "typedEffect" && newValue !== "tumble") {
+    if (key === "typedEffect" && newValue !== "fall") {
       TypedEffects.clear();
     }
     if (key !== "fontFamily") updateWordWrapperClasses();

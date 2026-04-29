@@ -533,7 +533,7 @@
     }
   }
 
-  &.typed-effect-tumble {
+  &.typed-effect-fall {
     .word.typed:not(.error) {
       opacity: 0;
     }
@@ -608,8 +608,8 @@
   }
 }
 
-.word.tumble-clone {
-  animation: typedEffectTumble 1s cubic-bezier(0.5, 0, 1, 1) forwards;
+.word.fall-clone {
+  animation: typedEffectFall 1s cubic-bezier(0.5, 0, 1, 1) forwards;
   display: inline-block;
   position: fixed;
   margin: 0;

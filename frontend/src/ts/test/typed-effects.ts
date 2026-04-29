@@ -1,11 +1,11 @@
 import { Config } from "../config/store";
 import { ElementWithUtils, qsa } from "../utils/dom";
-const TUMBLE_DURATION_MS = 1000;
+const FALL_DURATION_MS = 1000;
 
 export function onWordTyped(word: ElementWithUtils): void {
   switch (Config.typedEffect) {
-    case "tumble":
-      triggerTumble(word);
+    case "fall":
+      triggerFall(word);
       return;
     default:
       return;
@@ -13,10 +13,10 @@ export function onWordTyped(word: ElementWithUtils): void {
 }
 
 export function clear(): void {
-  qsa(".tumble-clone").remove();
+  qsa(".fall-clone").remove();
 }
 
-function triggerTumble(word: ElementWithUtils): void {
+function triggerFall(word: ElementWithUtils): void {
   if (word.hasClass("error")) return;
 
   const rect = word.native.getBoundingClientRect();
@@ -27,7 +27,7 @@ function triggerTumble(word: ElementWithUtils): void {
   const randomRotation = (Math.random() - 0.5) * 45;
   const randomX = (Math.random() - 0.5) * 100;
 
-  clone.classList.add("tumble-clone");
+  clone.classList.add("fall-clone");
   clone.style.top = `${rect.top}px`;
   clone.style.left = `${rect.left}px`;
   clone.style.width = `${rect.width}px`;
@@ -45,5 +45,5 @@ function triggerTumble(word: ElementWithUtils): void {
   };
 
   clone.addEventListener("animationend", cleanup, { once: true });
-  window.setTimeout(cleanup, TUMBLE_DURATION_MS);
+  window.setTimeout(cleanup, FALL_DURATION_MS);
 }

@@ -187,7 +187,7 @@ export const TypedEffectSchema = z.enum([
   "hide",
   "fade",
   "dots",
-  "tumble",
+  "fall",
 ]);
 export type TypedEffect = z.infer<typeof TypedEffectSchema>;
 
