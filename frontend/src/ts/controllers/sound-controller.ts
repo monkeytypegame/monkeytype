@@ -1,28 +1,46 @@
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
-import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
+import {
+  PlaySoundOnClick,
+  PlaySoundOnError,
+} from "@monkeytype/schemas/configs";
+import {
+  clickSoundConfig,
+  ScaleSoundConfig,
+  SoundConfigType,
+  soundsConfig,
+  SupportedOscillatorTypes,
+  ValidNotes,
+} from "../constants/sounds";
 
-async function gethowler(): Promise<typeof import("howler")> {
-  return await import("howler");
+let howlerModulePromise: Promise<typeof import("howler")> | null = null;
+async function getHowlerModule(): Promise<typeof import("howler")> {
+  howlerModulePromise ??= import("howler");
+  return howlerModulePromise;
 }
 
-type ClickSounds = Record<
-  string,
-  {
-    sounds: Howl[];
-    counter: number;
-  }[]
->;
+let initPromise: Promise<void> | null = null;
+const loadedBundles: Set<PlaySoundOnClick> = new Set();
+
+const howlers: Record<string, Promise<Howl>> = {};
+
+async function getHowl(src: string): Promise<Howl> {
+  howlers[src] ??= (async () => {
+    const { Howl } = await getHowlerModule();
+    return new Howl({ src });
+  })();
+
+  return howlers[src];
+}
 
 type ErrorSounds = Record<
-  string,
+  Exclude<PlaySoundOnError, "off">,
   {
     sounds: Howl[];
     counter: number;
@@ -30,487 +48,114 @@ type ErrorSounds = Record<
 >;
 
 let errorSounds: ErrorSounds | null = null;
-let clickSounds: ClickSounds | null = null;
 
 let timeWarning: Howl | null = null;
 
 let fartReverb: Howl | null = null;
 
 async function initTimeWarning(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (timeWarning !== null) return;
-  timeWarning = new Howl({
-    src: "../sound/timeWarning.wav",
-  });
+  timeWarning = await getHowl("../sound/timeWarning.wav");
 }
 
 async function initFartReverb(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (fartReverb !== null) return;
-  fartReverb = new Howl({
-    src: "../sound/fart-reverb.wav",
-  });
+  fartReverb = await getHowl("../sound/fart-reverb.wav");
 }
 
 async function initErrorSound(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (errorSounds !== null) return;
   errorSounds = {
     1: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error1/error1_1.wav" }),
-          new Howl({ src: "../sound/error1/error1_1.wav" }),
-        ],
+        sounds: [await getHowl("../sound/error1/error1_1.wav")],
         counter: 0,
       },
     ],
     2: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error2/error2_1.wav" }),
-          new Howl({ src: "../sound/error2/error2_1.wav" }),
-        ],
+        sounds: [await getHowl("../sound/error2/error2_1.wav")],
         counter: 0,
       },
     ],
     3: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error3/error3_1.wav" }),
-          new Howl({ src: "../sound/error3/error3_1.wav" }),
-        ],
+        sounds: [await getHowl("../sound/error3/error3_1.wav")],
         counter: 0,
       },
     ],
     4: [
       {
-        sounds: [
-          new Howl({ src: "../sound/error4/error4_1.wav" }),
-          new Howl({ src: "../sound/error4/error4_1.wav" }),
-        ],
+        sounds: [await getHowl("../sound/error4/error4_1.wav")],
         counter: 0,
       },
       {
-        sounds: [
-          new Howl({ src: "../sound/error4/error4_2.wav" }),
-          new Howl({ src: "../sound/error4/error4_2.wav" }),
-        ],
+        sounds: [await getHowl("../sound/error4/error4_2.wav")],
         counter: 0,
       },
     ],
   };
-  Howler.volume(Config.soundVolume);
+  (await getHowlerModule()).Howler.volume(Config.soundVolume);
 }
 
 async function init(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
-  if (clickSounds !== null) return;
-  clickSounds = {
-    1: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_1.wav" }),
-          new Howl({ src: "../sound/click1/click1_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_2.wav" }),
-          new Howl({ src: "../sound/click1/click1_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click1/click1_3.wav" }),
-          new Howl({ src: "../sound/click1/click1_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    2: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_1.wav" }),
-          new Howl({ src: "../sound/click2/click2_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_2.wav" }),
-          new Howl({ src: "../sound/click2/click2_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click2/click2_3.wav" }),
-          new Howl({ src: "../sound/click2/click2_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    3: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_1.wav" }),
-          new Howl({ src: "../sound/click3/click3_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_2.wav" }),
-          new Howl({ src: "../sound/click3/click3_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click3/click3_3.wav" }),
-          new Howl({ src: "../sound/click3/click3_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    4: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_1.wav" }),
-          new Howl({ src: "../sound/click4/click4_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_2.wav" }),
-          new Howl({ src: "../sound/click4/click4_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_3.wav" }),
-          new Howl({ src: "../sound/click4/click4_33.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_4.wav" }),
-          new Howl({ src: "../sound/click4/click4_44.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_5.wav" }),
-          new Howl({ src: "../sound/click4/click4_55.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click4/click4_6.wav" }),
-          new Howl({ src: "../sound/click4/click4_66.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    5: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_1.wav" }),
-          new Howl({ src: "../sound/click5/click5_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_2.wav" }),
-          new Howl({ src: "../sound/click5/click5_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_3.wav" }),
-          new Howl({ src: "../sound/click5/click5_33.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_4.wav" }),
-          new Howl({ src: "../sound/click5/click5_44.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_5.wav" }),
-          new Howl({ src: "../sound/click5/click5_55.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click5/click5_6.wav" }),
-          new Howl({ src: "../sound/click5/click5_66.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    6: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_1.wav" }),
-          new Howl({ src: "../sound/click6/click6_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_2.wav" }),
-          new Howl({ src: "../sound/click6/click6_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click6/click6_3.wav" }),
-          new Howl({ src: "../sound/click6/click6_33.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    7: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_1.wav" }),
-          new Howl({ src: "../sound/click7/click7_11.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_2.wav" }),
-          new Howl({ src: "../sound/click7/click7_22.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click7/click7_3.wav" }),
-          new Howl({ src: "../sound/click7/click7_33.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    14: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_1.wav" }),
-          new Howl({ src: "../sound/click14/click14_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_2.wav" }),
-          new Howl({ src: "../sound/click14/click14_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_3.wav" }),
-          new Howl({ src: "../sound/click14/click14_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_4.wav" }),
-          new Howl({ src: "../sound/click14/click14_4.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_5.wav" }),
-          new Howl({ src: "../sound/click14/click14_5.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_6.wav" }),
-          new Howl({ src: "../sound/click14/click14_6.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_7.wav" }),
-          new Howl({ src: "../sound/click14/click14_7.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_8.wav" }),
-          new Howl({ src: "../sound/click14/click14_8.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    15: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_1.wav" }),
-          new Howl({ src: "../sound/click15/click15_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_2.wav" }),
-          new Howl({ src: "../sound/click15/click15_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_3.wav" }),
-          new Howl({ src: "../sound/click15/click15_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_4.wav" }),
-          new Howl({ src: "../sound/click15/click15_4.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click15/click15_5.wav" }),
-          new Howl({ src: "../sound/click15/click15_5.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    16: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_1.wav" }),
-          new Howl({ src: "../sound/click16/click16_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_2.wav" }),
-          new Howl({ src: "../sound/click16/click16_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_3.wav" }),
-          new Howl({ src: "../sound/click16/click16_3.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_4.wav" }),
-          new Howl({ src: "../sound/click16/click16_4.wav" }),
-        ],
-        counter: 0,
-      },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_5.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_6.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      // {
-      //   sounds: [
-      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
-      //     new Howl({ src: "../sound/click16/click16_7.wav" }),
-      //   ],
-      //   counter: 0,
-      // },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_8.wav" }),
-          new Howl({ src: "../sound/click16/click16_8.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_9.wav" }),
-          new Howl({ src: "../sound/click16/click16_9.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_10.wav" }),
-          new Howl({ src: "../sound/click16/click16_10.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click16/click16_11.wav" }),
-          new Howl({ src: "../sound/click16/click16_11.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-  };
-  Howler.volume(Config.soundVolume);
+  initPromise ??= (async () => {
+    const { Howler } = await getHowlerModule();
+    Howler.volume(Config.soundVolume);
+  })();
+
+  await initPromise;
+
+  //preload sounds
+  const clickId = Config.playSoundOnClick;
+  if (clickId === "off") return;
+
+  if (!loadedBundles.has(clickId)) {
+    loadedBundles.add(clickId);
+
+    const config = clickSoundConfig[clickId];
+
+    if (config === undefined) return;
+
+    await Promise.all(config.flatMap((it) => it.sounds).map(getHowl));
+  }
+
+  //preload error sounds
+  await initErrorSound();
 }
 
-export async function previewClick(val: PlaySoundOnClick): Promise<void> {
-  if (["8", "9", "10", "11"].includes(val)) {
-    playNote("KeyQ", clickSoundIdsToOscillatorType[val as DynamicClickSounds]);
+export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
+  if (clickId === "off") return;
+
+  const config = soundsConfig[clickId];
+
+  if ("oscillatorType" in config) {
+    playNote({ codeOverride: "KeyQ", oscillatorType: config.oscillatorType });
     return;
   }
 
-  if (["12", "13"].includes(val)) {
-    scaleConfigurations[val as "12" | "13"].preview();
+  if ("validNotes" in config) {
+    scaleConfigurations[clickId]?.preview();
     return;
   }
 
-  if (clickSounds === null) await init();
+  await init();
 
-  const safeClickSounds = clickSounds as ClickSounds;
+  const safeClickSounds = clickSoundConfig[clickId];
+  if (
+    safeClickSounds === undefined ||
+    safeClickSounds[0]?.sounds[0] === undefined
+  ) {
+    return;
+  }
 
-  const clickSoundIds = Object.keys(safeClickSounds);
-  if (!clickSoundIds.includes(val)) return;
-
-  safeClickSounds?.[val]?.[0]?.sounds[0]?.seek(0);
-  safeClickSounds?.[val]?.[0]?.sounds[0]?.play();
+  const howl = await getHowl(safeClickSounds[0]?.sounds[0]);
+  howl.seek(0);
+  howl.play();
 }
 
-export async function previewError(val: string): Promise<void> {
+export async function previewError(val: PlaySoundOnError): Promise<void> {
+  if (val === "off") return;
   if (errorSounds === null) await initErrorSound();
 
   const safeErrorSounds = errorSounds as ErrorSounds;
@@ -528,7 +173,7 @@ document.addEventListener("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
-const notes = {
+const notes: Record<ValidNotes, ValidFrequencies> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -543,8 +188,7 @@ const notes = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 } as const;
 
-type ValidNotes = keyof typeof notes;
-type ValidFrequencies = (typeof notes)[ValidNotes];
+type ValidFrequencies = number[];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 
@@ -597,19 +241,6 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   BracketRight: bindToNote(notes.G, 2),
 };
 
-type DynamicClickSounds = Extract<PlaySoundOnClick, "8" | "9" | "10" | "11">;
-type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
-
-const clickSoundIdsToOscillatorType: Record<
-  DynamicClickSounds,
-  SupportedOscillatorTypes
-> = {
-  "8": "sine",
-  "9": "sawtooth",
-  "10": "square",
-  "11": "triangle",
-};
-
 let audioCtx: AudioContext | undefined | null;
 
 function initAudioContext(): void {
@@ -628,20 +259,13 @@ function initAudioContext(): void {
   }
 }
 
-type ValidScales = "pentatonic" | "wholetone";
-
-const scales: Record<ValidScales, ValidNotes[]> = {
-  pentatonic: ["C", "D", "E", "G", "A"],
-  wholetone: ["C", "D", "E", "Gb", "Ab", "Bb"],
-};
-
 type ScaleData = {
   octave: number; // current octave of scale
   direction: number; // whether scale is ascending or descending
   position: number; // current position in scale
 };
 
-function createPreviewScale(scaleName: ValidScales): () => void {
+function createPreviewScale(validNotes: ValidNotes[]): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
   const scale: ScaleData = {
     position: 0,
@@ -650,13 +274,12 @@ function createPreviewScale(scaleName: ValidScales): () => void {
   };
 
   return async () => {
-    if (clickSounds === null) await init();
-    playScale(scaleName, scale);
+    await init();
+    playScale(validNotes, scale);
   };
 }
 
 type ScaleMeta = {
-  name: ValidScales;
   preview: ReturnType<typeof createPreviewScale>;
   meta: ScaleData;
 };
@@ -667,29 +290,16 @@ const defaultScaleData: ScaleData = {
   direction: 1,
 };
 
-export const scaleConfigurations: Record<
-  Extract<PlaySoundOnClick, "12" | "13">,
-  ScaleMeta
-> = {
-  "12": {
-    name: "pentatonic",
-    preview: createPreviewScale("pentatonic"),
-    meta: defaultScaleData,
-  },
-  "13": {
-    name: "wholetone",
-    preview: createPreviewScale("wholetone"),
-    meta: defaultScaleData,
-  },
-};
+type ScaleConfigurationType = Partial<Record<PlaySoundOnClick, ScaleMeta>>;
 
-function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
+export const scaleConfigurations: ScaleConfigurationType =
+  extractScaleSounds(soundsConfig);
+
+function playScale(validNotes: ValidNotes[], scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
-
-  const randomNote = randomIntFromRange(0, scales[scale].length - 1);
 
   if (Math.random() < 0.5) {
     scaleMeta.octave += scaleMeta.direction;
@@ -702,7 +312,7 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
     scaleMeta.direction = 1;
   }
 
-  const note = scales[scale][randomNote] as ValidNotes;
+  const note = randomElementFromArray(validNotes);
 
   const currentFrequency = notes[note][scaleMeta.octave] as number;
 
@@ -736,20 +346,20 @@ export async function playFartReverb(): Promise<void> {
 }
 
 export async function clearAllSounds(): Promise<void> {
-  const Howl = (await gethowler()).Howler;
-  Howl.stop();
+  const { Howler } = await getHowlerModule();
+  Howler.stop();
 }
 
-function playNote(
-  codeOverride?: string,
-  oscillatorTypeOverride?: SupportedOscillatorTypes,
-): void {
+function playNote(options: {
+  codeOverride?: string;
+  oscillatorType: SupportedOscillatorTypes;
+}): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
 
-  currentCode = codeOverride ?? currentCode;
+  currentCode = options.codeOverride ?? currentCode;
   if (!(currentCode in codeToNote)) {
     return;
   }
@@ -761,11 +371,7 @@ function playNote(
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
 
-  oscillatorNode.type =
-    oscillatorTypeOverride ??
-    clickSoundIdsToOscillatorType[
-      Config.playSoundOnClick as DynamicClickSounds
-    ];
+  oscillatorNode.type = options.oscillatorType;
   gainNode.gain.value = Config.soundVolume / 10;
 
   oscillatorNode.connect(gainNode);
@@ -778,33 +384,39 @@ function playNote(
 }
 
 export async function playClick(codeOverride?: string): Promise<void> {
-  if (Config.playSoundOnClick === "off") return;
+  const val = Config.playSoundOnClick;
+  if (val === "off") return;
 
-  if (Config.playSoundOnClick in scaleConfigurations) {
-    const { name, meta } =
-      scaleConfigurations[
-        Config.playSoundOnClick as keyof typeof scaleConfigurations
-      ];
-    playScale(name, meta);
+  const config = soundsConfig[val];
+
+  if ("oscillatorType" in config) {
+    playNote({ codeOverride, oscillatorType: config.oscillatorType });
     return;
   }
 
-  if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
-    playNote(codeOverride ?? undefined);
+  if ("validNotes" in config) {
+    const scaleConfig = scaleConfigurations[val];
+    if (scaleConfig === undefined) {
+      throw new Error("missing scale config");
+    }
+    playScale(config.validNotes, scaleConfig.meta);
     return;
   }
 
-  if (clickSounds === null) await init();
+  await init();
 
-  const sounds = (clickSounds as ClickSounds)[Config.playSoundOnClick];
-
+  const sounds = clickSoundConfig[val];
   if (sounds === undefined) throw new Error("Invalid click sound ID");
-
   const randomSound = randomElementFromArray(sounds);
-  const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
+
+  const src = randomSound.sounds[randomSound.counter];
+  if (src === undefined) throw new Error("Invalid click sound ID");
+  const soundToPlay = await getHowl(src);
 
   randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
+  if (randomSound.counter === randomSound.sounds.length) {
+    randomSound.counter = 0;
+  }
   soundToPlay.seek(0);
   soundToPlay.play();
 }
@@ -820,22 +432,45 @@ export async function playError(): Promise<void> {
   const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
 
   randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
+  if (randomSound.counter === randomSound.sounds.length) {
+    randomSound.counter = 0;
+  }
   soundToPlay.seek(0);
   soundToPlay.play();
 }
 
-function setVolume(val: number): void {
+async function setVolume(val: number): Promise<void> {
   try {
+    const { Howler } = await getHowlerModule();
     Howler.volume(val);
   } catch (e) {
     //
   }
 }
 
+function extractScaleSounds(
+  shortConfig: SoundConfigType,
+): ScaleConfigurationType {
+  return Object.fromEntries(
+    Object.entries(shortConfig)
+      .filter(([_, cfg]) => "validNotes" in cfg)
+      .map(([key, cfg]) => {
+        const config = cfg as ScaleSoundConfig;
+
+        return [
+          key,
+          {
+            preview: createPreviewScale(config.validNotes),
+            meta: { ...defaultScaleData },
+          } as ScaleMeta,
+        ];
+      }),
+  );
+}
+
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "playSoundOnClick" && newValue !== "off") void init();
   if (key === "soundVolume") {
-    setVolume(newValue);
+    void setVolume(newValue);
   }
 });

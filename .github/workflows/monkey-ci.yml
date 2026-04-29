@@ -242,6 +242,7 @@ jobs:
               - 'frontend/static/themes/**'
               - 'frontend/static/webfonts/**'
               - 'frontend/static/challenges/**'
+              - 'frontend/static/sounds/**'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
