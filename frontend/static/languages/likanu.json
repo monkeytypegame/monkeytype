@@ -1,7 +1,7 @@
 {
   "name": "likanu",
   "rightToLeft": false,
-  "ligatures": true,
+  "cursiveScript": true,
   "orderedByFrequency": false,
   "bcp47": "xxs-Uixs",
   "words": [

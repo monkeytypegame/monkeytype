@@ -1,7 +1,6 @@
 {
   "name": "malay_1k",
   "rightToLeft": false,
-  "ligatures": false,
   "bcp47": "ms",
   "words": [
     "sebagai",

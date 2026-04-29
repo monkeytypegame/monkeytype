@@ -42,6 +42,6 @@
 }
 
 #words letter,
-#words.withLigatures .word letter {
+#words.cursiveScript .word letter {
   display: inline-block;
 }

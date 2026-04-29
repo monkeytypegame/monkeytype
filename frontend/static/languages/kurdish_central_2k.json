@@ -1,7 +1,7 @@
 {
   "name": "kurdish_central_2k",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursiveScript": true,
   "bcp47": "ckb",
   "words": [
     "ناو",

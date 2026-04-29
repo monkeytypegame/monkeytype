@@ -1,7 +1,6 @@
 {
   "name": "kyrgyz_1k",
   "rightToLeft": false,
-  "ligatures": false,
   "bcp47": "ky-KY",
   "words": [
     "мен",

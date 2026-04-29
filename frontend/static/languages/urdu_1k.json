@@ -1,7 +1,7 @@
 {
   "name": "urdu_1k",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "words": [
     "آلائش",

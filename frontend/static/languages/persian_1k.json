@@ -1,7 +1,7 @@
 {
   "name": "persian_1k",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "bcp47": "fa",
   "words": [

@@ -1,6 +1,6 @@
 {
   "name": "sinhala",
-  "ligatures": true,
+  "cursiveScript": true,
   "bcp47": "si",
   "words": [
     "අක්ෂර",

@@ -2,7 +2,7 @@
   "name": "kannada",
   "noLazyMode": true,
   "bcp47": "kn-IN",
-  "ligatures": true,
+  "cursiveScript": true,
   "orderedByFrequency": true,
   "words": [
     "ಆದರ",

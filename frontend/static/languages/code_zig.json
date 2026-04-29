@@ -1,7 +1,6 @@
 {
   "name": "code_zig",
   "noLazyMode": true,
-  "ligatures": false,
   "words": [
     "std.debug.print",
     "std.mem.Allocator",

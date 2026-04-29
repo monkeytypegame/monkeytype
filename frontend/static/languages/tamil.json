@@ -2,7 +2,7 @@
   "name": "tamil",
   "noLazyMode": true,
   "bcp47": "ta-IN",
-  "ligatures": true,
+  "cursiveScript": true,
   "orderedByFrequency": true,
   "words": [
     "இதழ்",

@@ -320,7 +320,7 @@
       unicode-bidi: bidi-override;
     }
   }
-  &.withLigatures {
+  &.cursiveScript {
     .word {
       overflow-wrap: anywhere;
       padding-bottom: 0.05em; // compensate for letter border
@@ -531,8 +531,8 @@
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
-    &:not(.withLigatures) .word,
-    &.withLigatures .word.broken-ligatures {
+    &:not(.cursiveScript) .word,
+    &.cursiveScript .word.broken-cursive {
       letter {
         position: relative;
         display: inline-block;
@@ -550,17 +550,17 @@
       }
     }
     // unify dot spacing
-    &.withLigatures .word.broken-ligatures {
+    &.cursiveScript .word.broken-cursive {
       letter {
         width: 0.4em;
       }
     }
-    .word.broken-ligatures:not(.needs-wrap) {
+    .word.broken-cursive:not(.needs-wrap) {
       white-space: nowrap;
     }
 
-    &:not(.withLigatures) .word.typed,
-    &.withLigatures .word.broken-ligatures.typed {
+    &:not(.cursiveScript) .word.typed,
+    &.cursiveScript .word.broken-cursive.typed {
       letter {
         color: var(--bg-color);
         animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
@@ -571,18 +571,18 @@
       }
     }
 
-    &:not(.withLigatures):not(.blind) {
+    &:not(.cursiveScript):not(.blind) {
       .word letter.incorrect::after {
         background: var(--c-dot--error);
       }
     }
-    &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
+    &.cursiveScript:not(.blind) .word.broken-cursive letter.incorrect::after {
       background: var(--c-dot--error);
     }
 
     @media (prefers-reduced-motion) {
-      &:not(.withLigatures) .word.typed,
-      &.withLigatures .word.broken-ligatures.typed {
+      &:not(.cursiveScript) .word.typed,
+      &.cursiveScript .word.broken-cursive.typed {
         letter {
           animation: none !important;
           transform: scale(0.4);
@@ -874,7 +874,7 @@
             unicode-bidi: bidi-override;
           }
         }
-        &.withLigatures {
+        &.cursiveScript {
           .word {
             overflow-wrap: anywhere;
             padding-bottom: 2px; // compensate for letter border

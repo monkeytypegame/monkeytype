@@ -1,7 +1,7 @@
 {
   "name": "urdu_5k",
   "rightToLeft": true,
-  "ligatures": true,
+  "cursiveScript": true,
   "noLazyMode": true,
   "words": [
     "کے",
