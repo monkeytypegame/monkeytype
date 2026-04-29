@@ -110,7 +110,7 @@
     "normalize.css": "8.0.1",
     "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.21.0",
-    "postcss": "8.5.8",
+    "postcss": "8.5.10",
     "sass": "1.70.0",
     "solid-devtools": "0.34.5",
     "solid-js": "1.9.10",
