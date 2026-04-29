@@ -20,16 +20,25 @@ import {
 } from "../constants/sounds";
 
 async function gethowler(): Promise<typeof import("howler")> {
-  return await import("howler");
+  return import("howler");
 }
 
-type ClickSounds = Record<
-  string,
-  {
-    sounds: Howl[];
-    counter: number;
-  }[]
->;
+let isInit = false;
+const loadedBundles: Set<PlaySoundOnClick> = new Set();
+const howlers: Record<string, Howl> = {};
+
+async function getHowl(src: string): Promise<Howl> {
+  const cached = howlers[src];
+
+  if (cached !== undefined) return cached;
+
+  const Howl = (await gethowler()).Howl;
+  const howl = new Howl({ src });
+  howlers[src] = howl;
+
+  return howl;
+}
+
 type ErrorSounds = Record<
   Exclude<PlaySoundOnError, "off">,
   {
@@ -39,26 +48,19 @@ type ErrorSounds = Record<
 >;
 
 let errorSounds: ErrorSounds | null = null;
-let clickSounds: ClickSounds | null = null;
 
 let timeWarning: Howl | null = null;
 
 let fartReverb: Howl | null = null;
 
 async function initTimeWarning(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (timeWarning !== null) return;
-  timeWarning = new Howl({
-    src: "../sound/timeWarning.wav",
-  });
+  timeWarning = await getHowl("../sound/timeWarning.wav");
 }
 
 async function initFartReverb(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
   if (fartReverb !== null) return;
-  fartReverb = new Howl({
-    src: "../sound/fart-reverb.wav",
-  });
+  fartReverb = await getHowl("../sound/fart-reverb.wav");
 }
 
 async function initErrorSound(): Promise<void> {
@@ -98,24 +100,36 @@ async function initErrorSound(): Promise<void> {
 }
 
 async function init(): Promise<void> {
-  const Howl = (await gethowler()).Howl;
-  if (clickSounds !== null) return;
-  clickSounds = Object.fromEntries(
-    Object.entries(clickSoundConfig).map(([key, value]) => [
-      key,
-      value.map((it) => ({
-        ...it,
-        sounds: it.sounds.map((src) => new Howl({ src })),
-      })),
-    ]),
-  );
-  Howler.volume(Config.soundVolume);
+  if (!isInit) {
+    isInit = true;
+    const howler = await gethowler();
+    howler.Howler.volume(Config.soundVolume);
+  }
+
+  //preload sounds
+  const clickId = Config.playSoundOnClick;
+  if (clickId === "off") return;
+
+  if (!loadedBundles.has(clickId)) {
+    loadedBundles.add(clickId);
+
+    const config = clickSoundConfig[clickId];
+
+    if (config === undefined) return;
+
+    await Promise.all(
+      config.flatMap((it) => it.sounds).map(async (it) => getHowl(it)),
+    );
+  }
+
+  //preload error sounds
+  await initErrorSound();
 }
 
-export async function previewClick(val: PlaySoundOnClick): Promise<void> {
-  if (val === "off") return;
+export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
+  if (clickId === "off") return;
 
-  const config = soundsConfig[val];
+  const config = soundsConfig[clickId];
 
   if ("oscillatorType" in config) {
     playNote({ codeOverride: "KeyQ", oscillatorType: config.oscillatorType });
@@ -123,18 +137,22 @@ export async function previewClick(val: PlaySoundOnClick): Promise<void> {
   }
 
   if ("validNotes" in config) {
-    scaleConfigurations[val]?.preview();
+    scaleConfigurations[clickId]?.preview();
   }
 
-  if (clickSounds === null) await init();
+  await init();
 
-  const safeClickSounds = clickSounds as ClickSounds;
+  const safeClickSounds = clickSoundConfig[clickId];
+  if (
+    safeClickSounds === undefined ||
+    safeClickSounds[0]?.sounds[0] === undefined
+  ) {
+    return;
+  }
 
-  const clickSoundIds = Object.keys(safeClickSounds);
-  if (!clickSoundIds.includes(val)) return;
-
-  safeClickSounds?.[val]?.[0]?.sounds[0]?.seek(0);
-  safeClickSounds?.[val]?.[0]?.sounds[0]?.play();
+  const howl = await getHowl(safeClickSounds[0]?.sounds[0]);
+  howl.seek(0);
+  howl.play();
 }
 
 export async function previewError(val: PlaySoundOnError): Promise<void> {
@@ -257,7 +275,7 @@ function createPreviewScale(validNotes: ValidNotes[]): () => void {
   };
 
   return async () => {
-    if (clickSounds === null) await init();
+    await init();
     playScale(validNotes, scale);
   };
 }
@@ -387,14 +405,15 @@ export async function playClick(codeOverride?: string): Promise<void> {
     return;
   }
 
-  if (clickSounds === null) await init();
+  await init();
 
-  const sounds = (clickSounds as ClickSounds)[Config.playSoundOnClick];
-
+  const sounds = clickSoundConfig[val];
   if (sounds === undefined) throw new Error("Invalid click sound ID");
-
   const randomSound = randomElementFromArray(sounds);
-  const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
+
+  const src = randomSound.sounds[randomSound.counter];
+  if (src === undefined) throw new Error("Invalid click sound ID");
+  const soundToPlay = await getHowl(src);
 
   randomSound.counter++;
   if (randomSound.counter === randomSound.sounds.length) {
