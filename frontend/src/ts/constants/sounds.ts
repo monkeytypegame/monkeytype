@@ -16,7 +16,7 @@ export const soundsConfig: SoundConfigType = {
   13: { validNotes: ["C", "D", "E", "Gb", "Ab", "Bb"] },
   14: { numberOfSounds: 8 },
   15: { numberOfSounds: 5 },
-  16: { numberOfSounds: 11 }, //TODO 5-7 were disabled
+  16: { numberOfSounds: 8 },
 };
 
 export type ClickSoundConfig = {
