@@ -230,7 +230,7 @@ async function joinOverlappingHints(
   hintElements: HTMLCollection,
 ): Promise<void> {
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    TestWords.words.getCurrent(),
+    TestWords.words.getCurrentText(),
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
   );
@@ -505,7 +505,7 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += buildWordHTML(TestWords.words.get(i), i);
+      wordsHTML += buildWordHTML(TestWords.words.getText(i), i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -742,7 +742,7 @@ export async function updateWordLetters({
     `test-ui.updateWordLetters.${wordIndex}`,
     async () => {
       pendingWordData.delete(wordIndex);
-      const currentWord = TestWords.words.get(wordIndex);
+      const currentWord = TestWords.words.getText(wordIndex);
       if (!currentWord && Config.mode !== "zen") return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
@@ -1329,7 +1329,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
-    const word = TestWords.words.get(i) ?? "";
+    const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =
@@ -1707,15 +1707,17 @@ export function getActiveWordTopAndHeightWithDifferentData(data: string): {
 
   if (!activeWord) throw new Error("No active word element found");
 
+  const lettersEls = activeWord.qsa("letter");
+  const domLettersCount = lettersEls.length;
   const nodes = [];
-  for (let i = activeWord.getChildren().length; i < data.length; i++) {
+  for (let i = domLettersCount; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
     const displayData = data[i] === " " ? "_" : data[i];
     tempLetter.textContent = displayData as string;
     nodes.push(tempLetter);
   }
 
-  activeWord.append(nodes);
+  lettersEls[domLettersCount - 1]?.native.after(...nodes);
 
   const top = activeWord.getOffsetTop();
   const height = activeWord.getOffsetHeight();
@@ -1754,7 +1756,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+      TestWords.words.getCurrentText().charAt(TestInput.input.current.length),
     );
   }
 
@@ -1959,7 +1961,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
     words = TestInput.input.getHistory().join(" ");
   } else {
     words = TestWords.words
-      .get()
+      .getText()
       .slice(0, TestInput.input.getHistory().length)
       .join(" ");
   }

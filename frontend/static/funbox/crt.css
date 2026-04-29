@@ -101,7 +101,7 @@ body.crtmode #caret {
 }
 
 body.crtmode #paceCaret,
-body.crtmode key,
+body.crtmode kbd,
 body.crtmode #bannerCenter .banner {
   box-shadow:
     3px 0 1px var(--crt-sub-color-glow),
