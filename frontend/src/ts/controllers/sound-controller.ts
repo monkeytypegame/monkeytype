@@ -397,7 +397,6 @@ export async function playClick(codeOverride?: string): Promise<void> {
   if ("validNotes" in config) {
     const scaleConfig = scaleConfigurations[val];
     if (scaleConfig === undefined) {
-      //TODO
       throw new Error("missing scale config");
     }
     playScale(config.validNotes, scaleConfig.meta);
