@@ -13,22 +13,6 @@
   transition: 0.5s;
 }
 
-header[data-focused] {
-  & [data-ui-element="logo"] > div,
-  [data-ui-element="logo"] svg {
-    transform: rotateY(0deg);
-    direction: ltr;
-  }
-  & [data-nav-item] {
-    --nav-focus-opacity: 1;
-    background: var(--sub-color);
-    transform: rotateY(180deg);
-  }
-  & [data-nav-item="account"] {
-    --themable-button-bg: var(--sub-color);
-  }
-}
-
 #words .incorrect.extra {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
@@ -36,7 +20,7 @@ header[data-focused] {
 }
 
 #caret {
-  background-image: url(/images/themes/chaos_theory/caret.webp) !important;
+  background-image: url("/images/themes/chaos_theory/caret.webp") !important;
   background-color: transparent !important;
   background-size: 1rem !important;
   background-position: center !important;
@@ -47,18 +31,21 @@ header[data-focused] {
   width: 4px !important;
 }
 
+/* this is not taking effect since 4 years ago because it is
+refering to the old .config which does not exist anymore
+did not try it on the new #testConfig yet
 .config .toggleButton {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
 
 .config .mode .textButton {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
 
 .config .wordCount .textButton,
@@ -68,8 +55,9 @@ header[data-focused] {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-  align-content: right;
+  //align-content: right; // there is no align-content: right
 }
+*/
 
 [data-nav-item] {
   color: var(--bg-color);
@@ -126,6 +114,22 @@ header[data-focused] {
 
 [data-nav-item="login"] {
   background: #ab92e1;
+}
+
+header[data-focused] {
+  & [data-ui-element="logo"] > div,
+  [data-ui-element="logo"] svg {
+    transform: rotateY(0deg);
+    direction: ltr;
+  }
+  & [data-nav-item] {
+    --nav-focus-opacity: 1;
+    background: var(--sub-color);
+    transform: rotateY(180deg);
+  }
+  & [data-nav-item="account"] {
+    --themable-button-bg: var(--sub-color);
+  }
 }
 
 body.crtmode {

@@ -248,7 +248,6 @@ body.darkMode {
     max-width: 465px;
     z-index: 100000001;
     // outline: 0.5rem solid var(--bg-color)
-    -webkit-user-select: none;
     user-select: none;
     .main {
       display: grid;
@@ -319,7 +318,6 @@ body.darkMode {
     width: 100%;
     max-width: 1000px;
     aspect-ratio: 16/9;
-    display: grid;
     grid-template-areas: "middle";
     .preloader {
       grid-area: middle;
@@ -470,7 +468,6 @@ body.darkMode {
         td {
           padding: 0.5rem;
           background: var(--bg-color);
-          position: -webkit-sticky;
           position: sticky;
           top: 0;
           z-index: 99;
@@ -488,7 +485,6 @@ body.darkMode {
       tfoot {
         td {
           padding: 1rem 0.5rem;
-          position: -webkit-sticky;
           position: sticky;
           bottom: -5px;
           background: var(--bg-color);
@@ -702,7 +698,6 @@ body.darkMode {
     }
 
     .badgeSelectionItem {
-      margin-bottom: 0.5rem;
       width: max-content;
       opacity: 25%;
       cursor: pointer;

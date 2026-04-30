@@ -46,7 +46,6 @@
 
 #barTimerProgress {
   opacity: 0;
-  z-index: -1;
   position: relative;
   z-index: 99;
   .bar {
@@ -119,7 +118,6 @@
     color: black;
     z-index: -1;
     text-align: center;
-    width: 100%;
     position: relative;
     display: grid;
     font-size: 10rem;
@@ -193,13 +191,11 @@
 
 #words {
   height: fit-content;
-  height: -moz-fit-content;
   padding-bottom: 0.5em; // to account for hints of the bottom line
   display: flex;
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-start;
-  -webkit-user-select: none;
   user-select: none;
 
   .newline {
@@ -345,7 +341,6 @@
   &.blurred {
     opacity: 0.25;
     filter: blur(4px);
-    -webkit-filter: blur(4px);
   }
 
   &.blind {
@@ -691,7 +686,6 @@
   pointer-events: none;
   border-radius: 0;
   caret-color: transparent;
-  resize: none;
   overflow: hidden;
   // if the text wraps, ctrl backspace will not work on firefox >:|
   // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
@@ -743,8 +737,8 @@
   }
 
   &.noBalloons {
-    [aria-label][data-balloon-pos]:before,
-    [aria-label][data-balloon-pos]:after {
+    [aria-label][data-balloon-pos]::before,
+    [aria-label][data-balloon-pos]::after {
       display: none;
     }
   }
@@ -899,7 +893,6 @@
 
     #resultReplay .words {
       user-select: none;
-      -webkit-user-select: none;
     }
 
     .chart {
@@ -1028,7 +1021,6 @@
       text-align: center;
       color: var(--sub-color);
       // grid-area: login;
-      grid-column: 1/3;
       .link {
         text-decoration: underline;
         display: inline-block;
@@ -1341,7 +1333,6 @@
 
   &.blurred {
     opacity: 0.25;
-    -webkit-filter: blur(4px);
     filter: blur(4px);
   }
 }
@@ -1358,13 +1349,6 @@
     overflow: visible clip;
     &.tape {
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0) 1%,
-        rgb(0, 0, 0) 10%,
-        rgb(0, 0, 0) 90%,
-        rgba(0, 0, 0, 0) 99%
-      );
       mask-image: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 1%,
@@ -1392,7 +1376,6 @@
     position: absolute;
     transform: translateX(-50%);
     top: -6rem;
-    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
     opacity: 0;
@@ -1405,7 +1388,6 @@
     z-index: 999;
     position: absolute;
     width: 100%;
-    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
   }
@@ -1419,7 +1401,6 @@
     margin-bottom: 0.5rem;
     transition: opacity 0.125s;
     justify-content: center;
-    -webkit-user-select: none;
     user-select: none;
 
     .textButton {
