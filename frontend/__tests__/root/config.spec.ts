@@ -56,9 +56,16 @@ describe("Config", () => {
       vi.useFakeTimers();
       mocks.forEach((it) => it.mockClear());
 
-      vi.mock("../../src/ts/test/test-state", () => ({
-        isActive: true,
-      }));
+      vi.mock("../../src/ts/test/test-state", async (importOriginal) => {
+        const actual =
+          await importOriginal<typeof import("../../src/ts/test/test-state")>();
+
+        return {
+          ...actual,
+          isActive: true,
+          resetQuoteHistory: vi.fn(),
+        };
+      });
 
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);

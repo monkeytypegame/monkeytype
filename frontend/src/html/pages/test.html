@@ -60,14 +60,25 @@
 
     <div id="keymap" class="hidden"></div>
 
-    <button
-      id="restartTestButton"
-      aria-label="Restart Test"
-      data-balloon-pos="down"
-      class="text"
-    >
-      <i class="fas fa-fw fa-redo-alt"></i>
-    </button>
+    <div id="testActionButtons">
+      <button
+        id="previousTestButton"
+        aria-label="Previous Test"
+        data-balloon-pos="down"
+        class="text testActionButton hidden"
+      >
+        <i class="fas fa-fw fa-undo-alt"></i>
+      </button>
+
+      <button
+        id="restartTestButton"
+        aria-label="Restart Test"
+        data-balloon-pos="down"
+        class="text testActionButton"
+      >
+        <i class="fas fa-fw fa-redo-alt"></i>
+      </button>
+    </div>
     <div id="liveStatsTextBottom" class="timerMain">
       <div class="wrapper">
         <div class="liveSpeed hidden">123</div>

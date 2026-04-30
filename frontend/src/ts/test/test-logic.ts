@@ -175,6 +175,7 @@ type RestartOptions = {
   practiseMissed?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
+  isPrevious?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -353,7 +354,7 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
-      const initResult = await init();
+      const initResult = await init(options.isPrevious ?? false);
 
       if (!initResult) {
         TestState.setTestRestarting(false);
@@ -387,7 +388,7 @@ let lastInitError: Error | null = null;
 let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
-async function init(): Promise<boolean> {
+async function init(loadPreviousQuote = false): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -420,7 +421,7 @@ async function init(): Promise<boolean> {
   }
 
   if (!language || language.name !== Config.language) {
-    return await init();
+    return await init(loadPreviousQuote);
   }
 
   if (getActivePage() === "test") {
@@ -519,7 +520,9 @@ async function init(): Promise<boolean> {
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
-    const gen = await WordsGenerator.generateWords(language);
+    const gen = await WordsGenerator.generateWords(language, {
+      loadPreviousQuote,
+    });
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
@@ -544,7 +547,7 @@ async function init(): Promise<boolean> {
       });
     }
 
-    return await init();
+    return await init(loadPreviousQuote);
   }
 
   let hasNumbers = false;
