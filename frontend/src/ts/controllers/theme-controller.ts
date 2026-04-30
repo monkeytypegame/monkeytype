@@ -89,10 +89,8 @@ function updateThemeIndicator(nameOverride?: string): void {
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
     const snapshot = DB.getSnapshot();
-    const matchedTheme = snapshot?.customThemes?.find(
-      (ct) =>
-        ct.colors.length === Config.customThemeColors.length &&
-        ct.colors.every((c, i) => c === Config.customThemeColors[i]),
+    const matchedTheme = snapshot?.customThemes?.find((ct) =>
+      Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
     );
 
     if (matchedTheme) {
