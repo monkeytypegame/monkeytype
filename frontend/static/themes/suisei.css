@@ -30,18 +30,21 @@ header[data-focused] [data-ui-element="logoText"] {
   color: transparent;
   padding-bottom: 0.1em;
 }
-header[data-focused] [data-nav-item] {
-  background: none;
-}
+
 [data-nav-item] {
   border-radius: 150px 150px 32px 32px;
   background-color: var(--sub-alt-color);
   color: var(--main-color);
 }
+
 [data-nav-item]:hover {
   animation: suisei-pulse 800ms ease-out infinite;
   color: var(--main-color);
   background-color: var(--sub-alt-color);
+}
+
+header[data-focused] [data-nav-item] {
+  background: none;
 }
 
 [data-nav-item="leaderboards"],
