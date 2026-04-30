@@ -1,13 +1,12 @@
 import { QuoteLength } from "@monkeytype/schemas/configs";
 import {
+  ResultFilterPresetNameSchema,
   ResultFilters,
   ResultFiltersGroupItem,
   ResultFiltersKeys,
-  ResultFiltersSchema,
 } from "@monkeytype/schemas/users";
 import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 import { SetStoreFunction, unwrap } from "solid-js/store";
-import { z } from "zod";
 
 import {
   deleteResultFilterPreset,
@@ -37,7 +36,7 @@ import { verifyResultFiltersStructure } from "./utils";
 const presetNameValidation = async (
   tagName: string,
 ): Promise<IsValidResponse> => {
-  const validationResult = ResultFiltersSchema.shape.name.safeParse(
+  const validationResult = ResultFilterPresetNameSchema.safeParse(
     normalizeName(tagName),
   );
   if (validationResult.success) return true;
@@ -52,10 +51,6 @@ const newFilterPresetModal = new SimpleModal({
       type: "text",
       initVal: "",
       validation: {
-        schema: z
-          .string()
-          .regex(/^[0-9a-zA-Z\ .-]+$/)
-          .max(16),
         isValid: presetNameValidation,
         debounceDelay: 0,
       },
@@ -72,6 +67,22 @@ const newFilterPresetModal = new SimpleModal({
       const message = createErrorMessage(e, "Error creating filter preset");
       return { status: "error", message };
     }
+  },
+});
+
+const deleteResultFilterPresetModal = new SimpleModal({
+  id: "removeFilterPresetModal",
+  title: "Delete Filter Preset",
+  buttonText: "delete",
+  beforeInitFn: (thisPopup) => {
+    thisPopup.text = `Are you sure you want to delete preset ${thisPopup.parameters[1]}?`;
+  },
+  execFn: async (thisPopup) => {
+    await deleteResultFilterPreset({
+      presetId: thisPopup.parameters[0] as string,
+    });
+
+    return { status: "success", message: `Tag removed` };
   },
 });
 
@@ -103,7 +114,10 @@ export function Filters(props: {
                   <Button
                     fa={{ icon: "fa-trash", fixedWidth: true }}
                     onClick={() =>
-                      void deleteResultFilterPreset({ presetId: preset._id })
+                      deleteResultFilterPresetModal.show(
+                        [preset._id, preset.name],
+                        {},
+                      )
                     }
                   />
                 </div>
