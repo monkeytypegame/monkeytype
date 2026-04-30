@@ -106,6 +106,9 @@ async function init(): Promise<void> {
 
   await initPromise;
 
+  //preload error sounds
+  await initErrorSound();
+
   //preload sounds
   const clickId = Config.playSoundOnClick;
   if (clickId === "off") return;
@@ -119,9 +122,6 @@ async function init(): Promise<void> {
 
     await Promise.all(config.flatMap((it) => it.sounds).map(getHowl));
   }
-
-  //preload error sounds
-  await initErrorSound();
 }
 
 export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
