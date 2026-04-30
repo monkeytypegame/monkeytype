@@ -4,6 +4,7 @@ import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   avg,
+  BTreeIndex,
   count,
   createCollection,
   createLiveQueryCollection,
@@ -212,6 +213,10 @@ const resultsCollection = createCollection(
     getKey: (it) => it._id,
   }),
 );
+
+resultsCollection.createIndex((row) => row.timestamp, {
+  indexType: BTreeIndex,
+});
 
 type ActionType = {
   updateTags: {
