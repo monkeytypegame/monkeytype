@@ -8,11 +8,16 @@ import {
   ScaleChartOptions,
 } from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
-import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
+import { JSXElement, onCleanup, onMount } from "solid-js";
 
 import { Theme } from "../../constants/themes";
+import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../states/theme";
+
+function getThemeHash(): string {
+  return Object.values(getTheme()).join("");
+}
 
 Chart.register(chartTrendline);
 type ChartJSProps<
@@ -32,27 +37,41 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   const [canvasRef, canvasEl] = useRefWithUtils<HTMLCanvasElement>();
 
   let chart: Chart<T, TData> | undefined;
+  let theme = "";
 
   onMount(() => {
     const canvas = canvasEl();
     if (canvas === undefined) return;
+    if (chart !== undefined) return;
+
     chart = new Chart(canvas.native, {
       type: props.type,
       data: props.data,
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
-
+    theme = getThemeHash();
     props.onChartInit?.(chart);
   });
 
-  createEffect(() => {
+  createEffectOn(getTheme, () => {
     if (!chart) return;
+    const newTheme = getThemeHash();
+    if (theme === newTheme) return;
+    theme = newTheme;
 
-    chart.config.type = props.type;
-    chart.data = props.data;
+    // Update labels
+    chart.data.labels = props.data.labels;
+
+    // Update datasets
+    chart.data.datasets.forEach((ds, i) => {
+      Object.assign(ds, props.data.datasets[i]);
+    });
+
+    // Update options
     if (props.options) {
       chart.options = addColorsToOptions(props.options, getTheme);
     }
+
     chart.update();
   });
 

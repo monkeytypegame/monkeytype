@@ -300,52 +300,14 @@ export const result = new ChartWithUpdateColors<
   },
 });
 
-export let accountHistoryActiveIndex: number;
-
-export type HistoryChartData = {
-  x: number;
-  y: number;
-  wpm: number;
-  acc: number;
-  mode: string;
-  mode2: string;
-  punctuation: boolean;
-  language: string;
-  timestamp: number;
-  difficulty: string;
-  raw: number;
-  isPb: boolean;
-};
-
-export type AccChartData = {
-  x: number;
-  y: number;
-  errorRate: number;
-};
-
 export type OtherChartData = {
   x: number;
   y: number;
 };
 
-export type ActivityChartDataPoint = {
-  x: number;
-  y: number;
-  maxWpm?: number;
-  restarts?: number;
-  amount?: number;
-  avgWpm?: number;
-  avgAcc?: number;
-  avgCon?: number;
-};
-
 async function updateColors<
   TType extends ChartType = "bar" | "line" | "scatter",
-  TData =
-    | HistoryChartData[]
-    | AccChartData[]
-    | ActivityChartDataPoint[]
-    | number[],
+  TData = number[],
   TLabel = string,
 >(
   chart: ChartWithUpdateColors<TType, TData, TLabel>,
