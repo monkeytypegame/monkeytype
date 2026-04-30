@@ -37,6 +37,8 @@ import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
 import { EditProfile } from "../../popups/EditProfile";
+import { showModal } from "../../../states/modals";
+
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -110,7 +112,6 @@ function ActionButtons(props: {
   const isUsersProfile = () =>
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
-  const [showEditProfile, setShowEditProfile] = createSignal(false);
   const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
     isAuthenticated() && !isUsersProfile() && !hasFriendRequest();
@@ -150,13 +151,11 @@ function ActionButtons(props: {
                 );
                 return;
               }
-              setShowEditProfile(true);
+              showModal("EditProfile");
             }}
           />
 
-          <Show when={showEditProfile()}>
-            <EditProfile onClose={() => setShowEditProfile(false)} />
-          </Show>
+          <EditProfile />
 
           <Button
             balloon={{ text: "Copy public link", position: "left" }}

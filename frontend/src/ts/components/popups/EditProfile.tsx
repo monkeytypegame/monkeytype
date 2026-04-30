@@ -15,7 +15,10 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 
-export function EditProfile(props: { onClose: () => void }) {
+import { AnimatedModal } from "../common/AnimatedModal";
+import { hideModal } from "../../states/modals";
+
+export function EditProfile() {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
@@ -123,22 +126,22 @@ export function EditProfile(props: { onClose: () => void }) {
 
     DB.setSnapshot(snapshot);
     showSuccessNotification("Profile updated");
-    props.onClose();
+    hideModal("EditProfile");
   };
 
   const isNotDefault = (value: string, initial: string) =>
     value !== initial && value !== "";
 
+
+
   return (
-    <dialog
-      id="editProfileModal"
-      class="modalWrapper"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) props.onClose();
-      }}
+    <AnimatedModal
+      id="EditProfile"
+      title="Edit Profile"
+      modalClass="max-w-[600px]"
+      afterHide={props.onClose}
     >
-      <form class="modal" onSubmit={handleSubmit}>
-        <div class="title">Edit Profile</div>
+      <form class="grid gap-4" onSubmit={handleSubmit}>
         <div>
           <label>name</label>
           <div>
@@ -300,6 +303,6 @@ export function EditProfile(props: { onClose: () => void }) {
           save
         </button>
       </form>
-    </dialog>
+    </AnimatedModal>
   );
 }
