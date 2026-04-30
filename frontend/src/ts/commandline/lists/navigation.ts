@@ -70,9 +70,8 @@ const commands: Command[] = [
       ),
     },
     exec: ({ input }): void => {
-      const username = input?.trim();
-      if (username === undefined || username === "") return;
-      void navigate(`/profile/${username}`);
+      if (input === undefined) return;
+      void navigate(`/profile/${input}`);
     },
   }),
   {
