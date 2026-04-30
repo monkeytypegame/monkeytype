@@ -6,7 +6,6 @@ import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
-import { PageIndicator } from "./PageIndicator";
 
 export function Navigation(props: {
   lastPage: number;
@@ -29,7 +28,6 @@ export function Navigation(props: {
       <Show when={props.isLoading}>
         <LoadingCircle color="sub" class="text-2xl" />
       </Show>
-      <PageIndicator currentPage={props.currentPage} />
       <Button
         onClick={() => props.onPageChange(0)}
         fa={{ icon: "fa-crown", fixedWidth: true }}
@@ -98,7 +96,10 @@ export function Navigation(props: {
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass}
         disabled={props.lastPage <= 1}
-      />
+      >
+        {" "}
+        {props.currentPage + 1}
+      </Button>
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
