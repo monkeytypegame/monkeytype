@@ -463,66 +463,6 @@ async function init(): Promise<void> {
         counter: 0,
       },
     ],
-    // 17: [
-    //   {
-    //     sounds: [
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/1.wav" }),
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/1.wav" }),
-    //     ],
-    //     counter: 0,
-    //   },
-    //   {
-    //     sounds: [
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/2.wav" }),
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/2.wav" }),
-    //     ],
-    //     counter: 0,
-    //   },
-    //   {
-    //     sounds: [
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/3.wav" }),
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/3.wav" }),
-    //     ],
-    //     counter: 0,
-    //   },
-    //   {
-    //     sounds: [
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/4.wav" }),
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/4.wav" }),
-    //     ],
-    //     counter: 0,
-    //   },
-    //   {
-    //     sounds: [
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/5.wav" }),
-    //       new Howl({ src: "../sound/cherrymx_red_pbt/5.wav" }),
-    //     ],
-    //     counter: 0,
-    //   },
-    // ],
-    17: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click17/click17_1.wav" }),
-          new Howl({ src: "../sound/click17/click17_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click17/click17_2.wav" }),
-          new Howl({ src: "../sound/click17/click17_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click17/click17_3.wav" }),
-          new Howl({ src: "../sound/click17/click17_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
     18: [
       {
         sounds: [
@@ -661,52 +601,6 @@ async function init(): Promise<void> {
         counter: 0,
       },
     ],
-    24: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click24/click24_1.wav" }),
-          new Howl({ src: "../sound/click24/click24_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click24/click24_2.wav" }),
-          new Howl({ src: "../sound/click24/click24_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click24/click24_3.wav" }),
-          new Howl({ src: "../sound/click24/click24_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    25: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click25/click25_1.wav" }),
-          new Howl({ src: "../sound/click25/click25_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click25/click25_2.wav" }),
-          new Howl({ src: "../sound/click25/click25_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click25/click25_3.wav" }),
-          new Howl({ src: "../sound/click25/click25_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
     26: [
       {
         sounds: [
@@ -749,29 +643,6 @@ async function init(): Promise<void> {
         sounds: [
           new Howl({ src: "../sound/click27/click27_3.wav" }),
           new Howl({ src: "../sound/click27/click27_3.wav" }),
-        ],
-        counter: 0,
-      },
-    ],
-    28: [
-      {
-        sounds: [
-          new Howl({ src: "../sound/click28/click28_1.wav" }),
-          new Howl({ src: "../sound/click28/click28_1.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click28/click28_2.wav" }),
-          new Howl({ src: "../sound/click28/click28_2.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click28/click28_3.wav" }),
-          new Howl({ src: "../sound/click28/click28_3.wav" }),
         ],
         counter: 0,
       },
@@ -1166,7 +1037,7 @@ export async function playError(): Promise<void> {
 function setVolume(val: number): void {
   try {
     Howler.volume(val);
-  } catch (e) {
+  } catch {
     //
   }
 }
