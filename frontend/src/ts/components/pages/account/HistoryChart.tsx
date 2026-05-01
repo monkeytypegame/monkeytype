@@ -134,7 +134,7 @@ export function HistoryChart(props: {
     <>
       <div style={{ height: "400px" }}>
         <ChartJs
-          name="Histogram"
+          name="History"
           type="line"
           data={{
             labels: props.results.map((_, i) => i),
