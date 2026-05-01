@@ -11,11 +11,17 @@ on:
 permissions:
   pull-requests: write
 
+concurrency:
+  group: semantic-pr-title-${{ github.event.pull_request.number }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   main:
     name: check
-    runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
+    runs-on: ubuntu-slim
+    if: >-
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      (github.event.action != 'edited' || github.event.changes.title != null)
     steps:
       - name: Lint and verify PR title
         uses: amannn/action-semantic-pull-request@v5
@@ -49,6 +55,7 @@ jobs:
         if: always() && (steps.lint_pr_title.outputs.error_message != null)
         with:
           header: pr-title-lint-error
+          skip_unchanged: true
           message: |
             Hey there and thank you for opening this pull request! 👋🏼
 
