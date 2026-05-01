@@ -32,6 +32,7 @@ export function DailyActivityChart(props: {
       {(data) => (
         <div style={{ height: "200px" }}>
           <ChartJs
+            name="DailyActivity"
             type="bar"
             data={{
               labels: data.map((it) => it.dayTimestamp),

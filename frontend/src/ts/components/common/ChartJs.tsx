@@ -8,7 +8,7 @@ import {
   ScaleChartOptions,
 } from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
-import { JSXElement, onCleanup, onMount } from "solid-js";
+import { createDeferred, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { Theme } from "../../constants/themes";
 import { createEffectOn } from "../../hooks/effects";
@@ -24,6 +24,7 @@ type ChartJSProps<
   T extends ChartType = ChartType,
   TData = DefaultDataPoint<T>,
 > = {
+  name: string;
   type: T;
   data: ChartData<T, TData>;
   options?: ChartOptions<T>;
@@ -49,33 +50,38 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       data: props.data,
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
+    console.log("### mount chart", props.name, chart?.id);
     theme = getThemeHash();
     props.onChartInit?.(chart);
   });
+
+  const updateChart = (data: ChartData<T, TData>): void => {
+    console.log("### update chart", props.name, chart?.id);
+    if (!chart) return;
+
+    chart.data = data;
+
+    if (props.options) {
+      chart.options = addColorsToOptions(props.options, getTheme);
+    }
+
+    chart.update("none");
+  };
+
+  const deferredData = createDeferred(() => props.data, { timeoutMs: 500 });
+
+  createEffectOn(deferredData, (data) => updateChart(data));
 
   createEffectOn(getTheme, () => {
     if (!chart) return;
     const newTheme = getThemeHash();
     if (theme === newTheme) return;
     theme = newTheme;
-
-    // Update labels
-    chart.data.labels = props.data.labels;
-
-    // Update datasets
-    chart.data.datasets.forEach((ds, i) => {
-      Object.assign(ds, props.data.datasets[i]);
-    });
-
-    // Update options
-    if (props.options) {
-      chart.options = addColorsToOptions(props.options, getTheme);
-    }
-
-    chart.update();
+    updateChart(deferredData());
   });
 
   onCleanup(() => {
+    console.log("### cleanup chart", props.name, chart?.id);
     chart?.destroy();
   });
 

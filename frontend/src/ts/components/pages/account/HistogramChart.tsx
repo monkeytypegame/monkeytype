@@ -20,6 +20,7 @@ export function HistogramChart(props: {
   return (
     <div style={{ height: "200px" }}>
       <ChartJs
+        name="Histogram"
         type="bar"
         data={{
           datasets: [

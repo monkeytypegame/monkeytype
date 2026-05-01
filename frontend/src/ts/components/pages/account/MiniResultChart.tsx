@@ -31,6 +31,7 @@ export function MiniResultChart(props: { resultId: string }): JSXElement {
           return (
             <div class="h-60 w-full">
               <ChartJs
+                name="MiniResult"
                 type="line"
                 data={{
                   labels: data.wpm.map((_, index) => (index + 1).toString()),
