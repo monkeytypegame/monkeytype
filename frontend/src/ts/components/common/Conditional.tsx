@@ -5,12 +5,15 @@ export function Conditional<T>(props: {
   then: JSXElement | ((value: Accessor<NonNullable<T>>) => JSXElement);
   else?: JSXElement;
 }): JSXElement {
-  // oxlint-disable-next-line solid/reactivity -- intentional: cache to avoid double getter evaluation
-  const thenValue = props.then;
   return (
     <Show when={props.if} fallback={props.else}>
-      {/* oxlint-disable-next-line solid/prefer-show -- intentional: handle function or JSXElement */}
-      {typeof thenValue === "function" ? thenValue : () => thenValue}
+      {(value) => {
+        // Access props.then once inside Show's children to avoid:
+        // 1. Eager evaluation when `if` is false
+        // 2. Double getter evaluation from typeof + usage
+        const thenValue = props.then;
+        return typeof thenValue === "function" ? thenValue(value) : thenValue;
+      }}
     </Show>
   );
 }
