@@ -6,6 +6,8 @@
   "scripts": {
     "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint .",
+    "lint-styles": "stylelint \"**/*.{scss,css}\"",
+    "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
     "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
@@ -74,7 +76,7 @@
     "zod-urlsearchparams": "0.0.16"
   },
   "devDependencies": {
-    "@eslint/json": "1.0.1",
+    "@eslint/json": "1.2.0",
     "@fortawesome/fontawesome-free": "5.15.4",
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
@@ -92,7 +94,7 @@
     "@types/object-hash": "3.0.6",
     "@types/subset-font": "1.4.3",
     "@types/throttle-debounce": "5.0.2",
-    "@vitest/coverage-v8": "4.0.15",
+    "@vitest/coverage-v8": "4.1.5",
     "autoprefixer": "10.4.27",
     "caniuse-lite": "1.0.30001778",
     "concurrently": "8.2.2",
