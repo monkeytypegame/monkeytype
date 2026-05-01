@@ -21,7 +21,7 @@ export function ProfilePage(): JSXElement {
     <Show when={isOpen}>
       <div class="flex h-full items-center justify-center text-lg">
         <AsyncContent query={profileQuery} ignoreError={true}>
-          {(profile) => <UserProfile profile={profile} />}
+          {(profile) => <UserProfile profile={profile()} />}
         </AsyncContent>
         <Show when={profileQuery.isError}>
           <div class="flex items-baseline gap-2 text-error">

@@ -20,7 +20,7 @@ const queryKeys = {
 };
 
 //cache results for one hour
-const staleTime = 1000 * 60 * 60;
+const staleTime = 100;
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export const getContributorsQueryOptions = () =>

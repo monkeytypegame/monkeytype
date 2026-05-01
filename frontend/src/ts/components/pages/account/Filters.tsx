@@ -266,7 +266,7 @@ export function Filters(props: {
       <AsyncContent collection={presetsQuery}>
         {(presets) => (
           <FilterPresets
-            presets={presets}
+            presets={presets()}
             onChangeFilters={props.onChangeFilters}
           />
         )}

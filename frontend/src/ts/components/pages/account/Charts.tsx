@@ -48,7 +48,7 @@ export function Charts(props: {
           <div>
             <FilterSummary filters={props.filters} tags={tags()} />
             <HistoryChart
-              results={results}
+              results={results()}
               beginAtZero={beginAtZero()}
               typingSpeedUnit={typingSpeedUnit()}
               format={format()}
@@ -57,7 +57,7 @@ export function Charts(props: {
           </div>
 
           <HistogramChart
-            results={results}
+            results={results()}
             typingSpeedUnit={typingSpeedUnit()}
           />
 

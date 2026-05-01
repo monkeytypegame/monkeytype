@@ -111,7 +111,7 @@ export function AccountPage(): JSXElement {
                 {(results) => (
                   <>
                     <Table
-                      data={[...results]}
+                      data={[...results()]}
                       onSortingChange={(val) => setSorting(val)}
                       selectedRowId={selectedResultId}
                     />

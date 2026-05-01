@@ -35,11 +35,11 @@ export function DailyActivityChart(props: {
             name="DailyActivity"
             type="bar"
             data={{
-              labels: data.map((it) => it.dayTimestamp),
+              labels: data().map((it) => it.dayTimestamp),
               datasets: [
                 {
                   yAxisID: "count",
-                  data: data.map((it) => it.timeTyping / 60),
+                  data: data().map((it) => it.timeTyping / 60),
                   backgroundColor: getTheme().main,
                   trendlineLinear: {
                     lineStyle: "dotted",
@@ -52,7 +52,7 @@ export function DailyActivityChart(props: {
                 },
                 {
                   yAxisID: "avgWpm",
-                  data: data.map((it) =>
+                  data: data().map((it) =>
                     props.typingSpeedUnit.fromWpm(it.avgWpm),
                   ),
                   borderColor: getTheme().sub,
@@ -147,7 +147,7 @@ export function DailyActivityChart(props: {
                         "bar" | "line"
                       >;
 
-                      const item = data[firstItem.dataIndex];
+                      const item = data()[firstItem.dataIndex];
                       if (item === undefined) return "unknown";
 
                       return dateFormat(
@@ -156,7 +156,7 @@ export function DailyActivityChart(props: {
                       );
                     },
                     beforeLabel: function (tooltipItem): string {
-                      const item = data[tooltipItem.dataIndex];
+                      const item = data()[tooltipItem.dataIndex];
                       if (item === undefined) return "unknown";
 
                       return `

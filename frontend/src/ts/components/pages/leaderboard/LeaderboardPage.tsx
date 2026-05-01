@@ -175,8 +175,8 @@ export function LeaderboardPage(): JSXElement {
               <Sidebar
                 selection={getSelection}
                 onSelect={onSelectionChange}
-                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
-                connectionsEnabled={config.connections.enabled}
+                validModeRules={config().dailyLeaderboards.validModeRules ?? []}
+                connectionsEnabled={config().connections.enabled}
               />
             )}
           </AsyncContent>
@@ -255,7 +255,7 @@ export function LeaderboardPage(): JSXElement {
                       dataQuery.isFetching ||
                       dataQuery.isRefetching
                     }
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil((data()?.count ?? 0) / pageSize)}
                     userPage={userPage()}
                     currentPage={getPage()}
                     onPageChange={setPage}
@@ -267,7 +267,7 @@ export function LeaderboardPage(): JSXElement {
                 <div>
                   <Table
                     type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    entries={data?.entries ?? []}
+                    entries={data()?.entries ?? []}
                     friendsOnly={getSelection().friendsOnly}
                     scrollToUser={scrollToUser}
                     onScrolledToUser={() => setScrollToUser(false)}
@@ -276,7 +276,7 @@ export function LeaderboardPage(): JSXElement {
 
                 <div class="mt-4 grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                   <Navigation
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil((data()?.count ?? 0) / pageSize)}
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}

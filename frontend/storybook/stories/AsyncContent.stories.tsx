@@ -35,7 +35,7 @@ function LoadingExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query}>{(data) => <div>{data}</div>}</AsyncContent>
+    <AsyncContent query={query}>{(data) => <div>{data()}</div>}</AsyncContent>
   );
 }
 
@@ -47,7 +47,7 @@ function SuccessExample(): ReturnType<typeof AsyncContent> {
 
   return (
     <AsyncContent query={query}>
-      {(data) => <div style={{ color: "var(--text-color)" }}>{data}</div>}
+      {(data) => <div style={{ color: "var(--text-color)" }}>{data()}</div>}
     </AsyncContent>
   );
 }

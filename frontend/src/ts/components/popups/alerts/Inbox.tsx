@@ -149,7 +149,7 @@ export function Inbox(): JSXElement {
               </Show>
 
               <For
-                each={inbox}
+                each={inbox()}
                 fallback={<div class="place-self-center">Nothing to show</div>}
               >
                 {(entry) => <Entry entry={entry} mutate={mutate} />}

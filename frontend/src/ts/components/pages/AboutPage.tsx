@@ -62,7 +62,6 @@ export function AboutPage(): JSXElement {
       </section>
       <section>
         <AsyncContent
-          alwaysShowContent
           query={typingStats}
           errorMessage="Failed to get global typing stats"
         >
@@ -71,9 +70,9 @@ export function AboutPage(): JSXElement {
               <For
                 each={
                   [
-                    ["total tests started", () => data()?.testsStarted],
-                    ["total typing time", () => data()?.timeTyping],
-                    ["total tests completed", () => data()?.testsCompleted],
+                    ["total tests started", () => data().testsStarted],
+                    ["total typing time", () => data().timeTyping],
+                    ["total tests completed", () => data().testsCompleted],
                   ] as const
                 }
               >
@@ -91,7 +90,6 @@ export function AboutPage(): JSXElement {
       </section>
       <section class="h-48 w-full">
         <AsyncContent
-          alwaysShowContent
           query={speedHistogram}
           errorMessage="Failed to get global speed stats for histogram"
         >
@@ -375,7 +373,7 @@ export function AboutPage(): JSXElement {
                 "grid-template-columns": "repeat(auto-fill, minmax(13em, 1fr))",
               }}
             >
-              <For each={data}>{(name) => <div>{name}</div>}</For>
+              <For each={data()}>{(name) => <div>{name}</div>}</For>
             </div>
           )}
         </AsyncContent>
@@ -398,7 +396,7 @@ export function AboutPage(): JSXElement {
                 "grid-template-columns": "repeat(auto-fill, minmax(13em, 1fr))",
               }}
             >
-              <For each={data}>{(name) => <div>{name}</div>}</For>
+              <For each={data()}>{(name) => <div>{name}</div>}</For>
             </div>
           )}
         </AsyncContent>

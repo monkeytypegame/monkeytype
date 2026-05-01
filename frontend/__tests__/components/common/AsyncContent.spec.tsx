@@ -187,11 +187,11 @@ describe("AsyncContent", () => {
             {...(options as Props<string>)}
             alwaysShowContent={false}
           >
-            {(data: string | undefined) => (
+            {(data) => (
               <>
                 static content
-                <Show when={data !== undefined} fallback={<div>no data</div>}>
-                  <div data-testid="content">{data}</div>
+                <Show when={data() !== undefined} fallback={<div>no data</div>}>
+                  <div data-testid="content">{data()}</div>
                 </Show>
               </>
             )}
@@ -405,19 +405,17 @@ describe("AsyncContent", () => {
             {...(options as Props<Q>)}
             alwaysShowContent={false}
           >
-            {(results: {
-              first: string | undefined;
-              second: string | undefined;
-            }) => (
+            {(results) => (
               <>
                 <Show
                   when={
-                    results.first !== undefined && results.second !== undefined
+                    results().first !== undefined &&
+                    results().second !== undefined
                   }
                   fallback={<div>no data</div>}
                 >
-                  <div data-testid="first">{results.first}</div>
-                  <div data-testid="second">{results.second}</div>
+                  <div data-testid="first">{results().first}</div>
+                  <div data-testid="second">{results().second}</div>
                 </Show>
               </>
             )}
