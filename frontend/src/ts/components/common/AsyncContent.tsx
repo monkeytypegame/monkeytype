@@ -63,7 +63,9 @@ type DeferredChildren<T extends QueryMapping> = {
 type EagerChildren<T extends QueryMapping> = {
   alwaysShowContent: true;
   showLoader?: true;
-  children: (data: { [K in keyof T]: T[K] | undefined }) => JSXElement;
+  children: (
+    data: Accessor<{ [K in keyof T]: T[K] | undefined }>,
+  ) => JSXElement;
 };
 
 export type Props<T extends QueryMapping> = BaseProps &
@@ -156,10 +158,12 @@ export default function AsyncContent<T extends QueryMapping>(
 
             <Conditional
               if={props.alwaysShowContent === true}
-              then={<>{props.children(value())}</>}
+              then={
+                <>{(props.children as EagerChildren<T>["children"])(value)}</>
+              }
               else={
                 <Show when={allResolved(value())}>
-                  {props.children(value())}
+                  {(props.children as DeferredChildren<T>["children"])(value())}
                 </Show>
               }
             />

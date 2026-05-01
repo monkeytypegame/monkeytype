@@ -159,8 +159,34 @@ describe("AsyncContent", () => {
           retry: 0,
         }));
 
+        if (options?.alwaysShowContent) {
+          return (
+            <AsyncContent
+              query={myQuery}
+              {...(options as Props<string>)}
+              alwaysShowContent
+            >
+              {(data) => (
+                <>
+                  static content
+                  <Show
+                    when={data() !== undefined}
+                    fallback={<div>no data</div>}
+                  >
+                    <div data-testid="content">{data()}</div>
+                  </Show>
+                </>
+              )}
+            </AsyncContent>
+          );
+        }
+
         return (
-          <AsyncContent query={myQuery} {...(options as Props<string>)}>
+          <AsyncContent
+            query={myQuery}
+            {...(options as Props<string>)}
+            alwaysShowContent={false}
+          >
             {(data: string | undefined) => (
               <>
                 static content
@@ -347,10 +373,37 @@ describe("AsyncContent", () => {
         }));
 
         type Q = { first: string | undefined; second: string | undefined };
+
+        if (options?.alwaysShowContent) {
+          return (
+            <AsyncContent
+              queries={{ first: firstQuery, second: secondQuery }}
+              {...(options as Props<Q>)}
+              alwaysShowContent
+            >
+              {(results) => (
+                <>
+                  <Show
+                    when={
+                      results()?.first !== undefined &&
+                      results()?.second !== undefined
+                    }
+                    fallback={<div>no data</div>}
+                  >
+                    <div data-testid="first">{results()?.first}</div>
+                    <div data-testid="second">{results()?.second}</div>
+                  </Show>
+                </>
+              )}
+            </AsyncContent>
+          );
+        }
+
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             {...(options as Props<Q>)}
+            alwaysShowContent={false}
           >
             {(results: {
               first: string | undefined;

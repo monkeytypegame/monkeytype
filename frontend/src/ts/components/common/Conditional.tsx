@@ -5,11 +5,12 @@ export function Conditional<T>(props: {
   then: JSXElement | ((value: Accessor<NonNullable<T>>) => JSXElement);
   else?: JSXElement;
 }): JSXElement {
+  // oxlint-disable-next-line solid/reactivity -- intentional: cache to avoid double getter evaluation
+  const thenValue = props.then;
   return (
     <Show when={props.if} fallback={props.else}>
-      {typeof props.then === "function"
-        ? props.then
-        : () => props.then as JSXElement}
+      {/* oxlint-disable-next-line solid/prefer-show -- intentional: handle function or JSXElement */}
+      {typeof thenValue === "function" ? thenValue : () => thenValue}
     </Show>
   );
 }

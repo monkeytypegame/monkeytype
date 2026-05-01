@@ -71,17 +71,17 @@ export function AboutPage(): JSXElement {
               <For
                 each={
                   [
-                    ["total tests started", data?.testsStarted],
-                    ["total typing time", data?.timeTyping],
-                    ["total tests completed", data?.testsCompleted],
+                    ["total tests started", () => data()?.testsStarted],
+                    ["total typing time", () => data()?.timeTyping],
+                    ["total tests completed", () => data()?.testsCompleted],
                   ] as const
                 }
               >
-                {([title, data]) => (
+                {([title, stat]) => (
                   <div class="text-center">
                     <div class="text-sub">{title}</div>
-                    <div class="text-5xl">{data?.text ?? "-"}</div>
-                    <div class="text-xl">{data?.subText ?? "-"}</div>
+                    <div class="text-5xl">{stat()?.text ?? "-"}</div>
+                    <div class="text-xl">{stat()?.subText ?? "-"}</div>
                   </div>
                 )}
               </For>
@@ -101,12 +101,12 @@ export function AboutPage(): JSXElement {
                 name="SpeedHistogram"
                 type="bar"
                 data={{
-                  labels: data?.labels ?? [],
+                  labels: data()?.labels ?? [],
                   datasets: [
                     {
                       yAxisID: "count",
                       label: "Users",
-                      data: data?.data ?? [],
+                      data: data()?.data ?? [],
                       minBarLength: 2,
                       backgroundColor: getTheme().main,
                       borderColor: getTheme().main,
@@ -169,7 +169,7 @@ export function AboutPage(): JSXElement {
               />
               <div class="text-right text-xs text-sub">
                 distribution of time 60 leaderboard results (wpm) <br />
-                {numberOfHistogramRecords(data?.data)} total results
+                {numberOfHistogramRecords(data()?.data)} total results
               </div>
             </>
           )}
