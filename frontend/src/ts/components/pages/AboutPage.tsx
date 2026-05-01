@@ -62,6 +62,7 @@ export function AboutPage(): JSXElement {
       </section>
       <section>
         <AsyncContent
+          alwaysShowContent
           query={typingStats}
           errorMessage="Failed to get global typing stats"
         >
@@ -70,9 +71,9 @@ export function AboutPage(): JSXElement {
               <For
                 each={
                   [
-                    ["total tests started", () => data().testsStarted],
-                    ["total typing time", () => data().timeTyping],
-                    ["total tests completed", () => data().testsCompleted],
+                    ["total tests started", () => data()?.testsStarted],
+                    ["total typing time", () => data()?.timeTyping],
+                    ["total tests completed", () => data()?.testsCompleted],
                   ] as const
                 }
               >
@@ -90,6 +91,7 @@ export function AboutPage(): JSXElement {
       </section>
       <section class="h-48 w-full">
         <AsyncContent
+          alwaysShowContent
           query={speedHistogram}
           errorMessage="Failed to get global speed stats for histogram"
         >
