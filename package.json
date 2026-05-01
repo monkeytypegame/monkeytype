@@ -60,11 +60,11 @@
     "update-oxc": "pnpm up -D -r oxlint@latest oxfmt@latest oxlint-tsgolint@latest"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.7.1",
+    "@commitlint/cli": "20.5.2",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
     "@types/node": "24.9.1",
-    "@vitest/coverage-v8": "4.0.15",
+    "@vitest/coverage-v8": "4.1.5",
     "caniuse-lite": "1.0.30001778",
     "conventional-changelog": "6.0.0",
     "husky": "8.0.1",
