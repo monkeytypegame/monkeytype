@@ -50,13 +50,11 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       data: props.data,
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
-    console.log("### mount chart", props.name, chart?.id);
     theme = getThemeHash();
     props.onChartInit?.(chart);
   });
 
   const updateChart = (data: ChartData<T, TData>): void => {
-    console.log("### update chart", props.name, chart?.id);
     if (!chart) return;
 
     chart.data = data;
@@ -81,7 +79,6 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   });
 
   onCleanup(() => {
-    console.log("### cleanup chart", props.name, chart?.id);
     chart?.destroy();
   });
 
