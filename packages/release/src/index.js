@@ -59,11 +59,15 @@ const runProjectRootCommand = (command, force) => {
 };
 
 const checkBranchSync = () => {
+  if (noSyncCheck) {
+    console.log("Skipping sync check.");
+    return;
+  }
   console.log("Checking if local branch is master...");
   const currentBranch = runProjectRootCommand(
     "git branch --show-current",
   ).trim();
-  if (currentBranch !== "master") {
+  if (currentBranch !== "master" && !isDryRun) {
     console.error(
       "Local branch is not master. Please checkout the master branch.",
     );
@@ -72,32 +76,26 @@ const checkBranchSync = () => {
 
   console.log("Checking if local master branch is in sync with origin...");
 
-  if (noSyncCheck) {
-    console.log("Skipping sync check.");
-  } else if (isDryRun) {
-    console.log("[Dry Run] Checking sync...");
-  } else {
-    try {
-      // Fetch the latest changes from the remote repository
-      runProjectRootCommand("git fetch origin");
+  try {
+    // Fetch the latest changes from the remote repository
+    runProjectRootCommand("git fetch origin");
 
-      // Get the commit hashes of the local and remote master branches
-      const localMaster = runProjectRootCommand("git rev-parse master").trim();
-      const remoteMaster = runProjectRootCommand(
-        "git rev-parse origin/master",
-      ).trim();
+    // Get the commit hashes of the local and remote master branches
+    const localMaster = runProjectRootCommand("git rev-parse master").trim();
+    const remoteMaster = runProjectRootCommand(
+      "git rev-parse origin/master",
+    ).trim();
 
-      if (localMaster !== remoteMaster) {
-        console.error(
-          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding.",
-        );
-        process.exit(1);
-      }
-    } catch (error) {
-      console.error("Error checking branch sync status.");
-      console.error(error);
+    if (localMaster !== remoteMaster && !isDryRun) {
+      console.error(
+        "Local master branch is not in sync with origin. Please pull the latest changes before proceeding.",
+      );
       process.exit(1);
     }
+  } catch (error) {
+    console.error("Error checking branch sync status.");
+    console.error(error);
+    process.exit(1);
   }
 };
 
@@ -156,9 +154,8 @@ const updatePackage = (newVersion) => {
 const checkUncommittedChanges = () => {
   console.log("Checking uncommitted changes...");
   const status = execSync("git status --porcelain").toString().trim();
-  if (isDryRun) {
-    console.log("[Dry Run] Checking uncommitted changes...");
-  } else if (status) {
+
+  if (status && !isDryRun) {
     console.error(
       "You have uncommitted changes. Please commit or stash them before proceeding.",
     );
@@ -168,11 +165,7 @@ const checkUncommittedChanges = () => {
 
 const installDependencies = () => {
   console.log("Installing dependencies...");
-  if (isDryRun) {
-    console.log("[Dry Run] Dependencies would be installed.");
-  } else {
-    runProjectRootCommand("pnpm i");
-  }
+  runProjectRootCommand("pnpm i");
 };
 
 const buildProject = () => {
@@ -233,11 +226,13 @@ const generateContributors = () => {
       contributors.replaceAll("\n", "").replace(/^.*?\[/, "["),
     );
 
-    fs.writeFileSync(
-      `${PROJECT_ROOT}/frontend/static/contributors.json`,
-      JSON.stringify(contributors, null, 2),
-      "utf8",
-    );
+    if (!isDryRun) {
+      fs.writeFileSync(
+        `${PROJECT_ROOT}/frontend/static/contributors.json`,
+        JSON.stringify(contributors, null, 2),
+        "utf8",
+      );
+    }
 
     console.log("Contributors list updated.");
   } catch (e) {
@@ -249,7 +244,7 @@ const generateContributors = () => {
 const createCommitAndTag = (version) => {
   console.log("Creating commit and tag... Pushing to Github...");
   runCommand(`git add .`);
-  runCommand(`git commit -m "chore: release ${version}" --no-verify`);
+  runCommand(`git commit -m "chore: release ${version}"`);
   runCommand(`git tag ${version}`);
   runCommand(`git push origin master --tags --no-verify`);
 };
