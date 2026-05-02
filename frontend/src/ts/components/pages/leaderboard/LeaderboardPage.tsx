@@ -231,14 +231,14 @@ export function LeaderboardPage(): JSXElement {
           </Show>
 
           <AsyncContent
-            queries={{ data: entriesQuery }}
+            queries={{ entriesQuery }}
             loader={
               <div class="flex justify-center pt-4 text-4xl">
                 <LoadingCircle />
               </div>
             }
           >
-            {({ dataData }) => (
+            {({ entriesQueryData }) => (
               <div>
                 <div
                   class={cn(
@@ -252,7 +252,9 @@ export function LeaderboardPage(): JSXElement {
                       entriesQuery.isFetching ||
                       entriesQuery.isRefetching
                     }
-                    lastPage={Math.ceil((dataData()?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil(
+                      (entriesQueryData()?.count ?? 0) / pageSize,
+                    )}
                     userPage={userPage()}
                     currentPage={getPage()}
                     onPageChange={setPage}
@@ -264,7 +266,7 @@ export function LeaderboardPage(): JSXElement {
                 <div>
                   <Table
                     type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    entries={dataData()?.entries ?? []}
+                    entries={entriesQueryData()?.entries ?? []}
                     friendsOnly={getSelection().friendsOnly}
                     scrollToUser={scrollToUser}
                     onScrolledToUser={() => setScrollToUser(false)}
@@ -273,7 +275,9 @@ export function LeaderboardPage(): JSXElement {
 
                 <div class="mt-4 grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                   <Navigation
-                    lastPage={Math.ceil((dataData()?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil(
+                      (entriesQueryData()?.count ?? 0) / pageSize,
+                    )}
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
