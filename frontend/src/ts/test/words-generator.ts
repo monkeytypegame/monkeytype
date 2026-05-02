@@ -593,6 +593,9 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
+const koreanRegex =
+  /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/;
+
 let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
@@ -602,6 +605,7 @@ type GenerateWordsReturn = {
   hasTab: boolean;
   hasNewline: boolean;
   hasNumbers: boolean;
+  koreanStatus: boolean;
   allRightToLeft?: boolean;
   allLigatures?: boolean;
 };
@@ -625,6 +629,7 @@ export async function generateWords(
     hasTab: false,
     hasNewline: false,
     hasNumbers: false,
+    koreanStatus: false,
     allRightToLeft: language.rightToLeft,
     allLigatures: language.ligatures ?? false,
   };
@@ -720,9 +725,20 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
-  ret.hasTab = currentWordset.words.some((w) => w.includes("\t"));
-  ret.hasNewline = currentWordset.words.some((w) => w.includes("\n"));
-  ret.hasNumbers = currentWordset.words.some((w) => /\d/g.test(w));
+  // we need to test both because ret.words has only first 100 words
+  // and currentWordset.words may be changed inside getNextWord() by funboxes
+  ret.hasTab =
+    ret.words.some((w) => w.text.includes("\t")) ||
+    currentWordset.words.some((w) => w.includes("\t"));
+  ret.hasNewline =
+    ret.words.some((w) => w.text.includes("\n")) ||
+    currentWordset.words.some((w) => w.includes("\n"));
+  ret.hasNumbers =
+    ret.words.some((w) => /\d/g.test(w.text)) ||
+    currentWordset.words.some((w) => /\d/g.test(w));
+  ret.koreanStatus =
+    ret.words.some((w) => koreanRegex.test(w.text.normalize())) ||
+    currentWordset.words.some((w) => koreanRegex.test(w.normalize()));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;

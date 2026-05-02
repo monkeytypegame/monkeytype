@@ -370,10 +370,10 @@ async function updateHintsPosition(): Promise<void> {
     await joinOverlappingHints(hintIndices, letterElements, wordHintsElements);
   }
 }
-
+/*
 type RequireOnly<T, K extends keyof T> = Required<Pick<T, K>> &
-  Partial<Omit<T, K>>;
-type WordTextWithDirection = RequireOnly<TestWords.Word, "text" | "direction">;
+  Partial<Omit<T, K>>;*/
+type WordTextWithDirection = Pick<TestWords.Word, "text" | "direction">;
 
 function buildWordHTML(word: WordTextWithDirection, wordIndex: number): string {
   let newlineafter = false;

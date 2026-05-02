@@ -511,17 +511,16 @@ async function init(): Promise<boolean> {
   let wordsHaveNumbers = false;
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
+  let wordsKoreanStatus = false;
   let allLigatures: boolean | undefined = undefined;
   let generatedWords: TestWords.Word[] = [];
-  let generatedWordsText: string[] = [];
-  let generatedSectionIndexes: number[] = [];
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
-    generatedWordsText = generatedWords.map((w) => w.text);
     wordsHaveNumbers = gen.hasNumbers;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
+    wordsKoreanStatus = gen.koreanStatus;
 
     ({ allLigatures } = gen);
   } catch (e) {
@@ -549,19 +548,9 @@ async function init(): Promise<boolean> {
   TestWords.words.haveNumbers = wordsHaveNumbers;
   TestWords.words.haveNewlines = wordsHaveNewline;
   TestWords.words.haveTabs = wordsHaveTab;
+  TestWords.words.koreanStatus = wordsKoreanStatus;
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
-
-  if (
-    generatedWordsText
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    TestWords.words.koreanStatus = true;
-  }
 
   TestWords.words.push(generatedWords);
 
@@ -575,11 +564,7 @@ async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrentText());
   TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
 
-  console.debug("Test initialized with words", generatedWordsText);
-  console.debug(
-    "Test initialized with section indexes",
-    generatedSectionIndexes,
-  );
+  console.debug("Test initialized with words", generatedWords);
   return true;
 }
 
