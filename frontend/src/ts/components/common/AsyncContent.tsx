@@ -12,7 +12,6 @@ import {
 import { showErrorNotification } from "../../states/notifications";
 import { createErrorMessage } from "../../utils/error";
 import { typedKeys } from "../../utils/misc";
-import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
 
 type AsyncEntry<T> = {
@@ -154,15 +153,16 @@ export default function AsyncContent<T extends QueryMapping>(
               {loader()}
             </Show>
 
-            <Conditional
-              if={props.alwaysShowContent === true}
-              then={<>{props.children(value())}</>}
-              else={
+            <Show
+              when={props.alwaysShowContent === true}
+              fallback={
                 <Show when={allResolved(value())}>
                   {props.children(value())}
                 </Show>
               }
-            />
+            >
+              {props.children(value())}
+            </Show>
           </>
         }
       >
