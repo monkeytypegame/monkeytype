@@ -35,3 +35,7 @@ export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
+
+export const [isTestPageVisible, setTestPageVisible] = createSignal(
+  getActivePage() === "test",
+);

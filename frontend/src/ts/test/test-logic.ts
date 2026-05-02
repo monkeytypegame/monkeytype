@@ -26,7 +26,11 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage, isAuthenticated } from "../states/core";
+import {
+  getActivePage,
+  isAuthenticated,
+  isTestPageVisible,
+} from "../states/core";
 import {
   setResultVisible,
   setWordsHaveNewline,
@@ -175,7 +179,6 @@ type RestartOptions = {
   practiseMissed?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
-  skipInit?: boolean;
 };
 
 export function restart(options = {} as RestartOptions): void {
@@ -185,7 +188,6 @@ export function restart(options = {} as RestartOptions): void {
     noAnim: false,
     nosave: false,
     isQuickRestart: false,
-    skipInit: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -356,11 +358,6 @@ export function restart(options = {} as RestartOptions): void {
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
 
-      if (options.skipInit) {
-        TestState.setTestRestarting(false);
-        return;
-      }
-
       const initResult = await init();
 
       if (!initResult) {
@@ -431,7 +428,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  if (isTestPageVisible()) {
     await Funbox.activate();
   }
 
