@@ -67,38 +67,33 @@ export function AboutPage(): JSXElement {
           queries={{ typingStats }}
           errorMessage="Failed to get global typing stats"
         >
-          {({ typingStatsData }) => {
-            return (
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <For
-                  each={
+          {({ typingStatsData }) => (
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <For
+                each={
+                  [
                     [
-                      [
-                        "total tests started",
-                        () => typingStatsData()?.testsStarted,
-                      ],
-                      [
-                        "total typing time",
-                        () => typingStatsData()?.timeTyping,
-                      ],
-                      [
-                        "total tests completed",
-                        () => typingStatsData()?.testsCompleted,
-                      ],
-                    ] as const
-                  }
-                >
-                  {([title, stat]) => (
-                    <div class="text-center">
-                      <div class="text-sub">{title}</div>
-                      <div class="text-5xl">{stat()?.text ?? "-"}</div>
-                      <div class="text-xl">{stat()?.subText ?? "-"}</div>
-                    </div>
-                  )}
-                </For>
-              </div>
-            );
-          }}
+                      "total tests started",
+                      () => typingStatsData()?.testsStarted,
+                    ],
+                    ["total typing time", () => typingStatsData()?.timeTyping],
+                    [
+                      "total tests completed",
+                      () => typingStatsData()?.testsCompleted,
+                    ],
+                  ] as const
+                }
+              >
+                {([title, stat]) => (
+                  <div class="text-center">
+                    <div class="text-sub">{title}</div>
+                    <div class="text-5xl">{stat()?.text ?? "-"}</div>
+                    <div class="text-xl">{stat()?.subText ?? "-"}</div>
+                  </div>
+                )}
+              </For>
+            </div>
+          )}
         </AsyncContent>
       </section>
       <section class="h-48 w-full">
