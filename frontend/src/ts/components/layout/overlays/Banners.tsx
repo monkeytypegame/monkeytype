@@ -49,12 +49,7 @@ function Banner(props: BannerType): JSXElement {
           />
           <i class={`self-center ${icon()} xl:hidden`}></i>
         </Show>
-        <Show
-          when={props.customContent !== undefined}
-          fallback={<div class="self-center p-2">{props.text}</div>}
-        >
-          <div class="self-center p-2">{props.customContent}</div>
-        </Show>
+        <div class="self-center p-2">{props.customContent ?? props.text}</div>
         <Show
           when={props.important === true}
           fallback={
