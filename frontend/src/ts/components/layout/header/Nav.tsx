@@ -86,8 +86,6 @@ export function Nav(): JSXElement {
   const showLoginButton = (): boolean =>
     serverConfig.data?.users.signUp ?? true;
 
-  // const [testing, _setTesting] = createSignal(false);
-
   const snap = () => getSnapshot();
 
   return (
