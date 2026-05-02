@@ -170,15 +170,18 @@ export function LeaderboardPage(): JSXElement {
     <Show when={isOpen()}>
       <div class="content-grid flex flex-col gap-8 lg:flex-row">
         <div class="w-full shrink-0 lg:w-60 2xl:w-75">
-          <AsyncContent queries={{ config: serverConfigurationQuery }}>
-            {({ configData }) => (
+          <AsyncContent queries={{ serverConfigurationQuery }}>
+            {({ serverConfigurationQueryData }) => (
               <Sidebar
                 selection={getSelection}
                 onSelect={onSelectionChange}
                 validModeRules={
-                  configData().dailyLeaderboards.validModeRules ?? []
+                  serverConfigurationQueryData().dailyLeaderboards
+                    .validModeRules ?? []
                 }
-                connectionsEnabled={configData().connections.enabled}
+                connectionsEnabled={
+                  serverConfigurationQueryData().connections.enabled
+                }
               />
             )}
           </AsyncContent>
