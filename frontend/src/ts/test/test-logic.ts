@@ -357,7 +357,6 @@ export function restart(options = {} as RestartOptions): void {
       TestState.setPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
-
       const initResult = await init();
 
       if (!initResult) {
