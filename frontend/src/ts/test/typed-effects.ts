@@ -1,6 +1,8 @@
+import { animate } from "animejs"; // v4: named export, no default
 import { Config } from "../config/store";
 import { ElementWithUtils, qsa, qsr } from "../utils/dom";
-const FALL_DURATION_MS = 1000;
+
+const FALL_DURATION_MS = 1700;
 
 export function onWordTyped(word: ElementWithUtils): void {
   switch (Config.typedEffect) {
@@ -23,8 +25,6 @@ function triggerFall(word: ElementWithUtils): void {
   if (rect.width === 0 && rect.height === 0) return;
 
   const clone = word.native.cloneNode(true) as HTMLElement;
-  const randomRotation = (Math.random() - 0.5) * 45;
-  const randomX = (Math.random() - 0.5) * 100;
 
   clone.classList.remove("active");
   clone.classList.add("fall-clone");
@@ -32,15 +32,19 @@ function triggerFall(word: ElementWithUtils): void {
   clone.style.left = `${rect.left}px`;
   clone.style.width = `${rect.width}px`;
   clone.style.height = `${rect.height}px`;
-  clone.style.setProperty("--fall-rotation", `${randomRotation}deg`);
-  clone.style.setProperty("--fall-x", `${randomX}px`);
 
   qsr("#words").native.appendChild(clone);
 
-  const cleanup = (): void => {
-    clone.remove();
-  };
+  const randomRotation = (Math.random() - 0.5) * 45;
+  const randomX = (Math.random() - 0.5) * 100;
 
-  clone.addEventListener("animationend", cleanup, { once: true });
-  window.setTimeout(cleanup, FALL_DURATION_MS);
+  animate(clone, {
+    translateX: randomX,
+    translateY: window.innerHeight - rect.top,
+    rotate: randomRotation,
+    opacity: [1, 1, 0],
+    duration: FALL_DURATION_MS,
+    easing: "easeInQuad",
+    onComplete: () => clone.remove(),
+  });
 }
