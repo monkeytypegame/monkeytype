@@ -66,7 +66,7 @@ export function LeaderboardPage(): JSXElement {
 
   //update url after the data is loaded
   createEffect(() => {
-    if (isOpen() && dataQuery.isSuccess) {
+    if (isOpen() && entriesQuery.isSuccess) {
       updateGetParameters(getSelection(), getPage());
     }
   });
@@ -90,7 +90,7 @@ export function LeaderboardPage(): JSXElement {
     }
   });
 
-  const dataQuery = useQuery(() => ({
+  const entriesQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...getSelection(),
       page: getPage() ?? 0,
@@ -193,26 +193,26 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show
-            when={isAuthenticated() && !dataQuery.isLoading}
+            when={isAuthenticated() && !entriesQuery.isLoading}
             fallback={<Separator />}
           >
             <AsyncContent
               queries={{
-                data: dataQuery,
+                entries: entriesQuery,
                 rank: rankQuery,
                 config: serverConfigurationQuery,
               }}
               alwaysShowContent
               errorClass="rounded bg-sub-alt p-4"
             >
-              {({ dataData, rankData, configData }) => (
+              {({ entriesData, rankData, configData }) => (
                 <UserRank
                   type={getSelection().type === "weekly" ? "xp" : "speed"}
                   data={rankData()}
                   friendsOnly={getSelection().friendsOnly}
-                  total={dataData()?.count}
+                  total={entriesData()?.count}
                   minWpm={(() => {
-                    const d = dataData();
+                    const d = entriesData();
                     return d && "minWpm" in d
                       ? (d.minWpm as number)
                       : undefined;
@@ -231,7 +231,7 @@ export function LeaderboardPage(): JSXElement {
           </Show>
 
           <AsyncContent
-            queries={{ data: dataQuery }}
+            queries={{ data: entriesQuery }}
             loader={
               <div class="flex justify-center pt-4 text-4xl">
                 <LoadingCircle />
@@ -248,9 +248,9 @@ export function LeaderboardPage(): JSXElement {
                   <NextUpdate type={getSelection().type} />
                   <Navigation
                     isLoading={
-                      dataQuery.isLoading ||
-                      dataQuery.isFetching ||
-                      dataQuery.isRefetching
+                      entriesQuery.isLoading ||
+                      entriesQuery.isFetching ||
+                      entriesQuery.isRefetching
                     }
                     lastPage={Math.ceil((dataData()?.count ?? 0) / pageSize)}
                     userPage={userPage()}
