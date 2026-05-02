@@ -26,8 +26,7 @@ type Collection<T> = Accessor<T> & {
   isError: boolean;
 };
 
-type QueryMapping = Record<string, unknown> | unknown;
-type AsyncMap<T extends QueryMapping> = {
+type AsyncMap<T extends Record<string, unknown>> = {
   [K in keyof T]: AsyncEntry<T[K]>;
 };
 
@@ -38,46 +37,29 @@ type BaseProps = {
   errorClass?: string;
 };
 
-type QueryProps<T extends QueryMapping> = {
+type QueryProps<T extends Record<string, unknown>> = {
   queries: { [K in keyof T]: UseQueryResult<T[K]> };
 };
 
-type SingleQueryProps<T> = {
-  query: UseQueryResult<T>;
-};
-
-type CollectionProps<T extends QueryMapping> = {
+type CollectionProps<T extends Record<string, unknown>> = {
   collections: { [K in keyof T]: Collection<T[K]> };
-};
-
-type SingleCollectionProps<T> = {
-  collection: Collection<T>;
 };
 
 type AccessorMap<T> = { [K in keyof T]: Accessor<T[K]> };
 type DataKeys<T> = { [K in keyof T as `${K & string}Data`]: T[K] };
 
-type DeferredChildren<T extends QueryMapping> = {
-  alwaysShowContent?: false;
-  children: (data: Accessor<{ [K in keyof T]: T[K] }>) => JSXElement;
-};
+type Source<T extends Record<string, unknown>> =
+  | QueryProps<T>
+  | CollectionProps<T>;
 
-type EagerChildren<T extends QueryMapping> = {
-  alwaysShowContent: true;
-  showLoader?: true;
-  children: (
-    data: Accessor<{ [K in keyof T]: T[K] } | undefined>,
-  ) => JSXElement;
-};
-
-type MultiDeferredChildren<T extends QueryMapping> = {
+type DeferredChildren<T extends Record<string, unknown>> = {
   alwaysShowContent?: false;
   children: (
     data: AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>,
   ) => JSXElement;
 };
 
-type MultiEagerChildren<T extends QueryMapping> = {
+type EagerChildren<T extends Record<string, unknown>> = {
   alwaysShowContent: true;
   showLoader?: true;
   children: (
@@ -85,50 +67,29 @@ type MultiEagerChildren<T extends QueryMapping> = {
   ) => JSXElement;
 };
 
-type SingleSource<T> = SingleQueryProps<T> | SingleCollectionProps<T>;
-type MultiSource<T extends QueryMapping> = QueryProps<T> | CollectionProps<T>;
-type SingleChildren<T> = DeferredChildren<T> | EagerChildren<T>;
-type MultiChildren<T extends QueryMapping> =
-  | MultiDeferredChildren<T>
-  | MultiEagerChildren<T>;
+type Children<T extends Record<string, unknown>> =
+  | DeferredChildren<T>
+  | EagerChildren<T>;
 
-export type Props<T extends QueryMapping> = BaseProps &
-  (SingleSource<T> | MultiSource<T>) &
-  (SingleChildren<T> | MultiChildren<T>);
+export type Props<T extends Record<string, unknown>> = BaseProps &
+  Source<T> &
+  Children<T>;
 
-// Single query/collection overloads
-function AsyncContent<T>(
-  props: BaseProps & SingleSource<T> & SingleChildren<T>,
-): JSXElement;
-// Multi query/collection overloads
 function AsyncContent<T extends Record<string, unknown>>(
-  props: BaseProps & MultiSource<T> & MultiChildren<T>,
-): JSXElement;
-function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
-  //@ts-expect-error this is fine
+  props: Props<T>,
+): JSXElement {
   const source = createMemo<AsyncMap<T>>(() => {
-    if ("query" in props) {
-      return fromQueries({ defaultQuery: props.query });
-    } else if ("queries" in props) {
+    if ("queries" in props) {
       return fromQueries(props.queries);
-    } else if ("collection" in props) {
-      return fromCollections({ defaultQuery: props.collection });
-    } else if ("collections" in props) {
+    } else {
       return fromCollections(props.collections);
     }
   });
 
-  const value = (): T => {
-    if ("defaultQuery" in source()) {
-      //@ts-expect-error we know the property is present
-      // oxlint-disable-next-line typescript/no-unsafe-call typescript/no-unsafe-member-access
-      return source().defaultQuery.value() as T;
-    } else {
-      return Object.fromEntries(
-        typedKeys(source()).map((key) => [key, source()[key].value()]),
-      ) as T; // For multiple queries
-    }
-  };
+  const value = (): T =>
+    Object.fromEntries(
+      typedKeys(source()).map((key) => [key, source()[key].value()]),
+    ) as T;
 
   const handleError = (err: unknown): string => {
     const message = createErrorMessage(
@@ -147,12 +108,9 @@ function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
   const allResolved = (
     data: ReturnType<typeof value>,
   ): data is { [K in keyof T]: T[K] } => {
-    //single query
     if (data === undefined || data === null) {
       return false;
     }
-    if ("defaultQuery" in source()) return true;
-
     return Object.values(data).every((v) => v !== undefined && v !== null);
   };
 
@@ -179,25 +137,19 @@ function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
   // Keys are stable for the component lifetime; per-key closures track
   // reactivity internally via value()/lastResolvedValue().
   // oxlint-disable solid/reactivity
-  const multi = !("defaultQuery" in source());
+  const eagerAccessorMap = Object.fromEntries(
+    typedKeys(source()).map((key) => [
+      `${String(key)}Data`,
+      () => value()?.[key],
+    ]),
+  ) as unknown as AccessorMap<DataKeys<{ [K in keyof T]: T[K] | undefined }>>;
 
-  const eagerAccessorMap = multi
-    ? (Object.fromEntries(
-        typedKeys(source()).map((key) => [
-          `${String(key)}Data`,
-          () => value()?.[key],
-        ]),
-      ) as AccessorMap<DataKeys<{ [K in keyof T]: T[K] | undefined }>>)
-    : undefined;
-
-  const deferredAccessorMap = multi
-    ? (Object.fromEntries(
-        typedKeys(source()).map((key) => [
-          `${String(key)}Data`,
-          () => lastResolvedValue()?.[key],
-        ]),
-      ) as AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>)
-    : undefined;
+  const deferredAccessorMap = Object.fromEntries(
+    typedKeys(source()).map((key) => [
+      `${String(key)}Data`,
+      () => lastResolvedValue()?.[key],
+    ]),
+  ) as unknown as AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>;
   // oxlint-enable solid/reactivity
 
   const loader = (): JSXElement =>
@@ -227,16 +179,14 @@ function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
                   {(_) =>
                     // oxlint-disable-next-line typescript/no-explicit-any
                     (props.children as (data: any) => JSXElement)(
-                      multi ? deferredAccessorMap : lastResolvedValue,
+                      deferredAccessorMap,
                     )
                   }
                 </Show>
               }
             >
               {/* oxlint-disable-next-line typescript/no-explicit-any */}
-              {(props.children as (data: any) => JSXElement)(
-                multi ? eagerAccessorMap : value,
-              )}
+              {(props.children as (data: any) => JSXElement)(eagerAccessorMap)}
             </Show>
           </>
         }

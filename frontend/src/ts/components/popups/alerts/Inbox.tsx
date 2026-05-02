@@ -117,10 +117,10 @@ export function Inbox(): JSXElement {
       }
       body={
         <AsyncContent
-          collection={inboxQuery}
+          collections={{ inbox: inboxQuery }}
           loader={<LoadingCircle class="place-self-center text-lg" />}
         >
-          {(inbox) => (
+          {({ inboxData }) => (
             <>
               <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
                 <Button
@@ -149,7 +149,7 @@ export function Inbox(): JSXElement {
               </Show>
 
               <For
-                each={inbox()}
+                each={inboxData()}
                 fallback={<div class="place-self-center">Nothing to show</div>}
               >
                 {(entry) => <Entry entry={entry} mutate={mutate} />}

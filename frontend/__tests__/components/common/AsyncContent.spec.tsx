@@ -142,7 +142,7 @@ describe("AsyncContent", () => {
       query: {
         result: string | Error;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<Props<{ result: string }>, "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -162,18 +162,18 @@ describe("AsyncContent", () => {
         if (options?.alwaysShowContent) {
           return (
             <AsyncContent
-              query={myQuery}
-              {...(options as Props<string>)}
+              queries={{ result: myQuery }}
+              {...(options as Props<{ result: string }>)}
               alwaysShowContent
             >
-              {(data) => (
+              {({ resultData }) => (
                 <>
                   static content
                   <Show
-                    when={data() !== undefined}
+                    when={resultData() !== undefined}
                     fallback={<div>no data</div>}
                   >
-                    <div data-testid="content">{data()}</div>
+                    <div data-testid="content">{resultData()}</div>
                   </Show>
                 </>
               )}
@@ -183,15 +183,18 @@ describe("AsyncContent", () => {
 
         return (
           <AsyncContent
-            query={myQuery}
-            {...(options as Props<string>)}
+            queries={{ result: myQuery }}
+            {...(options as Props<{ result: string }>)}
             alwaysShowContent={false}
           >
-            {(data) => (
+            {({ resultData }) => (
               <>
                 static content
-                <Show when={data() !== undefined} fallback={<div>no data</div>}>
-                  <div data-testid="content">{data()}</div>
+                <Show
+                  when={resultData() !== undefined}
+                  fallback={<div>no data</div>}
+                >
+                  <div data-testid="content">{resultData()}</div>
                 </Show>
               </>
             )}
@@ -344,7 +347,10 @@ describe("AsyncContent", () => {
         first: string | Error | undefined;
         second: string | Error | undefined;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<
+        Props<{ first: string; second: string }>,
+        "queries" | "children"
+      >,
     ): {
       container: HTMLElement;
     } {
