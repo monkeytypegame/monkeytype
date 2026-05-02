@@ -381,17 +381,14 @@ describe("AsyncContent", () => {
               {...(options as Props<Q>)}
               alwaysShowContent
             >
-              {(results) => (
+              {({ first, second }) => (
                 <>
                   <Show
-                    when={
-                      results()?.first !== undefined &&
-                      results()?.second !== undefined
-                    }
+                    when={first() !== undefined && second() !== undefined}
                     fallback={<div>no data</div>}
                   >
-                    <div data-testid="first">{results()?.first}</div>
-                    <div data-testid="second">{results()?.second}</div>
+                    <div data-testid="first">{first()}</div>
+                    <div data-testid="second">{second()}</div>
                   </Show>
                 </>
               )}
@@ -405,17 +402,14 @@ describe("AsyncContent", () => {
             {...(options as Props<Q>)}
             alwaysShowContent={false}
           >
-            {(results) => (
+            {({ first, second }) => (
               <>
                 <Show
-                  when={
-                    results().first !== undefined &&
-                    results().second !== undefined
-                  }
+                  when={first() !== undefined && second() !== undefined}
                   fallback={<div>no data</div>}
                 >
-                  <div data-testid="first">{results().first}</div>
-                  <div data-testid="second">{results().second}</div>
+                  <div data-testid="first">{first()}</div>
+                  <div data-testid="second">{second()}</div>
                 </Show>
               </>
             )}

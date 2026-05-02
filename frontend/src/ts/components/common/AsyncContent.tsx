@@ -54,6 +54,8 @@ type SingleCollectionProps<T> = {
   collection: Collection<T>;
 };
 
+type AccessorMap<T> = { [K in keyof T]: Accessor<T[K]> };
+
 type DeferredChildren<T extends QueryMapping> = {
   alwaysShowContent?: false;
   children: (data: Accessor<{ [K in keyof T]: T[K] }>) => JSXElement;
@@ -67,18 +69,39 @@ type EagerChildren<T extends QueryMapping> = {
   ) => JSXElement;
 };
 
-export type Props<T extends QueryMapping> = BaseProps &
-  (
-    | QueryProps<T>
-    | SingleQueryProps<T>
-    | CollectionProps<T>
-    | SingleCollectionProps<T>
-  ) &
-  (DeferredChildren<T> | EagerChildren<T>);
+type MultiDeferredChildren<T extends QueryMapping> = {
+  alwaysShowContent?: false;
+  children: (data: AccessorMap<{ [K in keyof T]: T[K] }>) => JSXElement;
+};
 
-export default function AsyncContent<T extends QueryMapping>(
-  props: Props<T>,
-): JSXElement {
+type MultiEagerChildren<T extends QueryMapping> = {
+  alwaysShowContent: true;
+  showLoader?: true;
+  children: (
+    data: AccessorMap<{ [K in keyof T]: T[K] | undefined }>,
+  ) => JSXElement;
+};
+
+type SingleSource<T> = SingleQueryProps<T> | SingleCollectionProps<T>;
+type MultiSource<T extends QueryMapping> = QueryProps<T> | CollectionProps<T>;
+type SingleChildren<T> = DeferredChildren<T> | EagerChildren<T>;
+type MultiChildren<T extends QueryMapping> =
+  | MultiDeferredChildren<T>
+  | MultiEagerChildren<T>;
+
+export type Props<T extends QueryMapping> = BaseProps &
+  (SingleSource<T> | MultiSource<T>) &
+  (SingleChildren<T> | MultiChildren<T>);
+
+// Single query/collection overloads
+function AsyncContent<T>(
+  props: BaseProps & SingleSource<T> & SingleChildren<T>,
+): JSXElement;
+// Multi query/collection overloads
+function AsyncContent<T extends Record<string, unknown>>(
+  props: BaseProps & MultiSource<T> & MultiChildren<T>,
+): JSXElement;
+function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
   //@ts-expect-error this is fine
   const source = createMemo<AsyncMap<T>>(() => {
     if ("query" in props) {
@@ -150,6 +173,27 @@ export default function AsyncContent<T extends QueryMapping>(
     false,
   );
 
+  // Keys are stable for the component lifetime; per-key closures track
+  // reactivity internally via value()/lastResolvedValue().
+  // oxlint-disable solid/reactivity
+  const multi = !("defaultQuery" in source());
+
+  const eagerAccessorMap = multi
+    ? (Object.fromEntries(
+        typedKeys(source()).map((key) => [key, () => value()?.[key]]),
+      ) as AccessorMap<{ [K in keyof T]: T[K] | undefined }>)
+    : undefined;
+
+  const deferredAccessorMap = multi
+    ? (Object.fromEntries(
+        typedKeys(source()).map((key) => [
+          key,
+          () => lastResolvedValue()?.[key],
+        ]),
+      ) as AccessorMap<{ [K in keyof T]: T[K] }>)
+    : undefined;
+  // oxlint-enable solid/reactivity
+
   const loader = (): JSXElement =>
     props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
@@ -175,14 +219,18 @@ export default function AsyncContent<T extends QueryMapping>(
               fallback={
                 <Show when={hasResolved()}>
                   {(_) =>
-                    props.children(
-                      lastResolvedValue as Accessor<{ [K in keyof T]: T[K] }>,
+                    // oxlint-disable-next-line typescript/no-explicit-any
+                    (props.children as (data: any) => JSXElement)(
+                      multi ? deferredAccessorMap : lastResolvedValue,
                     )
                   }
                 </Show>
               }
             >
-              {props.children(value)}
+              {/* oxlint-disable-next-line typescript/no-explicit-any */}
+              {(props.children as (data: any) => JSXElement)(
+                multi ? eagerAccessorMap : value,
+              )}
             </Show>
           </>
         }
@@ -225,3 +273,5 @@ function fromCollections<T extends Record<string, unknown>>(collections: {
     return acc;
   }, {} as AsyncMap<T>);
 }
+
+export default AsyncContent;
