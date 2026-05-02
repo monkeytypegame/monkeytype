@@ -1,7 +1,6 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
-import { Conditional } from "./Conditional";
 import { Fa } from "./Fa";
 
 export function LoadingCircle(props: {
@@ -10,24 +9,9 @@ export function LoadingCircle(props: {
   class?: string;
 }): JSXElement {
   return (
-    <Conditional
-      if={props.mode === "icon" || props.mode === undefined}
-      then={
-        <div
-          class={cn(
-            "preloader grid place-items-center",
-            {
-              "text-main": props.color === "main" || props.color === undefined,
-              "text-sub": props.color === "sub",
-              "text-text": props.color === "text",
-            },
-            props.class,
-          )}
-        >
-          <Fa icon="fa-circle-notch" fixedWidth spin />
-        </div>
-      }
-      else={
+    <Show
+      when={props.mode === "icon" || props.mode === undefined}
+      fallback={
         <div
           class={cn(
             "preloader grid h-[1em] w-[1em] animate-spin place-items-center p-[0.5em] [animation-duration:2s]",
@@ -45,6 +29,20 @@ export function LoadingCircle(props: {
           </svg>
         </div>
       }
-    />
+    >
+      <div
+        class={cn(
+          "preloader grid place-items-center",
+          {
+            "text-main": props.color === "main" || props.color === undefined,
+            "text-sub": props.color === "sub",
+            "text-text": props.color === "text",
+          },
+          props.class,
+        )}
+      >
+        <Fa icon="fa-circle-notch" fixedWidth spin />
+      </div>
+    </Show>
   );
 }
