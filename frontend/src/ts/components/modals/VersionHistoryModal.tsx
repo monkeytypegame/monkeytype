@@ -40,7 +40,7 @@ export function VersionHistoryModal(): JSXElement {
         {(data) => (
           <>
             <div class="releases">
-              <For each={data.pages.flatMap((it) => it.releases)}>
+              <For each={data().pages.flatMap((it) => it.releases)}>
                 {(release) => <ReleaseItem {...release} />}
               </For>
             </div>

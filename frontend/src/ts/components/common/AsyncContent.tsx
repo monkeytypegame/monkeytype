@@ -56,13 +56,15 @@ type SingleCollectionProps<T> = {
 
 type DeferredChildren<T extends QueryMapping> = {
   alwaysShowContent?: false;
-  children: (data: { [K in keyof T]: T[K] }) => JSXElement;
+  children: (data: Accessor<{ [K in keyof T]: T[K] }>) => JSXElement;
 };
 
 type EagerChildren<T extends QueryMapping> = {
   alwaysShowContent: true;
   showLoader?: true;
-  children: (data: { [K in keyof T]: T[K] | undefined }) => JSXElement;
+  children: (
+    data: Accessor<{ [K in keyof T]: T[K] } | undefined>,
+  ) => JSXElement;
 };
 
 export type Props<T extends QueryMapping> = BaseProps &
@@ -136,6 +138,18 @@ export default function AsyncContent<T extends QueryMapping>(
       .find((s) => s.isError())
       ?.error?.();
 
+  // Keep the last resolved value so deferred children stay mounted during
+  // transient loading states (e.g. navigating away and back).
+  const lastResolvedValue = createMemo<T | undefined>((prev) => {
+    const current = value();
+    return allResolved(current) ? current : prev;
+  });
+
+  const hasResolved = createMemo<boolean>(
+    (prev) => prev || lastResolvedValue() !== undefined,
+    false,
+  );
+
   const loader = (): JSXElement =>
     props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
 
@@ -144,24 +158,31 @@ export default function AsyncContent<T extends QueryMapping>(
       <div class={props.errorClass}>{handleError(err)}</div>
     );
 
+  // Only show loader on initial load, not on refetches
+  const showLoader = (): boolean =>
+    isLoading() &&
+    !props.alwaysShowContent &&
+    lastResolvedValue() === undefined;
+
   return (
     <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>
       <Switch
         fallback={
           <>
-            <Show when={isLoading() && !props.alwaysShowContent}>
-              {loader()}
-            </Show>
-
+            <Show when={showLoader()}>{loader()}</Show>
             <Show
               when={props.alwaysShowContent === true}
               fallback={
-                <Show when={allResolved(value())}>
-                  {props.children(value())}
+                <Show when={hasResolved()}>
+                  {(_) =>
+                    props.children(
+                      lastResolvedValue as Accessor<{ [K in keyof T]: T[K] }>,
+                    )
+                  }
                 </Show>
               }
             >
-              {props.children(value())}
+              {props.children(value)}
             </Show>
           </>
         }
@@ -170,7 +191,7 @@ export default function AsyncContent<T extends QueryMapping>(
           {errorText(firstError())}
         </Match>
 
-        <Match when={isLoading() && !props.alwaysShowContent}>{loader()}</Match>
+        <Match when={showLoader()}>{loader()}</Match>
       </Switch>
     </ErrorBoundary>
   );

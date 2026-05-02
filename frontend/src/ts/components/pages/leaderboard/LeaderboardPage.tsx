@@ -175,8 +175,8 @@ export function LeaderboardPage(): JSXElement {
               <Sidebar
                 selection={getSelection}
                 onSelect={onSelectionChange}
-                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
-                connectionsEnabled={config.connections.enabled}
+                validModeRules={config().dailyLeaderboards.validModeRules ?? []}
+                connectionsEnabled={config().connections.enabled}
               />
             )}
           </AsyncContent>
@@ -203,27 +203,33 @@ export function LeaderboardPage(): JSXElement {
               alwaysShowContent
               errorClass="rounded bg-sub-alt p-4"
             >
-              {({ data, rank, config }) => (
-                <UserRank
-                  type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rank}
-                  friendsOnly={getSelection().friendsOnly}
-                  total={data?.count}
-                  minWpm={
-                    data && "minWpm" in data
-                      ? (data.minWpm as number)
-                      : undefined
-                  }
-                  memoryDifference={getLbMemoryDifference(
-                    getSelection(),
-                    rank?.rank,
-                  )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                />
-              )}
+              {(queries) => {
+                const data = () => queries()?.data;
+                const rank = () => queries()?.rank;
+                const config = () => queries()?.config;
+                return (
+                  <UserRank
+                    type={getSelection().type === "weekly" ? "xp" : "speed"}
+                    data={rank()}
+                    friendsOnly={getSelection().friendsOnly}
+                    total={data()?.count}
+                    minWpm={(() => {
+                      const d = data();
+                      return d && "minWpm" in d
+                        ? (d.minWpm as number)
+                        : undefined;
+                    })()}
+                    memoryDifference={getLbMemoryDifference(
+                      getSelection(),
+                      rank()?.rank,
+                    )}
+                    isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                    isBanned={getSnapshot()?.banned ?? false}
+                    minTimeTyping={config()?.leaderboards.minTimeTyping ?? 0}
+                    userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                  />
+                );
+              }}
             </AsyncContent>
           </Show>
 
@@ -249,7 +255,7 @@ export function LeaderboardPage(): JSXElement {
                       dataQuery.isFetching ||
                       dataQuery.isRefetching
                     }
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil((data()?.count ?? 0) / pageSize)}
                     userPage={userPage()}
                     currentPage={getPage()}
                     onPageChange={setPage}
@@ -261,7 +267,7 @@ export function LeaderboardPage(): JSXElement {
                 <div>
                   <Table
                     type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    entries={data?.entries ?? []}
+                    entries={data()?.entries ?? []}
                     friendsOnly={getSelection().friendsOnly}
                     scrollToUser={scrollToUser}
                     onScrolledToUser={() => setScrollToUser(false)}
@@ -270,7 +276,7 @@ export function LeaderboardPage(): JSXElement {
 
                 <div class="mt-4 grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                   <Navigation
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil((data()?.count ?? 0) / pageSize)}
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
