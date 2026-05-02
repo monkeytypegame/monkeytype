@@ -20,8 +20,10 @@ export function ProfilePage(): JSXElement {
   return (
     <Show when={isOpen}>
       <div class="flex h-full items-center justify-center text-lg">
-        <AsyncContent queries={{ profile: profileQuery }} ignoreError={true}>
-          {({ profileData }) => <UserProfile profile={profileData()} />}
+        <AsyncContent queries={{ profileQuery }} ignoreError={true}>
+          {({ profileQueryData }) => (
+            <UserProfile profile={profileQueryData()} />
+          )}
         </AsyncContent>
         <Show when={profileQuery.isError}>
           <div class="flex items-baseline gap-2 text-error">
