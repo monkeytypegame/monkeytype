@@ -175,8 +175,8 @@ export function Nav(): JSXElement {
           fallback={
             <Anime
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, duration: 1250 }}
-              exit={{ opacity: 0, duration: 1250 }}
+              animate={{ opacity: 1, duration: 125 }}
+              exit={{ opacity: 0, duration: 125 }}
             >
               <Show when={showLoginButton()}>
                 <Button
@@ -200,8 +200,8 @@ export function Nav(): JSXElement {
           {(snap) => (
             <Anime
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, duration: 1250 }}
-              exit={{ opacity: 0, duration: 1250 }}
+              animate={{ opacity: 1, duration: 125 }}
+              exit={{ opacity: 0, duration: 125 }}
             >
               <div
                 ref={accountMenuRef}
