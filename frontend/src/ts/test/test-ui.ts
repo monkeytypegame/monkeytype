@@ -1102,7 +1102,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     while ((ltr = letters[i]) && ltr.getOffsetWidth() === 0 && i > 0) i--;
     let currentLetterOffset = ltr?.getOffsetLeft() ?? 0;
     let currentLetterWidth = ltr?.getOffsetWidth() ?? 0;
-    if (side === "afterLetter") currentLetterWidth = spaceWidth;
 
     if (
       (isActiveWordRTL && side === "beforeLetter") ||
