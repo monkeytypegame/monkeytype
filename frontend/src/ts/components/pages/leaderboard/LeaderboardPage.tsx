@@ -201,32 +201,39 @@ export function LeaderboardPage(): JSXElement {
           >
             <AsyncContent
               queries={{
-                entries: entriesQuery,
-                rank: rankQuery,
-                config: serverConfigurationQuery,
+                entriesQuery,
+                rankQuery,
+                serverConfigurationQuery,
               }}
               alwaysShowContent
               errorClass="rounded bg-sub-alt p-4"
             >
-              {({ entriesData, rankData, configData }) => (
+              {({
+                entriesQueryData,
+                rankQueryData,
+                serverConfigurationQueryData,
+              }) => (
                 <UserRank
                   type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rankData()}
+                  data={rankQueryData()}
                   friendsOnly={getSelection().friendsOnly}
-                  total={entriesData()?.count}
+                  total={entriesQueryData()?.count}
                   minWpm={(() => {
-                    const d = entriesData();
+                    const d = entriesQueryData();
                     return d && "minWpm" in d
                       ? (d.minWpm as number)
                       : undefined;
                   })()}
                   memoryDifference={getLbMemoryDifference(
                     getSelection(),
-                    rankData()?.rank,
+                    rankQueryData()?.rank,
                   )}
                   isLbOptOut={getSnapshot()?.lbOptOut ?? false}
                   isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={configData()?.leaderboards.minTimeTyping ?? 0}
+                  minTimeTyping={
+                    serverConfigurationQueryData()?.leaderboards
+                      .minTimeTyping ?? 0
+                  }
                   userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}
