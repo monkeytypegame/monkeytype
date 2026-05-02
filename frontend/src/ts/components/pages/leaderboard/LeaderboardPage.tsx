@@ -203,25 +203,25 @@ export function LeaderboardPage(): JSXElement {
               alwaysShowContent
               errorClass="rounded bg-sub-alt p-4"
             >
-              {({ data, rank, config }) => (
+              {({ dataData, rankData, configData }) => (
                 <UserRank
                   type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rank()}
+                  data={rankData()}
                   friendsOnly={getSelection().friendsOnly}
-                  total={data()?.count}
+                  total={dataData()?.count}
                   minWpm={(() => {
-                    const d = data();
+                    const d = dataData();
                     return d && "minWpm" in d
                       ? (d.minWpm as number)
                       : undefined;
                   })()}
                   memoryDifference={getLbMemoryDifference(
                     getSelection(),
-                    rank()?.rank,
+                    rankData()?.rank,
                   )}
                   isLbOptOut={getSnapshot()?.lbOptOut ?? false}
                   isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={config()?.leaderboards.minTimeTyping ?? 0}
+                  minTimeTyping={configData()?.leaderboards.minTimeTyping ?? 0}
                   userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
                 />
               )}

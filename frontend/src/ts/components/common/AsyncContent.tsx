@@ -55,6 +55,7 @@ type SingleCollectionProps<T> = {
 };
 
 type AccessorMap<T> = { [K in keyof T]: Accessor<T[K]> };
+type DataKeys<T> = { [K in keyof T as `${K & string}Data`]: T[K] };
 
 type DeferredChildren<T extends QueryMapping> = {
   alwaysShowContent?: false;
@@ -71,14 +72,16 @@ type EagerChildren<T extends QueryMapping> = {
 
 type MultiDeferredChildren<T extends QueryMapping> = {
   alwaysShowContent?: false;
-  children: (data: AccessorMap<{ [K in keyof T]: T[K] }>) => JSXElement;
+  children: (
+    data: AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>,
+  ) => JSXElement;
 };
 
 type MultiEagerChildren<T extends QueryMapping> = {
   alwaysShowContent: true;
   showLoader?: true;
   children: (
-    data: AccessorMap<{ [K in keyof T]: T[K] | undefined }>,
+    data: AccessorMap<DataKeys<{ [K in keyof T]: T[K] | undefined }>>,
   ) => JSXElement;
 };
 
@@ -180,17 +183,20 @@ function AsyncContent<T extends QueryMapping>(props: Props<T>): JSXElement {
 
   const eagerAccessorMap = multi
     ? (Object.fromEntries(
-        typedKeys(source()).map((key) => [key, () => value()?.[key]]),
-      ) as AccessorMap<{ [K in keyof T]: T[K] | undefined }>)
+        typedKeys(source()).map((key) => [
+          `${String(key)}Data`,
+          () => value()?.[key],
+        ]),
+      ) as AccessorMap<DataKeys<{ [K in keyof T]: T[K] | undefined }>>)
     : undefined;
 
   const deferredAccessorMap = multi
     ? (Object.fromEntries(
         typedKeys(source()).map((key) => [
-          key,
+          `${String(key)}Data`,
           () => lastResolvedValue()?.[key],
         ]),
-      ) as AccessorMap<{ [K in keyof T]: T[K] }>)
+      ) as AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>)
     : undefined;
   // oxlint-enable solid/reactivity
 
