@@ -1068,7 +1068,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* calculate current word width to add to #words margin */
   let inputWord = TestInput.input.current;
-  const targetWord = TestWords.words.getCurrent() || inputWord; // fallback for zen mode
+  const targetWord = TestWords.words.getCurrentText() || inputWord; // fallback for zen mode
   const [isActiveWordRTL, _] = isWordRightToLeft(
     targetWord,
     TestState.isLanguageRightToLeft,
