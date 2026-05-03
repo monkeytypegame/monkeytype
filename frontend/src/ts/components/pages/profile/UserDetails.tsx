@@ -16,7 +16,6 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { addFriend, isFriend } from "../../../db";
-import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
@@ -36,6 +35,9 @@ import { Button } from "../../common/Button";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { EditProfile } from "../../popups/EditProfile";
+import { showModal } from "../../../states/modals";
+
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -109,7 +111,6 @@ function ActionButtons(props: {
   const isUsersProfile = () =>
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
-
   const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
     isAuthenticated() && !isUsersProfile() && !hasFriendRequest();

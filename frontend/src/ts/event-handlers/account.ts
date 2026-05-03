@@ -1,11 +1,4 @@
 import * as PbTablesModal from "../modals/pb-tables";
-import * as EditProfileModal from "../modals/edit-profile";
-import { getSnapshot } from "../db";
-import { isAuthenticated } from "../states/core";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../states/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
@@ -20,25 +13,6 @@ accountPage?.onChild("click", ".pbsTime .showAllButton", () => {
 
 accountPage?.onChild("click", ".pbsWords .showAllButton", () => {
   PbTablesModal.show("words");
-});
-
-accountPage?.onChild("click", ".editProfileButton", () => {
-  if (!isAuthenticated()) {
-    showNoticeNotification("You must be logged in to edit your profile");
-    return;
-  }
-  const snapshot = getSnapshot();
-  if (!snapshot) {
-    showErrorNotification(
-      "Failed to open edit profile modal: No user snapshot found",
-    );
-    return;
-  }
-  if (snapshot.banned === true) {
-    showNoticeNotification("Banned users cannot edit their profile");
-    return;
-  }
-  EditProfileModal.show();
 });
 
 const TagsArraySchema = z.array(z.string());
