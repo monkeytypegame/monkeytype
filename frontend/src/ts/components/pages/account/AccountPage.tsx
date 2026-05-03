@@ -3,6 +3,7 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import {
   createResultsQueryState,
+  getResultsQueryOnce,
   getResultsSize,
   useResultsLiveQuery,
 } from "../../../collections/results";
@@ -46,11 +47,6 @@ export function AccountPage(): JSXElement {
   const [isExporting, setIsExporting] = createSignal(false);
 
   const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
-  const nonLimitResultsQuery = useResultsLiveQuery({
-    queryState,
-    sorting,
-    limit: () => Infinity,
-  });
 
   return (
     <Show when={isAuthenticated() && isOpen()}>
@@ -92,28 +88,28 @@ export function AccountPage(): JSXElement {
             />
             <TestStats queryState={queryState} />
 
-            <AsyncContent collections={{ nonLimitResultsQuery }}>
-              {({ nonLimitResultsQueryData }) => (
-                <div class="grid grid-cols-3">
-                  <Button
-                    text="Export CSV"
-                    fa={{ icon: "fa-file-csv" }}
-                    class="col-start-3 w-full"
-                    disabled={isExporting()}
-                    onClick={() => {
-                      setIsExporting(true);
-                      showLoaderBar();
-                      void downloadResultsCSV(
-                        nonLimitResultsQueryData(),
-                      ).finally(() => {
-                        hideLoaderBar();
-                        setIsExporting(false);
-                      });
-                    }}
-                  />
-                </div>
-              )}
-            </AsyncContent>
+            <div class="grid grid-cols-3">
+              <Button
+                text="Export CSV"
+                fa={{ icon: "fa-file-csv" }}
+                class="col-start-3 w-full"
+                disabled={isExporting()}
+                onClick={() => {
+                  setIsExporting(true);
+                  showLoaderBar();
+                  void getResultsQueryOnce({ queryState, sorting })
+                    .then(
+                      async (results) =>
+                        results !== undefined &&
+                        (await downloadResultsCSV(results)),
+                    )
+                    .finally(() => {
+                      hideLoaderBar();
+                      setIsExporting(false);
+                    });
+                }}
+              />
+            </div>
 
             <Advertisement id="ad-account-2" visible="sellout" />
 

@@ -17,6 +17,7 @@ import {
   not,
   or,
   Query,
+  queryOnce,
   sum,
   useLiveQuery,
 } from "@tanstack/solid-db";
@@ -117,6 +118,26 @@ export function useResultStatsLiveQuery(
       avgConsistency: avg(r.consistency),
     }));
   });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getResultsQueryOnce(options: {
+  queryState: Accessor<ResultsQueryState | undefined>;
+  sorting: Accessor<{
+    field: keyof SnapshotResult<Mode>;
+    direction: "asc" | "desc";
+  }>;
+}) {
+  const state = options.queryState();
+  if (!state) return undefined;
+
+  const sorting = options.sorting();
+
+  return queryOnce((q) =>
+    q
+      .from({ r: buildResultsQuery(state) })
+      .orderBy(({ r }) => r[sorting.field], sorting.direction),
+  );
 }
 
 /**
