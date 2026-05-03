@@ -15,7 +15,6 @@ import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
@@ -46,7 +45,7 @@ export function AccountPage(): JSXElement {
   );
   const [isExporting, setIsExporting] = createSignal(false);
 
-  const data = useResultsLiveQuery({ queryState, sorting, limit });
+  const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
 
   return (
     <Show when={isAuthenticated() && isOpen()}>
@@ -58,82 +57,81 @@ export function AccountPage(): JSXElement {
 
         <Filters filters={filters} onChangeFilters={setFilters} />
 
-        <Conditional
-          if={data()?.length > 0}
-          then={
-            <>
-              <Charts
-                filters={filters}
-                queryState={queryState}
-                onHistoryChartClick={({ index, _id }) => {
-                  const newLimit = Math.ceil(index / 10) * 10;
-                  if (limit() < newLimit) {
-                    setLimit(newLimit);
-                  }
-                  setSelectedResultId(_id);
-
-                  requestAnimationFrame(() => {
-                    qs(
-                      `#resultList tbody tr:nth-child(${index})`,
-                    )?.scrollIntoView({
-                      block: "center",
-                    });
-                  });
-                }}
-              />
-              <TestStats queryState={queryState} />
-
-              <div class="grid grid-cols-3">
-                <Button
-                  text="Export CSV"
-                  fa={{ icon: "fa-file-csv" }}
-                  class="col-start-3 w-full"
-                  disabled={isExporting()}
-                  onClick={() => {
-                    setIsExporting(true);
-                    showLoaderBar();
-                    const filteredResults = useResultsLiveQuery({
-                      queryState,
-                      sorting,
-                      limit: () => Infinity,
-                    });
-                    void downloadResultsCSV(filteredResults()).finally(() => {
-                      hideLoaderBar();
-                      setIsExporting(false);
-                    });
-                  }}
-                />
-              </div>
-
-              <Advertisement id="ad-account-2" visible="sellout" />
-
-              <AsyncContent collection={data}>
-                {(results) => (
-                  <>
-                    <Table
-                      data={[...results()]}
-                      onSortingChange={(val) => setSorting(val)}
-                      selectedRowId={selectedResultId}
-                    />
-                    <Button
-                      text="load more"
-                      disabled={
-                        data.isLoading || getResultsSize() < limit() + 10
-                      }
-                      onClick={() => setLimit((limit) => limit + 10)}
-                      class="w-full text-center"
-                    />
-                  </>
-                )}
-              </AsyncContent>
-            </>
-          }
-          else={
+        <Show
+          when={resultsQuery()?.length > 0}
+          fallback={
             <div class="grid h-150 place-items-center">
               <div>No data found. Check your filters.</div>
             </div>
           }
-        />
+        >
+          <>
+            <Charts
+              filters={filters}
+              queryState={queryState}
+              onHistoryChartClick={({ index, _id }) => {
+                const newLimit = Math.ceil(index / 10) * 10;
+                if (limit() < newLimit) {
+                  setLimit(newLimit);
+                }
+                setSelectedResultId(_id);
+
+                requestAnimationFrame(() => {
+                  qs(
+                    `#resultList tbody tr:nth-child(${index})`,
+                  )?.scrollIntoView({
+                    block: "center",
+                  });
+                });
+              }}
+            />
+            <TestStats queryState={queryState} />
+
+            <div class="grid grid-cols-3">
+              <Button
+                text="Export CSV"
+                fa={{ icon: "fa-file-csv" }}
+                class="col-start-3 w-full"
+                disabled={isExporting()}
+                onClick={() => {
+                  setIsExporting(true);
+                  showLoaderBar();
+                  const filteredResults = useResultsLiveQuery({
+                    queryState,
+                    sorting,
+                    limit: () => Infinity,
+                  });
+                  void downloadResultsCSV(filteredResults()).finally(() => {
+                    hideLoaderBar();
+                    setIsExporting(false);
+                  });
+                }}
+              />
+            </div>
+
+            <Advertisement id="ad-account-2" visible="sellout" />
+
+            <AsyncContent collections={{ resultsQuery }}>
+              {({ resultsQueryData }) => (
+                <>
+                  <Table
+                    data={[...resultsQueryData()]}
+                    onSortingChange={(val) => setSorting(val)}
+                    selectedRowId={selectedResultId}
+                  />
+                  <Button
+                    text="load more"
+                    disabled={
+                      resultsQuery.isLoading || getResultsSize() < limit() + 10
+                    }
+                    onClick={() => setLimit((limit) => limit + 10)}
+                    class="w-full text-center"
+                  />
+                </>
+              )}
+            </AsyncContent>
+          </>
+        </Show>
       </div>
     </Show>
   );
