@@ -16,10 +16,10 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { addFriend, isFriend } from "../../../db";
-import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -36,6 +36,7 @@ import { Button } from "../../common/Button";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { EditProfile } from "../../popups/EditProfile";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -98,6 +99,9 @@ export function UserDetails(props: {
           isAccountPage={props.isAccountPage}
         />
       </div>
+      <Show when={props.isAccountPage === true}>
+        <EditProfile />
+      </Show>
     </div>
   );
 }
@@ -177,7 +181,7 @@ function ActionButtons(props: {
             showNoticeNotification("Banned users cannot edit their profile");
             return;
           }
-          EditProfileModal.show();
+          showModal("EditProfile");
         }}
       />
       <Button

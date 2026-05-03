@@ -1,5 +1,4 @@
 import * as PbTablesModal from "../modals/pb-tables";
-import * as EditProfileModal from "../modals/edit-profile";
 import { getSnapshot } from "../db";
 import { isAuthenticated } from "../states/core";
 import {
@@ -38,7 +37,6 @@ accountPage?.onChild("click", ".editProfileButton", () => {
     showNoticeNotification("Banned users cannot edit their profile");
     return;
   }
-  EditProfileModal.show();
 });
 
 const TagsArraySchema = z.array(z.string());

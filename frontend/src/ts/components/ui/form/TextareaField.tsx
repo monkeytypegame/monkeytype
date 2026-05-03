@@ -9,6 +9,7 @@ export function TextareaField(props: {
   placeholder?: string;
   disabled?: boolean;
   class?: string;
+  maxLength?: number;
   onKeyDown?: (e: KeyboardEvent) => void;
   onKeyPress?: (e: KeyboardEvent) => void;
 }): JSXElement {
@@ -28,6 +29,7 @@ export function TextareaField(props: {
       onBlur={() => props.field().handleBlur()}
       onInput={(e) => props.field().handleChange(e.currentTarget.value)}
       disabled={props.disabled}
+      maxLength={props.maxLength}
       onKeyDown={(e) => props.onKeyDown?.(e)}
       onKeyPress={(e) => props.onKeyPress?.(e)}
     ></textarea>
