@@ -142,7 +142,7 @@ describe("AsyncContent", () => {
       query: {
         result: string | Error;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<Props<{ result: string }>, "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -159,39 +159,19 @@ describe("AsyncContent", () => {
           retry: 0,
         }));
 
-        if (options?.alwaysShowContent) {
-          return (
-            <AsyncContent
-              query={myQuery}
-              {...(options as Props<string>)}
-              alwaysShowContent
-            >
-              {(data) => (
-                <>
-                  static content
-                  <Show
-                    when={data() !== undefined}
-                    fallback={<div>no data</div>}
-                  >
-                    <div data-testid="content">{data()}</div>
-                  </Show>
-                </>
-              )}
-            </AsyncContent>
-          );
-        }
-
         return (
           <AsyncContent
-            query={myQuery}
-            {...(options as Props<string>)}
-            alwaysShowContent={false}
+            queries={{ result: myQuery }}
+            {...(options as Props<{ result: string | undefined }>)}
           >
-            {(data) => (
+            {({ resultData }) => (
               <>
                 static content
-                <Show when={data() !== undefined} fallback={<div>no data</div>}>
-                  <div data-testid="content">{data()}</div>
+                <Show
+                  when={resultData() !== undefined}
+                  fallback={<div>no data</div>}
+                >
+                  <div data-testid="content">{resultData()}</div>
                 </Show>
               </>
             )}
@@ -344,7 +324,10 @@ describe("AsyncContent", () => {
         first: string | Error | undefined;
         second: string | Error | undefined;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<
+        Props<{ first: string; second: string }>,
+        "queries" | "children"
+      >,
     ): {
       container: HTMLElement;
     } {
@@ -374,48 +357,20 @@ describe("AsyncContent", () => {
 
         type Q = { first: string | undefined; second: string | undefined };
 
-        if (options?.alwaysShowContent) {
-          return (
-            <AsyncContent
-              queries={{ first: firstQuery, second: secondQuery }}
-              {...(options as Props<Q>)}
-              alwaysShowContent
-            >
-              {(results) => (
-                <>
-                  <Show
-                    when={
-                      results()?.first !== undefined &&
-                      results()?.second !== undefined
-                    }
-                    fallback={<div>no data</div>}
-                  >
-                    <div data-testid="first">{results()?.first}</div>
-                    <div data-testid="second">{results()?.second}</div>
-                  </Show>
-                </>
-              )}
-            </AsyncContent>
-          );
-        }
-
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             {...(options as Props<Q>)}
             alwaysShowContent={false}
           >
-            {(results) => (
+            {({ firstData, secondData }) => (
               <>
                 <Show
-                  when={
-                    results().first !== undefined &&
-                    results().second !== undefined
-                  }
+                  when={firstData() !== undefined && secondData() !== undefined}
                   fallback={<div>no data</div>}
                 >
-                  <div data-testid="first">{results().first}</div>
-                  <div data-testid="second">{results().second}</div>
+                  <div data-testid="first">{firstData()}</div>
+                  <div data-testid="second">{secondData()}</div>
                 </Show>
               </>
             )}
