@@ -212,31 +212,33 @@ export function LeaderboardPage(): JSXElement {
                 entriesQueryData,
                 rankQueryData,
                 serverConfigurationQueryData,
-              }) => (
-                <UserRank
-                  type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rankQueryData()}
-                  friendsOnly={getSelection().friendsOnly}
-                  total={entriesQueryData()?.count}
-                  minWpm={(() => {
-                    const d = entriesQueryData();
-                    return d && "minWpm" in d
-                      ? (d.minWpm as number)
-                      : undefined;
-                  })()}
-                  memoryDifference={getLbMemoryDifference(
-                    getSelection(),
-                    rankQueryData()?.rank,
-                  )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={
-                    serverConfigurationQueryData()?.leaderboards
-                      .minTimeTyping ?? 0
-                  }
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                />
-              )}
+              }) => {
+                const minWpm = () => {
+                  const d = entriesQueryData();
+                  return d && "minWpm" in d ? (d.minWpm as number) : undefined;
+                };
+
+                return (
+                  <UserRank
+                    type={getSelection().type === "weekly" ? "xp" : "speed"}
+                    data={rankQueryData()}
+                    friendsOnly={getSelection().friendsOnly}
+                    total={entriesQueryData()?.count}
+                    minWpm={minWpm()}
+                    memoryDifference={getLbMemoryDifference(
+                      getSelection(),
+                      rankQueryData()?.rank,
+                    )}
+                    isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                    isBanned={getSnapshot()?.banned ?? false}
+                    minTimeTyping={
+                      serverConfigurationQueryData()?.leaderboards
+                        .minTimeTyping ?? 0
+                    }
+                    userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                  />
+                );
+              }}
             </AsyncContent>
           </Show>
 
