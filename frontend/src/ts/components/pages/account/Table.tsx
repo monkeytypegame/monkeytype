@@ -9,6 +9,7 @@ import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import * as EditResultTagsModal from "../../../modals/edit-result-tags";
 import { showModal } from "../../../states/modals";
+import { showNoticeNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
@@ -254,6 +255,12 @@ function getColumns<M extends Mode>({
                 : "no tags",
             }}
             onClick={() => {
+              if (tags.length === 0) {
+                showNoticeNotification(
+                  "You have no tags. You can create one in the tags section of the settings page.",
+                );
+                return;
+              }
               EditResultTagsModal.show(
                 info.row.original._id,
                 info.getValue(),
