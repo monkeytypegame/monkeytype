@@ -361,7 +361,6 @@ describe("AsyncContent", () => {
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             {...(options as Props<Q>)}
-            alwaysShowContent={false}
           >
             {({ firstData, secondData }) => (
               <>
