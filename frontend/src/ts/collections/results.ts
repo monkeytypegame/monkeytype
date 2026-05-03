@@ -537,13 +537,18 @@ function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
 }
 
 export function deleteLocalTag(tagId: string): void {
-  for (const result of resultsCollection.values()) {
-    if (!result.tags.includes(tagId)) continue;
-    void updateTags({
-      resultId: result._id,
-      tagIds: result.tags.filter((it) => it !== tagId),
-    });
-  }
+  resultsCollection.utils.writeBatch(() => {
+    for (const result of [...resultsCollection.values()]) {
+      if (!result.tags.includes(tagId)) {
+        continue;
+      }
+
+      resultsCollection.utils.writeUpdate({
+        ...result,
+        tags: result.tags.filter((it) => it !== tagId),
+      });
+    }
+  });
 }
 
 export function isResultsReady(): boolean {
