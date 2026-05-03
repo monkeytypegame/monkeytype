@@ -19,6 +19,7 @@ import { addFriend, isFriend } from "../../../db";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -36,8 +37,6 @@ import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
 import { EditProfile } from "../../popups/EditProfile";
-import { showModal } from "../../../states/modals";
-
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -100,6 +99,9 @@ export function UserDetails(props: {
           isAccountPage={props.isAccountPage}
         />
       </div>
+      <Show when={props.isAccountPage === true}>
+        <EditProfile />
+      </Show>
     </div>
   );
 }
@@ -178,7 +180,7 @@ function ActionButtons(props: {
             showNoticeNotification("Banned users cannot edit their profile");
             return;
           }
-          EditProfileModal.show();
+          showModal("EditProfile");
         }}
       />
       <Button
