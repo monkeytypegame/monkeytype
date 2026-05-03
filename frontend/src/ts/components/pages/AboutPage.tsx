@@ -64,25 +64,31 @@ export function AboutPage(): JSXElement {
       <section>
         <AsyncContent
           alwaysShowContent
-          query={typingStats}
+          queries={{ typingStats }}
           errorMessage="Failed to get global typing stats"
         >
-          {(data) => (
+          {({ typingStatsData }) => (
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <For
                 each={
                   [
-                    ["total tests started", data?.testsStarted],
-                    ["total typing time", data?.timeTyping],
-                    ["total tests completed", data?.testsCompleted],
+                    [
+                      "total tests started",
+                      () => typingStatsData()?.testsStarted,
+                    ],
+                    ["total typing time", () => typingStatsData()?.timeTyping],
+                    [
+                      "total tests completed",
+                      () => typingStatsData()?.testsCompleted,
+                    ],
                   ] as const
                 }
               >
-                {([title, data]) => (
+                {([title, stat]) => (
                   <div class="text-center">
                     <div class="text-sub">{title}</div>
-                    <div class="text-5xl">{data?.text ?? "-"}</div>
-                    <div class="text-xl">{data?.subText ?? "-"}</div>
+                    <div class="text-5xl">{stat()?.text ?? "-"}</div>
+                    <div class="text-xl">{stat()?.subText ?? "-"}</div>
                   </div>
                 )}
               </For>
@@ -93,20 +99,20 @@ export function AboutPage(): JSXElement {
       <section class="h-48 w-full">
         <AsyncContent
           alwaysShowContent
-          query={speedHistogram}
+          queries={{ speedHistogram }}
           errorMessage="Failed to get global speed stats for histogram"
         >
-          {(data) => (
+          {({ speedHistogramData }) => (
             <>
               <ChartJs
                 type="bar"
                 data={{
-                  labels: data?.labels ?? [],
+                  labels: speedHistogramData()?.labels ?? [],
                   datasets: [
                     {
                       yAxisID: "count",
                       label: "Users",
-                      data: data?.data ?? [],
+                      data: speedHistogramData()?.data ?? [],
                       minBarLength: 2,
                       backgroundColor: getTheme().main,
                       borderColor: getTheme().main,
@@ -169,7 +175,8 @@ export function AboutPage(): JSXElement {
               />
               <div class="text-right text-xs text-sub">
                 distribution of time 60 leaderboard results (wpm) <br />
-                {numberOfHistogramRecords(data?.data)} total results
+                {numberOfHistogramRecords(speedHistogramData()?.data)} total
+                results
               </div>
             </>
           )}
@@ -403,17 +410,17 @@ export function AboutPage(): JSXElement {
           text="top supporters"
         />
         <AsyncContent
-          query={supporters}
+          queries={{ supporters }}
           errorMessage="Failed to get supporters"
         >
-          {(data) => (
+          {({ supportersData }) => (
             <div
               class="grid"
               style={{
                 "grid-template-columns": "repeat(auto-fill, minmax(13em, 1fr))",
               }}
             >
-              <For each={data}>{(name) => <div>{name}</div>}</For>
+              <For each={supportersData()}>{(name) => <div>{name}</div>}</For>
             </div>
           )}
         </AsyncContent>
@@ -426,17 +433,17 @@ export function AboutPage(): JSXElement {
           text="contributors"
         />
         <AsyncContent
-          query={contributors}
+          queries={{ contributors }}
           errorMessage="Failed to get contributors"
         >
-          {(data) => (
+          {({ contributorsData }) => (
             <div
               class="grid"
               style={{
                 "grid-template-columns": "repeat(auto-fill, minmax(13em, 1fr))",
               }}
             >
-              <For each={data}>{(name) => <div>{name}</div>}</For>
+              <For each={contributorsData()}>{(name) => <div>{name}</div>}</For>
             </div>
           )}
         </AsyncContent>
