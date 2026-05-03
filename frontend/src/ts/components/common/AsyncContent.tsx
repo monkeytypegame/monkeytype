@@ -1,6 +1,7 @@
 import { UseQueryResult } from "@tanstack/solid-query";
 import {
   Accessor,
+  createEffect,
   createMemo,
   ErrorBoundary,
   JSXElement,
@@ -136,6 +137,22 @@ function AsyncContent<T extends Record<string, unknown>>(
 
   // Keys are stable for the component lifetime; per-key closures track
   // reactivity internally via value()/lastResolvedValue().
+  // oxlint-disable-next-line solid/reactivity -- intentional snapshot of initial keys
+  const keys = typedKeys(source());
+  if (import.meta.env.DEV) {
+    createEffect(() => {
+      const currentKeys = typedKeys(source());
+      if (
+        currentKeys.length !== keys.length ||
+        currentKeys.some((k, i) => k !== keys[i])
+      ) {
+        console.warn(
+          "AsyncContent: query keys changed between renders. This is not supported.",
+        );
+      }
+    });
+  }
+
   // oxlint-disable solid/reactivity
   const eagerAccessorMap = Object.fromEntries(
     typedKeys(source()).map((key) => [
