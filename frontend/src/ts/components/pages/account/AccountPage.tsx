@@ -83,7 +83,7 @@ export function AccountPage(): JSXElement {
 
                 requestAnimationFrame(() => {
                   qs(
-                    `#resultList tbody tr:nth-child(${index})`,
+                    `#resultList tbody tr:nth-child(${index + 1})`,
                   )?.scrollIntoView({
                     block: "center",
                   });
