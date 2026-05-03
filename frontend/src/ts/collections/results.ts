@@ -496,7 +496,7 @@ export async function getUserAverage(
       query = query.where(({ r }) => gte(r.timestamp, Date.now() - 86400000));
     }
     if (options.last10Only) {
-      query = query.orderBy(({ r }) => r.timestamp).limit(10);
+      query = query.orderBy(({ r }) => r.timestamp, "desc").limit(10);
     }
 
     return query.select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) }));
