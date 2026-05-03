@@ -105,6 +105,7 @@ export function AboutPage(): JSXElement {
           {({ speedHistogramData }) => (
             <>
               <ChartJs
+                name="SpeedHistogram"
                 type="bar"
                 data={{
                   labels: speedHistogramData()?.labels ?? [],
