@@ -12,7 +12,6 @@ export class LocalStorageWithSchema<T> {
     value: Record<string, unknown> | unknown[],
     zodIssues?: ZodIssue[],
   ) => T;
-  private afterParse?: (value: T) => T;
   private cache?: T;
 
   constructor(options: {
@@ -23,13 +22,11 @@ export class LocalStorageWithSchema<T> {
       value: Record<string, unknown> | unknown[],
       zodIssues?: ZodIssue[],
     ) => T;
-    afterParse?: (value: T) => T;
   }) {
     this.key = options.key;
     this.schema = options.schema;
     this.fallback = options.fallback;
     this.migrate = options.migrate;
-    this.afterParse = options.afterParse;
   }
 
   public get(): T {
@@ -78,14 +75,6 @@ export class LocalStorageWithSchema<T> {
       window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
       this.cache = this.fallback;
       return structuredClone(this.cache);
-    }
-
-    if (
-      parsed !== null &&
-      parsed !== undefined &&
-      this.afterParse !== undefined
-    ) {
-      parsed = this.afterParse(parsed);
     }
 
     if (migrated || parsed === this.fallback) {
