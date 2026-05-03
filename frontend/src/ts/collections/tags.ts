@@ -72,7 +72,7 @@ const actions = {
     onMutate: ({ name }) => {
       tagsCollection.insert({
         _id: tempId(),
-        name,
+        name: name.replace(/_/g, " "),
         personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
         active: false,
       });
@@ -96,7 +96,7 @@ const actions = {
   updateTagName: createOptimisticAction<ActionType["updateTagName"]>({
     onMutate: ({ tagId, newName }) => {
       tagsCollection.update(tagId, (tag) => {
-        tag.name = newName;
+        tag.name = newName.replace(/_/g, " ");
       });
     },
     mutationFn: async ({ tagId, newName }) => {
@@ -109,7 +109,7 @@ const actions = {
 
       tagsCollection.utils.writeUpdate({
         _id: tagId,
-        name: newName,
+        name: newName.replace(/_/g, " "),
       });
     },
   }),
