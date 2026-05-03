@@ -159,11 +159,9 @@ export default function AsyncContent<T extends QueryMapping>(
       <div class={props.errorClass}>{handleError(err)}</div>
     );
 
-  // Only show loader on initial load, not on refetches
+  // Show loader on initial load or when the query key changed (no cached data)
   const showLoader = (): boolean =>
-    isLoading() &&
-    !props.alwaysShowContent &&
-    lastResolvedValue() === undefined;
+    isLoading() && !props.alwaysShowContent && !allResolved(value());
 
   return (
     <ErrorBoundary fallback={props.ignoreError ? undefined : errorText}>
