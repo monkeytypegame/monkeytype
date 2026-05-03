@@ -46,6 +46,11 @@ export function AccountPage(): JSXElement {
   const [isExporting, setIsExporting] = createSignal(false);
 
   const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
+  const nonLimitResultsQuery = useResultsLiveQuery({
+    queryState,
+    sorting,
+    limit: () => Infinity,
+  });
 
   return (
     <Show when={isAuthenticated() && isOpen()}>
@@ -87,27 +92,28 @@ export function AccountPage(): JSXElement {
             />
             <TestStats queryState={queryState} />
 
-            <div class="grid grid-cols-3">
-              <Button
-                text="Export CSV"
-                fa={{ icon: "fa-file-csv" }}
-                class="col-start-3 w-full"
-                disabled={isExporting()}
-                onClick={() => {
-                  setIsExporting(true);
-                  showLoaderBar();
-                  const filteredResults = useResultsLiveQuery({
-                    queryState,
-                    sorting,
-                    limit: () => Infinity,
-                  });
-                  void downloadResultsCSV(filteredResults()).finally(() => {
-                    hideLoaderBar();
-                    setIsExporting(false);
-                  });
-                }}
-              />
-            </div>
+            <AsyncContent collections={{ nonLimitResultsQuery }}>
+              {({ nonLimitResultsQueryData }) => (
+                <div class="grid grid-cols-3">
+                  <Button
+                    text="Export CSV"
+                    fa={{ icon: "fa-file-csv" }}
+                    class="col-start-3 w-full"
+                    disabled={isExporting()}
+                    onClick={() => {
+                      setIsExporting(true);
+                      showLoaderBar();
+                      void downloadResultsCSV(
+                        nonLimitResultsQueryData(),
+                      ).finally(() => {
+                        hideLoaderBar();
+                        setIsExporting(false);
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </AsyncContent>
 
             <Advertisement id="ad-account-2" visible="sellout" />
 
