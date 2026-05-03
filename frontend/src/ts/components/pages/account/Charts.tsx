@@ -42,13 +42,13 @@ export function Charts(props: {
   });
 
   return (
-    <AsyncContent collection={resultsQuery}>
-      {(results) => (
+    <AsyncContent collections={{ resultsQuery }}>
+      {({ resultsQueryData }) => (
         <div class="flex flex-col gap-8">
           <div>
             <FilterSummary filters={props.filters} tags={tags()} />
             <HistoryChart
-              results={results()}
+              results={resultsQueryData()}
               beginAtZero={beginAtZero()}
               typingSpeedUnit={typingSpeedUnit()}
               format={format()}
@@ -57,7 +57,7 @@ export function Charts(props: {
           </div>
 
           <HistogramChart
-            results={results()}
+            results={resultsQueryData()}
             typingSpeedUnit={typingSpeedUnit()}
           />
 

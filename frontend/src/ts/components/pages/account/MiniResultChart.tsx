@@ -24,9 +24,9 @@ export function MiniResultChart(props: { resultId: string }): JSXElement {
 
   return (
     <AnimatedModal id="MiniResultChartModal" modalClass="max-w-300">
-      <AsyncContent query={query}>
-        {(result) => {
-          const data = result().chartData as ChartData;
+      <AsyncContent queries={{ query }}>
+        {({ queryData }) => {
+          const data = queryData().chartData as ChartData;
 
           return (
             <div class="h-60 w-full">

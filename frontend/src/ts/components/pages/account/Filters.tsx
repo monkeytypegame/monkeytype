@@ -263,10 +263,10 @@ export function Filters(props: {
 
   return (
     <div class="flex flex-col gap-8">
-      <AsyncContent collection={presetsQuery}>
-        {(presets) => (
+      <AsyncContent collections={{ presetsQuery }}>
+        {({ presetsQueryData }) => (
           <FilterPresets
-            presets={presets()}
+            presets={presetsQueryData()}
             onChangeFilters={props.onChangeFilters}
           />
         )}

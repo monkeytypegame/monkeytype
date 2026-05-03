@@ -28,18 +28,18 @@ export function DailyActivityChart(props: {
     props.format.typingSpeed(wpm, { showDecimalPlaces: true });
 
   return (
-    <AsyncContent collection={dataQuery}>
-      {(data) => (
+    <AsyncContent collections={{ dataQuery }}>
+      {({ dataQueryData }) => (
         <div style={{ height: "200px" }}>
           <ChartJs
             name="DailyActivity"
             type="bar"
             data={{
-              labels: data().map((it) => it.dayTimestamp),
+              labels: dataQueryData().map((it) => it.dayTimestamp),
               datasets: [
                 {
                   yAxisID: "count",
-                  data: data().map((it) => it.timeTyping / 60),
+                  data: dataQueryData().map((it) => it.timeTyping / 60),
                   backgroundColor: getTheme().main,
                   trendlineLinear: {
                     lineStyle: "dotted",
@@ -52,7 +52,7 @@ export function DailyActivityChart(props: {
                 },
                 {
                   yAxisID: "avgWpm",
-                  data: data().map((it) =>
+                  data: dataQueryData().map((it) =>
                     props.typingSpeedUnit.fromWpm(it.avgWpm),
                   ),
                   borderColor: getTheme().sub,
@@ -147,7 +147,7 @@ export function DailyActivityChart(props: {
                         "bar" | "line"
                       >;
 
-                      const item = data()[firstItem.dataIndex];
+                      const item = dataQueryData()[firstItem.dataIndex];
                       if (item === undefined) return "unknown";
 
                       return dateFormat(
@@ -156,7 +156,7 @@ export function DailyActivityChart(props: {
                       );
                     },
                     beforeLabel: function (tooltipItem): string {
-                      const item = data()[tooltipItem.dataIndex];
+                      const item = dataQueryData()[tooltipItem.dataIndex];
                       if (item === undefined) return "unknown";
 
                       return `
