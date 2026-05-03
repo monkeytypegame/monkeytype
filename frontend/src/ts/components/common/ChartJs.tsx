@@ -15,10 +15,6 @@ import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../states/theme";
 
-function getThemeHash(): string {
-  return Object.values(getTheme()).join("");
-}
-
 Chart.register(chartTrendline);
 type ChartJSProps<
   T extends ChartType = ChartType,
@@ -38,7 +34,6 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   const [canvasRef, canvasEl] = useRefWithUtils<HTMLCanvasElement>();
 
   let chart: Chart<T, TData> | undefined;
-  let theme = "";
 
   onMount(() => {
     const canvas = canvasEl();
@@ -50,7 +45,6 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
       data: props.data,
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
-    theme = getThemeHash();
     props.onChartInit?.(chart);
   });
 
@@ -68,15 +62,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
 
   const deferredData = createDeferred(() => props.data, { timeoutMs: 500 });
 
-  createEffectOn(deferredData, (data) => updateChart(data));
-
-  createEffectOn(getTheme, () => {
-    if (!chart) return;
-    const newTheme = getThemeHash();
-    if (theme === newTheme) return;
-    theme = newTheme;
-    updateChart(deferredData());
-  });
+  createEffectOn(deferredData, (data) => updateChart(data), { defer: true });
 
   onCleanup(() => {
     chart?.destroy();
