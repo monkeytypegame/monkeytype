@@ -76,7 +76,7 @@ function appendButtons(): void {
     const button = document.createElement("button");
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
-    button.innerHTML = tag?.name ?? tag?._id ?? "unknown tag"; //this shouldnt happen?
+    button.textContent = tag?.name ?? tag?._id ?? "unknown tag"; //this shouldnt happen?
     button.addEventListener("click", (e) => {
       toggleTag(tagId);
       updateActiveButtons();
