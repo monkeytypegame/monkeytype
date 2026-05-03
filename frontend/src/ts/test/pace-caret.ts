@@ -8,7 +8,7 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
-import { getUserAverage } from "../collections/results";
+import { getUserAverage10, getUserDailyBest } from "../collections/results";
 
 type Settings = {
   wpm: number;
@@ -84,13 +84,9 @@ export async function init(): Promise<void> {
       Config.lazyMode,
     );
   } else if (Config.paceCaret === "average") {
-    wpm = Math.round(
-      (await getUserAverage({ ...Config, mode2, last10Only: true })).wpm,
-    );
+    wpm = Math.round((await getUserAverage10({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "daily") {
-    wpm = Math.round(
-      (await getUserAverage({ ...Config, mode2, lastDayOnly: true })).wpm,
-    );
+    wpm = Math.round((await getUserDailyBest({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (Config.paceCaret === "last" || TestState.isPaceRepeat) {

@@ -7,7 +7,6 @@ import {
   BTreeIndex,
   count,
   createCollection,
-  createLiveQueryCollection,
   createOptimisticAction,
   eq,
   gte,
@@ -28,7 +27,6 @@ import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { __nonReactive as tagsNonReactive, updateLocalTagPB } from "./tags";
-import { ExactlyOneTrue } from "../utils/types";
 import { isAuthenticated } from "../states/core";
 import { createEffectOn } from "../hooks/effects";
 
@@ -490,63 +488,53 @@ export type CurrentSettingsFilter = {
   lazyMode: boolean;
 };
 
-export async function getUserAverage(
-  options: CurrentSettingsFilter &
-    ExactlyOneTrue<{
-      last10Only: boolean;
-      lastDayOnly: boolean;
-    }>,
+export async function getUserAverage10(
+  options: CurrentSettingsFilter,
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
 
-  const activeTagIds = tagsNonReactive.getActiveTags().map((it) => it._id);
-
-  const result = await createLiveQueryCollection((q) => {
-    let query = q
-      .from({ r: buildSettingsResultsQuery(options) })
-      .where(({ r }) =>
-        or(
-          false,
-          activeTagIds.length === 0,
-          ...activeTagIds.map((it) => inArray(it, r.tags)),
-        ),
-      );
-
-    if (options.lastDayOnly) {
-      query = query.where(({ r }) => gte(r.timestamp, Date.now() - 86400000));
-    }
-    if (options.last10Only) {
-      query = query.orderBy(({ r }) => r.timestamp, "desc").limit(10);
-    }
-
-    return query.select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) }));
-  }).toArrayWhenReady();
+  const result = await queryOnce(() =>
+    buildSettingsResultsQuery(options, {
+      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+    })
+      .orderBy(({ r }) => r.timestamp, "desc")
+      .limit(10)
+      .select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) })),
+  );
 
   return result.length === 1 && result[0] !== undefined
     ? result[0]
     : { wpm: 0, acc: 0 };
 }
 
-export async function findFastestResultByTagId(
-  options: CurrentSettingsFilter & { tagId: string },
-): Promise<SnapshotResult<Mode> | undefined> {
-  const result = await createLiveQueryCollection((q) =>
-    q
-      .from({ r: buildSettingsResultsQuery(options) })
-      .where(({ r }) => inArray(options.tagId, r.tags))
+export async function getUserDailyBest(
+  options: CurrentSettingsFilter,
+): Promise<{ wpm: number; acc: number }> {
+  //exit early if there is no user. Don't init the result collection
+  if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+
+  const result = await queryOnce(() =>
+    buildSettingsResultsQuery(options, {
+      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+    })
+      .where(({ r }) => gte(r.timestamp, Date.now() - 24 * 60 * 60 * 1000))
       .orderBy(({ r }) => r.wpm, "desc")
       .limit(1)
       .findOne(),
-  ).toArrayWhenReady();
-  return result.length === 1 && result[0] !== undefined
-    ? (result[0] as SnapshotResult<Mode>)
-    : undefined;
+  );
+
+  return result ?? { wpm: 0, acc: 0 };
 }
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
-function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
-  return new Query()
+function buildSettingsResultsQuery(
+  filter: CurrentSettingsFilter,
+  options?: { tagIds?: string[] },
+) {
+  const tagIds = options?.tagIds;
+
+  let query = new Query()
     .from({ r: resultsCollection })
     .where(({ r }) => eq(r.mode, filter.mode))
     .where(({ r }) => eq(r.mode2, filter.mode2))
@@ -555,6 +543,18 @@ function buildSettingsResultsQuery(filter: CurrentSettingsFilter) {
     .where(({ r }) => eq(r.language, filter.language))
     .where(({ r }) => eq(r.difficulty, filter.difficulty))
     .where(({ r }) => eq(r.lazyMode, filter.lazyMode));
+
+  if (tagIds !== undefined) {
+    query = query.where(({ r }) =>
+      or(
+        false,
+        tagIds.length === 0,
+        ...tagIds.map((it) => inArray(it, r.tags)),
+      ),
+    );
+  }
+
+  return query;
 }
 
 export function deleteLocalTag(tagId: string): void {
