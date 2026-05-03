@@ -14,7 +14,7 @@ if (import.meta.env.DEV) {
     })),
   );
 
-  const _LazySolidDevtoolsOverlay = lazy(async () =>
+  const LazySolidDevtoolsOverlay = lazy(async () =>
     import("@solid-devtools/overlay").then((m) => ({
       default: () => {
         onMount(() => {
@@ -33,9 +33,7 @@ if (import.meta.env.DEV) {
     <Suspense>
       <LazyTanstackDevtools />
       <LazyDevOptionsModal />
-      {/*.
-     <LazySolidDevtoolsOverlay />
-     */}
+      <LazySolidDevtoolsOverlay />
     </Suspense>
   );
 }
