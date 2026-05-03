@@ -82,7 +82,7 @@ const deleteResultFilterPresetModal = new SimpleModal({
       presetId: thisPopup.parameters[0] as string,
     });
 
-    return { status: "success", message: `Tag removed` };
+    return { status: "success", message: `Filter preset removed` };
   },
 });
 
