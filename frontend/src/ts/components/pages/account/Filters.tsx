@@ -61,7 +61,7 @@ const newFilterPresetModal = new SimpleModal({
     const filters = thisPopup.context as ResultFilters;
 
     try {
-      await insertResultFilterPreset({ name, filters });
+      await insertResultFilterPreset({ name: normalizeName(name), filters });
       return { status: "success", message: "Filter preset created" };
     } catch (e) {
       const message = createErrorMessage(e, "Error creating filter preset");
