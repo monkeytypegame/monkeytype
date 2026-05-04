@@ -55,7 +55,7 @@ const pages = {
         }
       },
       loadingPromise: async () => {
-        if (getSnapshot() === null) {
+        if (getSnapshot() === null || getSnapshot() === undefined) {
           throw new Error(
             "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
           );
