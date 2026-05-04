@@ -15,7 +15,7 @@ pnpm run dev        # All workspaces with hot reload
 ```
 
 ## SolidJS Migration
-Frontend is partially migrated - new components use SolidJS (`.tsx`), legacy code remains vanilla JS. 
+Frontend is partially migrated — new components use SolidJS (`.tsx`), legacy code remains vanilla JS. 
 
 ## Debug Tips
 - Type/lint errors: Run `pnpm run lint` (OXLint is source of truth, not tsc)
