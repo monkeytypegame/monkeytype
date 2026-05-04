@@ -78,11 +78,15 @@ const deleteResultFilterPresetModal = new SimpleModal({
     thisPopup.text = `Are you sure you want to delete preset ${thisPopup.parameters[1]}?`;
   },
   execFn: async (thisPopup) => {
-    await deleteResultFilterPreset({
-      presetId: thisPopup.parameters[0] as string,
-    });
-
-    return { status: "success", message: `Filter preset removed` };
+    try {
+      await deleteResultFilterPreset({
+        presetId: thisPopup.parameters[0] as string,
+      });
+      return { status: "success", message: `Filter preset removed` };
+    } catch (e) {
+      const message = createErrorMessage(e, "Error deleting filter preset");
+      return { status: "error", message };
+    }
   },
 });
 
