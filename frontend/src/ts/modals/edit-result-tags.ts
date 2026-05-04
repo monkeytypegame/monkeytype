@@ -8,6 +8,7 @@ import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
 import { __nonReactive } from "../collections/tags";
 import { updateTags } from "../collections/results";
+import { createErrorMessage } from "../utils/error";
 
 type State = {
   resultId: string;
@@ -107,16 +108,23 @@ function toggleTag(tagId: string): void {
 
 async function save(): Promise<void> {
   showLoaderBar();
-  await updateTags({
-    resultId: state.resultId,
-    tagIds: state.tags,
-    afterUpdate: ({ tagPbs }) => {
-      if (state.source === "resultPage") {
-        TestResult.updateTagsAfterEdit(state.tags, tagPbs);
-      }
-    },
-  });
-  hideLoaderBar();
+  try {
+    await updateTags({
+      resultId: state.resultId,
+      tagIds: state.tags,
+      afterUpdate: ({ tagPbs }) => {
+        if (state.source === "resultPage") {
+          TestResult.updateTagsAfterEdit(state.tags, tagPbs);
+        }
+      },
+    });
+    hideLoaderBar();
+  } catch (e) {
+    hideLoaderBar();
+    const message = createErrorMessage(e, "Failed to update tags");
+    showErrorNotification(message);
+    return;
+  }
 
   //if got no freaking idea why this is needed
   //but update tags somehow adds undefined to the end of the array
