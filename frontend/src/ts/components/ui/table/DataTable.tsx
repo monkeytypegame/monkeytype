@@ -59,9 +59,7 @@ export type DataTableProps<TData, TValue> = {
     activeRow: Accessor<string | null>;
   };
   class?: string;
-  headerClass?: string;
   headerCellClass?: string;
-  bodyClass?: string;
   bodyCellClass?: string;
   onSortingChange?: (sorting: SortingState) => void;
   noDataRow?:
