@@ -240,7 +240,8 @@ resultsCollection.createIndex((row) => row.timestamp, {
 type ActionType = {
   updateTags: {
     resultId: string;
-    tagIds: string[];
+    currentTagIds: string[];
+    newTagIds: string[];
     //TODO: remove when result page  is migrated to solidjs
     afterUpdate?: (params: { tagPbs: string[] }) => void;
   };
@@ -251,14 +252,14 @@ type ActionType = {
 
 const actions = {
   updateTags: createOptimisticAction<ActionType["updateTags"]>({
-    onMutate: ({ resultId, tagIds }) => {
+    onMutate: ({ resultId, newTagIds }) => {
       resultsCollection.update(resultId, (result) => {
-        result.tags = tagIds;
+        result.tags = newTagIds;
       });
     },
-    mutationFn: async ({ resultId, tagIds, afterUpdate }) => {
+    mutationFn: async ({ resultId, currentTagIds, newTagIds, afterUpdate }) => {
       const response = await Ape.results.updateTags({
-        body: { resultId, tagIds },
+        body: { resultId, tagIds: newTagIds },
       });
       if (response.status !== 200) {
         throw new Error(
@@ -273,8 +274,8 @@ const actions = {
       }
 
       const tagsToUpdate = [
-        ...result.tags.filter((tag) => !tagIds.includes(tag)),
-        ...tagIds.filter((tag) => !result.tags.includes(tag)),
+        ...currentTagIds.filter((tag) => !newTagIds.includes(tag)),
+        ...newTagIds.filter((tag) => !currentTagIds.includes(tag)),
       ];
       tagsToUpdate.forEach((tag) => {
         updateLocalTagPB(
@@ -288,6 +289,11 @@ const actions = {
           result.lazyMode,
           results,
         );
+      });
+
+      resultsCollection.utils.writeUpdate({
+        _id: resultId,
+        tags: newTagIds,
       });
 
       afterUpdate?.({ tagPbs: response.body.data.tagPbs });

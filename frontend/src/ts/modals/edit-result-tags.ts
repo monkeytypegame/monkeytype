@@ -111,7 +111,8 @@ async function save(): Promise<void> {
   try {
     await updateTags({
       resultId: state.resultId,
-      tagIds: state.tags,
+      currentTagIds: state.startingTags,
+      newTagIds: state.tags,
       afterUpdate: ({ tagPbs }) => {
         if (state.source === "resultPage") {
           TestResult.updateTagsAfterEdit(state.tags, tagPbs);
