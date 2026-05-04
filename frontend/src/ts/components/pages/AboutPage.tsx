@@ -212,7 +212,7 @@ export function AboutPage(): JSXElement {
         <H3 fa={{ icon: "fa-keyboard" }} text="keybinds" />
         <p>
           You can use <QuickRestartHotkey /> to restart the typing test. Open
-          the command line by pressing <CommandlineHotkey /> - there you can
+          the command line by pressing <CommandlineHotkey /> — there you can
           access all the functionality you need without touching your mouse.
         </p>
       </section>
@@ -283,7 +283,7 @@ export function AboutPage(): JSXElement {
       <section>
         <H3 fa={{ icon: "fa-bug" }} text="bug report or feature request" />
         <p>
-          If you encounter a bug, or have a feature request - join the Discord
+          If you encounter a bug, or have a feature request — join the Discord
           server, send me an email, a direct message on Twitter or create an
           issue on GitHub.
         </p>
@@ -311,7 +311,7 @@ export function AboutPage(): JSXElement {
         <H2 fa={{ icon: "fa-envelope" }} text="contact" />
         <p>
           If you encounter a bug, have a feature request or just want to say hi
-          - here are the different ways you can contact me directly.
+          — here are the different ways you can contact me directly.
         </p>
         <div class="mt-4 grid w-full grid-cols-1 gap-4 text-xl sm:grid-cols-2 lg:grid-cols-4">
           <Button
