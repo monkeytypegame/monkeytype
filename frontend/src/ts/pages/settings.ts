@@ -575,7 +575,7 @@ function refreshPresetsSettingsSection(): void {
     __nonReactivePresets.getPresets().forEach((preset) => {
       presetsEl?.appendHtml(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}">
-        <button class="presetButton">${preset.display}</button>
+        <button class="presetButton">${preset.name}</button>
         <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
         </button>
