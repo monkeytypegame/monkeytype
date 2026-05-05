@@ -21,7 +21,6 @@ export function Language(): JSXElement {
       fa={configMetadata.language.fa}
       inputs={
         <SlimSelect
-          appendToBody
           optionGroups={LanguageGroupNames.map(
             (group) =>
               ({

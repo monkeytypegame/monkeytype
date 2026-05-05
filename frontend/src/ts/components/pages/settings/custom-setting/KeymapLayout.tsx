@@ -16,7 +16,6 @@ export function KeymapLayout(): JSXElement {
       fa={configMetadata.keymapLayout.fa}
       inputs={
         <SlimSelect
-          appendToBody
           options={[
             {
               text: "emulator sync",

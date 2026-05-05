@@ -9,7 +9,6 @@ import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
-import { Conditional } from "../../../common/Conditional";
 import { Separator } from "../../../common/Separator";
 import { Setting } from "../Setting";
 
@@ -43,9 +42,9 @@ export function FontFamily(): JSXElement {
       }
       inputs={
         <div class="grid gap-4 self-end">
-          <Conditional
-            if={hasLocalFont()}
-            then={
+          <Show
+            when={hasLocalFont()}
+            fallback={
               <Button
                 fa={{ icon: "fa-trash" }}
                 text="remove local font"
@@ -59,54 +58,54 @@ export function FontFamily(): JSXElement {
                 }}
               />
             }
-            else={
-              <>
-                <input
-                  type="file"
-                  id="customFontUploadSolid"
-                  accept="font/woff,font/woff2,font/ttf,font/otf"
-                  class="hidden"
-                  onChange={async (e) => {
-                    const fileInput = e.target as HTMLInputElement;
-                    const file = fileInput.files?.[0];
+          >
+            <>
+              <input
+                type="file"
+                id="customFontUploadSolid"
+                accept="font/woff,font/woff2,font/ttf,font/otf"
+                class="hidden"
+                onChange={async (e) => {
+                  const fileInput = e.target as HTMLInputElement;
+                  const file = fileInput.files?.[0];
 
-                    if (!file) {
-                      return;
-                    }
+                  if (!file) {
+                    return;
+                  }
 
-                    // check type
-                    if (
-                      !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
-                      !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
-                    ) {
-                      showNoticeNotification(
-                        "Unsupported font format, must be woff, woff2, ttf or otf.",
-                      );
-                      fileInput.value = "";
-                      return;
-                    }
-
-                    const dataUrl = await readFileAsDataURL(file);
-                    await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
-
-                    await applyFontFamily();
-                    void refetch();
-
+                  // check type
+                  if (
+                    !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
+                    !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
+                  ) {
+                    showNoticeNotification(
+                      "Unsupported font format, must be woff, woff2, ttf or otf.",
+                    );
                     fileInput.value = "";
-                  }}
-                />
-                {/* i cant figure out how to trigger the file input with a Button component */}
-                <label
-                  for="customFontUploadSolid"
-                  class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
-                >
-                  <i class="fas fa-file-import"></i>
-                  use local font
-                </label>
-                <Separator text="or" />
-              </>
-            }
-          />
+                    return;
+                  }
+
+                  const dataUrl = await readFileAsDataURL(file);
+                  await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
+
+                  await applyFontFamily();
+                  void refetch();
+
+                  fileInput.value = "";
+                }}
+              />
+              {/* i cant figure out how to trigger the file input with a Button component */}
+              <label
+                // oxlint-disable-next-line react/no-unknown-property
+                for="customFontUploadSolid"
+                class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
+              >
+                <i class="fas fa-file-import"></i>
+                use local font
+              </label>
+              <Separator text="or" />
+            </>
+          </Show>
         </div>
       }
       fullWidthInputs={

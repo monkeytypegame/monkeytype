@@ -14,7 +14,6 @@ import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
 import { AnimeShow } from "../../../common/anime";
 import { Button } from "../../../common/Button";
-import { Conditional } from "../../../common/Conditional";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
@@ -73,9 +72,9 @@ export function CustomBackground(): JSXElement {
       }
       inputs={
         <div class="grid gap-2 self-end">
-          <Conditional
-            if={hasLocalBackground()}
-            then={
+          <Show
+            when={hasLocalBackground()}
+            fallback={
               <Button
                 fa={{ icon: "fa-trash" }}
                 text="remove local background"
@@ -88,48 +87,47 @@ export function CustomBackground(): JSXElement {
                 }}
               />
             }
-            else={
-              <>
-                <input
-                  type="file"
-                  id="customBackgroundUploadSolid"
-                  accept="image/*"
-                  class="hidden"
-                  onChange={async (e) => {
-                    const fileInput = e.target as HTMLInputElement;
-                    const file = fileInput.files?.[0];
+          >
+            <>
+              <input
+                type="file"
+                id="customBackgroundUploadSolid"
+                accept="image/*"
+                class="hidden"
+                onChange={async (e) => {
+                  const fileInput = e.target as HTMLInputElement;
+                  const file = fileInput.files?.[0];
 
-                    if (!file) {
-                      return;
-                    }
+                  if (!file) {
+                    return;
+                  }
 
-                    // check type
-                    if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-                      showNoticeNotification("Unsupported image format");
-                      fileInput.value = "";
-                      return;
-                    }
-
-                    const dataUrl = await readFileAsDataURL(file);
-                    await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
-
-                    void applyCustomBackground();
-
+                  // check type
+                  if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
+                    showNoticeNotification("Unsupported image format");
                     fileInput.value = "";
-                  }}
-                />
-                {/* i cant figure out how to trigger the file input with a Button component */}
-                <label
-                  for="customBackgroundUploadSolid"
-                  class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
-                >
-                  <i class="fas fa-file-import"></i>
-                  use local image
-                </label>
-              </>
-            }
-          />
+                    return;
+                  }
 
+                  const dataUrl = await readFileAsDataURL(file);
+                  await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
+
+                  void applyCustomBackground();
+
+                  fileInput.value = "";
+                }}
+              />
+              {/* i cant figure out how to trigger the file input with a Button component */}
+              <label
+                // oxlint-disable-next-line react/no-unknown-property
+                for="customBackgroundUploadSolid"
+                class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
+              >
+                <i class="fas fa-file-import"></i>
+                use local image
+              </label>
+            </>
+          </Show>
           <Separator text="or" />
           <Show when={!hasLocalBackground()}>
             <form

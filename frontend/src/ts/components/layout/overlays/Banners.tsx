@@ -1,4 +1,4 @@
-import { For, JSXElement, onCleanup, onMount } from "solid-js";
+import { For, JSXElement, onCleanup, onMount, Show } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { createEffectOn } from "../../../hooks/effects";
@@ -13,7 +13,6 @@ import {
 import { setGlobalOffsetTop } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
-import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 
 function Banner(props: BannerType): JSXElement {
@@ -39,29 +38,21 @@ function Banner(props: BannerType): JSXElement {
       )}
     >
       <div class="flex w-full justify-between gap-2">
-        <Conditional
-          if={props.imagePath !== undefined}
-          then={
-            <>
-              <img
-                src={props.imagePath}
-                alt="Banner Image"
-                class="hidden aspect-6/1 h-full max-h-9 self-center xl:block"
-              />
-              <i class={`self-center ${icon()} xl:hidden`}></i>
-            </>
-          }
-          else={<i class={`self-center ${icon()}`}></i>}
-        />
-        <Conditional
-          if={props.customContent !== undefined}
-          then={<div class="self-center p-2">{props.customContent}</div>}
-          else={<div class="self-center p-2">{props.text}</div>}
-        />
-        <Conditional
-          if={props.important === true}
-          then={<i class={`self-center ${icon()}`}></i>}
-          else={
+        <Show
+          when={props.imagePath !== undefined}
+          fallback={<i class={`self-center ${icon()}`}></i>}
+        >
+          <img
+            src={props.imagePath}
+            alt="Banner Image"
+            class="hidden aspect-6/1 h-full max-h-9 self-center xl:block"
+          />
+          <i class={`self-center ${icon()} xl:hidden`}></i>
+        </Show>
+        <div class="self-center p-2">{props.customContent ?? props.text}</div>
+        <Show
+          when={props.important === true}
+          fallback={
             <button
               type="button"
               class="text -mr-2 self-center text-bg hover:text-text"
@@ -72,7 +63,9 @@ function Banner(props: BannerType): JSXElement {
               <Fa icon="fa-times" fixedWidth />
             </button>
           }
-        />
+        >
+          <i class={`self-center ${icon()}`}></i>
+        </Show>
       </div>
     </div>
   );

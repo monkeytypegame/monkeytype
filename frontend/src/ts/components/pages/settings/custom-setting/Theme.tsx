@@ -22,7 +22,8 @@ import { showSimpleModal } from "../../../../states/simple-modal";
 import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
-import { AnimeConditional } from "../../../common/anime";
+import { AnimeSwitch } from "../../../common/anime";
+import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
@@ -220,12 +221,39 @@ export function Theme(): JSXElement {
         </div>
       }
       fullWidthInputs={
-        <AnimeConditional
+        // <AnimeConditional
+        //   exitBeforeEnter
+        //   if={!getConfig.customTheme}
+        //   then={<Presets />}
+        //   else={<Customs />}
+        // />
+        // <AnimePresence exitBeforeEnter>
+
+        //   </AnimePresence>
+        <AnimeSwitch
           exitBeforeEnter
-          if={!getConfig.customTheme}
-          then={<Presets />}
-          else={<Customs />}
-        />
+          animeProps={{
+            initial: {
+              opacity: 0,
+              duration: 125,
+            },
+            animate: {
+              opacity: 1,
+              duration: 125,
+            },
+            exit: {
+              opacity: 0,
+              duration: 125,
+            },
+          }}
+        >
+          <AnimeMatch when={!getConfig.customTheme}>
+            <Presets />
+          </AnimeMatch>
+          <AnimeMatch when={getConfig.customTheme}>
+            <Customs />
+          </AnimeMatch>
+        </AnimeSwitch>
       }
     />
   );

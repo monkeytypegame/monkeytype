@@ -24,6 +24,7 @@ export type ModalId =
   | "ShareTestSettings"
   | "CustomWordAmount"
   | "MobileTestConfig"
+  | "MiniResultChartModal"
   | "Cookies";
 
 export type ModalVisibility = {

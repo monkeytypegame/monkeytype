@@ -22,7 +22,6 @@ export function CustomPolyglot(): JSXElement {
       fa={configMetadata.customPolyglot.fa}
       inputs={
         <SlimSelect
-          appendToBody
           multiple
           settings={{
             closeOnSelect: false,

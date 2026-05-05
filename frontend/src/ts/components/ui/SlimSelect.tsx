@@ -34,7 +34,7 @@ export type SlimSelectProps = {
   children?: JSX.Element;
   ref?: (instance: SlimSelectCore | null) => void;
   disabled?: boolean;
-  appendToBody?: boolean;
+  appendTo?: "body" | "container";
 } & (
   | {
       multiple?: never;
@@ -254,7 +254,9 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       data: getInitialData() as Option[],
       settings: {
         ...props.settings,
-        ...(props.appendToBody ? {} : { contentLocation: containerRef }),
+        ...(props.appendTo === "container" && {
+          contentLocation: containerRef,
+        }),
       },
       ...(props.cssClasses && { cssClasses: props.cssClasses }),
       events: {
@@ -486,7 +488,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   return (
     <div
       ref={(el) => (containerRef = el)}
-      class="relative [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!"
+      class={`relative${props.appendTo === "container" ? " [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!" : ""}`}
     >
       <select ref={(el) => (selectRef = el)} multiple={props.multiple}>
         {props.children}

@@ -16,7 +16,6 @@ export function Layout(): JSXElement {
       fa={configMetadata.layout.fa}
       inputs={
         <SlimSelect
-          appendToBody
           options={LayoutsList.map((layout) => ({
             text: layout.replace(/_/g, " "),
             value: layout,

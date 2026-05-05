@@ -8,9 +8,10 @@ import {
   ScaleChartOptions,
 } from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
-import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
+import { createDeferred, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { Theme } from "../../constants/themes";
+import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../states/theme";
 
@@ -19,6 +20,7 @@ type ChartJSProps<
   T extends ChartType = ChartType,
   TData = DefaultDataPoint<T>,
 > = {
+  name: string;
   type: T;
   data: ChartData<T, TData>;
   options?: ChartOptions<T>;
@@ -36,25 +38,31 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   onMount(() => {
     const canvas = canvasEl();
     if (canvas === undefined) return;
+    if (chart !== undefined) return;
+
     chart = new Chart(canvas.native, {
       type: props.type,
       data: props.data,
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
-
     props.onChartInit?.(chart);
   });
 
-  createEffect(() => {
+  const updateChart = (data: ChartData<T, TData>): void => {
     if (!chart) return;
 
-    chart.config.type = props.type;
-    chart.data = props.data;
+    chart.data = data;
+
     if (props.options) {
       chart.options = addColorsToOptions(props.options, getTheme);
     }
-    chart.update();
-  });
+
+    chart.update("none");
+  };
+
+  const deferredData = createDeferred(() => props.data, { timeoutMs: 500 });
+
+  createEffectOn(deferredData, (data) => updateChart(data), { defer: true });
 
   onCleanup(() => {
     chart?.destroy();

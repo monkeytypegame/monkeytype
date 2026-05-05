@@ -17,7 +17,6 @@ export function CustomLayoutfluid(): JSXElement {
       fa={configMetadata.customLayoutfluid.fa}
       inputs={
         <SlimSelect
-          appendToBody
           multiple
           settings={{
             closeOnSelect: false,

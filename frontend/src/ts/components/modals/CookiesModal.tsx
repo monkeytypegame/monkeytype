@@ -6,7 +6,8 @@ import { hideModal, isModalOpen } from "../../states/modals";
 import { showErrorNotification } from "../../states/notifications";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { AnimeConditional } from "../common/anime";
+import { AnimeSwitch } from "../common/anime";
+import { AnimeMatch } from "../common/anime/AnimeMatch";
 import { Button } from "../common/Button";
 import { H3 } from "../common/Headers";
 
@@ -44,9 +45,24 @@ export function CookiesModal(): JSXElement {
         fa={{ icon: "fa-cookie-bite" }}
         class="mb-0 pb-0 text-2xl"
       />
-      <AnimeConditional
-        if={!showSettings()}
-        then={
+      <AnimeSwitch
+        exitBeforeEnter
+        animeProps={{
+          initial: {
+            opacity: 0,
+            duration: 125,
+          },
+          animate: {
+            opacity: 1,
+            duration: 125,
+          },
+          exit: {
+            opacity: 0,
+            duration: 125,
+          },
+        }}
+      >
+        <AnimeMatch when={!showSettings()}>
           <div class="grid gap-4">
             <div>
               Cookies enhance your experience and help us improve our website.
@@ -83,8 +99,8 @@ export function CookiesModal(): JSXElement {
               />
             </div>
           </div>
-        }
-        else={
+        </AnimeMatch>
+        <AnimeMatch when={showSettings()}>
           <div class="grid gap-4">
             <SettingsSection
               title="security"
@@ -158,8 +174,8 @@ export function CookiesModal(): JSXElement {
               }}
             />
           </div>
-        }
-      />
+        </AnimeMatch>
+      </AnimeSwitch>
     </AnimatedModal>
   );
 }
