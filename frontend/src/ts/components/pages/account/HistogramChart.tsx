@@ -49,7 +49,7 @@ export function HistogramChart(props: {
                 text: "Bucket",
               },
             },
-            count: {
+            y: {
               axis: "y",
               beginAtZero: true,
               ticks: {
