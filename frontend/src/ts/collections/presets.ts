@@ -9,19 +9,13 @@ import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
+import { tempId } from "./utils/misc";
 
-export type PresetItem = Preset & { display: string };
+export type PresetItem = Preset;
 
 const queryKeys = {
   root: () => [...baseKey("presets", { isUserSpecific: true })],
 };
-
-function toPresetItem(preset: Preset): PresetItem {
-  return {
-    ...preset,
-    display: preset.name.replaceAll("_", " "),
-  };
-}
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function usePresetsLiveQuery() {
@@ -67,9 +61,8 @@ const actions = {
   addPreset: createOptimisticAction<ActionType["addPreset"]>({
     onMutate: ({ name, config, settingGroups }) => {
       presetsCollection.insert({
-        _id: "temp-" + Date.now(),
-        name,
-        display: name.replaceAll("_", " "),
+        _id: tempId(),
+        name: name.replace(/_/g, " "),
         config,
         settingGroups,
       });
@@ -77,7 +70,7 @@ const actions = {
     mutationFn: async ({ name, config, settingGroups }) => {
       const response = await Ape.presets.add({
         body: {
-          name,
+          name: name.replace(/_/g, " "),
           config,
           ...(settingGroups !== undefined && { settingGroups }),
         },
@@ -85,21 +78,21 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to add preset: ${response.body.message}`);
       }
-      presetsCollection.utils.writeInsert(
-        toPresetItem({
-          _id: response.body.data.presetId,
-          name: name,
-          settingGroups: settingGroups,
-          config: config,
-        }),
-      );
+
+      const newPreset = {
+        _id: response.body.data.presetId,
+        name: name.replace(/_/g, " "),
+        config,
+        settingGroups,
+      };
+
+      presetsCollection.utils.writeInsert(newPreset);
     },
   }),
   editPreset: createOptimisticAction<ActionType["editPreset"]>({
     onMutate: ({ presetId, name, config, settingGroups }) => {
       presetsCollection.update(presetId, (preset) => {
-        preset.name = name;
-        preset.display = name.replaceAll("_", " ");
+        preset.name = name.replace(/_/g, " ");
 
         if (config !== undefined) {
           preset.config = config;
@@ -134,7 +127,6 @@ const actions = {
       presetsCollection.utils.writeUpdate({
         _id: presetId,
         name,
-        display: name.replaceAll("_", " "),
         ...(config !== undefined && { config }),
         ...(settingGroups !== undefined && { settingGroups }),
       });
@@ -169,7 +161,12 @@ function getPreset(id: string): PresetItem | undefined {
 }
 
 export function fillPresetsCollection(presets: Preset[]): void {
-  const presetItems = presets.map(toPresetItem);
+  const presetItems = presets.map((preset) => ({
+    _id: preset._id,
+    name: preset.name.replace(/_/g, " "),
+    config: preset.config,
+    settingGroups: preset.settingGroups,
+  }));
 
   presetsCollection.utils.writeBatch(() => {
     presetItems.forEach((item) => {
