@@ -1,4 +1,4 @@
-import * as DB from "../db";
+import { __nonReactive as __nonReactiveTags } from "../collections/tags";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Settings from "../pages/settings";
 import {
@@ -13,7 +13,7 @@ import {
   PresetTypeSchema,
 } from "@monkeytype/schemas/presets";
 import {
-  __nonReactive,
+  __nonReactive as __nonReactivePresets,
   addPreset,
   editPreset,
   deletePreset,
@@ -112,7 +112,7 @@ function initializeEditState(id: string): void {
   for (const key of state.checkboxes.keys()) {
     state.checkboxes.set(key, false);
   }
-  const edittedPreset = __nonReactive.getPreset(id);
+  const edittedPreset = __nonReactivePresets.getPreset(id);
   if (edittedPreset === undefined) {
     showErrorNotification("Preset not found");
     return;
@@ -289,7 +289,7 @@ async function apply(): Promise<void> {
       });
       showSuccessNotification("Preset added", { durationMs: 2000 });
     } else if (action === "edit") {
-      const existing = __nonReactive.getPreset(presetId);
+      const existing = __nonReactivePresets.getPreset(presetId);
       if (existing === undefined) {
         showErrorNotification("Preset not found");
         return;
@@ -357,10 +357,8 @@ function getConfigChanges(): Partial<ConfigType> {
     state.presetType === "partial"
       ? getPartialConfigChanges(getConfigChangesFromConfig())
       : getConfigChangesFromConfig();
-  const tags = DB.getSnapshot()?.tags ?? [];
-
-  const activeTagIds: string[] = tags
-    .filter((tag) => tag.active)
+  const activeTagIds: string[] = __nonReactiveTags
+    .getActiveTags()
     .map((tag) => tag._id);
 
   const setTags: boolean =

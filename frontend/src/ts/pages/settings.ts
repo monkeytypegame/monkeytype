@@ -8,7 +8,11 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
-import * as TagController from "../controllers/tag-controller";
+import {
+  __nonReactive as __nonReactiveTags,
+  toggleTagActive,
+  useTagsLiveQuery,
+} from "../collections/tags";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import {
@@ -33,7 +37,10 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
-import { __nonReactive, usePresetsLiveQuery } from "../collections/presets";
+import {
+  __nonReactive as __nonReactivePresets,
+  usePresetsLiveQuery,
+} from "../collections/presets";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { ThemesList, ThemeWithName } from "../constants/themes";
@@ -52,6 +59,7 @@ import * as FpsLimitSection from "../elements/settings/fps-limit-section";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
 import { createEffectOn } from "../hooks/effects";
+import { createMemo } from "solid-js";
 
 let settingsInitialized = false;
 
@@ -517,23 +525,25 @@ function setActiveFunboxButton(): void {
   }
 }
 
+const tagsQuery = useTagsLiveQuery();
+const activeTags = createMemo(() => tagsQuery().filter((tag) => tag.active));
+createEffectOn(activeTags, refreshTagsSettingsSection);
+
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const tagsEl = qs(".pageSettings .section.tags .tagsList")?.empty();
-    DB.getSnapshot()?.tags?.forEach((tag) => {
+    __nonReactiveTags.getTags().forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
       // }
       tagsEl?.appendHtml(`
 
-      <div class="buttons tag" data-id="${tag._id}" data-name="${
-        tag.name
-      }" data-display="${tag.display}">
+      <div class="buttons tag" data-id="${tag._id}" data-name="${tag.name}">
         <button class="tagButton ${tag.active ? "active" : ""}" active="${
           tag.active
         }">
-          ${tag.display}
+          ${tag.name}
         </button>
         <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
           <i class="fas fa-crown fa-fw"></i>
@@ -562,7 +572,7 @@ function refreshPresetsSettingsSection(): void {
     const presetsEl = qs(
       ".pageSettings .section.presets .presetsList",
     )?.empty();
-    __nonReactive.getPresets().forEach((preset) => {
+    __nonReactivePresets.getPresets().forEach((preset) => {
       presetsEl?.appendHtml(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}">
         <button class="presetButton">${preset.display}</button>
@@ -790,7 +800,7 @@ qs(".pageSettings .section.tags")?.onChild(
   (e) => {
     const target = e.childTarget as HTMLElement;
     const tagid = target.parentElement?.getAttribute("data-id") as string;
-    TagController.toggle(tagid);
+    toggleTagActive(tagid);
     target.classList.toggle("active");
   },
 );

@@ -83,6 +83,47 @@ const plugin = {
         };
       },
     }),
+    "no-non-reactive-access-in-components": defineRule({
+      createOnce(context) {
+        const getComponentAncestor = (node) => {
+          let current = node.parent;
+          while (current) {
+            // function Foo() { return <...> }
+            if (
+              current.type === "FunctionDeclaration" &&
+              containsJSXReturn(current.body)
+            ) {
+              return current.id?.name ?? "component";
+            }
+            // const Foo = () => { return <...> } or const Foo = function() { return <...> }
+            if (
+              (current.type === "ArrowFunctionExpression" ||
+                current.type === "FunctionExpression") &&
+              containsJSXReturn(current.body ?? current) &&
+              current.parent?.type === "VariableDeclarator"
+            ) {
+              return current.parent.id?.name ?? "component";
+            }
+            current = current.parent;
+          }
+          return null;
+        };
+
+        return {
+          MemberExpression(node) {
+            if (node.object?.name === "__nonReactive") {
+              const componentName = getComponentAncestor(node);
+              if (componentName) {
+                context.report({
+                  node,
+                  message: `__nonReactive should not be accessed in component \`${componentName}\`.`,
+                });
+              }
+            }
+          },
+        };
+      },
+    }),
     "prefer-arrow-in-component": defineRule({
       meta: {
         hasSuggestions: true,
