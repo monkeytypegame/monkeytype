@@ -70,7 +70,7 @@ const actions = {
     mutationFn: async ({ name, config, settingGroups }) => {
       const response = await Ape.presets.add({
         body: {
-          name: name.replace(/_/g, " "),
+          name: name.replace(/ /g, "_"),
           config,
           ...(settingGroups !== undefined && { settingGroups }),
         },
@@ -112,7 +112,7 @@ const actions = {
       const response = await Ape.presets.save({
         body: {
           _id: presetId,
-          name: name,
+          name: name.replace(/ /g, "_"),
           ...(config !== undefined && {
             config: config,
             settingGroups: settingGroups,
@@ -126,7 +126,7 @@ const actions = {
       // if this is missing getPreset is out of sync
       presetsCollection.utils.writeUpdate({
         _id: presetId,
-        name,
+        name: name.replace(/_/g, " "),
         ...(config !== undefined && { config }),
         ...(settingGroups !== undefined && { settingGroups }),
       });
