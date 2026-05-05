@@ -32,11 +32,9 @@ function update(): void {
   subgroup.list = [];
   if (presets.length === 0) return;
   presets.forEach((preset) => {
-    const dis = preset.display;
-
     subgroup.list.push({
       id: "applyPreset" + preset._id,
-      display: dis,
+      display: preset.name,
       exec: async (): Promise<void> => {
         Settings.setEventDisabled(true);
         await PresetController.apply(preset._id);
