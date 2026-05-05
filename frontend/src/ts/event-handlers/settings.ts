@@ -65,54 +65,24 @@ settingsPage?.qs(".section.tags")?.on("click", (e) => {
     EditTagPopup.show("add");
   } else if (target.classList.contains("editButton")) {
     const tagid = target.parentElement?.getAttribute("data-id");
-    const name = target.parentElement?.getAttribute("data-display");
-    if (
-      tagid === undefined ||
-      name === undefined ||
-      tagid === "" ||
-      name === "" ||
-      tagid === null ||
-      name === null
-    ) {
-      showErrorNotification(
-        "Failed to edit tag: Could not find tag id or name",
-      );
+    if (tagid === undefined || tagid === "" || tagid === null) {
+      showErrorNotification("Failed to edit tag: Could not find tag id");
       return;
     }
-    EditTagPopup.show("edit", tagid, name);
+    EditTagPopup.show("edit", tagid);
   } else if (target.classList.contains("clearPbButton")) {
     const tagid = target.parentElement?.getAttribute("data-id");
-    const name = target.parentElement?.getAttribute("data-display");
-    if (
-      tagid === undefined ||
-      name === undefined ||
-      tagid === "" ||
-      name === "" ||
-      tagid === null ||
-      name === null
-    ) {
-      showErrorNotification(
-        "Failed to clear tag PB: Could not find tag id or name",
-      );
+    if (tagid === undefined || tagid === "" || tagid === null) {
+      showErrorNotification("Failed to clear tag PB: Could not find tag id");
       return;
     }
-    EditTagPopup.show("clearPb", tagid, name);
+    EditTagPopup.show("clearPb", tagid);
   } else if (target.classList.contains("removeButton")) {
     const tagid = target.parentElement?.getAttribute("data-id");
-    const name = target.parentElement?.getAttribute("data-display");
-    if (
-      tagid === undefined ||
-      name === undefined ||
-      tagid === "" ||
-      name === "" ||
-      tagid === null ||
-      name === null
-    ) {
-      showErrorNotification(
-        "Failed to remove tag: Could not find tag id or name",
-      );
+    if (tagid === undefined || tagid === "" || tagid === null) {
+      showErrorNotification("Failed to remove tag: Could not find tag id");
       return;
     }
-    EditTagPopup.show("remove", tagid, name);
+    EditTagPopup.show("remove", tagid);
   }
 });
