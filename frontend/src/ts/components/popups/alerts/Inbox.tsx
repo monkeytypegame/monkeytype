@@ -117,12 +117,14 @@ export function Inbox(): JSXElement {
       }
       body={
         <AsyncContent
-          collection={inboxQuery}
+          collections={{ inboxQuery }}
           loader={<LoadingCircle class="place-self-center text-lg" />}
         >
-          {(inbox) => (
+          {({ inboxQueryData }) => (
             <>
-              <Show when={inboxQuery().some((it) => it.status === "unclaimed")}>
+              <Show
+                when={inboxQueryData().some((it) => it.status === "unclaimed")}
+              >
                 <Button
                   fa={{ icon: "fa-gift", fixedWidth: true }}
                   text="Claim all"
@@ -133,8 +135,8 @@ export function Inbox(): JSXElement {
               </Show>
               <Show
                 when={
-                  inboxQuery().length > 0 &&
-                  inboxQuery().every(
+                  inboxQueryData().length > 0 &&
+                  inboxQueryData().every(
                     (it) => it.status === "read" || it.status === "unread",
                   )
                 }
@@ -149,7 +151,7 @@ export function Inbox(): JSXElement {
               </Show>
 
               <For
-                each={inbox}
+                each={inboxQueryData()}
                 fallback={<div class="place-self-center">Nothing to show</div>}
               >
                 {(entry) => <Entry entry={entry} mutate={mutate} />}

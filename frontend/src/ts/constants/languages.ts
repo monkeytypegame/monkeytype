@@ -185,6 +185,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   jyutping: ["jyutping"],
   pinyin: ["pinyin", "pinyin_1k", "pinyin_10k"],
   hausa: ["hausa", "hausa_1k"],
+  bemba: ["bemba", "bemba_1k", "bemba_10k"],
   swedish: ["swedish", "swedish_1k", "swedish_diacritics"],
   serbian: ["serbian", "serbian_latin", "serbian_10k", "serbian_latin_10k"],
   georgian: ["georgian"],
