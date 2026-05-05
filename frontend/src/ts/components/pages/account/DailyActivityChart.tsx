@@ -152,7 +152,7 @@ export function DailyActivityChart(props: {
 
                       return dateFormat(
                         new Date(item.dayTimestamp as number),
-                        "dd MMM yyy",
+                        "dd MMM yyyy",
                       );
                     },
                     beforeLabel: function (tooltipItem): string {

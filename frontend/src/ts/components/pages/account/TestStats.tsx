@@ -42,7 +42,7 @@ export function TestStats(props: {
             return (
               <>
                 <div class="flex items-center justify-center text-sub">
-                  estimate words typed{" "}
+                  estimated words typed{" "}
                   <span class="p-5 text-5xl text-text lg:text-5xl">
                     {stats.words}
                   </span>
