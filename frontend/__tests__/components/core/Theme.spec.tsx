@@ -85,13 +85,13 @@ describe("Theme component", () => {
   it("removes CSS when theme has no CSS", async () => {
     themeSignalMock.mockImplementation(() => ({ name: "light" }) as any);
     const { css } = renderComponent();
-    expect(css.getAttribute("href")).toBe("");
+    expect(css).not.toBeInTheDocument();
   });
 
   it("removes CSS when theme is custom", async () => {
     themeSignalMock.mockImplementation(() => ({ name: "custom" }) as any);
     const { css } = renderComponent();
-    expect(css.getAttribute("href")).toBe("");
+    expect(css).not.toBeInTheDocument();
   });
 
   it("handles CSS load error", () => {
