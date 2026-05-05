@@ -257,7 +257,7 @@ export function SimpleModal(): JSXElement {
     <AnimatedModal
       id="SimpleModal"
       title={config()?.title}
-      focusFirstInput={true}
+      focusFirstInput={config()?.focusFirstInput ?? true}
       beforeShow={resetForm}
       modalClass={config()?.class}
     >

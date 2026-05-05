@@ -95,6 +95,7 @@ export type SimpleModalConfig = {
   textAllowHtml?: boolean;
   buttonText?: string;
   buttonAlwaysEnabled?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
   execFn: (...inputValues: string[]) => Promise<ExecReturn>;
 };
 

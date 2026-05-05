@@ -65,6 +65,7 @@ export function Tags(): JSXElement {
                     showSimpleModal({
                       title: "Edit tag name",
                       buttonText: "save",
+                      focusFirstInput: "focusAndSelect",
                       inputs: [
                         {
                           type: "text",
