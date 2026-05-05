@@ -142,7 +142,7 @@ export function getLanguageDisplayString(
   } else {
     out = language;
   }
-  return out.replace(/_/g, " ");
+  return replaceUnderscoresWithSpaces(out);
 }
 
 /**
@@ -375,6 +375,14 @@ export function isSpace(char: string): boolean {
   ]);
 
   return spaces.has(codePoint);
+}
+
+export function replaceUnderscoresWithSpaces(text: string): string {
+  return text.replace(/_/g, " ");
+}
+
+export function replaceSpacesWithUnderscores(text: string): string {
+  return text.replace(/ /g, "_");
 }
 
 // Export testing utilities for unit tests

@@ -33,7 +33,6 @@ import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
@@ -135,47 +134,9 @@ function ActionButtons(props: {
   };
 
   return (
-    <Conditional
-      if={props.isAccountPage === true}
-      then={
-        <>
-          <Button
-            balloon={{ text: "Edit profile", position: "left" }}
-            class="h-full rounded-none rounded-tr text-sub hover:text-bg"
-            fa={{ icon: "fa-pen", fixedWidth: true }}
-            onClick={() => {
-              if (props.profile.banned === true) {
-                showNoticeNotification(
-                  "Banned users cannot edit their profile",
-                );
-                return;
-              }
-              EditProfileModal.show();
-            }}
-          />
-          <Button
-            balloon={{ text: "Copy public link", position: "left" }}
-            class="h-full rounded-none rounded-br text-sub hover:text-bg"
-            fa={{ icon: "fa-link", fixedWidth: true }}
-            onClick={() => {
-              const url = `${location.origin}/profile/${props.profile.name}`;
-
-              navigator.clipboard.writeText(url).then(
-                function () {
-                  showNoticeNotification("URL Copied to clipboard");
-                },
-                function () {
-                  alert(
-                    "Failed to copy using the Clipboard API. Here's the link: " +
-                      url,
-                  );
-                },
-              );
-            }}
-          />
-        </>
-      }
-      else={
+    <Show
+      when={props.isAccountPage === true}
+      fallback={
         <>
           <Show when={!isUsersProfile()}>
             <Button
@@ -206,7 +167,40 @@ function ActionButtons(props: {
           </Show>
         </>
       }
-    />
+    >
+      <Button
+        balloon={{ text: "Edit profile", position: "left" }}
+        class="h-full rounded-none rounded-tr text-sub hover:text-bg"
+        fa={{ icon: "fa-pen", fixedWidth: true }}
+        onClick={() => {
+          if (props.profile.banned === true) {
+            showNoticeNotification("Banned users cannot edit their profile");
+            return;
+          }
+          EditProfileModal.show();
+        }}
+      />
+      <Button
+        balloon={{ text: "Copy public link", position: "left" }}
+        class="h-full rounded-none rounded-br text-sub hover:text-bg"
+        fa={{ icon: "fa-link", fixedWidth: true }}
+        onClick={() => {
+          const url = `${location.origin}/profile/${props.profile.name}`;
+
+          navigator.clipboard.writeText(url).then(
+            function () {
+              showNoticeNotification("URL Copied to clipboard");
+            },
+            function () {
+              alert(
+                "Failed to copy using the Clipboard API. Here's the link: " +
+                  url,
+              );
+            },
+          );
+        }}
+      />
+    </Show>
   );
 }
 

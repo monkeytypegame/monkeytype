@@ -7,7 +7,6 @@ import { createMemo, JSXElement, Match, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { Formatting } from "../../../utils/format";
-import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Table, TableEntry } from "./Table";
@@ -75,18 +74,9 @@ export function UserRank(props: {
         when={props.data !== undefined && props.total !== undefined}
         fallback={<LoadingCircle class="w-full text-center text-2xl" />}
       >
-        <Conditional
-          if={props.data !== null}
-          then={
-            <Table
-              type={props.type}
-              entries={[props.data as TableEntry]}
-              friendsOnly={props.friendsOnly}
-              userOverride={userOverride}
-              hideHeader={true}
-            />
-          }
-          else={
+        <Show
+          when={props.data !== null}
+          fallback={
             <div class="grid w-full place-items-center p-4 text-center text-sub">
               <Switch fallback="Not qualified">
                 <Match when={props.isLbOptOut}>
@@ -120,7 +110,15 @@ export function UserRank(props: {
               </Switch>
             </div>
           }
-        />
+        >
+          <Table
+            type={props.type}
+            entries={[props.data as TableEntry]}
+            friendsOnly={props.friendsOnly}
+            userOverride={userOverride}
+            hideHeader={true}
+          />
+        </Show>
       </Show>
     </div>
   );

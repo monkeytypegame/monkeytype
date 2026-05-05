@@ -162,6 +162,7 @@ export function QuoteSubmitModal(): JSXElement {
           children={(field) => (
             <LabeledField label="language">
               <SlimSelect
+                appendTo="container"
                 options={languageOptions}
                 selected={field().state.value}
                 onChange={(val) => field().handleChange(val ?? "")}
