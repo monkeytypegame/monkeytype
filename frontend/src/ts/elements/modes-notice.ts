@@ -2,6 +2,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
+import { __nonReactive } from "../collections/tags";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { configEvent, type ConfigEventKey } from "../events/config";
@@ -302,10 +303,8 @@ export async function update(): Promise<void> {
 
   let tagsString = "";
   try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        tagsString += tag.display + ", ";
-      }
+    __nonReactive.getActiveTags().forEach((tag) => {
+      tagsString += tag.name + ", ";
     });
 
     if (tagsString !== "") {

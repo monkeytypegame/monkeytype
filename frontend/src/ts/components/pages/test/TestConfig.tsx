@@ -16,10 +16,10 @@ import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 
 const variables = cn(
-  "[--card-gap:0.25em] [--font-size:0.6em] [--horizontal-padding:0.4em] [--vertical-padding:0.7rem]",
-  "md:[--card-gap:1em] md:[--font-size:0.7em] md:[--horizontal-padding:0.45em]",
-  "lg:[--card-gap:1em] lg:[--font-size:0.75em] lg:[--horizontal-padding:0.75em]",
-  "xl:[--card-gap:2em] xl:[--font-size:0.75em] xl:[--horizontal-padding:1em]",
+  "[--card-gap:0.25em] [--font-size:0.5em] [--horizontal-padding:0.4em] [--vertical-padding:0.5rem]",
+  "md:[--card-gap:1em] md:[--font-size:0.6em] md:[--horizontal-padding:0.45em] md:[--vertical-padding:0.75rem]",
+  "lg:[--card-gap:1em] lg:[--font-size:0.75em] lg:[--horizontal-padding:0.5em] lg:[--vertical-padding:0.75rem]",
+  "xl:[--card-gap:2em] xl:[--font-size:0.75em] xl:[--horizontal-padding:1em] xl:[--vertical-padding:0.75rem]",
 );
 const buttonClass = "px-(--horizontal-padding) py-(--vertical-padding)";
 const cardClass =
@@ -32,7 +32,7 @@ export function TestConfig(): JSXElement {
       <div
         class={cn(
           variables,
-          "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
+          "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
           getFocus() || getResultVisible()
             ? "pointer-events-none opacity-0"
@@ -46,7 +46,7 @@ export function TestConfig(): JSXElement {
       </div>
       <Button
         class={cn(
-          "mx-auto flex place-self-center px-4 py-2 text-sub sm:hidden",
+          "mx-auto flex place-self-center px-4 py-2 text-sub md:hidden",
         )}
         variant="button"
         onClick={() => {

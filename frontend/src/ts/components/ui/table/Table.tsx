@@ -17,7 +17,7 @@ const Table: Component<ComponentProps<"table">> = (props) => {
 const TableHeader: Component<ComponentProps<"thead">> = (props) => {
   const [local, others] = splitProps(props, ["class"]);
   return (
-    <thead class={cn("text-xs text-sub", local.class)} {...others}></thead>
+    <thead class={cn("text-em-xs text-sub", local.class)} {...others}></thead>
   );
 };
 
@@ -26,7 +26,7 @@ const TableBody: Component<ComponentProps<"tbody">> = (props) => {
   return (
     <tbody
       class={cn(
-        "text-sm xl:text-base [&>tr:nth-child(odd)>td]:bg-sub-alt",
+        "text-em-base [&>tr:nth-child(odd)>td]:bg-sub-alt",
         local.class,
       )}
       {...others}
@@ -50,7 +50,7 @@ const TableHead: Component<ComponentProps<"th">> = (props) => {
     <th
       aria-label={local["aria-label"]}
       class={cn(
-        "has-button:p-0 appearance-none p-2 align-bottom text-xs font-normal",
+        "appearance-none p-2 align-bottom text-xs font-normal",
         local.class,
       )}
       {...others}
@@ -63,7 +63,7 @@ const TableCell: Component<ComponentProps<"td">> = (props) => {
   return (
     <td
       class={cn(
-        "appearance-none p-0 py-1 first:rounded-l last:rounded-r",
+        "appearance-none p-2 first:rounded-l last:rounded-r",
         local.class,
       )}
       {...others}
