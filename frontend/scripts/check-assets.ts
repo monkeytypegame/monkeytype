@@ -463,14 +463,15 @@ async function validateSounds(): Promise<void> {
       ),
     ),
   );
-  soundFiles
-    .values()
+  [...soundFiles]
     .filter((name) => !expectedSoundFiles.has(name))
     .forEach((file) => problems.add("_additional", file));
 
   console.log(problems.toString());
 
-  return;
+  if (problems.hasError()) {
+    throw new Error("sounds with errors");
+  }
 }
 
 type Validator = () => Promise<void>;
