@@ -1,6 +1,6 @@
 {
   "name": "sinhala",
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "si",
   "words": [
     "අක්ෂර",

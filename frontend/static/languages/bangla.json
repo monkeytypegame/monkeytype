@@ -1,6 +1,6 @@
 {
   "name": "bangla",
-  "cursiveScript": true,
+  "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "bn-BD",
   "words": [

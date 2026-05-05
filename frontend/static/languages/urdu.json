@@ -1,7 +1,7 @@
 {
   "name": "urdu",
   "rightToLeft": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "noLazyMode": true,
   "words": [
     "آئے",

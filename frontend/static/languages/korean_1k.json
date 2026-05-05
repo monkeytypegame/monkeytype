@@ -1,6 +1,6 @@
 {
   "name": "korean_1k",
-  "cursiveScript": true,
+  "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",
   "words": [

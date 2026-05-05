@@ -1,7 +1,7 @@
 {
   "name": "hebrew_10k",
   "rightToLeft": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "he-IL",
   "words": [
     "של",

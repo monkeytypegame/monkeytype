@@ -1,7 +1,7 @@
 {
   "name": "arabic_10k",
   "rightToLeft": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "ar-SA",
   "words": [
     " اِكْتَشَفَ",

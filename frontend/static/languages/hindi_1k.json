@@ -1,6 +1,6 @@
 {
   "name": "hindi_1k",
-  "cursiveScript": true,
+  "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "hi-IN",
   "words": [

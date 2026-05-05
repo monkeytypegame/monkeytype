@@ -1,7 +1,7 @@
 {
   "name": "kurdish_central",
   "rightToLeft": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "ckb",
   "words": [
     "من",

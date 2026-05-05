@@ -3,9 +3,9 @@ import { ElementWithUtils } from "../utils/dom";
 
 function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
-  if (wordEl.hasClass("broken-cursive")) return false;
+  if (wordEl.hasClass("broken-joining")) return false;
 
-  return wordEl.getParent()?.hasClass("cursiveScript") ?? false;
+  return wordEl.getParent()?.hasClass("joiningScript") ?? false;
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
@@ -25,25 +25,25 @@ function applyIfNeeded(wordEl: ElementWithUtils): void {
     wordEl.setStyle({ width: "" });
     wordEl.addClass("needs-wrap");
   }
-  wordEl.addClass("broken-cursive");
+  wordEl.addClass("broken-joining");
 }
 
 function reset(wordEl: ElementWithUtils): void {
-  if (!wordEl.hasClass("broken-cursive")) return;
-  wordEl.removeClass("broken-cursive");
+  if (!wordEl.hasClass("broken-joining")) return;
+  wordEl.removeClass("broken-joining");
   wordEl.removeClass("needs-wrap");
   wordEl.setStyle({ width: "" });
 }
 
-export function set(wordEl: ElementWithUtils, cursiveBroken: boolean): void {
-  cursiveBroken ? applyIfNeeded(wordEl) : reset(wordEl);
+export function set(wordEl: ElementWithUtils, joiningBroken: boolean): void {
+  joiningBroken ? applyIfNeeded(wordEl) : reset(wordEl);
 }
 
 export function update(key: string, wordsEl: ElementWithUtils): void {
   const words = wordsEl.qsa(".word.typed");
 
   const shouldReset =
-    !wordsEl.hasClass("cursiveScript") ||
+    !wordsEl.hasClass("joiningScript") ||
     Config.typedEffect !== "dots" ||
     key === "fontFamily" ||
     key === "fontSize";

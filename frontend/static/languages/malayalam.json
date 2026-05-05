@@ -1,7 +1,7 @@
 {
   "name": "malayalam",
   "noLazyMode": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "ml-IN",
   "words": [
     "അടി",

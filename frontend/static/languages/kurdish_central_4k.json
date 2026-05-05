@@ -1,7 +1,7 @@
 {
   "name": "kurdish_central_4k",
   "rightToLeft": true,
-  "cursiveScript": true,
+  "joiningScript": true,
   "bcp47": "ckb",
   "words": [
     "ئاب",

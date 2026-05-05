@@ -52,7 +52,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
-import * as Cursive from "./break-cursive";
+import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -147,7 +147,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Cursive.set(previousActiveWord, true);
+          Joining.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -164,7 +164,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Cursive.set(newActiveWord, false);
+    Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
@@ -1240,15 +1240,15 @@ export async function lineJump(
   return;
 }
 
-export function setCursiveClass(isEnabled: boolean): void {
+export function setJoiningClass(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
-    wordsEl.addClass("cursiveScript");
-    qs("#resultWordsHistory .words")?.addClass("cursiveScript");
-    qs("#resultReplay .words")?.addClass("cursiveScript");
+    wordsEl.addClass("joiningScript");
+    qs("#resultWordsHistory .words")?.addClass("joiningScript");
+    qs("#resultReplay .words")?.addClass("joiningScript");
   } else {
-    wordsEl.removeClass("cursiveScript");
-    qs("#resultWordsHistory .words")?.removeClass("cursiveScript");
-    qs("#resultReplay .words")?.removeClass("cursiveScript");
+    wordsEl.removeClass("joiningScript");
+    qs("#resultWordsHistory .words")?.removeClass("joiningScript");
+    qs("#resultReplay .words")?.removeClass("joiningScript");
   }
 }
 
@@ -2085,7 +2085,7 @@ configEvent.subscribe(({ key, newValue }) => {
   ) {
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
-      Cursive.update(key, wordsEl);
+      Joining.update(key, wordsEl);
     }
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {

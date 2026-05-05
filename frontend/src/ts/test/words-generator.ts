@@ -602,7 +602,7 @@ type GenerateWordsReturn = {
   hasTab: boolean;
   hasNewline: boolean;
   allRightToLeft?: boolean;
-  allCursiveScript?: boolean;
+  allJoiningScript?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -625,7 +625,7 @@ export async function generateWords(
     hasTab: false,
     hasNewline: false,
     allRightToLeft: language.rightToLeft,
-    allCursiveScript: language.cursiveScript ?? false,
+    allJoiningScript: language.joiningScript ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -661,10 +661,10 @@ export async function generateWords(
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
       currentWordset = polyglotResult;
-      // set allCursiveScript if any language in languageProperties has cursiveScript: true
-      ret.allCursiveScript = Array.from(
+      // set allJoiningScript if any language in languageProperties has joiningScript: true
+      ret.allJoiningScript = Array.from(
         polyglotResult.languageProperties.values(),
-      ).some((props) => !!props.cursiveScript);
+      ).some((props) => !!props.joiningScript);
     } else {
       currentWordset = result;
     }
