@@ -91,6 +91,7 @@ export type SimpleModalConfig = {
   title: string;
   inputs?: SimpleModalInput[];
   text?: string;
+  textClass?: string;
   textAllowHtml?: boolean;
   buttonText?: string;
   buttonAlwaysEnabled?: boolean;

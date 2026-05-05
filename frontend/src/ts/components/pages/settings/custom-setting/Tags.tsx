@@ -1,9 +1,15 @@
 import { JSXElement, For } from "solid-js";
 
 import {
+  clearTagPBs,
+  deleteTag,
+  insertTag,
   toggleTagActive,
+  updateTagName,
   useTagsLiveQuery,
 } from "../../../../collections/tags";
+import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
 
@@ -34,7 +40,21 @@ export function Tags(): JSXElement {
                     icon: "fa-crown",
                   }}
                   onClick={() => {
-                    // todo: implement
+                    showSimpleModal({
+                      title: "Clear personal bests",
+                      text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
+                      buttonText: "clear",
+                      textClass: "text-text",
+                      execFn: async () => {
+                        showLoaderBar();
+                        await clearTagPBs({ tagId: tag._id });
+                        hideLoaderBar();
+                        return {
+                          status: "success",
+                          message: "Personal bests cleared",
+                        };
+                      },
+                    });
                   }}
                 />
                 <Button
@@ -42,7 +62,26 @@ export function Tags(): JSXElement {
                     icon: "fa-pen",
                   }}
                   onClick={() => {
-                    // todo: implement
+                    showSimpleModal({
+                      title: "Edit tag name",
+                      buttonText: "save",
+                      inputs: [
+                        {
+                          type: "text",
+                          initVal: tag.name,
+                        },
+                      ],
+                      textClass: "text-text",
+                      execFn: async (name) => {
+                        showLoaderBar();
+                        await updateTagName({ tagId: tag._id, newName: name });
+                        hideLoaderBar();
+                        return {
+                          status: "success",
+                          message: "Tag name updated",
+                        };
+                      },
+                    });
                   }}
                 />
                 <Button
@@ -50,7 +89,21 @@ export function Tags(): JSXElement {
                     icon: "fa-trash",
                   }}
                   onClick={() => {
-                    // todo: implement
+                    showSimpleModal({
+                      title: "Delete tag",
+                      text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
+                      buttonText: "delete",
+                      textClass: "text-text",
+                      execFn: async () => {
+                        showLoaderBar();
+                        await deleteTag({ tagId: tag._id });
+                        hideLoaderBar();
+                        return {
+                          status: "success",
+                          message: "Tag deleted",
+                        };
+                      },
+                    });
                   }}
                 />
               </div>
@@ -59,7 +112,27 @@ export function Tags(): JSXElement {
           <Button
             text="add tag"
             onClick={() => {
-              // todo: implement
+              showSimpleModal({
+                title: "Add new tag",
+                buttonText: "add",
+                inputs: [
+                  {
+                    type: "text",
+                    placeholder: "tag name",
+                  },
+                ],
+                execFn: async (name) => {
+                  showLoaderBar();
+                  await insertTag({
+                    name,
+                  });
+                  hideLoaderBar();
+                  return {
+                    status: "success",
+                    message: "Tag added",
+                  };
+                },
+              });
             }}
           />
         </div>

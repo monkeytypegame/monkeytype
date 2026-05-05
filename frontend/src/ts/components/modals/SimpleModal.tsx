@@ -272,7 +272,7 @@ export function SimpleModal(): JSXElement {
         <Show when={config()?.text}>
           {(text) => (
             <div
-              class="text-sub"
+              class={cn("text-sub", config()?.textClass)}
               {...(config()?.textAllowHtml === true
                 ? { innerHTML: text() }
                 : { textContent: text() })}

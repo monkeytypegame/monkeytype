@@ -185,6 +185,7 @@ export function Theme(): JSXElement {
             showSuccessNotification("Custom theme colors saved");
           }}
         />
+        {/* //todo: save as new when logged in */}
       </div>
     </div>
   );
