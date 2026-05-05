@@ -4,10 +4,10 @@ export const soundsConfig: SoundConfigType = {
   1: { numberOfSounds: 3 },
   2: { numberOfSounds: 3 },
   3: { numberOfSounds: 3 },
-  4: { numberOfSounds: 6, hasSecondVariant: true },
-  5: { numberOfSounds: 6, hasSecondVariant: true },
-  6: { numberOfSounds: 3, hasSecondVariant: true },
-  7: { numberOfSounds: 3, hasSecondVariant: true },
+  4: { numberOfSounds: 6 },
+  5: { numberOfSounds: 6 },
+  6: { numberOfSounds: 3 },
+  7: { numberOfSounds: 3 },
   8: { oscillatorType: "sine" },
   9: { oscillatorType: "sawtooth" },
   10: { oscillatorType: "square" },
@@ -21,7 +21,6 @@ export const soundsConfig: SoundConfigType = {
 
 export type ClickSoundConfig = {
   numberOfSounds: number;
-  hasSecondVariant?: true;
 };
 
 export type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
@@ -53,13 +52,7 @@ export type ValidNotes =
   | "B";
 
 type ClickSoundConfigType = Partial<
-  Record<
-    Exclude<PlaySoundOnClick, "off">,
-    {
-      sounds: string[];
-      counter: number;
-    }[]
-  >
+  Record<Exclude<PlaySoundOnClick, "off">, string[]>
 >;
 
 export const clickSoundConfig: ClickSoundConfigType =
@@ -75,16 +68,9 @@ function extractClickSounds(
         const config = cfg as ClickSoundConfig;
         const fullConfig = new Array(config.numberOfSounds)
           .fill(0)
-          .map((_, index) => {
-            const sounds = config.hasSecondVariant
-              ? [
-                  `../sound/click${key}/click${key}_${index + 1}.wav`,
-                  `../sound/click${key}/click${key}_${index + 1}_2.wav`,
-                ]
-              : [`../sound/click${key}/click${key}_${index + 1}.wav`];
-
-            return { sounds, counter: 0 };
-          });
+          .map(
+            (_, index) => `../sound/click${key}/click${key}_${index + 1}.wav`,
+          );
         return [key, fullConfig];
       }),
   );

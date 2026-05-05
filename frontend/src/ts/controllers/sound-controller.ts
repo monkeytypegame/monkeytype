@@ -39,13 +39,7 @@ async function getHowl(src: string): Promise<Howl> {
   return howlers[src];
 }
 
-type ErrorSounds = Record<
-  Exclude<PlaySoundOnError, "off">,
-  {
-    sounds: Howl[];
-    counter: number;
-  }[]
->;
+type ErrorSounds = Record<Exclude<PlaySoundOnError, "off">, Howl[]>;
 
 let errorSounds: ErrorSounds | null = null;
 
@@ -66,33 +60,12 @@ async function initFartReverb(): Promise<void> {
 async function initErrorSound(): Promise<void> {
   if (errorSounds !== null) return;
   errorSounds = {
-    1: [
-      {
-        sounds: [await getHowl("../sound/error1/error1_1.wav")],
-        counter: 0,
-      },
-    ],
-    2: [
-      {
-        sounds: [await getHowl("../sound/error2/error2_1.wav")],
-        counter: 0,
-      },
-    ],
-    3: [
-      {
-        sounds: [await getHowl("../sound/error3/error3_1.wav")],
-        counter: 0,
-      },
-    ],
+    1: [await getHowl("../sound/error1/error1_1.wav")],
+    2: [await getHowl("../sound/error2/error2_1.wav")],
+    3: [await getHowl("../sound/error3/error3_1.wav")],
     4: [
-      {
-        sounds: [await getHowl("../sound/error4/error4_1.wav")],
-        counter: 0,
-      },
-      {
-        sounds: [await getHowl("../sound/error4/error4_2.wav")],
-        counter: 0,
-      },
+      await getHowl("../sound/error4/error4_1.wav"),
+      await getHowl("../sound/error4/error4_2.wav"),
     ],
   };
   (await getHowlerModule()).Howler.volume(Config.soundVolume);
@@ -120,7 +93,7 @@ async function init(): Promise<void> {
 
     if (config === undefined) return;
 
-    await Promise.all(config.flatMap((it) => it.sounds).map(getHowl));
+    await Promise.all(config.flatMap(getHowl));
   }
 }
 
@@ -142,14 +115,11 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   await init();
 
   const safeClickSounds = clickSoundConfig[clickId];
-  if (
-    safeClickSounds === undefined ||
-    safeClickSounds[0]?.sounds[0] === undefined
-  ) {
+  if (safeClickSounds === undefined || safeClickSounds[0] === undefined) {
     return;
   }
 
-  const howl = await getHowl(safeClickSounds[0]?.sounds[0]);
+  const howl = await getHowl(safeClickSounds[0]);
   howl.seek(0);
   howl.play();
 }
@@ -163,8 +133,8 @@ export async function previewError(val: PlaySoundOnError): Promise<void> {
   const errorSoundIds = Object.keys(safeErrorSounds);
   if (!errorSoundIds.includes(val)) return;
 
-  errorSounds?.[val]?.[0]?.sounds[0]?.seek(0);
-  errorSounds?.[val]?.[0]?.sounds[0]?.play();
+  errorSounds?.[val]?.[0]?.seek(0);
+  errorSounds?.[val]?.[0]?.play();
 }
 
 let currentCode = "KeyA";
@@ -408,15 +378,7 @@ export async function playClick(codeOverride?: string): Promise<void> {
   const sounds = clickSoundConfig[val];
   if (sounds === undefined) throw new Error("Invalid click sound ID");
   const randomSound = randomElementFromArray(sounds);
-
-  const src = randomSound.sounds[randomSound.counter];
-  if (src === undefined) throw new Error("Invalid click sound ID");
-  const soundToPlay = await getHowl(src);
-
-  randomSound.counter++;
-  if (randomSound.counter === randomSound.sounds.length) {
-    randomSound.counter = 0;
-  }
+  const soundToPlay = await getHowl(randomSound);
   soundToPlay.seek(0);
   soundToPlay.play();
 }
@@ -429,14 +391,8 @@ export async function playError(): Promise<void> {
   if (sounds === undefined) throw new Error("Invalid error sound ID");
 
   const randomSound = randomElementFromArray(sounds);
-  const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
-
-  randomSound.counter++;
-  if (randomSound.counter === randomSound.sounds.length) {
-    randomSound.counter = 0;
-  }
-  soundToPlay.seek(0);
-  soundToPlay.play();
+  randomSound.seek(0);
+  randomSound.play();
 }
 
 async function setVolume(val: number): Promise<void> {

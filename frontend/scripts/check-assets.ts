@@ -440,12 +440,10 @@ async function validateSounds(): Promise<void> {
   );
 
   //missing sound files
+
   Object.entries(clickSoundConfig).forEach(([key, value]) => {
     value
-      .flatMap((it) =>
-        it.sounds.map((file) => file.substring("../sound/".length)),
-      )
-
+      .map((file) => file.substring("../sound/".length))
       .filter((it) => !soundFiles.has(it))
       .forEach((file) =>
         problems.add(
@@ -458,9 +456,7 @@ async function validateSounds(): Promise<void> {
   //additional files
   const expectedSoundFiles = new Set(
     Object.values(clickSoundConfig).flatMap((it) =>
-      it.flatMap((cfg) =>
-        cfg.sounds.map((file) => file.substring("../sound/".length)),
-      ),
+      it.map((file) => file.substring("../sound/".length)),
     ),
   );
   [...soundFiles]
