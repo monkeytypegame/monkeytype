@@ -43,7 +43,9 @@ import { MinAcc } from "./custom-setting/MinAcc";
 import { MinBurst } from "./custom-setting/MinBurst";
 import { MinSpeed } from "./custom-setting/MinSpeed";
 import { PaceCaret } from "./custom-setting/PaceCaret";
+import { Presets } from "./custom-setting/Presets";
 import { SoundVolume } from "./custom-setting/SoundVolume";
+import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
@@ -72,9 +74,9 @@ export function Settings(): JSXElement {
       <AccountSettingsNotice />
       <div>
         <Section title="behavior">
-          {/* todo: tags */}
-          {/* todo: presets */}
           <Show when={isAuthenticated()}>
+            <Tags />
+            <Presets />
             <AutoSetting key="resultSaving" />
           </Show>
           <AutoSetting key="difficulty" />
@@ -203,7 +205,6 @@ export function Settings(): JSXElement {
                 onClick={() => {
                   showSimpleModal({
                     title: "Are you sure?",
-                    // text: "Are you sure?",
                     buttonText: "reset",
                     execFn: async () => {
                       await resetConfig();
