@@ -49,23 +49,23 @@ let fartReverb: Howl | null = null;
 
 async function initTimeWarning(): Promise<void> {
   if (timeWarning !== null) return;
-  timeWarning = await getHowl("../sound/timeWarning.wav");
+  timeWarning = await getHowl("../sounds/timeWarning.wav");
 }
 
 async function initFartReverb(): Promise<void> {
   if (fartReverb !== null) return;
-  fartReverb = await getHowl("../sound/fart-reverb.wav");
+  fartReverb = await getHowl("../sounds/fart-reverb.wav");
 }
 
 async function initErrorSound(): Promise<void> {
   if (errorSounds !== null) return;
   errorSounds = {
-    1: [await getHowl("../sound/error1/error1_1.wav")],
-    2: [await getHowl("../sound/error2/error2_1.wav")],
-    3: [await getHowl("../sound/error3/error3_1.wav")],
+    1: [await getHowl("../sounds/error1/1.wav")],
+    2: [await getHowl("../sounds/error2/1.wav")],
+    3: [await getHowl("../sounds/error3/1.wav")],
     4: [
-      await getHowl("../sound/error4/error4_1.wav"),
-      await getHowl("../sound/error4/error4_2.wav"),
+      await getHowl("../sounds/error4/1.wav"),
+      await getHowl("../sounds/error4/2.wav"),
     ],
   };
   (await getHowlerModule()).Howler.volume(Config.soundVolume);

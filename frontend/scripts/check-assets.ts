@@ -430,11 +430,11 @@ async function validateSounds(): Promise<void> {
 
   const soundFiles = new Set(
     fs
-      .readdirSync("./static/sound")
+      .readdirSync("./static/sounds")
       .filter((it) => it.startsWith("click"))
       .flatMap((folder) =>
         fs
-          .readdirSync(`./static/sound/${folder}`)
+          .readdirSync(`./static/sounds/${folder}`)
           .map((it) => `${folder}/${it}`),
       ),
   );
@@ -443,12 +443,12 @@ async function validateSounds(): Promise<void> {
 
   Object.entries(clickSoundConfig).forEach(([key, value]) => {
     value
-      .map((file) => file.substring("../sound/".length))
+      .map((file) => file.substring("../sounds/".length))
       .filter((it) => !soundFiles.has(it))
       .forEach((file) =>
         problems.add(
           "click" + key,
-          `missing file frontend/static/sound/${file}`,
+          `missing file frontend/static/sounds/${file}`,
         ),
       );
   });
@@ -456,7 +456,7 @@ async function validateSounds(): Promise<void> {
   //additional files
   const expectedSoundFiles = new Set(
     Object.values(clickSoundConfig).flatMap((it) =>
-      it.map((file) => file.substring("../sound/".length)),
+      it.map((file) => file.substring("../sounds/".length)),
     ),
   );
   [...soundFiles]

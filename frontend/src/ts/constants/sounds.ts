@@ -68,9 +68,7 @@ function extractClickSounds(
         const config = cfg as ClickSoundConfig;
         const fullConfig = new Array(config.numberOfSounds)
           .fill(0)
-          .map(
-            (_, index) => `../sound/click${key}/click${key}_${index + 1}.wav`,
-          );
+          .map((_, index) => `../sounds/click${key}/${index + 1}.wav`);
         return [key, fullConfig];
       }),
   );
