@@ -26,9 +26,14 @@ import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { __nonReactive as tagsNonReactive, updateLocalTagPB } from "./tags";
+import {
+  __nonReactive as tagsNonReactive,
+  reconcileLocalTagPB,
+  saveLocalTagPB,
+} from "./tags";
 import { isAuthenticated } from "../states/core";
 import { createEffectOn } from "../hooks/effects";
+import { getLastResult } from "../states/snapshot";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -278,7 +283,7 @@ const actions = {
         ...newTagIds.filter((tag) => !currentTagIds.includes(tag)),
       ];
       tagsToUpdate.forEach((tag) => {
-        updateLocalTagPB(
+        reconcileLocalTagPB(
           tag,
           result.mode,
           result.mode2,
@@ -312,6 +317,56 @@ const actions = {
 export async function updateTags(
   params: ActionType["updateTags"],
 ): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    // if its not ready yet, send the api request to update the tags
+    const response = await Ape.results.updateTags({
+      body: { resultId: params.resultId, tagIds: params.newTagIds },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to update result tag: ${response.body.message}`);
+    }
+
+    const result = getLastResult();
+
+    if (result === undefined) {
+      throw new Error(`Cannot find result with id ${params.resultId}`);
+    }
+
+    if (result._id !== params.resultId) {
+      throw new Error(
+        `Last result id ${result._id} does not match updated result id ${params.resultId}. Call the devs and tell them to fix their ugly code`,
+      );
+    }
+
+    const tagsToUpdate = [
+      ...params.currentTagIds.filter((tag) => !params.newTagIds.includes(tag)),
+      ...params.newTagIds.filter((tag) => !params.currentTagIds.includes(tag)),
+    ];
+
+    tagsToUpdate.forEach((tag) => {
+      if (response.body.data.tagPbs.includes(tag)) {
+        saveLocalTagPB(
+          tag,
+          result.mode,
+          result.mode2,
+          result.punctuation,
+          result.numbers,
+          result.language,
+          result.difficulty,
+          result.lazyMode,
+          result.wpm,
+          result.acc,
+          result.rawWpm,
+          result.consistency,
+        );
+      }
+    });
+
+    params.afterUpdate?.({ tagPbs: response.body.data.tagPbs });
+    return;
+  }
+
   const transaction = actions.updateTags(params);
   await transaction.isPersisted.promise;
 }
