@@ -9,19 +9,17 @@ import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { isAuthenticated } from "../../../states/core";
-import { hotkeys } from "../../../states/hotkeys";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
-import { isFirefox } from "../../../utils/misc";
 // import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { Kbd } from "../../common/Kbd";
+import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
 import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
@@ -63,12 +61,7 @@ export function Settings(): JSXElement {
         <div class="text-center text-sub">
           tip: You can also change all these settings quickly using the command
           line
-          <br />(<Kbd hotkey={hotkeys.commandline} />
-          <Show when={!isFirefox()}>
-            &nbsp;or&nbsp;
-            <Kbd hotkey="Mod+Shift+P" />
-          </Show>
-          )
+          <br />(<CommandlineHotkey /> )
         </div>
       </Show>
       <AccountSettingsNotice />
