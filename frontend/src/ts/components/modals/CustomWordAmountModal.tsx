@@ -62,7 +62,12 @@ export function CustomWordAmountModal(): JSXElement {
             },
           }}
           children={(field) => (
-            <InputField field={field} type="number" placeholder="word amount" />
+            <InputField
+              field={field}
+              showIndicator
+              type="number"
+              placeholder="word amount"
+            />
           )}
         />
         <div class="text-xs">

@@ -152,6 +152,7 @@ export function QuoteSubmitModal(): JSXElement {
                 class="bg-bg-secondary w-full rounded p-2 text-text"
                 type="text"
                 field={field}
+                showIndicator
                 autocomplete="off"
               />
             </LabeledField>

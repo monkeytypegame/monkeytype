@@ -86,7 +86,9 @@ export function SaveCustomTextModal(props: {
               return undefined;
             },
           }}
-          children={(field) => <InputField field={field} placeholder="name" />}
+          children={(field) => (
+            <InputField field={field} showIndicator placeholder="name" />
+          )}
         />
         <form.Field
           name="isLong"
