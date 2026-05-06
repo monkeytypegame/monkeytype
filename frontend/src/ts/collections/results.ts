@@ -29,6 +29,7 @@ import { baseKey } from "../queries/utils/keys";
 import { __nonReactive as tagsNonReactive, updateLocalTagPB } from "./tags";
 import { isAuthenticated } from "../states/core";
 import { createEffectOn } from "../hooks/effects";
+import { getLastResult, setLastResult } from "../states/snapshot";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -224,9 +225,18 @@ const resultsCollection = createCollection(
         throw new Error("Error fetching results:" + response.body.message);
       }
 
-      return response.body.data.map((result) =>
+      const results = response.body.data.map((result) =>
         normalizeResult(result, knownTagIds),
       );
+
+      if (getLastResult() === undefined && results.length > 0) {
+        const lastResult = results.reduce((acc, cur) =>
+          acc === undefined || acc.timestamp < cur.timestamp ? cur : acc,
+        );
+        setLastResult(lastResult);
+      }
+
+      return results;
     },
     queryClient,
     getKey: (it) => it._id,
