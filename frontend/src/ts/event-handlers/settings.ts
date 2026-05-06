@@ -24,7 +24,7 @@ settingsPage?.qs(".section.presets")?.on("click", (e) => {
     EditPresetPopup.show("add");
   } else if (target.classList.contains("editButton")) {
     const presetid = target.parentElement?.getAttribute("data-id");
-    const name = target.parentElement?.getAttribute("data-display");
+    const name = target.parentElement?.getAttribute("data-name");
     if (
       presetid === undefined ||
       name === undefined ||
@@ -41,7 +41,7 @@ settingsPage?.qs(".section.presets")?.on("click", (e) => {
     EditPresetPopup.show("edit", presetid, name);
   } else if (target.classList.contains("removeButton")) {
     const presetid = target.parentElement?.getAttribute("data-id");
-    const name = target.parentElement?.getAttribute("data-display");
+    const name = target.parentElement?.getAttribute("data-name");
     if (
       presetid === undefined ||
       name === undefined ||

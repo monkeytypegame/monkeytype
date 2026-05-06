@@ -22,7 +22,6 @@ import {
 import {
   getDefaultSnapshot,
   Snapshot,
-  SnapshotPreset,
   SnapshotResult,
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
@@ -44,6 +43,7 @@ import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { fillTagsCollection, __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
+import { fillPresetsCollection } from "./collections/presets";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -198,29 +198,10 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.customThemes = userData.customThemes ?? [];
 
     fillTagsCollection(userData.tags ?? []);
+    fillPresetsCollection(presetsData ?? []);
+
+    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
-
-    if (presetsData !== undefined && presetsData !== null) {
-      const presetsWithDisplay = presetsData.map((preset) => {
-        return {
-          ...preset,
-          display: preset.name.replace(/_/g, " "),
-        };
-      }) as SnapshotPreset[];
-      snap.presets = presetsWithDisplay;
-
-      snap.presets = snap.presets?.sort(
-        (a: SnapshotPreset, b: SnapshotPreset) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        },
-      );
-    }
 
     snap.connections = convertConnections(connectionsData);
 

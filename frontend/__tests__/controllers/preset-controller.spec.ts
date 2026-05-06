@@ -10,6 +10,7 @@ import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as Tags from "../../src/ts/collections/tags";
+import * as Presets from "../../src/ts/collections/presets";
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -20,6 +21,7 @@ describe("PresetController", () => {
       //
     }));
     const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
+    const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
       Persistence,
@@ -41,6 +43,7 @@ describe("PresetController", () => {
     beforeEach(() => {
       [
         dbGetSnapshotMock,
+        getPresetMock,
         configApplyMock,
         configSaveFullConfigMock,
         configGetConfigChangesMock,
@@ -51,6 +54,7 @@ describe("PresetController", () => {
         tagsSaveActiveMock,
       ].forEach((it) => it.mockClear());
 
+      dbGetSnapshotMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
     });
 
@@ -88,6 +92,9 @@ describe("PresetController", () => {
     });
 
     it("should ignore unknown preset", async () => {
+      //GIVEN
+      getPresetMock.mockReturnValue(undefined);
+
       //WHEN
       await PresetController.apply("unknown");
       //THEN
@@ -143,7 +150,8 @@ describe("PresetController", () => {
         _id: "1",
         ...partialPreset,
       } as any;
-      dbGetSnapshotMock.mockReturnValue({ presets: [preset] } as any);
+      dbGetSnapshotMock.mockReturnValue({} as any);
+      getPresetMock.mockReturnValue(preset as any);
       return preset;
     };
   });

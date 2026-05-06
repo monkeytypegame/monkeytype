@@ -9,7 +9,7 @@ import * as Strings from "../utils/strings";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox/funbox";
 import {
-  __nonReactive,
+  __nonReactive as __nonReactiveTags,
   toggleTagActive,
   useTagsLiveQuery,
 } from "../collections/tags";
@@ -37,7 +37,10 @@ import {
 } from "@monkeytype/schemas/configs";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
-import { SnapshotPreset } from "../constants/default-snapshot";
+import {
+  __nonReactive as __nonReactivePresets,
+  usePresetsLiveQuery,
+} from "../collections/presets";
 import { LayoutsList } from "../constants/layouts";
 import { DataArrayPartial, Optgroup, OptionOptional } from "slim-select/store";
 import { ThemesList, ThemeWithName } from "../constants/themes";
@@ -529,7 +532,7 @@ createEffectOn(activeTags, refreshTagsSettingsSection);
 function refreshTagsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const tagsEl = qs(".pageSettings .section.tags .tagsList")?.empty();
-    __nonReactive.getTags().forEach((tag) => {
+    __nonReactiveTags.getTags().forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -561,15 +564,18 @@ function refreshTagsSettingsSection(): void {
   }
 }
 
+const presetsQuery = usePresetsLiveQuery();
+createEffectOn(presetsQuery, refreshPresetsSettingsSection);
+
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = qs(
       ".pageSettings .section.presets .presetsList",
     )?.empty();
-    DB.getSnapshot()?.presets?.forEach((preset: SnapshotPreset) => {
+    __nonReactivePresets.getPresets().forEach((preset) => {
       presetsEl?.appendHtml(`
-      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
-        <button class="presetButton">${preset.display}</button>
+      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}">
+        <button class="presetButton">${preset.name}</button>
         <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
         </button>
@@ -577,7 +583,7 @@ function refreshPresetsSettingsSection(): void {
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
-      
+
       `);
     });
     qs(".pageSettings .section.presets")?.show();

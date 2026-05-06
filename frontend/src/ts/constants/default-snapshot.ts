@@ -7,7 +7,6 @@ import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
-import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
 
@@ -69,15 +68,10 @@ export type Snapshot = Omit<
   maxStreak: number;
   isPremium: boolean;
   streakHourOffset?: number;
-  presets: SnapshotPreset[];
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
   connections: Record<string, ConnectionStatus | "incoming">;
-};
-
-export type SnapshotPreset = Preset & {
-  display: string;
 };
 
 const defaultSnap = {
@@ -94,7 +88,6 @@ const defaultSnap = {
   isPremium: false,
   config: getDefaultConfig(),
   customThemes: [],
-  presets: [],
   banned: undefined,
   verified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
