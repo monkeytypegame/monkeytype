@@ -42,7 +42,6 @@ import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
-import { fillPresetsCollection } from "./collections/presets";
 import { fetchUserFromApi } from "./ape/user";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
 
@@ -97,18 +96,12 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       ? Ape.connections.get()
       : { status: 200, body: { message: "", data: [] } };
 
-    const [userData, presetsResponse, connectionsResponse] = await Promise.all([
+    const [userData, connectionsResponse] = await Promise.all([
       fetchUserFromApi(),
-      Ape.presets.get(),
+
       connectionsRequest,
     ]);
 
-    if (presetsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${presetsResponse.body.message} (presets)`,
-        presetsResponse.status,
-      );
-    }
     if (connectionsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${connectionsResponse.body.message} (connections)`,
@@ -116,7 +109,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       );
     }
 
-    const presetsData = presetsResponse.body.data;
     const connectionsData = connectionsResponse.body.data;
 
     if (userData === null || userData === undefined) {
@@ -181,11 +173,9 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    fillPresetsCollection(presetsData ?? []);
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     snap.connections = convertConnections(connectionsData);
-
     dbSnapshot = snap;
 
     return dbSnapshot;

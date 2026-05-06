@@ -32,9 +32,7 @@ const queryKeys = {
 const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
-    startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {

@@ -10,6 +10,8 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId } from "./utils/misc";
+import { isAuthenticated } from "../states/core";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
 export type PresetItem = Preset;
 
@@ -29,13 +31,21 @@ export function usePresetsLiveQuery() {
 const presetsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
-    startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      return [] as PresetItem[];
+      if (!isAuthenticated()) return [];
+      const response = await Ape.presets.get();
+
+      if (response.status !== 200) {
+        throw new Error("Error fetching presets:" + response.body.message);
+      }
+
+      return response.body.data.map((it) => ({
+        ...it,
+        name: replaceUnderscoresWithSpaces(it.name),
+      }));
     },
   }),
 );
@@ -149,6 +159,9 @@ const actions = {
 };
 
 // --- Public API ---
+export async function waitForPresetsReady(): Promise<void> {
+  await presetsCollection.stateWhenReady();
+}
 
 function getPresets(): PresetItem[] {
   return [...presetsCollection.values()].sort((a, b) =>
@@ -158,21 +171,6 @@ function getPresets(): PresetItem[] {
 
 function getPreset(id: string): PresetItem | undefined {
   return presetsCollection.get(id);
-}
-
-export function fillPresetsCollection(presets: Preset[]): void {
-  const presetItems = presets.map((preset) => ({
-    _id: preset._id,
-    name: preset.name.replace(/_/g, " "),
-    config: preset.config,
-    settingGroups: preset.settingGroups,
-  }));
-
-  presetsCollection.utils.writeBatch(() => {
-    presetItems.forEach((item) => {
-      presetsCollection.utils.writeInsert(item);
-    });
-  });
 }
 
 export async function addPreset(
