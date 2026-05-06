@@ -339,28 +339,21 @@ export async function updateTags(
       );
     }
 
-    const tagsToUpdate = [
-      ...params.currentTagIds.filter((tag) => !params.newTagIds.includes(tag)),
-      ...params.newTagIds.filter((tag) => !params.currentTagIds.includes(tag)),
-    ];
-
-    tagsToUpdate.forEach((tag) => {
-      if (response.body.data.tagPbs.includes(tag)) {
-        saveLocalTagPB(
-          tag,
-          result.mode,
-          result.mode2,
-          result.punctuation,
-          result.numbers,
-          result.language,
-          result.difficulty,
-          result.lazyMode,
-          result.wpm,
-          result.acc,
-          result.rawWpm,
-          result.consistency,
-        );
-      }
+    response.body.data.tagPbs.forEach((tag) => {
+      saveLocalTagPB(
+        tag,
+        result.mode,
+        result.mode2,
+        result.punctuation,
+        result.numbers,
+        result.language,
+        result.difficulty,
+        result.lazyMode,
+        result.wpm,
+        result.acc,
+        result.rawWpm,
+        result.consistency,
+      );
     });
 
     params.afterUpdate?.({ tagPbs: response.body.data.tagPbs });
