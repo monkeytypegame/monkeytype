@@ -84,6 +84,9 @@ export async function flushPendingChanges({
     updatedStatus.deleted?.forEach((deleted) =>
       inboxCollection.utils.writeDelete(deleted.id),
     );
+    updatedStatus.read?.forEach((read) => {
+      inboxCollection.utils.writeUpdate(read);
+    });
   });
 
   return { refetch: false };
