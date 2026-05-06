@@ -13,6 +13,7 @@ import {
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
 import { tempId } from "./utils/misc";
+import { fetchUserFromApi } from "../ape/user";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
@@ -27,8 +28,13 @@ const resultFilterPresetsCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      //return emtpy array. We load the user with the snapshot and fill the collection from there
-      return [] as ResultFilters[];
+      const userData = await fetchUserFromApi();
+      if (userData === undefined) return [];
+
+      return (userData.resultFilterPresets ?? []).map((it) => ({
+        ...it,
+        name: replaceUnderscoresWithSpaces(it.name),
+      }));
     },
   }),
 );
@@ -117,14 +123,4 @@ export async function deleteResultFilterPreset(
 ): Promise<void> {
   const transaction = actions.deleteResultFilterPreset(params);
   await transaction.isPersisted.promise;
-}
-
-export function fillResultFilterPresetsCollection(
-  presets: ResultFilters[],
-): void {
-  resultFilterPresetsCollection.utils.writeBatch(() => {
-    presets
-      .map((it) => ({ ...it, name: replaceUnderscoresWithSpaces(it.name) }))
-      .forEach((it) => resultFilterPresetsCollection.utils.writeInsert(it));
-  });
 }

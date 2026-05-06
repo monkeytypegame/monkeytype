@@ -33,7 +33,6 @@ import {
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { insertLocalResult } from "./collections/results";
-import { fillResultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
@@ -41,21 +40,14 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
-import { fillTagsCollection, __nonReactive } from "./collections/tags";
+import { __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fillPresetsCollection } from "./collections/presets";
+import { fetchUserFromApi } from "./ape/user";
+import { SnapshotInitError } from "./utils/snapshot-init-error";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
-
-export class SnapshotInitError extends Error {
-  public responseCode: number;
-  constructor(message: string, responseCode: number) {
-    super(message);
-    this.name = "SnapshotInitError";
-    this.responseCode = responseCode;
-  }
-}
 
 export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
@@ -105,19 +97,12 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       ? Ape.connections.get()
       : { status: 200, body: { message: "", data: [] } };
 
-    const [userResponse, presetsResponse, connectionsResponse] =
-      await Promise.all([
-        Ape.users.get(),
-        Ape.presets.get(),
-        connectionsRequest,
-      ]);
+    const [userData, presetsResponse, connectionsResponse] = await Promise.all([
+      fetchUserFromApi(),
+      Ape.presets.get(),
+      connectionsRequest,
+    ]);
 
-    if (userResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${userResponse.body.message} (user)`,
-        userResponse.status,
-      );
-    }
     if (presetsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${presetsResponse.body.message} (presets)`,
@@ -131,11 +116,10 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       );
     }
 
-    const userData = userResponse.body.data;
     const presetsData = presetsResponse.body.data;
     const connectionsData = connectionsResponse.body.data;
 
-    if (userData === null) {
+    if (userData === null || userData === undefined) {
       throw new SnapshotInitError(
         `Request was successful but user data is null`,
         200,
@@ -197,10 +181,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    fillTagsCollection(userData.tags ?? []);
     fillPresetsCollection(presetsData ?? []);
-
-    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     snap.connections = convertConnections(connectionsData);
