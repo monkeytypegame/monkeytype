@@ -62,7 +62,11 @@ class Problems<K extends string, T extends string> {
 
     Object.entries(this.problems).forEach(([key, problems]) => {
       let label: string = this.labels[key as T] ?? `${key}`;
-      stepSummary.addHeading(`❌ ${label}`, 3).addList(problems as string[]);
+      stepSummary
+        .addRaw(`❌ ${label}`)
+        .addEOL()
+        .addList(problems as string[])
+        .addEOL();
     });
 
     return (
