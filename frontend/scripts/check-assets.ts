@@ -56,7 +56,7 @@ class Problems<K extends string, T extends string> {
   public toString(): string {
     stepSummary.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
-      stepSummary.addRaw("✅ all checks passesd").addEOL();
+      stepSummary.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
 
