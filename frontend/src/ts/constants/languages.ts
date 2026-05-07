@@ -353,6 +353,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_visual_basic",
     "code_arduino",
     "code_systemverilog",
+    "code_vhdl",
     "code_elixir",
     "code_gleam",
     "code_zig",
