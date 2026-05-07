@@ -54,17 +54,15 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
-    stepSummary.addHeading(`${this.type} Checks`);
+    stepSummary.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
-      stepSummary.addRaw("✅ valid");
+      stepSummary.addRaw("✅ all checks passesd").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
 
     Object.entries(this.problems).forEach(([key, problems]) => {
       let label: string = this.labels[key as T] ?? `${key}`;
-      stepSummary
-        .addHeading(label, 2)
-        .addList((problems as string[]).map((it) => `❌ ${it}`));
+      stepSummary.addHeading(`❌ ${label}`, 3).addList(problems as string[]);
     });
 
     return (
@@ -526,7 +524,12 @@ async function main(): Promise<void> {
 
   try {
     if (tasks.size > 0) {
-      await Promise.all([...tasks].map(async (validator) => validator()));
+      const results = await Promise.allSettled(
+        [...tasks].map(async (validator) => validator()),
+      );
+      if (results.find((it) => it.status === "rejected") !== undefined) {
+        throw new Error("One or more checks failed.");
+      }
     }
   } finally {
     await stepSummary.write();
