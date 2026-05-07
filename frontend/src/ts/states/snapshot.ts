@@ -5,7 +5,7 @@ import { Mode } from "@monkeytype/schemas/shared";
 
 export type MiniSnapshot = Omit<
   Snapshot,
-  "results" | "tags" | "presets" | "filterPresets"
+  "results" | "presets" | "filterPresets"
 >;
 const [snapshot, updateSnapshot] = createStore<{
   value: MiniSnapshot | undefined;

@@ -56,47 +56,6 @@
       }
     }
   }
-  .pageAccount {
-    .accountVerificatinNotice {
-      button {
-        grid-column: -1 / 1;
-      }
-    }
-    .group.resultBatches {
-      gap: 1rem;
-      grid-template-areas: "bar" "button" "text";
-      grid-template-columns: 1fr;
-    }
-    .group.topFilters {
-      .buttons {
-        grid-template-columns: 1fr;
-        button[filter="all"] {
-          grid-column: span 1;
-        }
-      }
-    }
-    .group.chart .below {
-      .buttons {
-        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-      }
-    }
-    .triplegroup.stats {
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    }
-    .group.aboveHistory {
-      grid-template-columns: 1fr;
-      .exportCSV {
-        grid-column: span 1;
-      }
-    }
-    .group.history table thead td:nth-child(8),
-    .group.history table tbody td:nth-child(8),
-    .group.history table thead td:nth-child(9),
-    .group.history table tbody td:nth-child(9) {
-      display: none;
-    }
-  }
-
   #keymap .row {
     height: 1.25rem;
   }

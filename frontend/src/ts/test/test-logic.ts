@@ -22,6 +22,7 @@ import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
 import * as Replay from "./replay";
+import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
@@ -582,12 +583,12 @@ async function init(): Promise<boolean> {
       Arrays.nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
-        [...TestWords.words.getCurrent()],
+        [...TestWords.words.getCurrentText()],
         0,
       ) as string,
     );
   }
-  Funbox.toggleScript(TestWords.words.getCurrent());
+  Funbox.toggleScript(TestWords.words.getCurrentText());
   TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
@@ -684,8 +685,8 @@ export async function addWord(): Promise<void> {
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      TestWords.words.get(TestWords.words.length - 1),
-      TestWords.words.get(TestWords.words.length - 2),
+      TestWords.words.getText(TestWords.words.length - 1),
+      TestWords.words.getText(TestWords.words.length - 2),
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -810,12 +811,9 @@ function buildCompletedEvent(
   }
 
   //tags
-  const activeTagsIds: string[] = [];
-  for (const tag of DB.getSnapshot()?.tags ?? []) {
-    if (tag.active === true) {
-      activeTagsIds.push(tag._id);
-    }
-  }
+  const activeTagsIds: string[] = __nonReactive
+    .getActiveTags()
+    .map((tag) => tag._id);
 
   const duration = parseFloat(stats.time.toString());
   const afkDuration = TestStats.calculateAfkSeconds(duration);
@@ -1139,7 +1137,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.get(wordIndex).length) {
+      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
         historyLength--;
       }
 
@@ -1470,7 +1468,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           Arrays.nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
-            [...TestWords.words.getCurrent()],
+            [...TestWords.words.getCurrentText()],
             0,
           ) as string,
         );
