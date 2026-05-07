@@ -526,17 +526,16 @@ async function main(): Promise<void> {
     }
   }
 
-  try {
-    if (tasks.size > 0) {
-      const results = await Promise.allSettled(
-        [...tasks].map(async (validator) => validator()),
-      );
-      if (results.find((it) => it.status === "rejected") !== undefined) {
-        throw new Error("One or more checks failed.");
-      }
-    }
-  } finally {
+  if (tasks.size > 0) {
+    const results = await Promise.allSettled(
+      [...tasks].map(async (validator) => validator()),
+    );
+
     await stepSummary.write();
+
+    if (results.find((it) => it.status === "rejected") !== undefined) {
+      throw new Error("One or more checks failed.");
+    }
   }
 }
 void main();
