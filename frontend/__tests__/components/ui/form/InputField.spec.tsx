@@ -83,12 +83,10 @@ describe("InputField", () => {
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
-  it("shows FieldIndicator when showIndicator is true", () => {
+  it("shows FieldIndicator", () => {
     const field = makeField("name");
     field.state.meta.isValidating = true;
-    const { container } = render(() => (
-      <InputField field={() => field} showIndicator />
-    ));
+    const { container } = render(() => <InputField field={() => field} />);
 
     expect(container.querySelector(".fa-circle-notch")).toBeInTheDocument();
   });
