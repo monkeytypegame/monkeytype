@@ -22,6 +22,9 @@ import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
+import * as ghCore from "@actions/core";
+
+const stepSummary = ghCore.summary;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -51,9 +54,18 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
+    stepSummary.addHeading(`${this.type} Checks`);
     if (!this.hasError()) {
+      stepSummary.addRaw("✅ valid");
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
+
+    Object.entries(this.problems).forEach(([key, problems]) => {
+      let label: string = this.labels[key as T] ?? `${key}`;
+      stepSummary
+        .addHeading(label, 2)
+        .addList((problems as string[]).map((it) => `❌ ${it}`));
+    });
 
     return (
       `${this.type} are \u001b[31minvalid\u001b[0m\n` +
@@ -512,9 +524,12 @@ async function main(): Promise<void> {
     }
   }
 
-  if (tasks.size > 0) {
-    await Promise.all([...tasks].map(async (validator) => validator()));
-    return;
+  try {
+    if (tasks.size > 0) {
+      await Promise.all([...tasks].map(async (validator) => validator()));
+    }
+  } finally {
+    await stepSummary.write();
   }
 }
 void main();
