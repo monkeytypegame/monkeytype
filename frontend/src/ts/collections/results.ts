@@ -500,13 +500,17 @@ export async function getUserAverage10(
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
 
-  const result = await queryOnce(() =>
-    buildSettingsResultsQuery(options, {
-      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-    })
-      .orderBy(({ r }) => r.timestamp, "desc")
-      .limit(10)
-      .select(({ r }) => ({ wpm: avg(r.wpm), acc: avg(r.acc) })),
+  const result = await queryOnce((q) =>
+    q
+      .from({
+        //we use sub-query to filter first and then aggregate
+        last10: buildSettingsResultsQuery(options, {
+          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+        })
+          .orderBy(({ r }) => r.timestamp, "desc")
+          .limit(10),
+      })
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) })),
   );
 
   return result.length === 1 && result[0] !== undefined
