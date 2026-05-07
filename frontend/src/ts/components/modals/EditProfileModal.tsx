@@ -118,8 +118,8 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField field={field} maxLength={250}/>
-                <div class="text-sm text-sub">
+                <TextareaField field={field} maxLength={250} />
+                <div class="mt-1 text-base">
                   {field().state.value.length}/250
                 </div>
               </>
@@ -137,8 +137,8 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField field={field} maxLength={75}/>
-                <div class="text-sm text-sub">
+                <TextareaField field={field} maxLength={75} />
+                <div class="mt-1 text-base">
                   {field().state.value.length}/75
                 </div>
               </>
@@ -150,7 +150,7 @@ export function EditProfile() {
           <label class="text-sub mb-[0.25em] block">github</label>
           <div class="flex items-center">
             <p class="my-2 mr-2">https://github.com/</p>
-            <div class="flex-1">
+            <div class="w-full max-w-60">
               <form.Field
                 name="github"
                 validators={{
@@ -175,7 +175,7 @@ export function EditProfile() {
           <label class="text-sub mb-[0.25em] block">twitter</label>
           <div class="flex items-center">
             <p class="my-2 mr-2">https://x.com/</p>
-            <div class="flex-1">
+            <div class="w-full max-w-60">
               <form.Field
                 name="twitter"
                 validators={{

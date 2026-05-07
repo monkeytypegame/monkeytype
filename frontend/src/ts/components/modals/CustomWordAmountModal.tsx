@@ -75,7 +75,7 @@ export function CustomWordAmountModal(): JSXElement {
           form={form}
           variant="button"
           text="apply"
-          skipDirtyCheck
+          skipUnchangedCheck 
         />
       </form>
     </AnimatedModal>
