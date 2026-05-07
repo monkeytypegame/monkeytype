@@ -2328,11 +2328,11 @@ export const themes: Record<ThemeName, Theme> = {
     main: "#178c81",
     sub: "#7f7f7e",
     subAlt: "#332F2F",
-    text: "#178c81",
+    text: "#808080",
     error: "#FF3F34",
-    errorExtra: "#de0202",
-    colorfulError: "#994242",
-    colorfulErrorExtra: "#994242",
+    errorExtra: "#FF0000",
+    colorfulError: "#FF0000",
+    colorfulErrorExtra: "#FF0000",
   },
 };
 
