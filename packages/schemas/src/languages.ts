@@ -412,7 +412,6 @@ export const LanguageSchema = z.enum(
     "code_visual_basic",
     "code_arduino",
     "code_systemverilog",
-    "code_vhdl",
     "code_elixir",
     "code_gleam",
     "code_zig",
@@ -444,6 +443,7 @@ export const LanguageSchema = z.enum(
     "pokemon_1k",
     "kokanu",
     "likanu",
+    "code_vhdl",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
