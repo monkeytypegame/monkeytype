@@ -205,8 +205,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.connections = convertConnections(connectionsData);
 
-    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
-
     dbSnapshot = snap;
 
     return dbSnapshot;
