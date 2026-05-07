@@ -9,7 +9,8 @@ import * as ConfigUtils from "../../src/ts/config/utils";
 import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
-import * as TagController from "../../src/ts/controllers/tag-controller";
+import * as Tags from "../../src/ts/collections/tags";
+import * as Presets from "../../src/ts/collections/presets";
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -20,6 +21,7 @@ describe("PresetController", () => {
       //
     }));
     const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
+    const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
       Persistence,
@@ -34,26 +36,25 @@ describe("PresetController", () => {
       "showSuccessNotification",
     );
     const testRestartMock = vi.spyOn(TestLogic, "restart");
-    const tagControllerClearMock = vi.spyOn(TagController, "clear");
-    const tagControllerSetMock = vi.spyOn(TagController, "set");
-    const tagControllerSaveActiveMock = vi.spyOn(
-      TagController,
-      "saveActiveToLocalStorage",
-    );
+    const tagsClearMock = vi.spyOn(Tags, "clearActiveTags");
+    const tagsSetMock = vi.spyOn(Tags, "setTagActive");
+    const tagsSaveActiveMock = vi.spyOn(Tags, "saveActiveToLocalStorage");
 
     beforeEach(() => {
       [
         dbGetSnapshotMock,
+        getPresetMock,
         configApplyMock,
         configSaveFullConfigMock,
         configGetConfigChangesMock,
         notificationAddMock,
         testRestartMock,
-        tagControllerClearMock,
-        tagControllerSetMock,
-        tagControllerSaveActiveMock,
+        tagsClearMock,
+        tagsSetMock,
+        tagsSaveActiveMock,
       ].forEach((it) => it.mockClear());
 
+      dbGetSnapshotMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
     });
 
@@ -66,7 +67,7 @@ describe("PresetController", () => {
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith(preset.config);
-      expect(tagControllerClearMock).toHaveBeenCalled();
+      expect(tagsClearMock).toHaveBeenCalled();
       expect(testRestartMock).toHaveBeenCalled();
       expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
         durationMs: 2000,
@@ -84,23 +85,16 @@ describe("PresetController", () => {
       await PresetController.apply(preset._id);
 
       //THEN
-      expect(tagControllerClearMock).toHaveBeenCalled();
-      expect(tagControllerSetMock).toHaveBeenNthCalledWith(
-        1,
-        "tagOne",
-        true,
-        false,
-      );
-      expect(tagControllerSetMock).toHaveBeenNthCalledWith(
-        2,
-        "tagTwo",
-        true,
-        false,
-      );
-      expect(tagControllerSaveActiveMock).toHaveBeenCalled();
+      expect(tagsClearMock).toHaveBeenCalled();
+      expect(tagsSetMock).toHaveBeenNthCalledWith(1, "tagOne", true, false);
+      expect(tagsSetMock).toHaveBeenNthCalledWith(2, "tagTwo", true, false);
+      expect(tagsSaveActiveMock).toHaveBeenCalled();
     });
 
     it("should ignore unknown preset", async () => {
+      //GIVEN
+      getPresetMock.mockReturnValue(undefined);
+
       //WHEN
       await PresetController.apply("unknown");
       //THEN
@@ -145,20 +139,10 @@ describe("PresetController", () => {
       await PresetController.apply(preset._id);
 
       //THEN
-      expect(tagControllerClearMock).toHaveBeenCalled();
-      expect(tagControllerSetMock).toHaveBeenNthCalledWith(
-        1,
-        "tagOne",
-        true,
-        false,
-      );
-      expect(tagControllerSetMock).toHaveBeenNthCalledWith(
-        2,
-        "tagTwo",
-        true,
-        false,
-      );
-      expect(tagControllerSaveActiveMock).toHaveBeenCalled();
+      expect(tagsClearMock).toHaveBeenCalled();
+      expect(tagsSetMock).toHaveBeenNthCalledWith(1, "tagOne", true, false);
+      expect(tagsSetMock).toHaveBeenNthCalledWith(2, "tagTwo", true, false);
+      expect(tagsSaveActiveMock).toHaveBeenCalled();
     });
 
     const givenPreset = (partialPreset: Partial<Preset>): Preset => {
@@ -166,7 +150,8 @@ describe("PresetController", () => {
         _id: "1",
         ...partialPreset,
       } as any;
-      dbGetSnapshotMock.mockReturnValue({ presets: [preset] } as any);
+      dbGetSnapshotMock.mockReturnValue({} as any);
+      getPresetMock.mockReturnValue(preset as any);
       return preset;
     };
   });
