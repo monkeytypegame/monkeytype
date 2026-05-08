@@ -439,11 +439,11 @@ export const LanguageSchema = z.enum(
     "code_abap_1k",
     "code_yoptascript",
     "code_cuda",
-    "code_objective_c",
     "kinyarwanda",
     "pokemon_1k",
     "kokanu",
     "likanu",
+    "code_objective_c"
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
