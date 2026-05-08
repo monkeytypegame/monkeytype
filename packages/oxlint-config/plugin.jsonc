@@ -24,6 +24,7 @@
     {
       "files": ["**/*.tsx"],
       "rules": {
+        "monkeytype-rules/no-non-reactive-access-in-components": "error",
         "monkeytype-rules/prefer-arrow-in-component": "error",
         "monkeytype-rules/one-component-per-file": "error",
         "monkeytype-rules/component-pascal-case": "error",
