@@ -12,6 +12,7 @@ import { Setting } from "../Setting";
 export function AutoSwitchTheme(): JSXElement {
   return (
     <Setting
+      key="autoSwitchTheme"
       title={
         configMetadata.autoSwitchTheme.displayString ?? "auto switch theme"
       }

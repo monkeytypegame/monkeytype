@@ -11,6 +11,7 @@ import { Setting } from "../Setting";
 export function Layout(): JSXElement {
   return (
     <Setting
+      key="layout"
       title="layout"
       description={configMetadata.layout.description}
       fa={configMetadata.layout.fa}

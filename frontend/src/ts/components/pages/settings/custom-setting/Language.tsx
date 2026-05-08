@@ -16,6 +16,7 @@ import { Setting } from "../Setting";
 export function Language(): JSXElement {
   return (
     <Setting
+      key="language"
       title="language"
       description={configMetadata.language.description}
       fa={configMetadata.language.fa}

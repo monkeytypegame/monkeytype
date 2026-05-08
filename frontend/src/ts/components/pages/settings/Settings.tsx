@@ -161,6 +161,7 @@ export function Settings(): JSXElement {
           <ImportExport />
           <AutoSetting key="ads" />
           <Setting
+            key="cookies"
             title="update cookie preferences"
             description="If you changed your mind about which cookies you consent to, you can change your preferences here."
             fa={{
@@ -179,6 +180,7 @@ export function Settings(): JSXElement {
           />
           <AnimationFpsLimit />
           <Setting
+            key="resetSettings"
             title="reset settings"
             description={
               <div>
@@ -418,6 +420,7 @@ function AutoSetting(props: {
 
   return (
     <Setting
+      key={props.key}
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
       description={configMetadata[props.key].description}

@@ -9,6 +9,7 @@ import { Setting } from "../Setting";
 export function SoundVolume(): JSXElement {
   return (
     <Setting
+      key="soundVolume"
       title="sound volume"
       description={configMetadata.soundVolume.description}
       fa={configMetadata.soundVolume.fa}

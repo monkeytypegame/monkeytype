@@ -13,6 +13,7 @@ import { Setting } from "../Setting";
 export function ImportExport(): JSXElement {
   return (
     <Setting
+      key="importExport"
       title="import/export settings"
       description="Import or export the settings as JSON."
       fa={{

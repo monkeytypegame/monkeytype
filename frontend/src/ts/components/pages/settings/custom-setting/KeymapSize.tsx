@@ -9,6 +9,7 @@ import { Setting } from "../Setting";
 export function KeymapSize(): JSXElement {
   return (
     <Setting
+      key="keymapSize"
       title="keymap size"
       description={configMetadata.keymapSize.description}
       fa={configMetadata.keymapSize.fa}

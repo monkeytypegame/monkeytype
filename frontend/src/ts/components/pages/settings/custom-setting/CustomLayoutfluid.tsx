@@ -12,6 +12,7 @@ import { Setting } from "../Setting";
 export function CustomLayoutfluid(): JSXElement {
   return (
     <Setting
+      key="customLayoutfluid"
       title="custom layoutfluid"
       description={configMetadata.customLayoutfluid.description}
       fa={configMetadata.customLayoutfluid.fa}

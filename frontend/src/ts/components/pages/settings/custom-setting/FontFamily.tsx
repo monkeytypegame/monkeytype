@@ -28,6 +28,7 @@ export function FontFamily(): JSXElement {
 
   return (
     <Setting
+      key="fontFamily"
       title={configMetadata.fontFamily.displayString ?? "font family"}
       fa={configMetadata.fontFamily.fa}
       description={

@@ -1,11 +1,18 @@
 import { JSXElement, Show } from "solid-js";
+import { z } from "zod";
+import { serialize } from "zod-urlsearchparams";
 
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { FaProps } from "../../common/Fa";
 import { H3 } from "../../common/Headers";
 
 type Props = {
+  key: string;
   title: string;
   fa: FaProps;
   description: string | JSXElement;
@@ -22,6 +29,29 @@ export function Setting(props: Props): JSXElement {
           class="-m-2 p-2 opacity-0 group-hover:opacity-100"
           variant="text"
           fa={{ icon: "fa-link" }}
+          onClick={() => {
+            const urlParams = serialize({
+              schema: z.object({
+                highlight: z.string(),
+              }),
+              data: {
+                highlight: props.key,
+              },
+            });
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+            window.history.replaceState({}, "", newUrl);
+
+            navigator.clipboard
+              .writeText(window.location.toString())
+              .then(() => {
+                showSuccessNotification("Link copied to clipboard");
+              })
+              .catch((e: unknown) => {
+                showErrorNotification("Failed to copy to clipboard", {
+                  error: e,
+                });
+              });
+          }}
         />
       </div>
       <div

@@ -54,6 +54,7 @@ export function CustomBackground(): JSXElement {
 
   return (
     <Setting
+      key="customBackground"
       title={
         configMetadata.customBackground.displayString ?? "custom background"
       }

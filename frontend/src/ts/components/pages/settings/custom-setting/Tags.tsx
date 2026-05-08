@@ -18,6 +18,7 @@ export function Tags(): JSXElement {
 
   return (
     <Setting
+      key="tags"
       title="tags"
       description="With tags, you can compare how fast you're typing in different situations. You can see your active tags above the test words. They will remain active until you deactivate them, or refresh the page."
       fa={{

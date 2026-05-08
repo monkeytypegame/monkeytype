@@ -41,6 +41,7 @@ export function PaceCaret(): JSXElement {
 
   return (
     <Setting
+      key="paceCaret"
       title={configMetadata.paceCaret.displayString ?? "pace caret"}
       fa={configMetadata.paceCaret.fa}
       description={configMetadata.paceCaret.description}

@@ -61,6 +61,7 @@ export function CustomBackgroundFilters(): JSXElement {
 
   return (
     <Setting
+      key="customBackgroundFilter"
       title="custom background filters"
       description={configMetadata.customBackgroundFilter.description}
       fa={configMetadata.customBackgroundFilter.fa}

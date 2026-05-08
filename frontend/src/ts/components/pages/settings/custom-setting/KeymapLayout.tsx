@@ -11,6 +11,7 @@ import { Setting } from "../Setting";
 export function KeymapLayout(): JSXElement {
   return (
     <Setting
+      key="keymapLayout"
       title="keymap layout"
       description={configMetadata.keymapLayout.description}
       fa={configMetadata.keymapLayout.fa}

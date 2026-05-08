@@ -12,6 +12,7 @@ import { Setting } from "../Setting";
 export function Funbox(): JSXElement {
   return (
     <Setting
+      key="funbox"
       title="funbox"
       description={configMetadata.funbox.description}
       fa={configMetadata.funbox.fa}

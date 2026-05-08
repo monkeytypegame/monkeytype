@@ -10,6 +10,7 @@ export function Presets(): JSXElement {
 
   return (
     <Setting
+      key="presets"
       title="presets"
       description="Create settings presets that can be applied with one click. Remember to edit your preset if you make any changes - they don't save on their own."
       fa={{

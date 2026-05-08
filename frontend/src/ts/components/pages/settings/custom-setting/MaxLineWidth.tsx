@@ -32,6 +32,7 @@ export function MaxLineWidth(): JSXElement {
 
   return (
     <Setting
+      key="maxLineWidth"
       title={configMetadata.maxLineWidth.displayString ?? "max line width"}
       fa={configMetadata.maxLineWidth.fa}
       description={configMetadata.maxLineWidth.description}

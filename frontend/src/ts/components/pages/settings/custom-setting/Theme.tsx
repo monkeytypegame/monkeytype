@@ -204,6 +204,7 @@ export function Theme(): JSXElement {
 
   return (
     <Setting
+      key="theme"
       title={configMetadata.theme.displayString ?? "theme"}
       fa={configMetadata.theme.fa}
       description={configMetadata.theme.description}

@@ -17,6 +17,7 @@ import { Setting } from "../Setting";
 export function CustomPolyglot(): JSXElement {
   return (
     <Setting
+      key="customPolyglot"
       title="polyglot languages"
       description={configMetadata.customPolyglot.description}
       fa={configMetadata.customPolyglot.fa}

@@ -41,6 +41,7 @@ export function MinBurst(): JSXElement {
 
   return (
     <Setting
+      key="minBurst"
       title={configMetadata.minBurst.displayString ?? "min burst"}
       fa={configMetadata.minBurst.fa}
       description={configMetadata.minBurst.description}

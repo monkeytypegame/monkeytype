@@ -41,6 +41,7 @@ export function MinAcc(): JSXElement {
 
   return (
     <Setting
+      key="minAcc"
       title={configMetadata.minAcc.displayString ?? "min accuracy"}
       fa={configMetadata.minAcc.fa}
       description={configMetadata.minAcc.description}
