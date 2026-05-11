@@ -1,7 +1,12 @@
 import { JSXElement, For } from "solid-js";
 
-import { usePresetsLiveQuery } from "../../../../collections/presets";
+import {
+  deletePreset,
+  usePresetsLiveQuery,
+} from "../../../../collections/presets";
 import { apply } from "../../../../controllers/preset-controller";
+import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
 
@@ -40,7 +45,21 @@ export function Presets(): JSXElement {
                     icon: "fa-trash",
                   }}
                   onClick={() => {
-                    // todo: implement
+                    showSimpleModal({
+                      title: "Delete preset",
+                      text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
+                      buttonText: "delete",
+                      textClass: "text-text",
+                      execFn: async () => {
+                        showLoaderBar();
+                        await deletePreset({ presetId: preset._id });
+                        hideLoaderBar();
+                        return {
+                          status: "success",
+                          message: "Preset deleted",
+                        };
+                      },
+                    });
                   }}
                 />
               </div>
