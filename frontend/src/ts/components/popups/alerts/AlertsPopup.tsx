@@ -1,6 +1,6 @@
 import { JSXElement } from "solid-js";
 
-import { flushStrategy } from "../../../collections/inbox";
+import { applyPendingInboxActions } from "../../../collections/inbox";
 import { hideModalAndClearChain } from "../../../states/modals";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import { Button } from "../../common/Button";
@@ -30,7 +30,7 @@ export function AlertsPopup(): JSXElement {
       onBackdropClick={() => hideModalAndClearChain("Alerts")}
       afterHide={() => {
         setTimeout(() => {
-          flushStrategy.flush();
+          applyPendingInboxActions();
         }, 125);
       }}
     >
