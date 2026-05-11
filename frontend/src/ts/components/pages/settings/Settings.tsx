@@ -160,11 +160,13 @@ export function Settings(): JSXElement {
           <AutoSetting key="fontSize" />
           <FontFamily />
           <AutoSetting key="keymapMode" />
-          <KeymapLayout />
-          <AutoSetting key="keymapStyle" wide />
-          <AutoSetting key="keymapLegendStyle" wide />
-          <AutoSetting key="keymapShowTopRow" wide />
-          <KeymapSize />
+          <Show when={getConfig.keymapMode !== "off"}>
+            <KeymapLayout />
+            <AutoSetting key="keymapStyle" wide />
+            <AutoSetting key="keymapLegendStyle" wide />
+            <AutoSetting key="keymapShowTopRow" wide />
+            <KeymapSize />
+          </Show>
         </Section>
         <Section title="theme">
           <AutoSetting key="flipTestColors" />
