@@ -291,7 +291,7 @@ export function SimpleModal(): JSXElement {
             variant="button"
             class="w-full"
             text={config()?.buttonText}
-            skipDirtyCheck={(config()?.inputs?.length ?? 0) === 0}
+            skipUnchangedCheck ={(config()?.inputs?.length ?? 0) === 0}
           />
         </Show>
       </form>

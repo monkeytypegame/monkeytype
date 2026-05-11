@@ -24,7 +24,8 @@ export type ModalId =
   | "ShareTestSettings"
   | "CustomWordAmount"
   | "MobileTestConfig"
-  | "MiniResultChartModal";
+  | "MiniResultChartModal"
+  | "EditProfile";
 
 export type ModalVisibility = {
   visible: boolean;
