@@ -398,20 +398,6 @@ function Picker(props: { color: ColorName }): JSXElement {
     >
       <div>{text()}</div>
       <input
-        ref={(el) => (colorInputRef = el)}
-        type="color"
-        value={getTheme()[props.color]}
-        onInput={debouncedInput}
-        // onChange={(e) => {
-        //   const current = [...getConfig.customThemeColors];
-        //   current[colorIndex()] = e.currentTarget.value;
-        //   setConfig(
-        //     "customThemeColors",
-        //     current as typeof getConfig.customThemeColors,
-        //   );
-        // }}
-      />
-      <input
         // class="text-center"
         type="text"
         value={getTheme()[props.color]}
@@ -425,19 +411,37 @@ function Picker(props: { color: ColorName }): JSXElement {
           updateThemeColor(props.color, value);
         }}
       />
-      <Button
-        class={cn(
-          `bg-(--picker-${props.color}) text-(--picker-bg)`,
-          `hover:bg-(--picker-text)`,
-          props.color === "bg" && "bg-(--picker-subAlt) text-(--picker-text)",
-          props.color === "subAlt" && "text-(--picker-text)",
-        )}
-        fa={{
-          icon: "fa-palette",
-          fixedWidth: true,
-        }}
-        onClick={() => colorInputRef?.click()}
-      />
+      <div class="grid">
+        <input
+          ref={(el) => (colorInputRef = el)}
+          type="color"
+          value={getTheme()[props.color]}
+          onInput={debouncedInput}
+          class="pointer-events-none col-[1/1] row-[1/1] m-0 h-full w-0 p-0 opacity-0"
+          // onChange={(e) => {
+          //   const current = [...getConfig.customThemeColors];
+          //   current[colorIndex()] = e.currentTarget.value;
+          //   setConfig(
+          //     "customThemeColors",
+          //     current as typeof getConfig.customThemeColors,
+          //   );
+          // }}
+        />
+        <Button
+          class={cn(
+            `col-[1/1] row-[1/1]`,
+            `bg-(--picker-${props.color}) text-(--picker-bg)`,
+            `hover:bg-(--picker-text)`,
+            props.color === "bg" && "bg-(--picker-subAlt) text-(--picker-text)",
+            props.color === "subAlt" && "text-(--picker-text)",
+          )}
+          fa={{
+            icon: "fa-palette",
+            fixedWidth: true,
+          }}
+          onClick={() => colorInputRef?.click()}
+        />
+      </div>
     </div>
   );
 }
