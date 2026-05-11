@@ -946,22 +946,22 @@ function getThemeDropdownData(
 
 function handleHighlightSection(highlight: Highlight | undefined): void {
   if (highlight === undefined) {
-    const element = document.querySelector(".section.highlight");
+    const element = document.querySelector<HTMLElement>(
+      `[data-component="solidSettings"] .settings-highlight`,
+    );
     if (element !== null) {
-      element.classList.remove("highlight");
+      element.classList.remove("settings-highlight");
+      element.style = "";
     }
     return;
   }
-
-  const element = document.querySelector(
-    `[data-config-name="${highlight}"] .groupTitle,[data-section-id="${highlight}"] .groupTitle`,
+  const element = document.querySelector<HTMLElement>(
+    `[data-component="solidSettings"] [data-setting-key="${highlight}"]`,
   );
-
   if (element !== null) {
     setTimeout(() => {
       element.scrollIntoView({ block: "center", behavior: "auto" });
-      element.parentElement?.classList.remove("highlight");
-      element.parentElement?.classList.add("highlight");
+      element.classList.add("settings-highlight");
     }, 250);
   }
 }

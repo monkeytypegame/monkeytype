@@ -22,7 +22,14 @@ type Props = {
 
 export function Setting(props: Props): JSXElement {
   return (
-    <div class="group grid gap-2">
+    <div
+      class={cn(
+        "group grid gap-2",
+        "-m-4 rounded-double p-4",
+        // "animate-[ring-flash_4s_ease-in_forwards]",
+      )}
+      data-setting-key={props.key}
+    >
       <div class="flex gap-2">
         <H3 text={props.title} fa={props.fa} class="pb-0" />
         <Button
