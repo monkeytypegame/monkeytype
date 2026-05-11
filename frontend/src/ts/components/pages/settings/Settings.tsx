@@ -7,6 +7,10 @@ import { resetConfig } from "../../../config/lifecycle";
 import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
+import {
+  previewClick,
+  previewError,
+} from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
@@ -103,8 +107,22 @@ export function Settings(): JSXElement {
         </Section>
         <Section title="sound">
           <SoundVolume />
-          <AutoSetting key="playSoundOnClick" wide />
-          <AutoSetting key="playSoundOnError" wide />
+          <AutoSetting
+            key="playSoundOnClick"
+            wide
+            onOptionClick={(option) => {
+              if (option === "off") return;
+              void previewClick(option);
+            }}
+          />
+          <AutoSetting
+            key="playSoundOnError"
+            wide
+            onOptionClick={(option) => {
+              if (option === "off") return;
+              void previewError(option);
+            }}
+          />
           <AutoSetting key="playTimeWarning" wide />
         </Section>
         <Section title="caret">
@@ -281,10 +299,11 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
   );
 }
 
-function AutoSetting(props: {
-  key: keyof Config;
+function AutoSetting<T extends keyof Config>(props: {
+  key: T;
   inputs?: JSXElement;
   wide?: boolean;
+  onOptionClick?: (value: Config[T]) => void;
 }): JSXElement {
   const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
 
@@ -299,7 +318,7 @@ function AutoSetting(props: {
       setTimeout(() => {
         setShowSavedIndicator(false);
       }, 2000);
-      setConfig(props.key, val);
+      setConfig(props.key, val as Config[T]);
     },
   }));
 
@@ -318,6 +337,7 @@ function AutoSetting(props: {
             }}
           >
             <form.Field
+              //@ts-expect-error what
               name={props.key}
               validators={{
                 onChange: ({ value }) => {
@@ -396,14 +416,15 @@ function AutoSetting(props: {
                   return "off";
                 }
 
-                return option.toString().replace(/_/g, " ");
+                return (option as string).toString().replace(/_/g, " ");
               };
               return (
                 <Button
                   active={getConfig[props.key] === option}
                   onClick={() => {
                     if (getConfig[props.key] === option) return;
-                    setConfig(props.key, option);
+                    props.onOptionClick?.(option as Config[T]);
+                    setConfig(props.key, option as Config[T]);
                   }}
                 >
                   {text()}
