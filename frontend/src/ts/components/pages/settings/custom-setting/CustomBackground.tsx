@@ -74,7 +74,7 @@ export function CustomBackground(): JSXElement {
       inputs={
         <div class="grid gap-2 self-end">
           <Show
-            when={hasLocalBackground()}
+            when={!hasLocalBackground()}
             fallback={
               <Button
                 fa={{ icon: "fa-trash" }}
@@ -127,9 +127,9 @@ export function CustomBackground(): JSXElement {
                 <i class="fas fa-file-import"></i>
                 use local image
               </label>
+              <Separator text="or" />
             </>
           </Show>
-          <Separator text="or" />
           <Show when={!hasLocalBackground()}>
             <form
               onSubmit={(e) => {
