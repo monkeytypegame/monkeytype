@@ -75,7 +75,6 @@ export function MinSpeed(): JSXElement {
                     placeholder={
                       configMetadata.minWpm.displayString ?? "min speed"
                     }
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

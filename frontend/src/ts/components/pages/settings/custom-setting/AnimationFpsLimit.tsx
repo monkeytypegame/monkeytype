@@ -75,7 +75,6 @@ export function AnimationFpsLimit(): JSXElement {
                   <InputField
                     field={field}
                     placeholder={"custom limit"}
-                    showIndicator={field().state.value !== ""}
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

@@ -75,7 +75,6 @@ export function PaceCaret(): JSXElement {
                   <InputField
                     field={field}
                     placeholder={"pace caret speed"}
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

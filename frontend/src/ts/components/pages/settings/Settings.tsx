@@ -342,7 +342,6 @@ function AutoSetting(props: {
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key
                     }
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

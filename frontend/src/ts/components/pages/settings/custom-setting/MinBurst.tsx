@@ -77,7 +77,6 @@ export function MinBurst(): JSXElement {
                     placeholder={
                       configMetadata.minBurst.displayString ?? "min burst"
                     }
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

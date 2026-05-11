@@ -69,7 +69,6 @@ export function MaxLineWidth(): JSXElement {
                       configMetadata.maxLineWidth.displayString ??
                       "max line width"
                     }
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>

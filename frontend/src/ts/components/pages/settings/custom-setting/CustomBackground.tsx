@@ -156,7 +156,6 @@ export function CustomBackground(): JSXElement {
                     <InputField
                       field={field}
                       placeholder={"image url"}
-                      showIndicator
                       type="text"
                     />
                     <AnimeShow when={showSavedIndicator()}>

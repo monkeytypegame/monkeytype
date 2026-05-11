@@ -77,7 +77,6 @@ export function MinAcc(): JSXElement {
                     placeholder={
                       configMetadata.minAcc.displayString ?? "min accuracy"
                     }
-                    showIndicator
                     type="number"
                   />
                   <AnimeShow when={showSavedIndicator()}>
