@@ -3,6 +3,10 @@ import { JSXElement } from "solid-js";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
+import {
+  playClick,
+  previewClick,
+} from "../../../../controllers/sound-controller";
 import { Slider } from "../../../common/Slider";
 import { Setting } from "../Setting";
 
@@ -24,6 +28,11 @@ export function SoundVolume(): JSXElement {
           value={getConfig.soundVolume}
           onChange={(value) => {
             if (value === getConfig.soundVolume) return;
+            if (getConfig.playSoundOnClick === "off") {
+              void previewClick("1");
+            } else {
+              void playClick();
+            }
             setConfig("soundVolume", value);
           }}
         />

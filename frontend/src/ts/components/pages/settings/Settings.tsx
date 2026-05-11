@@ -8,6 +8,7 @@ import { configMetadata, OptionMetadata } from "../../../config/metadata";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import {
+  playTimeWarning,
   previewClick,
   previewError,
 } from "../../../controllers/sound-controller";
@@ -123,7 +124,14 @@ export function Settings(): JSXElement {
               void previewError(option);
             }}
           />
-          <AutoSetting key="playTimeWarning" wide />
+          <AutoSetting
+            key="playTimeWarning"
+            wide
+            onOptionClick={(option) => {
+              if (option === "off") return;
+              void playTimeWarning();
+            }}
+          />
         </Section>
         <Section title="caret">
           <AutoSetting key="smoothCaret" />
