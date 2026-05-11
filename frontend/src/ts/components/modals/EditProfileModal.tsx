@@ -118,7 +118,11 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField field={field} maxLength={250} />
+                <TextareaField
+                  field={field}
+                  maxLength={250}
+                  showIndicator={true}
+                />
                 <div class="mt-1 text-base">
                   {field().state.value.length}/250
                 </div>
@@ -137,7 +141,11 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField field={field} maxLength={75} />
+                <TextareaField
+                  field={field}
+                  maxLength={75}
+                  showIndicator={true}
+                />
                 <div class="mt-1 text-base">
                   {field().state.value.length}/75
                 </div>
