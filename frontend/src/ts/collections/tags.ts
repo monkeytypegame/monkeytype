@@ -396,7 +396,7 @@ export function saveLocalTagPB<M extends Mode>(
   tagsCollection.utils.writeUpdate(tag);
 }
 
-export function updateLocalTagPB<M extends Mode>(
+export function reconcileLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
   mode2: Mode2<M>,
