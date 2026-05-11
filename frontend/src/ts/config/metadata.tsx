@@ -49,7 +49,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   fa: FaObject;
 
   optionsMetadata?: ConfigSchemas.Config[K] extends string | number | symbol
-    ? Partial<Record<ConfigSchemas.Config[K], OptionMetadata>>
+    ? Record<ConfigSchemas.Config[K], OptionMetadata>
     : ConfigSchemas.Config[K] extends boolean
       ? Partial<{
           true: OptionMetadata;
@@ -119,6 +119,22 @@ export type ConfigMetadataObject = {
 //todo:
 // maybe have generic set somehow handle test restarting
 
+const caretOptionsMetadata = {
+  banana: {
+    visible: false,
+  },
+  carrot: {
+    visible: false,
+  },
+  monkey: {
+    visible: false,
+  },
+  block: {},
+  off: {},
+  default: {},
+  outline: {},
+  underline: {},
+};
 export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
@@ -589,6 +605,7 @@ export const configMetadata: ConfigMetadataObject = {
   playSoundOnClick: {
     key: "playSoundOnClick",
     optionsMetadata: {
+      off: {},
       "1": { displayString: "click" },
       "2": { displayString: "beep" },
       "3": { displayString: "pop" },
@@ -605,6 +622,16 @@ export const configMetadata: ConfigMetadataObject = {
       "14": { displayString: "fist fight" },
       "15": { displayString: "rubber keys" },
       "16": { displayString: "fart" },
+      "17": { displayString: "akko lavenders" },
+      "18": { displayString: "cherrymx black abs" },
+      "19": { displayString: "cherrymx black pbg" },
+      "20": { displayString: "cherrymx blue abs" },
+      "21": { displayString: "cherrymx blue pbt" },
+      "22": { displayString: "cherrymx brown pbt" },
+      "23": { displayString: "kalih box white" },
+      "24": { displayString: "razer green" },
+      "25": { displayString: "tealios v2" },
+      "26": { displayString: "trust gxt" },
     },
     fa: { icon: "fa-volume-up" },
     displayString: "play sound on click",
@@ -615,6 +642,7 @@ export const configMetadata: ConfigMetadataObject = {
   playSoundOnError: {
     key: "playSoundOnError",
     optionsMetadata: {
+      off: {},
       "1": { displayString: "damage" },
       "2": { displayString: "triangle" },
       "3": { displayString: "square" },
@@ -630,6 +658,7 @@ export const configMetadata: ConfigMetadataObject = {
   playTimeWarning: {
     key: "playTimeWarning",
     optionsMetadata: {
+      off: {},
       "1": { displayString: "1 second" },
       "3": { displayString: "3 seconds" },
       "5": { displayString: "5 seconds" },
@@ -659,17 +688,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description: "Change the style of the caret during the test.",
-    optionsMetadata: {
-      banana: {
-        visible: false,
-      },
-      carrot: {
-        visible: false,
-      },
-      monkey: {
-        visible: false,
-      },
-    },
+    optionsMetadata: caretOptionsMetadata,
   },
   paceCaret: {
     key: "paceCaret",
@@ -683,6 +702,12 @@ export const configMetadata: ConfigMetadataObject = {
       tagPb: {
         displayString: "tag pb",
       },
+      average: {},
+      custom: {},
+      daily: {},
+      last: {},
+      off: {},
+      pb: {},
     },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
@@ -718,17 +743,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description: "Change the style of the pace caret during the test.",
-    optionsMetadata: {
-      banana: {
-        visible: false,
-      },
-      carrot: {
-        visible: false,
-      },
-      monkey: {
-        visible: false,
-      },
-    },
+    optionsMetadata: caretOptionsMetadata,
   },
   repeatedPace: {
     key: "repeatedPace",
@@ -1086,6 +1101,12 @@ export const configMetadata: ConfigMetadataObject = {
       fav: {
         displayString: "favorite",
       },
+      auto: {},
+      custom: {},
+      dark: {},
+      light: {},
+      off: {},
+      on: {},
     },
     isBlocked: ({ value }) => {
       if (value === "custom") {
