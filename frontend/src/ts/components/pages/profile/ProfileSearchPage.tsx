@@ -86,7 +86,6 @@ export function ProfileSearchPage(): JSXElement {
                   <InputField
                     field={field}
                     placeholder="username"
-                    showIndicator
                     autocomplete="new-username"
                     disabled={!isEditable()}
                   />
