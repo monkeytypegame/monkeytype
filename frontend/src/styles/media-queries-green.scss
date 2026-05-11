@@ -54,49 +54,6 @@
       }
     }
   }
-  .pageAccount {
-    .group.resultBatches {
-      gap: 1rem;
-      grid-template-areas: "bar" "button" "text";
-      grid-template-columns: 1fr;
-    }
-    .group.topFilters {
-      .buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        button[filter="all"] {
-          grid-column: span 2;
-        }
-        &.filterGroup {
-          margin-top: 2rem;
-        }
-      }
-    }
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      .buttons {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-      }
-    }
-    .triplegroup.stats {
-      .val {
-        font-size: 2rem;
-      }
-    }
-    .group.history {
-      font-size: 0.75rem;
-    }
-    .group.history table thead td:nth-child(6),
-    .group.history table tbody td:nth-child(6) {
-      display: none;
-    }
-    // .group.history table thead td:nth-child(8),
-    // .group.history table thead td:nth-child(9),
-    // .group.history table tbody td:nth-child(8),
-    // .group.history table tbody td:nth-child(9) {
-    //   display: none;
-    // }
-  }
 
   .testActivity {
     --gap-size: 0.1em;

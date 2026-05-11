@@ -5,7 +5,7 @@ import {
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { Accessor, createMemo, JSXElement } from "solid-js";
+import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { isFriend } from "../../../db";
@@ -17,7 +17,6 @@ import { secondsToString } from "../../../utils/date-and-time";
 import { qs } from "../../../utils/dom";
 import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
-import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
@@ -99,19 +98,9 @@ export function Table(
   );
 
   return (
-    <Conditional
-      if={props.type === "speed"}
-      then={
-        <DataTable
-          {...commonProps()}
-          columns={speedColumns()}
-          data={props.entries as LeaderboardEntry[]}
-          noDataRow={{
-            content: <NoEntriesFound />,
-          }}
-        />
-      }
-      else={
+    <Show
+      when={props.type === "speed"}
+      fallback={
         <DataTable
           {...commonProps()}
           columns={xpColumns()}
@@ -121,7 +110,16 @@ export function Table(
           }}
         />
       }
-    />
+    >
+      <DataTable
+        {...commonProps()}
+        columns={speedColumns()}
+        data={props.entries as LeaderboardEntry[]}
+        noDataRow={{
+          content: <NoEntriesFound />,
+        }}
+      />
+    </Show>
   );
 }
 

@@ -2,7 +2,6 @@ import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
-import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
 type BaseProps = {
@@ -80,35 +79,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   };
 
   return (
-    <Conditional
-      if={isAnchor()}
-      then={
-        <a
-          class={getClasses()}
-          href={props.href}
-          target={
-            props["router-link"] || props.href?.startsWith("#")
-              ? undefined
-              : "_blank"
-          }
-          rel={
-            props["router-link"] || props.href?.startsWith("#")
-              ? undefined
-              : "noreferrer noopener"
-          }
-          {...balloonHtmlProps()}
-          {...(props["router-link"] ? { "router-link": "" } : {})}
-          onClick={(e) => props.onClick?.(e)}
-          onMouseEnter={(e) => props.onMouseEnter?.(e)}
-          onMouseLeave={(e) => props.onMouseLeave?.(e)}
-          data-ui-variant={variant()}
-          data-ui-element="button"
-          {...props.dataset}
-        >
-          {content}
-        </a>
-      }
-      else={
+    <Show
+      when={isAnchor()}
+      fallback={
         <button
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
@@ -126,6 +99,31 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {content}
         </button>
       }
-    />
+    >
+      <a
+        class={getClasses()}
+        href={props.href}
+        target={
+          props["router-link"] || props.href?.startsWith("#")
+            ? undefined
+            : "_blank"
+        }
+        rel={
+          props["router-link"] || props.href?.startsWith("#")
+            ? undefined
+            : "noreferrer noopener"
+        }
+        {...balloonHtmlProps()}
+        {...(props["router-link"] ? { "router-link": "" } : {})}
+        onClick={(e) => props.onClick?.(e)}
+        onMouseEnter={(e) => props.onMouseEnter?.(e)}
+        onMouseLeave={(e) => props.onMouseLeave?.(e)}
+        data-ui-variant={variant()}
+        data-ui-element="button"
+        {...props.dataset}
+      >
+        {content}
+      </a>
+    </Show>
   );
 }
