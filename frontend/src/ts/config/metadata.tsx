@@ -624,7 +624,7 @@ export const configMetadata: ConfigMetadataObject = {
       "16": { displayString: "fart" },
       "17": { displayString: "akko lavenders" },
       "18": { displayString: "cherrymx black abs" },
-      "19": { displayString: "cherrymx black pbg" },
+      "19": { displayString: "cherrymx black pbt" },
       "20": { displayString: "cherrymx blue abs" },
       "21": { displayString: "cherrymx blue pbt" },
       "22": { displayString: "cherrymx brown pbt" },
