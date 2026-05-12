@@ -71,7 +71,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_hide elements"
+          href="#section_hideElements"
           text="hide elements"
           fa={{
             icon: "fa-eye-slash",
@@ -80,7 +80,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={cn(buttonClass, "pr-6")}
           variant="text"
-          href="#section_danger zone"
+          href="#section_dangerZone"
           text="danger zone"
           fa={{
             icon: "fa-exclamation-triangle",

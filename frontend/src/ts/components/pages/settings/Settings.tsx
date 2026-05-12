@@ -19,6 +19,7 @@ import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
+import { wordsToCamelCase } from "../../../utils/strings";
 // import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
@@ -285,7 +286,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
   const [isOpen, setIsOpen] = createSignal(true);
 
   return (
-    <div id={`section_${props.title}`}>
+    <div id={`section_${wordsToCamelCase(props.title)}`}>
       <Button
         variant="text"
         class="mb-8 w-max gap-4 p-0 text-4xl"
@@ -453,7 +454,9 @@ function AutoSetting<T extends keyof Config>(props: {
       key={props.key}
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
-      description={configMetadata[props.key].description}
+      description={
+        configMetadata[props.key].description ?? "Missing description"
+      }
       inputs={!props.wide ? autoInputs() : props.inputs}
       fullWidthInputs={
         props.wide ? (autoInputs() ?? props.inputs) : props.inputs
