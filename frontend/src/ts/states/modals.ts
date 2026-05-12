@@ -25,7 +25,9 @@ export type ModalId =
   | "CustomWordAmount"
   | "MobileTestConfig"
   | "MiniResultChartModal"
-  | "Cookies";
+  | "Cookies"
+  | "AddPresetModal"
+  | "EditPresetModal";
 
 export type ModalVisibility = {
   visible: boolean;

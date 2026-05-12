@@ -5,7 +5,9 @@ import {
   usePresetsLiveQuery,
 } from "../../../../collections/presets";
 import { apply } from "../../../../controllers/preset-controller";
+import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
+import { showModal } from "../../../../states/modals";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
@@ -37,7 +39,10 @@ export function Presets(): JSXElement {
                     icon: "fa-pen",
                   }}
                   onClick={() => {
-                    // todo: implement
+                    showEditPresetModal({
+                      presetId: preset._id,
+                      name: preset.name,
+                    });
                   }}
                 />
                 <Button
@@ -68,7 +73,7 @@ export function Presets(): JSXElement {
           <Button
             text="add preset"
             onClick={() => {
-              // todo: implement
+              showModal("AddPresetModal");
             }}
           />
         </div>

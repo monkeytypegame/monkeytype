@@ -6,6 +6,8 @@ import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
+import { AddPresetModal } from "./preset/AddPresetModal";
+import { EditPresetModal } from "./preset/EditPresetModal";
 import { QuoteRateModal } from "./QuoteRateModal";
 import { QuoteReportModal } from "./QuoteReportModal";
 import { QuoteSearchModal } from "./QuoteSearchModal";
@@ -32,6 +34,8 @@ export function Modals(): JSXElement {
       <ShareTestSettings />
       <MobileTestConfigModal />
       <CookiesModal />
+      <AddPresetModal />
+      <EditPresetModal />
     </>
   );
 }
