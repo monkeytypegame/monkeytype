@@ -35,9 +35,10 @@ export function AddPresetModal(): JSXElement {
       ),
     } as { presetName: string } & Record<ConfigGroupName, boolean>,
     onSubmit: async ({ value }) => {
-      const cleanedName = normalizeName(value.presetName);
-      const parsed = PresetNameSchema.safeParse(cleanedName);
-      if (!parsed.success) {
+      const parsedName = PresetNameSchema.safeParse(
+        normalizeName(value.presetName),
+      );
+      if (!parsedName.success) {
         showNoticeNotification("Preset name is not valid");
         return;
       }
@@ -64,7 +65,7 @@ export function AddPresetModal(): JSXElement {
 
       try {
         await addPreset({
-          name: parsed.data,
+          name: parsedName.data,
           config: configChanges,
           settingGroups:
             presetType() === "partial" ? activeSettingGroups : undefined,
@@ -89,12 +90,6 @@ export function AddPresetModal(): JSXElement {
       }
     },
   );
-
-  const isSubmitDisabled = () => {
-    const formValues = form.useStore((s) => s.values);
-    if (formValues().presetName.trim().length === 0) return true;
-    return false;
-  };
 
   return (
     <AnimatedModal id="AddPresetModal" title="Add new preset">
@@ -124,12 +119,7 @@ export function AddPresetModal(): JSXElement {
             </form.Field>
           )}
         />
-        <SubmitButton
-          form={form}
-          variant="button"
-          text="add"
-          disabled={isSubmitDisabled()}
-        />
+        <SubmitButton form={form} variant="button" text="add" />
       </form>
     </AnimatedModal>
   );
