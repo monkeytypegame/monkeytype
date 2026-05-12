@@ -41,7 +41,6 @@ import { __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fetchUserFromApi } from "./ape/user";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
-import { fillCustomThemesCollection } from "./collections/custom-themes";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -168,8 +167,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-
-    fillCustomThemesCollection(userData.customThemes ?? []);
 
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 

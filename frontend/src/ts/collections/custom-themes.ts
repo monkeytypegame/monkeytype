@@ -8,7 +8,8 @@ import {
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { tempId } from "./utils/misc";
+import { applyIdWorkaround, tempId } from "./utils/misc";
+import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
 
@@ -34,7 +35,14 @@ const customThemesCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      return [] as CustomThemeItem[];
+      if (!isAuthenticated()) return [] as CustomThemeItem[];
+      const response = await Ape.users.getCustomThemes();
+
+      if (response.status !== 200) {
+        throw new Error("Error fetching presets:" + response.body.message);
+      }
+
+      return response.body.data.map(applyIdWorkaround);
     },
   }),
 );
@@ -134,14 +142,6 @@ function getCustomThemes(): CustomThemeItem[] {
 
 function getCustomTheme(id: string): CustomThemeItem | undefined {
   return customThemesCollection.get(id);
-}
-
-export function fillCustomThemesCollection(themes: CustomTheme[]): void {
-  customThemesCollection.utils.writeBatch(() => {
-    themes.forEach((item) => {
-      customThemesCollection.utils.writeInsert(item);
-    });
-  });
 }
 
 export async function addCustomTheme(
