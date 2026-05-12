@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -142,7 +142,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -194,7 +194,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -261,7 +261,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -319,7 +319,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
