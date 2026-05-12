@@ -20,7 +20,8 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { tempId } from "./utils/misc";
+import { applyIdWorkaround, tempId } from "./utils/misc";
+import { fetchUserFromApi } from "../ape/user";
 
 export type TagItem = UserTag & { active: boolean };
 
@@ -31,13 +32,21 @@ const queryKeys = {
 const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
-    startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      return [] as TagItem[];
+      const activeIds = activeTagsLS.get();
+      const userData = await fetchUserFromApi();
+      if (userData === undefined) return [];
+
+      return (userData.tags ?? [])
+        .map((tag) => ({
+          ...tag,
+          name: tag.name.replace(/_/g, " "),
+          active: activeIds.includes(tag._id),
+        }))
+        .map(applyIdWorkaround);
     },
   }),
 );
@@ -203,22 +212,6 @@ function getTag(id: string): TagItem | undefined {
 
 function getActiveTags(): TagItem[] {
   return getTags().filter((tag) => tag.active);
-}
-
-export function fillTagsCollection(userTags: UserTag[]): void {
-  const activeIds = activeTagsLS.get();
-
-  const tagItems = userTags.map((tag) => ({
-    ...tag,
-    name: tag.name.replace(/_/g, " "),
-    active: activeIds.includes(tag._id),
-  }));
-
-  tagsCollection.utils.writeBatch(() => {
-    tagItems.forEach((item) => {
-      tagsCollection.utils.writeInsert(item);
-    });
-  });
 }
 
 // --- Active state ---

@@ -14,6 +14,9 @@ import * as UI from "../ui";
 import { typedKeys } from "../utils/misc";
 import { Validation } from "../types/validation";
 
+//TODO: remove display property and instead use optionsMetadata from configMetadata
+// eventually this file should be fully merged into config metadata, probably under the 'commandline' property
+
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
   | "minAccCustom"
