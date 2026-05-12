@@ -185,8 +185,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   if (newConfig.includes(funbox)) {
     newConfig = newConfig.filter((it) => it !== funbox);
   } else {
-    newConfig.push(funbox);
-    newConfig.sort();
+    newConfig = [...newConfig, funbox].sort();
   }
 
   if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
