@@ -34,6 +34,7 @@ import {
 import { isAuthenticated } from "../states/core";
 import { createEffectOn } from "../hooks/effects";
 import { getLastResult, setLastResult } from "../states/snapshot";
+import { applyIdWorkaround } from "./utils/misc";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -180,9 +181,6 @@ function normalizeResult(
   resultDate.setHours(0);
   resultDate.setMilliseconds(0);
 
-  // @ts-expect-error without this resorting the datatable causes wrong data e.g. tags to show up
-  result.id = result._id;
-
   //results strip default values, add them back
   result.bailedOut ??= false;
   result.blindMode ??= false;
@@ -229,9 +227,9 @@ const resultsCollection = createCollection(
         throw new Error("Error fetching results:" + response.body.message);
       }
 
-      const results = response.body.data.map((result) =>
-        normalizeResult(result, knownTagIds),
-      );
+      const results = response.body.data
+        .map((result) => normalizeResult(result, knownTagIds))
+        .map(applyIdWorkaround);
 
       if (getLastResult() === undefined && results.length > 0) {
         const lastResult = results.reduce((acc, cur) =>

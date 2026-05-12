@@ -20,7 +20,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { tempId } from "./utils/misc";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 
 export type TagItem = UserTag & { active: boolean };
@@ -40,11 +40,13 @@ const tagsCollection = createCollection(
       const userData = await fetchUserFromApi();
       if (userData === undefined) return [];
 
-      return (userData.tags ?? []).map((tag) => ({
-        ...tag,
-        name: tag.name.replace(/_/g, " "),
-        active: activeIds.includes(tag._id),
-      }));
+      return (userData.tags ?? [])
+        .map((tag) => ({
+          ...tag,
+          name: tag.name.replace(/_/g, " "),
+          active: activeIds.includes(tag._id),
+        }))
+        .map(applyIdWorkaround);
     },
   }),
 );

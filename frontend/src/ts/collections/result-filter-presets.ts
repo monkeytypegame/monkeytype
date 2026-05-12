@@ -12,7 +12,7 @@ import {
   replaceSpacesWithUnderscores,
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
-import { tempId } from "./utils/misc";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 
 const queryKeys = {
@@ -31,10 +31,12 @@ const resultFilterPresetsCollection = createCollection(
       const userData = await fetchUserFromApi();
       if (userData === undefined) return [];
 
-      return (userData.resultFilterPresets ?? []).map((it) => ({
-        ...it,
-        name: replaceUnderscoresWithSpaces(it.name),
-      }));
+      return (userData.resultFilterPresets ?? [])
+        .map((it) => ({
+          ...it,
+          name: replaceUnderscoresWithSpaces(it.name),
+        }))
+        .map(applyIdWorkaround);
     },
   }),
 );
