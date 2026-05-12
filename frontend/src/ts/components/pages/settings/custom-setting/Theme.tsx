@@ -3,6 +3,7 @@ import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import {
+  addCustomTheme,
   editCustomTheme,
   useCustomThemesLiveQuery,
 } from "../../../../collections/custom-themes";
@@ -190,17 +191,30 @@ export function Theme(): JSXElement {
             });
           }}
         />
-        <Button
-          text="save"
-          onClick={() => {
-            setConfig(
-              "customThemeColors",
-              convertThemeToCustomColors(getTheme()),
-            );
-            showSuccessNotification("Custom theme colors saved");
-          }}
-        />
-        {/* //todo: save as new when logged in */}
+        <Show when={isAuthenticated()}>
+          <Button
+            text="save as new"
+            onClick={() => {
+              void addCustomTheme({
+                name: "custom",
+                colors: convertThemeToCustomColors(getTheme()),
+              });
+              showSuccessNotification("Custom theme saved");
+            }}
+          />
+        </Show>
+        <Show when={!isAuthenticated()}>
+          <Button
+            text="save"
+            onClick={() => {
+              setConfig(
+                "customThemeColors",
+                convertThemeToCustomColors(getTheme()),
+              );
+              showSuccessNotification("Custom theme colors saved");
+            }}
+          />
+        </Show>
       </div>
     </div>
   );
