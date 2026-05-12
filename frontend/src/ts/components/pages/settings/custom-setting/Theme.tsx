@@ -4,6 +4,7 @@ import { debounce } from "throttle-debounce";
 
 import {
   addCustomTheme,
+  deleteCustomTheme,
   editCustomTheme,
   useCustomThemesLiveQuery,
 } from "../../../../collections/custom-themes";
@@ -388,6 +389,24 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
           "[--themable-button-hover-text:var(--main)] [--themable-button-text:var(--sub)]",
           "opacity-0 group-hover/theme:opacity-100",
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+          showSimpleModal({
+            title: "Delete custom theme",
+            text: `Are you sure you want to delete the custom theme "${props.theme.name.replace(/_/g, " ")}"? This action cannot be undone.`,
+            textClass: "text-text",
+            buttonText: "delete",
+            execFn: async () => {
+              void deleteCustomTheme({
+                themeId: props.theme._id,
+              });
+              return {
+                status: "success",
+                message: "Custom theme deleted",
+              };
+            },
+          });
+        }}
       />
     </button>
   );
