@@ -9,7 +9,7 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
-import * as DB from "../../db";
+import * as CustomThemes from "../../collections/custom-themes";
 import { configEvent } from "../../events/config";
 import { getActivePage, isAuthenticated } from "../../states/core";
 import { ThemeName } from "@monkeytype/schemas/configs";
@@ -169,7 +169,7 @@ export async function fillCustomButtons(): Promise<void> {
   saveButton?.setText("save as new");
   addButton?.show();
 
-  const customThemes = DB.getSnapshot()?.customThemes ?? [];
+  const customThemes = CustomThemes.__nonReactive.getCustomThemes();
 
   if (customThemes.length === 0) {
     customThemesEl?.setStyle({ marginBottom: "0" });
@@ -284,9 +284,7 @@ qs(".pageSettings")?.onChild(
     if ((e.target as HTMLElement).classList.contains("delButton")) return;
     if ((e.target as HTMLElement).classList.contains("editButton")) return;
     const customThemeId = target.getAttribute("customThemeId") ?? "";
-    const theme = DB.getSnapshot()?.customThemes?.find(
-      (e) => e._id === customThemeId,
-    );
+    const theme = CustomThemes.__nonReactive.getCustomTheme(customThemeId);
 
     if (theme === undefined) {
       //this shouldnt happen but typescript needs this check
@@ -408,7 +406,7 @@ qs(".pageSettings #saveCustomThemeButton")?.on("click", async () => {
     };
 
     showLoaderBar();
-    await DB.addCustomTheme(newCustomTheme);
+    await CustomThemes.addCustomTheme(newCustomTheme);
     hideLoaderBar();
   }
   void fillCustomButtons();

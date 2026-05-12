@@ -1,6 +1,11 @@
-import { For, JSXElement, Show } from "solid-js";
+import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
+import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 
+import {
+  editCustomTheme,
+  useCustomThemesLiveQuery,
+} from "../../../../collections/custom-themes";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
@@ -14,6 +19,7 @@ import {
   convertThemeToCustomColors,
 } from "../../../../controllers/theme-controller";
 import { createEffectOn } from "../../../../hooks/effects";
+import { isAuthenticated } from "../../../../states/core";
 import {
   showNoticeNotification,
   showSuccessNotification,
@@ -36,6 +42,8 @@ export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
 });
 
 export function Theme(): JSXElement {
+  const customThemes = useCustomThemesLiveQuery();
+
   const Presets = () => (
     <div class="grid gap-4">
       <Show when={getConfig.favThemes.length > 0}>
@@ -66,6 +74,13 @@ export function Theme(): JSXElement {
 
   const Customs = () => (
     <div class="grid gap-4">
+      <Show when={isAuthenticated()}>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
+          <For each={customThemes()}>
+            {(theme) => <CustomThemeButton theme={theme} />}
+          </For>
+        </div>
+      </Show>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Picker color="bg" />
         <Picker color="main" />
@@ -258,6 +273,109 @@ export function Theme(): JSXElement {
         </AnimeSwitch>
       }
     />
+  );
+}
+
+function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
+  const themeColors = () => convertCustomColorsToTheme(props.theme.colors);
+
+  return (
+    <button
+      type="button"
+      style={{
+        "--bg": themeColors().bg,
+        "--main": themeColors().main,
+        "--sub": themeColors().sub,
+        "--text": themeColors().text,
+      }}
+      class={cn(
+        "group/theme grid grid-cols-[auto_1fr_auto] justify-between p-0 ring-4 ring-transparent",
+        "bg-(--bg) text-(--main)",
+        "hover:ring-(--main)",
+        "transition-[opacity,color,background,box-shadow] duration-125",
+      )}
+      onClick={() => {
+        setConfig("customThemeColors", props.theme.colors);
+      }}
+      data-theme-id={props.theme._id}
+    >
+      <Button
+        variant="text"
+        fa={{
+          icon: "fa-pen",
+          fixedWidth: true,
+        }}
+        class={cn(
+          "mx-1 p-2",
+          "[--themable-button-hover-text:var(--main)] [--themable-button-text:var(--sub)]",
+          "opacity-0 group-hover/theme:opacity-100",
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          showSimpleModal({
+            title: "Update custom theme",
+            inputs: [
+              {
+                type: "text",
+                initVal: props.theme.name.replace(/_/g, " "),
+                validation: {
+                  // schema: CustomThemeNameSchema,
+                  isValid: async (val) => {
+                    if (
+                      CustomThemeNameSchema.safeParse(val.replace(/ /g, "_"))
+                        .success
+                    ) {
+                      return true;
+                    }
+                    return "Name must be 1-30 characters and can only contain letters, numbers, spaces, underscores and hyphens.";
+                  },
+                  // debounceDelay: 0,
+                },
+              },
+              {
+                type: "checkbox",
+                label: "Update custom theme to current colors",
+              },
+            ],
+            buttonText: "update",
+            execFn: async (name, updateColors) => {
+              debugger;
+              if (name === undefined) {
+                return {
+                  status: "error",
+                  message: "Name is required",
+                };
+              }
+              void editCustomTheme({
+                themeId: props.theme._id,
+                name: name.replace(/ /g, "_"),
+                colors: updateColors
+                  ? convertThemeToCustomColors(untrack(() => getTheme()))
+                  : untrack(() => props.theme.colors),
+              });
+
+              return {
+                status: "success",
+                message: "Updated",
+              };
+            },
+          });
+        }}
+      />
+      <div>{props.theme.name.replace(/_/g, " ")}</div>
+      <Button
+        variant="text"
+        fa={{
+          icon: "fa-trash",
+          fixedWidth: true,
+        }}
+        class={cn(
+          "mx-1 p-2",
+          "[--themable-button-hover-text:var(--main)] [--themable-button-text:var(--sub)]",
+          "opacity-0 group-hover/theme:opacity-100",
+        )}
+      />
+    </button>
   );
 }
 

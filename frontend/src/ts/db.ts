@@ -1,8 +1,5 @@
 import Ape from "./ape";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "./states/notifications";
+import { showErrorNotification } from "./states/notifications";
 import { getAuthenticatedUser } from "./firebase";
 import { isAuthenticated } from "./states/core";
 import * as Dates from "date-fns";
@@ -11,7 +8,7 @@ import {
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
-import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Badge } from "@monkeytype/schemas/users";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
@@ -44,6 +41,7 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 import { fillTagsCollection, __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fillPresetsCollection } from "./collections/presets";
+import { fillCustomThemesCollection } from "./collections/custom-themes";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -195,8 +193,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       snap.lbMemory = userData.lbMemory;
     }
 
-    snap.customThemes = userData.customThemes ?? [];
-
+    fillCustomThemesCollection(userData.customThemes ?? []);
     fillTagsCollection(userData.tags ?? []);
     fillPresetsCollection(presetsData ?? []);
 
@@ -214,94 +211,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } finally {
     setSolidSnapshot(dbSnapshot);
   }
-}
-
-export async function addCustomTheme(
-  theme: Omit<CustomTheme, "_id">,
-): Promise<boolean> {
-  if (!dbSnapshot) return false;
-
-  dbSnapshot.customThemes ??= [];
-
-  if (dbSnapshot.customThemes.length >= 20) {
-    showNoticeNotification("Too many custom themes!");
-    return false;
-  }
-
-  const response = await Ape.users.addCustomTheme({ body: { ...theme } });
-  if (response.status !== 200) {
-    showErrorNotification("Error adding custom theme", { response });
-    return false;
-  }
-
-  if (response.body.data === null) {
-    showErrorNotification("Error adding custom theme: No data returned");
-    return false;
-  }
-
-  const newCustomTheme: CustomTheme = {
-    ...theme,
-    _id: response.body.data._id,
-  };
-
-  dbSnapshot.customThemes.push(newCustomTheme);
-  return true;
-}
-
-export async function editCustomTheme(
-  themeId: string,
-  newTheme: Omit<CustomTheme, "_id">,
-): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-  if (!dbSnapshot) return false;
-
-  dbSnapshot.customThemes ??= [];
-
-  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
-  if (!customTheme) {
-    showErrorNotification(
-      "Editing failed: Custom theme with id: " + themeId + " does not exist",
-    );
-    return false;
-  }
-
-  const response = await Ape.users.editCustomTheme({
-    body: { themeId, theme: newTheme },
-  });
-  if (response.status !== 200) {
-    showErrorNotification("Error editing custom theme", { response });
-    return false;
-  }
-
-  const newCustomTheme: CustomTheme = {
-    ...newTheme,
-    _id: themeId,
-  };
-
-  dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
-    newCustomTheme;
-
-  return true;
-}
-
-export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-  if (!dbSnapshot) return false;
-
-  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
-  if (!customTheme) return false;
-
-  const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
-  if (response.status !== 200) {
-    showErrorNotification("Error deleting custom theme", { response });
-    return false;
-  }
-
-  dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
-    (t) => t._id !== themeId,
-  );
-
-  return true;
 }
 
 export async function getLocalPB<M extends Mode>(

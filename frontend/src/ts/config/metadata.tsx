@@ -3,8 +3,8 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { JSXElement } from "solid-js";
 
+import * as CustomThemes from "../collections/custom-themes";
 import { getDefaultConfig } from "../constants/default-config";
-import * as DB from "../db";
 import { isAuthenticated } from "../states/core";
 import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
@@ -1110,20 +1110,13 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (value === "custom") {
-        const snapshot = DB.getSnapshot();
         if (!isAuthenticated()) {
           showNoticeNotification(
             "Random theme 'custom' is unavailable without an account",
           );
           return true;
         }
-        if (!snapshot) {
-          showNoticeNotification(
-            "Random theme 'custom' requires a snapshot to be set",
-          );
-          return true;
-        }
-        if (snapshot?.customThemes?.length === 0) {
+        if (CustomThemes.__nonReactive.getCustomThemes().length === 0) {
           showNoticeNotification(
             "Random theme 'custom' requires at least one custom theme to be saved",
           );

@@ -21,6 +21,7 @@ import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
 import { createErrorMessage } from "../utils/error";
 import * as ThemeController from "../controllers/theme-controller";
+import * as CustomThemes from "../collections/custom-themes";
 import * as AccountSettings from "../pages/account-settings";
 import {
   ExecReturn,
@@ -1002,17 +1003,8 @@ list.updateCustomTheme = new SimpleModal({
   ],
   buttonText: "update",
   execFn: async (_thisPopup, name, updateColors): Promise<ExecReturn> => {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) {
-      return {
-        status: "error",
-        message: "Failed to update custom theme: no snapshot",
-      };
-    }
-
-    const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0],
-    );
+    const themeId = _thisPopup.parameters[0] as string;
+    const customTheme = CustomThemes.__nonReactive.getCustomTheme(themeId);
     if (customTheme === undefined) {
       return {
         status: "error",
@@ -1025,17 +1017,11 @@ list.updateCustomTheme = new SimpleModal({
         ? ThemeController.convertThemeToCustomColors(getTheme())
         : customTheme.colors;
 
-    const newTheme = {
+    await CustomThemes.editCustomTheme({
+      themeId: customTheme._id,
       name: normalizeName(name),
       colors: newColors,
-    };
-    const validation = await DB.editCustomTheme(customTheme._id, newTheme);
-    if (!validation) {
-      return {
-        status: "error",
-        message: "Failed to update custom theme",
-      };
-    }
+    });
     setConfig("customThemeColors", newColors);
     void ThemePicker.fillCustomButtons();
 
@@ -1045,12 +1031,8 @@ list.updateCustomTheme = new SimpleModal({
     };
   },
   beforeInitFn: (_thisPopup): void => {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
-
-    const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0],
-    );
+    const themeId = _thisPopup.parameters[0] as string;
+    const customTheme = CustomThemes.__nonReactive.getCustomTheme(themeId);
     if (!customTheme) return;
     (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name.replace(
       /_/g,
@@ -1065,7 +1047,9 @@ list.deleteCustomTheme = new SimpleModal({
   text: "Are you sure?",
   buttonText: "delete",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
+    await CustomThemes.deleteCustomTheme({
+      themeId: _thisPopup.parameters[0] as string,
+    });
     void ThemePicker.fillCustomButtons();
 
     return {

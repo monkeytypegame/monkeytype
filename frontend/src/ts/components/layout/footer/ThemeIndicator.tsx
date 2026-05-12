@@ -1,5 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
+import * as CustomThemes from "../../../collections/custom-themes";
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
 import {
@@ -9,7 +10,6 @@ import {
 } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
-import { getSnapshot } from "../../../states/snapshot";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
@@ -19,7 +19,10 @@ export function ThemeIndicator(): JSXElement {
         setConfig("customTheme", false);
         return;
       }
-      if (isAuthenticated() && (getSnapshot()?.customThemes?.length ?? 0) < 1) {
+      if (
+        isAuthenticated() &&
+        CustomThemes.__nonReactive.getCustomThemes().length < 1
+      ) {
         showNoticeNotification("No custom themes!");
         setConfig("customTheme", false);
         return;
