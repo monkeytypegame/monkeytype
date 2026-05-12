@@ -31,10 +31,6 @@ export function update(): void {
   subgroup.list = [];
 
   const customThemes = CustomThemes.__nonReactive.getCustomThemes();
-
-  if (customThemes.length === 0) {
-    return;
-  }
   for (const theme of customThemes) {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
