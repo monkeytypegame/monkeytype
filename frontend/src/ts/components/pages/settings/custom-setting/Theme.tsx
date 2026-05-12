@@ -202,8 +202,17 @@ export function Theme(): JSXElement {
               void addCustomTheme({
                 name: "custom",
                 colors: convertThemeToCustomColors(getTheme()),
-              });
-              showSuccessNotification("Custom theme saved");
+              })
+                .then(() => {
+                  showSuccessNotification("Custom theme saved");
+                })
+                .catch((e: unknown) => {
+                  showErrorNotification(
+                    e instanceof Error
+                      ? e.message
+                      : "Failed to save custom theme",
+                  );
+                });
             }}
           />
         </Show>
