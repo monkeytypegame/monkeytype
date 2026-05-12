@@ -3,7 +3,6 @@ import { JSXElement, For } from "solid-js";
 import {
   clearTagPBs,
   deleteTag,
-  insertTag,
   toggleTagActive,
   updateTagName,
   useTagsLiveQuery,
@@ -11,6 +10,7 @@ import {
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
+import { showAddTagModal } from "../../../modals/AddTagModal";
 import { Setting } from "../Setting";
 
 export function Tags(): JSXElement {
@@ -114,27 +114,7 @@ export function Tags(): JSXElement {
           <Button
             text="add tag"
             onClick={() => {
-              showSimpleModal({
-                title: "Add new tag",
-                buttonText: "add",
-                inputs: [
-                  {
-                    type: "text",
-                    placeholder: "tag name",
-                  },
-                ],
-                execFn: async (name) => {
-                  showLoaderBar();
-                  await insertTag({
-                    name,
-                  });
-                  hideLoaderBar();
-                  return {
-                    status: "success",
-                    message: "Tag added",
-                  };
-                },
-              });
+              showAddTagModal();
             }}
           />
         </div>
