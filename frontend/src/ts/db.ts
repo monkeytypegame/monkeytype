@@ -36,7 +36,7 @@ import { insertLocalResult } from "./collections/results";
 import { fillResultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
-  setSnapshot as setSolidSnapshot,
+  _setSnapshot as setSolidSnapshot,
 } from "./states/snapshot";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";

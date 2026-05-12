@@ -8,12 +8,13 @@ import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
 import Ape from "../../ape";
+import { setSnapshot } from "../../db";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { getSnapshot, setSnapshot } from "../../states/snapshot";
+import { getSnapshot } from "../../states/snapshot";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -66,8 +67,8 @@ export function EditProfile() {
         return;
       }
 
-      snapshot.details = response.body.data ?? updates;
-      snapshot.inventory?.badges.forEach((badge) => {
+      const newBadges = snapshot.inventory?.badges;
+      newBadges?.forEach((badge) => {
         if (badge.id === value.badgeId) {
           badge.selected = true;
         } else {
@@ -77,7 +78,11 @@ export function EditProfile() {
 
       form.reset(value);
       hideModal("EditProfile");
-      setSnapshot(snapshot);
+      setSnapshot({
+        ...snapshot,
+        details: response.body.data ?? updates,
+        inventory: { ...snapshot.inventory, badges: newBadges ?? [] },
+      });
       showSuccessNotification("Profile updated");
     },
   }));
