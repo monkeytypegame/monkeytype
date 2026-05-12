@@ -81,7 +81,7 @@ body {
   bottom: 3rem;
   background-color: var(--sub-alt-color);
   color: var(--text-color);
-  font-style: bold;
+  font-weight: bold;
   border-radius: 3px;
   padding: 1rem 2rem;
   cursor: pointer;
@@ -189,10 +189,6 @@ input[type="checkbox"] {
   }
 }
 
-.tooltip:hover .tooltip-text {
-  display: block;
-}
-
 .tooltip-text {
   display: none;
   color: var(--text-color);
@@ -201,4 +197,8 @@ input[type="checkbox"] {
   z-index: 1000;
   padding: 10px;
   border-radius: var(--roundness);
+}
+
+.tooltip:hover .tooltip-text {
+  display: block;
 }
