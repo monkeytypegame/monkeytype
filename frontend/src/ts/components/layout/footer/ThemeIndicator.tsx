@@ -1,6 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
-import * as CustomThemes from "../../../collections/custom-themes";
+import { useCustomThemesLiveQuery } from "../../../collections/custom-themes";
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
 import {
@@ -13,7 +13,7 @@ import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
-  const themes = CustomThemes.useCustomThemesLiveQuery();
+  const themes = useCustomThemesLiveQuery();
 
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
