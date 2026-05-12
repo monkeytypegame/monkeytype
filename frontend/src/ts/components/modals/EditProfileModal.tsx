@@ -11,11 +11,14 @@ import Ape from "../../ape";
 import * as DB from "../../db";
 import { hideModal } from "../../states/modals";
 import {
-  showSuccessNotification,
   showErrorNotification,
+  showSuccessNotification,
 } from "../../states/notifications";
+import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { BadgeButton } from "../common/BadgeButton";
+import { Button } from "../common/Button";
+import { Fa } from "../common/Fa";
+import { UserBadge } from "../common/UserBadge";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
@@ -217,19 +220,28 @@ export function EditProfile() {
           <label class="mb-[0.25em] block text-sub">badge</label>
           <form.Field name="badgeId">
             {(field) => (
-              <div class="flex flex-wrap">
-                <BadgeButton
-                  id={-1}
-                  selected={field().state.value === -1}
+              <div class="flex flex-wrap gap-2">
+                <Button
+                  class={cn("p-1.5 opacity-25", {
+                    "opacity-100": field().state.value === -1,
+                  })}
+                  active={field().state.value === -1}
                   onClick={() => field().handleChange(-1)}
-                />
+                >
+                  <Fa icon="fa-frown-open" />
+                  none
+                </Button>
                 <For each={badges}>
                   {(badge) => (
-                    <BadgeButton
-                      id={badge.id}
-                      selected={field().state.value === badge.id}
+                    <Button
+                      class={cn("p-0 opacity-25", {
+                        "opacity-100": field().state.value === badge.id,
+                      })}
+                      active={field().state.value === badge.id}
                       onClick={() => field().handleChange(badge.id)}
-                    />
+                    >
+                      <UserBadge id={badge.id} class="p-2" />
+                    </Button>
                   )}
                 </For>
               </div>
