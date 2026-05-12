@@ -15,12 +15,12 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
+import { BadgeButton } from "../common/BadgeButton";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
-import { BadgeButton } from "../common/BadgeButton";
 
 export function EditProfile() {
   const snapshot = DB.getSnapshot();
