@@ -20,6 +20,7 @@ import { AnimatedModal } from "../../common/AnimatedModal";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
+import { fromSchema } from "../../ui/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
 import { getActiveSettingGroups, getConfigChanges } from "./preset-modal-utils";
 
@@ -108,14 +109,7 @@ export function AddPresetModal(): JSXElement {
         <form.Field
           name="presetName"
           validators={{
-            onChange: ({ value }) => {
-              if (value.trim().length === 0) return "Preset name is required";
-              const parsed = PresetNameSchema.safeParse(normalizeName(value));
-              if (!parsed.success) {
-                return parsed.error.errors.map((err) => err.message).join(", ");
-              }
-              return undefined;
-            },
+            onChange: fromSchema(PresetNameSchema, { convert: normalizeName }),
           }}
           children={(field) => (
             <InputField field={field} placeholder="preset name" />
