@@ -22,6 +22,9 @@ import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
+import * as ghCore from "@actions/core";
+
+const stepSummary = ghCore.summary;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -51,9 +54,20 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
+    stepSummary.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
+      stepSummary.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
+
+    Object.entries(this.problems).forEach(([key, problems]) => {
+      let label: string = this.labels[key as T] ?? `${key}`;
+      stepSummary
+        .addRaw(`❌ ${label}`)
+        .addEOL()
+        .addList(problems as string[])
+        .addEOL();
+    });
 
     return (
       `${this.type} are \u001b[31minvalid\u001b[0m\n` +
@@ -513,8 +527,15 @@ async function main(): Promise<void> {
   }
 
   if (tasks.size > 0) {
-    await Promise.all([...tasks].map(async (validator) => validator()));
-    return;
+    const results = await Promise.allSettled(
+      [...tasks].map(async (validator) => validator()),
+    );
+
+    await stepSummary.write();
+
+    if (results.find((it) => it.status === "rejected") !== undefined) {
+      throw new Error("One or more checks failed.");
+    }
   }
 }
 void main();

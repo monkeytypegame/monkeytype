@@ -42,10 +42,11 @@ export function ProfileSearchPage(): JSXElement {
 
   createEffect(() => {
     if (isOpen()) {
-      form.reset();
       requestAnimationFrame(() => {
         inputEl()?.qs("input")?.focus({ preventScroll: true });
       });
+    } else {
+      form.reset();
     }
   });
 
@@ -77,7 +78,7 @@ export function ProfileSearchPage(): JSXElement {
                         getUserProfile(field.value),
                       );
                       return result !== null ? undefined : "Unknown user";
-                    } catch (e) {
+                    } catch {
                       return "Unknown user";
                     }
                   },
