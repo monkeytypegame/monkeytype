@@ -4,7 +4,6 @@ import * as DB from "../db";
 import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
-import * as Settings from "../pages/settings";
 import * as ThemePicker from "../elements/settings/theme-picker";
 import { FirebaseError } from "firebase/app";
 import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
@@ -800,22 +799,6 @@ list.optOutOfLeaderboards = new SimpleModal({
       thisPopup.inputs = [];
       thisPopup.buttonText = "reauthenticate to opt out";
     }
-  },
-});
-
-list.applyCustomFont = new SimpleModal({
-  id: "applyCustomFont",
-  title: "Custom font",
-  inputs: [{ type: "text", placeholder: "Font name", initVal: "" }],
-  text: "Make sure you have the font installed on your computer before applying",
-  buttonText: "apply",
-  execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
-    Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
-
-    return {
-      status: "success",
-      message: "Font applied",
-    };
   },
 });
 

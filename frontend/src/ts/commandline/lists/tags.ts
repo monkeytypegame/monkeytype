@@ -1,4 +1,3 @@
-import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import {
   clearActiveTags,
@@ -76,16 +75,16 @@ function update(): void {
       });
     }
   }
-  subgroup.list.push({
-    id: "createTag",
-    display: "Create tag",
-    icon: "fa-plus",
-    shouldFocusTestUI: false,
-    opensModal: true,
-    exec: ({ commandlineModal }): void => {
-      EditTagsPopup.show("add", undefined, commandlineModal);
-    },
-  });
+  // subgroup.list.push({
+  //   id: "createTag",
+  //   display: "Create tag",
+  //   icon: "fa-plus",
+  //   shouldFocusTestUI: false,
+  //   opensModal: true,
+  //   exec: ({ commandlineModal }): void => {
+  //     EditTagsPopup.show("add", undefined, commandlineModal);
+  //   },
+  // });
 }
 
 export default commands;

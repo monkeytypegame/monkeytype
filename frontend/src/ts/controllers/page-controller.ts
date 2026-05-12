@@ -5,7 +5,6 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as Settings from "../pages/settings";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
@@ -43,7 +42,7 @@ type ChangeOptions = {
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
-  settings: Settings.page,
+  settings: solidPage("settings"),
   about: solidPage("about"),
   account: solidPage("account", {
     loadingOptions: {

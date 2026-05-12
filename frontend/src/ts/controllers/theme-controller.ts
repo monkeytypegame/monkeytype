@@ -3,7 +3,6 @@ import { isColorDark, isColorLight } from "../utils/colors";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as BackgroundFilter from "../elements/custom-background-filter";
 import { configEvent } from "../events/config";
 import * as CustomThemes from "../collections/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
@@ -306,7 +305,6 @@ export async function applyCustomBackground(): Promise<void> {
 
     container?.replaceChildren(img);
 
-    BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
 }
