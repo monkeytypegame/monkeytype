@@ -7,7 +7,6 @@ import {
 } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { H3 } from "../../common/Headers";
 import { AlertsSection } from "./AlertsSection";
 
@@ -86,21 +85,20 @@ function NotificationEntry(props: {
           />
         </Show>
       </div>
-      <Conditional
-        if={props.notification.useInnerHtml}
-        then={
-          <div
-            class="text-xs wrap-break-word text-text"
-            // oxlint-disable-next-line solid/no-innerhtml
-            innerHTML={props.notification.message}
-          ></div>
-        }
-        else={
+      <Show
+        when={props.notification.useInnerHtml}
+        fallback={
           <div class="text-xs wrap-break-word text-text">
             {props.notification.message}
           </div>
         }
-      />
+      >
+        <div
+          class="text-xs wrap-break-word text-text"
+          // oxlint-disable-next-line solid/no-innerhtml
+          innerHTML={props.notification.message}
+        ></div>
+      </Show>
     </div>
   );
 }

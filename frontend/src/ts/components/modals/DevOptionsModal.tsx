@@ -3,7 +3,7 @@ import { envConfig } from "virtual:env-config";
 
 import Ape from "../../ape";
 import { signIn } from "../../auth";
-import { inboxCollection } from "../../collections/inbox";
+import { refetchInboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { toggleCaretDebug } from "../../elements/caret";
 import { getInputElement } from "../../input/input-element";
@@ -177,7 +177,7 @@ export function DevOptionsModal(): JSXElement {
           return;
         }
         showSuccessNotification("Debug inbox item added");
-        void inboxCollection.utils.refetch();
+        void refetchInboxCollection();
       });
   };
 
