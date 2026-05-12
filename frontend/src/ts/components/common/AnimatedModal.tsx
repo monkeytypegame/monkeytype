@@ -64,7 +64,6 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     visibility,
     (visible) => {
       const isChained = isModalChained(props.id);
-      console.log("aaa");
 
       if (visible) {
         void showModal(isChained);
