@@ -55,7 +55,7 @@ const commands: Command[] = [
   },
   withValidation({
     id: "searchProfile",
-    display: "Search Profile",
+    display: "Search for a profile",
     alias: "profile user search find lookup",
     icon: "fa-search",
     input: true,
