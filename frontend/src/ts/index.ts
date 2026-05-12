@@ -25,7 +25,6 @@ import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
-import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
@@ -79,7 +78,6 @@ void fetchLatestVersion().then((data) => {
 Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
-  CookiesModal.show();
   showModal("Cookies");
 }
 void init(onAuthStateChanged).then(() => {

@@ -1,5 +1,4 @@
 import * as ShareCustomThemeModal from "../modals/share-custom-theme";
-import * as CookiesModal from "../modals/cookies";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
 
@@ -11,12 +10,6 @@ const settingsPage = qs("#pageSettings");
 settingsPage?.qs("#shareCustomThemeButton")?.on("click", () => {
   ShareCustomThemeModal.show();
 });
-
-settingsPage
-  ?.qs(".section.updateCookiePreferences .buttons button")
-  ?.on("click", () => {
-    CookiesModal.show(true);
-  });
 
 settingsPage?.qs(".section.presets")?.on("click", (e) => {
   const target = e.target as HTMLElement;
