@@ -23,6 +23,7 @@ import {
 import { createEffectOn } from "../../../../hooks/effects";
 import { isAuthenticated } from "../../../../states/core";
 import {
+  showErrorNotification,
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
@@ -108,7 +109,9 @@ export function Theme(): JSXElement {
             if (presetTheme) {
               setTheme({ ...presetTheme, name: "custom" });
             } else {
-              showSuccessNotification("Current preset theme not found");
+              showErrorNotification(
+                "Current preset theme not found. How is this possible?",
+              );
             }
           }}
         />

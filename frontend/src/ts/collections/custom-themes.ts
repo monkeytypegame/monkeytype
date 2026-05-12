@@ -39,7 +39,9 @@ const customThemesCollection = createCollection(
       const response = await Ape.users.getCustomThemes();
 
       if (response.status !== 200) {
-        throw new Error("Error fetching presets:" + response.body.message);
+        throw new Error(
+          "Error fetching custom themes:" + response.body.message,
+        );
       }
 
       return response.body.data.map(applyIdWorkaround);
