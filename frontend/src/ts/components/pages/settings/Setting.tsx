@@ -61,19 +61,23 @@ export function Setting(props: Props): JSXElement {
           }}
         />
       </div>
-      <div
-        class={cn(
-          "grid grid-cols-1 gap-2",
-          "md:grid-cols-[1fr_1fr] md:gap-x-8",
-          "lg:grid-cols-[1.5fr_1fr]",
-          "xl:grid-cols-[2fr_1fr]",
-          props.inputs === undefined &&
-            "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
-        )}
-      >
-        <div class="">{props.description}</div>
-        <div>{props.inputs}</div>
-      </div>
+      <Show when={props.inputs !== undefined}>
+        <div
+          class={cn(
+            "grid grid-cols-1 gap-2",
+            "md:grid-cols-[1fr_1fr] md:gap-x-8",
+            "lg:grid-cols-[1.5fr_1fr]",
+            "xl:grid-cols-[2fr_1fr]",
+            props.inputs === undefined &&
+              "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
+          )}
+        >
+          <Show when={props.description !== ""}>
+            <div class="">{props.description}</div>
+          </Show>
+          <div>{props.inputs}</div>
+        </div>
+      </Show>
       <Show when={props.fullWidthInputs}>{props.fullWidthInputs}</Show>
     </div>
   );

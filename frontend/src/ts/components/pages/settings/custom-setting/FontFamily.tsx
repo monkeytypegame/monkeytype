@@ -42,7 +42,7 @@ export function FontFamily(): JSXElement {
         </>
       }
       inputs={
-        <div class="grid gap-4 self-end">
+        <div class="grid gap-2 self-end">
           <Show
             when={!hasLocalFont()}
             fallback={

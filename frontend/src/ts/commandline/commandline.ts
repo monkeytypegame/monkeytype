@@ -1029,11 +1029,6 @@ createEffect(() => {
           isAnimating = false;
           subgroupOverride = null;
           setCommandlineSubgroup(null);
-
-          // After animation completes, notify store to show pending modal
-          if (visibility?.chained) {
-            storeHideModal(MODAL_STORE_ID);
-          }
         },
       });
     }
