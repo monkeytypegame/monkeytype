@@ -1,3 +1,4 @@
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { JSXElement, Show } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
@@ -53,6 +54,9 @@ export function AutoSwitchTheme(): JSXElement {
                   value: theme.name,
                 }))}
                 selected={getConfig.themeLight}
+                onChange={(value) =>
+                  setConfig("themeLight", value as ThemeName)
+                }
               />
             </div>
             <div class="grid grid-cols-[7rem_1fr] items-center gap-2">
@@ -63,6 +67,7 @@ export function AutoSwitchTheme(): JSXElement {
                   value: theme.name,
                 }))}
                 selected={getConfig.themeDark}
+                onChange={(value) => setConfig("themeDark", value as ThemeName)}
               />
             </div>
           </div>
