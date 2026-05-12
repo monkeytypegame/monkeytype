@@ -354,7 +354,6 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
             ],
             buttonText: "update",
             execFn: async (name, updateColors) => {
-              debugger;
               if (name === undefined) {
                 return {
                   status: "error",
