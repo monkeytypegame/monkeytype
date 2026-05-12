@@ -1,7 +1,8 @@
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement } from "solid-js";
+import { JSXElement } from "solid-js";
 
 import { fpsLimitSchema, getfpsLimit, setfpsLimit } from "../../../../anim";
+import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { AnimeShow } from "../../../common/anime";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
@@ -11,7 +12,8 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function AnimationFpsLimit(): JSXElement {
-  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [showSavedIndicator, flashSavedIndicator, hideSavedIndicator] =
+    useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
       fpsLimit: "",
@@ -20,10 +22,7 @@ export function AnimationFpsLimit(): JSXElement {
       const val = parseInt(String(value.fpsLimit));
       if (val === getfpsLimit()) return;
       setfpsLimit(val);
-      setShowSavedIndicator(true);
-      setTimeout(() => {
-        setShowSavedIndicator(false);
-      }, 2000);
+      flashSavedIndicator();
     },
   }));
 
@@ -43,7 +42,7 @@ export function AnimationFpsLimit(): JSXElement {
             onClick={() => {
               setfpsLimit(1000);
               form.setFieldValue("fpsLimit", "");
-              setShowSavedIndicator(false);
+              hideSavedIndicator();
             }}
           />
           <Separator text="or" />

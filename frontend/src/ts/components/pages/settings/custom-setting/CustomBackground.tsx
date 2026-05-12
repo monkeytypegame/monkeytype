@@ -3,12 +3,13 @@ import {
   CustomBackgroundSchema,
 } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
-import { createResource, createSignal, JSXElement, For, Show } from "solid-js";
+import { createResource, JSXElement, For, Show } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { applyCustomBackground } from "../../../../controllers/theme-controller";
+import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { showNoticeNotification } from "../../../../states/notifications";
 import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
@@ -21,7 +22,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function CustomBackground(): JSXElement {
-  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -30,10 +31,7 @@ export function CustomBackground(): JSXElement {
     onSubmit: ({ value }) => {
       const val = value.customBackground;
       if (val === getConfig.customBackground) return;
-      setShowSavedIndicator(true);
-      setTimeout(() => {
-        setShowSavedIndicator(false);
-      }, 2000);
+      flashSavedIndicator();
       setConfig("customBackground", val);
     },
   }));

@@ -13,6 +13,7 @@ import {
   previewError,
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
@@ -316,7 +317,7 @@ function AutoSetting<T extends keyof Config>(props: {
   wide?: boolean;
   onOptionClick?: (value: Config[T]) => void;
 }): JSXElement {
-  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -325,10 +326,7 @@ function AutoSetting<T extends keyof Config>(props: {
     onSubmit: ({ value }) => {
       const val = parseInt(String(value[props.key]));
       if (val === getConfig[props.key]) return;
-      setShowSavedIndicator(true);
-      setTimeout(() => {
-        setShowSavedIndicator(false);
-      }, 2000);
+      flashSavedIndicator();
       setConfig(props.key, val as Config[T]);
     },
   }));

@@ -1,10 +1,11 @@
 import { MaxLineWidthSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement } from "solid-js";
+import { JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
+import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { AnimeShow } from "../../../common/anime";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Fa } from "../../../common/Fa";
@@ -13,7 +14,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MaxLineWidth(): JSXElement {
-  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -22,10 +23,7 @@ export function MaxLineWidth(): JSXElement {
     onSubmit: ({ value }) => {
       const val = parseInt(String(value.maxLineWidth));
       if (val === getConfig.maxLineWidth) return;
-      setShowSavedIndicator(true);
-      setTimeout(() => {
-        setShowSavedIndicator(false);
-      }, 2000);
+      flashSavedIndicator();
       setConfig("maxLineWidth", val);
     },
   }));

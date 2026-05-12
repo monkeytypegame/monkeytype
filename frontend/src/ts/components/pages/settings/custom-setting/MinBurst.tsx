@@ -1,10 +1,11 @@
 import { MinimumBurstCustomSpeedSchema } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement } from "solid-js";
+import { JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
+import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { AnimeShow } from "../../../common/anime";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
@@ -14,7 +15,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MinBurst(): JSXElement {
-  const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -28,13 +29,7 @@ export function MinBurst(): JSXElement {
       } else {
         setConfig("minBurst", "fixed");
       }
-      // showSuccessNotification("Min burst saved", {
-      //   durationMs: 1000,
-      // });
-      setShowSavedIndicator(true);
-      setTimeout(() => {
-        setShowSavedIndicator(false);
-      }, 2000);
+      flashSavedIndicator();
       setConfig("minBurstCustomSpeed", val);
     },
   }));
