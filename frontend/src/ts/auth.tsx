@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
+import { waitForPresetsReady } from "./collections/presets";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
 import { authEvent } from "./events/auth";
@@ -30,6 +31,7 @@ import {
   showSuccessNotification,
 } from "./states/notifications";
 import { createErrorMessage } from "./utils/error";
+import { SnapshotInitError } from "./utils/snapshot-init-error";
 
 export type AuthResult =
   | {
@@ -64,6 +66,8 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     const snapshot = await DB.initSnapshot();
+    //TODO: always load presets for now, remove when __nonReactive is removed from  presets collection
+    await waitForPresetsReady();
 
     if (snapshot === false) {
       throw new Error(
@@ -77,7 +81,7 @@ async function getDataAndInit(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof DB.SnapshotInitError) {
+    if (error instanceof SnapshotInitError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",

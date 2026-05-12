@@ -17,6 +17,16 @@ export const soundsConfig: SoundConfigType = {
   14: { numberOfSounds: 8 },
   15: { numberOfSounds: 5 },
   16: { numberOfSounds: 8 },
+  17: { numberOfSounds: 10 },
+  18: { numberOfSounds: 10 },
+  19: { numberOfSounds: 10 },
+  20: { numberOfSounds: 10 },
+  21: { numberOfSounds: 10 },
+  22: { numberOfSounds: 10 },
+  23: { numberOfSounds: 10 },
+  24: { numberOfSounds: 10 },
+  25: { numberOfSounds: 10 },
+  26: { numberOfSounds: 10 },
 };
 
 export type ClickSoundConfig = {
