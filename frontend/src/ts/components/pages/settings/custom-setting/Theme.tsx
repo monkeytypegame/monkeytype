@@ -129,7 +129,6 @@ export function Theme(): JSXElement {
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
               execFn: async (includeBackground) => {
-                debugger;
                 const newTheme: {
                   c: string[]; //colors
                   i?: string; //image
