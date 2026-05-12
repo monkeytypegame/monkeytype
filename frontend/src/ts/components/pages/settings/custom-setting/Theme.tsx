@@ -199,6 +199,11 @@ export function Theme(): JSXElement {
           <Button
             text="save as new"
             onClick={() => {
+              if (customThemes().length >= 20) {
+                showNoticeNotification("Custom themes limit reached");
+                return;
+              }
+
               void addCustomTheme({
                 name: "custom",
                 colors: convertThemeToCustomColors(getTheme()),
