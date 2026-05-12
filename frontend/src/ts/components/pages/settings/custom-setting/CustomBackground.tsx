@@ -124,7 +124,7 @@ export function CustomBackground(): JSXElement {
                 for="customBackgroundUploadSolid"
                 class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
               >
-                <i class="fas fa-file-import"></i>
+                <Fa icon="fa-file-import" fixedWidth />
                 use local image
               </label>
               <Separator text="or" />
