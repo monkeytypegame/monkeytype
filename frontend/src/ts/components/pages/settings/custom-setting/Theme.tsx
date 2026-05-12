@@ -129,6 +129,7 @@ export function Theme(): JSXElement {
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
               execFn: async (includeBackground) => {
+                debugger;
                 const newTheme: {
                   c: string[]; //colors
                   i?: string; //image
@@ -138,7 +139,7 @@ export function Theme(): JSXElement {
                   c: convertThemeToCustomColors(getTheme()),
                 };
 
-                if (includeBackground) {
+                if (includeBackground === "true") {
                   newTheme.i = getConfig.customBackground;
                   newTheme.s = getConfig.customBackgroundSize;
                   newTheme.f = getConfig.customBackgroundFilter;
