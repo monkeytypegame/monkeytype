@@ -13,16 +13,15 @@ import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
+  const themes = CustomThemes.useCustomThemesLiveQuery();
+
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
       if (Config.customTheme) {
         setConfig("customTheme", false);
         return;
       }
-      if (
-        isAuthenticated() &&
-        CustomThemes.__nonReactive.getCustomThemes().length < 1
-      ) {
+      if (isAuthenticated() && themes().length < 1) {
         showNoticeNotification("No custom themes!");
         setConfig("customTheme", false);
         return;
