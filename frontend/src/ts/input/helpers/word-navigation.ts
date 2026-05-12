@@ -60,9 +60,9 @@ export async function goToNextWord({
   TestInput.pushBurstToHistory(burst);
   ret.lastBurst = burst;
 
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
   TestInput.input.pushHistory();
   TestInput.corrected.pushHistory();
@@ -111,7 +111,7 @@ export function goToPreviousWord(
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
