@@ -24,7 +24,8 @@ import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
 import * as ghCore from "@actions/core";
 
-const stepSummary = ghCore.summary;
+const stepSummary =
+  process.env["GITHUB_STEP_SUMMARY"] !== undefined ? ghCore.summary : undefined;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -54,16 +55,16 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
-    stepSummary.addHeading(`${this.type} Checks`, 2);
+    stepSummary?.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
-      stepSummary.addRaw("✅ all checks passed").addEOL();
+      stepSummary?.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
 
     Object.entries(this.problems).forEach(([key, problems]) => {
       let label: string = this.labels[key as T] ?? `${key}`;
       stepSummary
-        .addRaw(`❌ ${label}`)
+        ?.addRaw(`❌ ${label}`)
         .addEOL()
         .addList(problems as string[])
         .addEOL();
@@ -531,7 +532,7 @@ async function main(): Promise<void> {
       [...tasks].map(async (validator) => validator()),
     );
 
-    await stepSummary.write();
+    await stepSummary?.write();
 
     if (results.find((it) => it.status === "rejected") !== undefined) {
       throw new Error("One or more checks failed.");
