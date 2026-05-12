@@ -454,9 +454,7 @@ function AutoSetting<T extends keyof Config>(props: {
       key={props.key}
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
-      description={
-        configMetadata[props.key].description ?? "Missing description"
-      }
+      description={configMetadata[props.key].description}
       inputs={!props.wide ? autoInputs() : props.inputs}
       fullWidthInputs={
         props.wide ? (autoInputs() ?? props.inputs) : props.inputs
