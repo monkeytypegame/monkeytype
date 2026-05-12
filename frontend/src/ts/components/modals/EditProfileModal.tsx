@@ -8,12 +8,12 @@ import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
 import Ape from "../../ape";
-import * as DB from "../../db";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import { getSnapshot, setSnapshot } from "../../states/snapshot";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -26,9 +26,10 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-
+  const snapshot = getSnapshot();
+  if (snapshot === undefined) {
+    throw new Error("missing snapshot in EditProfile");
+  }
   const badges = snapshot.inventory?.badges ?? [];
   const form = createForm(() => ({
     defaultValues: {
@@ -76,7 +77,7 @@ export function EditProfile() {
 
       form.reset(value);
       hideModal("EditProfile");
-      DB.setSnapshot(snapshot);
+      setSnapshot(snapshot);
       showSuccessNotification("Profile updated");
     },
   }));
@@ -222,7 +223,7 @@ export function EditProfile() {
             {(field) => (
               <div class="flex flex-wrap gap-2">
                 <Button
-                  class={cn("p-1.5 opacity-25", {
+                  class={cn("rounded-[0.5em] p-1.5 opacity-25", {
                     "opacity-100": field().state.value === -1,
                   })}
                   active={field().state.value === -1}
