@@ -1,3 +1,4 @@
+import { TagNameSchema } from "@monkeytype/schemas/users";
 import { JSXElement, For } from "solid-js";
 
 import {
@@ -9,6 +10,7 @@ import {
 } from "../../../../collections/tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { showSimpleModal } from "../../../../states/simple-modal";
+import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
 import { showAddTagModal } from "../../../modals/AddTagModal";
 import { Setting } from "../Setting";
@@ -71,12 +73,26 @@ export function Tags(): JSXElement {
                         {
                           type: "text",
                           initVal: tag.name,
+                          validation: {
+                            isValid: async (tagName) => {
+                              const validationResult = TagNameSchema.safeParse(
+                                normalizeName(tagName),
+                              );
+                              if (validationResult.success) return true;
+                              return validationResult.error.errors
+                                .map((err) => err.message)
+                                .join(", ");
+                            },
+                          },
                         },
                       ],
                       textClass: "text-text",
                       execFn: async (name) => {
                         showLoaderBar();
-                        await updateTagName({ tagId: tag._id, newName: name });
+                        await updateTagName({
+                          tagId: tag._id,
+                          newName: normalizeName(name),
+                        });
                         hideLoaderBar();
                         return {
                           status: "success",
