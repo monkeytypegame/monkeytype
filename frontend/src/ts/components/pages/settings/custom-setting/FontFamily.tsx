@@ -44,7 +44,7 @@ export function FontFamily(): JSXElement {
       inputs={
         <div class="grid gap-4 self-end">
           <Show
-            when={hasLocalFont()}
+            when={!hasLocalFont()}
             fallback={
               <Button
                 fa={{ icon: "fa-trash" }}
