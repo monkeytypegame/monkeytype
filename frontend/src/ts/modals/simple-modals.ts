@@ -4,7 +4,6 @@ import * as DB from "../db";
 import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
-import * as ThemePicker from "../elements/settings/theme-picker";
 import { FirebaseError } from "firebase/app";
 import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
@@ -861,21 +860,6 @@ list.resetPersonalBests = new SimpleModal({
   },
 });
 
-list.resetSettings = new SimpleModal({
-  id: "resetSettings",
-  title: "Reset settings",
-  text: "Are you sure you want to reset all your settings?",
-  buttonText: "reset",
-  execFn: async (): Promise<ExecReturn> => {
-    await resetConfig();
-    await FileStorage.deleteFile("LocalBackgroundFile");
-    return {
-      status: "success",
-      message: "Settings reset",
-    };
-  },
-});
-
 list.revokeAllTokens = new SimpleModal({
   id: "revokeAllTokens",
   title: "Revoke all tokens",
@@ -1006,7 +990,6 @@ list.updateCustomTheme = new SimpleModal({
       colors: newColors,
     });
     setConfig("customThemeColors", newColors);
-    void ThemePicker.fillCustomButtons();
 
     return {
       status: "success",
@@ -1033,7 +1016,6 @@ list.deleteCustomTheme = new SimpleModal({
     await CustomThemes.deleteCustomTheme({
       themeId: _thisPopup.parameters[0] as string,
     });
-    void ThemePicker.fillCustomButtons();
 
     return {
       status: "success",

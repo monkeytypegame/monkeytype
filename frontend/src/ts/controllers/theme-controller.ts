@@ -263,9 +263,6 @@ function applyCustomBackgroundSize(): void {
 
 export async function applyCustomBackground(): Promise<void> {
   let backgroundUrl = Config.customBackground;
-  qs<HTMLInputElement>(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
-  )?.setValue(backgroundUrl);
 
   //if there is a localBackgroundFile available, use it.
   const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");

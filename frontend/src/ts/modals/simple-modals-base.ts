@@ -15,7 +15,6 @@ export type PopupKey =
   | "optOutOfLeaderboards"
   | "applyCustomFont"
   | "resetPersonalBests"
-  | "resetSettings"
   | "revokeAllTokens"
   | "unlinkDiscord"
   | "editApeKey"
@@ -36,7 +35,6 @@ export const list: Record<PopupKey, SimpleModal | undefined> = {
   optOutOfLeaderboards: undefined,
   applyCustomFont: undefined,
   resetPersonalBests: undefined,
-  resetSettings: undefined,
   revokeAllTokens: undefined,
   unlinkDiscord: undefined,
   editApeKey: undefined,

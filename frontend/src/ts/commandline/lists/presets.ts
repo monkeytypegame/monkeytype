@@ -3,6 +3,7 @@ import * as PresetController from "../../controllers/preset-controller";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
 import { __nonReactive } from "../../collections/presets";
+import { showModal } from "../../states/modals";
 
 const subgroup: CommandsSubgroup = {
   title: "Presets...",
@@ -39,14 +40,14 @@ function update(): void {
       },
     });
   });
-  // subgroup.list.push({
-  //   id: "createPreset",
-  //   display: "Create preset",
-  //   icon: "fa-plus",
-  //   exec: (): void => {
-  //     EditPresetPopup.show("add");
-  //   },
-  // });
+  subgroup.list.push({
+    id: "createPreset",
+    display: "Create preset",
+    icon: "fa-plus",
+    exec: (): void => {
+      showModal("AddPresetModal");
+    },
+  });
 }
 
 export default commands;

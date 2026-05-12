@@ -3,11 +3,14 @@ import {
   clearActiveTags,
   toggleTagActive,
   __nonReactive,
+  insertTag,
 } from "../../collections/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
+import { showSimpleModal } from "../../states/simple-modal";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 
 const subgroup: CommandsSubgroup = {
   title: "Tags...",
@@ -75,16 +78,36 @@ function update(): void {
       });
     }
   }
-  // subgroup.list.push({
-  //   id: "createTag",
-  //   display: "Create tag",
-  //   icon: "fa-plus",
-  //   shouldFocusTestUI: false,
-  //   opensModal: true,
-  //   exec: ({ commandlineModal }): void => {
-  //     EditTagsPopup.show("add", undefined, commandlineModal);
-  //   },
-  // });
+  subgroup.list.push({
+    id: "createTag",
+    display: "Create tag",
+    icon: "fa-plus",
+    shouldFocusTestUI: false,
+    opensModal: true,
+    exec: (): void => {
+      showSimpleModal({
+        title: "Add new tag",
+        buttonText: "add",
+        inputs: [
+          {
+            type: "text",
+            placeholder: "tag name",
+          },
+        ],
+        execFn: async (name) => {
+          showLoaderBar();
+          await insertTag({
+            name,
+          });
+          hideLoaderBar();
+          return {
+            status: "success",
+            message: "Tag added",
+          };
+        },
+      });
+    },
+  });
 }
 
 export default commands;

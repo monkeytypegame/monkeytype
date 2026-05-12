@@ -13,7 +13,6 @@ import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
-import "./elements/settings/account-settings-notice";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestStats from "./test/test-stats";
