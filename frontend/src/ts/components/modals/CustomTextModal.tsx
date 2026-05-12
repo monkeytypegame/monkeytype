@@ -491,7 +491,7 @@ export function CustomTextModal(): JSXElement {
             </div>
             <SubmitButton
               form={form}
-              skipUnchangedCheck 
+              skipUnchangedCheck
               variant="button"
               text="ok"
               class="lg:col-start-1"

@@ -11,7 +11,6 @@ export function TextareaField(props: {
   disabled?: boolean;
   class?: string;
   maxLength?: number;
-  showIndicator?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
   onKeyPress?: (e: KeyboardEvent) => void;
 }): JSXElement {
@@ -23,6 +22,7 @@ export function TextareaField(props: {
           "col-start-1 row-start-1 w-full resize-y",
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
+          props.field().options.validators ? "pr-[1.85em]" : "",
           props.class,
         )}
         id={props.field().name as string}
@@ -36,7 +36,7 @@ export function TextareaField(props: {
         onKeyDown={(e) => props.onKeyDown?.(e)}
         onKeyPress={(e) => props.onKeyPress?.(e)}
       ></textarea>
-      <Show when={props.showIndicator}>
+      <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />
       </Show>
     </div>

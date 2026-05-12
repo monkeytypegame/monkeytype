@@ -2,7 +2,7 @@ import { JSXElement, splitProps } from "solid-js";
 
 import { Button, ButtonProps } from "../../common/Button";
 
-type FormStateSlice = {
+export type FormStateSlice = {
   canSubmit: boolean;
   isSubmitting: boolean;
   isValid: boolean;
@@ -11,12 +11,7 @@ type FormStateSlice = {
 
 type SubscribableForm = {
   Subscribe: (props: {
-    selector: (state: {
-      canSubmit: boolean;
-      isSubmitting: boolean;
-      isValid: boolean;
-      isDefaultValue: boolean;
-    }) => FormStateSlice;
+    selector: (state: FormStateSlice) => FormStateSlice;
     children: (state: () => FormStateSlice) => JSXElement;
   }) => JSXElement;
 };
@@ -27,10 +22,7 @@ export function SubmitButton(
     skipUnchangedCheck?: boolean;
   } & Omit<ButtonProps, "type">,
 ): JSXElement {
-  const [local, others] = splitProps(props, [
-    "disabled",
-    "skipUnchangedCheck",
-  ]);
+  const [local, others] = splitProps(props, ["disabled", "skipUnchangedCheck"]);
   return (
     <props.form.Subscribe
       selector={(state) => ({

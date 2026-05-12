@@ -4,23 +4,23 @@ import {
   UserProfileDetailsSchema,
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
+import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
+
 import Ape from "../../ape";
-import { getHTMLById } from "../../controllers/badge-controller";
 import * as DB from "../../db";
+import { hideModal } from "../../states/modals";
 import {
   showSuccessNotification,
   showErrorNotification,
 } from "../../states/notifications";
-
 import { AnimatedModal } from "../common/AnimatedModal";
-import { hideModal } from "../../states/modals";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
-import { TextareaField } from "../ui/form/TextareaField";
-import { createForm } from "@tanstack/solid-form";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
+import { BadgeButton } from "../common/BadgeButton";
 
 export function EditProfile() {
   const snapshot = DB.getSnapshot();
@@ -92,7 +92,7 @@ export function EditProfile() {
         }}
       >
         <div>
-          <label class="text-sub mb-[0.25em] block">name</label>
+          <label class="mb-[0.25em] block text-sub">name</label>
           <div>
             To update your name, go to Account Settings &gt; Account &gt; Update
             account name
@@ -100,7 +100,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">avatar</label>
+          <label class="mb-[0.25em] block text-sub">avatar</label>
           <div>
             To update your avatar make sure your Discord account is linked, then
             go to Account Settings &gt; Account &gt; Discord Integration and
@@ -109,7 +109,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">bio</label>
+          <label class="mb-[0.25em] block text-sub">bio</label>
           <form.Field
             name="bio"
             validators={{
@@ -118,11 +118,7 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField
-                  field={field}
-                  maxLength={250}
-                  showIndicator={true}
-                />
+                <TextareaField field={field} maxLength={250} />
                 <div class="mt-1 text-base">
                   {field().state.value.length}/250
                 </div>
@@ -132,7 +128,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">keyboard</label>
+          <label class="mb-[0.25em] block text-sub">keyboard</label>
           <form.Field
             name="keyboard"
             validators={{
@@ -141,11 +137,7 @@ export function EditProfile() {
           >
             {(field) => (
               <>
-                <TextareaField
-                  field={field}
-                  maxLength={75}
-                  showIndicator={true}
-                />
+                <TextareaField field={field} maxLength={75} />
                 <div class="mt-1 text-base">
                   {field().state.value.length}/75
                 </div>
@@ -155,7 +147,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">github</label>
+          <label class="mb-[0.25em] block text-sub">github</label>
           <div class="flex items-center">
             <p class="my-2 mr-2">https://github.com/</p>
             <div class="w-full max-w-60">
@@ -179,7 +171,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">twitter</label>
+          <label class="mb-[0.25em] block text-sub">twitter</label>
           <div class="flex items-center">
             <p class="my-2 mr-2">https://x.com/</p>
             <div class="w-full max-w-60">
@@ -203,7 +195,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">website</label>
+          <label class="mb-[0.25em] block text-sub">website</label>
           <form.Field
             name="website"
             validators={{
@@ -222,37 +214,22 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">badge</label>
+          <label class="mb-[0.25em] block text-sub">badge</label>
           <form.Field name="badgeId">
             {(field) => (
               <div class="flex flex-wrap">
-                <button
-                  type="button"
-                  class="w-max cursor-pointer mr-2 mb-2 p-0 rounded-half"
-                  classList={{
-                    "opacity-100": field().state.value === -1,
-                    "opacity-25 hover:opacity-100": field().state.value !== -1,
-                  }}
+                <BadgeButton
+                  id={-1}
+                  selected={field().state.value === -1}
                   onClick={() => field().handleChange(-1)}
-                >
-                  <div class="badge">
-                    <i class="fas fa-frown-open"></i>
-                    <div class="text">none</div>
-                  </div>
-                </button>
+                />
                 <For each={badges}>
                   {(badge) => (
-                    <button
-                      type="button"
-                      class="w-max cursor-pointer mr-2 mb-2 p-0 rounded-half"
-                      classList={{
-                        "opacity-100": field().state.value === badge.id,
-                        "opacity-25 hover:opacity-100":
-                          field().state.value !== badge.id,
-                      }}
+                    <BadgeButton
+                      id={badge.id}
+                      selected={field().state.value === badge.id}
                       onClick={() => field().handleChange(badge.id)}
-                      innerHTML={getHTMLById(badge.id, false, true)}
-                    ></button>
+                    />
                   )}
                 </For>
               </div>
@@ -261,7 +238,7 @@ export function EditProfile() {
         </div>
 
         <div>
-          <label class="text-sub mb-[0.25em] block">public activity</label>
+          <label class="mb-[0.25em] block text-sub">public activity</label>
           <form.Field name="showActivityOnPublicProfile">
             {(field) => (
               <Checkbox
