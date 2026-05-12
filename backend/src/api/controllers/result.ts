@@ -584,6 +584,18 @@ export async function addResult(
     streak,
   );
 
+  if (isNaN(xpGained.xp)) {
+    throw new MonkeyError(
+      500,
+      "Calculated XP is NaN",
+      JSON.stringify({
+        xpGained,
+        result: completedEvent,
+      }),
+      uid,
+    );
+  }
+
   if (xpGained.xp < 0) {
     throw new MonkeyError(
       500,
@@ -813,7 +825,7 @@ async function calculateXp(
   const totalXp =
     Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
 
-  if (gainMultiplier > 1) {
+  if (gainMultiplier !== 1) {
     // breakdown.push([
     //   "configMultiplier",
     //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
