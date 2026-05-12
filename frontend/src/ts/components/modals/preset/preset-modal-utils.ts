@@ -1,5 +1,6 @@
 import {
   ConfigGroupName,
+  ConfigGroupNameSchema,
   ConfigKey,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
@@ -56,4 +57,12 @@ export function getConfigChanges(
     ...activeConfigChanges,
     ...(setTags && { tags: activeTagIds }),
   };
+}
+
+export function getCheckboxes(
+  value: Record<ConfigGroupName, boolean>,
+): Record<ConfigGroupName, boolean> {
+  return Object.fromEntries(
+    ConfigGroupNameSchema.options.map((key) => [key, value[key]]),
+  ) as Record<ConfigGroupName, boolean>;
 }

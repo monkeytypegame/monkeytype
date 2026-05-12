@@ -26,7 +26,11 @@ import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import { fromSchema } from "../../ui/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
-import { getActiveSettingGroups, getConfigChanges } from "./preset-modal-utils";
+import {
+  getActiveSettingGroups,
+  getCheckboxes,
+  getConfigChanges,
+} from "./preset-modal-utils";
 
 export function EditPresetModal(): JSXElement {
   const [presetType, setPresetType] = createSignal<PresetType>("full");
@@ -46,17 +50,15 @@ export function EditPresetModal(): JSXElement {
       const data = editPresetData();
       if (data === null) return;
 
-      const cleanedName = normalizeName(value.presetName);
-      const parsed = PresetNameSchema.safeParse(cleanedName);
-      if (!parsed.success) {
+      const parsedName = PresetNameSchema.safeParse(
+        normalizeName(value.presetName),
+      );
+      if (!parsedName.success) {
         showNoticeNotification("Preset name is not valid");
         return;
       }
 
-      const checkboxes = Object.fromEntries(
-        ConfigGroupNameSchema.options.map((key) => [key, value[key]]),
-      ) as Record<ConfigGroupName, boolean>;
-
+      const checkboxes = getCheckboxes(value);
       if (
         value.updateConfig &&
         presetType() === "partial" &&
@@ -80,14 +82,14 @@ export function EditPresetModal(): JSXElement {
               : null;
           await editPreset({
             presetId: data.presetId,
-            name: parsed.data,
+            name: parsedName.data,
             config: configChanges,
             settingGroups: activeSettingGroups,
           });
         } else {
           await editPreset({
             presetId: data.presetId,
-            name: parsed.data,
+            name: parsedName.data,
           });
         }
         showSuccessNotification("Preset updated");
@@ -127,12 +129,6 @@ export function EditPresetModal(): JSXElement {
       }
     },
   );
-
-  const isSubmitDisabled = () => {
-    const formValues = form.useStore((s) => s.values);
-    if (formValues().presetName.trim().length === 0) return true;
-    return false;
-  };
 
   const isUpdateConfig = () => {
     const formValues = form.useStore((s) => s.values);
@@ -174,12 +170,7 @@ export function EditPresetModal(): JSXElement {
             )}
           />
         </Show>
-        <SubmitButton
-          form={form}
-          variant="button"
-          text="save"
-          disabled={isSubmitDisabled()}
-        />
+        <SubmitButton form={form} variant="button" text="save" />
       </form>
     </AnimatedModal>
   );
