@@ -113,7 +113,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     if (userData === null || userData === undefined) {
       throw new SnapshotInitError(
-        `Request was successful but user data is null`,
+        `Request was successful but user data is null/undefined`,
         200,
       );
     }
