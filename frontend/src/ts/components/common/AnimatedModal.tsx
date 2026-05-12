@@ -50,9 +50,7 @@ type AnimatedModalProps = ParentProps<{
 
   title?: string;
   modalClass?: string;
-  dialogClass?: string;
   wrapperClass?: string;
-  //todo check if wrapper and dialog can be merged into one
 }>;
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -321,7 +319,6 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       ref={dialogRef}
       class={cn(
         "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
-        props.dialogClass,
       )}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
