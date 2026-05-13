@@ -6,15 +6,13 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-import { AnimeShow } from "../../../common/anime";
 // import { showSuccessNotification } from "../../../../states/notifications";
-import { Fa } from "../../../common/Fa";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MaxLineWidth(): JSXElement {
-  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
+  const { component: SavedIndicator, flash } = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -23,7 +21,7 @@ export function MaxLineWidth(): JSXElement {
     onSubmit: ({ value }) => {
       const val = parseInt(String(value.maxLineWidth));
       if (val === getConfig.maxLineWidth) return;
-      flashSavedIndicator();
+      flash();
       setConfig("maxLineWidth", val);
     },
   }));
@@ -69,11 +67,7 @@ export function MaxLineWidth(): JSXElement {
                     }
                     type="number"
                   />
-                  <AnimeShow when={showSavedIndicator()}>
-                    <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
-                      <Fa icon="fa-save" fixedWidth />
-                    </div>
-                  </AnimeShow>
+                  <SavedIndicator />
                 </div>
               )}
             />

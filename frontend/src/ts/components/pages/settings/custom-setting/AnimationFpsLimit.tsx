@@ -3,17 +3,14 @@ import { JSXElement } from "solid-js";
 
 import { fpsLimitSchema, getfpsLimit, setfpsLimit } from "../../../../anim";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-import { AnimeShow } from "../../../common/anime";
 import { Button } from "../../../common/Button";
-import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function AnimationFpsLimit(): JSXElement {
-  const [showSavedIndicator, flashSavedIndicator, hideSavedIndicator] =
-    useSavedIndicator();
+  const { component: SavedIndicator, flash, hide } = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
       fpsLimit: "",
@@ -22,7 +19,7 @@ export function AnimationFpsLimit(): JSXElement {
       const val = parseInt(String(value.fpsLimit));
       if (val === getfpsLimit()) return;
       setfpsLimit(val);
-      flashSavedIndicator();
+      flash();
     },
   }));
 
@@ -42,7 +39,7 @@ export function AnimationFpsLimit(): JSXElement {
             onClick={() => {
               setfpsLimit(1000);
               form.setFieldValue("fpsLimit", "");
-              hideSavedIndicator();
+              hide();
             }}
           />
           <Separator text="or" />
@@ -76,11 +73,7 @@ export function AnimationFpsLimit(): JSXElement {
                     placeholder={"custom limit"}
                     type="number"
                   />
-                  <AnimeShow when={showSavedIndicator()}>
-                    <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
-                      <Fa icon="fa-save" fixedWidth />
-                    </div>
-                  </AnimeShow>
+                  <SavedIndicator />
                 </div>
               )}
             />

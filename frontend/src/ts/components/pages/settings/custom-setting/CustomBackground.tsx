@@ -13,7 +13,6 @@ import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { showNoticeNotification } from "../../../../states/notifications";
 import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
-import { AnimeShow } from "../../../common/anime";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
@@ -22,7 +21,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function CustomBackground(): JSXElement {
-  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
+  const { component: SavedIndicator, flash } = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -31,7 +30,7 @@ export function CustomBackground(): JSXElement {
     onSubmit: ({ value }) => {
       const val = value.customBackground;
       if (val === getConfig.customBackground) return;
-      flashSavedIndicator();
+      flash();
       setConfig("customBackground", val);
     },
   }));
@@ -156,11 +155,7 @@ export function CustomBackground(): JSXElement {
                       placeholder={"image url"}
                       type="text"
                     />
-                    <AnimeShow when={showSavedIndicator()}>
-                      <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
-                        <Fa icon="fa-save" fixedWidth />
-                      </div>
-                    </AnimeShow>
+                    <SavedIndicator />
                   </div>
                 )}
               />

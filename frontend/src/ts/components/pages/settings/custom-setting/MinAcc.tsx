@@ -6,16 +6,14 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-import { AnimeShow } from "../../../common/anime";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
-import { Fa } from "../../../common/Fa";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MinAcc(): JSXElement {
-  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
+  const { component: SavedIndicator, flash } = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -29,7 +27,7 @@ export function MinAcc(): JSXElement {
       } else {
         setConfig("minAcc", "custom");
       }
-      flashSavedIndicator();
+      flash();
       setConfig("minAccCustom", val);
     },
   }));
@@ -74,11 +72,7 @@ export function MinAcc(): JSXElement {
                     }
                     type="number"
                   />
-                  <AnimeShow when={showSavedIndicator()}>
-                    <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
-                      <Fa icon="fa-save" fixedWidth />
-                    </div>
-                  </AnimeShow>
+                  <SavedIndicator />
                 </div>
               )}
             />

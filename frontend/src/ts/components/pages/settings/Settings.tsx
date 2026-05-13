@@ -317,7 +317,7 @@ function AutoSetting<T extends keyof Config>(props: {
   wide?: boolean;
   onOptionClick?: (value: Config[T]) => void;
 }): JSXElement {
-  const [showSavedIndicator, flashSavedIndicator] = useSavedIndicator();
+  const { component: SavedIndicator, flash } = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -326,7 +326,7 @@ function AutoSetting<T extends keyof Config>(props: {
     onSubmit: ({ value }) => {
       const val = parseInt(String(value[props.key]));
       if (val === getConfig[props.key]) return;
-      flashSavedIndicator();
+      flash();
       setConfig(props.key, val as Config[T]);
     },
   }));
@@ -373,11 +373,7 @@ function AutoSetting<T extends keyof Config>(props: {
                     }
                     type="number"
                   />
-                  <AnimeShow when={showSavedIndicator()}>
-                    <div class="absolute top-0 right-0 rounded bg-sub-alt p-[0.5em] text-main">
-                      <Fa icon="fa-save" fixedWidth />
-                    </div>
-                  </AnimeShow>
+                  <SavedIndicator />
                 </div>
               )}
             />
