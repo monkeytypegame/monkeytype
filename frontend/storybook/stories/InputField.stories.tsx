@@ -27,6 +27,9 @@ function createFieldMock(options: {
   };
   return {
     name: options.name ?? "test",
+    options: {
+      validators: undefined,
+    },
     get state() {
       return {
         value: options.value ?? "",
