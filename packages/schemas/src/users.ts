@@ -239,7 +239,7 @@ export const UserEmailSchema = z.string().email();
 /**
  * username schema without profanity check
  */
-export const UserNameWithoutFilterSchema = slug().min(1).max(15);
+export const UserNameWithoutFilterSchema = slug().min(1).max(16);
 
 /**
  * username schema with profanity check
