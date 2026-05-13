@@ -9,6 +9,7 @@ import { For } from "solid-js";
 
 import Ape from "../../ape";
 import { setSnapshot } from "../../db";
+import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -67,22 +68,20 @@ export function EditProfile() {
         return;
       }
 
-      const newBadges = snapshot.inventory?.badges;
-      newBadges?.forEach((badge) => {
-        if (badge.id === value.badgeId) {
-          badge.selected = true;
-        } else {
-          delete badge.selected;
-        }
-      });
+      const newBadges =
+        snapshot.inventory?.badges?.map((it) => ({
+          ...it,
+          selected: it.id === value.badgeId,
+        })) ?? [];
 
       form.reset(value);
       hideModal("EditProfile");
       setSnapshot({
         ...snapshot,
         details: response.body.data ?? updates,
-        inventory: { ...snapshot.inventory, badges: newBadges ?? [] },
+        inventory: { ...snapshot.inventory, badges: newBadges },
       });
+      void invalidateMyProfile();
       showSuccessNotification("Profile updated");
     },
   }));
