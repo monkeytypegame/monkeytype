@@ -1,3 +1,4 @@
+import { PageNumberSchema } from "@monkeytype/schemas/util";
 import { JSXElement, Setter, Show } from "solid-js";
 
 import { setPage } from "../../../states/leaderboard-selection";
@@ -62,6 +63,18 @@ export function Navigation(props: {
               {
                 type: "number",
                 placeholder: "Page number",
+                validation: {
+                  isValid: async (page) => {
+                    const validationResult = PageNumberSchema.safeParse(
+                      Number.parseInt(page),
+                    );
+
+                    if (validationResult.success) return true;
+                    return validationResult.error.errors
+                      .map((err) => err.message)
+                      .join(", ");
+                  },
+                },
               },
             ],
             buttonText: "Go",
