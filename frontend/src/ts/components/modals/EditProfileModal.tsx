@@ -246,7 +246,7 @@ export function EditProfile() {
                       active={field().state.value === badge.id}
                       onClick={() => field().handleChange(badge.id)}
                     >
-                      <UserBadge id={badge.id} class="p-2" />
+                      <UserBadge id={badge.id} class="p-1.5 text-em-sm" />
                     </Button>
                   )}
                 </For>
