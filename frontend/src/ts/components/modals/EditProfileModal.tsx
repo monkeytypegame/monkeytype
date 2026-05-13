@@ -239,7 +239,7 @@ export function EditProfile() {
                 <For each={badges}>
                   {(badge) => (
                     <Button
-                      class={cn("p-0 opacity-25", {
+                      class={cn("p-0 opacity-25 hover:opacity-100", {
                         "opacity-100": field().state.value === badge.id,
                       })}
                       active={field().state.value === badge.id}
