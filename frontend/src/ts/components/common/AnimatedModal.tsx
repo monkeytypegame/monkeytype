@@ -46,7 +46,6 @@ type AnimatedModalProps = ParentProps<{
   title?: string;
   modalClass?: string;
   wrapperClass?: string;
-  deferShow?: boolean;
 }>;
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -67,14 +66,11 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
       if (visible) {
         void showModal(isChained);
-      } else {
+      } else if (dialogEl()?.native.open) {
         void hideModal(isChained);
       }
     },
-    {
-      // oxlint-disable-next-line solid/reactivity no need for reactivity
-      defer: props.deferShow === false ? false : true,
-    },
+    {},
   );
 
   const showModal = async (isChained: boolean): Promise<void> => {

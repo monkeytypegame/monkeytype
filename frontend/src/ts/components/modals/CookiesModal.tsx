@@ -39,7 +39,6 @@ export function CookiesModal(): JSXElement {
       wrapperClass="justify-end items-end"
       closeOnEscape={false}
       closeOnWrapperClick={false}
-      deferShow={false}
     >
       <H3
         text="We use cookies by the way"
