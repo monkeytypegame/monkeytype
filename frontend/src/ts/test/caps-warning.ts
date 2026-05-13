@@ -1,37 +1,17 @@
 import { Config } from "../config/store";
 import { qsr } from "../utils/dom";
-import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
+import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 
 const el = qsr("#capsWarning");
-let visible = false;
-
-export let capsState = false;
-
-function show(): void {
-  if (!visible) {
-    el.show();
-    visible = true;
-  }
-}
-
-function hide(): void {
-  if (visible) {
-    el.hide();
-    visible = false;
-  }
-}
 
 function updateCapsWarningVisibility(): void {
-  try {
-    if (Config.capsLockWarning && capsState) {
-      show();
-    } else {
-      hide();
-    }
-  } catch {}
+  if (Config.capsLockWarning && isCapsLockOn()) {
+    el.show();
+  } else {
+    el.hide();
+  }
 }
 
-onCapsLockChange((currentCapsState: boolean) => {
-  capsState = currentCapsState;
+onCapsLockChange(() => {
   updateCapsWarningVisibility();
 });
