@@ -425,7 +425,7 @@ export function CustomTextModal(): JSXElement {
               <Button
                 variant="button"
                 fa={{ icon: "fa-save" }}
-                text="savea"
+                text="save"
                 onClick={() => {
                   setTextToSave(cleanUpText());
                   showModal("SaveCustomText");
