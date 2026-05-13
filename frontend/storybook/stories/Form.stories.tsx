@@ -64,7 +64,6 @@ export const withValidation = meta.story({
           children={(field) => (
             <InputField
               field={field}
-              showIndicator
               autocomplete="current-user"
               disabled={!isEditable()}
             />
@@ -79,7 +78,6 @@ export const withValidation = meta.story({
             <InputField
               field={field}
               type="password"
-              showIndicator
               autocomplete="current-password"
               disabled={!isEditable()}
             />

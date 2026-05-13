@@ -1,9 +1,4 @@
-import {
-  ResultFilters,
-  User,
-  UserProfileDetails,
-  UserTag,
-} from "@monkeytype/schemas/users";
+import { User, UserProfileDetails } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
@@ -12,18 +7,11 @@ import {
   ModifiableTestActivityCalendar,
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
-import { Preset } from "@monkeytype/schemas/presets";
 import { Language } from "@monkeytype/schemas/languages";
 import { ConnectionStatus } from "@monkeytype/schemas/connections";
 
-export type SnapshotUserTag = UserTag & {
-  active?: boolean;
-  display: string;
-};
-
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
-  | "_id"
   | "bailedOut"
   | "blindMode"
   | "lazyMode"
@@ -38,7 +26,6 @@ export type SnapshotResult<M extends Mode> = Omit<
   | "afkDuration"
   | "tags"
 > & {
-  _id: string;
   bailedOut: boolean;
   blindMode: boolean;
   lazyMode: boolean;
@@ -52,6 +39,10 @@ export type SnapshotResult<M extends Mode> = Omit<
   incompleteTestSeconds: number;
   afkDuration: number;
   tags: string[];
+  //calculated values
+  words: number;
+  timeTyping: number;
+  dayTimestamp: number;
 };
 
 export type Snapshot = Omit<
@@ -75,24 +66,15 @@ export type Snapshot = Omit<
   inboxUnreadSize: number;
   streak: number;
   maxStreak: number;
-  filterPresets: ResultFilters[];
   isPremium: boolean;
   streakHourOffset?: number;
-  tags: SnapshotUserTag[];
-  presets: SnapshotPreset[];
-  results?: SnapshotResult<Mode>[];
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
   connections: Record<string, ConnectionStatus | "incoming">;
 };
 
-export type SnapshotPreset = Preset & {
-  display: string;
-};
-
 const defaultSnap = {
-  results: undefined,
   personalBests: {
     time: {},
     words: {},
@@ -106,8 +88,6 @@ const defaultSnap = {
   isPremium: false,
   config: getDefaultConfig(),
   customThemes: [],
-  presets: [],
-  tags: [],
   banned: undefined,
   verified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
@@ -120,7 +100,6 @@ const defaultSnap = {
   quoteMod: false,
   favoriteQuotes: {},
   addedAt: 0,
-  filterPresets: [],
   xp: 0,
   inboxUnreadSize: 0,
   streak: 0,

@@ -43,7 +43,13 @@ body {
 
 @media (prefers-reduced-motion) {
   body:not(.ignore-reduced-motion)
-    *:not(.fa-spin, .animate-\[loader\], .preloader, .fall-clone) {
+    *:not(
+      .fa-spin,
+      .animate-\[loader\],
+      .preloader,
+      .typed-effect-fade .word.typed,
+      .fall-clone
+    ) {
     animation: none !important;
     transition: none !important;
 

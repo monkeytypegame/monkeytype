@@ -21,6 +21,10 @@ import { z } from "zod";
 import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
+import { clickSoundConfig } from "../src/ts/constants/sounds";
+import * as ghCore from "@actions/core";
+
+const stepSummary = ghCore.summary;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -50,9 +54,20 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
+    stepSummary.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
+      stepSummary.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
+
+    Object.entries(this.problems).forEach(([key, problems]) => {
+      let label: string = this.labels[key as T] ?? `${key}`;
+      stepSummary
+        .addRaw(`❌ ${label}`)
+        .addEOL()
+        .addList(problems as string[])
+        .addEOL();
+    });
 
     return (
       `${this.type} are \u001b[31minvalid\u001b[0m\n` +
@@ -421,6 +436,54 @@ async function validateThemes(): Promise<void> {
   }
 }
 
+async function validateSounds(): Promise<void> {
+  const problems = new Problems<string, "_additional">("Sounds", {
+    _additional:
+      "Sound files present but missing in frontend/src/ts/constants/sounds",
+  });
+
+  const soundFiles = new Set(
+    fs
+      .readdirSync("./static/sounds")
+      .filter((it) => it.startsWith("click"))
+      .flatMap((folder) =>
+        fs
+          .readdirSync(`./static/sounds/${folder}`)
+          .map((it) => `${folder}/${it}`),
+      ),
+  );
+
+  //missing sound files
+
+  Object.entries(clickSoundConfig).forEach(([key, value]) => {
+    value
+      .map((file) => file.substring("../sounds/".length))
+      .filter((it) => !soundFiles.has(it))
+      .forEach((file) =>
+        problems.add(
+          "click" + key,
+          `missing file frontend/static/sounds/${file}`,
+        ),
+      );
+  });
+
+  //additional files
+  const expectedSoundFiles = new Set(
+    Object.values(clickSoundConfig).flatMap((it) =>
+      it.map((file) => file.substring("../sounds/".length)),
+    ),
+  );
+  [...soundFiles]
+    .filter((name) => !expectedSoundFiles.has(name))
+    .forEach((file) => problems.add("_additional", file));
+
+  console.log(problems.toString());
+
+  if (problems.hasError()) {
+    throw new Error("sounds with errors");
+  }
+}
+
 type Validator = () => Promise<void>;
 
 async function main(): Promise<void> {
@@ -436,11 +499,13 @@ async function main(): Promise<void> {
     challenges: [validateChallenges],
     fonts: [validateFonts],
     themes: [validateThemes],
+    sounds: [validateSounds],
     others: [
       validateChallenges,
       validateLayouts,
       validateFonts,
       validateThemes,
+      validateSounds,
     ],
   };
 
@@ -462,8 +527,15 @@ async function main(): Promise<void> {
   }
 
   if (tasks.size > 0) {
-    await Promise.all([...tasks].map(async (validator) => validator()));
-    return;
+    const results = await Promise.allSettled(
+      [...tasks].map(async (validator) => validator()),
+    );
+
+    await stepSummary.write();
+
+    if (results.find((it) => it.status === "rejected") !== undefined) {
+      throw new Error("One or more checks failed.");
+    }
   }
 }
 void main();

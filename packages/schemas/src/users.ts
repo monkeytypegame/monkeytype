@@ -15,10 +15,12 @@ import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
 
+export const ResultFilterPresetNameSchema = slug().max(16);
+
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: slug().max(16),
+  name: ResultFilterPresetNameSchema,
   pb: z
     .object({
       no: z.boolean(),
@@ -56,6 +58,7 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;
 
 export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;
