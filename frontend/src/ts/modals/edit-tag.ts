@@ -1,6 +1,6 @@
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { SimpleModal, TextInput } from "../elements/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { IsValidResponse } from "../types/validation";
 import {
@@ -12,6 +12,7 @@ import {
 } from "../collections/tags";
 import { normalizeName } from "../utils/strings";
 import { deleteLocalTag } from "../collections/results";
+import { TextInput } from "../states/simple-modal";
 
 function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
