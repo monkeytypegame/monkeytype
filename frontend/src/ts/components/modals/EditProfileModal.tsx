@@ -19,7 +19,6 @@ import { getSnapshot } from "../../states/snapshot";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-import { Fa } from "../common/Fa";
 import { UserBadge } from "../common/UserBadge";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
@@ -226,17 +225,7 @@ export function EditProfile() {
           <form.Field name="badgeId">
             {(field) => (
               <div class="flex flex-wrap gap-2">
-                <Button
-                  class={cn("rounded-[0.5em] p-1.5 opacity-25", {
-                    "opacity-100": field().state.value === -1,
-                  })}
-                  active={field().state.value === -1}
-                  onClick={() => field().handleChange(-1)}
-                >
-                  <Fa icon="fa-frown-open" />
-                  none
-                </Button>
-                <For each={badges}>
+                <For each={[{ id: -1 }, ...badges]}>
                   {(badge) => (
                     <Button
                       class={cn("p-0 opacity-25 hover:opacity-100", {
