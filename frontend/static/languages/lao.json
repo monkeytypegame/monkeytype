@@ -1,6 +1,8 @@
 {
   "name": "lao",
-  "leftToRight": true,
+  "rightToLeft": false,
+  "ligatures": false,
+  "orderedByFrequency": false,
   "bcp47": "lo",
   "words": [
     "ຂ້ອຍ",
