@@ -19,9 +19,14 @@ export function InputField(props: {
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
-  const shakeIt = () => {
-    setShake(true);
-    setTimeout(() => setShake(false), 300);
+  const shakeItIfYouWantIt = () => {
+    if (
+      props.field().state.meta.isTouched &&
+      !props.field().state.meta.isValid
+    ) {
+      setShake(true);
+      setTimeout(() => setShake(false), 300);
+    }
   };
 
   return (
@@ -48,16 +53,12 @@ export function InputField(props: {
         value={props.field().state.value as string}
         onBlur={() => {
           props.field().handleBlur();
-          if (!props.field().state.meta.isValid) {
-            shakeIt();
-          }
+          shakeItIfYouWantIt();
         }}
         onInput={(e) => props.field().handleChange(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            if (!props.field().state.meta.isValid) {
-              shakeIt();
-            }
+            shakeItIfYouWantIt();
           }
         }}
         disabled={props.disabled}
