@@ -3241,7 +3241,6 @@ describe("user controller test", () => {
         .set("Authorization", `Bearer ${uid}`)
         .send({
           ...newProfile,
-          selectedBadgeId: -1,
         })
         .expect(200);
 
