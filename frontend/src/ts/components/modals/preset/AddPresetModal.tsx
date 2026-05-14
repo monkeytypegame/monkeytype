@@ -20,7 +20,7 @@ import { AnimatedModal } from "../../common/AnimatedModal";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
-import { fromSchema } from "../../ui/form/utils";
+import { allFieldsMandatory, fromSchema } from "../../ui/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,
@@ -50,6 +50,9 @@ export function AddPresetModal(): JSXElement {
         return undefined;
       },
     },*/
+    validators: {
+      onChange: allFieldsMandatory(),
+    },
     onSubmit: async ({ value }) => {
       const parsedName = PresetNameSchema.safeParse(
         normalizeName(value.presetName),
