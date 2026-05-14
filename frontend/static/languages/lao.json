@@ -1,6 +1,7 @@
 {
   "name": "lao",
   "leftToRight": true,
+  "bcp47": "lo",
   "words": [
     "ຂ້ອຍ",
     "ເຈົ້າ",
