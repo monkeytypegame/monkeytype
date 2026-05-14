@@ -19,7 +19,6 @@ import { getSnapshot } from "../../states/snapshot";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-import { Fa } from "../common/Fa";
 import { UserBadge } from "../common/UserBadge";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
@@ -42,7 +41,7 @@ export function EditProfile() {
       website: snapshot.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
         snapshot.details?.showActivityOnPublicProfile ?? true,
-      badgeId: badges.find((b) => b.selected)?.id ?? null,
+      badgeId: badges.find((b) => b.selected)?.id ?? -1,
     },
     onSubmit: async ({ value }) => {
       const updates = {
@@ -59,7 +58,7 @@ export function EditProfile() {
       const response = await Ape.users.updateProfile({
         body: {
           ...updates,
-          selectedBadgeId: value.badgeId ?? undefined,
+          selectedBadgeId: value.badgeId,
         },
       });
 
@@ -226,25 +225,7 @@ export function EditProfile() {
           <form.Field name="badgeId">
             {(field) => (
               <div class="flex flex-wrap gap-2">
-                <Button
-                  class={cn("p-0 opacity-25 hover:opacity-100", {
-                    "opacity-100": field().state.value === null,
-                  })}
-                  active={field().state.value === null}
-                  onClick={() => field().handleChange(null)}
-                >
-                  <div
-                    class="rounded-[0.5em] p-1.5 text-em-sm"
-                    style={{
-                      background: "var(--sub-color)",
-                      color: "var(--text-color)",
-                    }}
-                  >
-                    <Fa icon="fa-frown-open" />
-                    <span class="pl-[0.75em]">none</span>
-                  </div>
-                </Button>
-                <For each={badges}>
+                <For each={[{ id: -1 }, ...badges]}>
                   {(badge) => (
                     <Button
                       class={cn("p-0 opacity-25 hover:opacity-100", {
