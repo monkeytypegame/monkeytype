@@ -1,5 +1,5 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { Accessor, JSXElement, Show } from "solid-js";
+import { Accessor, createSignal, JSXElement, Show } from "solid-js";
 
 import { cn } from "../../../utils/cn";
 import { FieldIndicator } from "./FieldIndicator";
@@ -17,8 +17,20 @@ export function InputField(props: {
   maxLength?: number;
   onFocus?: () => void;
 }): JSXElement {
+  const [shake, setShake] = createSignal(false);
+
+  const shakeIt = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 300);
+  };
+
   return (
-    <div class="grid w-full">
+    <div
+      class="grid w-full"
+      style={
+        shake() ? { animation: "shake 0.1s ease-in-out infinite" } : undefined
+      }
+    >
       <input
         class={cn(
           "col-start-1 row-start-1 w-full",
@@ -34,8 +46,20 @@ export function InputField(props: {
         autocomplete={props.autocomplete}
         name={props.field().name as string}
         value={props.field().state.value as string}
-        onBlur={() => props.field().handleBlur()}
+        onBlur={() => {
+          props.field().handleBlur();
+          if (!props.field().state.meta.isValid) {
+            shakeIt();
+          }
+        }}
         onInput={(e) => props.field().handleChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (!props.field().state.meta.isValid) {
+              shakeIt();
+            }
+          }
+        }}
         disabled={props.disabled}
         readOnly={props.readOnly}
         onClick={(e) => {
