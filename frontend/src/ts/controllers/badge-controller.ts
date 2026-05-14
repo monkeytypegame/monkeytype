@@ -12,14 +12,6 @@ export type UserBadge = {
 };
 
 export const badges: Record<number, UserBadge> = {
-  "-1": {
-    id: -1,
-    name: "none",
-    description: "",
-    icon: "fa-frown-open",
-    color: "var(--text-color)",
-    background: "var(--sub-color)",
-  },
   1: {
     id: 1,
     name: "Developer",
