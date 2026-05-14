@@ -16,7 +16,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function PaceCaret(): JSXElement {
-  const { component: SavedIndicator, flash } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -30,7 +30,7 @@ export function PaceCaret(): JSXElement {
       } else {
         setConfig("paceCaret", "custom");
       }
-      flash();
+      savedIndicator.flash();
       setConfig("paceCaretCustomSpeed", val);
     },
   }));
@@ -73,7 +73,7 @@ export function PaceCaret(): JSXElement {
                     placeholder={"pace caret speed"}
                     type="number"
                   />
-                  <SavedIndicator />
+                  <savedIndicator.component />
                 </div>
               )}
             />

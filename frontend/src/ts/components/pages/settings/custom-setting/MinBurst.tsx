@@ -13,7 +13,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MinBurst(): JSXElement {
-  const { component: SavedIndicator, flash } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -27,7 +27,7 @@ export function MinBurst(): JSXElement {
       } else {
         setConfig("minBurst", "fixed");
       }
-      flash();
+      savedIndicator.flash();
       setConfig("minBurstCustomSpeed", val);
     },
   }));
@@ -72,7 +72,7 @@ export function MinBurst(): JSXElement {
                     }
                     type="number"
                   />
-                  <SavedIndicator />
+                  <savedIndicator.component />
                 </div>
               )}
             />

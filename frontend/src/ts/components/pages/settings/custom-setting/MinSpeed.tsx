@@ -13,7 +13,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MinSpeed(): JSXElement {
-  const { component: SavedIndicator, flash } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -27,7 +27,7 @@ export function MinSpeed(): JSXElement {
       } else {
         setConfig("minWpm", "custom");
       }
-      flash();
+      savedIndicator.flash();
       setConfig("minWpmCustomSpeed", val);
     },
   }));
@@ -70,7 +70,7 @@ export function MinSpeed(): JSXElement {
                     }
                     type="number"
                   />
-                  <SavedIndicator />
+                  <savedIndicator.component />
                 </div>
               )}
             />

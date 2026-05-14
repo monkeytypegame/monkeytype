@@ -13,7 +13,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function MinAcc(): JSXElement {
-  const { component: SavedIndicator, flash } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -27,7 +27,7 @@ export function MinAcc(): JSXElement {
       } else {
         setConfig("minAcc", "custom");
       }
-      flash();
+      savedIndicator.flash();
       setConfig("minAccCustom", val);
     },
   }));
@@ -72,7 +72,7 @@ export function MinAcc(): JSXElement {
                     }
                     type="number"
                   />
-                  <SavedIndicator />
+                  <savedIndicator.component />
                 </div>
               )}
             />

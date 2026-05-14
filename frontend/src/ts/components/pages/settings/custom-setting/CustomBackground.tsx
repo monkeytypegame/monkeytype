@@ -21,7 +21,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function CustomBackground(): JSXElement {
-  const { component: SavedIndicator, flash } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
 
   const form = createForm(() => ({
     defaultValues: {
@@ -30,7 +30,7 @@ export function CustomBackground(): JSXElement {
     onSubmit: ({ value }) => {
       const val = value.customBackground;
       if (val === getConfig.customBackground) return;
-      flash();
+      savedIndicator.flash();
       setConfig("customBackground", val);
     },
   }));
@@ -155,7 +155,7 @@ export function CustomBackground(): JSXElement {
                       placeholder={"image url"}
                       type="text"
                     />
-                    <SavedIndicator />
+                    <savedIndicator.component />
                   </div>
                 )}
               />

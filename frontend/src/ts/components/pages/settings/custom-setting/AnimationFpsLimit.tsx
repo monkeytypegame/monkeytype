@@ -10,7 +10,7 @@ import { fromSchema } from "../../../ui/form/utils";
 import { Setting } from "../Setting";
 
 export function AnimationFpsLimit(): JSXElement {
-  const { component: SavedIndicator, flash, hide } = useSavedIndicator();
+  const savedIndicator = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
       fpsLimit: "",
@@ -19,7 +19,7 @@ export function AnimationFpsLimit(): JSXElement {
       const val = parseInt(String(value.fpsLimit));
       if (val === getfpsLimit()) return;
       setfpsLimit(val);
-      flash();
+      savedIndicator.flash();
     },
   }));
 
@@ -39,7 +39,7 @@ export function AnimationFpsLimit(): JSXElement {
             onClick={() => {
               setfpsLimit(1000);
               form.setFieldValue("fpsLimit", "");
-              hide();
+              savedIndicator.hide();
             }}
           />
           <Separator text="or" />
@@ -73,7 +73,7 @@ export function AnimationFpsLimit(): JSXElement {
                     placeholder={"custom limit"}
                     type="number"
                   />
-                  <SavedIndicator />
+                  <savedIndicator.component />
                 </div>
               )}
             />
