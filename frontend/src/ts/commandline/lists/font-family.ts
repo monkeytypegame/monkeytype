@@ -80,7 +80,7 @@ if (fromMeta.subgroup) {
                   await updateUI();
                 } catch (e) {
                   showNoticeNotification(
-                    "Error uploading font: " + (e as Error).message,
+                    `Error uploading font: ${(e as Error).message}`,
                   );
                 }
                 cleanup();
@@ -106,7 +106,7 @@ if (fromMeta.subgroup) {
               await applyFontFamily();
             } catch (e) {
               showNoticeNotification(
-                "Error removing font: " + (e as Error).message,
+                `Error removing font: ${(e as Error).message}`,
               );
             }
           },

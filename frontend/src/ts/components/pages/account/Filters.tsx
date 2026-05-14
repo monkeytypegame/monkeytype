@@ -165,7 +165,7 @@ export function Filters(props: {
           multiple
           settings={{
             showSearch: true,
-            placeholderText: "select a " + options.group,
+            placeholderText: `select a ${options.group}`,
             allowDeselect: true,
             closeOnSelect: false,
             maxValuesShown: 4,

@@ -121,8 +121,7 @@ export function DailyActivityChart(props: {
                   position: "right",
                   title: {
                     display: true,
-                    text:
-                      "Average " + props.format.typingSpeedUnit.toUpperCase(),
+                    text: `Average ${props.format.typingSpeedUnit.toUpperCase()}`,
                   },
                   grid: {
                     display: false,

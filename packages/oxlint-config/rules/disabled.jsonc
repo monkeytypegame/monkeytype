@@ -12,5 +12,6 @@
     "no-unassigned-import": "off",
     "no-array-reverse": "off", // disabled for compatibility
     "no-map-spread": "off",
+    "no-underscore-dangle": "off",
   },
 }

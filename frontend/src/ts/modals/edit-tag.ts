@@ -45,7 +45,7 @@ const actionModals: Record<Action, SimpleModal> = {
       } catch (e) {
         return {
           status: "error",
-          message: "Failed to add tag: " + errorMessage(e),
+          message: `Failed to add tag: ${errorMessage(e)}`,
         };
       }
 
@@ -77,7 +77,7 @@ const actionModals: Record<Action, SimpleModal> = {
       } catch (e) {
         return {
           status: "error",
-          message: "Failed to update tag: " + errorMessage(e),
+          message: `Failed to update tag: ${errorMessage(e)}`,
         };
       }
 
@@ -102,7 +102,7 @@ const actionModals: Record<Action, SimpleModal> = {
       } catch (e) {
         return {
           status: "error",
-          message: "Failed to remove tag: " + errorMessage(e),
+          message: `Failed to remove tag: ${errorMessage(e)}`,
         };
       }
 
@@ -128,7 +128,7 @@ const actionModals: Record<Action, SimpleModal> = {
       } catch (e) {
         return {
           status: "error",
-          message: "Failed to clear tag PBs: " + errorMessage(e),
+          message: `Failed to clear tag PBs: ${errorMessage(e)}`,
         };
       }
 

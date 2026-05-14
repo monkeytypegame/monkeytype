@@ -47,7 +47,7 @@ export function update(
   const title = element.querySelector(".title");
   {
     if (title !== null) {
-      title.innerHTML = calendar.getTotalTests() + " tests";
+      title.innerHTML = `${calendar.getTotalTests()} tests`;
     }
   }
 

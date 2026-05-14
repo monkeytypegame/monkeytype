@@ -191,7 +191,7 @@ function Mode2(): JSXElement {
       const newWidth = next?.getOuterWidth() ?? 0;
 
       void wrapperEl.promiseAnimate({
-        width: [previousWidth + "px", newWidth + "px"],
+        width: [`${previousWidth}px`, `${newWidth}px`],
         duration: durationMs,
         onComplete: () => {
           wrapperEl.setStyle({

@@ -166,7 +166,6 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="username"
-              showIndicator
               autocomplete="new-username"
               disabled={!getLoginPageInputsEnabled()}
             />
@@ -187,7 +186,6 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="email"
-              showIndicator
               autocomplete="new-email"
               disabled={!getLoginPageInputsEnabled()}
               onFocus={() => {
@@ -214,7 +212,6 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
-              showIndicator
               autocomplete="verify-email"
               placeholder="verify email"
               disabled={!getLoginPageInputsEnabled()}
@@ -238,7 +235,6 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="password"
-              showIndicator
               autocomplete="new-password"
               type="password"
               disabled={!getLoginPageInputsEnabled()}
@@ -256,7 +252,6 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
-              showIndicator
               placeholder="verify password"
               autocomplete="verify-password"
               type="password"

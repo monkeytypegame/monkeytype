@@ -22,6 +22,10 @@ import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
+import * as ghCore from "@actions/core";
+
+const stepSummary =
+  process.env["GITHUB_STEP_SUMMARY"] !== undefined ? ghCore.summary : undefined;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -51,22 +55,32 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
+    stepSummary?.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
+      stepSummary?.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
 
-    return (
-      `${this.type} are \u001b[31minvalid\u001b[0m\n` +
-      Object.entries(this.problems)
-        .map(([key, problems]) => {
-          let label: string = this.labels[key as T] ?? `${key}`;
+    Object.entries(this.problems).forEach(([key, problems]) => {
+      let label: string = this.labels[key as T] ?? `${key}`;
+      stepSummary
+        ?.addRaw(`❌ ${label}`)
+        .addEOL()
+        .addList(problems as string[])
+        .addEOL();
+    });
 
-          return `${label}:\n ${(problems as string[])
-            .map((error) => "\t- " + error)
-            .join("\n")}`;
-        })
-        .join("\n")
-    );
+    return `${this.type} are \u001b[31minvalid\u001b[0m\n${Object.entries(
+      this.problems,
+    )
+      .map(([key, problems]) => {
+        let label: string = this.labels[key as T] ?? `${key}`;
+
+        return `${label}:\n ${(problems as string[])
+          .map((error) => `\t- ${error}`)
+          .join("\n")}`;
+      })
+      .join("\n")}`;
   }
 }
 
@@ -137,7 +151,7 @@ async function validateLayouts(): Promise<void> {
   //no files not defined in LayoutsList
   const additionalLayoutFiles = fs
     .readdirSync("./static/layouts")
-    .filter((it) => !LayoutsList.some((layout) => layout + ".json" === it));
+    .filter((it) => !LayoutsList.some((layout) => `${layout}.json` === it));
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -277,7 +291,7 @@ async function validateLanguages(): Promise<void> {
     );
 
     if (languageFileData.name !== language) {
-      problems.add(language, "Name is not " + language);
+      problems.add(language, `Name is not ${language}`);
     }
     const duplicates = findDuplicates(languageFileData.words);
     const duplicatePercentage =
@@ -294,7 +308,7 @@ async function validateLanguages(): Promise<void> {
 
   //no files not defined in LanguageList
   fs.readdirSync("./static/languages")
-    .filter((it) => !LanguageList.some((language) => language + ".json" === it))
+    .filter((it) => !LanguageList.some((language) => `${language}.json` === it))
     .forEach((it) => problems.add("_additional", it));
 
   //check groups
@@ -391,7 +405,7 @@ async function validateThemes(): Promise<void> {
 
   //missing or additional theme files (mismatch in hasCss)
   ThemesList.filter(
-    (it) => themeFiles.includes(it.name + ".css") !== (it.hasCss ?? false),
+    (it) => themeFiles.includes(`${it.name}.css`) !== (it.hasCss ?? false),
   ).forEach((it) =>
     problems.add(
       it.name,
@@ -401,7 +415,7 @@ async function validateThemes(): Promise<void> {
 
   //additional theme files
   themeFiles
-    .filter((it) => !ThemesList.some((theme) => theme.name + ".css" === it))
+    .filter((it) => !ThemesList.some((theme) => `${theme.name}.css` === it))
     .forEach((it) => problems.add("_additional", it));
 
   //validate theme colors are valid hex colors, not covered by typescipt
@@ -447,7 +461,7 @@ async function validateSounds(): Promise<void> {
       .filter((it) => !soundFiles.has(it))
       .forEach((file) =>
         problems.add(
-          "click" + key,
+          `click${key}`,
           `missing file frontend/static/sounds/${file}`,
         ),
       );
@@ -513,8 +527,15 @@ async function main(): Promise<void> {
   }
 
   if (tasks.size > 0) {
-    await Promise.all([...tasks].map(async (validator) => validator()));
-    return;
+    const results = await Promise.allSettled(
+      [...tasks].map(async (validator) => validator()),
+    );
+
+    await stepSummary?.write();
+
+    if (results.find((it) => it.status === "rejected") !== undefined) {
+      throw new Error("One or more checks failed.");
+    }
   }
 }
 void main();
