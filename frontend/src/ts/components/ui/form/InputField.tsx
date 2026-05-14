@@ -16,6 +16,10 @@ export function InputField(props: {
   dir?: "ltr" | "rtl" | "auto";
   maxLength?: number;
   onFocus?: () => void;
+  /**
+   * If user inputs empty string the field is resetted to the default value
+   */
+  resetToDefaultIfEmptyOnBlur?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -52,8 +56,17 @@ export function InputField(props: {
         name={props.field().name as string}
         value={props.field().state.value as string}
         onBlur={() => {
-          props.field().handleBlur();
+          if (
+            props.resetToDefaultIfEmptyOnBlur &&
+            props.field().state.value === ""
+          ) {
+            props.field().setValue(
+              // oxlint-disable-next-line typescript/no-unsafe-member-access
+              props.field().form.options.defaultValues?.[props.field().name],
+            );
+          }
           shakeItIfYouWantIt();
+          props.field().handleBlur();
         }}
         onInput={(e) => props.field().handleChange(e.target.value)}
         onKeyDown={(e) => {
