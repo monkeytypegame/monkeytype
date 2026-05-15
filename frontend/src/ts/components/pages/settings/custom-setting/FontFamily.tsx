@@ -5,6 +5,7 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
@@ -16,6 +17,10 @@ export function FontFamily(): JSXElement {
   const [hasLocalFont, { refetch }] = createResource(async () =>
     FileStorage.hasFile("LocalFontFamilyFile"),
   );
+
+  const fontOptions = getOptions(ConfigSchema.shape.fontFamily);
+  const isCustomFont = () =>
+    fontOptions !== undefined && !fontOptions.includes(getConfig.fontFamily);
 
   const readFileAsDataURL = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -149,6 +154,36 @@ export function FontFamily(): JSXElement {
                 );
               }}
             </For>
+            <Button
+              class="w-full"
+              text={
+                isCustomFont()
+                  ? `custom (${getConfig.fontFamily.replace(/_/g, " ")})`
+                  : "custom"
+              }
+              active={isCustomFont()}
+              onClick={() => {
+                showSimpleModal({
+                  title: "Custom font",
+                  text: "Make sure you have the font installed on your computer before applying",
+                  textClass: "text-text",
+                  buttonText: "apply",
+                  inputs: [
+                    {
+                      type: "text",
+                      placeholder: "Font name",
+                    },
+                  ],
+                  execFn: async (fontName) => {
+                    setConfig("fontFamily", fontName.replace(/\s/g, "_"));
+                    return {
+                      status: "success",
+                      message: "Font applied",
+                    };
+                  },
+                });
+              }}
+            />
           </div>
         </Show>
       }
