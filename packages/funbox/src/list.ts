@@ -269,7 +269,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "read_ahead_hard",
   },
   tunnel_vision: {
-    description: "Only see what's near the caret.",
+    description: "Only the area around the caret is visible.",
     canGetPb: true,
     difficultyLevel: 2,
     properties: ["changesWordsVisibility", "hasCssFile"],
