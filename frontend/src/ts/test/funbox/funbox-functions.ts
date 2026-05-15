@@ -72,6 +72,65 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   }
 }
 
+let tunnelVisionObserver: MutationObserver | undefined;
+let tunnelVisionFrame: number | undefined;
+
+function updateTunnelVisionCaretPosition(): void {
+  tunnelVisionFrame = undefined;
+
+  const caret = document.getElementById("caret");
+  const words = document.getElementById("words");
+  if (caret === null || words === null) return;
+
+  const caretRect = caret.getBoundingClientRect();
+  const wordsRect = words.getBoundingClientRect();
+  words.style.setProperty(
+    "--caret-center-x",
+    `${caretRect.left + caretRect.width / 2 - wordsRect.left}px`,
+  );
+  words.style.setProperty(
+    "--caret-center-y",
+    `${caretRect.top + caretRect.height / 2 - wordsRect.top}px`,
+  );
+}
+
+function scheduleTunnelVisionCaretPositionUpdate(): void {
+  if (tunnelVisionFrame !== undefined) return;
+  tunnelVisionFrame = requestAnimationFrame(updateTunnelVisionCaretPosition);
+}
+
+function startTunnelVision(): void {
+  if (tunnelVisionObserver !== undefined) return;
+
+  const caret = document.getElementById("caret");
+  if (caret === null) return;
+
+  tunnelVisionObserver = new MutationObserver(
+    scheduleTunnelVisionCaretPositionUpdate,
+  );
+  tunnelVisionObserver.observe(caret, {
+    attributes: true,
+    attributeFilter: ["class", "style"],
+  });
+  window.addEventListener("resize", scheduleTunnelVisionCaretPositionUpdate);
+  scheduleTunnelVisionCaretPositionUpdate();
+}
+
+function stopTunnelVision(): void {
+  tunnelVisionObserver?.disconnect();
+  tunnelVisionObserver = undefined;
+  window.removeEventListener("resize", scheduleTunnelVisionCaretPositionUpdate);
+
+  if (tunnelVisionFrame !== undefined) {
+    cancelAnimationFrame(tunnelVisionFrame);
+    tunnelVisionFrame = undefined;
+  }
+
+  const words = document.getElementById("words");
+  words?.style.removeProperty("--caret-center-x");
+  words?.style.removeProperty("--caret-center-y");
+}
+
 //todo move to its own file
 class CharDistribution {
   public chars: Record<string, number>;
@@ -501,6 +560,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
     },
+  },
+  tunnel_vision: {
+    applyConfig: startTunnelVision,
+    clearGlobal: stopTunnelVision,
   },
   memory: {
     applyConfig(): void {

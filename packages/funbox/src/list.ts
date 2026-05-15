@@ -273,6 +273,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 2,
     properties: ["changesWordsVisibility", "hasCssFile"],
+    frontendFunctions: ["applyConfig", "clearGlobal"],
     name: "tunnel_vision",
     cssModifications: ["words"],
   },

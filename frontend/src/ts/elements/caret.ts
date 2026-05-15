@@ -378,8 +378,6 @@ export class Caret {
         ...(options.animate && options.animationOptions),
       };
 
-      this.updateWordsCaretPosition(left, top);
-
       if (options.animate) {
         this.animatePosition(animateOrPositionOptions);
       } else {
@@ -553,17 +551,5 @@ export class Caret {
       top,
       width,
     };
-  }
-
-  private updateWordsCaretPosition(left: number, top: number): void {
-    if (!this.isMainCaret) return;
-    if (!document.body.classList.contains("fb-tunnel-vision")) return;
-
-    const style = wordsCache.native.style;
-    const centerX = left - wordsCache.getOffsetLeft() + this.getWidth() / 2;
-    const centerY = top - wordsCache.getOffsetTop() + this.getHeight() / 2;
-
-    style.setProperty("--caret-center-x", `${centerX}px`);
-    style.setProperty("--caret-center-y", `${centerY}px`);
   }
 }
