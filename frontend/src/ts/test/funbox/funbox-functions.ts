@@ -75,28 +75,26 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
 let tunnelVisionObserver: MutationObserver | undefined;
 let tunnelVisionFrame: number | undefined;
 
-function updateTunnelVisionCaretPosition(): void {
-  tunnelVisionFrame = undefined;
-
-  const caret = document.getElementById("caret");
-  const words = document.getElementById("words");
-  if (caret === null || words === null) return;
-
-  const caretRect = caret.getBoundingClientRect();
-  const wordsRect = words.getBoundingClientRect();
-  words.style.setProperty(
-    "--caret-center-x",
-    `${caretRect.left + caretRect.width / 2 - wordsRect.left}px`,
-  );
-  words.style.setProperty(
-    "--caret-center-y",
-    `${caretRect.top + caretRect.height / 2 - wordsRect.top}px`,
-  );
-}
-
-function scheduleTunnelVisionCaretPositionUpdate(): void {
+function requestCaretPositionUpdate(): void {
   if (tunnelVisionFrame !== undefined) return;
-  tunnelVisionFrame = requestAnimationFrame(updateTunnelVisionCaretPosition);
+  tunnelVisionFrame = requestAnimationFrame(() => {
+    tunnelVisionFrame = undefined;
+
+    const caret = document.getElementById("caret");
+    const words = document.getElementById("words");
+    if (caret === null || words === null) return;
+
+    const caretRect = caret.getBoundingClientRect();
+    const wordsRect = words.getBoundingClientRect();
+    words.style.setProperty(
+      "--caret-center-x",
+      `${caretRect.left + caretRect.width / 2 - wordsRect.left}px`,
+    );
+    words.style.setProperty(
+      "--caret-center-y",
+      `${caretRect.top + caretRect.height / 2 - wordsRect.top}px`,
+    );
+  });
 }
 
 //todo move to its own file
@@ -536,25 +534,17 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       const caret = document.getElementById("caret");
       if (caret === null) return;
 
-      tunnelVisionObserver = new MutationObserver(
-        scheduleTunnelVisionCaretPositionUpdate,
-      );
+      tunnelVisionObserver = new MutationObserver(requestCaretPositionUpdate);
       tunnelVisionObserver.observe(caret, {
         attributes: true,
         attributeFilter: ["class", "style"],
       });
-      window.addEventListener(
-        "resize",
-        scheduleTunnelVisionCaretPositionUpdate,
-      );
+      window.addEventListener("resize", requestCaretPositionUpdate);
     },
     clearGlobal(): void {
       tunnelVisionObserver?.disconnect();
       tunnelVisionObserver = undefined;
-      window.removeEventListener(
-        "resize",
-        scheduleTunnelVisionCaretPositionUpdate,
-      );
+      window.removeEventListener("resize", requestCaretPositionUpdate);
 
       if (tunnelVisionFrame !== undefined) {
         cancelAnimationFrame(tunnelVisionFrame);
