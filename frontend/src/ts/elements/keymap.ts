@@ -706,4 +706,6 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
-onCapsLockChange(() => void updateLegends());
+onCapsLockChange(() => {
+  if (Config.keymapLegendStyle === "dynamic") void updateLegends();
+});
