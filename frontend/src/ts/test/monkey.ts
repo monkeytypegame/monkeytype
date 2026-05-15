@@ -57,7 +57,7 @@ export function updateFastOpacity(num: number): void {
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  monkeyEl?.setStyle({ animationDuration: animDuration + "s" });
+  monkeyEl?.setStyle({ animationDuration: `${animDuration}s` });
 }
 
 export function type(event: KeyboardEvent): void {

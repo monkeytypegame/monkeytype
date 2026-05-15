@@ -55,7 +55,7 @@ function update(): void {
 
     for (const tag of tags) {
       subgroup.list.push({
-        id: "toggleTag" + tag._id,
+        id: `toggleTag${tag._id}`,
         display: tag.name,
         sticky: true,
         active: () => {

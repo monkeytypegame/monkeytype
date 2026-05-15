@@ -60,24 +60,24 @@ function fillData(): void {
   // };
 
   fillGroup("wpm", r.wpm);
-  fillGroup("acc", r.acc + "%");
+  fillGroup("acc", `${r.acc}%`);
   fillGroup("raw", r.rawWpm);
-  fillGroup("con", r.consistency + "%");
+  fillGroup("con", `${r.consistency}%`);
   fillGroup("chardata", r.charStats.join("/"));
 
-  let tt = r.mode + " " + r.mode2;
+  let tt = `${r.mode} ${r.mode2}`;
 
-  tt += "<br>" + r.language;
+  tt += `<br>${r.language}`;
 
   if (r.numbers) tt += "<br>numbers";
   if (r.punctuation) tt += "<br>punctuation";
   if (r.blindMode) tt += "<br>blind";
   if (r.lazyMode) tt += "<br>lazy";
   if (r.funbox.length > 0) {
-    tt += "<br>" + r.funbox.map((it) => it.replace(/_/g, " ")).join(",");
+    tt += `<br>${r.funbox.map((it) => it.replace(/_/g, " ")).join(",")}`;
   }
-  if (r.difficulty !== "normal") tt += "<br>" + r.difficulty;
-  if (r.tags.length > 0) tt += "<br>" + r.tags.length + " tags";
+  if (r.difficulty !== "normal") tt += `<br>${r.difficulty}`;
+  if (r.tags.length > 0) tt += `<br>${r.tags.length} tags`;
 
   fillGroup("testType", tt, true);
 }

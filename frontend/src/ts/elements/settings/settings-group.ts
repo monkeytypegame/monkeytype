@@ -75,7 +75,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
 
       if (el.hasAttribute("multiple")) {
         throw new Error(
-          "multi-select dropdowns not supported. Config: " + this.configName,
+          `multi-select dropdowns not supported. Config: ${this.configName}`,
         );
       }
 

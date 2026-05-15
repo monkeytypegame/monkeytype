@@ -3,7 +3,7 @@ import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command, withValidation } from "../types";
 import { remoteValidation } from "../../utils/remote-validation";
-import { UserNameSchema } from "@monkeytype/schemas/users";
+import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import Ape from "../../ape";
 
 const commands: Command[] = [
@@ -60,7 +60,7 @@ const commands: Command[] = [
     icon: "fa-search",
     input: true,
     validation: {
-      schema: UserNameSchema,
+      schema: UserNameWithoutFilterSchema,
       debounceDelay: 1000,
       isValid: remoteValidation(
         async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),

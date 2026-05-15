@@ -54,9 +54,9 @@ const inboxCollection = createCollection(
       const response = await Ape.users.getInbox();
       if (response.status !== 200) {
         showErrorNotification(
-          "Error fetching user inbox: " + response.body.message,
+          `Error fetching user inbox: ${response.body.message}`,
         );
-        throw new Error("Error fetching user inbox: " + response.body.message);
+        throw new Error(`Error fetching user inbox: ${response.body.message}`);
       }
       setMaxMailboxSize(response.body.data.maxMail);
       return response.body.data.inbox.map(addStatus);
@@ -157,9 +157,9 @@ async function flushPendingChanges({
 
   if (response.status !== 200) {
     showErrorNotification(
-      "Error updating user inbox: " + response.body.message,
+      `Error updating user inbox: ${response.body.message}`,
     );
-    throw new Error("Error updating user inbox: " + response.body.message);
+    throw new Error(`Error updating user inbox: ${response.body.message}`);
   }
 
   inboxCollection.utils.writeBatch(() => {

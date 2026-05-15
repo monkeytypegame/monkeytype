@@ -28,7 +28,7 @@ async function fetchJson<T>(url: string): Promise<T> {
       throw new Error(`${res.status} ${res.statusText}`);
     }
   } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
+    console.error(`Error fetching JSON: ${url}`, e);
     throw e;
   }
 }

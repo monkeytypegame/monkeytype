@@ -488,13 +488,13 @@ function buildSingleListCommands(
         /\s?\.\.\.$/g,
         "",
       );
-      const singleListDisplay =
-        parentCommandDisplay +
-        '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
-        command.display;
+      const singleListDisplay = `${
+        parentCommandDisplay
+      }<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
+        command.display
+      }`;
 
-      const singleListDisplayNoIcon =
-        parentCommandDisplay + " " + command.display;
+      const singleListDisplayNoIcon = `${parentCommandDisplay} ${command.display}`;
 
       let newAlias: string | undefined = undefined;
 

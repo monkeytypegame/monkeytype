@@ -67,7 +67,7 @@ inputEl.addEventListener("beforeinput", async (event) => {
       event.preventDefault();
     }
   } else {
-    throw new Error("Unhandled beforeinput type: " + inputType);
+    throw new Error(`Unhandled beforeinput type: ${inputType}`);
   }
 });
 
@@ -147,6 +147,6 @@ inputEl.addEventListener("input", async (event) => {
       TestUI.afterTestCompositionUpdate();
     }
   } else {
-    throw new Error("Unhandled input type: " + inputType);
+    throw new Error(`Unhandled input type: ${inputType}`);
   }
 });
