@@ -372,6 +372,7 @@ function AutoSetting<T extends keyof Config>(props: {
                       configMetadata[props.key].displayString ?? props.key
                     }
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>

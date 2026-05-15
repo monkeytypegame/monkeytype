@@ -72,6 +72,7 @@ export function PaceCaret(): JSXElement {
                     field={field}
                     placeholder={"pace caret speed"}
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>

@@ -65,6 +65,7 @@ export function MaxLineWidth(): JSXElement {
                       configMetadata.maxLineWidth.displayString ??
                       "max line width"
                     }
+                    resetToDefaultIfEmptyOnBlur
                     type="number"
                   />
                   <SavedIndicator />

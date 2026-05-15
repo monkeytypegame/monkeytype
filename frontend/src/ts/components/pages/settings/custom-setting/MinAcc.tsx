@@ -71,6 +71,7 @@ export function MinAcc(): JSXElement {
                       configMetadata.minAcc.displayString ?? "min accuracy"
                     }
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>

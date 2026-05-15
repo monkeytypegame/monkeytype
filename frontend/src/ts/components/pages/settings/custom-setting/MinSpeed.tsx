@@ -69,6 +69,7 @@ export function MinSpeed(): JSXElement {
                       configMetadata.minWpm.displayString ?? "min speed"
                     }
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>

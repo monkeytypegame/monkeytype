@@ -71,6 +71,7 @@ export function MinBurst(): JSXElement {
                       configMetadata.minBurst.displayString ?? "min burst"
                     }
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>

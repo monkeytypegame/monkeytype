@@ -72,6 +72,7 @@ export function AnimationFpsLimit(): JSXElement {
                     field={field}
                     placeholder={"custom limit"}
                     type="number"
+                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>
