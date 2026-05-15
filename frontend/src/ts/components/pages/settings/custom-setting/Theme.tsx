@@ -376,17 +376,28 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
                   message: "Name is required",
                 };
               }
-              void editCustomTheme({
+              editCustomTheme({
                 themeId: props.theme._id,
                 name: name.replace(/ /g, "_"),
                 colors: updateColors
                   ? convertThemeToCustomColors(untrack(() => getTheme()))
                   : untrack(() => props.theme.colors),
-              });
+              })
+                .then(() => {
+                  showSuccessNotification("Updated");
+                })
+                .catch(() => {
+                  showErrorNotification(
+                    e instanceof Error
+                      ? e.message
+                      : "Failed to update custom theme",
+                  );
+                });
 
               return {
                 status: "success",
-                message: "Updated",
+                message: "",
+                showNotification: false,
               };
             },
           });
