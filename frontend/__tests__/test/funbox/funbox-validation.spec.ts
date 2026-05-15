@@ -24,6 +24,7 @@ describe("funbox-validation", () => {
         "nospace", //nospace
         "plus_one", //toPush:
         "read_ahead_easy", //changesWordVisibility
+        "tunnel_vision", //changesWordVisibility
         "tts", //speaks
         "layout_mirror", //changesLayout
         "zipf", //changesWordsFrequency

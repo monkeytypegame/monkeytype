@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { CustomBackgroundSchema } from "@monkeytype/schemas/configs";
+import {
+  CustomBackgroundSchema,
+  FunboxNameSchema,
+} from "@monkeytype/schemas/configs";
 
 describe("config schema", () => {
   describe("CustomBackgroundSchema", () => {
@@ -78,6 +81,12 @@ describe("config schema", () => {
       } else {
         expect(parsed.success).toEqual(true);
       }
+    });
+  });
+
+  describe("FunboxNameSchema", () => {
+    it("accepts tunnel vision", () => {
+      expect(FunboxNameSchema.safeParse("tunnel_vision").success).toBe(true);
     });
   });
 });

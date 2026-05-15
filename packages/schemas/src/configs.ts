@@ -309,6 +309,7 @@ export const FunboxNameSchema = z.enum([
   "read_ahead_easy",
   "read_ahead",
   "read_ahead_hard",
+  "tunnel_vision",
   "memory",
   "nospace",
   "poetry",

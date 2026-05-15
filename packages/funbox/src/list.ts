@@ -268,6 +268,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["rememberSettings", "handleKeydown"],
     name: "read_ahead_hard",
   },
+  tunnel_vision: {
+    description: "Only see what's near the caret.",
+    canGetPb: true,
+    difficultyLevel: 2,
+    properties: ["changesWordsVisibility", "hasCssFile"],
+    name: "tunnel_vision",
+    cssModifications: ["words"],
+  },
   memory: {
     description: "Test your memory. Remember the words and type them blind.",
     canGetPb: true,

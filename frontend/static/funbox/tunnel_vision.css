@@ -1,0 +1,14 @@
+body.fb-tunnel-vision #words {
+  --tunnel-vision-radius: 4.5em;
+  --tunnel-vision-softness: 0.75em;
+
+  mask-image: radial-gradient(
+    circle at var(--caret-center-x, 50%) var(--caret-center-y, 50%),
+    #000 0,
+    #000 var(--tunnel-vision-radius),
+    transparent
+      calc(var(--tunnel-vision-radius) + var(--tunnel-vision-softness))
+  );
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+}

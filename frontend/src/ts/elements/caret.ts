@@ -282,7 +282,7 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    if (this.style === "off") return;
+    if (this.style === "off" && !this.isMainCaret) return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
       const word = wordsCache.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
@@ -377,6 +377,8 @@ export class Caret {
         ...(this.isFullWidth() && { width }),
         ...(options.animate && options.animationOptions),
       };
+
+      this.updateWordsCaretPosition(left, top);
 
       if (options.animate) {
         this.animatePosition(animateOrPositionOptions);
@@ -551,5 +553,16 @@ export class Caret {
       top,
       width,
     };
+  }
+
+  private updateWordsCaretPosition(left: number, top: number): void {
+    if (!this.isMainCaret) return;
+
+    const style = wordsCache.native.style;
+    const centerX = left - wordsCache.getOffsetLeft() + this.getWidth() / 2;
+    const centerY = top - wordsCache.getOffsetTop() + this.getHeight() / 2;
+
+    style.setProperty("--caret-center-x", `${centerX}px`);
+    style.setProperty("--caret-center-y", `${centerY}px`);
   }
 }
