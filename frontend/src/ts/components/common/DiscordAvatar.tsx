@@ -2,7 +2,6 @@ import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { cn } from "../../utils/cn";
-import { Conditional } from "./Conditional";
 import { LoadingCircle } from "./LoadingCircle";
 
 //cache successful and missing avatars
@@ -59,33 +58,27 @@ export function DiscordAvatar(props: {
         props.class,
       )}
     >
-      <Conditional
-        if={showDiscordAvatar()}
-        then={
-          <>
-            <Show when={showSpinner()}>
-              <LoadingCircle
-                color="sub"
-                mode="svg"
-                class="col-start-1 row-start-1 h-full w-full fill-current"
-              />
-            </Show>
-            <img
-              src={`https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
-              class="col-start-1 row-start-1 rounded-full"
-              onLoad={() => {
-                setAvatar(cacheKey(), true);
-                setShowSpinner(false);
-              }}
-              onError={() => {
-                setAvatar(cacheKey(), false);
-                setShowSpinner(false);
-              }}
-            />
-          </>
-        }
-        else={fallback()}
-      />
+      <Show when={showDiscordAvatar()} fallback={fallback()}>
+        <Show when={showSpinner()}>
+          <LoadingCircle
+            color="sub"
+            mode="svg"
+            class="col-start-1 row-start-1 h-full w-full fill-current"
+          />
+        </Show>
+        <img
+          src={`https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
+          class="col-start-1 row-start-1 rounded-full"
+          onLoad={() => {
+            setAvatar(cacheKey(), true);
+            setShowSpinner(false);
+          }}
+          onError={() => {
+            setAvatar(cacheKey(), false);
+            setShowSpinner(false);
+          }}
+        />
+      </Show>
     </div>
   );
 }

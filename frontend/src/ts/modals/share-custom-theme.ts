@@ -40,9 +40,7 @@ async function generateUrl(): Promise<string> {
     newTheme.f = Config.customBackgroundFilter;
   }
 
-  return (
-    window.location.origin + "?customTheme=" + btoa(JSON.stringify(newTheme))
-  );
+  return `${window.location.origin}?customTheme=${btoa(JSON.stringify(newTheme))}`;
 }
 
 async function copy(): Promise<void> {

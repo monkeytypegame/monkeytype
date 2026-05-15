@@ -38,19 +38,19 @@ export function secondsToString(
 
   if (showDays) {
     days < 10 && delimiter !== "text"
-      ? (daysString = "0" + days)
+      ? (daysString = `0${days}`)
       : (daysString = days);
   }
   hours < 10 && delimiter !== "text"
-    ? (hoursString = "0" + hours)
+    ? (hoursString = `0${hours}`)
     : (hoursString = hours);
   minutes < 10 && delimiter !== "text"
-    ? (minutesString = "0" + minutes)
+    ? (minutesString = `0${minutes}`)
     : (minutesString = minutes);
   seconds < 10 &&
   (minutes > 0 || hours > 0 || alwaysShowMinutes) &&
   delimiter !== "text"
-    ? (secondsString = "0" + seconds)
+    ? (secondsString = `0${seconds}`)
     : (secondsString = seconds);
 
   let ret = "";

@@ -371,7 +371,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
 
   if (key === "NoCode") {
     noCodeIndex--;
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
   }
 
   const keyDownDataForKey = keyDownData[key];
@@ -414,7 +414,7 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
   }
 
   if (key === "NoCode") {
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
     noCodeIndex++;
   }
 

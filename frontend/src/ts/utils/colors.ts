@@ -70,26 +70,26 @@ export function hexToRgb(hex: string):
 
   if (hex.length === 4) {
     // #RGB format
-    r = Number("0x" + hex[1] + hex[1]);
-    g = Number("0x" + hex[2] + hex[2]);
-    b = Number("0x" + hex[3] + hex[3]);
+    r = Number(`0x${hex[1]}${hex[1]}`);
+    g = Number(`0x${hex[2]}${hex[2]}`);
+    b = Number(`0x${hex[3]}${hex[3]}`);
   } else if (hex.length === 5) {
     // #RGBA format
-    r = Number("0x" + hex[1] + hex[1]);
-    g = Number("0x" + hex[2] + hex[2]);
-    b = Number("0x" + hex[3] + hex[3]);
-    a = Number("0x" + hex[4] + hex[4]) / 255;
+    r = Number(`0x${hex[1]}${hex[1]}`);
+    g = Number(`0x${hex[2]}${hex[2]}`);
+    b = Number(`0x${hex[3]}${hex[3]}`);
+    a = Number(`0x${hex[4]}${hex[4]}`) / 255;
   } else if (hex.length === 7) {
     // #RRGGBB format
-    r = Number("0x" + hex[1] + hex[2]);
-    g = Number("0x" + hex[3] + hex[4]);
-    b = Number("0x" + hex[5] + hex[6]);
+    r = Number(`0x${hex[1]}${hex[2]}`);
+    g = Number(`0x${hex[3]}${hex[4]}`);
+    b = Number(`0x${hex[5]}${hex[6]}`);
   } else if (hex.length === 9) {
     // #RRGGBBAA format
-    r = Number("0x" + hex[1] + hex[2]);
-    g = Number("0x" + hex[3] + hex[4]);
-    b = Number("0x" + hex[5] + hex[6]);
-    a = Number("0x" + hex[7] + hex[8]) / 255;
+    r = Number(`0x${hex[1]}${hex[2]}`);
+    g = Number(`0x${hex[3]}${hex[4]}`);
+    b = Number(`0x${hex[5]}${hex[6]}`);
+    a = Number(`0x${hex[7]}${hex[8]}`) / 255;
   } else {
     return undefined;
   }
@@ -144,26 +144,26 @@ export function hexToHSL(hex: string): {
 
   if (hex.length === 4) {
     // #RGB format
-    r = ("0x" + hex[1] + hex[1]) as unknown as number;
-    g = ("0x" + hex[2] + hex[2]) as unknown as number;
-    b = ("0x" + hex[3] + hex[3]) as unknown as number;
+    r = `0x${hex[1]}${hex[1]}` as unknown as number;
+    g = `0x${hex[2]}${hex[2]}` as unknown as number;
+    b = `0x${hex[3]}${hex[3]}` as unknown as number;
   } else if (hex.length === 5) {
     // #RGBA format
-    r = ("0x" + hex[1] + hex[1]) as unknown as number;
-    g = ("0x" + hex[2] + hex[2]) as unknown as number;
-    b = ("0x" + hex[3] + hex[3]) as unknown as number;
-    a = (("0x" + hex[4] + hex[4]) as unknown as number) / 255;
+    r = `0x${hex[1]}${hex[1]}` as unknown as number;
+    g = `0x${hex[2]}${hex[2]}` as unknown as number;
+    b = `0x${hex[3]}${hex[3]}` as unknown as number;
+    a = (`0x${hex[4]}${hex[4]}` as unknown as number) / 255;
   } else if (hex.length === 7) {
     // #RRGGBB format
-    r = ("0x" + hex[1] + hex[2]) as unknown as number;
-    g = ("0x" + hex[3] + hex[4]) as unknown as number;
-    b = ("0x" + hex[5] + hex[6]) as unknown as number;
+    r = `0x${hex[1]}${hex[2]}` as unknown as number;
+    g = `0x${hex[3]}${hex[4]}` as unknown as number;
+    b = `0x${hex[5]}${hex[6]}` as unknown as number;
   } else if (hex.length === 9) {
     // #RRGGBBAA format
-    r = ("0x" + hex[1] + hex[2]) as unknown as number;
-    g = ("0x" + hex[3] + hex[4]) as unknown as number;
-    b = ("0x" + hex[5] + hex[6]) as unknown as number;
-    a = (("0x" + hex[7] + hex[8]) as unknown as number) / 255;
+    r = `0x${hex[1]}${hex[2]}` as unknown as number;
+    g = `0x${hex[3]}${hex[4]}` as unknown as number;
+    b = `0x${hex[5]}${hex[6]}` as unknown as number;
+    a = (`0x${hex[7]}${hex[8]}` as unknown as number) / 255;
   } else {
     r = 0x00;
     g = 0x00;
@@ -279,9 +279,7 @@ export function convertStringToHex(color: string): string {
 
   if (/^#[0-9a-f]{3}$/i.test(input)) {
     // Expand #rgb → #rrggbb
-    return (
-      "#" + input[1] + input[1] + input[2] + input[2] + input[3] + input[3]
-    );
+    return `#${input[1]}${input[1]}${input[2]}${input[2]}${input[3]}${input[3]}`;
   }
 
   const rgbMatch =

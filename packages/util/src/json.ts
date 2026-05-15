@@ -35,7 +35,7 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
 
   if (error) {
     if (fallback === undefined) {
-      throw new Error(`Invalid JSON: ` + error.message);
+      throw new Error(`Invalid JSON: ${error.message}`);
     }
     return fallback as unknown;
   }

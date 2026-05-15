@@ -85,7 +85,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !==
+    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
       options.data
   ) {
     // replace the data with the override
@@ -101,7 +101,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = TestInput.input.current;
-  const currentWord = TestWords.words.getCurrent();
+  const currentWord = TestWords.words.getCurrentText();
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
@@ -151,7 +151,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrent().length;
+    (testInput + data).length === TestWords.words.getCurrentText().length;
   const shouldGoToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
@@ -169,7 +169,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   TestInput.pushKeypressWord(wordIndex);
   if (!correct) {
     TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
+    TestInput.pushMissedWord(TestWords.words.getCurrentText());
   }
   if (Config.keymapMode === "react") {
     flash(data, correct);
@@ -236,7 +236,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
-  const nextWord = TestWords.words.getCurrent();
+  const nextWord = TestWords.words.getCurrentText();
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
   const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
 
