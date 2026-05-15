@@ -557,6 +557,7 @@ export class Caret {
 
   private updateWordsCaretPosition(left: number, top: number): void {
     if (!this.isMainCaret) return;
+    if (!document.body.classList.contains("fb-tunnel-vision")) return;
 
     const style = wordsCache.native.style;
     const centerX = left - wordsCache.getOffsetLeft() + this.getWidth() / 2;
