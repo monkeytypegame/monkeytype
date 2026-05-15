@@ -40,7 +40,7 @@ const customThemesCollection = createCollection(
 
       if (response.status !== 200) {
         throw new Error(
-          "Error fetching custom themes:" + response.body.message,
+          `Error fetching custom themes: ${response.body.message}`,
         );
       }
 
