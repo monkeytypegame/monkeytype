@@ -144,10 +144,9 @@ export function Theme(): JSXElement {
                   newTheme.f = getConfig.customBackgroundFilter;
                 }
 
-                const link =
-                  window.location.origin +
-                  "?customTheme=" +
-                  btoa(JSON.stringify(newTheme));
+                const link = `${window.location.origin}?customTheme=${btoa(
+                  JSON.stringify(newTheme),
+                )}`;
 
                 try {
                   await navigator.clipboard.writeText(link);
