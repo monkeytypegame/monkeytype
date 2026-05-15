@@ -547,7 +547,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         "resize",
         scheduleTunnelVisionCaretPositionUpdate,
       );
-      scheduleTunnelVisionCaretPositionUpdate();
     },
     clearGlobal(): void {
       tunnelVisionObserver?.disconnect();
@@ -561,10 +560,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         cancelAnimationFrame(tunnelVisionFrame);
         tunnelVisionFrame = undefined;
       }
-
-      const words = document.getElementById("words");
-      words?.style.removeProperty("--caret-center-x");
-      words?.style.removeProperty("--caret-center-y");
     },
   },
   memory: {

@@ -10,6 +10,4 @@
     transparent
       calc(var(--tunnel-vision-radius) + var(--tunnel-vision-softness))
   );
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
 }
