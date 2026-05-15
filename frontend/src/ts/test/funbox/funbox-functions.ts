@@ -99,38 +99,6 @@ function scheduleTunnelVisionCaretPositionUpdate(): void {
   tunnelVisionFrame = requestAnimationFrame(updateTunnelVisionCaretPosition);
 }
 
-function startTunnelVision(): void {
-  if (tunnelVisionObserver !== undefined) return;
-
-  const caret = document.getElementById("caret");
-  if (caret === null) return;
-
-  tunnelVisionObserver = new MutationObserver(
-    scheduleTunnelVisionCaretPositionUpdate,
-  );
-  tunnelVisionObserver.observe(caret, {
-    attributes: true,
-    attributeFilter: ["class", "style"],
-  });
-  window.addEventListener("resize", scheduleTunnelVisionCaretPositionUpdate);
-  scheduleTunnelVisionCaretPositionUpdate();
-}
-
-function stopTunnelVision(): void {
-  tunnelVisionObserver?.disconnect();
-  tunnelVisionObserver = undefined;
-  window.removeEventListener("resize", scheduleTunnelVisionCaretPositionUpdate);
-
-  if (tunnelVisionFrame !== undefined) {
-    cancelAnimationFrame(tunnelVisionFrame);
-    tunnelVisionFrame = undefined;
-  }
-
-  const words = document.getElementById("words");
-  words?.style.removeProperty("--caret-center-x");
-  words?.style.removeProperty("--caret-center-y");
-}
-
 //todo move to its own file
 class CharDistribution {
   public chars: Record<string, number>;
@@ -562,8 +530,42 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   tunnel_vision: {
-    applyConfig: startTunnelVision,
-    clearGlobal: stopTunnelVision,
+    applyConfig(): void {
+      if (tunnelVisionObserver !== undefined) return;
+
+      const caret = document.getElementById("caret");
+      if (caret === null) return;
+
+      tunnelVisionObserver = new MutationObserver(
+        scheduleTunnelVisionCaretPositionUpdate,
+      );
+      tunnelVisionObserver.observe(caret, {
+        attributes: true,
+        attributeFilter: ["class", "style"],
+      });
+      window.addEventListener(
+        "resize",
+        scheduleTunnelVisionCaretPositionUpdate,
+      );
+      scheduleTunnelVisionCaretPositionUpdate();
+    },
+    clearGlobal(): void {
+      tunnelVisionObserver?.disconnect();
+      tunnelVisionObserver = undefined;
+      window.removeEventListener(
+        "resize",
+        scheduleTunnelVisionCaretPositionUpdate,
+      );
+
+      if (tunnelVisionFrame !== undefined) {
+        cancelAnimationFrame(tunnelVisionFrame);
+        tunnelVisionFrame = undefined;
+      }
+
+      const words = document.getElementById("words");
+      words?.style.removeProperty("--caret-center-x");
+      words?.style.removeProperty("--caret-center-y");
+    },
   },
   memory: {
     applyConfig(): void {

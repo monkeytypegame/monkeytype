@@ -1,4 +1,4 @@
-body.fb-tunnel-vision #words {
+#words {
   /* em keeps the visible area proportional to the current typing font size. */
   --tunnel-vision-radius: 3em;
   --tunnel-vision-softness: 0.8em;
