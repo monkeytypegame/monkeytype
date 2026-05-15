@@ -47,7 +47,6 @@ export function Tags(): JSXElement {
                       title: "Clear personal bests",
                       text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "clear",
-                      textClass: "text-text",
                       execFn: async () => {
                         showLoaderBar();
                         await clearTagPBs({ tagId: tag._id });
@@ -86,7 +85,6 @@ export function Tags(): JSXElement {
                           },
                         },
                       ],
-                      textClass: "text-text",
                       execFn: async (name) => {
                         showLoaderBar();
                         await updateTagName({
@@ -111,7 +109,6 @@ export function Tags(): JSXElement {
                       title: "Delete tag",
                       text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "delete",
-                      textClass: "text-text",
                       execFn: async () => {
                         showLoaderBar();
                         await deleteTag({ tagId: tag._id });

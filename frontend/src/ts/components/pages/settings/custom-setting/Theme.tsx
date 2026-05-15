@@ -409,7 +409,6 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
           showSimpleModal({
             title: "Delete custom theme",
             text: `Are you sure you want to delete the custom theme "${props.theme.name.replace(/_/g, " ")}"? This action cannot be undone.`,
-            textClass: "text-text",
             buttonText: "delete",
             execFn: async () => {
               void deleteCustomTheme({

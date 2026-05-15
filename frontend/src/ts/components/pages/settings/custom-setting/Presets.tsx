@@ -54,7 +54,6 @@ export function Presets(): JSXElement {
                       title: "Delete preset",
                       text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
                       buttonText: "delete",
-                      textClass: "text-text",
                       execFn: async () => {
                         showLoaderBar();
                         await deletePreset({ presetId: preset._id });

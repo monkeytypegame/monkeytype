@@ -166,12 +166,11 @@ export function FontFamily(): JSXElement {
                 showSimpleModal({
                   title: "Custom font",
                   text: "Make sure you have the font installed on your computer before applying",
-                  textClass: "text-text",
                   buttonText: "apply",
                   inputs: [
                     {
                       type: "text",
-                      placeholder: "Font name",
+                      placeholder: "font name",
                     },
                   ],
                   execFn: async (fontName) => {
