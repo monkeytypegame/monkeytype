@@ -33,7 +33,7 @@ export function update(): void {
   const customThemes = CustomThemes.__nonReactive.getCustomThemes();
   for (const theme of customThemes) {
     subgroup.list.push({
-      id: "setCustomThemeId" + theme._id,
+      id: `setCustomThemeId${theme._id}`,
       display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {

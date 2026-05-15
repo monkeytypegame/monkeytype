@@ -224,7 +224,7 @@ const resultsCollection = createCollection(
       });
 
       if (response.status !== 200) {
-        throw new Error("Error fetching results:" + response.body.message);
+        throw new Error(`Error fetching results:${response.body.message}`);
       }
 
       const results = response.body.data

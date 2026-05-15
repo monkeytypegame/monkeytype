@@ -181,7 +181,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     setSolidSnapshot(dbSnapshot);
   }
 }
-
 export async function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,

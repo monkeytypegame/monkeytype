@@ -129,7 +129,7 @@ export function init(
   sortableMissedBiwords.forEach((missedBiwords) => {
     for (let i = 0; i < missedBiwords[2]; i++) {
       if (missedBiwords[1] !== "") {
-        newCustomText.push(missedBiwords[1] + " " + missedBiwords[0]);
+        newCustomText.push(`${missedBiwords[1]} ${missedBiwords[0]}`);
       } else {
         newCustomText.push(missedBiwords[0]);
       }

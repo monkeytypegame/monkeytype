@@ -39,7 +39,7 @@ const presetsCollection = createCollection(
       const response = await Ape.presets.get();
 
       if (response.status !== 200) {
-        throw new Error("Error fetching presets:" + response.body.message);
+        throw new Error(`Error fetching presets:${response.body.message}`);
       }
 
       return response.body.data

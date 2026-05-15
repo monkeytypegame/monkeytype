@@ -123,7 +123,7 @@ async function fetchPendingConnections(): Promise<void> {
   });
 
   if (result.status !== 200) {
-    showErrorNotification("Error getting connections: " + result.body.message);
+    showErrorNotification(`Error getting connections: ${result.body.message}`);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
@@ -175,7 +175,7 @@ function updatePendingConnections(): void {
 async function fetchFriends(): Promise<void> {
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
-    showErrorNotification("Error getting friends: " + result.body.message);
+    showErrorNotification(`Error getting friends: ${result.body.message}`);
     friendsList = undefined;
   } else {
     friendsList = result.body.data;
@@ -251,7 +251,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         </td>
         <td><span data-balloon-pos="up" aria-label="${
           entry.lastModified !== undefined
-            ? "since " + format(entry.lastModified, "dd MMM yyyy HH:mm")
+            ? `since ${format(entry.lastModified, "dd MMM yyyy HH:mm")}`
             : ""
         }">${
           entry.lastModified !== undefined
@@ -366,7 +366,7 @@ function formatPb(entry?: PersonalBest):
 function formatStreak(length?: number, prefix?: string): string {
   if (length === 1) return "-";
   return isSafeNumber(length)
-    ? `${prefix !== undefined ? prefix + " " : ""}${length} days`
+    ? `${prefix !== undefined ? `${prefix} ` : ""}${length} days`
     : "-";
 }
 

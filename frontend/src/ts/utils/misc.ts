@@ -106,9 +106,9 @@ export function objectToQueryString<T extends string | number | boolean>(
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
-        encodeURIComponent(p) +
-          "=" +
-          encodeURIComponent(obj[p] as unknown as T),
+        `${encodeURIComponent(p)}=${encodeURIComponent(
+          obj[p] as unknown as T,
+        )}`,
       );
     }
   }
@@ -490,8 +490,7 @@ export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
   if (title === undefined || title === "") {
-    document.title =
-      local + "Monkeytype | A minimalistic, customizable typing test";
+    document.title = `${local}Monkeytype | A minimalistic, customizable typing test`;
   } else {
     document.title = local + title;
   }
@@ -701,7 +700,7 @@ export function formatTopPercentage(lbRank?: RankAndCount): string {
   if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
-  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+  return `Top ${roundTo2((lbRank.rank / lbRank.count) * 100)}%`;
 }
 
 export function formatTypingStatsRatio(stats: {

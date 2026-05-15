@@ -89,7 +89,9 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    showErrorNotification("Failed to save last result", { response });
+    showErrorNotification(`Failed to save last result hello ${failReason} hi`, {
+      response,
+    });
     return;
   }
 

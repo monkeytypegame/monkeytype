@@ -57,7 +57,7 @@ const customBackgroundCommand: Command = {
                 await applyCustomBackground();
               } catch (e) {
                 showNoticeNotification(
-                  "Error uploading background: " + (e as Error).message,
+                  `Error uploading background: ${(e as Error).message}`,
                 );
               }
               cleanup();
@@ -85,7 +85,7 @@ const customBackgroundCommand: Command = {
             await applyCustomBackground();
           } catch (e) {
             showNoticeNotification(
-              "Error removing background: " + (e as Error).message,
+              `Error removing background: ${(e as Error).message}`,
             );
           }
         },

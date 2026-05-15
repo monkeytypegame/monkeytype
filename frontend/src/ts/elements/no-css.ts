@@ -2,25 +2,21 @@ import { envConfig } from "virtual:env-config";
 import { qs } from "../utils/dom";
 
 qs("#nocss .requestedStylesheets")?.setHtml(
-  "Requested stylesheets:<br>" +
-    (
-      [
-        ...document.querySelectorAll("link[rel=stylesheet"),
-      ] as HTMLAnchorElement[]
-    )
-      .map((l) => l.href)
-      .filter((l) => /\/css\/style/gi.test(l))
-      .join("<br>"),
+  `Requested stylesheets:<br>${(
+    [...document.querySelectorAll("link[rel=stylesheet")] as HTMLAnchorElement[]
+  )
+    .map((l) => l.href)
+    .filter((l) => /\/css\/style/gi.test(l))
+    .join("<br>")}`,
 );
 
 qs("#nocss .requestedJs")?.setHtml(
-  "Requested Javascript files:<br>" +
-    ([...document.querySelectorAll("script")] as HTMLScriptElement[])
-      .map((l) => l.src)
-      .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
-      .join("<br>") +
-    "<br><br>Client version:<br>" +
-    envConfig.clientVersion,
+  `Requested Javascript files:<br>${(
+    [...document.querySelectorAll("script")] as HTMLScriptElement[]
+  )
+    .map((l) => l.src)
+    .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
+    .join("<br>")}<br><br>Client version:<br>${envConfig.clientVersion}`,
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {

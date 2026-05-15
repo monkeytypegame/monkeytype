@@ -193,8 +193,9 @@ function ActionButtons(props: {
             },
             function () {
               alert(
-                "Failed to copy using the Clipboard API. Here's the link: " +
-                  url,
+                `Failed to copy using the Clipboard API. Here's the link: ${
+                  url
+                }`,
               );
             },
           );
@@ -354,17 +355,16 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     <div class="col-span-2 flex w-full items-center gap-2">
       <Balloon
         class="shrink-0 text-text"
-        text={formatXp(props.xp ?? 0) + " total xp"}
+        text={`${formatXp(props.xp ?? 0)} total xp`}
       >
         {xpDetails().level}
       </Balloon>
       <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
       <Balloon
         class="shrink-0 text-xs"
-        text={
-          formatXp(xpDetails().levelMaxXp - xpDetails().levelCurrentXp) +
-          " xp until next level"
-        }
+        text={`${formatXp(
+          xpDetails().levelMaxXp - xpDetails().levelCurrentXp,
+        )} xp until next level`}
       >
         {formatXp(xpDetails().levelCurrentXp)}/
         {formatXp(xpDetails().levelMaxXp)}{" "}

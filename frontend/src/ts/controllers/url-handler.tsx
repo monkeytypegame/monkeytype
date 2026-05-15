@@ -95,7 +95,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    showNoticeNotification("Failed to load theme from URL: " + error.message);
+    showNoticeNotification(`Failed to load theme from URL: ${error.message}`);
     return;
   }
 
@@ -178,7 +178,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (error) {
     console.error("Failed to parse test settings:", error);
     showNoticeNotification(
-      "Failed to load test settings from URL: " + error.message,
+      `Failed to load test settings from URL: ${error.message}`,
     );
     return;
   }

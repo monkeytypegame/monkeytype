@@ -637,7 +637,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   underscore_spaces: {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
-      return word + "_";
+      return `${word}_`;
     },
   },
   crt: {

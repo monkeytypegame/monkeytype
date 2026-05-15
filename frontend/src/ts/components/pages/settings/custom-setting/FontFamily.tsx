@@ -127,7 +127,7 @@ export function FontFamily(): JSXElement {
                     return "Comic Sans MS";
                   }
 
-                  return option.replace(/_/g, " ") + " Preview";
+                  return `${option.replace(/_/g, " ")} Preview`;
                 };
 
                 return (
