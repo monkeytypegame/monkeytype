@@ -44,7 +44,8 @@ export function Funbox(): JSXElement {
                 }
                 if (funbox.name === "upside_down") {
                   return {
-                    transform: "scaleY(-1)",
+                    transform: "rotate(180deg)",
+                    "z-index": 2,
                   };
                 }
                 return undefined;
