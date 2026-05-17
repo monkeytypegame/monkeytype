@@ -3,10 +3,10 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { getUserAverage10 } from "../collections/results";
+import { configEvent } from "../events/config";
 
 let averageWPM = 0;
 let averageAcc = 0;
-let hasFetched = false;
 
 export async function update(): Promise<void> {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
@@ -17,11 +17,6 @@ export async function update(): Promise<void> {
 
   averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
   averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);
-  hasFetched = true;
-}
-
-export function hasData(): boolean {
-  return hasFetched;
 }
 
 export function getWPM(): number {
@@ -31,3 +26,9 @@ export function getWPM(): number {
 export function getAcc(): number {
   return averageAcc;
 }
+
+configEvent.subscribe(({ key, newValue }) => {
+  if (key === "showAverage" && newValue !== "off") {
+    void update();
+  }
+});
