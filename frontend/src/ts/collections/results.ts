@@ -407,8 +407,8 @@ export async function deleteLocalTag(
     //not loaded yet, don't need to update
     return;
   }
-  const transtaction = actions.deleteLocalTag(params);
-  await transtaction.isPersisted.promise;
+  const transaction = actions.deleteLocalTag(params);
+  await transaction.isPersisted.promise;
 }
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
