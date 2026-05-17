@@ -106,7 +106,7 @@ const actionModals: Record<Action, SimpleModal> = {
         };
       }
 
-      deleteLocalTag(tagId);
+      await deleteLocalTag({ tagId });
       void Settings.update();
 
       return { status: "success", message: `Tag removed` };

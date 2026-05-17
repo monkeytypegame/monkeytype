@@ -24,16 +24,16 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { isAuthenticated } from "../states/core";
+import { getLastResult, setLastResult } from "../states/snapshot";
 import {
-  __nonReactive as tagsNonReactive,
   reconcileLocalTagPB,
   saveLocalTagPB,
+  __nonReactive as tagsNonReactive,
 } from "./tags";
-import { isAuthenticated } from "../states/core";
-import { createEffectOn } from "../hooks/effects";
-import { getLastResult, setLastResult } from "../states/snapshot";
 import { applyIdWorkaround } from "./utils/misc";
 
 export type ResultsQueryState = {
@@ -260,6 +260,9 @@ type ActionType = {
   insertLocalResult: {
     result: SnapshotResult<Mode>;
   };
+  deleteLocalTag: {
+    tagId: string;
+  };
 };
 
 const actions = {
@@ -317,6 +320,21 @@ const actions = {
     },
     mutationFn: async ({ result }) => {
       resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+  }),
+  deleteLocalTag: createOptimisticAction<ActionType["deleteLocalTag"]>({
+    onMutate: ({ tagId }) => {
+      for (const result of [...resultsCollection.values()].filter((it) =>
+        it.tags.includes(tagId),
+      )) {
+        resultsCollection.utils.writeUpdate({
+          ...result,
+          tags: result.tags.filter((it) => it !== tagId),
+        });
+      }
+    },
+    mutationFn: async () => {
+      return true;
     },
   }),
 };
@@ -380,6 +398,17 @@ export async function insertLocalResult(
   }
   const transaction = actions.insertLocalResult(params);
   await transaction.isPersisted.promise;
+}
+
+export async function deleteLocalTag(
+  params: ActionType["deleteLocalTag"],
+): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    //not loaded yet, don't need to update
+    return;
+  }
+  const transtaction = actions.deleteLocalTag(params);
+  await transtaction.isPersisted.promise;
 }
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
@@ -620,21 +649,6 @@ function buildSettingsResultsQuery(
   }
 
   return query;
-}
-
-export function deleteLocalTag(tagId: string): void {
-  resultsCollection.utils.writeBatch(() => {
-    for (const result of [...resultsCollection.values()]) {
-      if (!result.tags.includes(tagId)) {
-        continue;
-      }
-
-      resultsCollection.utils.writeUpdate({
-        ...result,
-        tags: result.tags.filter((it) => it !== tagId),
-      });
-    }
-  });
 }
 
 export function isResultsReady(): boolean {
