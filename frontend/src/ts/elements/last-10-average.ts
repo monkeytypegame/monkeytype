@@ -6,6 +6,7 @@ import { getUserAverage10 } from "../collections/results";
 
 let averageWPM = 0;
 let averageAcc = 0;
+let hasFetched = false;
 
 export async function update(): Promise<void> {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
@@ -16,6 +17,11 @@ export async function update(): Promise<void> {
 
   averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
   averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);
+  hasFetched = true;
+}
+
+export function hasData(): boolean {
+  return hasFetched;
 }
 
 export function getWPM(): number {

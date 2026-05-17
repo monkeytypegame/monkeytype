@@ -183,6 +183,9 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAverage !== "off") {
+    if (!Last10Average.hasData()) {
+      await Last10Average.update();
+    }
     const avgWPM = Last10Average.getWPM();
     const avgAcc = Last10Average.getAcc();
 
