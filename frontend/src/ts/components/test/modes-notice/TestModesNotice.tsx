@@ -335,16 +335,21 @@ function MinBurst() {
 }
 
 function Funbox() {
-  //TODO not working when removing/adding funboxes (try empty). getconfig.funbox doesnt seem to be fully reactive
+  const funboxes = createMemo(() => {
+    //getConfig.funbox doesn't work reaactive, wrapping in a memo
+    if (getConfig.funbox.length === 0) return undefined;
+    return [...getConfig.funbox].map(replaceUnderscoresWithSpaces).join(", ");
+  });
+
   return (
-    <Show when={getConfig.funbox.length > 0}>
+    <Show when={funboxes()}>
       <div>
         <Button
           variant="text"
           fa={{ icon: "fa-gamepad" }}
           onClick={() => showCommandLineForConfig("funbox")}
         >
-          {getConfig.funbox.map(replaceUnderscoresWithSpaces).join(", ")}
+          {funboxes()}
         </Button>
       </div>
     </Show>
