@@ -111,7 +111,10 @@ const plugin = {
 
         return {
           MemberExpression(node) {
-            if (node.object?.name === "__nonReactive") {
+            if (
+              node.property?.name === "__nonReactive" ||
+              node.object?.name === "__nonReactive"
+            ) {
               const componentName = getComponentAncestor(node);
               if (componentName) {
                 context.report({
