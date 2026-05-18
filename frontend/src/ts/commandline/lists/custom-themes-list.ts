@@ -43,7 +43,7 @@ export function update(): void {
   }
   for (const theme of snapshot.customThemes) {
     subgroup.list.push({
-      id: "setCustomThemeId" + theme._id,
+      id: `setCustomThemeId${theme._id}`,
       display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {

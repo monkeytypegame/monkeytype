@@ -126,11 +126,11 @@ export async function highlightWordsInRange(
     if (!position) continue;
 
     // Update highlight element positions
-    highlightEl.style.right = position.highlightRight + "px";
+    highlightEl.style.right = `${position.highlightRight}px`;
     // inputWordsContainer.style.right = 0 + "px";
 
-    inputWordsContainer.style.left = position.inputContainerLeft + "px";
-    highlightEl.style.left = position.highlightLeft + "px";
+    inputWordsContainer.style.left = `${position.inputContainerLeft}px`;
+    highlightEl.style.left = `${position.highlightLeft}px`;
   }
 
   // Update flags and variables
@@ -269,10 +269,10 @@ async function init(): Promise<boolean> {
     const IWC_height = line.rect.height;
 
     // Calculate top, left as % relative to "#resultWordsHistory"
-    const HC_top_percent = (HC_rel_top / RWH_height) * 100 + "%";
-    const HC_left_percent = (HC_rel_left / RWH_width) * 100 + "%";
-    const HC_width_percent = (HC_width / RWH_width) * 100 + "%";
-    const HC_height_percent = (HC_height / RWH_height) * 100 + "%";
+    const HC_top_percent = `${(HC_rel_top / RWH_height) * 100}%`;
+    const HC_left_percent = `${(HC_rel_left / RWH_width) * 100}%`;
+    const HC_width_percent = `${(HC_width / RWH_width) * 100}%`;
+    const HC_height_percent = `${(HC_height / RWH_height) * 100}%`;
 
     highlightContainer.style.width = HC_width_percent;
     highlightContainer.style.top = HC_top_percent;
@@ -284,10 +284,10 @@ async function init(): Promise<boolean> {
     const inputWordsContainerEl = document.createElement("div");
 
     // Calculate inputWordsContainerEl properties relative to highlightContainer
-    inputWordsContainerEl.style.top = line.rect.top - HC_rect_top + "px";
-    inputWordsContainerEl.style.left = line.rect.left - HC_rect_left + "px";
-    inputWordsContainerEl.style.width = IWC_width + "px";
-    inputWordsContainerEl.style.height = IWC_height + "px";
+    inputWordsContainerEl.style.top = `${line.rect.top - HC_rect_top}px`;
+    inputWordsContainerEl.style.left = `${line.rect.left - HC_rect_left}px`;
+    inputWordsContainerEl.style.width = `${IWC_width}px`;
+    inputWordsContainerEl.style.height = `${IWC_height}px`;
 
     highlightEl.className = "highlight highlight-hidden";
     inputWordsContainerEl.className = "inputWordsContainer";
@@ -311,8 +311,7 @@ async function init(): Promise<boolean> {
       }
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
-      inputWordEl.style.left =
-        wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset + "px";
+      inputWordEl.style.left = `${wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset}px`;
       inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
         .replace(/\n/g, "_")

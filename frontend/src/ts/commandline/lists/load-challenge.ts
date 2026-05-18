@@ -22,7 +22,7 @@ const commands: Command[] = [
 function update(challenges: Challenge[]): void {
   challenges.forEach((challenge) => {
     subgroup.list.push({
-      id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
+      id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
       display: challenge.display,
       exec: async (): Promise<void> => {
         await navigate("/");

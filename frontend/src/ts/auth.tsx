@@ -97,7 +97,7 @@ async function getDataAndInit(): Promise<boolean> {
         );
       }
 
-      showErrorNotification("Failed to get user data: " + error.message);
+      showErrorNotification(`Failed to get user data: ${error.message}`);
     } else {
       showErrorNotification("Failed to get user data", { error });
     }

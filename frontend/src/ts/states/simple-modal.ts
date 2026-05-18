@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-import { z } from "zod";
 
 import { showModal, hideModal } from "./modals";
 import {
@@ -8,7 +7,7 @@ import {
   showErrorNotification,
 } from "./notifications";
 import { showLoaderBar, hideLoaderBar } from "./loader-bar";
-import { IsValidResponse } from "../types/validation";
+import { Validation } from "../types/validation";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -20,11 +19,7 @@ type CommonInput<TType, TValue> = {
   optional?: boolean;
   label?: string;
   oninput?: (event: Event) => void;
-  validation?: {
-    schema?: z.Schema<string>;
-    isValid?: (value: string) => Promise<IsValidResponse>;
-    debounceDelay?: number;
-  };
+  validation?: Validation<string>;
 };
 
 export type TextInput = CommonInput<"text", string>;

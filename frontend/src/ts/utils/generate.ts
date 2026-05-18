@@ -92,7 +92,7 @@ export function getMorse(word: string): string {
   const deAccentedWord = Strings.replaceSpecialChars(word);
   for (let i = 0; i < deAccentedWord.length; i++) {
     const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
-    morseWord += letter !== undefined ? letter + "/" : "";
+    morseWord += letter !== undefined ? `${letter}/` : "";
   }
   return morseWord;
 }

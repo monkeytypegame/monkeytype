@@ -395,7 +395,7 @@ describe("Loaderboard Controller", () => {
       await mockApp
         .get("/leaderboards/rank")
         .query({ language: "english", mode: "time", mode2: "60" })
-        .set("authorization", "ApeKey " + apeKey)
+        .set("authorization", `ApeKey ${apeKey}`)
         .expect(200);
     });
     it("should get for mode", async () => {
@@ -405,7 +405,7 @@ describe("Loaderboard Controller", () => {
           .get("/leaderboards/rank")
           .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
+        expect(response.status, `for mode ${mode}`).toEqual(200);
       }
     });
 
@@ -417,7 +417,7 @@ describe("Loaderboard Controller", () => {
           .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode: "words", mode2 });
 
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
+        expect(response.status, `for mode2 ${mode2}`).toEqual(200);
       }
     });
     it("fails for missing query", async () => {
@@ -750,7 +750,7 @@ describe("Loaderboard Controller", () => {
         const response = await mockApp
           .get("/leaderboards/daily")
           .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
+        expect(response.status, `for mode ${mode}`).toEqual(200);
       }
     });
 
@@ -760,7 +760,7 @@ describe("Loaderboard Controller", () => {
           .get("/leaderboards/daily")
           .query({ language: "english", mode: "words", mode2 });
 
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
+        expect(response.status, `for mode2 ${mode2}`).toEqual(200);
       }
     });
 
@@ -963,7 +963,7 @@ describe("Loaderboard Controller", () => {
           .get("/leaderboards/daily/rank")
           .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
+        expect(response.status, `for mode ${mode}`).toEqual(200);
       }
     });
 
@@ -974,7 +974,7 @@ describe("Loaderboard Controller", () => {
           .set("Authorization", `Bearer ${uid}`)
           .query({ language: "english", mode: "words", mode2 });
 
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
+        expect(response.status, `for mode2 ${mode2}`).toEqual(200);
       }
     });
 

@@ -210,8 +210,9 @@ export async function sendVerificationEmail(
       } else {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link: " +
-            error.errorInfo.message,
+          `Firebase failed to generate an email verification link: ${
+            error.errorInfo.message
+          }`,
           JSON.stringify(error),
         );
       }
@@ -231,7 +232,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Failed to generate an email verification link: " + message,
+            `Failed to generate an email verification link: ${message}`,
             error.stack,
           );
         }

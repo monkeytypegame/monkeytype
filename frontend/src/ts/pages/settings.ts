@@ -650,7 +650,7 @@ export async function update(
     if (options.eventKey === undefined || options.eventKey === key) {
       const element = document.querySelector(query) as HTMLInputElement;
       if (element === null) {
-        throw new Error("Unknown input element " + query);
+        throw new Error(`Unknown input element ${query}`);
       }
 
       element.value = new String(value).toString();

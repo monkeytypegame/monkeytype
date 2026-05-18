@@ -511,7 +511,7 @@ export function getFunbox(
     //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error(
-        "One of the funboxes is invalid: " + nameOrNames.toString(),
+        `One of the funboxes is invalid: ${nameOrNames.toString()}`,
       );
     }
 
@@ -520,7 +520,7 @@ export function getFunbox(
     const out = getObject()[nameOrNames];
 
     if (out === undefined) {
-      throw new Error("Invalid funbox name: " + nameOrNames);
+      throw new Error(`Invalid funbox name: ${nameOrNames}`);
     }
 
     return out;

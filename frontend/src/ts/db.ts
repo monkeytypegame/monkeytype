@@ -231,7 +231,7 @@ export async function editCustomTheme(
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
     showErrorNotification(
-      "Editing failed: Custom theme with id: " + themeId + " does not exist",
+      `Editing failed: Custom theme with id: ${themeId} does not exist`,
     );
     return false;
   }

@@ -52,11 +52,10 @@ function update(mode: Mode): void {
     let dateText = `-<br><span class="sub">-</span>`;
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
-      dateText =
-        format(date, "dd MMM yyyy") +
-        "<br><div class='sub'>" +
-        format(date, "HH:mm") +
-        "</div>";
+      dateText = `${format(date, "dd MMM yyyy")}<br><div class='sub'>${format(
+        date,
+        "HH:mm",
+      )}</div>`;
     }
     currentTbody?.insertAdjacentHTML(
       "beforeend",

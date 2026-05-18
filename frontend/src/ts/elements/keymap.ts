@@ -101,7 +101,7 @@ function highlightKey(currentKey: string): void {
       $target.addClass("activeKey");
     } catch (e) {
       if (e instanceof Error) {
-        console.log("could not update highlighted keymap key: " + e.message);
+        console.log(`could not update highlighted keymap key: ${e.message}`);
       }
     }
   });
@@ -484,7 +484,7 @@ export async function refresh(): Promise<void> {
   } catch (e) {
     if (e instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message,
+        `something went wrong when changing layout, resettings: ${e.message}`,
       );
       // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }

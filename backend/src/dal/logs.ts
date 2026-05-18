@@ -36,7 +36,7 @@ async function insertIntoDb(
 
   Logger.info(
     `${event}\t${uid}\t${
-      stringified.length > 100 ? stringified.slice(0, 100) + "..." : stringified
+      stringified.length > 100 ? `${stringified.slice(0, 100)}...` : stringified
     }`,
   );
 

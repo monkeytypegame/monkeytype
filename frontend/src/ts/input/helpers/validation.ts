@@ -63,7 +63,7 @@ export function shouldInsertSpaceCharacter(options: {
   if (Config.mode === "zen") {
     return false;
   }
-  const correctSoFar = (targetWord + " ").startsWith(inputValue + " ");
+  const correctSoFar = `${targetWord} `.startsWith(`${inputValue} `);
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correctSoFar;
   const stopOnErrorWordAndIncorrect =

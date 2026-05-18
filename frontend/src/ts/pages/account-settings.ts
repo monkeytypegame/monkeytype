@@ -176,7 +176,7 @@ qsa(
       window.open(response.body.data.url, "_self");
     } else {
       showErrorNotification(
-        "Failed to get OAuth from discord: " + response.body.message,
+        `Failed to get OAuth from discord: ${response.body.message}`,
       );
     }
   });

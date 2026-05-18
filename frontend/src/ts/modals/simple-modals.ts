@@ -166,9 +166,9 @@ async function reauthenticate(
     } else {
       return {
         status: "error",
-        message:
-          "Failed to reauthenticate: " +
-          (typedError?.message ?? JSON.stringify(e)),
+        message: `Failed to reauthenticate: ${
+          typedError?.message ?? JSON.stringify(e)
+        }`,
       };
     }
   }
