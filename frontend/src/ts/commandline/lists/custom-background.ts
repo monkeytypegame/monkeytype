@@ -2,7 +2,6 @@ import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
-import { updateUI } from "../../elements/settings/custom-background-picker";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
@@ -56,7 +55,6 @@ const customBackgroundCommand: Command = {
               try {
                 await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
                 await applyCustomBackground();
-                await updateUI();
               } catch (e) {
                 showNoticeNotification(
                   `Error uploading background: ${(e as Error).message}`,
@@ -85,7 +83,6 @@ const customBackgroundCommand: Command = {
             await FileStorage.deleteFile("LocalBackgroundFile");
             setConfig("customBackground", "");
             await applyCustomBackground();
-            await updateUI();
           } catch (e) {
             showNoticeNotification(
               `Error removing background: ${(e as Error).message}`,
