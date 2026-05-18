@@ -24,6 +24,7 @@ export function Last10Average(): JSXElement {
               fa={{ icon: "fa-chart-bar" }}
               onClick={() => showCommandLineForConfig("showAverage")}
             >
+              avg:
               <Show
                 when={
                   getConfig.showAverage === "speed" ||
@@ -31,8 +32,9 @@ export function Last10Average(): JSXElement {
                 }
               >
                 <span>
-                  {format().typingSpeed(last10Data()?.at(0)?.wpm ?? 0)}{" "}
-                  {getConfig.typingSpeedUnit}
+                  {format().typingSpeed(last10Data()?.at(0)?.wpm ?? 0, {
+                    suffix: ` ${getConfig.typingSpeedUnit}`,
+                  })}
                 </span>
               </Show>
               <Show
@@ -42,7 +44,9 @@ export function Last10Average(): JSXElement {
                 }
               >
                 <span>
-                  {format().accuracy(last10Data()?.at(0)?.acc ?? 0)} acc
+                  {format().accuracy(last10Data()?.at(0)?.acc ?? 0, {
+                    suffix: " acc",
+                  })}
                 </span>
               </Show>
             </Button>
