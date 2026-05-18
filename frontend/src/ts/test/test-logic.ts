@@ -11,7 +11,6 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -27,8 +26,14 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage, isAuthenticated } from "../states/core";
 import {
+  getActivePage,
+  getCustomTextIndicator,
+  isAuthenticated,
+} from "../states/core";
+import {
+  isRepeated,
+  setIsRepeated,
   setResultVisible,
   setWordsHaveNewline,
   setWordsHaveTab,
@@ -219,7 +224,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.words,
           Config.time,
           CustomText.getData(),
-          CustomTextState.isCustomTextLong() ?? false,
+          getCustomTextIndicator()?.isLong ?? false,
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -241,7 +246,7 @@ export function restart(options = {} as RestartOptions): void {
       }
     }
 
-    if (TestState.isRepeated) {
+    if (isRepeated()) {
       options.withSameWordset = true;
     }
 
@@ -352,7 +357,7 @@ export function restart(options = {} as RestartOptions): void {
         repeatWithPace = true;
       }
 
-      TestState.setRepeated(options.withSameWordset ?? false);
+      setIsRepeated(options.withSameWordset ?? false);
       TestState.setPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
@@ -897,8 +902,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   TestUI.onTestFinish();
 
-  if (TestState.isRepeated && Config.mode === "quote") {
-    TestState.setRepeated(false);
+  if (isRepeated() && Config.mode === "quote") {
+    setIsRepeated(false);
   }
 
   // in case the tests ends with a keypress (not a word submission)
@@ -1069,7 +1074,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     showNoticeNotification("Test invalid - AFK detected");
     TestStats.setInvalid();
     dontSave = true;
-  } else if (TestState.isRepeated) {
+  } else if (isRepeated()) {
     showNoticeNotification("Test invalid - repeated");
     TestStats.setInvalid();
     dontSave = true;
@@ -1110,7 +1115,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  if (TestState.isRepeated || difficultyFailed) {
+  if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
       const testSeconds = completedEvent.testDuration;
       const afkseconds = completedEvent.afkDuration;
@@ -1123,9 +1128,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  const customTextName = CustomTextState.getCustomTextName();
-  const isLong = CustomTextState.isCustomTextLong();
-  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+  const customTextName = getCustomTextIndicator()?.name;
+  const isLong = getCustomTextIndicator()?.isLong;
+  if (Config.mode === "custom" && customTextName !== undefined && isLong) {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
@@ -1210,7 +1215,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     difficultyFailed,
     failReason,
     afkDetected,
-    TestState.isRepeated,
+    isRepeated(),
     tooShort,
     TestWords.currentQuote,
     dontSave,

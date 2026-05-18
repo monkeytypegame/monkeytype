@@ -14,7 +14,6 @@ import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
-import * as CustomTextState from "../../legacy-states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
@@ -26,6 +25,7 @@ import {
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
 import { wordsHaveTab } from "../../states/test";
+import { getCustomTextIndicator } from "../../states/core";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -49,7 +49,7 @@ export async function handleEnter(
         Config.words,
         Config.time,
         CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false,
+        getCustomTextIndicator()?.isLong ?? false,
       )
     ) {
       const delay = Date.now() - getLastBailoutAttempt();

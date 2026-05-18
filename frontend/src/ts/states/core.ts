@@ -1,5 +1,7 @@
 import { createSignal } from "solid-js";
 import { PageName } from "../pages/page";
+import { ConfigKey } from "@monkeytype/schemas/configs";
+import { showModal } from "./modals";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
@@ -35,4 +37,14 @@ export const [isUserVerified, setUserVerified] = createSignal(false);
 
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
+>(undefined);
+
+//TODO better type
+export function showCommandLineForConfig(configKey: ConfigKey | "tags"): void {
+  setCommandlineSubgroup(configKey);
+  showModal("Commandline");
+}
+
+export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
+  { name: string; isLong: boolean } | undefined
 >(undefined);

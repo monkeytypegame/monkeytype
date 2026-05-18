@@ -20,6 +20,7 @@ import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
+import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
@@ -38,6 +39,7 @@ const components: Record<string, () => JSXElement> = {
   devtools: () => <DevTools />,
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
+  testmodesnotice: () => <TestModesNotice />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

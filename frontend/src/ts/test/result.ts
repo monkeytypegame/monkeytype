@@ -15,7 +15,7 @@ import {
   showSuccessNotification,
   addNotificationWithLevel,
 } from "../states/notifications";
-import { isAuthenticated } from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getQuoteStats } from "../states/quote-rate";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
@@ -33,7 +33,6 @@ import * as TodayTracker from "./today-tracker";
 import { configEvent } from "../events/config";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "./../legacy-states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
@@ -1090,7 +1089,7 @@ export async function update(
     Config.words,
     Config.time,
     CustomText.getData(),
-    CustomTextState.isCustomTextLong() ?? false,
+    getCustomTextIndicator()?.isLong ?? false,
   );
 
   if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {

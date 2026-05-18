@@ -24,16 +24,16 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { isAuthenticated } from "../states/core";
+import { getLastResult, setLastResult } from "../states/snapshot";
 import {
-  __nonReactive as tagsNonReactive,
   reconcileLocalTagPB,
   saveLocalTagPB,
+  __nonReactive as tagsNonReactive,
 } from "./tags";
-import { isAuthenticated } from "../states/core";
-import { createEffectOn } from "../hooks/effects";
-import { getLastResult, setLastResult } from "../states/snapshot";
 import { applyIdWorkaround } from "./utils/misc";
 
 export type ResultsQueryState = {
@@ -549,7 +549,23 @@ export type CurrentSettingsFilter = {
   lazyMode: boolean;
 };
 
-export async function getUserAverage10(
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useUserAverage10LiveQuery(options: CurrentSettingsFilter) {
+  return useLiveQuery((q) =>
+    q
+      .from({
+        //we use sub-query to filter first and then aggregate
+        last10: buildSettingsResultsQuery(options, {
+          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+        })
+          .orderBy(({ r }) => r.timestamp, "desc")
+          .limit(10),
+      })
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) })),
+  );
+}
+
+export async function getUserAverage10Once(
   options: CurrentSettingsFilter,
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection

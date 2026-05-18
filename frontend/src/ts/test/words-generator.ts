@@ -28,6 +28,7 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
+import { isRepeated } from "../states/test";
 
 //pin implementation
 const random = Math.random;
@@ -498,7 +499,7 @@ async function getQuoteWordList(
   language: LanguageObject,
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
-  if (TestState.isRepeated) {
+  if (isRepeated()) {
     if (currentWordset === null) {
       throw new WordGenError("Current wordset is null");
     }
@@ -610,7 +611,7 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
-  if (!TestState.isRepeated) {
+  if (!isRepeated()) {
     previousGetNextWordReturns = [];
   }
   previousRandomQuote = TestWords.currentQuote;
@@ -745,7 +746,7 @@ export async function getNextWord(
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
-    isRepeated: TestState.isRepeated,
+    isRepeated: isRepeated(),
     currentWordset,
     wordIndex,
     language: currentLanguage,
@@ -765,7 +766,7 @@ export async function getNextWord(
   //because quote test can be repeated in the middle of a test
   //we cant rely on data inside previousGetNextWordReturns
   //because it might not include the full quote
-  if (TestState.isRepeated && Config.mode !== "quote") {
+  if (isRepeated() && Config.mode !== "quote") {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {

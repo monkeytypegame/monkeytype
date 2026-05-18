@@ -3,6 +3,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   createCollection,
   createOptimisticAction,
+  eq,
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { z } from "zod";
@@ -56,6 +57,16 @@ export function useTagsLiveQuery() {
   return useLiveQuery((q) => {
     return q
       .from({ tag: tagsCollection })
+      .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useActiveTagsLiveQuery() {
+  return useLiveQuery((q) => {
+    return q
+      .from({ tag: tagsCollection })
+      .where(({ tag }) => eq(tag.active, true))
       .orderBy(({ tag }) => tag.name, "asc");
   });
 }

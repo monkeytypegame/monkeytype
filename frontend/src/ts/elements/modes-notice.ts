@@ -6,8 +6,7 @@ import { __nonReactive } from "../collections/tags";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { configEvent, type ConfigEventKey } from "../events/config";
-import { isAuthenticated } from "../states/core";
-import * as CustomTextState from "../legacy-states/custom-text-name";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
@@ -17,6 +16,7 @@ import {
   wordsHaveNewline,
   wordsHaveTab,
   getLoadedChallenge,
+  isRepeated,
 } from "../states/test";
 
 configEvent.subscribe(({ key }) => {
@@ -50,7 +50,7 @@ const testModesNotice = qsr(".pageTest #testModesNotice");
 export async function update(): Promise<void> {
   testModesNotice.empty();
 
-  if (TestState.isRepeated && Config.mode !== "quote") {
+  if (isRepeated() && Config.mode !== "quote") {
     testModesNotice.appendHtml(
       `<div class="textButton noInteraction" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`,
     );
@@ -87,16 +87,13 @@ export async function update(): Promise<void> {
     );
   }
 
-  const customTextName = CustomTextState.getCustomTextName();
-  const isLong = CustomTextState.isCustomTextLong();
-  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+  if (Config.mode === "custom" && getCustomTextIndicator()?.isLong) {
     testModesNotice.appendHtml(
       `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
-        customTextName,
+        getCustomTextIndicator()?.name,
       )} (<kbd>shift + enter</kbd><span> to save progress</span>)</div>`,
     );
   }
-
   const loadedChallenge = getLoadedChallenge();
   if (loadedChallenge !== null) {
     testModesNotice.appendHtml(
