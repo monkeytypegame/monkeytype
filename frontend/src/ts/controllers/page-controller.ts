@@ -44,11 +44,6 @@ const pages = {
   test: PageTest.page,
   settings: solidPage("settings", {
     beforeShow: async () => {
-      const highlight = new URLSearchParams(window.location.search).get(
-        "highlight",
-      );
-      if (highlight === null) return;
-
       // clear any previous highlight
       const prev = document.querySelector<HTMLElement>(
         '[data-component="settingspage"] .settings-highlight',
@@ -56,6 +51,11 @@ const pages = {
       if (prev !== null) {
         prev.classList.remove("settings-highlight");
       }
+
+      const highlight = new URLSearchParams(window.location.search).get(
+        "highlight",
+      );
+      if (highlight === null) return;
 
       const element = document.querySelector<HTMLElement>(
         `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
