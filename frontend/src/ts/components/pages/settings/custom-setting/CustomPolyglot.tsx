@@ -26,6 +26,7 @@ export function CustomPolyglot(): JSXElement {
           multiple
           settings={{
             closeOnSelect: false,
+            allowDeselect: true,
             minSelected: 2,
           }}
           optionGroups={LanguageGroupNames.map(

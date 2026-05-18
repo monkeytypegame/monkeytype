@@ -21,6 +21,7 @@ export function CustomLayoutfluid(): JSXElement {
           multiple
           settings={{
             closeOnSelect: false,
+            allowDeselect: true,
             minSelected: 2,
           }}
           options={LayoutsList.map((layout) => ({
