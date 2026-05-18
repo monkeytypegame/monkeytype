@@ -5,7 +5,6 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as Settings from "../pages/settings";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
@@ -43,7 +42,32 @@ type ChangeOptions = {
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
-  settings: Settings.page,
+  settings: solidPage("settings", {
+    beforeShow: async () => {
+      // clear any previous highlight
+      const prev = document.querySelector<HTMLElement>(
+        '[data-component="settingspage"] .settings-highlight',
+      );
+      if (prev !== null) {
+        prev.classList.remove("settings-highlight");
+      }
+
+      const highlight = new URLSearchParams(window.location.search).get(
+        "highlight",
+      );
+      if (highlight === null) return;
+
+      const element = document.querySelector<HTMLElement>(
+        `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
+      );
+      if (element === null) return;
+
+      setTimeout(() => {
+        element.scrollIntoView({ block: "center", behavior: "auto" });
+        element.classList.add("settings-highlight");
+      }, 250);
+    },
+  }),
   about: solidPage("about"),
   account: solidPage("account", {
     loadingOptions: {

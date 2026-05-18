@@ -18,12 +18,19 @@ type CommonInput<TType, TValue> = {
   disabled?: boolean;
   optional?: boolean;
   label?: string;
+  class?: string;
   oninput?: (event: Event) => void;
   validation?: Validation<string>;
 };
 
-export type TextInput = CommonInput<"text", string>;
-export type TextArea = CommonInput<"textarea", string>;
+export type TextInput = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"text", string>;
+export type TextArea = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"textarea", string>;
 export type PasswordInput = CommonInput<"password", string>;
 type EmailInput = CommonInput<"email", string>;
 
@@ -75,11 +82,15 @@ export type ExecReturn = {
 };
 
 export type SimpleModalConfig = {
+  class?: string;
   title: string;
   inputs?: SimpleModalInput[];
   text?: string;
+  textClass?: string;
   textAllowHtml?: boolean;
-  buttonText: string;
+  buttonText?: string;
+  buttonAlwaysEnabled?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
   execFn: (...inputValues: string[]) => Promise<ExecReturn>;
 };
 
