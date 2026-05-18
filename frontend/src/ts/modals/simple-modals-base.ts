@@ -13,7 +13,6 @@ export type PopupKey =
   | "deleteAccount"
   | "resetAccount"
   | "optOutOfLeaderboards"
-  | "applyCustomFont"
   | "resetPersonalBests"
   | "revokeAllTokens"
   | "unlinkDiscord"
@@ -33,7 +32,6 @@ export const list: Record<PopupKey, SimpleModal | undefined> = {
   deleteAccount: undefined,
   resetAccount: undefined,
   optOutOfLeaderboards: undefined,
-  applyCustomFont: undefined,
   resetPersonalBests: undefined,
   revokeAllTokens: undefined,
   unlinkDiscord: undefined,
