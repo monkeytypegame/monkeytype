@@ -53,7 +53,7 @@ export class SimpleModal {
   inputs: FormInput[];
   text?: string;
   textAllowHtml: boolean;
-  buttonText: string;
+  buttonText?: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
   beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
@@ -101,7 +101,7 @@ export class SimpleModal {
 
     this.initInputs();
 
-    if (this.buttonText === "") {
+    if (this.buttonText === "" || this.buttonText === undefined) {
       this.element.qs(".submitButton")?.remove();
     } else {
       this.element.qs(".submitButton")?.setText(this.buttonText);
