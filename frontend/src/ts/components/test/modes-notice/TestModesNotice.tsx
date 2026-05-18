@@ -23,6 +23,7 @@ import {
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { Kbd } from "../../common/Kbd";
+import { Last10Average } from "./Last10Average";
 
 export function TestModesNotice() {
   return (
@@ -37,6 +38,7 @@ export function TestModesNotice() {
       <Difficulty />
       <BlindMode />
       <LazyMode />
+      <Last10Average />
       {/* pace caret */}
       {/* average */}
       {/* pb */}

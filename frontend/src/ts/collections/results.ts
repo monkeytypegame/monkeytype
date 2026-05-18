@@ -33,8 +33,11 @@ import {
   reconcileLocalTagPB,
   saveLocalTagPB,
   __nonReactive as tagsNonReactive,
+  useActiveTagsLiveQuery,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
+import { getConfig } from "../config/store";
+import { getMode2 } from "../utils/misc";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -550,14 +553,29 @@ export type CurrentSettingsFilter = {
 };
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
-export function useUserAverage10LiveQuery(options: CurrentSettingsFilter) {
+export function useUserAverage10LiveQuery() {
+  const tags = useActiveTagsLiveQuery();
+
   return useLiveQuery((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: buildSettingsResultsQuery(options, {
-          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-        })
+        last10: q
+          .from({ r: resultsCollection })
+          .where(({ r }) => eq(r.mode, getConfig.mode))
+          .where(({ r }) => eq(r.mode2, getMode2(getConfig, null))) //TODO read the current quote without creating a circle
+          .where(({ r }) => eq(r.punctuation, getConfig.punctuation))
+          .where(({ r }) => eq(r.numbers, getConfig.numbers))
+          .where(({ r }) => eq(r.language, getConfig.language))
+          .where(({ r }) => eq(r.difficulty, getConfig.difficulty))
+          .where(({ r }) => eq(r.lazyMode, getConfig.lazyMode))
+          .where(({ r }) =>
+            or(
+              false,
+              tags().length === 0,
+              ...tags().map((it) => inArray(it._id, r.tags)),
+            ),
+          )
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
