@@ -5,6 +5,7 @@ import { getConfig } from "../config/store";
 import { canQuickRestart } from "../utils/quick-restart";
 import { getData as getCustomTextData } from "../test/custom-text";
 import { getActivePage, getCustomTextIndicator } from "./core";
+import { QuoteWithTextSplit } from "../types/quotes";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -16,6 +17,12 @@ export const [getFocus, setFocus] = createSignal(false);
 
 export const [isLongTest, setIsLongTest] = createSignal(false);
 export const [isRepeated, setIsRepeated] = createSignal(false);
+export const [isPaceRepeat, setIsPaceRepeat] = createSignal(false);
+export const [getPaceCaretWpm, setPaceCaretWpm] = createSignal<
+  number | undefined
+>(undefined);
+export const [getCurrentQuote, setCurrentQuote] =
+  createSignal<QuoteWithTextSplit | null>(null);
 
 createEffect(() => {
   getActivePage(); // depend on active page

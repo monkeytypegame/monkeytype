@@ -10,7 +10,7 @@ import { Formatting } from "../../../utils/format";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 
-export function Last10Average(): JSXElement {
+export function AverageNotice(): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
   const last10 = useUserAverage10LiveQuery();
 

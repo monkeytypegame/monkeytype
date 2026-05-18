@@ -1,10 +1,7 @@
-import * as PaceCaret from "../test/pace-caret";
-import * as TestState from "../test/test-state";
 import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
 import { __nonReactive } from "../collections/tags";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
 import { configEvent, type ConfigEventKey } from "../events/config";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getLanguageDisplayString } from "../utils/strings";
@@ -17,6 +14,9 @@ import {
   wordsHaveTab,
   getLoadedChallenge,
   isRepeated,
+  isPaceRepeat,
+  getPaceCaretWpm,
+  getCurrentQuote,
 } from "../states/test";
 
 configEvent.subscribe(({ key }) => {
@@ -153,11 +153,8 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (
-    Config.paceCaret !== "off" ||
-    (Config.repeatedPace && TestState.isPaceRepeat)
-  ) {
-    const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
+  if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat())) {
+    const speed = Format.typingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${Config.typingSpeedUnit}`,
     });
@@ -204,8 +201,8 @@ export async function update(): Promise<void> {
     if (!isAuthenticated()) {
       return;
     }
-    const mode2 = getMode2(Config, TestWords.currentQuote);
-    const pb = await DB.getLocalPB(
+    const mode2 = getMode2(Config, getCurrentQuote());
+    const pb = DB.getLocalPB(
       Config.mode,
       mode2,
       Config.punctuation,

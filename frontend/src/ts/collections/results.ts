@@ -38,6 +38,7 @@ import {
 import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
+import { getCurrentQuote } from "../states/test";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -563,7 +564,7 @@ export function useUserAverage10LiveQuery() {
         last10: q
           .from({ r: resultsCollection })
           .where(({ r }) => eq(r.mode, getConfig.mode))
-          .where(({ r }) => eq(r.mode2, getMode2(getConfig, null))) //TODO read the current quote without creating a circle
+          .where(({ r }) => eq(r.mode2, getMode2(getConfig, getCurrentQuote())))
           .where(({ r }) => eq(r.punctuation, getConfig.punctuation))
           .where(({ r }) => eq(r.numbers, getConfig.numbers))
           .where(({ r }) => eq(r.language, getConfig.language))

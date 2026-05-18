@@ -57,9 +57,9 @@ import { z } from "zod";
 import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
-import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { getCurrentQuote } from "../states/test";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -294,7 +294,7 @@ function applyFakeChartData(): void {
 
 export async function updateChartPBLine(): Promise<void> {
   const themecolors = getTheme();
-  const localPb = await DB.getLocalPB(
+  const localPb = DB.getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation ?? false,
@@ -509,7 +509,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
 
   if (canGetPb.value) {
-    const localPb = await DB.getLocalPB(
+    const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -534,7 +534,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       );
     }
   } else {
-    const localPb = await DB.getLocalPB(
+    const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -1049,7 +1049,7 @@ export async function update(
       qs("main #result #rateQuoteButton")?.hide();
       qs("main #result #reportQuoteButton")?.hide();
     } else {
-      updateRateQuote(currentQuote);
+      updateRateQuote(getCurrentQuote());
       qs("main #result #reportQuoteButton")?.show();
     }
     qs("main #result .stats .dailyLeaderboard")?.hide();

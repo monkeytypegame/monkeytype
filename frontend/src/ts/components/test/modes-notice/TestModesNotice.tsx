@@ -10,6 +10,8 @@ import {
 import { hotkeys } from "../../../states/hotkeys";
 import {
   getLoadedChallenge,
+  getPaceCaretWpm,
+  isPaceRepeat,
   isRepeated,
   wordsHaveNewline,
   wordsHaveTab,
@@ -23,8 +25,8 @@ import {
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { Kbd } from "../../common/Kbd";
-import { Last10Average } from "./Last10Average";
-
+import { AverageNotice } from "./AverageNotice";
+import { PbNotice } from "./PbNotice";
 export function TestModesNotice() {
   return (
     <div class="flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity select-none">
@@ -38,10 +40,9 @@ export function TestModesNotice() {
       <Difficulty />
       <BlindMode />
       <LazyMode />
-      <Last10Average />
-      {/* pace caret */}
-      {/* average */}
-      {/* pb */}
+      <PaceCaretNotice />
+      <AverageNotice />
+      <PbNotice />
       <MinSpeed />
       <MinAcc />
       <MinBurst />
@@ -232,6 +233,38 @@ function LazyMode() {
           onClick={() => showCommandLineForConfig("lazyMode")}
         >
           lazy
+        </Button>
+      </div>
+    </Show>
+  );
+}
+
+function PaceCaretNotice() {
+  const format = createMemo(() => new Formatting(getConfig));
+  return (
+    <Show
+      when={
+        getConfig.paceCaret !== "off" ||
+        (getConfig.repeatedPace && isPaceRepeat())
+      }
+    >
+      <div>
+        <Button
+          variant="text"
+          fa={{ icon: "fa-tachometer-alt" }}
+          onClick={() => showCommandLineForConfig("paceCaret")}
+        >
+          <Show
+            when={getConfig.paceCaret === "tagPb"}
+            fallback={getConfig.paceCaret}
+          >
+            tag pb
+          </Show>{" "}
+          pace{" "}
+          {format().typingSpeed(getPaceCaretWpm() ?? 0, {
+            showDecimalPlaces: false,
+            suffix: ` ${getConfig.typingSpeedUnit}`,
+          })}
         </Button>
       </div>
     </Show>

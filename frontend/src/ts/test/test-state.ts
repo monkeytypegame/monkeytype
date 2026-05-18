@@ -1,6 +1,5 @@
 import { promiseWithResolvers } from "../utils/misc";
 
-export let isPaceRepeat = false;
 export let isActive = false;
 export let bailedOut = false;
 export let selectedQuoteId =
@@ -11,10 +10,6 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
-
-export function setPaceRepeat(tf: boolean): void {
-  isPaceRepeat = tf;
-}
 
 export function setActive(tf: boolean): void {
   isActive = tf;

@@ -1,14 +1,14 @@
 import * as Misc from "../utils/misc";
 import * as Numbers from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
 import { getUserAverage10Once } from "../collections/results";
+import { getCurrentQuote } from "../states/test";
 
 let averageWPM = 0;
 let averageAcc = 0;
 
 export async function update(): Promise<void> {
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
 
   const average = await getUserAverage10Once({ ...Config, mode2 });
   const wpm = Numbers.roundTo2(average.wpm);
