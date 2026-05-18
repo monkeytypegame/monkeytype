@@ -31,7 +31,7 @@ import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { authEvent } from "../events/auth";
 import { Connection } from "@monkeytype/schemas/connections";
-import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
+import { UserNameWithoutFilterSchema, Friend } from "@monkeytype/schemas/users";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -52,7 +52,7 @@ const addFriendModal = new SimpleModal({
       type: "text",
       initVal: "",
       validation: {
-        schema: UserNameSchema,
+        schema: UserNameWithoutFilterSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
           { check: (data) => !data.available || "Unknown user" },

@@ -156,7 +156,7 @@ export function SavedTextsModal(props: {
 
       <Separator />
 
-      <div class="text-em-xs text-sub">
+      <div class="text-em-xs text-error">
         Heads up! These texts are only stored locally. If you switch devices or
         clear your local browser data they will be lost.
       </div>

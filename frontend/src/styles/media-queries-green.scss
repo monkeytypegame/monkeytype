@@ -29,31 +29,6 @@
       font-size: 7rem;
     }
   }
-  .pageSettings {
-    .section {
-      grid-template-columns: 1fr 1fr;
-
-      &[data-config-name="customBackgroundFilter"] {
-        .groups {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      &.themes .tabContainer .tabContent.customTheme {
-        .customThemeInputs .customThemeInput {
-          grid-template-columns: 10em 1fr;
-        }
-      }
-    }
-    .settingsGroup.quickNav {
-      justify-content: unset;
-      .links {
-        max-width: unset;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-      }
-    }
-  }
 
   .testActivity {
     --gap-size: 0.1em;

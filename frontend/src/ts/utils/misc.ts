@@ -2,7 +2,7 @@ import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
-import { RankAndCount, UserNameSchema } from "@monkeytype/schemas/users";
+import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
@@ -143,11 +143,6 @@ export function escapeHTML<T extends string | null | undefined>(str: T): T {
   };
 
   return str.replace(/[&<>"'/`]/g, (char) => escapeMap[char] as string) as T;
-}
-
-export function isUsernameValid(name: string): boolean {
-  if (name === null || name === undefined || name === "") return false;
-  return UserNameSchema.safeParse(name).success;
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
