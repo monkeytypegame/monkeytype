@@ -21,7 +21,7 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor } from "solid-js";
+import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
@@ -556,27 +556,18 @@ export type CurrentSettingsFilter = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useUserAverage10LiveQuery() {
   const tags = useActiveTagsLiveQuery();
+  const options = createMemo(() => ({
+    ...getConfig,
+    mode2: getMode2(getConfig, getCurrentQuote()),
+  }));
 
   return useLiveQuery((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: q
-          .from({ r: resultsCollection })
-          .where(({ r }) => eq(r.mode, getConfig.mode))
-          .where(({ r }) => eq(r.mode2, getMode2(getConfig, getCurrentQuote())))
-          .where(({ r }) => eq(r.punctuation, getConfig.punctuation))
-          .where(({ r }) => eq(r.numbers, getConfig.numbers))
-          .where(({ r }) => eq(r.language, getConfig.language))
-          .where(({ r }) => eq(r.difficulty, getConfig.difficulty))
-          .where(({ r }) => eq(r.lazyMode, getConfig.lazyMode))
-          .where(({ r }) =>
-            or(
-              false,
-              tags().length === 0,
-              ...tags().map((it) => inArray(it._id, r.tags)),
-            ),
-          )
+        last10: buildSettingsResultsQuery(options(), {
+          tagIds: tags().map((it) => it._id),
+        })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
