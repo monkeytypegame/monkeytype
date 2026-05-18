@@ -17,7 +17,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={cn(buttonClass, "pl-6")}
           variant="text"
-          href="#section_behavior"
+          href="#group_behavior"
           text="behavior"
           fa={{
             icon: "fa-tools",
@@ -26,7 +26,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_input"
+          href="#group_input"
           text="input"
           fa={{
             icon: "fa-keyboard",
@@ -35,7 +35,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_sound"
+          href="#group_sound"
           text="sound"
           fa={{
             icon: "fa-volume-up",
@@ -44,7 +44,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_caret"
+          href="#group_caret"
           text="caret"
           fa={{
             icon: "fa-i-cursor",
@@ -53,7 +53,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_appearance"
+          href="#group_appearance"
           text="appearance"
           fa={{
             icon: "fa-palette",
@@ -62,7 +62,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_theme"
+          href="#group_theme"
           text="theme"
           fa={{
             icon: "fa-brush",
@@ -71,7 +71,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={buttonClass}
           variant="text"
-          href="#section_hideElements"
+          href="#group_hideElements"
           text="hide elements"
           fa={{
             icon: "fa-eye-slash",
@@ -80,7 +80,7 @@ export function QuickNav(): JSXElement {
         <Button
           class={cn(buttonClass, "pr-6")}
           variant="text"
-          href="#section_dangerZone"
+          href="#group_dangerZone"
           text="danger zone"
           fa={{
             icon: "fa-exclamation-triangle",

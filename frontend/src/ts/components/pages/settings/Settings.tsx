@@ -287,7 +287,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
   const [isOpen, setIsOpen] = createSignal(true);
 
   return (
-    <div id={`section_${wordsToCamelCase(props.title)}`}>
+    <div id={`group_${wordsToCamelCase(props.title)}`}>
       <Button
         variant="text"
         class="mb-8 w-max gap-4 p-0 text-4xl"
