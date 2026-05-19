@@ -98,7 +98,7 @@ export default class AnimatedModal<
     }
 
     const dialogElement = qs<HTMLDialogElement>(
-      "#" + constructorParams.dialogId,
+      `#${constructorParams.dialogId}`,
     );
     const modalElement = qs(`#${constructorParams.dialogId} > .modal`);
 

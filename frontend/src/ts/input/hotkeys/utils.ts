@@ -7,6 +7,7 @@ import {
 } from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isInputElementFocused } from "../input-element";
+import * as CompositionState from "../../legacy-states/composition";
 
 export const NoKey = "" as Hotkey;
 
@@ -65,6 +66,13 @@ function handleHotkeyOnInteractiveElement(
     return true;
   } else if (hotkey === "Escape" && isAnyPopupVisible()) {
     return true;
+  } else if (
+    hotkey === "Escape" &&
+    isInputElementFocused() &&
+    CompositionState.getData() !== ""
+  ) {
+    return true;
   }
+
   return false;
 }

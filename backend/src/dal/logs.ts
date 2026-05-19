@@ -36,7 +36,7 @@ async function insertIntoDb(
 
   Logger.info(
     `${event}\t${uid}\t${
-      stringified.length > 100 ? stringified.slice(0, 100) + "..." : stringified
+      stringified.length > 100 ? `${stringified.slice(0, 100)}...` : stringified
     }`,
   );
 
@@ -56,7 +56,6 @@ export async function addImportantLog(
   message: string | Record<string, unknown>,
   uid = "",
 ): Promise<void> {
-  console.log("log", event, message, uid);
   await insertIntoDb(event, message, uid, true);
 }
 

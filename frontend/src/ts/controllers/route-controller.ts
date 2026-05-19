@@ -13,9 +13,7 @@ import { authEvent } from "../events/auth";
 // https://www.youtube.com/watch?v=OstALBk-jTc
 
 function pathToRegex(path: string): RegExp {
-  return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
-  );
+  return new RegExp(`^${path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)")}$`);
 }
 
 function getParams(match: {

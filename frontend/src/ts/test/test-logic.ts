@@ -89,7 +89,9 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    showErrorNotification("Failed to save last result", { response });
+    showErrorNotification(`Failed to save last result hello ${failReason} hi`, {
+      response,
+    });
     return;
   }
 
@@ -516,7 +518,7 @@ async function init(): Promise<boolean> {
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
   let allRightToLeft: boolean | undefined = undefined;
-  let allLigatures: boolean | undefined = undefined;
+  let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
@@ -525,7 +527,7 @@ async function init(): Promise<boolean> {
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
-    ({ allRightToLeft, allLigatures } = gen);
+    ({ allRightToLeft, allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -588,8 +590,9 @@ async function init(): Promise<boolean> {
       ) as string,
     );
   }
+
   Funbox.toggleScript(TestWords.words.getCurrentText());
-  TestUI.setLigatures(allLigatures ?? language.ligatures ?? false);
+  TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
   TestState.setIsLanguageRightToLeft(isLanguageRTL);

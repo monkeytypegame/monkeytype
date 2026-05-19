@@ -148,7 +148,7 @@ export function update(): void {
         const percent = 100 - ((time + 1) / maxtime) * 100;
 
         animate(barEl, {
-          width: percent + "vw",
+          width: `${percent}vw`,
           duration: 1000,
           ease: "linear",
         });
@@ -158,7 +158,7 @@ export function update(): void {
           displayTime = DateTime.secondsToString(time);
         }
         if (textEl !== null) {
-          textEl.innerHTML = "<div>" + displayTime + "</div>";
+          textEl.innerHTML = `<div>${displayTime}</div>`;
         }
       } else if (Config.timerStyle === "flash_mini") {
         let displayTime = DateTime.secondsToString(maxtime - time);
@@ -171,7 +171,7 @@ export function update(): void {
           } else {
             miniEl.style.opacity = "1";
           }
-          miniEl.innerHTML = "<div>" + displayTime + "</div>";
+          miniEl.innerHTML = `<div>${displayTime}</div>`;
         }
       } else if (Config.timerStyle === "flash_text") {
         let displayTime = DateTime.secondsToString(maxtime - time);
@@ -214,7 +214,7 @@ export function update(): void {
         );
 
         animate(barEl, {
-          width: percent + "vw",
+          width: `${percent}vw`,
           duration: 250,
         });
       } else if (

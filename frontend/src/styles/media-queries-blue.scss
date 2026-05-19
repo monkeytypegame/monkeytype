@@ -38,46 +38,6 @@
       }
     }
   }
-  .pageSettings {
-    .accountSettingsNotice {
-      button {
-        grid-column: -1/1;
-      }
-    }
-    .section {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "text" "buttons";
-
-      &.themes {
-        grid-template-columns: 1fr 1fr;
-        gap: 1em;
-        .tabContainer .tabContent.customTheme {
-          .customThemeInputs {
-            grid-template-columns: 1fr;
-            .customThemeInput {
-              grid-template-columns: 1fr 1fr;
-            }
-          }
-          .customThemeButtons {
-            grid-template-columns: 1fr;
-          }
-        }
-      }
-    }
-    .section[data-config-name="fontFamily"] {
-      grid-template-areas:
-        "title"
-        "text"
-        "tabs"
-        "buttons";
-      .topRight {
-        grid-area: tabs;
-        align-self: start;
-      }
-    }
-  }
 
   .pageFriends {
     .content .friends table,
