@@ -99,7 +99,8 @@
   "packageManager": "pnpm@10.28.1",
   "pnpm": {
     "overrides": {
-      "postcss": "8.5.8"
+      "postcss": "8.5.8",
+      "re2": "1.24.1"
     }
   }
 }
