@@ -68,7 +68,7 @@ export function Settings(): JSXElement {
         <div class="text-center text-sub">
           tip: You can also change all these settings quickly using the command
           line
-          <br />(<CommandlineHotkey /> )
+          <br />( <CommandlineHotkey /> )
         </div>
       </Show>
       <AccountSettingsNotice />
