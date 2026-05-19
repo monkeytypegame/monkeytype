@@ -19,6 +19,18 @@ import {
   getLoadedChallenge,
 } from "../states/test";
 
+configEvent.subscribe(({ key, newValue }) => {
+  if (key === "showAverage") {
+    if (newValue !== "off") {
+      void Last10Average.update().then(() => {
+        void update();
+      });
+    } else {
+      void update();
+    }
+  }
+});
+
 configEvent.subscribe(({ key }) => {
   const configKeys: ConfigEventKey[] = [
     "difficulty",
@@ -32,7 +44,6 @@ configEvent.subscribe(({ key }) => {
     "minBurst",
     "confidenceMode",
     "layout",
-    "showAverage",
     "showPb",
     "typingSpeedUnit",
     "quickRestart",

@@ -3,7 +3,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { getUserAverage10 } from "../collections/results";
-import { configEvent } from "../events/config";
 
 let averageWPM = 0;
 let averageAcc = 0;
@@ -26,9 +25,3 @@ export function getWPM(): number {
 export function getAcc(): number {
   return averageAcc;
 }
-
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "showAverage" && newValue !== "off") {
-    void update();
-  }
-});
