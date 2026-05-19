@@ -2,21 +2,19 @@ import { render, screen } from "@solidjs/testing-library";
 import { JSXElement } from "solid-js";
 import { describe, it, expect } from "vitest";
 
-import { SubmitButton } from "../../../../src/ts/components/ui/form/SubmitButton";
+import {
+  FormStateSlice,
+  SubmitButton,
+} from "../../../../src/ts/components/ui/form/SubmitButton";
 
-type FormState = {
-  canSubmit: boolean;
-  isSubmitting: boolean;
-  isValid: boolean;
-  isDirty: boolean;
-};
+type FormState = FormStateSlice;
 
 function makeForm(state: Partial<FormState> = {}) {
   const fullState: FormState = {
     canSubmit: true,
     isSubmitting: false,
     isValid: true,
-    isDirty: true,
+    isDefaultValue: false,
     ...state,
   };
 
@@ -39,9 +37,9 @@ describe("SubmitButton", () => {
     expect(screen.getByRole("button")).toHaveAttribute("type", "submit");
   });
 
-  it("disables when form is not dirty", () => {
+  it("disables when form is unchanged", () => {
     render(() => (
-      <SubmitButton form={makeForm({ isDirty: false })} text="Save" />
+      <SubmitButton form={makeForm({ isDefaultValue: true })} text="Save" />
     ));
     expect(screen.getByRole("button")).toBeDisabled();
   });
