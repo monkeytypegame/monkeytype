@@ -3,6 +3,8 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   createCollection,
   createOptimisticAction,
+  eq,
+  queryOnce,
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { z } from "zod";
@@ -60,6 +62,16 @@ export function useTagsLiveQuery() {
   });
 }
 
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getActiveTagsOnce() {
+  return queryOnce((q) => {
+    return q
+      .from({ tag: tagsCollection })
+      .where(({ tag }) => eq(tag.active, true))
+      .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
 type ActionType = {
   insertTag: {
     name: string;
@@ -73,6 +85,18 @@ type ActionType = {
   };
   deleteTag: {
     tagId: string;
+  };
+  toggleTagActive: {
+    tagId: string;
+    noSave?: boolean;
+  };
+  setTagActive: {
+    tagId: string;
+    active: boolean;
+    noSave?: boolean;
+  };
+  clearActiveTags: {
+    noSave?: boolean;
   };
 };
 
@@ -168,6 +192,43 @@ const actions = {
       tagsCollection.utils.writeDelete(tagId);
     },
   }),
+  toggleTagActive: createOptimisticAction<ActionType["toggleTagActive"]>({
+    onMutate: ({ tagId, noSave }) => {
+      const tag = tagsCollection.get(tagId);
+      if (tag === undefined) return;
+      tagsCollection.utils.writeUpdate({ ...tag, active: !tag.active });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
+    },
+  }),
+  setTagActive: createOptimisticAction<ActionType["setTagActive"]>({
+    onMutate: ({ tagId, active, noSave }) => {
+      const tag = tagsCollection.get(tagId);
+      if (tag === undefined) return;
+      tagsCollection.utils.writeUpdate({ ...tag, active });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
+    },
+  }),
+  clearActiveTags: createOptimisticAction<ActionType["clearActiveTags"]>({
+    onMutate: ({ noSave }) => {
+      tagsCollection.utils.writeBatch(() => {
+        tagsCollection.forEach((tag) => {
+          if (tag.active) {
+            tagsCollection.utils.writeUpdate({ ...tag, active: false });
+          }
+        });
+      });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
+    },
+  }),
 };
 
 // --- Public API ---
@@ -200,6 +261,27 @@ export async function deleteTag(
   await transaction.isPersisted.promise;
 }
 
+export async function toggleTagActive(
+  params: ActionType["toggleTagActive"],
+): Promise<void> {
+  const transaction = actions.toggleTagActive(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function setTagActive(
+  params: ActionType["setTagActive"],
+): Promise<void> {
+  const transaction = actions.setTagActive(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function clearActiveTags(
+  params: ActionType["clearActiveTags"],
+): Promise<void> {
+  const transaction = actions.clearActiveTags(params);
+  await transaction.isPersisted.promise;
+}
+
 function getTags(): TagItem[] {
   return [...tagsCollection.values()].sort((a, b) =>
     a.name.localeCompare(b.name),
@@ -228,35 +310,6 @@ export function saveActiveToLocalStorage(): void {
     if (t.active) activeIds.push(t._id);
   });
   activeTagsLS.set(activeIds);
-}
-
-export function toggleTagActive(tagId: string, nosave = false): void {
-  const tag = tagsCollection.get(tagId);
-  if (tag === undefined) return;
-  tagsCollection.utils.writeUpdate({ ...tag, active: !tag.active });
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function setTagActive(
-  tagId: string,
-  state: boolean,
-  nosave = false,
-): void {
-  const tag = tagsCollection.get(tagId);
-  if (tag === undefined) return;
-  tagsCollection.utils.writeUpdate({ ...tag, active: state });
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function clearActiveTags(nosave = false): void {
-  tagsCollection.utils.writeBatch(() => {
-    tagsCollection.forEach((tag) => {
-      if (tag.active) {
-        tagsCollection.utils.writeUpdate({ ...tag, active: false });
-      }
-    });
-  });
-  if (!nosave) saveActiveToLocalStorage();
 }
 
 // --- Personal bests ---
