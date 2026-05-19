@@ -333,7 +333,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="set"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "set")}
             />
@@ -342,7 +342,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="add"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "add")}
             />
