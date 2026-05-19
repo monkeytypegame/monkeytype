@@ -40,8 +40,9 @@ export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
 >(undefined);
 
 //TODO better type
-export function showCommandLineForConfig(configKey: ConfigKey | "tags"): void {
-  setCommandlineSubgroup(configKey);
+export type CommandlineSelector = ConfigKey | "tags" | "loadChallenge";
+export function showCommandLineForConfig(selector: CommandlineSelector): void {
+  setCommandlineSubgroup(selector);
   showModal("Commandline");
 }
 

@@ -218,6 +218,8 @@ const resultsCollection = createCollection(
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
+
+      console.log("### init results");
       const knownTagIds = new Set(
         tagsNonReactive.getTags().map((it) => it._id),
       );

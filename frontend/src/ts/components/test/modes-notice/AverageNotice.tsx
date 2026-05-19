@@ -12,6 +12,7 @@ import { Button } from "../../common/Button";
 
 export function AverageNotice(): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
+  //todo only load if active
   const last10 = useUserAverage10LiveQuery();
 
   return (
