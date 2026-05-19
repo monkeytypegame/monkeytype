@@ -15,5 +15,3 @@ function updateCapsWarningVisibility(): void {
 onCapsLockChange(() => {
   updateCapsWarningVisibility();
 });
-
-// Comment
