@@ -5,10 +5,10 @@
 - [Getting Started](#getting-started)
 - [How to Contribute](#how-to-contribute)
 - [Standards and Guidelines](#standards-and-guidelines)
-  - [Theme Guidelines](#theme-guidelines)
-  - [Language Guidelines](#language-guidelines)
-  - [Quote Guidelines](#quote-guidelines)
-  - [Layout Guidelines](#layout-guidelines)
+  - [Adding Themes](#adding-themes)
+  - [Adding Languages](#adding-languages)
+  - [Adding Quotes](#adding-quotes)
+  - [Adding Layouts](#adding-layouts)
 - [Questions](#questions)
 
 ## Getting Started
