@@ -25,6 +25,9 @@ export type ModalId =
   | "CustomWordAmount"
   | "MobileTestConfig"
   | "MiniResultChartModal"
+  | "Cookies"
+  | "AddPresetModal"
+  | "EditPresetModal"
   | "EditProfile";
 
 export type ModalVisibility = {

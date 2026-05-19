@@ -114,6 +114,7 @@ export const LanguageSchema = z.enum(
     "greek_5k",
     "greek_10k",
     "greek_25k",
+    "greek_koine",
     "greeklish",
     "greeklish_1k",
     "greeklish_5k",

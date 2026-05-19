@@ -136,7 +136,7 @@ export function WordFilterModal(props: {
         }
 
         const regincl = exactMatchOnly
-          ? new RegExp("^[" + filterin + "]+$", "i")
+          ? new RegExp(`^[${filterin}]+$`, "i")
           : new RegExp(filterin, "i");
 
         let filterout = Misc.escapeRegExp(value.exclude.trim());

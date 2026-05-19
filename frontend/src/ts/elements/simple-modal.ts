@@ -324,7 +324,7 @@ export class SimpleModal {
         }
         inputsEl?.appendHtml(buildTag({ tagname, classes, attributes }));
       }
-      const element = qsr<HTMLInputElement>("#" + attributes["id"]);
+      const element = qsr<HTMLInputElement>(`#${attributes["id"]}`);
 
       const originalOnInput = element.native.oninput;
       element.native.oninput = (e) => {

@@ -1,8 +1,5 @@
 import Ape from "./ape";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "./states/notifications";
+import { showErrorNotification } from "./states/notifications";
 import { getAuthenticatedUser } from "./firebase";
 import { isAuthenticated } from "./states/core";
 import * as Dates from "date-fns";
@@ -11,7 +8,7 @@ import {
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
-import { Badge, CustomTheme } from "@monkeytype/schemas/users";
+import { Badge } from "@monkeytype/schemas/users";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import {
   Mode,
@@ -33,7 +30,6 @@ import {
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
 import { insertLocalResult } from "./collections/results";
-import { fillResultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
   _setSnapshot as setSolidSnapshot,
@@ -41,21 +37,13 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
-import { fillTagsCollection, __nonReactive } from "./collections/tags";
+import { __nonReactive } from "./collections/tags";
 import { updateTagsInFilterStorage } from "./states/result-filters";
-import { fillPresetsCollection } from "./collections/presets";
+import { fetchUserFromApi } from "./ape/user";
+import { SnapshotInitError } from "./utils/snapshot-init-error";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
-
-export class SnapshotInitError extends Error {
-  public responseCode: number;
-  constructor(message: string, responseCode: number) {
-    super(message);
-    this.name = "SnapshotInitError";
-    this.responseCode = responseCode;
-  }
-}
 
 export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
@@ -105,25 +93,12 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       ? Ape.connections.get()
       : { status: 200, body: { message: "", data: [] } };
 
-    const [userResponse, presetsResponse, connectionsResponse] =
-      await Promise.all([
-        Ape.users.get(),
-        Ape.presets.get(),
-        connectionsRequest,
-      ]);
+    const [userData, connectionsResponse] = await Promise.all([
+      fetchUserFromApi(),
 
-    if (userResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${userResponse.body.message} (user)`,
-        userResponse.status,
-      );
-    }
-    if (presetsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${presetsResponse.body.message} (presets)`,
-        presetsResponse.status,
-      );
-    }
+      connectionsRequest,
+    ]);
+
     if (connectionsResponse.status !== 200) {
       throw new SnapshotInitError(
         `${connectionsResponse.body.message} (connections)`,
@@ -131,13 +106,11 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       );
     }
 
-    const userData = userResponse.body.data;
-    const presetsData = presetsResponse.body.data;
     const connectionsData = connectionsResponse.body.data;
 
-    if (userData === null) {
+    if (userData === null || userData === undefined) {
       throw new SnapshotInitError(
-        `Request was successful but user data is null`,
+        `Request was successful but user data is null/undefined`,
         200,
       );
     }
@@ -195,16 +168,9 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       snap.lbMemory = userData.lbMemory;
     }
 
-    snap.customThemes = userData.customThemes ?? [];
-
-    fillTagsCollection(userData.tags ?? []);
-    fillPresetsCollection(presetsData ?? []);
-
-    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     snap.connections = convertConnections(connectionsData);
-
     dbSnapshot = snap;
 
     return dbSnapshot;
@@ -215,95 +181,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     setSolidSnapshot(dbSnapshot);
   }
 }
-
-export async function addCustomTheme(
-  theme: Omit<CustomTheme, "_id">,
-): Promise<boolean> {
-  if (!dbSnapshot) return false;
-
-  dbSnapshot.customThemes ??= [];
-
-  if (dbSnapshot.customThemes.length >= 20) {
-    showNoticeNotification("Too many custom themes!");
-    return false;
-  }
-
-  const response = await Ape.users.addCustomTheme({ body: { ...theme } });
-  if (response.status !== 200) {
-    showErrorNotification("Error adding custom theme", { response });
-    return false;
-  }
-
-  if (response.body.data === null) {
-    showErrorNotification("Error adding custom theme: No data returned");
-    return false;
-  }
-
-  const newCustomTheme: CustomTheme = {
-    ...theme,
-    _id: response.body.data._id,
-  };
-
-  dbSnapshot.customThemes.push(newCustomTheme);
-  return true;
-}
-
-export async function editCustomTheme(
-  themeId: string,
-  newTheme: Omit<CustomTheme, "_id">,
-): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-  if (!dbSnapshot) return false;
-
-  dbSnapshot.customThemes ??= [];
-
-  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
-  if (!customTheme) {
-    showErrorNotification(
-      "Editing failed: Custom theme with id: " + themeId + " does not exist",
-    );
-    return false;
-  }
-
-  const response = await Ape.users.editCustomTheme({
-    body: { themeId, theme: newTheme },
-  });
-  if (response.status !== 200) {
-    showErrorNotification("Error editing custom theme", { response });
-    return false;
-  }
-
-  const newCustomTheme: CustomTheme = {
-    ...newTheme,
-    _id: themeId,
-  };
-
-  dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
-    newCustomTheme;
-
-  return true;
-}
-
-export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-  if (!dbSnapshot) return false;
-
-  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
-  if (!customTheme) return false;
-
-  const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
-  if (response.status !== 200) {
-    showErrorNotification("Error deleting custom theme", { response });
-    return false;
-  }
-
-  dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
-    (t) => t._id !== themeId,
-  );
-
-  return true;
-}
-
 export async function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,

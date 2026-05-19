@@ -4,7 +4,7 @@ import type { Plugin } from "vite";
 
 function stubVirtualEnvConfig(): Plugin {
   const id = "virtual:env-config";
-  const resolved = "\0" + id;
+  const resolved = `\0${id}`;
   return {
     name: "stub-virtual-env-config",
     resolveId(source) {
@@ -105,7 +105,7 @@ function stubChartController(): Plugin {
 
 function stubVirtualLanguageHashes(): Plugin {
   const id = "virtual:language-hashes";
-  const resolved = "\0" + id;
+  const resolved = `\0${id}`;
   return {
     name: "stub-virtual-language-hashes",
     resolveId(source) {

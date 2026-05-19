@@ -649,7 +649,7 @@ export async function addResult(
   if (isPb) {
     void addLog(
       "user_new_pb",
-      `${completedEvent.mode + " " + completedEvent.mode2} ${
+      `${`${completedEvent.mode} ${completedEvent.mode2}`} ${
         completedEvent.wpm
       } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
         completedEvent.consistency

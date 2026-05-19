@@ -287,8 +287,7 @@ async function joinOverlappingHints(
         (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
-      hintBlock1.style.left =
-        block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
+      hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
 
       hintBlock1.insertAdjacentHTML("beforeend", hintBlock2.innerHTML);
       hintBlock2.remove();
@@ -389,7 +388,7 @@ function buildWordHTML(word: string, wordIndex: number): string {
       newlineafter = true;
       retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
-      retval += "<letter>" + char + "</letter>";
+      retval += `<letter>${char}</letter>`;
     }
   }
   retval += "</div>";
@@ -450,7 +449,7 @@ function updateWordWrapperClasses(): void {
 
   qsa(
     "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).setStyle({ fontSize: Config.fontSize + "rem" });
+  ).setStyle({ fontSize: `${Config.fontSize}rem` });
 
   if (TestState.isLanguageRightToLeft) {
     wordsEl.addClass("rightToLeftTest");
@@ -471,10 +470,10 @@ function updateWordWrapperClasses(): void {
           !className.startsWith("typed-effect-"),
       ) ?? [];
   if (Config.highlightMode !== null) {
-    existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+    existing.push(`highlight-${Config.highlightMode.replaceAll("_", "-")}`);
   }
   if (Config.typedEffect !== null) {
-    existing.push("typed-effect-" + Config.typedEffect.replaceAll("_", "-"));
+    existing.push(`typed-effect-${Config.typedEffect.replaceAll("_", "-")}`);
   }
 
   wordsEl.native.className = existing.join(" ");
@@ -550,12 +549,12 @@ export function updateWordsInputPosition(): void {
     el.style.maxWidth = "";
   }
   if (activeWord.getOffsetWidth() < letterHeight) {
-    el.style.width = letterHeight + "px";
+    el.style.width = `${letterHeight}px`;
   } else {
-    el.style.width = activeWord.getOffsetWidth() + "px";
+    el.style.width = `${activeWord.getOffsetWidth()}px`;
   }
 
-  el.style.top = targetTop + "px";
+  el.style.top = `${targetTop}px`;
 
   if (Config.tapeMode !== "off") {
     el.style.left = `${
@@ -563,9 +562,9 @@ export function updateWordsInputPosition(): void {
     }px`;
   } else {
     if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
-      el.style.left = activeWord.getOffsetLeft() - letterHeight + "px";
+      el.style.left = `${activeWord.getOffsetLeft() - letterHeight}px`;
     } else {
-      el.style.left = Math.max(0, activeWord.getOffsetLeft()) + "px";
+      el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
     }
   }
 
@@ -631,7 +630,7 @@ export function updateWordsWrapperHeight(force = false): void {
     wordsWrapperEl.setStyle({ height: "" });
   } else if (Config.mode === "zen") {
     //zen mode, showAllLines off
-    wordsWrapperEl.setStyle({ height: wordHeight * 2 + "px" });
+    wordsWrapperEl.setStyle({ height: `${wordHeight * 2}px` });
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
@@ -655,19 +654,19 @@ export function updateWordsWrapperHeight(force = false): void {
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
       //limit to 3 lines
-      wordsWrapperEl.setStyle({ height: wrapperHeight + "px" });
+      wordsWrapperEl.setStyle({ height: `${wrapperHeight}px` });
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
       if (wordsHaveNewline()) {
-        wordsWrapperEl.setStyle({ height: wordHeight * 3 + "px" });
+        wordsWrapperEl.setStyle({ height: `${wordHeight * 3}px` });
       } else {
         const wordsHeight = wordsEl.getOffsetHeight() ?? wordHeight;
-        wordsWrapperEl.setStyle({ height: wordsHeight + "px" });
+        wordsWrapperEl.setStyle({ height: `${wordsHeight}px` });
       }
     }
   }
 
-  outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
+  outOfFocusEl.style.maxHeight = `${wordHeight * 3}px`;
 }
 
 function updateWordsMargin(): void {
@@ -804,15 +803,14 @@ export async function updateWordLetters({
             }
             ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
           } else {
-            ret +=
-              `<letter class="incorrect ${tabChar}${nlChar}">` +
-              (Config.indicateTypos === "replace" ||
+            ret += `<letter class="incorrect ${tabChar}${nlChar}">${
+              Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
                 ? inputChars[i] === " " || inputChars[i] === "\t"
                   ? "_"
                   : inputChars[i]
-                : currentLetter) +
-              "</letter>";
+                : currentLetter
+            }</letter>`;
             if (
               Config.indicateTypos === "below" ||
               Config.indicateTypos === "both"
@@ -857,7 +855,7 @@ export async function updateWordLetters({
           } else if (currentLetter === "\n") {
             ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
           } else {
-            ret += `<letter>` + currentLetter + "</letter>";
+            ret += `<letter>${currentLetter}</letter>`;
           }
         }
       }
@@ -1139,7 +1137,7 @@ export function updatePremid(): void {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let fbtext = "";
   if (Config.funbox.length > 0) {
-    fbtext = " " + Config.funbox.join(" ");
+    fbtext = ` ${Config.funbox.join(" ")}`;
   }
   qs(".pageTest #premidTestMode")?.setText(
     `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
@@ -1290,29 +1288,25 @@ function buildWordLettersHTML(
         ) {
           out += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
         } else {
-          out +=
-            `<letter class="corrected ${extraCorrected}">` +
-            inputCharacters[c] +
-            "</letter>";
+          out += `<letter class="corrected ${extraCorrected}">${
+            inputCharacters[c]
+          }</letter>`;
         }
       } else {
         if (inputCharacters[c] === TestInput.input.current) {
-          out +=
-            `<letter class='correct ${extraCorrected}'>` +
-            wordCharacters[c] +
-            "</letter>";
+          out += `<letter class='correct ${extraCorrected}'>${
+            wordCharacters[c]
+          }</letter>`;
         } else if (inputCharacters[c] === undefined) {
-          out += "<letter>" + wordCharacters[c] + "</letter>";
+          out += `<letter>${wordCharacters[c]}</letter>`;
         } else {
-          out +=
-            `<letter class="incorrect ${extraCorrected}">` +
-            wordCharacters[c] +
-            "</letter>";
+          out += `<letter class="incorrect ${extraCorrected}">${
+            wordCharacters[c]
+          }</letter>`;
         }
       }
     } else {
-      out +=
-        '<letter class="incorrect extra">' + inputCharacters[c] + "</letter>";
+      out += `<letter class="incorrect extra">${inputCharacters[c]}</letter>`;
     }
   }
   return out;
@@ -1541,7 +1535,7 @@ export async function applyBurstHeatmap(): Promise<void> {
         }
       }
 
-      qs("#resultWordsHistory .heatmapLegend .box" + index)?.setHtml(
+      qs(`#resultWordsHistory .heatmapLegend .box${index}`)?.setHtml(
         `<div>${Misc.escapeHTML(string)}</div>`,
       );
     });
@@ -1608,7 +1602,7 @@ function updateWordsWidth(): void {
       };
     } else {
       css = {
-        "max-width": Config.maxLineWidth + "ch",
+        "max-width": `${Config.maxLineWidth}ch`,
       };
     }
   } else {
@@ -1640,7 +1634,7 @@ function updateLiveStatsMargin(): void {
   } else {
     qs("#liveStatsMini")?.setStyle({
       justifyContent: "center",
-      marginLeft: Config.tapeMargin + "%",
+      marginLeft: `${Config.tapeMargin}%`,
     });
   }
 }

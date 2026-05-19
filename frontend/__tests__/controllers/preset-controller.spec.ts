@@ -56,6 +56,7 @@ describe("PresetController", () => {
 
       dbGetSnapshotMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
+      tagsClearMock.mockResolvedValue();
     });
 
     it("should apply for full preset", async () => {
