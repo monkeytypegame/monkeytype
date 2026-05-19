@@ -1,10 +1,9 @@
-import * as DB from "../../db";
 import * as ModesNotice from "../../elements/modes-notice";
-import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
-import * as EditPresetPopup from "../../modals/edit-preset";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
+import { __nonReactive } from "../../collections/presets";
+import { showModal } from "../../states/modals";
 
 const subgroup: CommandsSubgroup = {
   title: "Presets...",
@@ -28,20 +27,15 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const snapshot = DB.getSnapshot();
+  const presets = __nonReactive.getPresets();
   subgroup.list = [];
-  if (!snapshot?.presets || snapshot.presets.length === 0) return;
-  snapshot.presets.forEach((preset) => {
-    const dis = preset.display;
-
+  if (presets.length === 0) return;
+  presets.forEach((preset) => {
     subgroup.list.push({
-      id: "applyPreset" + preset._id,
-      display: dis,
+      id: `applyPreset${preset._id}`,
+      display: preset.name,
       exec: async (): Promise<void> => {
-        Settings.setEventDisabled(true);
         await PresetController.apply(preset._id);
-        Settings.setEventDisabled(false);
-        void Settings.update();
         void ModesNotice.update();
       },
     });
@@ -51,7 +45,7 @@ function update(): void {
     display: "Create preset",
     icon: "fa-plus",
     exec: (): void => {
-      EditPresetPopup.show("add");
+      showModal("AddPresetModal");
     },
   });
 }

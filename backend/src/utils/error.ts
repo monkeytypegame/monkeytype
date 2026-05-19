@@ -62,12 +62,12 @@ class MonkeyError extends Error implements MonkeyServerErrorType {
     if (isDevEnvironment()) {
       this.message =
         (stack ?? "")
-          ? String(message) + "\nStack: " + String(stack)
+          ? `${String(message)}\nStack: ${String(stack)}`
           : String(message);
     } else {
       if ((this.stack ?? "") && this.status >= 500) {
-        this.stack = this.message + "\n" + this.stack;
-        this.message = "Internal Server Error " + this.errorId;
+        this.stack = `${this.message}\n${this.stack}`;
+        this.message = `Internal Server Error ${this.errorId}`;
       } else {
         this.message = String(message);
       }

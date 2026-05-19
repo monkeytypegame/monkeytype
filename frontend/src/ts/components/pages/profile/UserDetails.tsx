@@ -16,10 +16,10 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { addFriend, isFriend } from "../../../db";
-import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -33,10 +33,10 @@ import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { EditProfile } from "../../modals/EditProfileModal";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -99,6 +99,9 @@ export function UserDetails(props: {
           isAccountPage={props.isAccountPage}
         />
       </div>
+      <Show when={props.isAccountPage === true}>
+        <EditProfile />
+      </Show>
     </div>
   );
 }
@@ -135,47 +138,9 @@ function ActionButtons(props: {
   };
 
   return (
-    <Conditional
-      if={props.isAccountPage === true}
-      then={
-        <>
-          <Button
-            balloon={{ text: "Edit profile", position: "left" }}
-            class="h-full rounded-none rounded-tr text-sub hover:text-bg"
-            fa={{ icon: "fa-pen", fixedWidth: true }}
-            onClick={() => {
-              if (props.profile.banned === true) {
-                showNoticeNotification(
-                  "Banned users cannot edit their profile",
-                );
-                return;
-              }
-              EditProfileModal.show();
-            }}
-          />
-          <Button
-            balloon={{ text: "Copy public link", position: "left" }}
-            class="h-full rounded-none rounded-br text-sub hover:text-bg"
-            fa={{ icon: "fa-link", fixedWidth: true }}
-            onClick={() => {
-              const url = `${location.origin}/profile/${props.profile.name}`;
-
-              navigator.clipboard.writeText(url).then(
-                function () {
-                  showNoticeNotification("URL Copied to clipboard");
-                },
-                function () {
-                  alert(
-                    "Failed to copy using the Clipboard API. Here's the link: " +
-                      url,
-                  );
-                },
-              );
-            }}
-          />
-        </>
-      }
-      else={
+    <Show
+      when={props.isAccountPage === true}
+      fallback={
         <>
           <Show when={!isUsersProfile()}>
             <Button
@@ -206,7 +171,41 @@ function ActionButtons(props: {
           </Show>
         </>
       }
-    />
+    >
+      <Button
+        balloon={{ text: "Edit profile", position: "left" }}
+        class="h-full rounded-none rounded-tr text-sub hover:text-bg"
+        fa={{ icon: "fa-pen", fixedWidth: true }}
+        onClick={() => {
+          if (props.profile.banned === true) {
+            showNoticeNotification("Banned users cannot edit their profile");
+            return;
+          }
+          showModal("EditProfile");
+        }}
+      />
+      <Button
+        balloon={{ text: "Copy public link", position: "left" }}
+        class="h-full rounded-none rounded-br text-sub hover:text-bg"
+        fa={{ icon: "fa-link", fixedWidth: true }}
+        onClick={() => {
+          const url = `${location.origin}/profile/${props.profile.name}`;
+
+          navigator.clipboard.writeText(url).then(
+            function () {
+              showNoticeNotification("URL Copied to clipboard");
+            },
+            function () {
+              alert(
+                `Failed to copy using the Clipboard API. Here's the link: ${
+                  url
+                }`,
+              );
+            },
+          );
+        }}
+      />
+    </Show>
   );
 }
 
@@ -360,17 +359,16 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     <div class="col-span-2 flex w-full items-center gap-2">
       <Balloon
         class="shrink-0 text-text"
-        text={formatXp(props.xp ?? 0) + " total xp"}
+        text={`${formatXp(props.xp ?? 0)} total xp`}
       >
         {xpDetails().level}
       </Balloon>
       <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
       <Balloon
         class="shrink-0 text-xs"
-        text={
-          formatXp(xpDetails().levelMaxXp - xpDetails().levelCurrentXp) +
-          " xp until next level"
-        }
+        text={`${formatXp(
+          xpDetails().levelMaxXp - xpDetails().levelCurrentXp,
+        )} xp until next level`}
       >
         {formatXp(xpDetails().levelCurrentXp)}/
         {formatXp(xpDetails().levelMaxXp)}{" "}

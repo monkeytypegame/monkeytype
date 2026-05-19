@@ -7,15 +7,12 @@ import "solid-devtools";
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/settings";
-import "./event-handlers/account";
 import "./modals/google-sign-up";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
-import "./elements/settings/account-settings-notice";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestStats from "./test/test-stats";
@@ -26,10 +23,8 @@ import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
 import "./test/caps-warning";
 import "./modals/simple-modals";
-import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
-import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
@@ -50,6 +45,7 @@ import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
+import { showModal } from "./states/modals";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -80,7 +76,7 @@ void fetchLatestVersion().then((data) => {
 Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
-  CookiesModal.show();
+  showModal("Cookies");
 }
 void init(onAuthStateChanged).then(() => {
   if (accepted !== null) {
@@ -91,7 +87,6 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  toggleFilterDebug: Account.toggleFilterDebug,
   glarsesMode: enable,
   stats: TestStats.getStats,
   replay: Replay.getReplayExport,

@@ -1,7 +1,6 @@
 {
   "name": "bulgarian_latin",
   "rightToLeft": false,
-  "ligatures": false,
   "orderedByFrequency": false,
   "bcp47": "bg",
   "noLazyMode": true,

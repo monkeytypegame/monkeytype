@@ -287,7 +287,7 @@ export class Caret {
       const word = wordsCache.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
-      const wordText = TestWords.words.get(options.wordIndex) ?? "";
+      const wordText = TestWords.words.getText(options.wordIndex) ?? "";
       const wordLength = Array.from(wordText).length;
 
       // caret can be either on the left side of the target letter or the right

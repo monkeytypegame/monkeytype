@@ -1,6 +1,5 @@
 {
   "name": "code_elixir",
-  "ligatures": true,
   "words": [
     "__CALLER__",
     "__DIR__",
