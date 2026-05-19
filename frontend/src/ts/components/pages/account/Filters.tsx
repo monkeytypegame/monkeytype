@@ -19,6 +19,7 @@ import defaultResultFilters from "../../../constants/default-result-filters";
 import { SimpleModal } from "../../../elements/simple-modal";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { IsValidResponse } from "../../../types/validation";
+import { cn } from "../../../utils/cn";
 import { createErrorMessage } from "../../../utils/error";
 import {
   getLanguageDisplayString,
@@ -141,6 +142,7 @@ export function Filters(props: {
     text: string;
     group: T;
     format?: (value: K) => string;
+    class?: string;
   }): JSXElement => {
     // Isolate this group's data to prevent unnecessary updates
     const groupData = createMemo(() => props.filters[options.group]);
@@ -159,7 +161,7 @@ export function Filters(props: {
     );
 
     return (
-      <div class="w-full">
+      <div class={cn(`w-full`, options.class)}>
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
@@ -320,7 +322,7 @@ export function Filters(props: {
             onClick={() => props.onChangeFilters(noFilters())}
             class="mb-4 w-full"
           />
-          <div class="gap-4 md:grid md:grid-cols-2 [&>div]:last:col-span-2">
+          <div class="gap-4 md:grid md:grid-cols-2">
             <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
             <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
             <ButtonGroup text="mode" icon="fa-bars" group="mode" />
@@ -350,6 +352,9 @@ export function Filters(props: {
               icon="fa-gamepad"
               text="funbox"
               group="funbox"
+              class={cn("", {
+                "col-span-2": tags().length === 0,
+              })}
               format={(val) =>
                 val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)
               }
@@ -358,6 +363,7 @@ export function Filters(props: {
               icon="fa-globe-americas"
               text="language"
               group="language"
+              class="col-span-2"
               format={getLanguageDisplayString}
             />
           </div>
