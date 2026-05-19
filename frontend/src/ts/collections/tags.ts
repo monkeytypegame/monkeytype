@@ -285,7 +285,7 @@ export async function setTagActive(
 }
 
 export async function clearActiveTags(
-  params: ActionType["clearActiveTags"],
+  params: ActionType["clearActiveTags"] = {},
 ): Promise<void> {
   const transaction = actions.clearActiveTags(params);
   await transaction.isPersisted.promise;

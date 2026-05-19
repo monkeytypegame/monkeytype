@@ -41,7 +41,7 @@ function update(): void {
       icon: "fa-times",
       sticky: true,
       exec: async (): Promise<void> => {
-        await clearActiveTags({});
+        await clearActiveTags();
         if (
           Config.paceCaret === "average" ||
           Config.paceCaret === "tagPb" ||
