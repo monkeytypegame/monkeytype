@@ -6,6 +6,6 @@
   direction: ltr;
 }
 
-#words.withLigatures .word {
+#words.joiningScript .word {
   unicode-bidi: bidi-override;
 }
