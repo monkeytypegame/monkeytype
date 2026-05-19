@@ -611,13 +611,14 @@ export async function getUserAverage10Once(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+  const tags = useActiveTagsLiveQuery();
 
   const result = await queryOnce((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(options, {
-          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+          tagIds: tags().map((it) => it._id),
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
@@ -635,10 +636,11 @@ export async function getUserDailyBest(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+  const tags = useActiveTagsLiveQuery();
 
   const result = await queryOnce(() =>
     buildSettingsResultsQuery(options, {
-      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
+      tagIds: tags().map((it) => it._id),
     })
       .where(({ r }) => gte(r.timestamp, Date.now() - 24 * 60 * 60 * 1000))
       .orderBy(({ r }) => r.wpm, "desc")
