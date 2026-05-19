@@ -1,7 +1,6 @@
 {
   "name": "urdu_roman",
   "rightToLeft": false,
-  "ligatures": false,
   "orderedByFrequency": false,
   "bcp47": "ur-Latn",
   "words": [

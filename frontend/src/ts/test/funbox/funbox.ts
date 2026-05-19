@@ -115,8 +115,8 @@ export async function activate(
     return false;
   }
 
-  if (language.ligatures) {
-    if (isFunboxActiveWithProperty("noLigatures")) {
+  if (language.joiningScript) {
+    if (isFunboxActiveWithProperty("noJoiningScript")) {
       showNoticeNotification(
         "Current language does not support this funbox mode",
       );
