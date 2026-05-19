@@ -22,8 +22,9 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { applyIdWorkaround, isTempId, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
+import { updateTagsInFilterStorage } from "../states/result-filters";
 
 export type TagItem = UserTag & { active: boolean };
 
@@ -124,6 +125,11 @@ const actions = {
       };
 
       tagsCollection.utils.writeInsert(newTag);
+      updateTagsInFilterStorage(
+        [...tagsCollection.values()]
+          .filter((it) => !isTempId(it._id))
+          .map((it) => it._id),
+      );
     },
   }),
   updateTagName: createOptimisticAction<ActionType["updateTagName"]>({
@@ -190,6 +196,9 @@ const actions = {
         throw new Error(`Failed to delete tag: ${response.body.message}`);
       }
       tagsCollection.utils.writeDelete(tagId);
+      updateTagsInFilterStorage(
+        [...tagsCollection.values()].map((it) => it._id),
+      );
     },
   }),
   toggleTagActive: createOptimisticAction<ActionType["toggleTagActive"]>({
