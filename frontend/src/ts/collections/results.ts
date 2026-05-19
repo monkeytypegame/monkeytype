@@ -316,10 +316,11 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.insert(result);
-    },
-    mutationFn: async ({ result }) => {
       resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+    mutationFn: async () => {
+      //we don't sync the changes back to the backend here, it is done already
+      return;
     },
   }),
   deleteLocalTag: createOptimisticAction<ActionType["deleteLocalTag"]>({
@@ -334,7 +335,8 @@ const actions = {
       }
     },
     mutationFn: async () => {
-      return true;
+      //we do not sync the changes back to the backend
+      return;
     },
   }),
 };
