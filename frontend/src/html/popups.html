@@ -49,82 +49,6 @@
   <form class="modal"></form>
 </dialog>
 
-<dialog id="cookiesModal" class="modalWrapper hidden" data-nosnippet>
-  <div class="extensionMessage">
-    If you see this text, that means an extension is blocking a cookie consent
-    popup. This will cause the website to incorrectly assume its still visible
-    and stop you from enjoying Monkeytype. Please disable any extensions that
-    block cookie popups and refresh the page.
-  </div>
-  <div class="modal">
-    <div class="title">
-      <i class="fas fa-cookie-bite"></i>
-      We use cookies by the way
-    </div>
-    <div class="main">
-      <div class="text">
-        Cookies enhance your experience and help us improve our website.
-      </div>
-      <div class="buttons">
-        <button class="active acceptAll">accept all</button>
-        <button class="rejectAll">reject non-essential</button>
-        <button class="openSettings">more options</button>
-      </div>
-    </div>
-    <div class="settings hidden">
-      <div class="cookie security">
-        <label class="checkbox">
-          <div class="title">security</div>
-          <div class="description">
-            We use Cloudflare cookies to improve security and performance of our
-            site.
-            <br />
-            <br />
-            They
-            <b>do not</b>
-            store any personal information and are required.
-          </div>
-          <input type="checkbox" checked disabled />
-        </label>
-      </div>
-      <div class="cookie analytics">
-        <label class="checkbox">
-          <div class="title">analytics</div>
-          <div class="description">
-            We use Google Analytics to track the overall traffic and
-            demographics of our site.
-          </div>
-          <input type="checkbox" />
-        </label>
-      </div>
-      <div class="cookie sentry">
-        <label class="checkbox">
-          <div class="title">sentry</div>
-          <div class="description">
-            We use Sentry to track errors and performance issues on our site, as
-            well as record anonymized user sessions to help us debug issues and
-            improve our product.
-          </div>
-          <input type="checkbox" />
-        </label>
-      </div>
-      <div class="cookie ads">
-        <label class="checkbox">
-          <div class="title">advertising</div>
-          <div class="description">
-            Our advertising partner may use cookies to deliver ads that are more
-            relevant to you.
-          </div>
-          <div class="textButton">
-            Click to change your preferences on ad related cookies
-          </div>
-        </label>
-      </div>
-      <button class="active acceptSelected">accept selected</button>
-    </div>
-  </div>
-</dialog>
-
 <div id="videoAdPopupWrapper" class="popupWrapper hidden">
   <div id="videoAdPopup">
     <div class="preloader">
@@ -200,13 +124,6 @@
     <!-- </div> -->
     <button class="start">start</button>
   </div>
-</dialog>
-
-<dialog id="importExportSettingsModal" class="modalWrapper hidden">
-  <form class="modal" data-mode="">
-    <input type="text" title="import settings" />
-    <button>import settings</button>
-  </form>
 </dialog>
 
 <dialog id="shareCustomThemeUrlModal" class="modalWrapper hidden">
@@ -348,79 +265,4 @@
     </div>
     <div class="suggestions"></div>
   </div>
-</dialog>
-
-<dialog id="editProfileModal" class="modalWrapper hidden">
-  <form class="modal">
-    <div class="title">Edit Profile</div>
-    <div>
-      <label>name</label>
-      <div>
-        To update your name, go to Account Settings > Account > Update account
-        name
-      </div>
-    </div>
-    <div>
-      <label>avatar</label>
-      <div>
-        To update your avatar make sure your Discord account is linked, then go
-        to Account Settings > Account > Discord Integration and click "Update
-        Avatar"
-      </div>
-    </div>
-    <div>
-      <label>bio</label>
-      <textarea class="bio" autocomplete="off" maxlength="250"></textarea>
-    </div>
-    <div>
-      <label>keyboard</label>
-      <textarea class="keyboard" autocomplete="off" maxlength="75"></textarea>
-    </div>
-    <div>
-      <label>github</label>
-      <div class="socialURL">
-        <p>https://github.com/</p>
-        <input
-          class="github"
-          type="text"
-          value=""
-          placeholder="username"
-          maxlength="39"
-        />
-      </div>
-    </div>
-    <div>
-      <label>twitter</label>
-      <div class="socialURL">
-        <p>https://x.com/</p>
-        <input
-          class="twitter"
-          type="text"
-          value=""
-          placeholder="username"
-          maxlength="20"
-        />
-      </div>
-    </div>
-    <div>
-      <label>website</label>
-      <input class="website" type="text" value="" maxlength="200" />
-    </div>
-    <div>
-      <label>badge</label>
-      <div class="badgeSelectionContainer"></div>
-    </div>
-    <div>
-      <label>public activity</label>
-      <label class="checkbox">
-        <input
-          class="editProfileShowActivityOnPublicProfile"
-          type="checkbox"
-          checked
-        />
-        <span>Include test activity graph on your public profile.</span>
-      </label>
-    </div>
-    <button class="edit-profile-submit" type="submit">save</button>
-  </form>
 </dialog>

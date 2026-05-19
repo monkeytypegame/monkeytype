@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Full checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         # paths filter doesn't need checkout on pr
         if: github.event_name != 'pull_request'
 
@@ -74,13 +74,13 @@ jobs:
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - name: Checkout pnpm-lock
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             pnpm-lock.yaml
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -101,11 +101,11 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Full checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -119,19 +119,19 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             backend
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -142,7 +142,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -167,14 +167,14 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             frontend
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -183,7 +183,7 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -194,7 +194,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -219,7 +219,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             frontend
@@ -245,12 +245,12 @@ jobs:
               - 'frontend/static/sounds/**'
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -261,7 +261,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -297,18 +297,18 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -319,7 +319,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -351,7 +351,7 @@ jobs:
         run: echo $PR_NUM > pr_num.txt
 
       - name: Upload the PR number
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pr_num
           path: ./pr_num.txt

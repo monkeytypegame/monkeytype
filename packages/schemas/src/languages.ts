@@ -114,6 +114,7 @@ export const LanguageSchema = z.enum(
     "greek_5k",
     "greek_10k",
     "greek_25k",
+    "greek_koine",
     "greeklish",
     "greeklish_1k",
     "greeklish_5k",
@@ -443,6 +444,7 @@ export const LanguageSchema = z.enum(
     "pokemon_1k",
     "kokanu",
     "likanu",
+    "code_vhdl",
     "lao",
   ],
   {
@@ -457,7 +459,7 @@ export const LanguageObjectSchema = z
     name: LanguageSchema,
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),
-    ligatures: z.boolean().optional(),
+    joiningScript: z.boolean().optional(),
     orderedByFrequency: z.boolean().optional(),
     words: z.array(z.string()).min(1),
     additionalAccents: z

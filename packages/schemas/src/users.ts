@@ -92,7 +92,7 @@ function profileDetailsBase(
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(slug().max(20)).or(
+export const TwitterProfileSchema = profileDetailsBase(slug().max(15)).or(
   z.literal(""),
 );
 
@@ -235,9 +235,18 @@ export const FavoriteQuotesSchema = z.record(
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
 export const UserEmailSchema = z.string().email();
+
+/**
+ * username schema without profanity check
+ */
+export const UserNameWithoutFilterSchema = slug().min(1).max(16);
+
+/**
+ * username schema with profanity check
+ */
 export const UserNameSchema = doesNotContainDisallowedWords(
   "substring",
-  slug().min(1).max(16),
+  UserNameWithoutFilterSchema,
 );
 
 export const UserSchema = z.object({

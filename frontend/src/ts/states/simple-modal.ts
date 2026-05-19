@@ -9,7 +9,7 @@ import {
 import { showLoaderBar, hideLoaderBar } from "./loader-bar";
 import { Validation } from "../types/validation";
 
-type CommonInput<TType, TValue> = {
+export type CommonInput<TType, TValue> = {
   type: TType;
   name?: string;
   initVal?: TValue;
@@ -18,12 +18,24 @@ type CommonInput<TType, TValue> = {
   disabled?: boolean;
   optional?: boolean;
   label?: string;
+  class?: string;
   oninput?: (event: Event) => void;
+  /**
+   * Validate the input value and indicate the validation result next to the input.
+   * If the schema is defined it is always checked first.
+   * Only if the schema validaton is passed or missing the `isValid` method is called.
+   */
   validation?: Validation<string>;
 };
 
-export type TextInput = CommonInput<"text", string>;
-export type TextArea = CommonInput<"textarea", string>;
+export type TextInput = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"text", string>;
+export type TextArea = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"textarea", string>;
 export type PasswordInput = CommonInput<"password", string>;
 type EmailInput = CommonInput<"email", string>;
 
@@ -75,11 +87,15 @@ export type ExecReturn = {
 };
 
 export type SimpleModalConfig = {
+  class?: string;
   title: string;
   inputs?: SimpleModalInput[];
   text?: string;
+  textClass?: string;
   textAllowHtml?: boolean;
-  buttonText: string;
+  buttonText?: string;
+  buttonAlwaysEnabled?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
   execFn: (...inputValues: string[]) => Promise<ExecReturn>;
 };
 

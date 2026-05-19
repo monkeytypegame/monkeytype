@@ -1,7 +1,6 @@
 {
   "name": "bemba",
   "rightToLeft": false,
-  "ligatures": false,
   "orderedByFrequency": false,
   "bcp47": "bem",
   "words": [
