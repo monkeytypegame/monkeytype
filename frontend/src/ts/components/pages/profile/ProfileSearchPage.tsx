@@ -1,4 +1,4 @@
-import { UserNameSchema } from "@monkeytype/schemas/users";
+import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
@@ -70,7 +70,7 @@ export function ProfileSearchPage(): JSXElement {
               <form.Field
                 name="username"
                 validators={{
-                  onChange: fromSchema(UserNameSchema),
+                  onChange: fromSchema(UserNameWithoutFilterSchema),
                   onChangeAsyncDebounceMs: 1000,
                   onChangeAsync: async (field) => {
                     try {

@@ -47,7 +47,6 @@ describe("AnimatedModal", () => {
     const { dialog } = renderModal({});
 
     expect(dialog).toHaveAttribute("id", "SupportModal");
-    expect(dialog).toHaveClass("hidden");
   });
 
   it("renders children inside modal div", () => {

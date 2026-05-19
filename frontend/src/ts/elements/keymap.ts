@@ -7,7 +7,7 @@ import * as Hangul from "hangul-js";
 import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
-import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
+import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
@@ -704,4 +704,8 @@ document.addEventListener("keyup", (e) => {
   ) {
     void updateLegends();
   }
+});
+
+onCapsLockChange(() => {
+  if (Config.keymapLegendStyle === "dynamic") void updateLegends();
 });

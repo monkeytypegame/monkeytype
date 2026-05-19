@@ -2,7 +2,6 @@ import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 
-import { updateUI } from "../../elements/settings/custom-font-picker";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
@@ -77,7 +76,6 @@ if (fromMeta.subgroup) {
                 try {
                   await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
                   await applyFontFamily();
-                  await updateUI();
                 } catch (e) {
                   showNoticeNotification(
                     `Error uploading font: ${(e as Error).message}`,
@@ -102,7 +100,6 @@ if (fromMeta.subgroup) {
           exec: async (): Promise<void> => {
             try {
               await FileStorage.deleteFile("LocalFontFamilyFile");
-              await updateUI();
               await applyFontFamily();
             } catch (e) {
               showNoticeNotification(
