@@ -1,7 +1,7 @@
 {
   "name": "lao",
   "rightToLeft": false,
-  "ligatures": false,
+  "": false,
   "orderedByFrequency": false,
   "bcp47": "lo",
   "words": [
