@@ -17,6 +17,7 @@ function createFieldMock(options: {
   name?: string;
   value?: string;
   meta?: MetaState;
+  validators?: object;
 }) {
   const stateMeta = {
     isTouched: true,
@@ -27,6 +28,9 @@ function createFieldMock(options: {
   };
   return {
     name: options.name ?? "test",
+    options: {
+      validators: options.validators,
+    },
     get state() {
       return {
         value: options.value ?? "",
@@ -47,7 +51,6 @@ const meta = preview.meta({
   component: InputField as Component<{
     field: Accessor<AnyFieldApi>;
     placeholder?: string;
-    showIndicator?: true;
     autocomplete?: string;
     type?: string;
     disabled?: boolean;
@@ -59,7 +62,6 @@ const meta = preview.meta({
   tags: ["autodocs"],
   argTypes: {
     placeholder: { control: "text" },
-    showIndicator: { control: "boolean" },
     autocomplete: { control: "text" },
     type: { control: "text" },
     disabled: { control: "boolean" },
@@ -74,8 +76,10 @@ export const Default = meta.story({
 
 export const withIndicator = meta.story({
   args: {
-    showIndicator: true,
-    field: () => createFieldMock({}),
+    field: () =>
+      createFieldMock({
+        validators: { onChange: () => undefined },
+      }),
   },
 });
 

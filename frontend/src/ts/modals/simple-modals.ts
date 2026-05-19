@@ -21,12 +21,6 @@ import { createErrorMessage } from "../utils/error";
 import * as ThemeController from "../controllers/theme-controller";
 import * as CustomThemes from "../collections/custom-themes";
 import * as AccountSettings from "../pages/account-settings";
-import {
-  ExecReturn,
-  PasswordInput,
-  SimpleModal,
-  TextInput,
-} from "../elements/simple-modal";
 
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
@@ -42,6 +36,8 @@ import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
 import { normalizeName } from "../utils/strings";
 import { IsValidResponse } from "../types/validation";
+import { ExecReturn, SimpleModal } from "../elements/simple-modal";
+import { PasswordInput, TextInput } from "../states/simple-modal";
 
 export { list, showPopup };
 export type { PopupKey };
@@ -196,10 +192,6 @@ list.updateEmail = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserEmailSchema,
-        isValid: async (currentValue, thisPopup) =>
-          currentValue === thisPopup.inputs?.[1]?.currentValue() ||
-          "Emails don't match",
-        debounceDelay: 0,
       },
     },
   ],

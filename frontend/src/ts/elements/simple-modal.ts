@@ -9,113 +9,31 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   addNotificationWithLevel,
-  AddNotificationOptions,
 } from "../states/notifications";
 import {
   ValidatedHtmlInputElement,
   ValidationOptions,
 } from "./input-validation";
 import { ElementWithUtils, qsr } from "../utils/dom";
+import { ValidationResult } from "../types/validation";
 import {
-  IsValidResponse,
-  Validation,
-  ValidationResult,
-} from "../types/validation";
+  SimpleModalConfig,
+  SimpleModalInput,
+  ExecReturn as BaseExecReturn,
+} from "../states/simple-modal";
 
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
-type CommonInput<TType, TValue> = {
-  type: TType;
-  initVal?: TValue;
-  placeholder?: string;
-  hidden?: boolean;
-  disabled?: boolean;
-  optional?: boolean;
-  label?: string;
-  oninput?: (event: Event) => void;
-  /**
-   * Validate the input value and indicate the validation result next to the input.
-   * If the schema is defined it is always checked first.
-   * Only if the schema validaton is passed or missing the `isValid` method is called.
-   */
-  validation?: Omit<Validation<string>, "isValid"> & {
-    /**
-     * Custom async validation method.
-     * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
-     * @param value current input value
-     * @param thisPopup the current modal
-     * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
-     */
-    isValid?: (
-      value: string,
-      thisPopup: SimpleModal,
-    ) => Promise<IsValidResponse>;
-  };
-};
-
-export type TextInput = CommonInput<"text", string>;
-export type TextArea = CommonInput<"textarea", string>;
-export type PasswordInput = CommonInput<"password", string>;
-type EmailInput = CommonInput<"email", string>;
-
-type RangeInput = {
-  min: number;
-  max: number;
-  step?: number;
-} & CommonInput<"range", number>;
-
-type DateTimeInput = {
-  min?: Date;
-  max?: Date;
-} & CommonInput<"datetime-local", Date>;
-type DateInput = {
-  min?: Date;
-  max?: Date;
-} & CommonInput<"date", Date>;
-
-type CheckboxInput = {
-  label: string;
-  placeholder?: never;
-  description?: string;
-} & CommonInput<"checkbox", boolean>;
-
-type NumberInput = {
-  min?: number;
-  max?: number;
-} & CommonInput<"number", number>;
-
-type CommonInputType =
-  | TextInput
-  | TextArea
-  | PasswordInput
-  | EmailInput
-  | RangeInput
-  | DateTimeInput
-  | DateInput
-  | CheckboxInput
-  | NumberInput;
-
-export type ExecReturn = {
-  status: "success" | "notice" | "error";
-  message: string;
-  showNotification?: false;
-  notificationOptions?: AddNotificationOptions;
+export type ExecReturn = BaseExecReturn & {
   hideOptions?: HideOptions;
-  afterHide?: () => void;
-  alwaysHide?: boolean;
 };
 
-type FormInput = CommonInputType & {
+type FormInput = SimpleModalInput & {
   hasError?: boolean;
   currentValue: () => string;
 };
-type SimpleModalOptions = {
+type SimpleModalOptions = Omit<SimpleModalConfig, "execFn"> & {
   id: string;
-  title: string;
-  inputs?: CommonInputType[];
-  text?: string;
-  textAllowHtml?: boolean;
-  buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn?: (thisPopup: SimpleModal) => void;
   beforeShowFn?: (thisPopup: SimpleModal) => void;
@@ -135,7 +53,7 @@ export class SimpleModal {
   inputs: FormInput[];
   text?: string;
   textAllowHtml: boolean;
-  buttonText: string;
+  buttonText?: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
   beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
@@ -183,7 +101,7 @@ export class SimpleModal {
 
     this.initInputs();
 
-    if (this.buttonText === "") {
+    if (this.buttonText === "" || this.buttonText === undefined) {
       this.element.qs(".submitButton")?.remove();
     } else {
       this.element.qs(".submitButton")?.setText(this.buttonText);
