@@ -380,9 +380,12 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_abap_1k",
     "code_yoptascript",
     "code_cuda",
+    "code_vhdl",
+    "code_6502_assembly",
   ],
   viossa: ["viossa", "viossa_njutro"],
   kokanu: ["kokanu", "likanu"],
+  lao: ["lao"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
