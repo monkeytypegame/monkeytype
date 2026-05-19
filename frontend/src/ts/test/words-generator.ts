@@ -1,7 +1,7 @@
 import { Config } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import * as CustomText from "./custom-text";
-import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
+import { IWordset, Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
   Quote,
   QuoteWithTextSplit,
@@ -27,7 +27,7 @@ import { WordGenError } from "../utils/word-gen-error";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
-import { LanguageObject } from "@monkeytype/schemas/languages";
+import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 
 //pin implementation
 const random = Math.random;
@@ -348,7 +348,7 @@ async function getFunboxSection(): Promise<string[]> {
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Wordset,
+  wordset?: IWordset,
 ): string {
   const funbox = findSingleActiveFunboxWithFunction("getWord");
 
@@ -386,25 +386,21 @@ async function applyBritishEnglishToWord(
   return await BritishEnglish.replace(word, previousWord);
 }
 
-function applyLazyModeToWord(word: string, language: LanguageObject): string {
-  // polyglot mode, use the word's actual language
-  if (currentWordset && currentWordset instanceof PolyglotWordset) {
-    const langName = currentWordset.wordsWithLanguage.get(word);
-    const langProps = langName
-      ? currentWordset.languageProperties.get(langName)
-      : undefined;
-    const allowLazyMode =
-      (langProps && !langProps.noLazyMode) === true || Config.mode === "custom";
-    if (Config.lazyMode && allowLazyMode && langProps) {
-      word = LazyMode.replaceAccents(word, langProps.additionalAccents);
-    }
-    return word;
-  }
+function applyLazyModeToWord(
+  word: string,
+  language: LanguageObject,
+  polyglotLang?: Language,
+): string {
+  const langProps =
+    polyglotLang && currentWordset instanceof PolyglotWordset
+      ? currentWordset.languageProperties.get(polyglotLang)
+      : language;
 
-  // normal mode
-  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (!langProps) return word;
+
+  const allowLazyMode = !langProps.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
-    word = LazyMode.replaceAccents(word, language.additionalAccents);
+    word = LazyMode.replaceAccents(word, langProps.additionalAccents);
   }
   return word;
 }
@@ -499,8 +495,10 @@ async function getQuoteWordList(
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
   if (TestState.isRepeated) {
-    if (currentWordset === null) {
-      throw new WordGenError("Current wordset is null");
+    if (currentWordset === null || !(currentWordset instanceof Wordset)) {
+      throw new WordGenError(
+        "Current wordset is null or not instance of Wordset",
+      );
     }
 
     TestWords.setCurrentQuote(previousRandomQuote);
@@ -509,9 +507,8 @@ async function getQuoteWordList(
     // because it will be reversed again in the generateWords function
     if (wordOrder === "reverse") {
       return currentWordset.words.reverse();
-    } else {
-      return currentWordset.words;
     }
+    return currentWordset.words;
   }
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
@@ -592,7 +589,7 @@ async function getQuoteWordList(
   return TestWords.currentQuote.textSplit;
 }
 
-let currentWordset: Wordset | null = null;
+let currentWordset: IWordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
@@ -656,17 +653,11 @@ export async function generateWords(
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
-    const result = await funbox.functions.withWords(wordList);
+    currentWordset = await funbox.functions.withWords(wordList);
     // PolyglotWordset if polyglot otherwise Wordset
-    if (result instanceof PolyglotWordset) {
-      const polyglotResult = result;
-      currentWordset = polyglotResult;
+    if (currentWordset instanceof PolyglotWordset) {
       // set allLigatures if any language in languageProperties has ligatures true
-      ret.allLigatures = Array.from(
-        polyglotResult.languageProperties.values(),
-      ).some((props) => !!props.ligatures);
-    } else {
-      currentWordset = result;
+      ret.allLigatures = currentWordset.hasLigatures();
     }
   } else {
     currentWordset = await withWords(wordList);
@@ -713,12 +704,13 @@ export async function generateWords(
 
   ret.hasTab =
     ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
+    currentWordset.hasChar("\t") ||
     (Config.mode === "quote" &&
       (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
+
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
+    currentWordset.hasChar("\n") ||
     (Config.mode === "quote" &&
       (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
 
@@ -804,7 +796,7 @@ export async function getNextWord(
   }
 
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
-  let randomWord = currentWordset.randomWord(funboxFrequency);
+  let pick = currentWordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
     ?.replace(/[.?!":\-,']/g, "")
@@ -814,22 +806,22 @@ export async function getNextWord(
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
-      randomWord = currentWordset.nextWord();
+      pick = currentWordset.nextWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
-      randomWord = currentWordset.nextWord();
+      pick = currentWordset.nextWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getMode() === "random" &&
       (currentWordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
-      randomWord = currentWordset.randomWord(funboxFrequency);
+      pick = currentWordset.randomWord(funboxFrequency);
     } else if (Config.mode === "custom" && CustomText.getMode() === "shuffle") {
-      randomWord = currentWordset.shuffledWord();
+      pick = currentWordset.shuffledWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getLimitMode() === "section"
     ) {
-      randomWord = currentWordset.randomWord(funboxFrequency);
+      pick = currentWordset.randomWord(funboxFrequency);
 
       const previousSection = Arrays.nthElementFromArray(sectionHistory, -1);
       const previousSection2 = Arrays.nthElementFromArray(sectionHistory, -2);
@@ -837,19 +829,20 @@ export async function getNextWord(
       let regenerationCount = 0;
       while (
         regenerationCount < 100 &&
-        (previousSection === randomWord || previousSection2 === randomWord)
+        (previousSection === pick.word || previousSection2 === pick.word)
       ) {
         regenerationCount++;
-        randomWord = currentWordset.randomWord(funboxFrequency);
+        pick = currentWordset.randomWord(funboxFrequency);
       }
     } else if (isCurrentlyUsingFunboxSection) {
-      randomWord = funboxSection.join(" ");
+      pick.word = funboxSection.join(" ");
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
-      let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
+      let firstAfterSplit = (pick.word.split(" ")[0] as string).toLowerCase();
       let firstAfterSplitLazy = applyLazyModeToWord(
         firstAfterSplit,
         currentLanguage,
+        pick.language,
       );
       while (
         regenarationCount < 100 &&
@@ -857,36 +850,40 @@ export async function getNextWord(
           previousWord2Raw === firstAfterSplitLazy ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
-            randomWord === "I") ||
+            pick.word === "I") ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
             !Config.language.startsWith("code") &&
-            /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+            /[-=_+[\]{};'\\:"|,./<>?]/i.test(pick.word)) ||
           (Config.mode !== "custom" &&
             !Config.numbers &&
-            /[0-9]/i.test(randomWord)))
+            /[0-9]/i.test(pick.word)))
       ) {
         regenarationCount++;
-        randomWord = currentWordset.randomWord(funboxFrequency);
-        firstAfterSplit = randomWord.split(" ")[0] as string;
+        pick = currentWordset.randomWord(funboxFrequency);
+        firstAfterSplit = pick.word.split(" ")[0] as string;
         firstAfterSplitLazy = applyLazyModeToWord(
           firstAfterSplit,
           currentLanguage,
+          pick.language,
         );
       }
     }
-    randomWord = randomWord.replace(/ +/g, " ");
-    randomWord = randomWord.replace(/(^ )|( $)/g, "");
+    pick.word = pick.word.replace(/ +/g, " ");
+    pick.word = pick.word.replace(/(^ )|( $)/g, "");
 
-    randomWord = getFunboxWord(randomWord, wordIndex, currentWordset);
+    pick.word = getFunboxWord(pick.word, wordIndex, currentWordset);
 
-    currentSection = [...randomWord.split(" ")];
-    sectionHistory.push(randomWord);
-    randomWord = currentSection.shift() as string;
+    currentSection = [...pick.word.split(" ")];
+    sectionHistory.push(pick.word);
+    pick.word = currentSection.shift() as string;
     sectionIndex++;
   } else {
-    randomWord = currentSection.shift() as string;
+    pick.word = currentSection.shift() as string;
   }
+
+  let randomWord = pick.word;
+  const randomWordLanguage = pick.language ?? Config.language;
 
   if (randomWord === undefined) {
     throw new WordGenError("Random word is undefined");
@@ -901,10 +898,6 @@ export async function getNextWord(
   }
 
   const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");
-  const randomWordLanguage =
-    (currentWordset instanceof PolyglotWordset
-      ? currentWordset.wordsWithLanguage.get(randomWord)
-      : Config.language) ?? Config.language; // Fall back to Config language if per-word language is unavailable
 
   if (
     Config.mode !== "custom" &&
@@ -923,9 +916,9 @@ export async function getNextWord(
 
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-  randomWord = applyLazyModeToWord(randomWord, currentLanguage);
+  randomWord = applyLazyModeToWord(randomWord, currentLanguage, pick.language);
 
-  if (Config.language.startsWith("swiss_german")) {
+  if (randomWordLanguage.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 

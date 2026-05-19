@@ -1,11 +1,23 @@
 import { zipfyRandomArrayIndex } from "../utils/misc";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
+import { Language } from "@monkeytype/schemas/languages";
 
 export type FunboxWordsFrequency = "normal" | "zipf";
 
+export type WordsetPick = { word: string; language?: Language };
+
 let currentWordset: Wordset | null = null;
 
-export class Wordset {
+export type IWordset = {
+  length: number;
+  resetIndexes(): void;
+  randomWord(mode: FunboxWordsFrequency): WordsetPick;
+  shuffledWord(): WordsetPick;
+  nextWord(): WordsetPick;
+  hasChar(char: string): boolean;
+};
+
+export class Wordset implements IWordset {
   words: string[];
   length: number;
   orderedIndex: number;
@@ -23,19 +35,23 @@ export class Wordset {
     this.shuffledIndexes = [];
   }
 
-  randomWord(mode: FunboxWordsFrequency): string {
+  randomWord(mode: FunboxWordsFrequency): WordsetPick {
     if (mode === "zipf") {
-      return this.words[zipfyRandomArrayIndex(this.words.length)] as string;
+      return {
+        word: this.words[zipfyRandomArrayIndex(this.length)] as string,
+      };
     } else {
-      return randomElementFromArray(this.words);
+      return { word: randomElementFromArray(this.words) };
     }
   }
 
-  shuffledWord(): string {
+  shuffledWord(): WordsetPick {
     if (this.shuffledIndexes.length === 0) {
       this.generateShuffledIndexes();
     }
-    return this.words[this.shuffledIndexes.pop() as number] as string;
+    return {
+      word: this.words[this.shuffledIndexes.pop() as number] as string,
+    };
   }
 
   generateShuffledIndexes(): void {
@@ -46,11 +62,15 @@ export class Wordset {
     shuffle(this.shuffledIndexes);
   }
 
-  nextWord(): string {
+  nextWord(): WordsetPick {
     if (this.orderedIndex >= this.length) {
       this.orderedIndex = 0;
     }
-    return this.words[this.orderedIndex++] as string;
+    return { word: this.words[this.orderedIndex++] as string };
+  }
+
+  hasChar(char: string): boolean {
+    return this.words.some((w) => w.includes(char));
   }
 }
 
