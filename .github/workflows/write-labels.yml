@@ -20,6 +20,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+          name: labels
+          path: ./labels
 
       - name: Read json file
         id: json_reader
