@@ -93,7 +93,7 @@ describe("PresetController", () => {
       });
       expect(tagsSetMock).toHaveBeenNthCalledWith(2, {
         tagId: "tagTwo",
-        active: false,
+        active: true,
       });
       expect(tagsSaveActiveMock).toHaveBeenCalled();
     });
