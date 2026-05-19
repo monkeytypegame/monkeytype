@@ -9,6 +9,7 @@
   - [Adding Languages](#adding-languages)
   - [Adding Quotes](#adding-quotes)
   - [Adding Layouts](#adding-layouts)
+  - [Adding Fonts](#adding-fonts)
 - [Questions](#questions)
 
 ## Getting Started
