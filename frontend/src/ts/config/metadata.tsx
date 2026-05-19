@@ -304,7 +304,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-eye-slash" },
     optionsMetadata: {
       true: {
-        displayString: "‎",
+        displayString: " ",
       },
     },
     displayString: "blind mode",
