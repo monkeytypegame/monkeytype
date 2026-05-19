@@ -467,8 +467,8 @@ importers:
         specifier: 1.0.1
         version: 1.0.1
       '@types/damerau-levenshtein':
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.2
+        version: 1.0.2
       '@types/howler':
         specifier: 2.2.7
         version: 2.2.7
@@ -4689,8 +4689,8 @@ packages:
   '@types/cron@1.7.3':
     resolution: {integrity: sha512-iPmUXyIJG1Js+ldPYhOQcYU3kCAQ2FWrSkm1FJPoii2eYSn6wEW6onPukNTT0bfiflexNSRPl6KWmAIqS+36YA==}
 
-  '@types/damerau-levenshtein@1.0.0':
-    resolution: {integrity: sha512-8XQ1jJHlOl6HjZ3/fU9Yrm/14jxM4gXVezPWiwkyiG0GnYROsI6wdh8DwKccAFGDNiNYBooTZkRXVe4du6plKA==}
+  '@types/damerau-levenshtein@1.0.2':
+    resolution: {integrity: sha512-2IcR1RKFITuOO24yzurWAS3/2Lo7ptVDTCL+YkCa4Ir1ZjjEfqsJa3nRMhqf4hb+4AkE5nd6cRzqp9qpVvWSfw==}
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
@@ -15742,7 +15742,7 @@ snapshots:
       '@types/node': 24.9.1
       moment: 2.30.1
 
-  '@types/damerau-levenshtein@1.0.0': {}
+  '@types/damerau-levenshtein@1.0.2': {}
 
   '@types/deep-eql@4.0.2': {}
 
