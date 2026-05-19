@@ -4,6 +4,7 @@
 
 - [Getting Started](#getting-started)
 - [How to Contribute](#how-to-contribute)
+- [Guidelines](#guidelines)
 - [Common Contributions](#common-contributions)
   - [Adding Themes](#adding-themes)
   - [Adding Languages](#adding-languages)
@@ -22,9 +23,7 @@ We have two separate contribution guides based on what you're looking to contrib
 
 If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](/docs/CONTRIBUTING_ADVANCED.md).
 
-## Common Contributions
-
-Below is a set of general guidelines for different types of changes.
+## Guidelines
 
 ### Pull Request Naming Guidelines
 
@@ -50,6 +49,8 @@ For types, we use the following:
 - `feat: add new feature (@github_username)`
 - `impr(quotes): add english quotes (@username)`
 - `fix(leaderboard): show user rank correctly (@user1, @user2, @user3)`
+
+## Common Contributions
 
 ### Adding Themes
 
