@@ -8,6 +8,7 @@ import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
+import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
@@ -703,4 +704,8 @@ document.addEventListener("keyup", (e) => {
   ) {
     void updateLegends();
   }
+});
+
+onCapsLockChange(() => {
+  if (Config.keymapLegendStyle === "dynamic") void updateLegends();
 });

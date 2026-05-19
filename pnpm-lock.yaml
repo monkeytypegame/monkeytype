@@ -286,8 +286,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0
       '@leonabcd123/modern-caps-lock':
-        specifier: 3.0.4
-        version: 3.0.4
+        specifier: 3.1.3
+        version: 3.1.3
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
@@ -2913,8 +2913,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@leonabcd123/modern-caps-lock@3.0.4':
-    resolution: {integrity: sha512-GUUlmHBu3r6H9KaE9sCxqr0iTSLMev7vdzoovrotyaTSS+AtOrJNdptlWf2DnYAHG8U4EJ++mjyUJdNDjaYI9Q==}
+  '@leonabcd123/modern-caps-lock@3.1.3':
+    resolution: {integrity: sha512-A3nD8ez8AKAvGut8yZAyX2bjSi/nbK6Tb7h+lryO1JcqxqUHcvIZ4og4QTOn6USLzz6YGCLl8sDJYNo5eHtvXQ==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -13308,7 +13308,7 @@ snapshots:
 
   '@eslint/eslintrc@3.3.3':
     dependencies:
-      ajv: 6.12.6
+      ajv: 6.15.0
       debug: 4.4.3
       espree: 10.4.0
       globals: 14.0.0
@@ -14085,7 +14085,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@leonabcd123/modern-caps-lock@3.0.4': {}
+  '@leonabcd123/modern-caps-lock@3.1.3': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
