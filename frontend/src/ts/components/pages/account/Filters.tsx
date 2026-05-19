@@ -159,7 +159,7 @@ export function Filters(props: {
     );
 
     return (
-      <div>
+      <div class="w-full">
         <H3 fa={{ icon: options.icon, fixedWidth: true }} text={options.text} />
         <SlimSelect
           multiple
@@ -334,16 +334,18 @@ export function Filters(props: {
             <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
             <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
 
-            <Dropdown
-              icon="fa-tag"
-              text="tags"
-              group="tags"
-              format={(tag) =>
-                tag === "none"
-                  ? "no tag"
-                  : (tags().find((it) => it._id === tag)?.name ?? tag)
-              }
-            />
+            <Show when={tags().length > 0}>
+              <Dropdown
+                icon="fa-tag"
+                text="tags"
+                group="tags"
+                format={(tag) =>
+                  tag === "none"
+                    ? "no tag"
+                    : (tags().find((it) => it._id === tag)?.name ?? tag)
+                }
+              />
+            </Show>
             <Dropdown
               icon="fa-gamepad"
               text="funbox"
