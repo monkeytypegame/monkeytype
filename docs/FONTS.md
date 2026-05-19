@@ -2,8 +2,8 @@
 
 - [Forking Monkeytype](#forking-monkeytype)
 - [Adding fonts](#adding-fonts)
-- [Committing Languages](#committing-languages)
-- [Language Guidelines](#language-guidelines)
+- [Committing Fonts](#committing-fonts)
+- [Font Guidelines](#font-guidelines)
 
 ### Forking Monkeytype
 
