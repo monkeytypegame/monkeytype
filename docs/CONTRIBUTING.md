@@ -4,7 +4,7 @@
 
 - [Getting Started](#getting-started)
 - [How to Contribute](#how-to-contribute)
-- [Standards and Guidelines](#standards-and-guidelines)
+- [Common Contributions](#common-contributions)
   - [Adding Themes](#adding-themes)
   - [Adding Languages](#adding-languages)
   - [Adding Quotes](#adding-quotes)
@@ -22,7 +22,7 @@ We have two separate contribution guides based on what you're looking to contrib
 
 If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](/docs/CONTRIBUTING_ADVANCED.md).
 
-## Standards and Guidelines
+## Common Contributions
 
 Below is a set of general guidelines for different types of changes.
 
