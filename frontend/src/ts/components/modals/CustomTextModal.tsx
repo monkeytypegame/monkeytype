@@ -305,7 +305,7 @@ export function CustomTextModal(): JSXElement {
     const newText =
       (data.set ?? true)
         ? incomingText
-        : form.getFieldValue("text") + " " + incomingText;
+        : `${form.getFieldValue("text")} ${incomingText}`;
     untrack(() => {
       batch(() => {
         form.setFieldValue("text", newText);
@@ -344,8 +344,7 @@ export function CustomTextModal(): JSXElement {
       const area = e.currentTarget as HTMLTextAreaElement;
       const start = area.selectionStart;
       const end = area.selectionEnd;
-      area.value =
-        area.value.substring(0, start) + "\t" + area.value.substring(end);
+      area.value = `${area.value.substring(0, start)}\t${area.value.substring(end)}`;
       area.selectionStart = area.selectionEnd = start + 1;
       form.setFieldValue("text", area.value);
     }

@@ -9,7 +9,7 @@ export function getInputElement(): HTMLTextAreaElement {
 }
 
 export function setInputElementValue(value: string): void {
-  el.value = " " + value;
+  el.value = ` ${value}`;
 }
 
 export function appendToInputElementValue(value: string): void {

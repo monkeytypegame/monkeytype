@@ -281,7 +281,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "script") {
       showLoaderBar();
       const response = await fetch(
-        "/challenges/" + (challenge.parameters[0] as string),
+        `/challenges/${challenge.parameters[0] as string}`,
       );
       hideLoaderBar();
       if (response.status !== 200) {
@@ -394,7 +394,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     if (notitext === undefined) {
       showSuccessNotification(`Challenge '${challenge.display}' loaded.`);
     } else {
-      showSuccessNotification("Challenge loaded. " + notitext);
+      showSuccessNotification(`Challenge loaded. ${notitext}`);
     }
     setLoadedChallenge(challenge);
     challengeLoading = false;

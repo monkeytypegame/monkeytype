@@ -13,6 +13,7 @@ import {
 import { Mode2Schema, ModeSchema } from "@monkeytype/schemas/shared";
 import { initContract } from "@ts-rest/core";
 import { LanguageSchema } from "@monkeytype/schemas/languages";
+import { PageNumberSchema } from "@monkeytype/schemas/util";
 
 const LanguageAndModeQuerySchema = z.object({
   language: LanguageSchema,
@@ -21,7 +22,7 @@ const LanguageAndModeQuerySchema = z.object({
 });
 
 const PaginationQuerySchema = z.object({
-  page: z.number().int().safe().nonnegative().default(0),
+  page: PageNumberSchema,
   pageSize: z.number().int().safe().positive().min(10).max(200).default(50),
 });
 

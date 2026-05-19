@@ -51,7 +51,7 @@ export class Formatting {
     formatOptions: FormatOptions = {},
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
-    options.suffix = "%" + (options.suffix ?? "");
+    options.suffix = `%${options.suffix ?? ""}`;
 
     return this.number(percentage, options);
   }

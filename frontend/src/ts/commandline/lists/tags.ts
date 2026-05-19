@@ -1,4 +1,3 @@
-import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import {
   clearActiveTags,
@@ -9,6 +8,7 @@ import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
+import { showAddTagModal } from "../../components/modals/AddTagModal";
 
 const subgroup: CommandsSubgroup = {
   title: "Tags...",
@@ -55,7 +55,7 @@ function update(): void {
 
     for (const tag of tags) {
       subgroup.list.push({
-        id: "toggleTag" + tag._id,
+        id: `toggleTag${tag._id}`,
         display: tag.name,
         sticky: true,
         active: () => {
@@ -82,8 +82,8 @@ function update(): void {
     icon: "fa-plus",
     shouldFocusTestUI: false,
     opensModal: true,
-    exec: ({ commandlineModal }): void => {
-      EditTagsPopup.show("add", undefined, commandlineModal);
+    exec: (): void => {
+      showAddTagModal();
     },
   });
 }

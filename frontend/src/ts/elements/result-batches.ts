@@ -55,7 +55,7 @@ export async function update(): Promise<void> {
   };
 
   bars.downloaded.fill?.setStyle({
-    width: Math.min(percentageDownloaded, 100) + "%",
+    width: `${Math.min(percentageDownloaded, 100)}%`,
   });
   bars.downloaded.rightText?.setText(
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
@@ -64,7 +64,7 @@ export async function update(): Promise<void> {
   const colors = getTheme();
 
   bars.limit.fill?.setStyle({
-    width: Math.min(percentageLimit, 100) + "%",
+    width: `${Math.min(percentageLimit, 100)}%`,
     background: blendTwoHexColors(
       colors.sub,
       colors.error,

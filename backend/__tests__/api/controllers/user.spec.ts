@@ -3349,9 +3349,9 @@ describe("user controller test", () => {
           socialProfiles: {
             twitter: new Array(21).fill("x").join(""),
             github: new Array(40).fill("x").join(""),
-            website:
-              "https://" +
-              new Array(201 - "https://".length).fill("x").join(""),
+            website: `https://${new Array(201 - "https://".length)
+              .fill("x")
+              .join("")}`,
           },
         })
         .expect(422);

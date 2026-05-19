@@ -23,6 +23,21 @@ export function camelCaseToWords(str: string): string {
 }
 
 /**
+ * Converts a string with words separated by spaces to camelCase.
+ * @param str The input string with words separated by spaces.
+ * @returns The camelCase version of the input string.
+ */
+export function wordsToCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/ +/)
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join("");
+}
+
+/**
  * Returns the last character of a string.
  * @param word The input string.
  * @returns The last character of the input string, or an empty string if the input is empty.

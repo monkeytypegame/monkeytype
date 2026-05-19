@@ -24,16 +24,16 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { isAuthenticated } from "../states/core";
+import { getLastResult, setLastResult } from "../states/snapshot";
 import {
-  __nonReactive as tagsNonReactive,
   reconcileLocalTagPB,
   saveLocalTagPB,
+  __nonReactive as tagsNonReactive,
 } from "./tags";
-import { isAuthenticated } from "../states/core";
-import { createEffectOn } from "../hooks/effects";
-import { getLastResult, setLastResult } from "../states/snapshot";
 import { applyIdWorkaround } from "./utils/misc";
 
 export type ResultsQueryState = {
@@ -224,7 +224,7 @@ const resultsCollection = createCollection(
       });
 
       if (response.status !== 200) {
-        throw new Error("Error fetching results:" + response.body.message);
+        throw new Error(`Error fetching results:${response.body.message}`);
       }
 
       const results = response.body.data
@@ -259,6 +259,9 @@ type ActionType = {
   };
   insertLocalResult: {
     result: SnapshotResult<Mode>;
+  };
+  deleteLocalTag: {
+    tagId: string;
   };
 };
 
@@ -313,10 +316,27 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.insert(result);
-    },
-    mutationFn: async ({ result }) => {
       resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+    mutationFn: async () => {
+      //we don't sync the changes back to the backend here, it is done already
+      return;
+    },
+  }),
+  deleteLocalTag: createOptimisticAction<ActionType["deleteLocalTag"]>({
+    onMutate: ({ tagId }) => {
+      for (const result of [...resultsCollection.values()].filter((it) =>
+        it.tags.includes(tagId),
+      )) {
+        resultsCollection.utils.writeUpdate({
+          ...result,
+          tags: result.tags.filter((it) => it !== tagId),
+        });
+      }
+    },
+    mutationFn: async () => {
+      //we do not sync the changes back to the backend
+      return;
     },
   }),
 };
@@ -379,6 +399,17 @@ export async function insertLocalResult(
     return;
   }
   const transaction = actions.insertLocalResult(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function deleteLocalTag(
+  params: ActionType["deleteLocalTag"],
+): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    //not loaded yet, don't need to update
+    return;
+  }
+  const transaction = actions.deleteLocalTag(params);
   await transaction.isPersisted.promise;
 }
 
@@ -620,21 +651,6 @@ function buildSettingsResultsQuery(
   }
 
   return query;
-}
-
-export function deleteLocalTag(tagId: string): void {
-  resultsCollection.utils.writeBatch(() => {
-    for (const result of [...resultsCollection.values()]) {
-      if (!result.tags.includes(tagId)) {
-        continue;
-      }
-
-      resultsCollection.utils.writeUpdate({
-        ...result,
-        tags: result.tags.filter((it) => it !== tagId),
-      });
-    }
-  });
 }
 
 export function isResultsReady(): boolean {

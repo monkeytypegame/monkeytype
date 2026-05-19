@@ -3,9 +3,8 @@ import { isColorDark, isColorLight } from "../utils/colors";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as BackgroundFilter from "../elements/custom-background-filter";
 import { configEvent } from "../events/config";
-import * as DB from "../db";
+import * as CustomThemes from "../collections/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
@@ -88,10 +87,11 @@ function updateThemeIndicator(nameOverride?: string): void {
 
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
-    const snapshot = DB.getSnapshot();
-    const matchedTheme = snapshot?.customThemes?.find((ct) =>
-      Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
-    );
+    const matchedTheme = CustomThemes.__nonReactive
+      .getCustomThemes()
+      .find((ct) =>
+        Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
+      );
 
     if (matchedTheme) {
       str = `${matchedTheme.name} (custom)`;
@@ -181,8 +181,10 @@ async function changeThemeList(): Promise<void> {
     themesList = themes.map((t) => {
       return t.name;
     });
-  } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
-    themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
+  } else if (Config.randomTheme === "custom") {
+    themesList = CustomThemes.__nonReactive
+      .getCustomThemes()
+      .map((ct) => ct._id);
   }
   Arrays.shuffle(themesList);
   randomThemeIndex = 0;
@@ -213,8 +215,8 @@ export async function randomizeTheme(): Promise<void> {
   let colorsOverride: CustomThemeColors | undefined;
 
   if (Config.randomTheme === "custom") {
-    const theme = DB.getSnapshot()?.customThemes?.find(
-      (ct) => ct._id === randomTheme,
+    const theme = CustomThemes.__nonReactive.getCustomTheme(
+      randomTheme as string,
     );
     colorsOverride = theme?.colors;
     randomTheme = "custom";
@@ -229,7 +231,7 @@ export async function randomizeTheme(): Promise<void> {
     let name = randomTheme.replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
-        DB.getSnapshot()?.customThemes?.find((ct) => ct._id === randomTheme)
+        CustomThemes.__nonReactive.getCustomTheme(randomTheme as string)
           ?.name ?? "custom"
       ).replace(/_/g, " ");
     }
@@ -261,9 +263,6 @@ function applyCustomBackgroundSize(): void {
 
 export async function applyCustomBackground(): Promise<void> {
   let backgroundUrl = Config.customBackground;
-  qs<HTMLInputElement>(
-    ".pageSettings .section[data-config-name='customBackgroundSize'] input[type='text']",
-  )?.setValue(backgroundUrl);
 
   //if there is a localBackgroundFile available, use it.
   const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
@@ -303,7 +302,6 @@ export async function applyCustomBackground(): Promise<void> {
 
     container?.replaceChildren(img);
 
-    BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
 }
