@@ -1524,7 +1524,7 @@ describe("user controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should fail with password too short", async () => {
+    it("should fail with invalid password", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
