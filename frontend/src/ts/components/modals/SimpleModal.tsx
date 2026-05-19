@@ -314,7 +314,7 @@ export function SimpleModal(): JSXElement {
             variant="button"
             class="w-full"
             text={config()?.buttonText}
-            skipDirtyCheck={
+            skipUnchangedCheck={
               config()?.buttonAlwaysEnabled === true ||
               (config()?.inputs?.length ?? 0) === 0
             }

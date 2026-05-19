@@ -458,7 +458,7 @@ export const LanguageObjectSchema = z
     name: LanguageSchema,
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),
-    ligatures: z.boolean().optional(),
+    joiningScript: z.boolean().optional(),
     orderedByFrequency: z.boolean().optional(),
     words: z.array(z.string()).min(1),
     additionalAccents: z
