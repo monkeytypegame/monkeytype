@@ -1,6 +1,5 @@
 {
   "name": "sanskrit_roman",
-  "ligatures": true,
   "bcp47": "sa",
   "words": [
     "aṃhu",

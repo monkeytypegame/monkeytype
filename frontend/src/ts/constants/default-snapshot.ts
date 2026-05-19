@@ -54,6 +54,7 @@ export type Snapshot = Omit<
   | "streak"
   | "resultFilterPresets"
   | "tags"
+  | "customThemes"
   | "xp"
   | "testActivity"
 > & {
@@ -87,7 +88,6 @@ const defaultSnap = {
   uid: "",
   isPremium: false,
   config: getDefaultConfig(),
-  customThemes: [],
   banned: undefined,
   verified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
