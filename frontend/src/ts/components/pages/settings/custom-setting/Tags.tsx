@@ -1,6 +1,7 @@
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { JSXElement, For } from "solid-js";
 
+import { deleteLocalTag } from "../../../../collections/results";
 import {
   clearTagPBs,
   deleteTag,
@@ -112,6 +113,7 @@ export function Tags(): JSXElement {
                       execFn: async () => {
                         showLoaderBar();
                         await deleteTag({ tagId: tag._id });
+                        await deleteLocalTag({ tagId: tag._id });
                         hideLoaderBar();
                         return {
                           status: "success",

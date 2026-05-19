@@ -264,6 +264,9 @@ type ActionType = {
   insertLocalResult: {
     result: SnapshotResult<Mode>;
   };
+  deleteLocalTag: {
+    tagId: string;
+  };
 };
 
 const actions = {
@@ -317,10 +320,27 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.insert(result);
-    },
-    mutationFn: async ({ result }) => {
       resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+    mutationFn: async () => {
+      //we don't sync the changes back to the backend here, it is done already
+      return;
+    },
+  }),
+  deleteLocalTag: createOptimisticAction<ActionType["deleteLocalTag"]>({
+    onMutate: ({ tagId }) => {
+      for (const result of [...resultsCollection.values()].filter((it) =>
+        it.tags.includes(tagId),
+      )) {
+        resultsCollection.utils.writeUpdate({
+          ...result,
+          tags: result.tags.filter((it) => it !== tagId),
+        });
+      }
+    },
+    mutationFn: async () => {
+      //we do not sync the changes back to the backend
+      return;
     },
   }),
 };
@@ -383,6 +403,17 @@ export async function insertLocalResult(
     return;
   }
   const transaction = actions.insertLocalResult(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function deleteLocalTag(
+  params: ActionType["deleteLocalTag"],
+): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    //not loaded yet, don't need to update
+    return;
+  }
+  const transaction = actions.deleteLocalTag(params);
   await transaction.isPersisted.promise;
 }
 
@@ -646,21 +677,6 @@ function buildSettingsResultsQuery(
   }
 
   return query;
-}
-
-export function deleteLocalTag(tagId: string): void {
-  resultsCollection.utils.writeBatch(() => {
-    for (const result of [...resultsCollection.values()]) {
-      if (!result.tags.includes(tagId)) {
-        continue;
-      }
-
-      resultsCollection.utils.writeUpdate({
-        ...result,
-        tags: result.tags.filter((it) => it !== tagId),
-      });
-    }
-  });
 }
 
 export function isResultsReady(): boolean {
