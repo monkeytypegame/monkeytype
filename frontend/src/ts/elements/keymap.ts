@@ -7,8 +7,7 @@ import * as Hangul from "hangul-js";
 import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
-import { capsState } from "../test/caps-warning";
-import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
+import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
@@ -505,6 +504,7 @@ function getLegendStates(): KeymapLegendStates | undefined {
   // so we have to check for that.
   const shiftState = ShiftTracker.leftState || ShiftTracker.rightState;
   const altState = AltTracker.leftState || AltTracker.rightState;
+  const capsState = isCapsLockOn();
 
   const osDependentLettersState = isMacLike
     ? shiftState || capsState
