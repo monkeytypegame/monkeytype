@@ -1213,7 +1213,7 @@ describe("test-activity-calendar.ts", () => {
 });
 
 function getDate(date: string): Date {
-  return new UTCDateMini(Dates.parseISO(date + "T00:00:00Z"));
+  return new UTCDateMini(Dates.parseISO(`${date}T00:00:00Z`));
 }
 
 function getData(from: string, to: string): number[] {

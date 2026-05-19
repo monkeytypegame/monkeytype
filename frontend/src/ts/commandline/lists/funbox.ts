@@ -21,7 +21,7 @@ const list: Command[] = [
 
 for (const funbox of getAllFunboxes()) {
   list.push({
-    id: "changeFunbox" + funbox.name,
+    id: `changeFunbox${funbox.name}`,
     display: funbox.name.replace(/_/g, " "),
     available: () => {
       const activeNames = getActiveFunboxNames();

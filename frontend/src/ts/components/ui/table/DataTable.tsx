@@ -24,7 +24,6 @@ import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
-import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import {
   Table,
@@ -60,6 +59,9 @@ export type DataTableProps<TData, TValue> = {
     activeRow: Accessor<string | null>;
   };
   class?: string;
+  headerCellClass?: string;
+  bodyCellClass?: string;
+  onSortingChange?: (sorting: SortingState) => void;
   noDataRow?:
     | true
     | {
@@ -109,8 +111,15 @@ export function DataTable<TData, TValue = any>(
       return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (it) => {
+      setSorting(it);
+      props.onSortingChange?.(sorting());
+    },
+
+    //oxlint-disable-next-line solid/reactivity
+    ...(props.onSortingChange
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
     enableRowSelection: () => props.rowSelection !== undefined,
     getRowId: (row, index) =>
       props.rowSelection !== undefined
@@ -184,75 +193,9 @@ export function DataTable<TData, TValue = any>(
                 <TableRow>
                   <For each={headerGroup.headers}>
                     {(header) => (
-                      <Conditional
-                        if={header.column.getCanSort()}
-                        then={
-                          <TableHead
-                            colSpan={header.colSpan}
-                            aria-sort={
-                              header.column.getIsSorted() === "asc"
-                                ? "ascending"
-                                : header.column.getIsSorted() === "desc"
-                                  ? "descending"
-                                  : "none"
-                            }
-                            class={cn(columnVisibility()[header.column.id])}
-                          >
-                            <button
-                              type="button"
-                              role="button"
-                              onClick={(e) => {
-                                header.column.getToggleSortingHandler()?.(e);
-                              }}
-                              class={cn(
-                                "m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt",
-                                {
-                                  "justify-start text-left":
-                                    (header.column.columnDef.meta?.align ??
-                                      "left") === "left",
-                                  "justify-center text-center":
-                                    header.column.columnDef.meta?.align ===
-                                    "center",
-                                  "justify-end text-right":
-                                    header.column.columnDef.meta?.align ===
-                                    "right",
-                                },
-                                header.column.columnDef.meta?.headerClass,
-                              )}
-                              {...(header.column.columnDef.meta?.headerMeta ??
-                                {})}
-                            >
-                              <Show when={!header.isPlaceholder}>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                              </Show>
-
-                              <Switch fallback={<i class="fa-fw"></i>}>
-                                <Match
-                                  when={header.column.getIsSorted() === "asc"}
-                                >
-                                  <Fa
-                                    icon={"fa-sort-up"}
-                                    fixedWidth
-                                    aria-hidden="true"
-                                  />
-                                </Match>
-                                <Match
-                                  when={header.column.getIsSorted() === "desc"}
-                                >
-                                  <Fa
-                                    icon={"fa-sort-down"}
-                                    fixedWidth
-                                    aria-hidden="true"
-                                  />
-                                </Match>
-                              </Switch>
-                            </button>
-                          </TableHead>
-                        }
-                        else={
+                      <Show
+                        when={header.column.getCanSort()}
+                        fallback={
                           <TableHead
                             colSpan={header.colSpan}
                             class={cn(
@@ -268,6 +211,7 @@ export function DataTable<TData, TValue = any>(
                                   "right",
                               },
                               columnVisibility()[header.column.id],
+                              props.headerCellClass,
                             )}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
@@ -280,7 +224,76 @@ export function DataTable<TData, TValue = any>(
                             </Show>
                           </TableHead>
                         }
-                      />
+                      >
+                        <TableHead
+                          colSpan={header.colSpan}
+                          aria-sort={
+                            header.column.getIsSorted() === "asc"
+                              ? "ascending"
+                              : header.column.getIsSorted() === "desc"
+                                ? "descending"
+                                : "none"
+                          }
+                          class={cn(
+                            "p-0",
+                            columnVisibility()[header.column.id],
+                          )}
+                        >
+                          <button
+                            type="button"
+                            role="button"
+                            onClick={(e) => {
+                              header.column.getToggleSortingHandler()?.(e);
+                            }}
+                            class={cn(
+                              "m-0 box-border flex h-full w-full cursor-pointer items-start rounded-none border-0 bg-transparent p-2 font-normal whitespace-nowrap text-sub hover:bg-sub-alt",
+                              {
+                                "justify-start text-left":
+                                  (header.column.columnDef.meta?.align ??
+                                    "left") === "left",
+                                "justify-center text-center":
+                                  header.column.columnDef.meta?.align ===
+                                  "center",
+                                "justify-end text-right":
+                                  header.column.columnDef.meta?.align ===
+                                  "right",
+                              },
+                              props.headerCellClass,
+                              header.column.columnDef.meta?.headerClass,
+                            )}
+                            {...(header.column.columnDef.meta?.headerMeta ??
+                              {})}
+                          >
+                            <Show when={!header.isPlaceholder}>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </Show>
+
+                            <Switch fallback={<i class="fa-fw"></i>}>
+                              <Match
+                                when={header.column.getIsSorted() === "asc"}
+                              >
+                                <Fa
+                                  icon={"fa-sort-up"}
+                                  fixedWidth
+                                  aria-hidden="true"
+                                />
+                              </Match>
+                              <Match
+                                when={header.column.getIsSorted() === "desc"}
+                              >
+                                <Fa
+                                  icon={"fa-sort-down"}
+                                  fixedWidth
+                                  aria-hidden="true"
+                                />
+                              </Match>
+                            </Switch>
+                          </button>
+                        </TableHead>
+                      </Show>
                     )}
                   </For>
                 </TableRow>
@@ -327,6 +340,7 @@ export function DataTable<TData, TValue = any>(
                               cell.column.columnDef.meta?.align === "right",
                           },
                           columnVisibility()[cell.column.id],
+                          props.bodyCellClass,
                           cellClass.class,
                         )}
                       >

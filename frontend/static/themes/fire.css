@@ -74,6 +74,11 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   --untyped-letter-animation: fire 5s linear infinite;
 }
 
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: fire 5s linear infinite;
+}
+
 #words .word.typed letter.correct,
 #words.highlight-word .word.typed letter,
 #words.highlight-next-word .word.typed letter,
@@ -84,9 +89,4 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 
 #words.flipped .word.typed letter {
   animation: none;
-}
-
-#words.highlight-off .word letter,
-#words.highlight-off .word.typed letter {
-  animation: fire 5s linear infinite;
 }

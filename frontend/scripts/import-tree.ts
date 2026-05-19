@@ -217,11 +217,11 @@ function depthColor(depth: number): string {
 function leavesFolder(filePath: string): boolean {
   if (boundary === null) return false;
   if (filePath.startsWith("@monkeytype/")) return true;
-  return !filePath.startsWith(boundary + "/");
+  return !filePath.startsWith(`${boundary}/`);
 }
 
 function displayPath(filePath: string): string {
-  if (filePath.startsWith(ROOT + "/")) {
+  if (filePath.startsWith(`${ROOT}/`)) {
     return path.relative(ROOT, filePath);
   }
   return filePath;

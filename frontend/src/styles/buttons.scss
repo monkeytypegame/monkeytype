@@ -27,7 +27,6 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-  text-align: center;
   color: var(--text-color);
   cursor: pointer;
   transition:
@@ -38,11 +37,9 @@ input[type="submit"] {
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
   align-items: center;
-  height: -moz-min-content;
   height: min-content;
   line-height: 1.25;
   appearance: none;
@@ -115,10 +112,8 @@ button.text,
   border-radius: var(--roundness);
   background: none;
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
-  height: -moz-min-content;
   height: min-content;
   line-height: 1.25;
   appearance: none;

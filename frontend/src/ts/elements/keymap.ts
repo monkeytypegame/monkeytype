@@ -8,6 +8,7 @@ import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
 import { capsState } from "../test/caps-warning";
+import { onCapsLockChange } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
@@ -101,7 +102,7 @@ function highlightKey(currentKey: string): void {
       $target.addClass("activeKey");
     } catch (e) {
       if (e instanceof Error) {
-        console.log("could not update highlighted keymap key: " + e.message);
+        console.log(`could not update highlighted keymap key: ${e.message}`);
       }
     }
   });
@@ -484,7 +485,7 @@ export async function refresh(): Promise<void> {
   } catch (e) {
     if (e instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message,
+        `something went wrong when changing layout, resettings: ${e.message}`,
       );
       // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }
@@ -703,4 +704,8 @@ document.addEventListener("keyup", (e) => {
   ) {
     void updateLegends();
   }
+});
+
+onCapsLockChange(() => {
+  if (Config.keymapLegendStyle === "dynamic") void updateLegends();
 });

@@ -132,7 +132,7 @@ export async function handleReports(
       } else {
         throw new MonkeyError(
           500,
-          "Error handling reports: " + getErrorMessage(e),
+          `Error handling reports: ${getErrorMessage(e)}`,
         );
       }
     }

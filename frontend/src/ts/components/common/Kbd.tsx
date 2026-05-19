@@ -1,4 +1,4 @@
-import { formatWithLabels, Hotkey } from "@tanstack/solid-hotkeys";
+import { formatForDisplay, Hotkey } from "@tanstack/solid-hotkeys";
 import { JSXElement } from "solid-js";
 
 type Props =
@@ -9,7 +9,9 @@ export function Kbd(props: Props): JSXElement {
   return (
     <kbd>
       {props.hotkey
-        ? formatWithLabels(props.hotkey).toLowerCase().replace(/\+/g, " + ")
+        ? formatForDisplay(props.hotkey, { useSymbols: false })
+            .toLowerCase()
+            .replace(/\+/g, " + ")
         : props.text}
     </kbd>
   );

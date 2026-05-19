@@ -259,7 +259,7 @@ function getRateLimitDescription(limit: RateLimiterId | RateLimitIds): string {
     )} with ApeKeys`;
   }
 
-  return result + ".\n\n";
+  return `${result}.\n\n`;
 }
 
 function formatWindow(window: Window): string {
@@ -273,7 +273,7 @@ function formatWindow(window: Window): string {
 
     return `every ${duration}`;
   }
-  return "per " + window;
+  return `per ${window}`;
 }
 
 function addRequiredConfiguration(

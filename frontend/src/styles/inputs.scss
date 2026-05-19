@@ -25,7 +25,6 @@ textarea {
     top: -1.75rem;
     right: 0.25rem;
     color: var(--sub-color);
-    -webkit-user-select: none;
     user-select: none;
     &.error {
       color: var(--error-color);
@@ -41,13 +40,13 @@ textarea {
 }
 
 input[type="range"] {
-  -webkit-appearance: none;
+  appearance: none;
   padding: 0;
   width: 100%;
   height: 1.25em;
   border-radius: var(--roundness);
   &::-webkit-slider-thumb {
-    -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     border: none;
     width: 25%;
@@ -63,7 +62,7 @@ input[type="range"] {
   }
 
   &::-moz-range-thumb {
-    -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     border: none;
     width: 25%;
@@ -110,14 +109,13 @@ input[type="checkbox"] {
   position: relative;
   transition: background 0.125s;
   flex-shrink: 0;
-  &:after {
+  &::after {
     font-family: "Font Awesome";
     content: "\f00c";
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: block;
     border-radius: calc((var(--roundness) / 2) - 0.1em);
     font-weight: 900;
     position: absolute;
@@ -129,23 +127,23 @@ input[type="checkbox"] {
     color: transparent;
   }
 
-  &:checked:after {
+  &:checked::after {
     color: var(--main-color);
   }
-  &:hover:after {
+  &:hover::after {
     color: var(--bg-color);
   }
-  &:hover:checked:after {
+  &:hover:checked::after {
     color: var(--text-color);
   }
 
   &[disabled] {
     opacity: 0.33;
     pointer-events: none;
-    &:hover:after {
+    &:hover::after {
       color: var(--sub-alt-color);
     }
-    &:hover:checked:after {
+    &:hover:checked::after {
       color: var(--main-color);
     }
   }
@@ -176,15 +174,11 @@ textarea:disabled {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   margin: 0;
 }
 
 input[type="number"] {
-  -moz-appearance: textfield;
-  -webkit-appearance: textfield;
   appearance: textfield;
 }
 
@@ -202,13 +196,12 @@ select:-webkit-autofill:focus {
   outline: 0.15em solid var(--main-color);
   font-family: inherit;
   -webkit-text-fill-color: var(--text-color);
-  -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
   caret-color: var(--text-color);
 }
 
 // slim-select styles
 .ss-main {
-  border-radius: var(--roundness);
   outline: none;
   border: none;
   border-radius: var(--roundness);
@@ -316,7 +309,7 @@ select:-webkit-autofill:focus {
         color: var(--sub-color);
       }
       &::-webkit-search-cancel-button {
-        -webkit-appearance: none;
+        appearance: none;
       }
     }
   }

@@ -2,7 +2,7 @@ import { lastElementFromArray } from "./arrays";
 import { Config } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
-import { RankAndCount, UserNameSchema } from "@monkeytype/schemas/users";
+import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
@@ -106,9 +106,9 @@ export function objectToQueryString<T extends string | number | boolean>(
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
-        encodeURIComponent(p) +
-          "=" +
-          encodeURIComponent(obj[p] as unknown as T),
+        `${encodeURIComponent(p)}=${encodeURIComponent(
+          obj[p] as unknown as T,
+        )}`,
       );
     }
   }
@@ -143,11 +143,6 @@ export function escapeHTML<T extends string | null | undefined>(str: T): T {
   };
 
   return str.replace(/[&<>"'/`]/g, (char) => escapeMap[char] as string) as T;
-}
-
-export function isUsernameValid(name: string): boolean {
-  if (name === null || name === undefined || name === "") return false;
-  return UserNameSchema.safeParse(name).success;
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
@@ -490,8 +485,7 @@ export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
   if (title === undefined || title === "") {
-    document.title =
-      local + "Monkeytype | A minimalistic, customizable typing test";
+    document.title = `${local}Monkeytype | A minimalistic, customizable typing test`;
   } else {
     document.title = local + title;
   }
@@ -701,7 +695,7 @@ export function formatTopPercentage(lbRank?: RankAndCount): string {
   if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
-  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+  return `Top ${roundTo2((lbRank.rank / lbRank.count) * 100)}%`;
 }
 
 export function formatTypingStatsRatio(stats: {
