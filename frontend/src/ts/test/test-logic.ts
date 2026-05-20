@@ -970,8 +970,14 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     keyConsistency = 0;
   }
 
+  const wpmHistory = getWpmHistory();
+  const wpmCons = Numbers.roundTo2(
+    Numbers.kogasa(Numbers.stdDev(wpmHistory) / Numbers.mean(wpmHistory)),
+  );
+  const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
+
   const chartData = {
-    wpm: getWpmHistory(),
+    wpm: wpmHistory,
     // wpm: undefined,
     burst: rawPerSecond,
     err: getErrorCountHistory(),
@@ -1014,7 +1020,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
         : Numbers.roundTo2(TestStats.incompleteSeconds),
 
     consistency: consistency,
-    // wpmConsistency: wpmConsistency,
+    wpmConsistency: wpmConsistency,
     keyConsistency: keyConsistency,
     chartData: chartData,
 
@@ -1168,6 +1174,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (key === "keyOverlap") {
       val1 = Numbers.roundTo2(val1 as number);
       val2 = Numbers.roundTo2(val2 as number);
+    }
+
+    if (key === "timestamp") {
+      continue;
     }
 
     // if (key === "chartData") {
