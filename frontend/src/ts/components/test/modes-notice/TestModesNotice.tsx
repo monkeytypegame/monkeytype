@@ -18,6 +18,7 @@ import {
   wordsHaveTab,
 } from "../../../states/test";
 import { getActiveFunboxNames } from "../../../test/funbox/list";
+import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
 import {
   getLanguageDisplayString,
@@ -30,32 +31,37 @@ import { PbNotice } from "./PbNotice";
 
 export function TestModesNotice() {
   return (
-    <Show when={!getFocus()}>
-      <div class="flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity select-none">
-        <Repeated />
-        <ResultSaving />
-        <QuickRestart />
-        <LongText />
-        <LoadedChallenge />
-        <ZenMode />
-        <Language />
-        <Difficulty />
-        <BlindMode />
-        <LazyMode />
-        <PaceCaretNotice />
-        <AverageNotice />
-        <PbNotice />
-        <MinSpeed />
-        <MinAcc />
-        <MinBurst />
-        <Funbox />
-        <ConfidenceMode />
-        <StopOnError />
-        <Layout />
-        <OppositeShift />
-        <Tags />
-      </div>
-    </Show>
+    <div
+      class={cn(
+        "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
+        {
+          "opacity-0": getFocus(),
+        },
+      )}
+    >
+      <Repeated />
+      <ResultSaving />
+      <QuickRestart />
+      <LongText />
+      <LoadedChallenge />
+      <ZenMode />
+      <Language />
+      <Difficulty />
+      <BlindMode />
+      <LazyMode />
+      <PaceCaretNotice />
+      <AverageNotice />
+      <PbNotice />
+      <MinSpeed />
+      <MinAcc />
+      <MinBurst />
+      <Funbox />
+      <ConfidenceMode />
+      <StopOnError />
+      <Layout />
+      <OppositeShift />
+      <Tags />
+    </div>
   );
 }
 
