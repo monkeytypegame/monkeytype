@@ -215,8 +215,10 @@ function LazyMode() {
 
 function PaceCaretNotice() {
   const displaySpeed = createMemo(() => {
-    const type =
-      getConfig.paceCaret === "tagPb" ? "tag pb" : getConfig.paceCaret;
+    let type: string = getConfig.paceCaret;
+    if (type === "off") type = "custom";
+    else if (type === "tagPb") type = "tag pb";
+
     const format = new Formatting(getConfig);
     const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
@@ -304,7 +306,7 @@ function MinBurst() {
 
 function Funbox() {
   const funboxes = createMemo(() => {
-    //getConfig.funbox doesn't work reaactive, wrapping in a memo
+    //getConfig.funbox doesn't work reactive, wrapping in a memo
     if (getConfig.funbox.length === 0) return undefined;
     return [...getConfig.funbox].map(replaceUnderscoresWithSpaces).join(", ");
   });
