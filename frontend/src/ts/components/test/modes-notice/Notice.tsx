@@ -22,34 +22,37 @@ export function Notice(
   const isButton = () =>
     props.onClick !== undefined || props.openCommandline !== undefined;
 
+  const ButtonNotice = () => (
+    <Button
+      class={cn("h-full", props.class)}
+      variant="text"
+      onClick={
+        props.onClick ??
+        (() =>
+          showCommandLineForConfig(
+            props.openCommandline as CommandlineSelector,
+          ))
+      }
+      fa={props.icon !== undefined ? { icon: props.icon } : undefined}
+    >
+      {props.children}
+    </Button>
+  );
+
+  const DivNotice = () => (
+    <div class="flex items-center gap-2">
+      <Show when={props.icon !== undefined}>
+        <Fa icon={props.icon as FaSolidIcon} />
+      </Show>
+      {props.children}
+    </div>
+  );
+
   return (
     <Show when={props.when}>
-      <div class={cn(isButton() ? {} : cn(props.class, "p-[0.5em]"))}>
-        <Show
-          when={isButton()}
-          fallback=<div class="flex items-center gap-2">
-            <Show when={props.icon !== undefined}>
-              <Fa icon={props.icon as FaSolidIcon} />
-            </Show>
-            {props.children}
-          </div>
-        >
-          <Button
-            class={cn("h-full", props.class)}
-            variant="text"
-            onClick={
-              props.onClick ??
-              (() =>
-                showCommandLineForConfig(
-                  props.openCommandline as CommandlineSelector,
-                ))
-            }
-            fa={props.icon !== undefined ? { icon: props.icon } : undefined}
-          >
-            {props.children}
-          </Button>
-        </Show>
-      </div>
+      <Show when={isButton()} fallback={<DivNotice />}>
+        <ButtonNotice />
+      </Show>
     </Show>
   );
 }
