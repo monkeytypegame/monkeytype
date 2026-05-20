@@ -1,9 +1,7 @@
 import { ParentProps, Show } from "solid-js";
 
-import {
-  CommandlineSelector,
-  showCommandLineForConfig,
-} from "../../../states/core";
+import { CommandlineSubgroupKey } from "../../../commandline/types";
+import { showCommandLineForConfig } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
 import { OneOf } from "../../../utils/types";
@@ -16,7 +14,7 @@ export function Notice(
     class?: string;
   } & OneOf<{ children: ParentProps["children"]; text: string | undefined }> &
     Partial<
-      OneOf<{ onClick: () => void; openCommandline: CommandlineSelector }>
+      OneOf<{ onClick: () => void; openCommandline: CommandlineSubgroupKey }>
     >,
 ) {
   const isButton = () =>
@@ -30,7 +28,7 @@ export function Notice(
         props.onClick ??
         (() =>
           showCommandLineForConfig(
-            props.openCommandline as CommandlineSelector,
+            props.openCommandline as CommandlineSubgroupKey,
           ))
       }
       fa={props.icon !== undefined ? { icon: props.icon } : undefined}

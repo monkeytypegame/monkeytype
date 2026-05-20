@@ -11,10 +11,9 @@ import { showQuoteReportModal } from "../states/quote-report";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
-import { ConfigKey } from "@monkeytype/schemas/configs";
-import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
 import { getCurrentQuote } from "../states/test";
+import { CommandlineSubgroupKey } from "../commandline/types";
 
 const testPage = qs(".pageTest");
 
@@ -22,7 +21,7 @@ testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
   const target = event.childTarget as HTMLElement;
   const attr = target?.getAttribute("commands");
   if (attr === null) return;
-  Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
+  Commandline.show({ subgroupOverride: attr as CommandlineSubgroupKey });
 });
 
 testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {

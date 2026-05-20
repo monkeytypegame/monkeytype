@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
+import { CommandlineSubgroupKey } from "../commandline/types";
 import { PageName } from "../pages/page";
-import { ConfigKey } from "@monkeytype/schemas/configs";
 import { showModal } from "./modals";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
@@ -39,9 +39,9 @@ export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
 
-//TODO better type
-export type CommandlineSelector = ConfigKey | "tags" | "loadChallenge";
-export function showCommandLineForConfig(selector: CommandlineSelector): void {
+export function showCommandLineForConfig(
+  selector: CommandlineSubgroupKey,
+): void {
   setCommandlineSubgroup(selector);
   showModal("Commandline");
 }
