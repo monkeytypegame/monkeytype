@@ -87,11 +87,15 @@ export function getLastKeypressToEndMs(): number {
 export function getKeypressesPerSecond(): number[] {
   const events = getAllTestEvents();
   const testDuration = getTestDurationMs();
-  const expectedLength = Math.floor(testDuration / 1000);
+  const expectedLength = Math.round(testDuration / 1000);
 
   const keypresses: number[] = [];
   for (const event of events) {
     if (event.type !== "input") {
+      continue;
+    }
+
+    if (event.data.inputType !== "insertText") {
       continue;
     }
 
@@ -302,62 +306,93 @@ export function getErrorCountHistory(): number[] {
 }
 
 export function getWpmHistory(): number[] {
+  const events = getAllTestEvents();
   const testDuration = getTestDurationMs();
-  const expectedLength = Math.floor(testDuration / 1000);
-
-  // not calculating correctly if get partial crecdit but then submit incorrect word
-
+  const expectedLength = Math.round(testDuration / 1000);
   const wpmHistory: number[] = [];
 
-  const start = performance.now();
+  // not calculating correctly if get partial credit but then submit incorrect word
+
+  // Running state: simulated input per word, built up incrementally
+  const simulatedInputs: Map<number, string> = new Map();
+  // Track last event per word for space-submission detection
+  const lastEventPerWord: Map<number, InputEvent> = new Map();
+  let eventIndex = 0;
+
   for (let second = 0; second < expectedLength; second++) {
-    const eventsPerWordIndex = getInputEventsPerWord((second + 1) * 1000);
+    const timeLimit = (second + 1) * 1000;
 
-    let correctWordChars: number[] = [];
-    for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
-      let maxWordIndex = Math.max(...eventsPerWordIndex.keys());
-      const lastEventOfWord = events[events.length - 1] as InputEvent;
-      if (
-        lastEventOfWord.data.inputType === "insertText" &&
-        lastEventOfWord.data.data === " "
-      ) {
-        maxWordIndex++;
+    // Process only new events up to this second's boundary
+    while (eventIndex < events.length) {
+      const event = events[eventIndex];
+      if (event === undefined) break;
+      if (event.testMs > timeLimit) break;
+
+      if (event.type === "input") {
+        let wordIndex = event.data.wordIndex;
+
+        // Match getInputEventsPerWord behavior: deleteWordBackward on
+        // charIndex 0 is attributed to the previous word
+        if (
+          event.data.inputType === "deleteWordBackward" &&
+          event.data.charIndex === 0 &&
+          wordIndex > 0
+        ) {
+          wordIndex -= 1;
+        }
+
+        // Update simulated input for this word
+        const current = simulatedInputs.get(wordIndex) ?? "";
+        if (
+          event.data.inputType === "insertText" ||
+          event.data.inputType === "insertCompositionText"
+        ) {
+          simulatedInputs.set(wordIndex, current + event.data.data);
+        } else if (event.data.inputType === "deleteContentBackward") {
+          simulatedInputs.set(wordIndex, current.slice(0, -1));
+        } else if (event.data.inputType === "deleteWordBackward") {
+          simulatedInputs.set(wordIndex, "");
+        }
+
+        lastEventPerWord.set(wordIndex, event);
       }
-      const lastWord = wordIndex === maxWordIndex;
-
-      let simulatedInput = getSimulatedInput(events);
-
-      //todo decide if this should be done or not
-      if (lastWord) {
-        //remove trailing space for last word
-        simulatedInput = simulatedInput.trimEnd();
-      }
-
-      const targetWord =
-        TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
-
-      const charCounts = countChars(simulatedInput, targetWord, lastWord, true);
-
-      correctWordChars.push(charCounts.correctWord);
+      eventIndex++;
     }
 
-    console.debug(eventsPerWordIndex);
+    // Compute max word index
+    let maxWordIndex = 0;
+    for (const k of simulatedInputs.keys()) {
+      if (k > maxWordIndex) maxWordIndex = k;
+    }
 
-    console.debug(
-      `Correct chars after second ${second + 1}: ${correctWordChars}`,
-    );
+    // Count correct chars across all words
+    let totalCorrect = 0;
+    for (const [wordIndex, input] of simulatedInputs) {
+      // Check if this word's last event was a space submission
+      let adjustedMax = maxWordIndex;
+      const lastEvt = lastEventPerWord.get(wordIndex);
+      if (
+        lastEvt !== undefined &&
+        lastEvt.data.inputType === "insertText" &&
+        lastEvt.data.data === " "
+      ) {
+        adjustedMax = maxWordIndex + 1;
+      }
+      const lastWord = wordIndex === adjustedMax;
 
-    wpmHistory.push(
-      calculateWpm(
-        correctWordChars.reduce((a, b) => a + b, 0),
-        second + 1,
-      ),
-    );
-    const end = performance.now();
-    console.debug(`Second ${second + 1} took ${end - start} ms`);
+      const trimmed = lastWord ? input.trimEnd() : input;
+      const targetWord =
+        TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+      totalCorrect += countChars(
+        trimmed,
+        targetWord,
+        lastWord,
+        true,
+      ).correctWord;
+    }
+
+    wpmHistory.push(Math.round(calculateWpm(totalCorrect, second + 1)));
   }
-
-  // console.log(simulateInput());
 
   return wpmHistory;
 }

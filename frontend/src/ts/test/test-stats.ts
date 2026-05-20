@@ -161,6 +161,9 @@ export function calculateWpmAndRaw(
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end,
   );
+
+  console.log("testSeconds", testSeconds);
+
   const chars = countChars(final);
   const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,

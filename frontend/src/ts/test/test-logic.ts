@@ -1201,7 +1201,56 @@ export async function finish(difficultyFailed = false): Promise<void> {
     //   };
     // }
 
-    if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+    if (key === "chartData") {
+      const v1 = val1 as CompletedEvent["chartData"];
+      const v2 = val2 as CompletedEvent["chartData"];
+
+      if (v1 === "toolong" || v2 === "toolong") {
+        if (v1 === v2) {
+          console.debug(
+            `Completed event match on key chartData: both are "toolong"`,
+          );
+        } else {
+          console.error(
+            `Completed event mismatch on key chartData: one is "toolong" and the other is not`,
+            v1,
+            v2,
+          );
+        }
+        continue;
+      }
+
+      if (Arrays.areSortedArraysEqual(v1.wpm, v2.wpm)) {
+        console.debug(`Completed event match on key chartData.wpm:`, v1.wpm);
+      } else {
+        console.error(
+          `Completed event mismatch on key chartData.wpm:`,
+          v1.wpm,
+          v2.wpm,
+        );
+      }
+      if (Arrays.areSortedArraysEqual(v1.burst, v2.burst)) {
+        console.debug(
+          `Completed event match on key chartData.burst:`,
+          v1.burst,
+        );
+      } else {
+        console.error(
+          `Completed event mismatch on key chartData.burst:`,
+          v1.burst,
+          v2.burst,
+        );
+      }
+      if (Arrays.areSortedArraysEqual(v1.err, v2.err)) {
+        console.debug(`Completed event match on key chartData.err:`, v1.err);
+      } else {
+        console.error(
+          `Completed event mismatch on key chartData.err:`,
+          v1.err,
+          v2.err,
+        );
+      }
+    } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);

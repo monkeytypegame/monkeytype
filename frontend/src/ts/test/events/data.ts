@@ -12,7 +12,7 @@ import {
 } from "./types";
 import { keysToTrack } from "./helpers";
 import { mean } from "@monkeytype/util/numbers";
-import testData300 from "./test-data-300";
+import { start } from "../test-stats";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -97,14 +97,13 @@ export function logTestEvent(
 }
 
 export function getAllTestEvents(): TestEvent[] {
-  //@ts-expect-error for testing
-  return testData300;
-  // return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
-  //   .sort((a, b) => a.ms - b.ms)
-  //   .map((event) => {
-  //     event.testMs = event.ms - TestStats.start;
-  //     return event;
-  //   });
+  // return testData300;
+  return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
+    .sort((a, b) => a.ms - b.ms)
+    .map((event) => {
+      event.testMs = event.ms - start;
+      return event;
+    });
 }
 
 export function logEventsDataToTheConsole(): void {
@@ -127,10 +126,32 @@ export function logEventsDataToTheConsole(): void {
   );
 }
 
+export function logEventsDataToTheConsoleTable(): void {
+  console.table(
+    getAllTestEvents().map((event) => {
+      const d = event.data;
+      let e = {
+        ...event,
+        ...event.data,
+      };
+      // @ts-expect-error just for logging to the console
+      delete e.data;
+      // @ts-expect-error just for logging to the console
+      e = {
+        ...e,
+        ...d,
+      };
+      return e;
+    }),
+  );
+}
+
 //@ts-expect-error testing
 window["testevents"] = {
   getAllTestEvents,
   getInputEvents,
+  logEventsDataToTheConsole,
+  logEventsDataToTheConsoleTable,
 };
 
 export function resetTestEvents(): void {
