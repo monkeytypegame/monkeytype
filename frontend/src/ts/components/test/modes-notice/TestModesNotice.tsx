@@ -9,6 +9,7 @@ import {
 } from "../../../states/core";
 import { hotkeys } from "../../../states/hotkeys";
 import {
+  getFocus,
   getLoadedChallenge,
   getPaceCaretWpm,
   isPaceRepeat,
@@ -29,30 +30,32 @@ import { PbNotice } from "./PbNotice";
 
 export function TestModesNotice() {
   return (
-    <div class="flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity select-none">
-      <Repeated />
-      <ResultSaving />
-      <QuickRestart />
-      <LongText />
-      <LoadedChallenge />
-      <ZenMode />
-      <Language />
-      <Difficulty />
-      <BlindMode />
-      <LazyMode />
-      <PaceCaretNotice />
-      <AverageNotice />
-      <PbNotice />
-      <MinSpeed />
-      <MinAcc />
-      <MinBurst />
-      <Funbox />
-      <ConfidenceMode />
-      <StopOnError />
-      <Layout />
-      <OppositeShift />
-      <Tags />
-    </div>
+    <Show when={!getFocus()}>
+      <div class="flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity select-none">
+        <Repeated />
+        <ResultSaving />
+        <QuickRestart />
+        <LongText />
+        <LoadedChallenge />
+        <ZenMode />
+        <Language />
+        <Difficulty />
+        <BlindMode />
+        <LazyMode />
+        <PaceCaretNotice />
+        <AverageNotice />
+        <PbNotice />
+        <MinSpeed />
+        <MinAcc />
+        <MinBurst />
+        <Funbox />
+        <ConfidenceMode />
+        <StopOnError />
+        <Layout />
+        <OppositeShift />
+        <Tags />
+      </div>
+    </Show>
   );
 }
 
