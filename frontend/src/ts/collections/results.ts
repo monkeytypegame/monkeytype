@@ -33,7 +33,7 @@ import {
   getActiveTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  __nonReactive as tagsNonReactive,
+  useTagsLiveQuery,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
 
@@ -209,15 +209,15 @@ function normalizeResult(
   } as SnapshotResult<Mode>;
 }
 
+const tagsQuery = useTagsLiveQuery();
+
 const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
-      const knownTagIds = new Set(
-        tagsNonReactive.getTags().map((it) => it._id),
-      );
+      const knownTagIds = new Set([...tagsQuery().map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
