@@ -219,7 +219,6 @@ const resultsCollection = createCollection(
     queryFn: async () => {
       if (!isAuthenticated()) return [];
 
-      console.log("### init results");
       const knownTagIds = new Set(
         tagsNonReactive.getTags().map((it) => it._id),
       );
@@ -587,25 +586,30 @@ export type CurrentSettingsFilter = {
 };
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
-export function useUserAverage10LiveQuery() {
+export function useUserAverage10LiveQuery(options: {
+  isEnabled: Accessor<boolean>;
+}) {
   const tags = useActiveTagsLiveQuery();
-  const options = createMemo(() => ({
+  const queryOptions = createMemo(() => ({
     ...getConfig,
     mode2: getMode2(getConfig, getCurrentQuote()),
   }));
 
-  return useLiveQuery((q) =>
-    q
+  return useLiveQuery((q) => {
+    //disable query
+    if (!options.isEnabled()) return undefined;
+
+    return q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: buildSettingsResultsQuery(options(), {
+        last10: buildSettingsResultsQuery(queryOptions(), {
           tagIds: tags().map((it) => it._id),
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
-      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) })),
-  );
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }));
+  });
 }
 
 export async function getUserAverage10Once(

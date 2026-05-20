@@ -2,29 +2,28 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { useUserAverage10LiveQuery } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
-import {
-  isAuthenticated,
-  showCommandLineForConfig,
-} from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { Formatting } from "../../../utils/format";
 import AsyncContent from "../../common/AsyncContent";
-import { Button } from "../../common/Button";
+import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
   const format = createMemo(() => new Formatting(getConfig));
-  //todo only load if active
-  const last10 = useUserAverage10LiveQuery();
+  const last10 = useUserAverage10LiveQuery({
+    isEnabled: () => isAuthenticated() && getConfig.showAverage !== "off",
+  });
 
   return (
-    <Show when={isAuthenticated() && getConfig.showAverage !== "off"}>
+    <Notice
+      when={isAuthenticated() && getConfig.showAverage !== "off"}
+      icon="fa-chart-bar"
+      openCommandline="showAverage"
+    >
       <AsyncContent collections={{ last10 }}>
         {({ last10Data }) => (
-          <Show when={last10Data().length > 0}>
-            <Button
-              variant="text"
-              fa={{ icon: "fa-chart-bar" }}
-              onClick={() => showCommandLineForConfig("showAverage")}
-            >
+          <>
+            <Show when={last10Data().length === 0}>No average</Show>
+            <Show when={last10Data().length > 0}>
               avg:
               <Show
                 when={
@@ -50,10 +49,10 @@ export function AverageNotice(): JSXElement {
                   })}
                 </span>
               </Show>
-            </Button>
-          </Show>
+            </Show>
+          </>
         )}
       </AsyncContent>
-    </Show>
+    </Notice>
   );
 }

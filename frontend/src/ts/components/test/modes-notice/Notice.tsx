@@ -24,7 +24,7 @@ export function Notice(
 
   return (
     <Show when={props.when}>
-      <div class={cn(isButton() ? {} : props.class)}>
+      <div class={cn(isButton() ? {} : cn(props.class, "p-[0.5em]"))}>
         <Show
           when={isButton()}
           fallback=<>

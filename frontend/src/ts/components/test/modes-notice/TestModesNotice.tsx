@@ -26,6 +26,7 @@ import { Kbd } from "../../common/Kbd";
 import { AverageNotice } from "./AverageNotice";
 import { Notice } from "./Notice";
 import { PbNotice } from "./PbNotice";
+
 export function TestModesNotice() {
   return (
     <div class="flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity select-none">
