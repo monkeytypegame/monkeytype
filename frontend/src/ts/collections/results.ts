@@ -608,7 +608,8 @@ export function useUserAverage10LiveQuery(options: {
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
-      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }));
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
+      .findOne();
   });
 }
 
@@ -629,12 +630,11 @@ export async function getUserAverage10Once(
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
-      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) })),
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
+      .findOne(),
   );
 
-  return result.length === 1 && result[0] !== undefined
-    ? result[0]
-    : { wpm: 0, acc: 0 };
+  return result ?? { wpm: 0, acc: 0 };
 }
 
 export async function getUserDailyBest(

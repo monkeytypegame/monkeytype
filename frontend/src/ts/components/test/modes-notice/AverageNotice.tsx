@@ -4,7 +4,6 @@ import { useUserAverage10LiveQuery } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
 import { isAuthenticated } from "../../../states/core";
 import { Formatting } from "../../../utils/format";
-import AsyncContent from "../../common/AsyncContent";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
@@ -19,40 +18,30 @@ export function AverageNotice(): JSXElement {
       icon="fa-chart-bar"
       openCommandline="showAverage"
     >
-      <AsyncContent collections={{ last10 }}>
-        {({ last10Data }) => (
-          <>
-            <Show when={last10Data().length === 0}>No average</Show>
-            <Show when={last10Data().length > 0}>
-              avg:
-              <Show
-                when={
-                  getConfig.showAverage === "speed" ||
-                  getConfig.showAverage === "both"
-                }
-              >
-                <span>
-                  {format().typingSpeed(last10Data()?.at(0)?.wpm ?? 0, {
-                    suffix: ` ${getConfig.typingSpeedUnit}`,
-                  })}
-                </span>
-              </Show>
-              <Show
-                when={
-                  getConfig.showAverage === "acc" ||
-                  getConfig.showAverage === "both"
-                }
-              >
-                <span>
-                  {format().accuracy(last10Data()?.at(0)?.acc ?? 0, {
-                    suffix: " acc",
-                  })}
-                </span>
-              </Show>
-            </Show>
-          </>
-        )}
-      </AsyncContent>
+      <Show when={last10() !== undefined} fallback="no average">
+        avg:{" "}
+        <Show
+          when={
+            getConfig.showAverage === "speed" ||
+            getConfig.showAverage === "both"
+          }
+        >
+          {format().typingSpeed(last10()?.wpm ?? 0, {
+            suffix: ` ${getConfig.typingSpeedUnit}`,
+          })}
+        </Show>
+        <Show
+          when={
+            getConfig.showAverage === "acc" || getConfig.showAverage === "both"
+          }
+        >
+          <span>
+            {format().accuracy(last10()?.acc ?? 0, {
+              suffix: " acc",
+            })}
+          </span>
+        </Show>
+      </Show>
     </Notice>
   );
 }
