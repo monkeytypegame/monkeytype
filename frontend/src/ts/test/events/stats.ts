@@ -277,7 +277,7 @@ export function getErrorCountHistory(): number[] {
   //gets a history of error counts per second, errors from prevoius seconds are carried not over
   const events = getAllTestEvents();
   const testDuration = getTestDurationMs();
-  const expectedLength = Math.floor(testDuration / 1000);
+  const expectedLength = Math.round(testDuration / 1000);
   const errorCounts: number[] = [];
 
   for (const event of events) {
