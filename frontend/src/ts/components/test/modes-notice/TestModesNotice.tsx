@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo } from "solid-js";
 
 import { useActiveTagsLiveQuery } from "../../../collections/tags";
 import * as Commandline from "../../../commandline/commandline";
@@ -360,10 +360,8 @@ function OppositeShift() {
       when={getConfig.oppositeShiftMode !== "off"}
       icon="fa-exchange-alt"
       openCommandline="oppositeShiftMode"
-    >
-      opposite shift
-      <Show when={getConfig.oppositeShiftMode === "keymap"}> (keymap)</Show>
-    </Notice>
+      text={`opposite shift${getConfig.oppositeShiftMode === "keymap" ? " (keymap)" : ""}`}
+    />
   );
 }
 
