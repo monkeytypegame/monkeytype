@@ -32,7 +32,7 @@ import { Connection } from "@monkeytype/schemas/connections";
 import { insertLocalResult } from "./collections/results";
 import {
   setLastResult,
-  setSnapshot as setSolidSnapshot,
+  _setSnapshot as setSolidSnapshot,
 } from "./states/snapshot";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";

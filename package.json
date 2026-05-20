@@ -78,7 +78,7 @@
     "stylelint": "17.6.0",
     "stylelint-config-standard": "40.0.0",
     "stylelint-config-standard-scss": "17.0.0",
-    "turbo": "2.7.5",
+    "turbo": "2.9.14",
     "vitest": "4.1.0",
     "yaml": "2.8.3"
   },

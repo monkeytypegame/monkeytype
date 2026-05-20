@@ -27,7 +27,8 @@ export type ModalId =
   | "MiniResultChartModal"
   | "Cookies"
   | "AddPresetModal"
-  | "EditPresetModal";
+  | "EditPresetModal"
+  | "EditProfile";
 
 export type ModalVisibility = {
   visible: boolean;
