@@ -371,6 +371,9 @@ function countChars(final = false): CharCount {
     }
     if (i < inputWords.length - 1) {
       spaces++;
+      if (inputWord !== targetWord) {
+        incorrectChars++;
+      }
     }
   }
   if (isFunboxActiveWithProperty("nospace")) {
