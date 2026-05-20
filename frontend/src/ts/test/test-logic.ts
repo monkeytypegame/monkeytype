@@ -274,10 +274,10 @@ export function restart(options = {} as RestartOptions): void {
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      TestStats.incrementIncompleteSeconds(tt);
-      TestStats.incrementRestartCount();
+      TestState.incrementIncompleteSeconds(tt);
+      TestState.incrementRestartCount();
       const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-      TestStats.pushIncompleteTest(acc, tt);
+      TestState.pushIncompleteTest(acc, tt);
     }
   }
 
@@ -868,12 +868,12 @@ function buildCompletedEvent(
     lazyMode: Config.lazyMode,
     timestamp: Date.now(),
     language: language,
-    restartCount: TestStats.restartCount,
-    incompleteTests: TestStats.incompleteTests,
+    restartCount: TestState.restartCount,
+    incompleteTests: TestState.incompleteTests,
     incompleteTestSeconds:
-      TestStats.incompleteSeconds < 0
+      TestState.incompleteSeconds < 0
         ? 0
-        : Numbers.roundTo2(TestStats.incompleteSeconds),
+        : Numbers.roundTo2(TestState.incompleteSeconds),
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     tags: activeTagsIds,
@@ -1010,14 +1010,12 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     stopOnLetter: Config.stopOnError === "letter",
-
-    restartCount: TestStats.restartCount, // move somewhere else
-    incompleteTests: TestStats.incompleteTests, //move semewhere else
-    //move
+    restartCount: TestState.restartCount,
+    incompleteTests: TestState.incompleteTests,
     incompleteTestSeconds:
-      TestStats.incompleteSeconds < 0
+      TestState.incompleteSeconds < 0
         ? 0
-        : Numbers.roundTo2(TestStats.incompleteSeconds),
+        : Numbers.roundTo2(TestState.incompleteSeconds),
 
     consistency: consistency,
     wpmConsistency: wpmConsistency,
@@ -1402,9 +1400,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = completedEvent.acc;
-      TestStats.incrementIncompleteSeconds(tt);
-      TestStats.incrementRestartCount();
-      TestStats.pushIncompleteTest(acc, tt);
+      TestState.incrementIncompleteSeconds(tt);
+      TestState.incrementRestartCount();
+      TestState.pushIncompleteTest(acc, tt);
     }
   }
 
@@ -1464,7 +1462,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (dontSave) {
       void AnalyticsController.log("testCompletedInvalid");
     } else {
-      TestStats.resetIncomplete();
+      TestState.resetIncomplete();
 
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);

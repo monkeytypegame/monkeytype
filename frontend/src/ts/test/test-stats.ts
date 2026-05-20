@@ -5,7 +5,7 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
 
@@ -112,29 +112,6 @@ export function restart(): void {
   end3 = 0;
   invalid = false;
   lastSecondNotRound = false;
-}
-
-export let restartCount = 0;
-export let incompleteSeconds = 0;
-
-export let incompleteTests: IncompleteTest[] = [];
-
-export function incrementRestartCount(): void {
-  restartCount++;
-}
-
-export function incrementIncompleteSeconds(val: number): void {
-  incompleteSeconds += val;
-}
-
-export function pushIncompleteTest(acc: number, seconds: number): void {
-  incompleteTests.push({ acc, seconds });
-}
-
-export function resetIncomplete(): void {
-  restartCount = 0;
-  incompleteSeconds = 0;
-  incompleteTests = [];
 }
 
 export function setInvalid(): void {
