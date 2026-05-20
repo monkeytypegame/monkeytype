@@ -14,7 +14,7 @@ export function Notice(
     when: boolean | undefined;
     icon?: FaSolidIcon;
     class?: string;
-  } & ParentProps &
+  } & OneOf<{ children: ParentProps["children"]; text: string | undefined }> &
     Partial<
       OneOf<{ onClick: () => void; openCommandline: CommandlineSelector }>
     >,
@@ -35,7 +35,7 @@ export function Notice(
       }
       fa={props.icon !== undefined ? { icon: props.icon } : undefined}
     >
-      {props.children}
+      {props.children ?? props.text}
     </Button>
   );
 
@@ -44,7 +44,7 @@ export function Notice(
       <Show when={props.icon !== undefined}>
         <Fa icon={props.icon as FaSolidIcon} />
       </Show>
-      {props.children}
+      {props.children ?? props.text}
     </div>
   );
 

@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getLocalPB } from "../../../db";
@@ -11,9 +11,9 @@ import { getMode2 } from "../../../utils/misc";
 import { Notice } from "./Notice";
 
 export function PbNotice() {
-  const format = createMemo(() => new Formatting(getConfig));
-  const pb = createMemo(() => {
-    if (!isAuthenticated()) return undefined;
+  const displayText = createMemo(() => {
+    if (!isAuthenticated()) return "";
+    const format = new Formatting(getConfig);
 
     //react on config.funbox
     const _funbox = getConfig.funbox;
@@ -21,7 +21,7 @@ export function PbNotice() {
     const _snapshot = getSnapshot();
 
     const mode2 = getMode2(getConfig, getCurrentQuote());
-    return getLocalPB(
+    const pb = getLocalPB(
       getConfig.mode,
       mode2,
       getConfig.punctuation,
@@ -31,22 +31,25 @@ export function PbNotice() {
       getConfig.lazyMode,
       getActiveFunboxes(),
     );
+
+    if (pb === undefined) return "no pb";
+
+    const speed = format.typingSpeed(pb.wpm, {
+      showDecimalPlaces: true,
+      suffix: ` ${getConfig.typingSpeedUnit}`,
+    });
+
+    const acc = format.accuracy(pb.acc, { suffix: ` acc` });
+
+    return `${speed} ${acc}`;
   });
+
   return (
     <Notice
       when={isAuthenticated() && getConfig.showPb}
       icon="fa-crown"
       openCommandline="showPb"
-    >
-      <Show when={pb() !== undefined} fallback="no pb">
-        {format().typingSpeed(pb()?.wpm, {
-          showDecimalPlaces: true,
-          suffix: ` ${getConfig.typingSpeedUnit}`,
-        })}{" "}
-        {format().accuracy(pb()?.acc, {
-          suffix: ` acc`,
-        })}
-      </Show>
-    </Notice>
+      text={displayText()}
+    />
   );
 }

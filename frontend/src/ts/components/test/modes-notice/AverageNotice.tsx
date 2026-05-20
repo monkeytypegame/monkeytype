@@ -1,4 +1,4 @@
-import { createMemo, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement } from "solid-js";
 
 import { useUserAverage10LiveQuery } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
@@ -7,9 +7,30 @@ import { Formatting } from "../../../utils/format";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
   const last10 = useUserAverage10LiveQuery({
     isEnabled: () => isAuthenticated() && getConfig.showAverage !== "off",
+  });
+
+  const displayText = createMemo(() => {
+    if (last10() === undefined) return "no average";
+
+    const format = new Formatting(getConfig);
+    let speed = undefined;
+    let acc = undefined;
+
+    if (getConfig.showAverage === "both" || getConfig.showAverage === "speed") {
+      speed = format.typingSpeed(last10()?.wpm ?? 0, {
+        suffix: ` ${getConfig.typingSpeedUnit}`,
+      });
+    }
+
+    if (getConfig.showAverage === "both" || getConfig.showAverage === "acc") {
+      acc = format.accuracy(last10()?.acc ?? 0, {
+        suffix: " acc",
+      });
+    }
+
+    return [speed, acc].filter((it) => it !== undefined).join(" ");
   });
 
   return (
@@ -17,31 +38,7 @@ export function AverageNotice(): JSXElement {
       when={isAuthenticated() && getConfig.showAverage !== "off"}
       icon="fa-chart-bar"
       openCommandline="showAverage"
-    >
-      <Show when={last10() !== undefined} fallback="no average">
-        avg:{" "}
-        <Show
-          when={
-            getConfig.showAverage === "speed" ||
-            getConfig.showAverage === "both"
-          }
-        >
-          {format().typingSpeed(last10()?.wpm ?? 0, {
-            suffix: ` ${getConfig.typingSpeedUnit}`,
-          })}
-        </Show>
-        <Show
-          when={
-            getConfig.showAverage === "acc" || getConfig.showAverage === "both"
-          }
-        >
-          <span>
-            {format().accuracy(last10()?.acc ?? 0, {
-              suffix: " acc",
-            })}
-          </span>
-        </Show>
-      </Show>
-    </Notice>
+      text={displayText()}
+    />
   );
 }

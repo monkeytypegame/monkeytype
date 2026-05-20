@@ -71,9 +71,8 @@ function Repeated() {
       when={isRepeated() && getConfig.mode !== "quote"}
       class="text-error"
       icon="fa-sync-alt"
-    >
-      repeated
-    </Notice>
+      text="repeated"
+    />
   );
 }
 
@@ -84,9 +83,8 @@ function ResultSaving() {
       icon="fa-save"
       openCommandline="resultSaving"
       class="text-error"
-    >
-      saving disabled
-    </Notice>
+      text="saving disabled"
+    />
   );
 }
 
@@ -135,19 +133,16 @@ function LoadedChallenge() {
       when={getLoadedChallenge() !== null}
       icon="fa-award"
       openCommandline="loadChallenge"
-    >
-      {getLoadedChallenge()?.display}
-    </Notice>
+      text={getLoadedChallenge()?.display}
+    />
   );
 }
 
 function ZenMode() {
   return (
-    <Show when={getConfig.mode === "zen"}>
-      <div>
-        <Kbd hotkey="Shift+Enter" /> to finish zen
-      </div>
-    </Show>
+    <Notice when={getConfig.mode === "zen"}>
+      <Kbd hotkey="Shift+Enter" /> to finish zen
+    </Notice>
   );
 }
 
@@ -164,23 +159,21 @@ function Language() {
         when={getConfig.mode !== "zen" && !isUsingPolyglot()}
         icon="fa-globe-americas"
         openCommandline="language"
-      >
-        {getLanguageDisplayString(
+        text={getLanguageDisplayString(
           getConfig.language,
           getConfig.mode === "quote",
         )}
-      </Notice>
+      />
       <Notice
         when={getConfig.funbox.includes("polyglot")}
         icon="fa-globe-americas"
         onClick={() =>
           Commandline.show({ commandOverride: "setCustomPolyglotCustom" })
         }
-      >
-        {getConfig.customPolyglot
+        text={getConfig.customPolyglot
           .map((lang) => getLanguageDisplayString(lang, true))
           .join(", ")}
-      </Notice>
+      />
     </>
   );
 }
@@ -193,9 +186,8 @@ function Difficulty() {
       }
       icon={getConfig.difficulty === "expert" ? "fa-star-half-alt" : "fa-star"}
       onClick={() => showCommandLineForConfig("difficulty")}
-    >
-      {getConfig.difficulty}
-    </Notice>
+      text={getConfig.difficulty}
+    />
   );
 }
 
@@ -205,9 +197,8 @@ function BlindMode() {
       when={getConfig.blindMode}
       icon="fa-eye-slash"
       openCommandline="blindMode"
-    >
-      blind
-    </Notice>
+      text="blind"
+    />
   );
 }
 
@@ -217,14 +208,24 @@ function LazyMode() {
       when={getConfig.lazyMode}
       icon="fa-couch"
       openCommandline="lazyMode"
-    >
-      lazy
-    </Notice>
+      text="lazy"
+    />
   );
 }
 
 function PaceCaretNotice() {
-  const format = createMemo(() => new Formatting(getConfig));
+  const displaySpeed = createMemo(() => {
+    const type =
+      getConfig.paceCaret === "tagPb" ? "tag pb" : getConfig.paceCaret;
+    const format = new Formatting(getConfig);
+    const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
+      showDecimalPlaces: false,
+      suffix: ` ${getConfig.typingSpeedUnit}`,
+    });
+
+    return `${type} pace ${speed}`;
+  });
+
   return (
     <Notice
       when={
@@ -233,70 +234,71 @@ function PaceCaretNotice() {
       }
       icon="fa-tachometer-alt"
       openCommandline="paceCaret"
-    >
-      <Show
-        when={getConfig.paceCaret === "tagPb"}
-        fallback={getConfig.paceCaret}
-      >
-        tag pb
-      </Show>{" "}
-      pace{" "}
-      {format().typingSpeed(getPaceCaretWpm() ?? 0, {
-        showDecimalPlaces: false,
-        suffix: ` ${getConfig.typingSpeedUnit}`,
-      })}
-    </Notice>
+      text={displaySpeed()}
+    />
   );
 }
 
 function MinSpeed() {
-  const format = createMemo(() => new Formatting(getConfig));
+  const displaySpeed = createMemo(() => {
+    const format = new Formatting(getConfig);
+    const speed = format.typingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
+      showDecimalPlaces: false,
+      suffix: ` ${getConfig.typingSpeedUnit}`,
+    });
+
+    return `min ${speed}`;
+  });
+
   return (
     <Notice
       when={getConfig.minWpm !== "off"}
       icon="fa-bomb"
       openCommandline="minWpm"
-    >
-      min{" "}
-      {format().typingSpeed(getConfig.minWpmCustomSpeed, {
-        showDecimalPlaces: false,
-        suffix: ` ${getConfig.typingSpeedUnit}`,
-      })}
-    </Notice>
+      text={displaySpeed()}
+    />
   );
 }
 
 function MinAcc() {
-  const format = createMemo(() => new Formatting(getConfig));
+  const displayAcc = createMemo(() => {
+    const format = new Formatting(getConfig);
+    const acc = format.accuracy(getConfig.minAccCustom, {
+      showDecimalPlaces: false,
+      suffix: " acc",
+    });
+
+    return `min ${acc}`;
+  });
+
   return (
     <Notice
       when={getConfig.minAcc !== "off"}
       icon="fa-bomb"
       openCommandline="minAcc"
-    >
-      min{" "}
-      {format().accuracy(getConfig.minAccCustom, {
-        showDecimalPlaces: false,
-        suffix: " acc",
-      })}
-    </Notice>
+      text={displayAcc()}
+    />
   );
 }
 
 function MinBurst() {
-  const format = createMemo(() => new Formatting(getConfig));
+  const displaySpeed = createMemo(() => {
+    const format = new Formatting(getConfig);
+    const speed = format.typingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
+      showDecimalPlaces: false,
+      suffix: ` ${getConfig.typingSpeedUnit}`,
+    });
+
+    return `min ${speed} burst ${getConfig.minBurst === "flex" ? "(flex)" : ""}`;
+  });
+
   return (
     <Notice
       when={getConfig.minBurst !== "off"}
       icon="fa-bomb"
       openCommandline="minBurst"
-    >
-      min{" "}
-      {format().typingSpeed(getConfig.minBurstCustomSpeed, {
-        showDecimalPlaces: false,
-        suffix: ` ${getConfig.typingSpeedUnit} burst ${getConfig.minBurst === "flex" ? "(flex)" : ""}`,
-      })}
-    </Notice>
+      text={displaySpeed()}
+    />
   );
 }
 
@@ -312,9 +314,8 @@ function Funbox() {
       when={funboxes() !== undefined}
       icon="fa-gamepad"
       openCommandline="funbox"
-    >
-      {funboxes()}
-    </Notice>
+      text={funboxes()}
+    />
   );
 }
 
@@ -324,9 +325,10 @@ function ConfidenceMode() {
       when={getConfig.confidenceMode !== "off"}
       icon="fa-backspace"
       openCommandline="confidenceMode"
-    >
-      {getConfig.confidenceMode === "max" ? "max" : ""} confidence
-    </Notice>
+      text={
+        getConfig.confidenceMode === "max" ? "max confidence" : "confidence"
+      }
+    />
   );
 }
 
@@ -336,9 +338,8 @@ function StopOnError() {
       when={getConfig.stopOnError !== "off"}
       icon="fa-hand-paper"
       openCommandline="stopOnError"
-    >
-      stop on {getConfig.stopOnError}
-    </Notice>
+      text={`stop on ${getConfig.stopOnError}`}
+    />
   );
 }
 
@@ -348,9 +349,8 @@ function Layout() {
       when={getConfig.layout !== "default"}
       icon="fa-keyboard"
       openCommandline="layout"
-    >
-      emulating {replaceUnderscoresWithSpaces(getConfig.layout)}
-    </Notice>
+      text={`emulating ${replaceUnderscoresWithSpaces(getConfig.layout)}`}
+    />
   );
 }
 
@@ -375,10 +375,9 @@ function Tags() {
       when={tags().length > 0}
       icon={tags().length === 1 ? "fa-tag" : "fa-tags"}
       openCommandline="tags"
-    >
-      {tags()
+      text={tags()
         .map((tag) => tag.name)
         .join(", ")}
-    </Notice>
+    />
   );
 }
