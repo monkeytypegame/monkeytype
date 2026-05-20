@@ -589,7 +589,6 @@ export type CurrentSettingsFilter = {
 export function useUserAverage10LiveQuery(options: {
   isEnabled: Accessor<boolean>;
 }) {
-  const tags = useActiveTagsLiveQuery();
   const queryOptions = createMemo(() => ({
     ...getConfig,
     mode2: getMode2(getConfig, getCurrentQuote()),
@@ -603,7 +602,7 @@ export function useUserAverage10LiveQuery(options: {
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(queryOptions(), {
-          tagIds: tags().map((it) => it._id),
+          activeTagsOnly: true,
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
@@ -618,14 +617,13 @@ export async function getUserAverage10Once(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-  const tags = useActiveTagsLiveQuery();
 
   const result = await queryOnce((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(options, {
-          tagIds: tags().map((it) => it._id),
+          activeTagsOnly: true,
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
@@ -637,18 +635,14 @@ export async function getUserAverage10Once(
   return result ?? { wpm: 0, acc: 0 };
 }
 
-export async function getUserDailyBest(
+export async function getUserDailyBestOnce(
   options: CurrentSettingsFilter,
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
 
-  const tags = useActiveTagsLiveQuery();
-
   const result = await queryOnce(() =>
-    buildSettingsResultsQuery(options, {
-      tagIds: tags().map((it) => it._id),
-    })
+    buildSettingsResultsQuery(options, { activeTagsOnly: true })
       .where(({ r }) => gte(r.timestamp, Date.now() - 24 * 60 * 60 * 1000))
       .orderBy(({ r }) => r.wpm, "desc")
       .limit(1)
@@ -658,13 +652,13 @@ export async function getUserDailyBest(
   return result ?? { wpm: 0, acc: 0 };
 }
 
+const activeTagQuery = useActiveTagsLiveQuery();
+
 // oxlint-disable-next-line typescript/explicit-function-return-type
 function buildSettingsResultsQuery(
   filter: CurrentSettingsFilter,
-  options?: { tagIds?: string[] },
+  options?: { activeTagsOnly?: boolean },
 ) {
-  const tagIds = options?.tagIds;
-
   let query = new Query()
     .from({ r: resultsCollection })
     .where(({ r }) => eq(r.mode, filter.mode))
@@ -673,14 +667,15 @@ function buildSettingsResultsQuery(
     .where(({ r }) => eq(r.numbers, filter.numbers))
     .where(({ r }) => eq(r.language, filter.language))
     .where(({ r }) => eq(r.difficulty, filter.difficulty))
+
     .where(({ r }) => eq(r.lazyMode, filter.lazyMode));
 
-  if (tagIds !== undefined) {
+  if (options?.activeTagsOnly) {
     query = query.where(({ r }) =>
       or(
         false,
-        tagIds.length === 0,
-        ...tagIds.map((it) => inArray(it, r.tags)),
+        activeTagQuery().length === 0,
+        ...activeTagQuery().map((it) => inArray(it._id, r.tags)),
       ),
     );
   }
