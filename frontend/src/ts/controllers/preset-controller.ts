@@ -34,10 +34,10 @@ export async function apply(_id: string): Promise<void> {
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
   ) {
-    clearActiveTags(true);
+    await clearActiveTags({ noSave: true });
     if (presetToApply.config.tags) {
       for (const tagId of presetToApply.config.tags) {
-        setTagActive(tagId, true, false);
+        await setTagActive({ tagId, active: true });
       }
       saveActiveToLocalStorage();
     }
