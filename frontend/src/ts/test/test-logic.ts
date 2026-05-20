@@ -84,11 +84,10 @@ import {
   logTestEvent,
   resetTestEvents,
   testing,
+  getKeypressDurations,
 } from "./events/data";
-import * as Time from "../states/time";
 import {
   getChars,
-  getKeypressDurations,
   getKeypressesPerSecond,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
@@ -905,12 +904,9 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars(true);
 
   //tags
-  const activeTagsIds: string[] = [];
-  for (const tag of DB.getSnapshot()?.tags ?? []) {
-    if (tag.active === true) {
-      activeTagsIds.push(tag._id);
-    }
-  }
+  const activeTagsIds: string[] = __nonReactive
+    .getActiveTags()
+    .map((tag) => tag._id);
 
   let language = Config.language;
   if (Config.mode === "quote") {

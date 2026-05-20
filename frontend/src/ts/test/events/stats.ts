@@ -5,13 +5,13 @@ import {
   // simulateInput,
 } from "./data";
 import * as TestWords from "../../test/test-words";
-import Config from "../../config";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { InputEvent } from "./types";
+import { Config } from "../../config/store";
 
 export function getStartToFirstKeypressMs(): number {
   const events = getAllTestEvents();
@@ -102,9 +102,7 @@ export function getKeypressesPerSecond(): number[] {
 
   // Fill in empty values with 0
   for (let i = 0; i < expectedLength; i++) {
-    if (keypresses[i] === undefined) {
-      keypresses[i] = 0;
-    }
+    keypresses[i] ??= 0;
   }
 
   return keypresses;
@@ -164,7 +162,8 @@ export function getChars(final: boolean): CharCounts {
       simulatedInput = simulatedInput.trimEnd();
     }
 
-    const targetWord = TestWords.words.get(wordIndex) + (lastWord ? "" : " ");
+    const targetWord =
+      TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
 
     const charCounts = countChars(
       simulatedInput,
@@ -217,38 +216,6 @@ export function getAccuracy(): {
     incorrect: incorrect,
     percentage: percentage,
   };
-}
-
-export function getKeypressDurations(): number[] {
-  const events = getAllTestEvents();
-
-  const keydownTimes: Map<
-    string,
-    {
-      timestamp: number;
-      index: number;
-    }
-  > = new Map();
-  const durations: number[] = [];
-
-  for (const event of events) {
-    if (event.type === "keydown") {
-      keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
-        index: durations.length,
-      });
-      durations.push(0); // placeholder
-    } else if (event.type === "keyup") {
-      const keydownTime = keydownTimes.get(event.data.code);
-      if (keydownTime !== undefined) {
-        const duration = event.ms - keydownTime.timestamp;
-        durations[keydownTime.index] = duration;
-        keydownTimes.delete(event.data.code);
-      }
-    }
-  }
-
-  return durations;
 }
 
 export function getKeypressSpacing(): number[] {
@@ -316,9 +283,7 @@ export function getErrorCountHistory(): number[] {
       !event.data.correct
     ) {
       const eventSecond = Math.floor(event.testMs / 1000);
-      if (errorCounts[eventSecond] === undefined) {
-        errorCounts[eventSecond] = 0;
-      }
+      errorCounts[eventSecond] ??= 0;
       errorCounts[eventSecond]++;
     }
   }
@@ -326,9 +291,7 @@ export function getErrorCountHistory(): number[] {
   //fill in empty values with 0
   const maxTime = errorCounts.length;
   for (let i = 0; i < maxTime; i++) {
-    if (errorCounts[i] === undefined) {
-      errorCounts[i] = 0;
-    }
+    errorCounts[i] ??= 0;
   }
 
   while (errorCounts.length < expectedLength) {
@@ -370,7 +333,8 @@ export function getWpmHistory(): number[] {
         simulatedInput = simulatedInput.trimEnd();
       }
 
-      const targetWord = TestWords.words.get(wordIndex) + (lastWord ? "" : " ");
+      const targetWord =
+        TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
 
       const charCounts = countChars(simulatedInput, targetWord, lastWord, true);
 

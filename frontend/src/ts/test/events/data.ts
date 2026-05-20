@@ -1,4 +1,3 @@
-import * as TestStats from "../../test/test-stats";
 import {
   InputEvent,
   InputEventData,
@@ -12,7 +11,6 @@ import {
   TimerEventData,
 } from "./types";
 import { keysToTrack } from "./helpers";
-import { getKeypressDurations } from "./stats";
 import { mean } from "@monkeytype/util/numbers";
 import testData300 from "./test-data-300";
 
@@ -61,7 +59,7 @@ export function logTestEvent(
     //todo: move this to input code i think
     let key = code;
     if (key === "NoCode") {
-      key = "NoCode" + noCodeIndex;
+      key = `NoCode${noCodeIndex}`;
       noCodeIndex++;
     }
 
@@ -85,7 +83,7 @@ export function logTestEvent(
     let key = code;
     if (key === "NoCode") {
       noCodeIndex--;
-      key = "NoCode" + noCodeIndex;
+      key = `NoCode${noCodeIndex}`;
     }
 
     pressedKeys.delete(key);
@@ -99,13 +97,14 @@ export function logTestEvent(
 }
 
 export function getAllTestEvents(): TestEvent[] {
+  //@ts-expect-error for testing
   return testData300;
-  return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
-    .sort((a, b) => a.ms - b.ms)
-    .map((event) => {
-      event.testMs = event.ms - TestStats.start;
-      return event;
-    });
+  // return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
+  //   .sort((a, b) => a.ms - b.ms)
+  //   .map((event) => {
+  //     event.testMs = event.ms - TestStats.start;
+  //     return event;
+  //   });
 }
 
 export function logEventsDataToTheConsole(): void {
@@ -153,6 +152,38 @@ export function getInputEvents(): InputEvent[] {
 
 export function getPressedKeys(): Map<string, { timestamp: number }> {
   return pressedKeys;
+}
+
+export function getKeypressDurations(): number[] {
+  const events = getAllTestEvents();
+
+  const keydownTimes: Map<
+    string,
+    {
+      timestamp: number;
+      index: number;
+    }
+  > = new Map();
+  const durations: number[] = [];
+
+  for (const event of events) {
+    if (event.type === "keydown") {
+      keydownTimes.set(event.data.code, {
+        timestamp: event.ms,
+        index: durations.length,
+      });
+      durations.push(0); // placeholder
+    } else if (event.type === "keyup") {
+      const keydownTime = keydownTimes.get(event.data.code);
+      if (keydownTime !== undefined) {
+        const duration = event.ms - keydownTime.timestamp;
+        durations[keydownTime.index] = duration;
+        keydownTimes.delete(event.data.code);
+      }
+    }
+  }
+
+  return durations;
 }
 
 export function forceReleaseAllKeys(): void {
