@@ -27,10 +27,10 @@ export function Notice(
       <div class={cn(isButton() ? {} : cn(props.class, "p-[0.5em]"))}>
         <Show
           when={isButton()}
-          fallback=<div>
+          fallback=<div class="flex items-center gap-2">
             <Show when={props.icon !== undefined}>
               <Fa icon={props.icon as FaSolidIcon} />
-            </Show>{" "}
+            </Show>
             {props.children}
           </div>
         >
