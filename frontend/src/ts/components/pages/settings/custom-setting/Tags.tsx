@@ -36,7 +36,7 @@ export function Tags(): JSXElement {
                   text={tag.name}
                   active={tag.active}
                   onClick={() => {
-                    toggleTagActive(tag._id);
+                    void toggleTagActive({ tagId: tag._id });
                   }}
                 />
                 <Button
