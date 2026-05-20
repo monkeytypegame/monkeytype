@@ -978,7 +978,6 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
   const chartData = {
     wpm: wpmHistory,
-    // wpm: undefined,
     burst: rawPerSecond,
     err: getErrorCountHistory(),
   };
