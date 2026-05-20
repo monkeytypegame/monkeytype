@@ -27,15 +27,15 @@ export function Notice(
       <div class={cn(isButton() ? {} : cn(props.class, "p-[0.5em]"))}>
         <Show
           when={isButton()}
-          fallback=<>
+          fallback=<div>
             <Show when={props.icon !== undefined}>
               <Fa icon={props.icon as FaSolidIcon} />
             </Show>{" "}
             {props.children}
-          </>
+          </div>
         >
           <Button
-            class={cn(props.class)}
+            class={cn("h-full", props.class)}
             variant="text"
             onClick={
               props.onClick ??
