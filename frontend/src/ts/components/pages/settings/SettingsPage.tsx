@@ -14,18 +14,17 @@ import {
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
-import { getActivePage, isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
-// import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
-// import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { Page } from "../../common/Page";
 import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
@@ -33,7 +32,6 @@ import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
-// import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { FontFamily } from "./custom-setting/FontFamily";
@@ -55,15 +53,14 @@ import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
-export function Settings(): JSXElement {
+export function SettingsPage(): JSXElement {
   const [hasLocalBg] = createResource(
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),
   );
-  const isOpen = (): boolean => getActivePage() === "settings";
 
   return (
-    <Show when={isOpen()}>
+    <Page id="settings">
       <div class="grid gap-8">
         <QuickNav />
         <Show when={getConfig.showKeyTips}>
@@ -253,7 +250,7 @@ export function Settings(): JSXElement {
 
         <AccountSettingsNotice />
       </div>
-    </Show>
+    </Page>
   );
 }
 
