@@ -40,7 +40,7 @@ export function Notice(
   );
 
   const DivNotice = () => (
-    <div class="flex items-center gap-2">
+    <div class={cn("flex items-center gap-2", props.class)}>
       <Show when={props.icon !== undefined}>
         <Fa icon={props.icon as FaSolidIcon} />
       </Show>
