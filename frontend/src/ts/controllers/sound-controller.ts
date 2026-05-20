@@ -2,7 +2,7 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
 import { leftState, rightState } from "../test/shift-tracker";
-import { capsState } from "../test/caps-warning";
+import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
 
 import type { Howl } from "howler";
@@ -335,7 +335,8 @@ function playNote(options: {
   }
 
   const baseOctave = 3;
-  const octave = baseOctave + (leftState || rightState || capsState ? 1 : 0);
+  const octave =
+    baseOctave + (leftState || rightState || isCapsLockOn() ? 1 : 0);
   const currentFrequency = codeToNote[currentCode]?.(octave);
 
   const oscillatorNode = audioCtx.createOscillator();

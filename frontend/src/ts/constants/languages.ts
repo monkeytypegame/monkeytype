@@ -381,6 +381,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_yoptascript",
     "code_cuda",
     "code_vhdl",
+    "code_6502_assembly",
   ],
   viossa: ["viossa", "viossa_njutro"],
   kokanu: ["kokanu", "likanu"],
