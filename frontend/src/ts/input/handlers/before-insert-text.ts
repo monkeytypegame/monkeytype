@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
@@ -8,6 +8,8 @@ import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
+import * as SlowTimer from "../../legacy-states/slow-timer";
+import { wordsHaveNewline } from "../../states/test";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -32,7 +34,7 @@ export function onBeforeInsertText(data: string): boolean {
   const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
     data,
     inputValue,
-    targetWord: TestWords.words.getCurrent(),
+    targetWord: TestWords.words.getCurrentText(),
   });
 
   //prevent space from being inserted if input is empty
@@ -52,13 +54,13 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !TestWords.hasNewline && Config.mode !== "zen") {
+  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
     return true;
   }
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
   const overLimit = TestInput.input.current.length >= inputLimit;
   if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
     console.error("Hitting word limit");
@@ -67,14 +69,12 @@ export function onBeforeInsertText(data: string): boolean {
 
   // prevent the word from jumping to the next line if the word is too long
   // this will not work for the first word of each line, but that has a low chance of happening
-  // make sure to only check this when necessary (hide extra letters is off or input is longer than word)
-  // because this check is expensive (causes layout reflows)
-
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    TestInput.input.current.length >= TestWords.words.getCurrent().length;
+    TestInput.input.current.length >= TestWords.words.getCurrentText().length;
 
   if (
+    !SlowTimer.get() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
@@ -82,9 +82,23 @@ export function onBeforeInsertText(data: string): boolean {
     (shouldInsertSpaceAsCharacter === true || !dataIsSpace) &&
     Config.mode !== "zen"
   ) {
-    const topAfterAppend = TestUI.getActiveWordTopAfterAppend(data);
-    const wordJumped = topAfterAppend > TestUI.activeWordTop;
-    if (wordJumped) {
+    // make sure to only check this when really necessary
+    // because this check is expensive (causes layout reflows)
+
+    // if there is pending word data, wwe need to account for that
+    const pendingWordData = TestUI.pendingWordData.get(
+      TestState.activeWordIndex,
+    );
+    const { top: topAfterAppend, height: heightAfterAppend } =
+      TestUI.getActiveWordTopAndHeightWithDifferentData(
+        (pendingWordData ?? TestInput.input.current) + data,
+      );
+    if (topAfterAppend > TestUI.activeWordTop) {
+      //word jumped to next line
+      return true;
+    }
+    if (heightAfterAppend > TestUI.activeWordHeight) {
+      // letters wrapped to next line
       return true;
     }
   }

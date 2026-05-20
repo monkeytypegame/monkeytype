@@ -1,5 +1,5 @@
 import Hangul from "hangul-js";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
@@ -148,11 +148,6 @@ export function calculateTestSeconds(now?: number): number {
     duration = (now - start) / 1000;
   }
 
-  if (Config.mode === "zen" && duration < 0) {
-    duration = 0;
-    console.log("Zen mode with negative duration detected, setting to 0");
-  }
-
   return duration;
 }
 
@@ -221,9 +216,10 @@ export function setLastSecondNotRound(): void {
   lastSecondNotRound = true;
 }
 
-export function calculateBurst(): number {
+export function calculateBurst(endTime: number = performance.now()): number {
   const containsKorean = TestInput.input.getKoreanStatus();
-  const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
+  const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
+  if (timeToWrite <= 0) return 0;
   let wordLength: number;
   wordLength = !containsKorean
     ? TestInput.input.current.length
@@ -251,7 +247,6 @@ export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.keypressCountHistory.splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
-  TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);
 }
 
@@ -284,7 +279,7 @@ function getTargetWords(): string[] {
     targetWords.push(
       Config.mode === "zen"
         ? TestInput.input.current
-        : TestWords.words.getCurrent(),
+        : TestWords.words.getCurrentText(),
     );
   }
 

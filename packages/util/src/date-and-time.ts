@@ -2,17 +2,6 @@ export const MILISECONDS_IN_HOUR = 3600000;
 export const MILLISECONDS_IN_DAY = 86400000;
 
 /**
- * Returns the current day's start timestamp adjusted by the hour offset.
- * @param hourOffset The offset in hours. Default is 0.
- * @returns The timestamp of the start of the current day adjusted by the hour offset.
- */
-export function getCurrentDayTimestamp(hourOffset = 0): number {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime, offsetMilis);
-}
-
-/**
  * Returns the timestamp of the start of the day for the given timestamp adjusted by the offset.
  * @param timestamp The timestamp for which to get the start of the day.
  * @param offsetMilis The offset in milliseconds. Default is 0.
@@ -23,6 +12,17 @@ export function getStartOfDayTimestamp(
   offsetMilis = 0,
 ): number {
   return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
+}
+
+/**
+ * Returns the current day's start timestamp adjusted by the hour offset.
+ * @param hourOffset The offset in hours. Default is 0.
+ * @returns The timestamp of the start of the current day adjusted by the hour offset.
+ */
+export function getCurrentDayTimestamp(hourOffset = 0): number {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const currentTime = Date.now();
+  return getStartOfDayTimestamp(currentTime, offsetMilis);
 }
 
 /**

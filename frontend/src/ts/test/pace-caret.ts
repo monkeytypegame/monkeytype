@@ -1,11 +1,14 @@
 import * as TestWords from "./test-words";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as DB from "../db";
+import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
-import { Caret } from "../utils/caret";
+import { Caret } from "../elements/caret";
+import { qsr } from "../utils/dom";
+import { getUserAverage10, getUserDailyBest } from "../collections/results";
 
 type Settings = {
   wpm: number;
@@ -22,10 +25,7 @@ let startTimestamp = 0;
 
 export let settings: Settings | null = null;
 
-export const caret = new Caret(
-  document.getElementById("paceCaret") as HTMLElement,
-  Config.paceCaretStyle,
-);
+export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
@@ -74,7 +74,7 @@ export async function init(): Promise<void> {
         )
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
-    wpm = await DB.getActiveTagsPB(
+    wpm = getActiveTagsPB(
       Config.mode,
       mode2,
       Config.punctuation,
@@ -84,27 +84,9 @@ export async function init(): Promise<void> {
       Config.lazyMode,
     );
   } else if (Config.paceCaret === "average") {
-    [wpm] = await DB.getUserAverage10(
-      Config.mode,
-      mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-    );
-    wpm = Math.round(wpm);
+    wpm = Math.round((await getUserAverage10({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "daily") {
-    wpm = await DB.getUserDailyBest(
-      Config.mode,
-      mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-    );
-    wpm = Math.round(wpm);
+    wpm = Math.round((await getUserDailyBest({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (Config.paceCaret === "last" || TestState.isPaceRepeat) {
@@ -132,7 +114,12 @@ export async function init(): Promise<void> {
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
-  if (settings === null || !TestState.isActive || TestState.resultVisible) {
+  const currentSettings = settings;
+  if (
+    currentSettings === null ||
+    !TestState.isActive ||
+    TestState.resultVisible
+  ) {
     return;
   }
 
@@ -148,8 +135,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const duration = absoluteStepEnd - now;
 
     caret.goTo({
-      wordIndex: settings.currentWordIndex,
-      letterIndex: settings.currentLetterIndex,
+      wordIndex: currentSettings.currentWordIndex,
+      letterIndex: currentSettings.currentLetterIndex,
       isLanguageRightToLeft: TestState.isLanguageRightToLeft,
       isDirectionReversed: TestState.isDirectionReversed,
       animate: true,
@@ -159,12 +146,14 @@ export async function update(expectedStepEnd: number): Promise<void> {
       },
     });
 
-    // Normal case - schedule next step
-    settings.timeout = setTimeout(
+    currentSettings.timeout = setTimeout(
       () => {
-        update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
-          settings = null;
-        });
+        if (settings !== currentSettings) return;
+        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
+          () => {
+            if (settings === currentSettings) settings = null;
+          },
+        );
       },
       Math.max(0, duration),
     );
@@ -190,7 +179,7 @@ function incrementLetterIndex(): void {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.get(settings.currentWordIndex).length + 1
+      TestWords.words.getText(settings.currentWordIndex).length + 1
     ) {
       //go to the next word
       settings.currentLetterIndex = 0;
@@ -203,7 +192,7 @@ function incrementLetterIndex(): void {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.get(settings.currentWordIndex - 1).length - 1;
+              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -213,7 +202,7 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.get(settings.currentWordIndex).length
+            TestWords.words.getText(settings.currentWordIndex).length
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -260,9 +249,9 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") void init();
-  if (eventKey === "paceCaretStyle") {
+configEvent.subscribe(({ key }) => {
+  if (key === "paceCaret") void init();
+  if (key === "paceCaretStyle") {
     caret.setStyle(Config.paceCaretStyle);
   }
 });

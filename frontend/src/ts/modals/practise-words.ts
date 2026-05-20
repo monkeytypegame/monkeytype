@@ -1,6 +1,7 @@
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
+import { ElementWithUtils } from "../utils/dom";
 
 type State = {
   missed: "off" | "words" | "biwords";
@@ -12,53 +13,44 @@ const state: State = {
   slow: false,
 };
 
-const practiseModal = "#practiseWordsModal .modal";
-
 function updateUI(): void {
-  $(`${practiseModal} .group[data-id="missed"] button`).removeClass("active");
-  $(
-    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`,
-  ).addClass("active");
+  const modalEl = modal.getModal();
+  modalEl.qsa(`.group[data-id="missed"] button`).removeClass("active");
+  modalEl
+    .qs(`.group[data-id="missed"] button[value="${state.missed}"]`)
+    ?.addClass("active");
 
-  $(`${practiseModal} .group[data-id="slow"] button`).removeClass("active");
-  $(
-    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`,
-  ).addClass("active");
+  modalEl.qsa(`.group[data-id="slow"] button`).removeClass("active");
+  modalEl
+    .qs(`.group[data-id="slow"] button[value="${state.slow}"]`)
+    ?.addClass("active");
 
   if (state.missed === "off" && !state.slow) {
-    $(`${practiseModal} .start`).prop("disabled", true);
+    modalEl.qs(`.start`)?.disable();
   } else {
-    $(`${practiseModal} .start`).prop("disabled", false);
+    modalEl.qs(`.start`)?.enable();
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='missed'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.missed = (e.target as HTMLButtonElement).value as
-        | "off"
-        | "words"
-        | "biwords";
-      updateUI();
-    });
-  }
+async function setup(modalEl: ElementWithUtils): Promise<void> {
+  modalEl.qsa(".group[data-id='missed'] button").on("click", (e) => {
+    state.missed = (e.currentTarget as HTMLButtonElement).value as
+      | "off"
+      | "words"
+      | "biwords";
+    updateUI();
+  });
 
-  for (const button of modalEl.querySelectorAll(
-    ".group[data-id='slow'] button",
-  )) {
-    button.addEventListener("click", (e) => {
-      state.slow = (e.target as HTMLButtonElement).value === "true";
-      updateUI();
-    });
-  }
+  modalEl.qsa(".group[data-id='slow'] button").on("click", (e) => {
+    state.slow = (e.currentTarget as HTMLButtonElement).value === "true";
+    updateUI();
+  });
 
-  modalEl.querySelector(".start")?.addEventListener("click", () => {
+  modalEl.qs(".start")?.on("click", () => {
     apply();
   });
 
-  modalEl.addEventListener("submit", (e) => {
+  modalEl.on("submit", (e) => {
     e.preventDefault();
     apply();
   });

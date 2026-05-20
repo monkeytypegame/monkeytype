@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";
@@ -12,7 +12,7 @@ import {
 import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
-import * as Loader from "../../elements/loader";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
@@ -60,9 +60,9 @@ export async function goToNextWord({
   TestInput.pushBurstToHistory(burst);
   ret.lastBurst = burst;
 
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
   TestInput.input.pushHistory();
   TestInput.corrected.pushHistory();
@@ -70,12 +70,12 @@ export async function goToNextWord({
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
     setAwaitingNextWord(true);
-    Loader.show();
+    showLoaderBar();
     await TestLogic.addWord();
-    Loader.hide();
+    hideLoaderBar();
     setAwaitingNextWord(false);
   } else {
-    await TestLogic.addWord();
+    void TestLogic.addWord();
   }
 
   if (
@@ -111,7 +111,7 @@ export function goToPreviousWord(
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 

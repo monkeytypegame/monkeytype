@@ -12,7 +12,7 @@ import { MonkeyRequest } from "../types";
 export async function getConfiguration(
   _req: MonkeyRequest,
 ): Promise<GetConfigurationResponse> {
-  const currentConfiguration = await Configuration.getLiveConfiguration();
+  const currentConfiguration = await Configuration.getCachedConfiguration(true);
   return new MonkeyResponse("Configuration retrieved", currentConfiguration);
 }
 

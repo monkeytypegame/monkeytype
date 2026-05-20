@@ -1,11 +1,14 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWordsModal from "../../modals/practise-words";
-import * as Notifications from "../../elements/notifications";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../states/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
@@ -97,7 +100,7 @@ const commands: Command[] = [
     display: "Toggle word history",
     icon: "fa-align-left",
     exec: (): void => {
-      TestUI.toggleResultWords();
+      void TestUI.toggleResultWords();
     },
     available: (): boolean => {
       return TestState.resultVisible;
@@ -144,10 +147,10 @@ const commands: Command[] = [
 
       navigator.clipboard.writeText(words).then(
         () => {
-          Notifications.add("Copied to clipboard", 1);
+          showSuccessNotification("Copied to clipboard");
         },
         () => {
-          Notifications.add("Failed to copy!", -1);
+          showErrorNotification("Failed to copy!");
         },
       );
     },

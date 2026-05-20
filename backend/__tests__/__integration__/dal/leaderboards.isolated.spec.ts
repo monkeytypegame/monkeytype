@@ -123,7 +123,7 @@ describe("LeaderboardsDal", () => {
       //GIVEN
       const stats = pb(100, 90, 2);
       //@ts-ignore
-      stats["consistency"] = undefined;
+      stats.consistency = undefined;
 
       await createUser(lbBests(stats));
 
@@ -496,7 +496,7 @@ async function createUser(
   userProperties?: Partial<UserDal.DBUser>,
 ): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
-  await UserDal.addUser("User " + uid, uid + "@example.com", uid);
+  await UserDal.addUser(`User ${uid}`, `${uid}@example.com`, uid);
 
   await DB.getDb()
     ?.collection<UserDal.DBUser>("users")
@@ -505,8 +505,8 @@ async function createUser(
       {
         $set: {
           timeTyping: 7200,
-          discordId: "discord " + uid,
-          discordAvatar: "avatar " + uid,
+          discordId: `discord ${uid}`,
+          discordAvatar: `avatar ${uid}`,
           ...userProperties,
           lbPersonalBests,
         },

@@ -8,9 +8,11 @@ button,
 .textButton {
   .fas,
   .far,
-  .fab {
+  .fab,
+  .icon {
     line-height: 1.25;
     pointer-events: none;
+    justify-self: center;
   }
   &.fullWidth {
     width: 100%;
@@ -25,7 +27,6 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-  text-align: center;
   color: var(--text-color);
   cursor: pointer;
   transition:
@@ -36,10 +37,9 @@ input[type="submit"] {
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
-  height: -moz-min-content;
+  align-items: center;
   height: min-content;
   line-height: 1.25;
   appearance: none;
@@ -48,8 +48,8 @@ input[type="submit"] {
   font-size: 1em;
   display: inline-flex;
   gap: 0.5em;
-  align-items: baseline;
   justify-content: center;
+  justify-items: center;
 
   &.danger {
     background: var(--error-color);
@@ -112,10 +112,8 @@ button.text,
   border-radius: var(--roundness);
   background: none;
   text-align: center;
-  -webkit-user-select: none;
   user-select: none;
   align-content: center;
-  height: -moz-min-content;
   height: min-content;
   line-height: 1.25;
   appearance: none;

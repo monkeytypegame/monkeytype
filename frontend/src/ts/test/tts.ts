@@ -1,7 +1,7 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
-import * as ConfigEvent from "../observables/config-event";
-import * as TTSEvent from "../observables/tts-event";
+import { configEvent } from "../events/config";
+import { ttsEvent } from "../events/tts";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
@@ -31,19 +31,19 @@ export async function speak(text: string): Promise<void> {
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "funbox") {
-    if (eventValue === "none") {
-      clear();
-    } else if (eventValue === "tts") {
+configEvent.subscribe(({ key, newValue }) => {
+  if (key === "funbox") {
+    if (newValue.includes("tts")) {
       void init();
+    } else {
+      clear();
     }
   }
-  if (eventKey === "language" && Config.funbox.includes("tts")) {
+  if (key === "language" && Config.funbox.includes("tts")) {
     void setLanguage();
   }
 });
 
-TTSEvent.subscribe((text) => {
+ttsEvent.subscribe((text) => {
   void speak(text);
 });

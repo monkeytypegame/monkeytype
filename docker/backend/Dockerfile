@@ -8,12 +8,12 @@ COPY packages packages
 COPY backend backend
 
 #gimme pnpm + build
-RUN npm i -g pnpm && \
+RUN npm i -g pnpm@10.28.1 && \
     pnpm i --frozen-lockfile && \
     npm run build
 
 #deploy (install all non-dev dependencies in a single node_module folder)
-RUN pnpm deploy --filter backend --prod /prod/backend
+RUN pnpm deploy --legacy --filter backend --prod /prod/backend
 
 #---------------------------------
 

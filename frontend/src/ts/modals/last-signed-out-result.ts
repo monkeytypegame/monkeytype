@@ -1,14 +1,16 @@
 import AnimatedModal from "../utils/animated-modal";
 
 import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import { syncNotSignedInLastResult } from "../utils/results";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 
 function reset(): void {
-  (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
+  modal.getModal().qs(".result")?.setHtml(`
   <div class="group wpm">
         <div class="sub">wpm</div>
         <div class="val">-</div>
@@ -32,7 +34,7 @@ function reset(): void {
       <div class="group testType">
         <div class="sub">test type</div>
         <div class="val">-</div>
-      </div>`;
+      </div>`);
 }
 
 function fillData(): void {
@@ -58,24 +60,24 @@ function fillData(): void {
   // };
 
   fillGroup("wpm", r.wpm);
-  fillGroup("acc", r.acc + "%");
+  fillGroup("acc", `${r.acc}%`);
   fillGroup("raw", r.rawWpm);
-  fillGroup("con", r.consistency + "%");
+  fillGroup("con", `${r.consistency}%`);
   fillGroup("chardata", r.charStats.join("/"));
 
-  let tt = r.mode + " " + r.mode2;
+  let tt = `${r.mode} ${r.mode2}`;
 
-  tt += "<br>" + r.language;
+  tt += `<br>${r.language}`;
 
   if (r.numbers) tt += "<br>numbers";
   if (r.punctuation) tt += "<br>punctuation";
   if (r.blindMode) tt += "<br>blind";
   if (r.lazyMode) tt += "<br>lazy";
   if (r.funbox.length > 0) {
-    tt += "<br>" + r.funbox.map((it) => it.replace(/_/g, " ")).join(",");
+    tt += `<br>${r.funbox.map((it) => it.replace(/_/g, " ")).join(",")}`;
   }
-  if (r.difficulty !== "normal") tt += "<br>" + r.difficulty;
-  if (r.tags.length > 0) tt += "<br>" + r.tags.length + " tags";
+  if (r.difficulty !== "normal") tt += `<br>${r.difficulty}`;
+  if (r.tags.length > 0) tt += `<br>${r.tags.length} tags`;
 
   fillGroup("testType", tt, true);
 }
@@ -85,18 +87,20 @@ function fillGroup(
   text: string | number,
   html = false,
 ): void {
+  const el = modal.getModal().qs(`.group.${groupClass} .val`);
+  if (!el) return;
+
   if (html) {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).html(`${text}`);
+    el.setHtml(`${text}`);
   } else {
-    $(modal.getModal()).find(`.group.${groupClass} .val`).text(text);
+    el.setText(`${text}`);
   }
 }
 
 export function show(): void {
   if (!TestLogic.notSignedInLastResult) {
-    Notifications.add(
+    showErrorNotification(
       "Failed to show last signed out result modal: no last result",
-      -1,
     );
     return;
   }
@@ -113,7 +117,7 @@ function hide(): void {
   void modal.hide();
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     if (TestLogic.notSignedInLastResult !== null) {
       show();
@@ -124,18 +128,16 @@ AuthEvent.subscribe((event) => {
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
-    modalEl
-      .querySelector("button.save")
-      ?.addEventListener("click", async () => {
-        const user = getAuthenticatedUser();
-        if (user !== null) {
-          void syncNotSignedInLastResult(user.uid);
-        }
-        hide();
-      });
-    modalEl.querySelector("button.discard")?.addEventListener("click", () => {
+    modalEl.qs("button.save")?.on("click", async () => {
+      const user = getAuthenticatedUser();
+      if (user !== null) {
+        void TestLogic.syncNotSignedInLastResult(user.uid);
+      }
+      hide();
+    });
+    modalEl.qs("button.discard")?.on("click", () => {
       TestLogic.clearNotSignedInResult();
-      Notifications.add("Last test result discarded", 0);
+      showNoticeNotification("Last test result discarded");
       hide();
     });
   },

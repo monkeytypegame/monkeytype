@@ -13,7 +13,7 @@ export function createETagGenerator(options: {
   return function generateETag(body, encoding) {
     const buf = !Buffer.isBuffer(body) ? Buffer.from(body, encoding) : body;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    // oxlint-disable-next-line no-unsafe-assignment, no-unsafe-call
     const generatedTag: string = etag(buf, options);
 
     //custom code to add the version number

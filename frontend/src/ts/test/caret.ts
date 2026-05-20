@@ -1,9 +1,10 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestInput from "./test-input";
 import * as TestState from "../test/test-state";
-import { subscribe } from "../observables/config-event";
-import { Caret } from "../utils/caret";
-import * as CompositionState from "../states/composition";
+import { configEvent } from "../events/config";
+import { Caret } from "../elements/caret";
+import * as CompositionState from "../legacy-states/composition";
+import { qsr } from "../utils/dom";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -40,17 +41,14 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-export const caret = new Caret(
-  document.getElementById("caret") as HTMLElement,
-  Config.caretStyle,
-);
+export const caret = new Caret(qsr("#caret"), Config.caretStyle);
 
-subscribe((eventKey) => {
-  if (eventKey === "caretStyle") {
+configEvent.subscribe(({ key }) => {
+  if (key === "caretStyle") {
     caret.setStyle(Config.caretStyle);
     updatePosition(true);
   }
-  if (eventKey === "smoothCaret") {
+  if (key === "smoothCaret") {
     caret.updateBlinkingAnimation();
   }
 });

@@ -1,23 +1,29 @@
 import * as Misc from "../utils/misc";
-import * as PageTransition from "../states/page-transition";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
-import * as Commandline from "../commandline/commandline";
-import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
+import * as PageTransition from "../legacy-states/page-transition";
+import { Config } from "../config/store";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
-import * as TestLogic from "../test/test-logic";
-import { navigate } from "../controllers/route-controller";
 import { isInputElementFocused } from "../input/input-element";
-import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestState from "../test/test-state";
+import { isDevEnvironment } from "../utils/env";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
-  const pageTestActive: boolean = ActivePage.get() === "test";
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  const pageTestActive: boolean = getActivePage() === "test";
   if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
@@ -35,55 +41,6 @@ document.addEventListener("keydown", (e) => {
       }
     }
   }
-
-  if (
-    (e.key === "Escape" && Config.quickRestart !== "esc") ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      !TestWords.hasTab &&
-      !e.shiftKey) ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      TestWords.hasTab &&
-      e.shiftKey) ||
-    (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
-  ) {
-    e.preventDefault();
-    const popupVisible = Misc.isAnyPopupVisible();
-    if (!popupVisible) {
-      Commandline.show();
-    }
-  }
-
-  if (!isInputElementFocused()) {
-    const isInteractiveElement =
-      document.activeElement?.tagName === "INPUT" ||
-      document.activeElement?.tagName === "TEXTAREA" ||
-      document.activeElement?.tagName === "SELECT" ||
-      document.activeElement?.tagName === "BUTTON" ||
-      document.activeElement?.classList.contains("button") ||
-      document.activeElement?.classList.contains("textButton");
-
-    if (
-      (e.key === "Tab" &&
-        Config.quickRestart === "tab" &&
-        !isInteractiveElement) ||
-      (e.key === "Escape" && Config.quickRestart === "esc") ||
-      (e.key === "Enter" &&
-        Config.quickRestart === "enter" &&
-        !isInteractiveElement)
-    ) {
-      e.preventDefault();
-      if (ActivePage.get() === "test") {
-        if (e.shiftKey) {
-          ManualRestart.set();
-        }
-        TestLogic.restart();
-      } else {
-        void navigate("");
-      }
-    }
-  }
 });
 
 //stop space scrolling
@@ -97,23 +54,23 @@ window.addEventListener("keydown", function (e) {
 });
 
 window.onerror = function (message, url, line, column, error): void {
-  if (Misc.isDevEnvironment()) {
-    Notifications.add(error?.message ?? "Undefined message", -1, {
+  if (isDevEnvironment()) {
+    showErrorNotification(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
-      duration: 5,
+      durationMs: 5000,
       important: true,
     });
+    console.error({ message, url, line, column, error });
   }
 };
 
 window.onunhandledrejection = function (e): void {
-  if (Misc.isDevEnvironment()) {
-    Notifications.add(
+  if (isDevEnvironment()) {
+    showErrorNotification(
       (e.reason as Error).message ?? e.reason ?? "Undefined message",
-      -1,
       {
         customTitle: "DEV: Unhandled rejection",
-        duration: 5,
+        durationMs: 5000,
         important: true,
       },
     );

@@ -57,26 +57,25 @@ async function getLog() {
 }
 
 function itemIsAddingQuotes(item) {
-  const scopeIsQuote =
-    item.scope?.includes("quote") ||
-    item.scope?.includes("quotes") ||
-    item.message?.includes("quote");
+  const typeIsImprovement = item.type === "impr";
+  const scopeIsQuote = item.scope?.includes("quote");
 
-  const messageAdds =
-    item.message.includes("add") ||
-    item.message.includes("added") ||
-    item.message.includes("adding") ||
-    item.message.includes("adds");
+  const messageAdds = item.message.startsWith("add");
 
-  return scopeIsQuote && messageAdds;
+  const messageQuotes =
+    item.message.endsWith("quote") === true || item.message.endsWith("quotes");
+
+  return typeIsImprovement && scopeIsQuote && messageAdds && messageQuotes;
 }
 
 function itemIsAddressingQuoteReports(item) {
   const scopeIsQuote =
-    item.scope?.includes("quote") || item.scope?.includes("quotes");
+    item.scope?.includes("quote") === true ||
+    item.scope?.includes("quotes") === true;
 
   const messageReport =
-    item.message.includes("report") || item.message.includes("reports");
+    item.message.includes("report") === true ||
+    item.message.includes("reports") === true;
 
   return scopeIsQuote && messageReport;
 }
@@ -272,9 +271,9 @@ function convertStringToLog(logString) {
         type,
         scope,
         message,
-        usernames: usernames || [],
-        prs: prs || [],
-        body: body || "",
+        usernames: usernames ?? [],
+        prs: prs ?? [],
+        body: body ?? "",
       });
     } else {
       // console.log({ hash, shortHash, title, body });
@@ -376,7 +375,7 @@ async function main() {
   let final = "";
 
   if (contributorCount > 0) {
-    final += header + "\n\n\n";
+    final += `${header}\n\n\n`;
   }
 
   const sections = [];
@@ -391,7 +390,7 @@ async function main() {
 
   const footer = buildFooter(log);
   if (footer) {
-    final += "\n" + footer;
+    final += `\n${footer}`;
   }
 
   console.log(final);

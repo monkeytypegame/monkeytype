@@ -57,6 +57,7 @@ export async function replace(word: string): Promise<string> {
     RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
     (_, $1, $2, $3) =>
       $1 +
+      // oxlint-disable-next-line typescript/prefer-string-starts-ends-with
       (($2 as string).charAt(0) === ($2 as string).charAt(0).toUpperCase()
         ? shouldWholeReplacementWordBeCapitalised($2 as string)
           ? randomReplacement.toUpperCase()

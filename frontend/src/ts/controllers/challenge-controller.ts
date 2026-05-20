@@ -1,13 +1,19 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Notifications from "../elements/notifications";
-import * as ManualRestart from "../test/manual-restart-tracker";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
-import Config, * as UpdateConfig from "../config";
-import * as ConfigEvent from "../observables/config-event";
+
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import {
   Config as ConfigType,
@@ -20,17 +26,19 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
+import { qs } from "../utils/dom";
+import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 
 let challengeLoading = false;
 
 export function clearActive(): void {
   if (
-    TestState.activeChallenge &&
+    getLoadedChallenge() !== null &&
     !challengeLoading &&
     !TestState.testRestarting
   ) {
-    Notifications.add("Challenge cleared", 0);
-    TestState.setActiveChallenge(null);
+    showNoticeNotification("Challenge cleared");
+    setLoadedChallenge(null);
   }
 }
 
@@ -141,31 +149,30 @@ function verifyRequirement(
 }
 
 export function verify(result: CompletedEvent): string | null {
-  if (!TestState.activeChallenge) return null;
+  const loadedChallenge = getLoadedChallenge();
+
+  if (loadedChallenge === null) return null;
 
   try {
     const afk = (result.afkDuration / result.testDuration) * 100;
 
     if (afk > 10) {
-      Notifications.add(`Challenge failed: AFK time is greater than 10%`, 0);
+      showNoticeNotification(`Challenge failed: AFK time is greater than 10%`);
       return null;
     }
 
-    if (TestState.activeChallenge.requirements === undefined) {
-      Notifications.add(
-        `${TestState.activeChallenge.display} challenge passed!`,
-        1,
-      );
-      return TestState.activeChallenge.name;
+    if (loadedChallenge.requirements === undefined) {
+      showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
+      return loadedChallenge.name || null;
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
       for (const requirementType of Misc.typedKeys(
-        TestState.activeChallenge.requirements,
+        loadedChallenge.requirements,
       )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
-          TestState.activeChallenge.requirements,
+          loadedChallenge.requirements,
           requirementType,
         );
         if (!passed) {
@@ -174,35 +181,27 @@ export function verify(result: CompletedEvent): string | null {
         failReasons.push(...requirementFailReasons);
       }
       if (requirementsMet) {
-        if (TestState.activeChallenge.autoRole) {
-          Notifications.add(
+        if (loadedChallenge.autoRole) {
+          showSuccessNotification(
             "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
-            1,
-            {
-              duration: 5,
-            },
+            { durationMs: 5000 },
           );
         }
-        Notifications.add(
-          `${TestState.activeChallenge.display} challenge passed!`,
-          1,
-        );
-        return TestState.activeChallenge.name;
+        showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
+        return loadedChallenge.name;
       } else {
-        Notifications.add(
+        showNoticeNotification(
           `${
-            TestState.activeChallenge.display
+            loadedChallenge.display
           } challenge failed: ${failReasons.join(", ")}`,
-          0,
         );
         return null;
       }
     }
   } catch (e) {
     console.error(e);
-    Notifications.add(
+    showNoticeNotification(
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
-      0,
     );
     return null;
   }
@@ -211,16 +210,14 @@ export function verify(result: CompletedEvent): string | null {
 export async function setup(challengeName: string): Promise<boolean> {
   challengeLoading = true;
 
-  UpdateConfig.setFunbox([]);
+  setConfig("funbox", []);
 
   const { data: list, error } = await tryCatch(JSONData.getChallengeList());
   if (error) {
-    const message = Misc.createErrorMessage(error, "Failed to setup challenge");
-    Notifications.add(message, -1);
-    ManualRestart.set();
+    showErrorNotification("Failed to setup challenge", { error });
     setTimeout(() => {
-      $("header .config").removeClass("hidden");
-      $(".page.pageTest").removeClass("hidden");
+      qs("header .config")?.show();
+      qs(".page.pageTest")?.show();
     }, 250);
     return false;
   }
@@ -231,41 +228,62 @@ export async function setup(challengeName: string): Promise<boolean> {
   let notitext;
   try {
     if (challenge === undefined) {
-      Notifications.add("Challenge not found", 0);
-      ManualRestart.set();
+      showNoticeNotification("Challenge not found");
       setTimeout(() => {
-        $("header .config").removeClass("hidden");
-        $(".page.pageTest").removeClass("hidden");
+        qs("header .config")?.show();
+        qs(".page.pageTest")?.show();
       }, 250);
       return false;
     }
     if (challenge.type === "customTime") {
-      UpdateConfig.setTimeConfig(challenge.parameters[0] as number, true);
-      UpdateConfig.setMode("time", true);
-      UpdateConfig.setDifficulty("normal", true);
+      setConfig("time", challenge.parameters[0] as number, {
+        nosave: true,
+      });
+      setConfig("mode", "time", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.name === "englishMaster") {
-        UpdateConfig.setLanguage("english_10k", true);
-        UpdateConfig.setNumbers(true, true);
-        UpdateConfig.setPunctuation(true, true);
+        setConfig("language", "english_10k", {
+          nosave: true,
+        });
+        setConfig("numbers", true, {
+          nosave: true,
+        });
+        setConfig("punctuation", true, {
+          nosave: true,
+        });
       }
     } else if (challenge.type === "customWords") {
-      UpdateConfig.setWordCount(challenge.parameters[0] as number, true);
-      UpdateConfig.setMode("words", true);
-      UpdateConfig.setDifficulty("normal", true);
+      setConfig("words", challenge.parameters[0] as number, {
+        nosave: true,
+      });
+      setConfig("mode", "words", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setMode(challenge.parameters[1] as CustomTextMode);
       CustomText.setLimitValue(challenge.parameters[2] as number);
       CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
-      UpdateConfig.setMode("custom", true);
-      UpdateConfig.setDifficulty("normal", true);
+      setConfig("mode", "custom", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
     } else if (challenge.type === "script") {
-      Loader.show();
+      showLoaderBar();
       const response = await fetch(
-        "/challenges/" + (challenge.parameters[0] as string),
+        `/challenges/${challenge.parameters[0] as string}`,
       );
-      Loader.hide();
+      hideLoaderBar();
       if (response.status !== 200) {
         throw new Error(`${response.status} ${response.statusText}`);
       }
@@ -277,66 +295,117 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setMode("repeat");
       CustomText.setLimitMode("word");
       CustomText.setPipeDelimiter(false);
-      UpdateConfig.setMode("custom", true);
-      UpdateConfig.setDifficulty("normal", true);
+      setConfig("mode", "custom", {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.parameters[1] !== null) {
-        UpdateConfig.setTheme(challenge.parameters[1] as ThemeName);
+        setConfig("theme", challenge.parameters[1] as ThemeName);
       }
       if (challenge.parameters[2] !== null) {
         void Funbox.activate(challenge.parameters[2] as FunboxName[]);
       }
     } else if (challenge.type === "accuracy") {
-      UpdateConfig.setTimeConfig(0, true);
-      UpdateConfig.setMode("time", true);
-      UpdateConfig.setDifficulty("master", true);
+      setConfig("time", 0, {
+        nosave: true,
+      });
+      setConfig("mode", "time", {
+        nosave: true,
+      });
+      setConfig("difficulty", "master", {
+        nosave: true,
+      });
     } else if (challenge.type === "funbox") {
-      UpdateConfig.setFunbox(challenge.parameters[0] as FunboxName[], true);
-      UpdateConfig.setDifficulty("normal", true);
+      setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+        nosave: true,
+      });
+      setConfig("difficulty", "normal", {
+        nosave: true,
+      });
       if (challenge.parameters[1] === "words") {
-        UpdateConfig.setWordCount(challenge.parameters[2] as number, true);
+        setConfig("words", challenge.parameters[2] as number, {
+          nosave: true,
+        });
       } else if (challenge.parameters[1] === "time") {
-        UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
+        setConfig("time", challenge.parameters[2] as number, {
+          nosave: true,
+        });
       }
-      UpdateConfig.setMode(challenge.parameters[1] as Mode, true);
+      setConfig("mode", challenge.parameters[1] as Mode, {
+        nosave: true,
+      });
       if (challenge.parameters[3] !== undefined) {
-        UpdateConfig.setDifficulty(challenge.parameters[3] as Difficulty, true);
+        setConfig("difficulty", challenge.parameters[3] as Difficulty, {
+          nosave: true,
+        });
       }
-    } else if (challenge.type === "special") {
+    } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
-        UpdateConfig.setMode("time", true);
-        UpdateConfig.setTimeConfig(120, true);
-        UpdateConfig.setLanguage("english_10k", true);
-        UpdateConfig.setPunctuation(true, true);
-        UpdateConfig.setStopOnError("word", true);
-        UpdateConfig.setLayout("semimak", true);
-        UpdateConfig.setKeymapLayout("overrideSync", true);
-        UpdateConfig.setKeymapMode("static", true);
+        setConfig("mode", "time", {
+          nosave: true,
+        });
+        setConfig("time", 120, {
+          nosave: true,
+        });
+        setConfig("language", "english_10k", {
+          nosave: true,
+        });
+        setConfig("punctuation", true, {
+          nosave: true,
+        });
+        setConfig("stopOnError", "word", {
+          nosave: true,
+        });
+        setConfig("layout", "semimak", {
+          nosave: true,
+        });
+        setConfig("keymapLayout", "overrideSync", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "static", {
+          nosave: true,
+        });
+      } else if (challenge.name === "wingdings") {
+        // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
+        setConfig("mode", "words", {
+          nosave: true,
+        });
+        setConfig("words", 10, {
+          nosave: true,
+        });
+        setConfig("difficulty", "master", {
+          nosave: true,
+        });
+        setConfig("fontFamily", "Wingdings", {
+          nosave: true,
+        });
+        setConfig("keymapMode", "off", {
+          nosave: true,
+        });
       }
     }
-    ManualRestart.set();
     notitext = challenge.message;
-    $("header .config").removeClass("hidden");
-    $(".page.pageTest").removeClass("hidden");
+    qs("header .config")?.show();
+    qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
-      Notifications.add(`Challenge '${challenge.display}' loaded.`, 0);
+      showSuccessNotification(`Challenge '${challenge.display}' loaded.`);
     } else {
-      Notifications.add("Challenge loaded. " + notitext, 0);
+      showSuccessNotification(`Challenge loaded. ${notitext}`);
     }
-    TestState.setActiveChallenge(challenge);
+    setLoadedChallenge(challenge);
     challengeLoading = false;
     return true;
   } catch (e) {
-    Notifications.add(
-      Misc.createErrorMessage(e, "Failed to load challenge"),
-      -1,
-    );
+    showErrorNotification("Failed to load challenge", { error: e });
     return false;
   }
 }
 
-ConfigEvent.subscribe((eventKey) => {
+configEvent.subscribe(({ key }) => {
   if (
     [
       "difficulty",
@@ -353,7 +422,8 @@ ConfigEvent.subscribe((eventKey) => {
       "keymapMode",
       "keymapLayout",
       "layout",
-    ].includes(eventKey)
+      "fontFamily",
+    ].includes(key)
   ) {
     clearActive();
   }

@@ -33,7 +33,7 @@ describe("sanitize function", () => {
       );
 
       if (expected.numbers === false) {
-        sanitized.toThrowError();
+        sanitized.toThrow();
       } else if (expected.numbers === true) {
         sanitized.toStrictEqual(input);
       } else {
@@ -50,7 +50,7 @@ describe("sanitize function", () => {
         );
 
         if (expected.numbersMin === false) {
-          sanitized.toThrowError();
+          sanitized.toThrow();
         } else if (expected.numbersMin === true) {
           sanitized.toStrictEqual(input);
         } else {
@@ -151,6 +151,18 @@ describe("sanitize function", () => {
           optional: { name: "Alice", age: 23 },
         },
       },
+      {
+        input: {
+          name: "Alice",
+          //results in two errors on the same path. array with invalid value and not enough items
+          enumArray: ["invalid" as any],
+        },
+        expected: {
+          mandatory: false,
+          partial: { name: "Alice" }, //enumArray is removed
+          optional: false,
+        },
+      },
     ];
 
     it.for(testCases)("object mandatory with $input", ({ input, expected }) => {
@@ -161,7 +173,7 @@ describe("sanitize function", () => {
       );
 
       if (expected.mandatory === false) {
-        sanitized.toThrowError();
+        sanitized.toThrow();
       } else if (expected.mandatory === true) {
         sanitized.toStrictEqual(input);
       } else {
@@ -178,7 +190,7 @@ describe("sanitize function", () => {
         );
 
         if (expected.partial === false) {
-          sanitized.toThrowError();
+          sanitized.toThrow();
         } else if (expected.partial === true) {
           sanitized.toStrictEqual(input);
         } else {
@@ -194,7 +206,7 @@ describe("sanitize function", () => {
       );
 
       if (expected.optional === false) {
-        sanitized.toThrowError();
+        sanitized.toThrow();
       } else if (expected.optional === true) {
         sanitized.toStrictEqual(input);
       } else {
@@ -288,7 +300,7 @@ describe("sanitize function", () => {
       );
 
       if (expected.mandatory === false) {
-        sanitized.toThrowError();
+        sanitized.toThrow();
       } else if (expected.mandatory === true) {
         sanitized.toStrictEqual(input);
       } else {
@@ -303,7 +315,7 @@ describe("sanitize function", () => {
       );
 
       if (expected.partial === false) {
-        sanitized.toThrowError();
+        sanitized.toThrow();
       } else if (expected.partial === true) {
         sanitized.toStrictEqual(input);
       } else {
@@ -320,7 +332,7 @@ describe("sanitize function", () => {
         );
 
         if (expected.minArray === false) {
-          sanitized.toThrowError();
+          sanitized.toThrow();
         } else if (expected.minArray === true) {
           sanitized.toStrictEqual(input);
         } else {
@@ -365,7 +377,7 @@ describe("sanitize function", () => {
     } as any;
     expect(() => {
       sanitize(schema.required().strip(), obj);
-    }).toThrowError(
+    }).toThrow(
       "unable to sanitize: name: Required, age: Required, tags: Required, enumArray: Required",
     );
   });

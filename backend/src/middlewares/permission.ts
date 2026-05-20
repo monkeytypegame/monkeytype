@@ -136,11 +136,13 @@ export function verifyPermissions<
 function getRequiredPermissionIds(
   metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
-  if (metadata === undefined || metadata.requirePermission === undefined)
+  if (metadata === undefined || metadata.requirePermission === undefined) {
     return undefined;
+  }
 
-  if (Array.isArray(metadata.requirePermission))
+  if (Array.isArray(metadata.requirePermission)) {
     return metadata.requirePermission;
+  }
   return [metadata.requirePermission];
 }
 
@@ -186,11 +188,12 @@ async function checkUserPermissions(
   )) as DBUser;
 
   for (const check of checks) {
-    if (!check.criteria(user))
+    if (!check.criteria(user)) {
       return {
         passed: false,
         invalidMessage: check.invalidMessage,
       };
+    }
   }
 
   return {

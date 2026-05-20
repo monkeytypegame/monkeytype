@@ -50,9 +50,9 @@
       "id": 7
     },
     {
-      "text": "El ímpetu, producto de la masa por la velocidad de un cuerpo se conserva entre portales. Para los nuevos, si entras rápido sales rápido.",
+      "text": "El ímpetu, producto de la masa por la velocidad de un cuerpo, se conserva entre portales. Para los nuevos, si entras rápido sales rápido.",
       "source": "Portal 1",
-      "length": 136,
+      "length": 137,
       "id": 8
     },
     {
@@ -446,7 +446,7 @@
       "id": 78
     },
     {
-      "text": "El trabajo del pensamiento se parece a la perforación de un pozo: el agua es turbia al principio, más luego se clarifica.",
+      "text": "El trabajo del pensamiento se parece a la perforación de un pozo: el agua es turbia al principio, mas luego se clarifica.",
       "source": "Proverbio chino",
       "length": 121,
       "id": 79
@@ -1158,6 +1158,36 @@
       "source": "Antonio Machado",
       "length": 155,
       "id": 201
+    },
+    {
+      "text": "El dolor por tu ausencia es punzante y atormentador. Daría lo que fuera por no conocerlo; cualquier cosa, excepto nunca haberte conocido (lo cual sería aún peor).",
+      "source": "Plume - Outer Wilds",
+      "length": 162,
+      "id": 202
+    },
+    {
+      "text": "Nuestra curiosidad te acompaña en tu viaje. Sigues los pasos de quienes te precedieron, y tu camino guía a quienes te seguirán después.",
+      "source": "Outer Wilds",
+      "length": 135,
+      "id": 203
+    },
+    {
+      "text": "Si muero, lo haré habiendo vivido bien mi vida. No es el destino lo que importa, sino cómo se llega a él.",
+      "source": "El camino de los Reyes - Brandon Sanderson",
+      "length": 105,
+      "id": 204
+    },
+    {
+      "text": "Dentro, soy yo. Un yo muy distinto del que era hace un año, pero no puedo preocuparme por eso, así que sigo adelante y espero que mis pies me lleven adonde necesito ir.",
+      "source": "El camino de los Reyes - Brandon Sanderson",
+      "length": 168,
+      "id": 205
+    },
+    {
+      "text": "Todas las historias han sido ya contadas antes. Nos las contamos a nosotros mismos, como han hecho todos los hombres que han existido. Y todos los hombres que existirán. Lo único nuevo son los nombres.",
+      "source": "Palabras Radiantes - Brandon Sanderson",
+      "length": 201,
+      "id": 206
     }
   ]
 }

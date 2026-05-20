@@ -1,6 +1,7 @@
 {
   "name": "esperanto_h_sistemo_25k",
   "noLazyMode": true,
+  "orderedByFrequency": true,
   "words": [
     "la",
     "mi",

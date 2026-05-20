@@ -1,5 +1,5 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, StringNumberSchema } from "./util";
+import { IdSchema, nameWithSeparators, slug, StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
@@ -12,16 +12,15 @@ import {
   PersonalBestSchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
-import { doesNotContainProfanity } from "./validation/validation";
+import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
+
+export const ResultFilterPresetNameSchema = slug().max(16);
 
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: z
-    .string()
-    .regex(/^[0-9a-zA-Z_.-]+$/)
-    .max(16),
+  name: ResultFilterPresetNameSchema,
   pb: z
     .object({
       no: z.boolean(),
@@ -59,8 +58,9 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;
 
-export const StreakHourOffsetSchema = z.number().int().min(-11).max(12);
+export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;
 
 export const UserStreakSchema = z
@@ -72,11 +72,13 @@ export const UserStreakSchema = z
   })
   .strict();
 export type UserStreak = z.infer<typeof UserStreakSchema>;
+export const TagNameSchema = nameWithSeparators().max(16);
+export type TagName = z.infer<typeof TagNameSchema>;
 
 export const UserTagSchema = z
   .object({
     _id: IdSchema,
-    name: z.string(),
+    name: TagNameSchema,
     personalBests: PersonalBestsSchema,
   })
   .strict();
@@ -85,24 +87,18 @@ export type UserTag = z.infer<typeof UserTagSchema>;
 function profileDetailsBase(
   schema: ZodString,
 ): ZodEffects<ZodOptional<ZodEffects<ZodString>>> {
-  return doesNotContainProfanity("word", schema)
+  return doesNotContainDisallowedWords("word", schema)
     .optional()
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(20)
-    .regex(/^[0-9a-zA-Z_.-]+$/),
-).or(z.literal(""));
+export const TwitterProfileSchema = profileDetailsBase(slug().max(15)).or(
+  z.literal(""),
+);
 
-export const GithubProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(39)
-    .regex(/^[0-9a-zA-Z_.-]+$/),
-).or(z.literal(""));
+export const GithubProfileSchema = profileDetailsBase(slug().max(39)).or(
+  z.literal(""),
+);
 
 export const WebsiteSchema = profileDetailsBase(
   z.string().url().max(200).startsWith("https://"),
@@ -125,10 +121,7 @@ export const UserProfileDetailsSchema = z
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
-export const CustomThemeNameSchema = z
-  .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
-  .max(16);
+export const CustomThemeNameSchema = nameWithSeparators().max(16);
 export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
 export const CustomThemeSchema = z
@@ -242,16 +235,18 @@ export const FavoriteQuotesSchema = z.record(
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
 export const UserEmailSchema = z.string().email();
-export const UserNameSchema = doesNotContainProfanity(
+
+/**
+ * username schema without profanity check
+ */
+export const UserNameWithoutFilterSchema = slug().min(1).max(16);
+
+/**
+ * username schema with profanity check
+ */
+export const UserNameSchema = doesNotContainDisallowedWords(
   "substring",
-  z
-    .string()
-    .min(1)
-    .max(16)
-    .regex(
-      /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscore and minus.",
-    ),
+  UserNameWithoutFilterSchema,
 );
 
 export const UserSchema = z.object({
@@ -260,7 +255,7 @@ export const UserSchema = z.object({
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
-  lastReultHashes: z.array(z.string()).optional(), //todo: fix typo (its in the db too)
+  lastReultHashes: z.array(z.string()).optional(), //TODO: fix typo (it's in the db too)
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
   timeTyping: z
@@ -296,12 +291,6 @@ export type ResultFiltersGroup = keyof ResultFilters;
 
 export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
   keyof ResultFilters[T];
-
-export const TagNameSchema = z
-  .string()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
-  .max(16);
-export type TagName = z.infer<typeof TagNameSchema>;
 
 export const TypingStatsSchema = z.object({
   completedTests: z.number().int().nonnegative().optional(),

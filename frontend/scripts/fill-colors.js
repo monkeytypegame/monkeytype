@@ -1,4 +1,4 @@
-// eslint-disable no-require-imports
+// oxlint-disable no-require-imports
 const fs = require("fs");
 
 function main() {

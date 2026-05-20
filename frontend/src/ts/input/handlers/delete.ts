@@ -4,7 +4,7 @@ import * as TestInput from "../../test/test-input";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import * as Replay from "../../test/replay";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 import { logTestEvent } from "../../test/events/data";
@@ -23,7 +23,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
-    .getCurrent()
+    .getCurrentText()
     .startsWith(TestInput.input.current);
 
   //special check for code languages

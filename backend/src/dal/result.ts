@@ -21,7 +21,7 @@ export async function addResult(
   const { data: user } = await tryCatch(getUser(uid, "add result"));
 
   if (!user) throw new MonkeyError(404, "User not found", "add result");
-  if (result.uid === undefined) result.uid = uid;
+  result.uid ??= uid;
   // result.ir = true;
   const res = await getResultCollection().insertOne(result);
   return {

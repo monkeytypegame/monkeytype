@@ -1,25 +1,54 @@
-import Config from "./config";
+import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import * as TestState from "./test/test-state";
-import * as ConfigEvent from "./observables/config-event";
+import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { get as getActivePage } from "./states/active-page";
-import { isDevEnvironment } from "./utils/misc";
-import { isCustomTextLong } from "./states/custom-text-name";
+import { getActivePage, getGlobalOffsetTop } from "./states/core";
+import { isDevEnvironment } from "./utils/env";
+import { isCustomTextLong } from "./legacy-states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
-import { applyFontFamily } from "./controllers/theme-controller";
+import { qs, qsr } from "./utils/dom";
+import { createEffect } from "solid-js";
+import fileStorage from "./utils/file-storage";
+import { convertRemToPixels } from "./utils/numbers";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replaceAll(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"',
+    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "Vazirharf", "monospace"`,
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
+}
+
+export async function applyFontFamily(): Promise<void> {
+  let font = Config.fontFamily.replace(/_/g, " ");
+
+  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
+  if (localFont === undefined) {
+    //use config font
+    qs(".customFont")?.empty();
+  } else {
+    font = "LOCALCUSTOM";
+
+    qs(".customFont")?.setHtml(`
+      @font-face{ 
+        font-family: LOCALCUSTOM;
+        src: url(${localFont});
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }`);
+  }
+
+  document.documentElement.style.setProperty(
+    "--font",
+    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
+  );
 }
 
 export function clearFontPreview(): void {
@@ -40,27 +69,11 @@ export function setMediaQueryDebugLevel(level: number): void {
   }
 }
 
-function updateKeytips(): void {
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey =
-    userAgent.includes("mac") && !userAgent.includes("firefox")
-      ? "cmd"
-      : "ctrl";
-
-  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
-  $("footer .keyTips").html(`
-    ${
-      Config.quickRestart === "off"
-        ? "<key>tab</key> + <key>enter</key>"
-        : `<key>${Config.quickRestart}</key>`
-    } - restart test<br>
-    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-}
-
 if (isDevEnvironment()) {
-  $("header #logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  $("body").append(
+  qs("head title")?.setText(
+    `${qs("head title")?.native.textContent ?? ""} (localhost)`,
+  );
+  qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
   );
 }
@@ -81,7 +94,7 @@ window.addEventListener("beforeunload", (event) => {
     if (TestState.isActive) {
       event.preventDefault();
       // Included for legacy support, e.g. Chrome/Edge < 119
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      // oxlint-disable-next-line no-deprecated
       event.returnValue = "";
     }
   }
@@ -107,21 +120,19 @@ const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
-$(window).on("resize", () => {
+window.addEventListener("resize", () => {
   throttledEvent();
   debouncedEvent();
 });
 
-ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "quickRestart") updateKeytips();
-  if (eventKey === "showKeyTips") {
-    if (Config.showKeyTips) {
-      $("footer .keyTips").removeClass("hidden");
-    } else {
-      $("footer .keyTips").addClass("hidden");
-    }
-  }
-  if (eventKey === "fontFamily") {
+createEffect(() => {
+  qsr("#app").setStyle({
+    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
+  });
+});
+
+configEvent.subscribe(async ({ key }) => {
+  if (key === "fontFamily") {
     await applyFontFamily();
   }
 });

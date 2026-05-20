@@ -1,6 +1,12 @@
 import { z, ZodIssue } from "zod";
 import { tryCatchSync } from "./trycatch";
 
+function prettyErrorMessage(issue: ZodIssue | undefined): string {
+  if (issue === undefined) return "";
+  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
+  return `${path}${issue.message.toLowerCase()}`;
+}
+
 /**
  * Parse a JSON string into an object and validate it against a schema
  * @param json  JSON string
@@ -29,11 +35,9 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
 
   if (error) {
     if (fallback === undefined) {
-      throw new Error(`Invalid JSON: ` + error.message);
+      throw new Error(`Invalid JSON: ${error.message}`);
     }
-    // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   const safeParse = schema.safeParse(jsonParsed);
@@ -60,16 +64,8 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
           .join(", ")}`,
       );
     }
-    // todo fix me
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return fallback as z.infer<T>;
+    return fallback as unknown;
   }
 
   return safeParseMigrated.data as T;
-}
-
-function prettyErrorMessage(issue: ZodIssue | undefined): string {
-  if (issue === undefined) return "";
-  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
-  return `${path}${issue.message.toLowerCase()}`;
 }

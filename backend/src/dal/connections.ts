@@ -20,8 +20,9 @@ export async function getConnections(options: {
 }): Promise<DBConnection[]> {
   const { initiatorUid, receiverUid, status } = options;
 
-  if (initiatorUid === undefined && receiverUid === undefined)
+  if (initiatorUid === undefined && receiverUid === undefined) {
     throw new Error("Missing filter");
+  }
 
   let filter: Filter<DBConnection> = { $or: [] };
 
@@ -73,7 +74,7 @@ export async function create(
 
     return created;
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     if (e.name === "MongoServerError" && e.code === 11000) {
       const existing = await getCollection().findOne(
         { key },

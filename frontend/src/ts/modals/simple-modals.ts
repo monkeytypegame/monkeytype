@@ -1,17 +1,12 @@
 import Ape from "../ape";
 import * as AccountController from "../auth";
 import * as DB from "../db";
-import * as UpdateConfig from "../config";
-import * as Notifications from "../elements/notifications";
-import * as Settings from "../pages/settings";
-import * as ThemePicker from "../elements/settings/theme-picker";
-import * as CustomText from "../test/custom-text";
+import { resetConfig } from "../config/lifecycle";
+import { setConfig } from "../config/setters";
+import { showNoticeNotification } from "../states/notifications";
 import { FirebaseError } from "firebase/app";
-import {
-  isAuthenticated,
-  getAuthenticatedUser,
-  isAuthAvailable,
-} from "../firebase";
+import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import {
   EmailAuthProvider,
   User,
@@ -20,94 +15,43 @@ import {
   reauthenticateWithPopup,
   unlink,
 } from "firebase/auth";
-import {
-  createErrorMessage,
-  isDevEnvironment,
-  reloadAfter,
-} from "../utils/misc";
-import * as CustomTextState from "../states/custom-text-name";
+import { reloadAfter } from "../utils/misc";
+import { isDevEnvironment } from "../utils/env";
+import { createErrorMessage } from "../utils/error";
 import * as ThemeController from "../controllers/theme-controller";
-import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import * as CustomThemes from "../collections/custom-themes";
 import * as AccountSettings from "../pages/account-settings";
-import {
-  ExecReturn,
-  PasswordInput,
-  SimpleModal,
-  TextInput,
-} from "../utils/simple-modal";
-import { ShowOptions } from "../utils/animated-modal";
+
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
+  CustomThemeNameSchema,
   PasswordSchema,
   UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import { goToPage } from "../pages/leaderboards";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
 import { remoteValidation } from "../utils/remote-validation";
+import { list, PopupKey, showPopup } from "./simple-modals-base";
+import { getTheme } from "../states/theme";
+import { normalizeName } from "../utils/strings";
+import { IsValidResponse } from "../types/validation";
+import { ExecReturn, SimpleModal } from "../elements/simple-modal";
+import { PasswordInput, TextInput } from "../states/simple-modal";
 
-type PopupKey =
-  | "updateEmail"
-  | "updateName"
-  | "updatePassword"
-  | "removeGoogleAuth"
-  | "removeGithubAuth"
-  | "removePasswordAuth"
-  | "addPasswordAuth"
-  | "deleteAccount"
-  | "resetAccount"
-  | "optOutOfLeaderboards"
-  | "applyCustomFont"
-  | "resetPersonalBests"
-  | "resetSettings"
-  | "revokeAllTokens"
-  | "unlinkDiscord"
-  | "editApeKey"
-  | "deleteCustomText"
-  | "deleteCustomTextLong"
-  | "resetProgressCustomTextLong"
-  | "updateCustomTheme"
-  | "deleteCustomTheme"
-  | "devGenerateData"
-  | "lbGoToPage";
-
-const list: Record<PopupKey, SimpleModal | undefined> = {
-  updateEmail: undefined,
-  updateName: undefined,
-  updatePassword: undefined,
-  removeGoogleAuth: undefined,
-  removeGithubAuth: undefined,
-  removePasswordAuth: undefined,
-  addPasswordAuth: undefined,
-  deleteAccount: undefined,
-  resetAccount: undefined,
-  optOutOfLeaderboards: undefined,
-  applyCustomFont: undefined,
-  resetPersonalBests: undefined,
-  resetSettings: undefined,
-  revokeAllTokens: undefined,
-  unlinkDiscord: undefined,
-  editApeKey: undefined,
-  deleteCustomText: undefined,
-  deleteCustomTextLong: undefined,
-  resetProgressCustomTextLong: undefined,
-  updateCustomTheme: undefined,
-  deleteCustomTheme: undefined,
-  devGenerateData: undefined,
-  lbGoToPage: undefined,
-};
+export { list, showPopup };
+export type { PopupKey };
 
 type AuthMethod = "password" | "github.com" | "google.com";
 
 type ReauthSuccess = {
-  status: 1;
+  status: "success";
   message: string;
   user: User;
 };
 
 type ReauthFailed = {
-  status: -1 | 0;
+  status: "error" | "notice";
   message: string;
 };
 
@@ -143,7 +87,7 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
     getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === authProvider,
-    ) || false
+    ) ?? false
   );
 }
 
@@ -152,7 +96,7 @@ async function reauthenticate(
 ): Promise<ReauthSuccess | ReauthFailed> {
   if (!isAuthAvailable()) {
     return {
-      status: -1,
+      status: "error",
       message: "Authentication is not initialized",
     };
   }
@@ -160,7 +104,7 @@ async function reauthenticate(
   const user = getAuthenticatedUser();
   if (user === null) {
     return {
-      status: -1,
+      status: "error",
       message: "User is not signed in",
     };
   }
@@ -170,7 +114,7 @@ async function reauthenticate(
   try {
     if (authMethod === undefined) {
       return {
-        status: -1,
+        status: "error",
         message:
           "Failed to reauthenticate: there is no valid authentication present on the account.",
       };
@@ -179,7 +123,7 @@ async function reauthenticate(
     if (authMethod === "password") {
       if (options.password === undefined) {
         return {
-          status: -1,
+          status: "error",
           message: "Failed to reauthenticate using password: password missing.",
         };
       }
@@ -197,7 +141,7 @@ async function reauthenticate(
     }
 
     return {
-      status: 1,
+      status: "success",
       message: "Reauthenticated",
       user,
     };
@@ -205,21 +149,21 @@ async function reauthenticate(
     const typedError = e as FirebaseError;
     if (typedError.code === "auth/wrong-password") {
       return {
-        status: 0,
+        status: "notice",
         message: "Incorrect password",
       };
     } else if (typedError.code === "auth/invalid-credential") {
       return {
-        status: 0,
+        status: "notice",
         message:
           "Password is incorrect or your account does not have password authentication enabled.",
       };
     } else {
       return {
-        status: -1,
-        message:
-          "Failed to reauthenticate: " +
-          (typedError?.message ?? JSON.stringify(e)),
+        status: "error",
+        message: `Failed to reauthenticate: ${
+          typedError?.message ?? JSON.stringify(e)
+        }`,
       };
     }
   }
@@ -248,15 +192,10 @@ list.updateEmail = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserEmailSchema,
-        isValid: async (currentValue, thisPopup) =>
-          currentValue === thisPopup.inputs?.[1]?.currentValue() ||
-          "Emails don't match",
-        debounceDelay: 0,
       },
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     password,
@@ -265,13 +204,13 @@ list.updateEmail = new SimpleModal({
   ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
-        status: 0,
+        status: "notice",
         message: "Emails don't match",
       };
     }
 
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -287,15 +226,16 @@ list.updateEmail = new SimpleModal({
 
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to update email: " + response.body.message,
+        status: "error",
+        message: "Failed to update email",
+        notificationOptions: { response },
       };
     }
 
     AccountController.signOut();
 
     return {
-      status: 1,
+      status: "success",
       message: "Email updated",
     };
   },
@@ -319,14 +259,13 @@ list.removeGoogleAuth = new SimpleModal({
       initVal: "",
     },
   ],
-  onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
       password,
       excludeMethod: "google.com",
     });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -338,7 +277,7 @@ list.removeGoogleAuth = new SimpleModal({
     } catch (e) {
       const message = createErrorMessage(e, "Failed to unlink Google account");
       return {
-        status: -1,
+        status: "error",
         message,
       };
     }
@@ -347,7 +286,7 @@ list.removeGoogleAuth = new SimpleModal({
 
     reloadAfter(3);
     return {
-      status: 1,
+      status: "success",
       message: "Google authentication removed",
     };
   },
@@ -373,14 +312,13 @@ list.removeGithubAuth = new SimpleModal({
       initVal: "",
     },
   ],
-  onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
       password,
       excludeMethod: "github.com",
     });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -392,7 +330,7 @@ list.removeGithubAuth = new SimpleModal({
     } catch (e) {
       const message = createErrorMessage(e, "Failed to unlink GitHub account");
       return {
-        status: -1,
+        status: "error",
         message,
       };
     }
@@ -401,7 +339,7 @@ list.removeGithubAuth = new SimpleModal({
 
     reloadAfter(3);
     return {
-      status: 1,
+      status: "success",
       message: "GitHub authentication removed",
     };
   },
@@ -426,13 +364,12 @@ list.removePasswordAuth = new SimpleModal({
       label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
     },
   ],
-  onlineOnly: true,
   buttonText: "reauthenticate to remove",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
       excludeMethod: "password",
     });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -447,7 +384,7 @@ list.removePasswordAuth = new SimpleModal({
         "Failed to remove password authentication",
       );
       return {
-        status: -1,
+        status: "error",
         message,
       };
     }
@@ -456,7 +393,7 @@ list.removePasswordAuth = new SimpleModal({
 
     reloadAfter(3);
     return {
-      status: 1,
+      status: "success",
       message: "Password authentication removed",
     };
   },
@@ -489,23 +426,23 @@ list.updateName = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (_thisPopup, password, newName): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
       };
     }
 
-    const updateNameResponse = await Ape.users.updateName({
+    const response = await Ape.users.updateName({
       body: { name: newName },
     });
-    if (updateNameResponse.status !== 200) {
+    if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to update name: " + updateNameResponse.body.message,
+        status: "error",
+        message: "Failed to update name",
+        notificationOptions: { response },
       };
     }
 
@@ -519,7 +456,7 @@ list.updateName = new SimpleModal({
     }
 
     return {
-      status: 1,
+      status: "success",
       message: "Name updated",
     };
   },
@@ -562,7 +499,6 @@ list.updatePassword = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     previousPass,
@@ -571,20 +507,20 @@ list.updatePassword = new SimpleModal({
   ): Promise<ExecReturn> => {
     if (newPassword !== newPassConfirm) {
       return {
-        status: 0,
+        status: "notice",
         message: "New passwords don't match",
       };
     }
 
     if (newPassword === previousPass) {
       return {
-        status: 0,
+        status: "notice",
         message: "New password must be different from previous password",
       };
     }
 
     const reauth = await reauthenticate({ password: previousPass });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -597,15 +533,16 @@ list.updatePassword = new SimpleModal({
 
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to update password: " + response.body.message,
+        status: "error",
+        message: "Failed to update password",
+        notificationOptions: { response },
       };
     }
 
     AccountController.signOut();
 
     return {
-      status: 1,
+      status: "success",
       message: "Password updated",
     };
   },
@@ -645,7 +582,6 @@ list.addPasswordAuth = new SimpleModal({
     },
   ],
   buttonText: "reauthenticate to add",
-  onlineOnly: true,
   execFn: async (
     _thisPopup,
     email,
@@ -655,20 +591,20 @@ list.addPasswordAuth = new SimpleModal({
   ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
-        status: 0,
+        status: "notice",
         message: "Emails don't match",
       };
     }
 
     if (password !== passConfirm) {
       return {
-        status: 0,
+        status: "notice",
         message: "Passwords don't match",
       };
     }
 
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -684,7 +620,7 @@ list.addPasswordAuth = new SimpleModal({
         "Failed to add password authentication",
       );
       return {
-        status: -1,
+        status: "error",
         message,
       };
     }
@@ -697,16 +633,16 @@ list.addPasswordAuth = new SimpleModal({
     });
     if (response.status !== 200) {
       return {
-        status: -1,
+        status: "error",
         message:
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-          response.body.message,
+          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
+        notificationOptions: { response },
       };
     }
 
     AccountSettings.updateUI();
     return {
-      status: 1,
+      status: "success",
       message: "Password authentication added",
     };
   },
@@ -724,30 +660,30 @@ list.deleteAccount = new SimpleModal({
   ],
   text: "This is the last time you can change your mind. After pressing the button everything is gone.",
   buttonText: "delete",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
       };
     }
 
-    Notifications.add("Deleting all data...", 0);
-    const usersResponse = await Ape.users.delete();
+    showNoticeNotification("Deleting all data...");
+    const response = await Ape.users.delete();
 
-    if (usersResponse.status !== 200) {
+    if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to delete user data: " + usersResponse.body.message,
+        status: "error",
+        message: "Failed to delete user data",
+        notificationOptions: { response },
       };
     }
 
     reloadAfter(3);
 
     return {
-      status: 1,
+      status: "success",
       message: "Account deleted, goodbye",
     };
   },
@@ -772,33 +708,33 @@ list.resetAccount = new SimpleModal({
   ],
   text: "This is the last time you can change your mind. After pressing the button everything is gone.",
   buttonText: "reset",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
       };
     }
 
-    Notifications.add("Resetting settings...", 0);
-    await UpdateConfig.reset();
+    showNoticeNotification("Resetting settings...");
+    await resetConfig();
     await FileStorage.deleteFile("LocalBackgroundFile");
 
-    Notifications.add("Resetting account...", 0);
+    showNoticeNotification("Resetting account...");
     const response = await Ape.users.reset();
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to reset account: " + response.body.message,
+        status: "error",
+        message: "Failed to reset account",
+        notificationOptions: { response },
       };
     }
 
     reloadAfter(3);
 
     return {
-      status: 1,
+      status: "success",
       message: "Account reset",
     };
   },
@@ -823,10 +759,9 @@ list.optOutOfLeaderboards = new SimpleModal({
   ],
   text: "Are you sure you want to opt out of leaderboards?",
   buttonText: "opt out",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -836,15 +771,16 @@ list.optOutOfLeaderboards = new SimpleModal({
     const response = await Ape.users.optOutOfLeaderboards();
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to opt out: " + response.body.message,
+        status: "error",
+        message: "Failed to opt out",
+        notificationOptions: { response },
       };
     }
 
     reloadAfter(3);
 
     return {
-      status: 1,
+      status: "success",
       message: "Leaderboards opt out successful",
     };
   },
@@ -854,22 +790,6 @@ list.optOutOfLeaderboards = new SimpleModal({
       thisPopup.inputs = [];
       thisPopup.buttonText = "reauthenticate to opt out";
     }
-  },
-});
-
-list.applyCustomFont = new SimpleModal({
-  id: "applyCustomFont",
-  title: "Custom font",
-  inputs: [{ type: "text", placeholder: "Font name", initVal: "" }],
-  text: "Make sure you have the font installed on your computer before applying",
-  buttonText: "apply",
-  execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
-    Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
-
-    return {
-      status: 1,
-      message: "Font applied",
-    };
   },
 });
 
@@ -884,10 +804,9 @@ list.resetPersonalBests = new SimpleModal({
     },
   ],
   buttonText: "reset",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -897,15 +816,16 @@ list.resetPersonalBests = new SimpleModal({
     const response = await Ape.users.deletePersonalBests();
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to reset personal bests: " + response.body.message,
+        status: "error",
+        message: "Failed to reset personal bests",
+        notificationOptions: { response },
       };
     }
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to reset personal bests: no snapshot",
       };
     }
@@ -919,7 +839,7 @@ list.resetPersonalBests = new SimpleModal({
     };
 
     return {
-      status: 1,
+      status: "success",
       message: "Personal bests reset",
     };
   },
@@ -929,22 +849,6 @@ list.resetPersonalBests = new SimpleModal({
       thisPopup.inputs = [];
       thisPopup.buttonText = "reauthenticate to reset";
     }
-  },
-});
-
-list.resetSettings = new SimpleModal({
-  id: "resetSettings",
-  title: "Reset settings",
-  text: "Are you sure you want to reset all your settings?",
-  buttonText: "reset",
-  onlineOnly: true,
-  execFn: async (): Promise<ExecReturn> => {
-    await UpdateConfig.reset();
-    await FileStorage.deleteFile("LocalBackgroundFile");
-    return {
-      status: 1,
-      message: "Settings reset",
-    };
   },
 });
 
@@ -960,10 +864,9 @@ list.revokeAllTokens = new SimpleModal({
   ],
   text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
-  onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({ password });
-    if (reauth.status !== 1) {
+    if (reauth.status !== "success") {
       return {
         status: reauth.status,
         message: reauth.message,
@@ -973,15 +876,16 @@ list.revokeAllTokens = new SimpleModal({
     const response = await Ape.users.revokeAllTokens();
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to revoke tokens: " + response.body.message,
+        status: "error",
+        message: "Failed to revoke tokens",
+        notificationOptions: { response },
       };
     }
 
     reloadAfter(3);
 
     return {
-      status: 1,
+      status: "success",
       message: "Tokens revoked",
     };
   },
@@ -1001,12 +905,11 @@ list.unlinkDiscord = new SimpleModal({
   title: "Unlink Discord",
   text: "Are you sure you want to unlink your Discord account?",
   buttonText: "unlink",
-  onlineOnly: true,
   execFn: async (): Promise<ExecReturn> => {
     const snap = DB.getSnapshot();
     if (!snap) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to unlink Discord: no snapshot",
       };
     }
@@ -1014,8 +917,9 @@ list.unlinkDiscord = new SimpleModal({
     const response = await Ape.users.unlinkDiscord();
     if (response.status !== 200) {
       return {
-        status: -1,
-        message: "Failed to unlink Discord: " + response.body.message,
+        status: "error",
+        message: "Failed to unlink Discord",
+        notificationOptions: { response },
       };
     }
 
@@ -1025,71 +929,19 @@ list.unlinkDiscord = new SimpleModal({
     AccountSettings.updateUI();
 
     return {
-      status: 1,
+      status: "success",
       message: "Discord unlinked",
     };
   },
 });
 
-list.deleteCustomText = new SimpleModal({
-  id: "deleteCustomText",
-  title: "Delete custom text",
-  text: "Are you sure?",
-  buttonText: "delete",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
-    CustomTextState.setCustomTextName("", undefined);
-
-    return {
-      status: 1,
-      message: "Custom text deleted",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
-  },
-});
-
-list.deleteCustomTextLong = new SimpleModal({
-  id: "deleteCustomTextLong",
-  title: "Delete custom text",
-  text: "Are you sure?",
-  buttonText: "delete",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
-    CustomTextState.setCustomTextName("", undefined);
-
-    return {
-      status: 1,
-      message: "Custom text deleted",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
-  },
-});
-
-list.resetProgressCustomTextLong = new SimpleModal({
-  id: "resetProgressCustomTextLong",
-  title: "Reset progress for custom text",
-  text: "Are you sure?",
-  buttonText: "reset",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    const text = CustomText.getCustomText(
-      _thisPopup.parameters[0] as string,
-      true,
-    );
-    CustomText.setText(text);
-    return {
-      status: 1,
-      message: "Custom text progress reset",
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
-  },
-});
+const customThemeValidation = async (
+  name: string,
+): Promise<IsValidResponse> => {
+  const validationResult = CustomThemeNameSchema.safeParse(normalizeName(name));
+  if (validationResult.success) return true;
+  return validationResult.error.errors.map((err) => err.message).join(", ");
+};
 
 list.updateCustomTheme = new SimpleModal({
   id: "updateCustomTheme",
@@ -1099,6 +951,7 @@ list.updateCustomTheme = new SimpleModal({
       type: "text",
       placeholder: "name",
       initVal: "",
+      validation: { isValid: customThemeValidation, debounceDelay: 0 },
     },
     {
       type: "checkbox",
@@ -1108,67 +961,41 @@ list.updateCustomTheme = new SimpleModal({
     },
   ],
   buttonText: "update",
-  onlineOnly: true,
   execFn: async (_thisPopup, name, updateColors): Promise<ExecReturn> => {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) {
-      return {
-        status: -1,
-        message: "Failed to update custom theme: no snapshot",
-      };
-    }
-
-    const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0],
-    );
+    const themeId = _thisPopup.parameters[0] as string;
+    const customTheme = CustomThemes.__nonReactive.getCustomTheme(themeId);
     if (customTheme === undefined) {
       return {
-        status: -1,
+        status: "error",
         message: "Failed to update custom theme: theme not found",
       };
     }
 
-    let newColors: string[] = [];
-    if (updateColors === "true") {
-      for (const color of ThemeController.colorVars) {
-        newColors.push(
-          $(
-            `.pageSettings .tabContent.customTheme #${color}[type='color']`,
-          ).attr("value") as string,
-        );
-      }
-    } else {
-      newColors = customTheme.colors;
-    }
+    let newColors =
+      updateColors === "true"
+        ? ThemeController.convertThemeToCustomColors(getTheme())
+        : customTheme.colors;
 
-    const newTheme = {
-      name: name.replaceAll(" ", "_"),
-      colors: newColors as CustomThemeColors,
-    };
-    const validation = await DB.editCustomTheme(customTheme._id, newTheme);
-    if (!validation) {
-      return {
-        status: -1,
-        message: "Failed to update custom theme",
-      };
-    }
-    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
-    void ThemePicker.fillCustomButtons();
+    await CustomThemes.editCustomTheme({
+      themeId: customTheme._id,
+      name: normalizeName(name),
+      colors: newColors,
+    });
+    setConfig("customThemeColors", newColors);
 
     return {
-      status: 1,
+      status: "success",
       message: "Custom theme updated",
     };
   },
   beforeInitFn: (_thisPopup): void => {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
-
-    const customTheme = snapshot.customThemes?.find(
-      (t) => t._id === _thisPopup.parameters[0],
-    );
+    const themeId = _thisPopup.parameters[0] as string;
+    const customTheme = CustomThemes.__nonReactive.getCustomTheme(themeId);
     if (!customTheme) return;
-    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name;
+    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name.replace(
+      /_/g,
+      " ",
+    );
   },
 });
 
@@ -1177,13 +1004,13 @@ list.deleteCustomTheme = new SimpleModal({
   title: "Delete custom theme",
   text: "Are you sure?",
   buttonText: "delete",
-  onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    void ThemePicker.fillCustomButtons();
+    await CustomThemes.deleteCustomTheme({
+      themeId: _thisPopup.parameters[0] as string,
+    });
 
     return {
-      status: 1,
+      status: "success",
       message: "Custom theme deleted",
     };
   },
@@ -1203,7 +1030,7 @@ list.devGenerateData = new SimpleModal({
         const span = document.querySelector(
           "#devGenerateData_1 + span",
         ) as HTMLInputElement;
-        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        span.innerText = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
       },
       validation: {
@@ -1259,19 +1086,23 @@ list.devGenerateData = new SimpleModal({
       username,
       createUser: createUser === "true",
     };
-    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0)
+    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0) {
       request.firstTestTimestamp = Date.parse(firstTestTimestamp);
-    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0)
+    }
+    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0) {
       request.lastTestTimestamp = Date.parse(lastTestTimestamp);
-    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0)
+    }
+    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0) {
       request.minTestsPerDay = Number.parseInt(minTestsPerDay);
-    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
+    }
+    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0) {
       request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
+    }
 
     const result = await Ape.dev.generateData({ body: request });
 
     return {
-      status: result.status === 200 ? 1 : -1,
+      status: result.status === 200 ? "success" : "error",
       message: result.body.message,
       hideOptions: {
         clearModalChain: true,
@@ -1279,136 +1110,3 @@ list.devGenerateData = new SimpleModal({
     };
   },
 });
-
-list.lbGoToPage = new SimpleModal({
-  id: "lbGoToPage",
-  title: "Go to page",
-  inputs: [
-    {
-      type: "number",
-      placeholder: "Page number",
-    },
-  ],
-  buttonText: "Go",
-  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
-    const page = parseInt(pageNumber, 10);
-    if (isNaN(page) || page < 1) {
-      return {
-        status: 0,
-        message: "Invalid page number",
-      };
-    }
-
-    goToPage(page - 1);
-
-    return {
-      status: 1,
-      message: "Navigating to page " + page,
-      showNotification: false,
-    };
-  },
-});
-
-export function showPopup(
-  key: PopupKey,
-  showParams = [] as string[],
-  showOptions: ShowOptions = {},
-): void {
-  const popup = list[key];
-  if (popup === undefined) {
-    Notifications.add("Failed to show popup - popup is not defined", -1);
-    return;
-  }
-  popup.show(showParams, showOptions);
-}
-
-//todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
-  showPopup("unlinkDiscord");
-});
-
-$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
-  showPopup("removeGoogleAuth");
-});
-
-$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
-  showPopup("removeGithubAuth");
-});
-
-$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
-  showPopup("removePasswordAuth");
-});
-
-$("#resetSettingsButton").on("click", () => {
-  showPopup("resetSettings");
-});
-
-$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
-});
-
-$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
-  showPopup("resetPersonalBests");
-});
-
-$(".pageAccountSettings").on("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
-$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
-  showPopup("updateName");
-});
-
-$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
-  showPopup("addPasswordAuth");
-});
-
-$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
-  showPopup("updateEmail");
-});
-
-$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
-  showPopup("updatePassword");
-});
-
-$(".pageAccountSettings").on("click", "#deleteAccount", () => {
-  showPopup("deleteAccount");
-});
-
-$(".pageAccountSettings").on("click", "#resetAccount", () => {
-  showPopup("resetAccount");
-});
-
-$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
-  showPopup("optOutOfLeaderboards");
-});
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .delButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("deleteCustomTheme", [customThemeId]);
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section.themes .customTheme .editButton",
-  (e) => {
-    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
-    const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId], {
-      focusFirstInput: "focusAndSelect",
-    });
-  },
-);
-
-$(".pageSettings").on(
-  "click",
-  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
-  () => {
-    showPopup("applyCustomFont");
-  },
-);

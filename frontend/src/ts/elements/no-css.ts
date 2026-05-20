@@ -1,29 +1,26 @@
 import { envConfig } from "virtual:env-config";
+import { qs } from "../utils/dom";
 
-$("#nocss .requestedStylesheets").html(
-  "Requested stylesheets:<br>" +
-    (
-      [
-        ...document.querySelectorAll("link[rel=stylesheet"),
-      ] as HTMLAnchorElement[]
-    )
-      .map((l) => l.href)
-      .filter((l) => /\/css\/style/gi.test(l))
-      .join("<br>"),
+qs("#nocss .requestedStylesheets")?.setHtml(
+  `Requested stylesheets:<br>${(
+    [...document.querySelectorAll("link[rel=stylesheet")] as HTMLAnchorElement[]
+  )
+    .map((l) => l.href)
+    .filter((l) => /\/css\/style/gi.test(l))
+    .join("<br>")}`,
 );
 
-$("#nocss .requestedJs").html(
-  "Requested Javascript files:<br>" +
-    ([...document.querySelectorAll("script")] as HTMLScriptElement[])
-      .map((l) => l.src)
-      .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
-      .join("<br>") +
-    "<br><br>Client version:<br>" +
-    envConfig.clientVersion,
+qs("#nocss .requestedJs")?.setHtml(
+  `Requested Javascript files:<br>${(
+    [...document.querySelectorAll("script")] as HTMLScriptElement[]
+  )
+    .map((l) => l.src)
+    .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
+    .join("<br>")}<br><br>Client version:<br>${envConfig.clientVersion}`,
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {
-  $("#nocss .keys").html(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;
@@ -60,7 +57,7 @@ if (window.navigator.userAgent.toLowerCase().includes("mac")) {
     </span>
   `);
 } else {
-  $("#nocss .keys").html(`
+  qs("#nocss .keys")?.setHtml(`
     <span
       style="
         padding: 1rem;

@@ -210,8 +210,9 @@ export async function sendVerificationEmail(
       } else {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link: " +
-            error.errorInfo.message,
+          `Firebase failed to generate an email verification link: ${
+            error.errorInfo.message
+          }`,
           JSON.stringify(error),
         );
       }
@@ -231,7 +232,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Failed to generate an email verification link: " + message,
+            `Failed to generate an email verification link: ${message}`,
             error.stack,
           );
         }
@@ -553,7 +554,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
           uid,
         );
       } catch (e) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-unsafe-member-access
         if (e.code === "auth/user-not-found") {
           throw new MonkeyError(
             404,
@@ -1207,8 +1208,9 @@ export function generateCurrentTestActivity(
   let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
   let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
 
-  if (lastYearData === undefined && thisYearData === undefined)
+  if (lastYearData === undefined && thisYearData === undefined) {
     return undefined;
+  }
 
   lastYearData = lastYearData ?? [];
   thisYearData = thisYearData ?? [];

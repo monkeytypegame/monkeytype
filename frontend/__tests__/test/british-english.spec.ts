@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { replace } from "../../src/ts/test/british-english";
-import Config from "../../src/ts/config";
+import { Config } from "../../src/ts/config/store";
 
 describe("british-english", () => {
   describe("replace", () => {
@@ -62,6 +62,11 @@ describe("british-english", () => {
     it("should not affect words without double quotes", async () => {
       await expect(replace("'hello'", "")).resolves.toEqual("'hello'");
       await expect(replace("test", "")).resolves.toEqual("test");
+    });
+
+    it("ignores prototype-related property names (e.g. constructor, __proto__)", async () => {
+      await expect(replace("constructor", "")).resolves.toEqual("constructor");
+      await expect(replace("__proto__", "")).resolves.toEqual("__proto__");
     });
   });
 });

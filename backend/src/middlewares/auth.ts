@@ -51,8 +51,7 @@ export function authenticateTsRestRequest<
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
-      ...((getMetadata(req)["authenticationOptions"] ??
-        {}) as EndpointMetadata),
+      ...((getMetadata(req).authenticationOptions ?? {}) as EndpointMetadata),
     };
 
     const startTime = performance.now();
@@ -60,7 +59,8 @@ export function authenticateTsRestRequest<
     let authType = "None";
 
     const isPublic =
-      options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+      options.isPublic === true ||
+      (options.isPublicOnDev && isDevEnvironment());
 
     const {
       authorization: authHeader,
@@ -202,7 +202,7 @@ async function authenticateWithBearerToken(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     const errorCode = error?.errorInfo?.code as string | undefined;
 
     if (errorCode?.includes("auth/id-token-expired")) {
@@ -241,7 +241,7 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const isPublic =
-    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+    options.isPublic === true || (options.isPublicOnDev && isDevEnvironment());
 
   if (!isPublic) {
     if (!configuration.apeKeys.acceptKeys) {
@@ -301,7 +301,7 @@ async function authenticateWithApeKey(
 
 async function authenticateWithUid(token: string): Promise<DecodedToken> {
   if (!isDevEnvironment()) {
-    throw new MonkeyError(401, "Baerer type uid is not supported");
+    throw new MonkeyError(401, "Bearer type uid is not supported");
   }
   const [uid, email] = token.split("|");
 
@@ -358,7 +358,7 @@ export function authenticateGithubWebhook(
     }
     throw new MonkeyError(
       500,
-      "Failed to authenticate Github webhook: " + (error as Error).message,
+      `Failed to authenticate Github webhook: ${(error as Error).message}`,
     );
   }
 }

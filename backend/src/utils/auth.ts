@@ -103,7 +103,7 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
     await emailQueue.sendForgotPasswordEmail(email, name, link);
   } catch (err) {
     if (isFirebaseError(err) && err.errorInfo.code !== "auth/user-not-found") {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      // oxlint-disable-next-line only-throw-error
       throw err;
     }
   }

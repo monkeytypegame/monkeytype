@@ -1,17 +1,17 @@
-//import type { ConfigMetadata } from "../../src/ts/config-metadata";
+//import type { ConfigMetadata } from "../../src/ts/config/metadata";
 
 import { describe, it, expect, afterAll, vi } from "vitest";
 import * as Util from "../../src/ts/commandline/util";
 
 import type { CommandlineConfigMetadata } from "../../src/ts/commandline/commandline-metadata";
 import type { ConfigKey } from "@monkeytype/schemas/configs";
-import type { ConfigMetadata } from "../../src/ts/config-metadata";
+import type { ConfigMetadata } from "../../src/ts/config/metadata";
 import { z, ZodSchema } from "zod";
 
 const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
 
 describe("CommandlineUtils", () => {
-  vi.mock("../../src/ts/config-metadata", () => ({ configMetadata: [] }));
+  vi.mock("../../src/ts/config/metadata", () => ({ configMetadata: [] }));
   vi.mock("../../src/ts/commandline/commandline-metadata", () => ({
     commandlineConfigMetadata: [],
   }));
@@ -153,12 +153,14 @@ describe("CommandlineUtils", () => {
             },
           },
           configMeta: {
-            icon: "icon",
+            fa: {
+              icon: "fa-keyboard",
+            },
           },
           schema,
         });
 
-        const inputCmd = cmd.subgroup?.list.at(cmd.subgroup?.list.length - 1);
+        const inputCmd = cmd.subgroup?.list[cmd.subgroup?.list.length - 1];
 
         //THEN
         expect(cmd.subgroup?.list.map((it) => it.id)).toEqual([
@@ -173,8 +175,10 @@ describe("CommandlineUtils", () => {
           defaultValue: expect.anything(),
           alias: "alias",
           input: true,
-          icon: "icon",
+          icon: "fa-keyboard",
           exec: expect.anything(),
+          hover: undefined,
+          configValue: undefined,
           inputValueConvert: Number,
           validation: expect.anything(),
         });
@@ -198,7 +202,9 @@ describe("CommandlineUtils", () => {
           },
         },
         configMeta: {
-          icon: "icon",
+          fa: {
+            icon: "fa-keyboard",
+          },
         },
         schema,
       });
@@ -210,7 +216,7 @@ describe("CommandlineUtils", () => {
           display: "custom test...",
           alias: "alias",
           input: true,
-          icon: "icon",
+          icon: "fa-keyboard",
         }),
       );
     });

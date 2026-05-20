@@ -102,21 +102,23 @@ export function rateLimitRequest<
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    const rateLimit = getMetadata(req).rateLimit;
-    if (rateLimit === undefined) {
+    const metadataRateLimit = getMetadata(req).rateLimit;
+    if (metadataRateLimit === undefined) {
       next();
       return;
     }
 
-    const hasApeKeyLimiterId = typeof rateLimit === "object";
+    const hasApeKeyLimiterId = typeof metadataRateLimit === "object";
     let rateLimiterId: RateLimiterId;
 
     if (req.ctx.decodedToken.type === "ApeKey") {
       rateLimiterId = hasApeKeyLimiterId
-        ? rateLimit.apeKey
+        ? metadataRateLimit.apeKey
         : "defaultApeRateLimit";
     } else {
-      rateLimiterId = hasApeKeyLimiterId ? rateLimit.normal : rateLimit;
+      rateLimiterId = hasApeKeyLimiterId
+        ? metadataRateLimit.normal
+        : metadataRateLimit;
     }
 
     const rateLimiter = requestLimiters[rateLimiterId];

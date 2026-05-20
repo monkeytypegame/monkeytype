@@ -20,20 +20,17 @@ inputEl.addEventListener("select selectstart", (event) => {
 
 inputEl.addEventListener("selectionchange", (event) => {
   const selection = window.getSelection();
+
   console.debug("wordsInput event selectionchange", {
     event,
     selection: selection?.toString(),
     isCollapsed: selection?.isCollapsed,
-    selectionStart: (event.target as HTMLInputElement).selectionStart,
-    selectionEnd: (event.target as HTMLInputElement).selectionEnd,
+    selectionStart: inputEl.selectionStart,
+    selectionEnd: inputEl.selectionEnd,
   });
-  const el = event.target;
-  if (el === null || !(el instanceof HTMLInputElement)) {
-    return;
-  }
 
-  const hasSelectedText = el.selectionStart !== el.selectionEnd;
-  const isCursorAtEnd = el.selectionStart === el.value.length;
+  const hasSelectedText = inputEl.selectionStart !== inputEl.selectionEnd;
+  const isCursorAtEnd = inputEl.selectionStart === inputEl.value.length;
   if (hasSelectedText || !isCursorAtEnd) {
     moveInputElementCaretToTheEnd();
   }

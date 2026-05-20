@@ -80,7 +80,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 2,
     properties: [
       "hasCssFile",
-      "noLigatures",
+      "noJoiningScript",
       "conflictsWithSymmetricChars",
       "ignoreReducedMotion",
     ],
@@ -114,12 +114,20 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "arrows",
   },
   rAnDoMcAsE: {
-    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    description: "raNdomIze ThE CApitaLizatIon Of EveRY LeTtEr.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "rAnDoMcAsE",
+  },
+  sPoNgEcAsE: {
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "sPoNgEcAsE",
   },
   capitals: {
     description: "Capitalize Every Word.",
@@ -148,7 +156,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "rememberSettings",
       "handleSpace",
       "getResultContent",
-      "restart",
     ],
     name: "layoutfluid",
   },
@@ -156,7 +163,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures", "ignoreReducedMotion"],
+    properties: ["hasCssFile", "noJoiningScript", "ignoreReducedMotion"],
     name: "earthquake",
     cssModifications: ["words"],
   },
@@ -393,7 +400,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Go back to the 1980s",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noJoiningScript"],
     frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "crt",
     cssModifications: ["body"],
@@ -416,7 +423,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["noLigatures"],
+    properties: ["noJoiningScript"],
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
   },
@@ -456,7 +463,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Practice american sign language.",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noJoiningScript"],
     name: "asl",
     cssModifications: ["words"],
   },
@@ -476,6 +483,22 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
+export function getObject(): Record<FunboxName, FunboxMetadata> {
+  return list;
+}
+
+export function getFunboxNames(): FunboxName[] {
+  return Object.keys(list) as FunboxName[];
+}
+
+export function getList(): FunboxMetadata[] {
+  const out: FunboxMetadata[] = [];
+  for (const name of getFunboxNames()) {
+    out.push(list[name]);
+  }
+  return out;
+}
+
 export function getFunbox(name: FunboxName): FunboxMetadata;
 export function getFunbox(names: FunboxName[]): FunboxMetadata[];
 export function getFunbox(
@@ -488,7 +511,7 @@ export function getFunbox(
     //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error(
-        "One of the funboxes is invalid: " + nameOrNames.toString(),
+        `One of the funboxes is invalid: ${nameOrNames.toString()}`,
       );
     }
 
@@ -497,25 +520,9 @@ export function getFunbox(
     const out = getObject()[nameOrNames];
 
     if (out === undefined) {
-      throw new Error("Invalid funbox name: " + nameOrNames);
+      throw new Error(`Invalid funbox name: ${nameOrNames}`);
     }
 
     return out;
   }
-}
-
-export function getObject(): Record<FunboxName, FunboxMetadata> {
-  return list;
-}
-
-export function getList(): FunboxMetadata[] {
-  const out: FunboxMetadata[] = [];
-  for (const name of getFunboxNames()) {
-    out.push(list[name]);
-  }
-  return out;
-}
-
-export function getFunboxNames(): FunboxName[] {
-  return Object.keys(list) as FunboxName[];
 }

@@ -1,8 +1,8 @@
-import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
-
+import { qs, qsr } from "../utils/dom";
+import { Config } from "../config/store";
 type ReplayAction =
   | "correctLetter"
   | "incorrectLetter"
@@ -29,6 +29,8 @@ let timeoutList: NodeJS.Timeout[] = [];
 let stopwatchList: NodeJS.Timeout[] = [];
 const toggleButton = document.getElementById("playpauseReplayButton")
   ?.children[0];
+
+const replayEl = qsr(".pageTest #resultReplay");
 
 function replayGetWordsList(wordsListFromScript: string[]): void {
   wordsList = wordsListFromScript;
@@ -88,7 +90,7 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (config.playSoundOnError !== "off") {
+    if (Config.playSoundOnError !== "off") {
       void Sound.playError();
     } else {
       void Sound.playClick();
@@ -149,8 +151,9 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     const replayWords = document.getElementById("replayWords");
 
-    if (replayWords !== null)
+    if (replayWords !== null) {
       activeWord = replayWords.children[wordPos] as HTMLElement;
+    }
 
     curPos = activeWord.children.length;
     while (activeWord.children[curPos - 1]?.className === "") curPos--;
@@ -186,24 +189,11 @@ function loadOldReplay(): number {
 }
 
 function toggleReplayDisplay(): void {
-  if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
+  if (replayEl.isHidden()) {
     initializeReplayPrompt();
     loadOldReplay();
     //show
-    if (!$("#watchReplayButton").hasClass("loaded")) {
-      $("#words").html(
-        `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`,
-      );
-      $("#resultReplay")
-        .removeClass("hidden")
-        .css("display", "none")
-        .slideDown(250);
-    } else {
-      $("#resultReplay")
-        .removeClass("hidden")
-        .css("display", "none")
-        .slideDown(250);
-    }
+    void replayEl.slideDown(250);
   } else {
     //hide
     if (
@@ -212,18 +202,11 @@ function toggleReplayDisplay(): void {
     ) {
       pauseReplay();
     }
-    $("#resultReplay").slideUp(250, () => {
-      $("#resultReplay").addClass("hidden");
-    });
+    void replayEl.slideUp(250);
   }
 }
 
 function startReplayRecording(): void {
-  if (!$("#resultReplay").stop(true, true).hasClass("hidden")) {
-    //hide replay display if user left it open
-    toggleReplayDisplay();
-  }
-  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
@@ -247,7 +230,7 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
 function updateStatsString(time: number): void {
   const wpm = TestInput.wpmHistory[time - 1] ?? 0;
   const statsString = `${wpm}wpm\t${time}s`;
-  $("#replayStats").text(statsString);
+  qs("#replayStats")?.setText(statsString);
 }
 
 function playReplay(): void {
@@ -317,7 +300,7 @@ function getReplayExport(): string {
   });
 }
 
-$(".pageTest #playpauseReplayButton").on("click", () => {
+qs(".pageTest #playpauseReplayButton")?.on("click", () => {
   if (toggleButton?.className === "fas fa-play") {
     playReplay();
   } else if (toggleButton?.className === "fas fa-pause") {
@@ -325,23 +308,25 @@ $(".pageTest #playpauseReplayButton").on("click", () => {
   }
 });
 
-$("#replayWords").on("click", "letter", (event) => {
+qs("#replayWords")?.onChild("click", "letter", (event) => {
   //allows user to click on the place they want to start their replay at
   pauseReplay();
-  const replayWords = document.querySelector("#replayWords");
+  const replayWords = qs("#replayWords");
 
-  const words = [...(replayWords?.children ?? [])];
-  targetWordPos = words.indexOf(
-    (event.target as HTMLElement).parentNode as HTMLElement,
-  );
+  const words = [...(replayWords?.native?.children ?? [])];
+  targetWordPos =
+    words?.indexOf(
+      (event.childTarget as HTMLElement).parentNode as HTMLElement,
+    ) ?? 0;
+
   const letters = [...(words[targetWordPos] as HTMLElement).children];
-  targetCurPos = letters.indexOf(event.target as HTMLElement);
+  targetCurPos = letters?.indexOf(event.childTarget as HTMLElement) ?? 0;
 
   initializeReplayPrompt();
   loadOldReplay();
 });
 
-$(".pageTest").on("click", "#watchReplayButton", () => {
+qs(".pageTest")?.onChild("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
 

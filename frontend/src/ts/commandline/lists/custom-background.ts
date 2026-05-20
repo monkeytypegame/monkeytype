@@ -2,8 +2,9 @@ import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { applyCustomBackground } from "../../controllers/theme-controller";
-import { updateUI } from "../../elements/settings/custom-background-picker";
-import * as Notifications from "../../elements/notifications";
+import { showNoticeNotification } from "../../states/notifications";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
 
@@ -42,8 +43,8 @@ const customBackgroundCommand: Command = {
             }
 
             // check type
-            if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/)) {
-              Notifications.add("Unsupported image format", 0);
+            if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
+              showNoticeNotification("Unsupported image format");
               cleanup();
               return;
             }
@@ -54,11 +55,9 @@ const customBackgroundCommand: Command = {
               try {
                 await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
                 await applyCustomBackground();
-                await updateUI();
               } catch (e) {
-                Notifications.add(
-                  "Error uploading background: " + (e as Error).message,
-                  0,
+                showNoticeNotification(
+                  `Error uploading background: ${(e as Error).message}`,
                 );
               }
               cleanup();
@@ -70,22 +69,23 @@ const customBackgroundCommand: Command = {
         },
       },
       {
-        id: "removeLocalBackground",
-        display: "Remove local background",
+        id: "removeCustomBackground",
+        display: "Remove custom background",
         icon: "fa-trash",
-        alias: "remove background",
         available: async (): Promise<boolean> => {
-          return await FileStorage.hasFile("LocalBackgroundFile");
+          return (
+            (await FileStorage.hasFile("LocalBackgroundFile")) ||
+            Config.customBackground !== ""
+          );
         },
         exec: async (): Promise<void> => {
           try {
             await FileStorage.deleteFile("LocalBackgroundFile");
+            setConfig("customBackground", "");
             await applyCustomBackground();
-            await updateUI();
           } catch (e) {
-            Notifications.add(
-              "Error removing background: " + (e as Error).message,
-              0,
+            showNoticeNotification(
+              `Error removing background: ${(e as Error).message}`,
             );
           }
         },

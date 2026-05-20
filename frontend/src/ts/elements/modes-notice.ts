@@ -2,18 +2,25 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
 import * as Last10Average from "../elements/last-10-average";
-import Config from "../config";
+import { __nonReactive } from "../collections/tags";
+import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
-import * as ConfigEvent from "../observables/config-event";
-import { isAuthenticated } from "../firebase";
-import * as CustomTextState from "../states/custom-text-name";
+import { configEvent, type ConfigEventKey } from "../events/config";
+import { isAuthenticated } from "../states/core";
+import * as CustomTextState from "../legacy-states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/strings";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getActiveFunboxes, getActiveFunboxNames } from "../test/funbox/list";
 import { escapeHTML, getMode2 } from "../utils/misc";
+import { qsr } from "../utils/dom";
+import {
+  wordsHaveNewline,
+  wordsHaveTab,
+  getLoadedChallenge,
+} from "../states/test";
 
-ConfigEvent.subscribe((eventKey) => {
-  const configKeys: ConfigEvent.ConfigEventKey[] = [
+configEvent.subscribe(({ key }) => {
+  const configKeys: ConfigEventKey[] = [
     "difficulty",
     "blindMode",
     "stopOnError",
@@ -31,79 +38,83 @@ ConfigEvent.subscribe((eventKey) => {
     "quickRestart",
     "customPolyglot",
     "alwaysShowDecimalPlaces",
+    "resultSaving",
   ];
-  if (configKeys.includes(eventKey)) {
+  if (configKeys.includes(key)) {
     void update();
   }
 });
 
+const testModesNotice = qsr(".pageTest #testModesNotice");
+
 export async function update(): Promise<void> {
-  $(".pageTest #testModesNotice").empty();
+  testModesNotice.empty();
 
   if (TestState.isRepeated && Config.mode !== "quote") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<div class="textButton noInteraction" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`,
     );
   }
 
-  if (!TestState.savingEnabled) {
-    $(".pageTest #testModesNotice").append(
+  if (!Config.resultSaving) {
+    testModesNotice.appendHtml(
       `<div class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`,
     );
   }
 
-  if (TestWords.hasTab) {
+  if (wordsHaveTab()) {
     if (Config.quickRestart === "esc") {
-      $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`,
+      testModesNotice.appendHtml(
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to open commandline</span></div>`,
       );
-      $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`,
+      testModesNotice.appendHtml(
+        `<div class="textButton noInteraction"><kbd>esc</kbd><span> to restart</span></div>`,
       );
     }
     if (Config.quickRestart === "tab") {
-      $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`,
+      testModesNotice.appendHtml(
+        `<div class="textButton noInteraction"><kbd>shift + tab</kbd><span> to restart</span></div>`,
       );
     }
   }
 
   if (
-    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    (wordsHaveNewline() || Config.funbox.includes("58008")) &&
     Config.quickRestart === "enter"
   ) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`,
+    testModesNotice.appendHtml(
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to restart</span></div>`,
     );
   }
 
   const customTextName = CustomTextState.getCustomTextName();
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<div class="textButton noInteraction"><i class="fas fa-book"></i>${escapeHTML(
         customTextName,
-      )} (shift + enter to save progress)</div>`,
+      )} (<kbd>shift + enter</kbd><span> to save progress</span>)</div>`,
     );
   }
 
-  if (TestState.activeChallenge) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`,
+  const loadedChallenge = getLoadedChallenge();
+  if (loadedChallenge !== null) {
+    testModesNotice.appendHtml(
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${loadedChallenge.display}</div>`,
     );
   }
 
   if (Config.mode === "zen") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`,
+    testModesNotice.appendHtml(
+      `<div class="textButton noInteraction"><kbd>shift + enter</kbd><span> to finish zen</span></div>`,
     );
   }
 
   const usingPolyglot = getActiveFunboxNames().includes("polyglot");
 
   if (Config.mode !== "zen" && !usingPolyglot) {
-    $(".pageTest #testModesNotice").append(
-      `<button class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+    testModesNotice.appendHtml(
+      `<button class="textButton" commands="language"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
         Config.language,
         Config.mode === "quote",
       )}</button>`,
@@ -118,29 +129,29 @@ export async function update(): Promise<void> {
       })
       .join(", ");
 
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commandId="setCustomPolyglotCustom"><i class="fas fa-globe-americas"></i>${languages}</button>`,
     );
   }
 
   if (Config.difficulty === "expert") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="difficulty"><i class="fas fa-star-half-alt"></i>expert</button>`,
     );
   } else if (Config.difficulty === "master") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="difficulty"><i class="fas fa-star"></i>master</button>`,
     );
   }
 
   if (Config.blindMode) {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="blindMode"><i class="fas fa-eye-slash"></i>blind</button>`,
     );
   }
 
   if (Config.lazyMode) {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="lazyMode"><i class="fas fa-couch"></i>lazy</button>`,
     );
   }
@@ -154,8 +165,8 @@ export async function update(): Promise<void> {
       suffix: ` ${Config.typingSpeedUnit}`,
     });
 
-    $(".pageTest #testModesNotice").append(
-      `<button class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
+    testModesNotice.appendHtml(
+      `<button class="textButton" commands="paceCaret"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
@@ -186,7 +197,7 @@ export async function update(): Promise<void> {
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
 
-      $(".pageTest #testModesNotice").append(
+      testModesNotice.appendHtml(
         `<button class="textButton" commands="showAverage"><i class="fas fa-chart-bar"></i>avg: ${text}</button>`,
       );
     }
@@ -217,13 +228,13 @@ export async function update(): Promise<void> {
       })} ${pb?.acc}% acc`;
     }
 
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="showPb"><i class="fas fa-crown"></i>${str}</button>`,
     );
   }
 
   if (Config.minWpm !== "off") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minWpmCustomSpeed,
         { showDecimalPlaces: false, suffix: ` ${Config.typingSpeedUnit}` },
@@ -232,13 +243,13 @@ export async function update(): Promise<void> {
   }
 
   if (Config.minAcc !== "off") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="minAcc"><i class="fas fa-bomb"></i>min ${Config.minAccCustom}% acc</button>`,
     );
   }
 
   if (Config.minBurst !== "off") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minBurstCustomSpeed,
         { showDecimalPlaces: false },
@@ -249,7 +260,7 @@ export async function update(): Promise<void> {
   }
 
   if (Config.funbox.length > 0) {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
         .map((it) => it.replace(/_/g, " "))
         .join(", ")}</button>`,
@@ -257,25 +268,25 @@ export async function update(): Promise<void> {
   }
 
   if (Config.confidenceMode === "on") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>confidence</button>`,
     );
   }
   if (Config.confidenceMode === "max") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>max confidence</button>`,
     );
   }
 
   if (Config.stopOnError !== "off") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</button>`,
     );
   }
 
   if (Config.layout !== "default") {
-    $(".pageTest #testModesNotice").append(
-      `<button class="textButton" commands="layouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
+    testModesNotice.appendHtml(
+      `<button class="textButton" commands="layout"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
         /_/g,
         " ",
       )}</button>`,
@@ -283,7 +294,7 @@ export async function update(): Promise<void> {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    $(".pageTest #testModesNotice").append(
+    testModesNotice.appendHtml(
       `<button class="textButton" commands="oppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
         Config.oppositeShiftMode === "keymap" ? " (keymap)" : ""
       }</button>`,
@@ -292,14 +303,12 @@ export async function update(): Promise<void> {
 
   let tagsString = "";
   try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        tagsString += tag.display + ", ";
-      }
+    __nonReactive.getActiveTags().forEach((tag) => {
+      tagsString += `${tag.name}, `;
     });
 
     if (tagsString !== "") {
-      $(".pageTest #testModesNotice").append(
+      testModesNotice.appendHtml(
         `<button class="textButton" commands="tags"><i class="fas fa-tag"></i>${tagsString.substring(
           0,
           tagsString.length - 2,

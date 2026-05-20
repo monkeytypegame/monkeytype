@@ -10,7 +10,7 @@ describe("json", () => {
       nested: z.object({ foo: z.string() }).strict().optional(),
     });
     it("should throw with invalid json", () => {
-      expect(() => parseWithSchema("blah", schema)).toThrowError(
+      expect(() => parseWithSchema("blah", schema)).toThrow(
         new Error(
           `Invalid JSON: Unexpected token 'b', "blah" is not valid JSON`,
         ),
@@ -40,7 +40,7 @@ describe("json", () => {
             }
           }`;
 
-      expect(() => parseWithSchema(json, schema)).toThrowError(
+      expect(() => parseWithSchema(json, schema)).toThrow(
         new Error(
           `JSON does not match schema: "test" expected boolean, received string, "name" required, "nested.foo" expected string, received number`,
         ),
@@ -95,7 +95,7 @@ describe("json", () => {
             };
           },
         });
-      }).toThrowError(
+      }).toThrow(
         new Error(
           `Migrated value does not match schema: "test" expected boolean, received string, "name" expected string, received null`,
         ),

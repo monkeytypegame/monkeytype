@@ -1,4 +1,5 @@
-import Config, * as UpdateConfig from "../config";
+import { Config } from "../config/store";
+import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import * as CustomText from "./custom-text";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
@@ -23,7 +24,8 @@ import {
   isFunboxActiveWithFunction,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
-import * as Loader from "../elements/loader";
+
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 
@@ -67,10 +69,10 @@ export async function punctuateWord(
     if (currentLanguage === "spanish") {
       const rand = random();
       if (rand > 0.9) {
-        word = "¿" + word;
+        word = `¿${word}`;
         spanishSentenceTracker = "?";
       } else if (rand > 0.8) {
-        word = "¡" + word;
+        word = `¡${word}`;
         spanishSentenceTracker = "!";
       }
     }
@@ -329,7 +331,7 @@ async function getFunboxSection(): Promise<string[]> {
     const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(funbox.name);
+      toggleFunbox(funbox.name);
       throw new Error("Failed to pull section");
     }
 
@@ -392,7 +394,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
       ? currentWordset.languageProperties.get(langName)
       : undefined;
     const allowLazyMode =
-      (langProps && !langProps.noLazyMode) || Config.mode === "custom";
+      (langProps && !langProps.noLazyMode) === true || Config.mode === "custom";
     if (Config.lazyMode && allowLazyMode && langProps) {
       word = LazyMode.replaceAccents(word, langProps.additionalAccents);
     }
@@ -515,15 +517,15 @@ async function getQuoteWordList(
     ? "german"
     : language.name;
 
-  Loader.show();
+  showLoaderBar();
   const quotesCollection = await QuotesController.getQuotes(
     languageToGet,
     Config.quoteLength,
   );
-  Loader.hide();
+  hideLoaderBar();
 
   if (quotesCollection.length === 0) {
-    UpdateConfig.setMode("words");
+    setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
         .replace(/_\d*k$/g, "")
@@ -537,7 +539,7 @@ async function getQuoteWordList(
       TestState.selectedQuoteId,
     );
     if (targetQuote === undefined) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError(
         `Quote ${TestState.selectedQuoteId} does not exist`,
       );
@@ -548,14 +550,14 @@ async function getQuoteWordList(
       Config.language,
     );
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
     const randomQuote = QuotesController.getRandomQuote();
     if (randomQuote === null) {
-      UpdateConfig.setQuoteLengthAll();
+      setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;
@@ -600,7 +602,7 @@ type GenerateWordsReturn = {
   hasTab: boolean;
   hasNewline: boolean;
   allRightToLeft?: boolean;
-  allLigatures?: boolean;
+  allJoiningScript?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -623,7 +625,7 @@ export async function generateWords(
     hasTab: false,
     hasNewline: false,
     allRightToLeft: language.rightToLeft,
-    allLigatures: language.ligatures ?? false,
+    allJoiningScript: language.joiningScript ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -659,10 +661,10 @@ export async function generateWords(
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
       currentWordset = polyglotResult;
-      // set allLigatures if any language in languageProperties has ligatures true
-      ret.allLigatures = Array.from(
+      // set allJoiningScript if any language in languageProperties has joiningScript: true
+      ret.allJoiningScript = Array.from(
         polyglotResult.languageProperties.values(),
-      ).some((props) => !!props.ligatures);
+      ).some((props) => !!props.joiningScript);
     } else {
       currentWordset = result;
     }
@@ -899,16 +901,20 @@ export async function getNextWord(
   }
 
   const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");
+  const randomWordLanguage =
+    (currentWordset instanceof PolyglotWordset
+      ? currentWordset.wordsWithLanguage.get(randomWord)
+      : Config.language) ?? Config.language; // Fall back to Config language if per-word language is unavailable
 
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
-    !Config.language.startsWith("german") &&
-    !Config.language.startsWith("swiss_german") &&
-    !Config.language.startsWith("code") &&
-    !Config.language.startsWith("klingon") &&
+    !randomWordLanguage.startsWith("german") &&
+    !randomWordLanguage.startsWith("swiss_german") &&
+    !randomWordLanguage.startsWith("code") &&
+    !randomWordLanguage.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection &&
     !usingFunboxWithGetWord
   ) {
@@ -918,7 +924,6 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, currentLanguage);
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
@@ -936,6 +941,9 @@ export async function getNextWord(
       wordsBound,
     );
   }
+
+  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+
   if (Config.numbers) {
     if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);

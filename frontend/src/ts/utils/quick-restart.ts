@@ -1,4 +1,4 @@
-import { CustomTextSettings } from "../test/custom-text";
+import { CustomTextSettings } from "@monkeytype/schemas/results";
 
 export function canQuickRestart(
   mode: string,

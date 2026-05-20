@@ -1,5 +1,6 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
-import Config, * as UpdateConfig from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { randomTheme } from "../../controllers/theme-controller";
 import { Command } from "../types";
 
@@ -18,7 +19,7 @@ const commands: Command[] = [
       const { theme, favThemes, customTheme } = Config;
       const themeToUpdate = randomTheme ?? theme;
       if (!customTheme && !favThemes.includes(themeToUpdate as ThemeName)) {
-        UpdateConfig.setFavThemes([...favThemes, themeToUpdate as ThemeName]);
+        setConfig("favThemes", [...favThemes, themeToUpdate as ThemeName]);
       }
     },
   },
@@ -37,7 +38,7 @@ const commands: Command[] = [
       const { theme, favThemes, customTheme } = Config;
       const themeToUpdate = (randomTheme as ThemeName) ?? theme;
       if (!customTheme && favThemes.includes(themeToUpdate)) {
-        UpdateConfig.setFavThemes([
+        setConfig("favThemes", [
           ...favThemes.filter((t) => t !== themeToUpdate),
         ]);
       }

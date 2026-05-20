@@ -1,5 +1,6 @@
-import Config, { genericSet } from "../config";
-import { ConfigMetadata, configMetadata } from "../config-metadata";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { ConfigMetadata, configMetadata } from "../config/metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
@@ -10,25 +11,10 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema } from "zod";
-
-function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
-  if (schema instanceof z.ZodLiteral) {
-    return [schema.value] as z.infer<T>[];
-  } else if (schema instanceof z.ZodEnum) {
-    return schema.options as z.infer<T>[];
-  } else if (schema instanceof z.ZodBoolean) {
-    return [true, false] as z.infer<T>[];
-  } else if (schema instanceof z.ZodUnion) {
-    return (schema.options as ZodSchema[])
-      .flatMap(getOptions)
-      .filter((it) => it !== undefined) as z.infer<T>[];
-  }
-  return undefined;
-}
+import { ZodSchema, ZodFirstPartySchemaTypes } from "zod";
+import { getOptions } from "../utils/zod";
 
 export function buildCommandForConfigKey<
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
   const configMeta = configMetadata[key];
@@ -69,7 +55,7 @@ function _buildCommandForConfigKey<
 
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
-      isPartOfSubgruop: "subgroup" in commandMeta,
+      isPartOfSubgroup: "subgroup" in commandMeta,
       inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
@@ -120,8 +106,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
 
   if (values === undefined) {
     throw new Error(
-      //@ts-expect-error todo
-      `Unsupported schema type for key "${key}": ${schema._def.typeName}`,
+      `Unsupported schema type for key "${key}": ${(schema as ZodFirstPartySchemaTypes)._def.typeName}`,
     );
   }
   const list = values.map((value) =>
@@ -137,7 +122,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   return {
     id: `change${capitalizeFirstLetter(key)}`,
     display: display,
-    icon: configMeta?.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
     subgroup: {
       title: display,
       configKey: key,
@@ -186,7 +171,7 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     visible: isCommandVisible?.(value) ?? undefined,
     available: isCommandAvailable?.(value) ?? undefined,
     exec: (): void => {
-      genericSet(key, val);
+      setConfig(key, val);
       afterExec?.(val);
     },
     hover:
@@ -201,13 +186,13 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
 
 function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
-  isPartOfSubgruop,
+  isPartOfSubgroup,
   inputProps,
   configMeta,
   schema,
 }: {
   key: K;
-  isPartOfSubgruop: boolean;
+  isPartOfSubgroup: boolean;
   inputProps?: InputProps<K>;
   configMeta: ConfigMetadata<K>;
   schema?: ZodSchema;
@@ -216,7 +201,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
 
   const displayString =
     inputProps?.display ??
-    (isPartOfSubgruop
+    (isPartOfSubgroup
       ? "custom..."
       : `${capitalizeFirstLetter(configMeta.displayString ?? key)}...`);
 
@@ -231,12 +216,12 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     display: displayString,
     alias: inputProps?.alias ?? undefined,
     input: true,
-    icon: configMeta.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
 
     //@ts-expect-error this is fine
     exec: ({ input }): void => {
       if (input === undefined) return;
-      genericSet(key, input as ConfigSchemas.Config[K]);
+      setConfig(key, input as ConfigSchemas.Config[K]);
       inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
     },
     hover: inputProps?.hover,

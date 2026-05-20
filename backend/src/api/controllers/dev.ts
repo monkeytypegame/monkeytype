@@ -11,9 +11,11 @@ import MonkeyError from "../../utils/error";
 
 import { Mode, PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import {
+  AddDebugInboxItemRequest,
   GenerateDataRequest,
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
+import { buildMonkeyMail } from "../../utils/monkey-mail";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
@@ -42,6 +44,37 @@ export async function createTestData(
   return new MonkeyResponse("test data created", { uid, email });
 }
 
+export async function addDebugInboxItem(
+  req: MonkeyRequest<undefined, AddDebugInboxItemRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { rewardType } = req.body;
+  const inboxConfig = req.ctx.configuration.users.inbox;
+
+  const rewards =
+    rewardType === "xp"
+      ? [{ type: "xp" as const, item: 1000 }]
+      : rewardType === "badge"
+        ? [{ type: "badge" as const, item: { id: 1 } }]
+        : [];
+
+  const body =
+    rewardType === "xp"
+      ? "Here is your 1000 XP reward for debugging."
+      : rewardType === "badge"
+        ? "Here is your Developer badge reward."
+        : "A debug inbox item with no reward.";
+
+  const mail = buildMonkeyMail({
+    subject: "Debug Inbox Item",
+    body,
+    rewards,
+  });
+
+  await UserDal.addToInbox(uid, [mail], inboxConfig);
+  return new MonkeyResponse("Debug inbox item added", null);
+}
+
 async function getOrCreateUser(
   username: string,
   password: string,
@@ -55,8 +88,8 @@ async function getOrCreateUser(
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
-  const email = username + "@example.com";
-  Logger.success("create user " + username);
+  const email = `${username}@example.com`;
+  Logger.success(`create user ${username}`);
   const { uid } = await FirebaseAdmin().auth().createUser({
     displayName: username,
     password: password,
@@ -96,8 +129,9 @@ async function createTestResults(
     const results = createArray(day.amount, () =>
       createResult(user, day.timestamp),
     );
-    if (results.length > 0)
+    if (results.length > 0) {
       await ResultDal.getResultCollection().insertMany(results);
+    }
   }
 }
 
@@ -221,9 +255,10 @@ async function updateUser(uid: string): Promise<void> {
       { sort: { wpm: -1, timestamp: 1 } },
     )) as DBResult;
 
-    if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
-    if (personalBests[mode.mode][mode.mode2] === undefined)
+    personalBests[mode.mode] ??= {};
+    if (personalBests[mode.mode][mode.mode2] === undefined) {
       personalBests[mode.mode][mode.mode2] = [];
+    }
 
     const entry = {
       acc: best.acc,
@@ -241,10 +276,11 @@ async function updateUser(uid: string): Promise<void> {
     (personalBests[mode.mode][mode.mode2] as PersonalBest[]).push(entry);
 
     if (mode.mode === "time") {
-      if (lbPersonalBests[mode.mode][mode.mode2] === undefined)
+      if (lbPersonalBests[mode.mode][mode.mode2] === undefined) {
         lbPersonalBests[mode.mode][mode.mode2] = {};
+      }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line no-unsafe-member-access
       lbPersonalBests[mode.mode][mode.mode2][mode.language] = entry;
     }
 

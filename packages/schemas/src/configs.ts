@@ -54,6 +54,9 @@ export type ConfidenceMode = z.infer<typeof ConfidenceModeSchema>;
 export const IndicateTyposSchema = z.enum(["off", "below", "replace", "both"]);
 export type IndicateTypos = z.infer<typeof IndicateTyposSchema>;
 
+export const CompositionDisplaySchema = z.enum(["off", "below", "replace"]);
+export type CompositionDisplay = z.infer<typeof CompositionDisplaySchema>;
+
 export const TimerStyleSchema = z.enum([
   "off",
   "bar",
@@ -140,6 +143,17 @@ export const PlaySoundOnClickSchema = z.enum([
   "13",
   "14",
   "15",
+  "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "21",
+  "22",
+  "23",
+  "24",
+  "25",
+  "26",
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
@@ -177,6 +191,9 @@ export const HighlightModeSchema = z.enum([
   "next_three_words",
 ]);
 export type HighlightMode = z.infer<typeof HighlightModeSchema>;
+
+export const TypedEffectSchema = z.enum(["keep", "hide", "fade", "dots"]);
+export type TypedEffect = z.infer<typeof TypedEffectSchema>;
 
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);
 export type TapeMode = z.infer<typeof TapeModeSchema>;
@@ -276,6 +293,7 @@ export const FunboxNameSchema = z.enum([
   "choo_choo",
   "arrows",
   "rAnDoMcAsE",
+  "sPoNgEcAsE",
   "capitals",
   "layout_mirror",
   "layoutfluid",
@@ -355,11 +373,11 @@ export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
 
 export const CustomBackgroundSchema = z
   .string()
-  .url("Needs to be an URI.")
-  .regex(/^(https|http):\/\/.*/, "Unsupported protocol.")
-  .regex(/^[^`'"]*$/, "May not contain quotes.")
-  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format.")
-  .max(2048, "URL is too long.")
+  .url("Needs to be an URI")
+  .regex(/^(https|http):\/\/.*/, "Unsupported protocol")
+  .regex(/^[^`'"]*$/, "May not contain quotes")
+  .regex(/.+(\.png|\.gif|\.jpeg|\.jpg|\.webp)/gi, "Unsupported image format")
+  .max(2048, "URL is too long")
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
@@ -386,6 +404,7 @@ export const ConfigSchema = z
     difficulty: DifficultySchema,
     quickRestart: QuickRestartSchema,
     repeatQuotes: RepeatQuotesSchema,
+    resultSaving: z.boolean(),
     blindMode: z.boolean(),
     alwaysShowWordsHistory: z.boolean(),
     singleListCommandLine: SingleListCommandLineSchema,
@@ -408,6 +427,7 @@ export const ConfigSchema = z
     confidenceMode: ConfidenceModeSchema,
     quickEnd: z.boolean(),
     indicateTypos: IndicateTyposSchema,
+    compositionDisplay: CompositionDisplaySchema,
     hideExtraLetters: z.boolean(),
     lazyMode: z.boolean(),
     layout: LayoutSchema,
@@ -435,6 +455,7 @@ export const ConfigSchema = z
     timerColor: TimerColorSchema,
     timerOpacity: TimerOpacitySchema,
     highlightMode: HighlightModeSchema,
+    typedEffect: TypedEffectSchema,
     tapeMode: TapeModeSchema,
     tapeMargin: TapeMarginSchema,
     smoothLineScroll: z.boolean(),
@@ -504,119 +525,4 @@ export const ConfigGroupNameSchema = z.enum([
   "hidden",
   "ads",
 ]);
-
 export type ConfigGroupName = z.infer<typeof ConfigGroupNameSchema>;
-
-export const ConfigGroupsLiteral = {
-  //test
-  punctuation: "test",
-  numbers: "test",
-  words: "test",
-  time: "test",
-  mode: "test",
-  quoteLength: "test",
-  language: "test",
-  burstHeatmap: "test",
-
-  //behavior
-  difficulty: "behavior",
-  quickRestart: "behavior",
-  repeatQuotes: "behavior",
-  blindMode: "behavior",
-  alwaysShowWordsHistory: "behavior",
-  singleListCommandLine: "behavior",
-  minWpm: "behavior",
-  minWpmCustomSpeed: "behavior",
-  minAcc: "behavior",
-  minAccCustom: "behavior",
-  minBurst: "behavior",
-  minBurstCustomSpeed: "behavior",
-  britishEnglish: "behavior",
-  funbox: "behavior", //todo: maybe move to test?
-  customLayoutfluid: "behavior",
-  customPolyglot: "behavior",
-
-  //input
-  freedomMode: "input",
-  strictSpace: "input",
-  oppositeShiftMode: "input",
-  stopOnError: "input",
-  confidenceMode: "input",
-  quickEnd: "input",
-  indicateTypos: "input",
-  hideExtraLetters: "input",
-  lazyMode: "input",
-  layout: "input",
-  codeUnindentOnBackspace: "input",
-
-  //sound
-  soundVolume: "sound",
-  playSoundOnClick: "sound",
-  playSoundOnError: "sound",
-  playTimeWarning: "sound",
-
-  //caret
-  smoothCaret: "caret",
-  caretStyle: "caret",
-  paceCaret: "caret",
-  paceCaretCustomSpeed: "caret",
-  paceCaretStyle: "caret",
-  repeatedPace: "caret",
-
-  //appearance
-  timerStyle: "appearance",
-  liveSpeedStyle: "appearance",
-  liveAccStyle: "appearance",
-  liveBurstStyle: "appearance",
-  timerColor: "appearance",
-  timerOpacity: "appearance",
-  highlightMode: "appearance",
-  tapeMode: "appearance",
-  tapeMargin: "appearance",
-  smoothLineScroll: "appearance",
-  showAllLines: "appearance",
-  alwaysShowDecimalPlaces: "appearance",
-  typingSpeedUnit: "appearance",
-  startGraphsAtZero: "appearance",
-  maxLineWidth: "appearance",
-  fontSize: "appearance",
-  fontFamily: "appearance",
-  keymapMode: "appearance",
-  keymapLayout: "appearance",
-  keymapStyle: "appearance",
-  keymapLegendStyle: "appearance",
-  keymapShowTopRow: "appearance",
-  keymapSize: "appearance",
-
-  //theme
-  flipTestColors: "theme",
-  colorfulMode: "theme",
-  customBackground: "theme",
-  customBackgroundSize: "theme",
-  customBackgroundFilter: "theme",
-  autoSwitchTheme: "theme",
-  themeLight: "theme",
-  themeDark: "theme",
-  randomTheme: "theme",
-  favThemes: "theme",
-  theme: "theme",
-  customTheme: "theme",
-  customThemeColors: "theme",
-
-  //hide elements
-  showKeyTips: "hideElements",
-  showOutOfFocusWarning: "hideElements",
-  capsLockWarning: "hideElements",
-  showAverage: "hideElements",
-  showPb: "hideElements",
-
-  //other
-  accountChart: "hidden",
-  monkey: "hidden",
-  monkeyPowerLevel: "hidden",
-
-  //ads
-  ads: "ads",
-} as const satisfies Record<ConfigKey, ConfigGroupName>;
-
-export type ConfigGroups = typeof ConfigGroupsLiteral;

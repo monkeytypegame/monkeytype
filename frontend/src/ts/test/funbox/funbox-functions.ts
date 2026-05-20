@@ -1,18 +1,22 @@
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
-import Config, * as UpdateConfig from "../../config";
+import { Config } from "../../config/store";
+import { setConfig, toggleFunbox } from "../../config/setters";
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import * as TTSEvent from "../../observables/tts-event";
-import * as Notifications from "../../elements/notifications";
+import { ttsEvent } from "../../events/tts";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+} from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
-import * as KeymapEvent from "../../observables/keymap-event";
+import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
@@ -23,6 +27,7 @@ import * as TestState from "../test-state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { qs } from "../../utils/dom";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -49,7 +54,7 @@ export type FunboxFunctions = {
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
-    .getCurrent()
+    .getCurrentText()
     .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
@@ -58,12 +63,12 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     !isCorrect &&
     (TestInput.input.current !== "" ||
       TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1) ||
+        TestWords.words.getText(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
-    $("#words").addClass("read_ahead_disabled");
+    qs("#words")?.addClass("read_ahead_disabled");
   } else if (event.key === " ") {
-    $("#words").removeClass("read_ahead_disabled");
+    qs("#words")?.removeClass("read_ahead_disabled");
   }
 }
 
@@ -79,7 +84,7 @@ class CharDistribution {
   public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
-      (this.chars[char] as number)++;
+      (this.chars[char] as number) += 1;
     } else {
       this.chars[char] = 1;
     }
@@ -196,7 +201,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return word;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       if (event.key === "Enter") {
@@ -207,25 +212,29 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   simon_says: {
     applyConfig(): void {
-      UpdateConfig.setKeymapMode("next", true);
+      setConfig("keymapMode", "next", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+      save("keymapMode", Config.keymapMode);
     },
   },
   tts: {
     applyConfig(): void {
-      UpdateConfig.setKeymapMode("off", true);
+      setConfig("keymapMode", "off", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+      save("keymapMode", Config.keymapMode);
     },
     toggleScript(params: string[]): void {
       if (window.speechSynthesis === undefined) {
-        Notifications.add("Failed to load text-to-speech script", -1);
+        showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
+      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
     },
   },
   arrows: {
@@ -233,11 +242,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return DDR.chart2Word(wordIndex === 0);
     },
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       const ekey = event.key;
@@ -318,18 +323,32 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   rAnDoMcAsE: {
     alterText(word: string): string {
-      let randomcaseword = word[0] as string;
-      for (let i = 1; i < word.length; i++) {
-        if (
-          randomcaseword[i - 1] ===
-          (randomcaseword[i - 1] as string).toUpperCase()
-        ) {
-          randomcaseword += (word[i] as string).toLowerCase();
+      let randomCaseWord = "";
+
+      for (let letter of word) {
+        if (Math.random() < 0.5) {
+          randomCaseWord += letter.toUpperCase();
         } else {
-          randomcaseword += (word[i] as string).toUpperCase();
+          randomCaseWord += letter.toLowerCase();
         }
       }
-      return randomcaseword;
+
+      return randomCaseWord;
+    },
+  },
+  sPoNgEcAsE: {
+    alterText(word: string): string {
+      let spongeCaseWord = "";
+
+      for (let i = 0; i < word.length; i++) {
+        if (i % 2 === 0) {
+          spongeCaseWord += word[i]?.toLowerCase();
+        } else {
+          spongeCaseWord += word[i]?.toUpperCase();
+        }
+      }
+
+      return spongeCaseWord;
     },
   },
   rot13: {
@@ -372,25 +391,33 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (Config.layout === "default") {
         layout = "qwerty";
       }
-      UpdateConfig.setLayout(layout, true);
-      UpdateConfig.setKeymapLayout("overrideSync", true);
+      setConfig("layout", layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", "overrideSync", {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-      save("layout", Config.layout, UpdateConfig.setLayout);
+      save("keymapMode", Config.keymapMode);
+      save("layout", Config.layout);
     },
   },
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid[0] ?? "qwerty";
 
-      UpdateConfig.setLayout(layout as Layout, true);
-      UpdateConfig.setKeymapLayout(layout as KeymapLayout, true);
+      setConfig("layout", layout as Layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", layout as KeymapLayout, {
+        nosave: true,
+      });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-      save("layout", Config.layout, UpdateConfig.setLayout);
-      save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
+      save("keymapMode", Config.keymapMode);
+      save("layout", Config.layout);
+      save("keymapLayout", Config.keymapLayout);
     },
     handleSpace(): void {
       if (Config.mode !== "time") {
@@ -414,8 +441,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
             LayoutfluidFunboxTimer.hide();
           }
           if (mod === wordsPerLayout) {
-            UpdateConfig.setLayout(layouts[index] as Layout);
-            UpdateConfig.setKeymapLayout(layouts[index] as KeymapLayout);
+            setConfig("layout", layouts[index] as Layout);
+            setConfig("keymapLayout", layouts[index] as KeymapLayout);
             if (mod > 3) {
               LayoutfluidFunboxTimer.hide();
             }
@@ -424,27 +451,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           LayoutfluidFunboxTimer.hide();
         }
         setTimeout(() => {
-          void KeymapEvent.highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          highlight(
+            TestWords.words
+              .getCurrentText()
+              .charAt(TestInput.input.current.length),
           );
         }, 1);
       }
     },
     getResultContent(): string {
       return Config.customLayoutfluid.join(" ");
-    },
-    restart(): void {
-      if (this.applyConfig) this.applyConfig();
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1,
-            ),
-        );
-      }, 1);
     },
   },
   gibberish: {
@@ -464,11 +480,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_easy: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -476,11 +488,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -488,11 +496,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_hard: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
     async handleKeydown(event): Promise<void> {
       await readAheadHandleKeydown(event);
@@ -500,38 +504,38 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   memory: {
     applyConfig(): void {
-      $("#wordsWrapper").addClass("hidden");
-      UpdateConfig.setShowAllLines(true, true);
+      qs("#wordsWrapper")?.hide();
+      setConfig("showAllLines", true, {
+        nosave: true,
+      });
       if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react", true);
+        setConfig("keymapMode", "react", {
+          nosave: true,
+        });
       }
     },
     rememberSettings(): void {
-      save("mode", Config.mode, UpdateConfig.setMode);
-      save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
+      save("mode", Config.mode);
+      save("showAllLines", Config.showAllLines);
       if (Config.keymapMode === "next") {
-        save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+        save("keymapMode", Config.keymapMode);
       }
     },
     start(): void {
       MemoryTimer.reset();
-      $("#words").addClass("hidden");
+      qs("#words")?.hide();
     },
     restart(): void {
       MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      $("#words").removeClass("hidden");
+      qs("#words")?.show();
       if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react");
+        setConfig("keymapMode", "react");
       }
     },
   },
   nospace: {
     rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode,
-      );
+      save("highlightMode", Config.highlightMode);
     },
   },
   poetry: {
@@ -568,7 +572,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
   },
   IPv6: {
@@ -587,7 +591,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers, UpdateConfig.setNumbers);
+      save("numbers", Config.numbers);
     },
   },
   binary: {
@@ -603,7 +607,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return `0x${word}`;
     },
     rememberSettings(): void {
-      save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
+      save("punctuation", Config.punctuation);
     },
   },
   zipf: {
@@ -633,7 +637,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   underscore_spaces: {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
-      return word + "_";
+      return `${word}_`;
     },
   },
   crt: {
@@ -643,33 +647,33 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
       if (isSafari) {
         //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = navigator.userAgent.match(
-          /.*Version\/([0-9]*)\.([0-9]*).*/,
+        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
+          navigator.userAgent,
         );
         const mainVersion =
           versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
         const minorVersion =
           versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
         if (mainVersion <= 16 && minorVersion <= 5) {
-          Notifications.add(
+          showNoticeNotification(
             "CRT is not available on Safari 16.5 or earlier.",
-            0,
             {
-              duration: 5,
+              durationMs: 5000,
             },
           );
-          UpdateConfig.toggleFunbox("crt");
+          toggleFunbox("crt");
           return;
         }
       }
-      $("body").append('<div id="scanline" />');
-      $("body").addClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+      qs("#scanline")?.remove();
+      qs("body")?.appendHtml('<div id="scanline" />');
+      qs("body")?.addClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
     },
     clearGlobal(): void {
-      $("#scanline").remove();
-      $("body").removeClass("crtmode");
-      $("#globalFunBoxTheme").attr("href", ``);
+      qs("#scanline")?.remove();
+      qs("body")?.removeClass("crtmode");
+      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
     },
   },
   ALL_CAPS: {
@@ -681,9 +685,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     async withWords(_words) {
       const promises = Config.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
-          Notifications.add(
+          showNoticeNotification(
             `Failed to load language: ${language}. It will be ignored.`,
-            0,
           );
           return null;
         }),
@@ -694,7 +697,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
 
       if (languages.length === 0) {
-        UpdateConfig.toggleFunbox("polyglot");
+        toggleFunbox("polyglot");
         throw new Error(
           `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
@@ -704,15 +707,16 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
       if (languages.length === 1) {
         const lang = languages[0] as LanguageObject;
-        UpdateConfig.setLanguage(lang.name, true);
-        UpdateConfig.toggleFunbox("polyglot", true);
-        Notifications.add(
+        setConfig("language", lang.name, {
+          nosave: true,
+        });
+        toggleFunbox("polyglot", true);
+        showNoticeNotification(
           `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
             ", ",
           )}).`,
-          0,
           {
-            duration: 7,
+            durationMs: 7000,
           },
         );
         throw new WordGenError("");
@@ -729,11 +733,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       ) {
         const fallbackLanguage =
           languages[0]?.name ?? (allRightToLeft ? "arabic" : "english");
-        UpdateConfig.setLanguage(fallbackLanguage);
-        Notifications.add(
+        setConfig("language", fallbackLanguage);
+        showNoticeNotification(
           `Language direction conflict: switched to ${fallbackLanguage} for consistency.`,
-          0,
-          { duration: 5 },
+          { durationMs: 5000 },
         );
         throw new WordGenError("");
       }
@@ -744,7 +747,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           lang.name,
           {
             noLazyMode: lang.noLazyMode,
-            ligatures: lang.ligatures,
+            joiningScript: lang.joiningScript,
             rightToLeft: lang.rightToLeft,
             additionalAccents: lang.additionalAccents,
           },

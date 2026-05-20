@@ -44,12 +44,12 @@ export type EndpointMetadata = {
 
 /**
  *
- * @param meta Ensure the type of metadata is `EndpointMetadata`.
+ * @param metadata Ensure the type of metadata is `EndpointMetadata`.
  * Ts-rest does not allow to specify the type of `metadata`.
  * @returns
  */
-export function meta(meta: EndpointMetadata): EndpointMetadata {
-  return meta;
+export function meta(metadata: EndpointMetadata): EndpointMetadata {
+  return metadata;
 }
 
 export type RequestAuthenticationOptions = {
@@ -77,6 +77,8 @@ export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 
 export const MonkeyClientError = MonkeyResponseSchema;
+export type MonkeyClientErrorType = z.infer<typeof MonkeyClientError>;
+
 export const MonkeyServerError = MonkeyClientError.extend({
   errorId: z.string(),
   uid: z.string().optional(),
@@ -130,3 +132,17 @@ export const CommonResponses = {
     "Endpoint disabled or server is under maintenance",
   ),
 };
+
+export type CommonResponsesType =
+  | {
+      status: 400 | 401 | 403 | 429 | 470 | 471 | 472 | 479;
+      body: MonkeyClientErrorType;
+    }
+  | {
+      status: 422;
+      body: MonkeyValidationError;
+    }
+  | {
+      status: 500 | 503;
+      body: MonkeyServerErrorType;
+    };

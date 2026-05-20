@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import * as UserDAL from "../../../src/dal/user";
-import * as UserTestData from "../../__testData__/users";
-import { createConnection as createFriend } from "../../__testData__/connections";
-import { ObjectId } from "mongodb";
-import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
-import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import { PersonalBest, PersonalBests } from "@monkeytype/schemas/shared";
+import { MonkeyMail, ResultFilters } from "@monkeytype/schemas/users";
+import { ObjectId } from "mongodb";
+import * as UserDAL from "../../../src/dal/user";
+import { createConnection as createFriend } from "../../__testData__/connections";
+import * as UserTestData from "../../__testData__/users";
 
 const mockPersonalBest: PersonalBest = {
   acc: 1,
@@ -128,8 +128,8 @@ describe("UserDal", () => {
 
   it("isNameAvailable should correctly check if a username is available", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const { uid: user1 } = await UserTestData.createUser({ name: name1 });
     await UserTestData.createUser({ name: name2 });
 
@@ -160,8 +160,8 @@ describe("UserDal", () => {
 
   it("updatename should not allow unavailable usernames", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
     const _decoy = await UserTestData.createUser();
@@ -173,8 +173,8 @@ describe("UserDal", () => {
   });
 
   it("same usernames (different casing) should be available only for the same user", async () => {
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
 
@@ -192,8 +192,8 @@ describe("UserDal", () => {
 
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
-    const name = "user" + new ObjectId().toHexString();
-    const renamed = "renamed" + new ObjectId().toHexString();
+    const name = `user${new ObjectId().toHexString()}`;
+    const renamed = `renamed${new ObjectId().toHexString()}`;
     const testUser = await UserTestData.createUser({ name: name });
 
     // when
@@ -1122,11 +1122,60 @@ describe("UserDal", () => {
       expect(year2024[93]).toEqual(2);
     });
   });
+
+  describe("getUser", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getUser(user.uid, "read");
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
+  });
+
+  describe("getUserByName", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getUserByName(user.name, "read");
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
+  });
+
+  describe("getPersonalBests", () => {
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getPersonalBests(user.uid, "time", "15");
+
+      expect(read).toBeUndefined();
+    });
+  });
+
   describe("getPartialUser", () => {
     it("should throw for unknown user", async () => {
       await expect(async () =>
         UserDAL.getPartialUser("1234", "stack", []),
-      ).rejects.toThrowError("User not found\nStack: stack");
+      ).rejects.toThrow("User not found\nStack: stack");
     });
 
     it("should get streak", async () => {
@@ -1156,12 +1205,30 @@ describe("UserDal", () => {
         },
       });
     });
+    it("should get with missing personalBests", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({ personalBests: undefined });
+
+      //WHEN
+      const read = await UserDAL.getPartialUser(user.uid, "read", [
+        "uid",
+        "personalBests",
+      ]);
+
+      expect(read.personalBests).toEqual({
+        custom: {},
+        quote: {},
+        time: {},
+        words: {},
+        zen: {},
+      });
+    });
   });
   describe("updateEmail", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.updateEmail("unknown", "test@example.com"),
-      ).rejects.toThrowError("User not found\nStack: update email");
+      ).rejects.toThrow("User not found\nStack: update email");
     });
     it("should update", async () => {
       //given
@@ -1177,7 +1244,7 @@ describe("UserDal", () => {
   });
   describe("resetPb", () => {
     it("throws for nonexisting user", async () => {
-      await expect(async () => UserDAL.resetPb("unknown")).rejects.toThrowError(
+      await expect(async () => UserDAL.resetPb("unknown")).rejects.toThrow(
         "User not found\nStack: reset pb",
       );
     });
@@ -1205,7 +1272,7 @@ describe("UserDal", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.linkDiscord("unknown", "", ""),
-      ).rejects.toThrowError("User not found\nStack: link discord");
+      ).rejects.toThrow("User not found\nStack: link discord");
     });
     it("should update", async () => {
       //given
@@ -1241,7 +1308,7 @@ describe("UserDal", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
         UserDAL.unlinkDiscord("unknown"),
-      ).rejects.toThrowError("User not found\nStack: unlink discord");
+      ).rejects.toThrow("User not found\nStack: unlink discord");
     });
     it("should update", async () => {
       //given
@@ -1629,7 +1696,7 @@ describe("UserDal", () => {
 
     it("increments bananas", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const { uid } = await UserTestData.createUser({
         name,
         bananas: 1,

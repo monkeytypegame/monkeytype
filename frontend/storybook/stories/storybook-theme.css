@@ -1,0 +1,32 @@
+/* Fallback theme variables for Storybook (serika_dark) */
+:root {
+  --bg-color: #323437;
+  --main-color: #e2b714;
+  --caret-color: #e2b714;
+  --sub-color: #646669;
+  --sub-alt-color: #2c2e31;
+  --text-color: #d1d0c5;
+  --error-color: #ca4754;
+  --error-extra-color: #7e2a33;
+  --colorful-error-color: #ca4754;
+  --colorful-error-extra-color: #7e2a33;
+  --roundness: 0.5rem;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: "Roboto Mono", monospace;
+}
+
+.docs-story {
+  background: var(--bg-color) !important;
+}
+
+.devIndicator {
+  display: none;
+}
+
+.docs-story .docblock-code-toggle {
+  display: none;
+}

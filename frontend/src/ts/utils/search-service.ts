@@ -2,7 +2,7 @@ import { stemmer } from "stemmer";
 import levenshtein from "damerau-levenshtein";
 
 export type SearchService<T> = {
-  query: (query: string) => SearchResult<T>;
+  query: (query: string, ids: number[]) => SearchResult<T>;
 };
 
 type SearchServiceOptions = {
@@ -98,7 +98,7 @@ export const buildSearchService = <T>(
         internalDocument.termFrequencies[stemmedToken] = 0;
       }
 
-      (internalDocument.termFrequencies[stemmedToken] as number)++;
+      (internalDocument.termFrequencies[stemmedToken] as number) += 1;
       maxTermFrequency = Math.max(
         maxTermFrequency,
         internalDocument.termFrequencies[stemmedToken] as number,
@@ -110,7 +110,7 @@ export const buildSearchService = <T>(
 
   const tokenSet = Object.keys(reverseIndex);
 
-  const query = (searchQuery: string): SearchResult<T> => {
+  const query = (searchQuery: string, ids: number[]): SearchResult<T> => {
     const searchResult: SearchResult<T> = {
       results: [],
       matchedQueryTerms: [],
@@ -155,7 +155,10 @@ export const buildSearchService = <T>(
 
             const scoreForToken = score * idf * termFrequency;
 
-            results.set(document.id, currentScore + scoreForToken);
+            const quote = documents[document.id] as InternalDocument;
+            if (ids.length === 0 || ids.includes(quote?.id)) {
+              results.set(document.id, currentScore + scoreForToken);
+            }
           });
 
           normalizedTokenToOriginal[token]?.forEach((originalToken) => {

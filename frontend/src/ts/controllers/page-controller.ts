@@ -1,28 +1,125 @@
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as ActivePage from "../states/active-page";
-import * as Settings from "../pages/settings";
-import * as Account from "../pages/account";
+import {
+  getActivePage,
+  setActivePage,
+  setSelectedProfileName,
+} from "../states/core";
 import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
-import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
-import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as Friends from "../pages/friends";
 import * as Page404 from "../pages/404";
-import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
-import Page, { PageName, LoadingOptions } from "../pages/page";
+import Page, {
+  PageName,
+  LoadingOptions,
+  PageProperties,
+  PageWithUrlParams,
+  UrlParamsSchema,
+  OptionsWithUrlParams,
+} from "../pages/page";
+import { onDOMReady, qsa, qsr } from "../utils/dom";
+import * as Skeleton from "../utils/skeleton";
+import {
+  LeaderboardUrlParamsSchema,
+  readGetParameters,
+} from "../states/leaderboard-selection";
+import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
+import { getSnapshot } from "../db";
+import * as TodayTracker from "../test/today-tracker";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
 
 type ChangeOptions = {
   force?: boolean;
   params?: Record<string, string>;
   data?: unknown;
   loadingOptions?: LoadingOptions;
+};
+
+const pages = {
+  loading: PageLoading.page,
+  test: PageTest.page,
+  settings: solidPage("settings", {
+    beforeShow: async () => {
+      // clear any previous highlight
+      const prev = document.querySelector<HTMLElement>(
+        '[data-component="settingspage"] .settings-highlight',
+      );
+      if (prev !== null) {
+        prev.classList.remove("settings-highlight");
+      }
+
+      const highlight = new URLSearchParams(window.location.search).get(
+        "highlight",
+      );
+      if (highlight === null) return;
+
+      const element = document.querySelector<HTMLElement>(
+        `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
+      );
+      if (element === null) return;
+
+      setTimeout(() => {
+        element.scrollIntoView({ block: "center", behavior: "auto" });
+        element.classList.add("settings-highlight");
+      }, 250);
+    },
+  }),
+  about: solidPage("about"),
+  account: solidPage("account", {
+    loadingOptions: {
+      loadingMode: () => {
+        if (isResultsReady()) {
+          return "none";
+        } else {
+          return "sync";
+        }
+      },
+      loadingPromise: async () => {
+        if (getSnapshot() === null || getSnapshot() === undefined) {
+          throw new Error(
+            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+          );
+        }
+        await waitForResultsReady();
+        TodayTracker.addAllFromToday();
+      },
+      style: "bar",
+      keyframes: [
+        {
+          percentage: 90,
+          durationMs: 2000,
+          text: "Downloading results...",
+        },
+      ],
+    },
+  }),
+  login: solidPage("login"),
+  profile: solidPage("profile", {
+    beforeShow: async (options) => {
+      setSelectedProfileName(options.params?.["uidOrName"]);
+    },
+  }),
+  profileSearch: solidPage("profileSearch"),
+  friends: Friends.page,
+  404: Page404.page,
+  accountSettings: PageAccountSettings.page,
+  leaderboards: solidPage("leaderboards", {
+    urlParamsSchema: LeaderboardUrlParamsSchema,
+    loadingOptions: {
+      style: "spinner",
+      loadingMode: () => "sync",
+      loadingPromise: async () => {
+        await serverConfigurationPromise;
+      },
+    },
+    beforeShow: async (options) => {
+      readGetParameters(options.urlParams);
+    },
+  }),
 };
 
 function updateOpenGraphUrl(): void {
@@ -58,14 +155,14 @@ async function showSyncLoading({
   loadingOptions: LoadingOptions[];
   totalDuration: number;
 }): Promise<void> {
-  PageLoading.page.element.removeClass("hidden").css("opacity", 0);
+  PageLoading.page.element.show().setStyle({ opacity: "0" });
   await PageLoading.page.beforeShow({});
 
   const fillDivider = loadingOptions.length;
   const fillOffset = 100 / fillDivider;
 
   //void here to run the loading promise as soon as possible
-  void Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+  void PageLoading.page.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });
@@ -96,13 +193,13 @@ async function showSyncLoading({
     }
   }
 
-  await Misc.promiseAnimate(PageLoading.page.element[0] as HTMLElement, {
+  await PageLoading.page.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
 
   await PageLoading.page.afterHide();
-  PageLoading.page.element.addClass("hidden");
+  PageLoading.page.element.hide();
 }
 
 // Global abort controller for keyframe promises
@@ -173,44 +270,29 @@ export async function change(
     return false;
   }
 
-  if (!options.force && ActivePage.get() === pageName) {
+  if (!options.force && getActivePage() === pageName) {
     console.debug(`change page ${pageName} stoped, page already active`);
     return false;
   } else {
     console.log(`changing page ${pageName}`);
   }
 
-  const pages = {
-    loading: PageLoading.page,
-    test: PageTest.page,
-    settings: Settings.page,
-    about: PageAbout.page,
-    account: Account.page,
-    login: PageLogin.page,
-    profile: PageProfile.page,
-    profileSearch: PageProfileSearch.page,
-    friends: Friends.page,
-    404: Page404.page,
-    accountSettings: PageAccountSettings.page,
-    leaderboards: PageLeaderboards.page,
-  };
-
-  const previousPage = pages[ActivePage.get()];
+  const previousPage = pages[getActivePage()];
   const nextPage = pages[pageName];
   const totalDuration = Misc.applyReducedMotion(250);
 
   //start
   PageTransition.set(true);
-  $(".page").removeClass("active");
+  qsa(".page")?.removeClass("active");
 
   //previous page
   await previousPage?.beforeHide?.();
-  previousPage.element.removeClass("hidden").css("opacity", 1);
-  await Misc.promiseAnimate(previousPage.element[0] as HTMLElement, {
+  previousPage.element.show().setStyle({ opacity: "1" });
+  await previousPage.element.promiseAnimate({
     opacity: "0",
     duration: totalDuration / 2,
   });
-  previousPage.element.addClass("hidden");
+  previousPage.element.hide();
   await previousPage?.afterHide();
 
   // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
@@ -245,7 +327,7 @@ export async function change(
     }
 
     pages.loading.element.addClass("active");
-    ActivePage.set(pages.loading.id);
+    setActivePage(pages.loading.id);
     Focus.set(false);
     PageLoading.showError();
     PageLoading.updateText(
@@ -259,7 +341,7 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  ActivePage.set(nextPage.id);
+  setActivePage(nextPage.id);
   updateOpenGraphUrl();
   Focus.set(false);
 
@@ -274,14 +356,14 @@ export async function change(
     typeof nextPageLoadingMode === "object" &&
     nextPageLoadingMode.mode === "async"
   ) {
-    nextPageLoadingMode.beforeLoading();
+    nextPageLoadingMode.beforeLoading?.();
     void nextPage?.loadingOptions?.loadingPromise().then(() => {
-      nextPageLoadingMode.afterLoading();
+      nextPageLoadingMode.afterLoading?.();
     });
   }
 
-  nextPage.element.removeClass("hidden").css("opacity", 0);
-  await Misc.promiseAnimate(nextPage.element[0] as HTMLElement, {
+  nextPage.element.show().setStyle({ opacity: "0" });
+  await nextPage.element.promiseAnimate({
     opacity: "1",
     duration: totalDuration / 2,
   });
@@ -292,4 +374,69 @@ export async function change(
   PageTransition.set(false);
   void AdController.reinstate();
   return true;
+}
+
+function solidPage(
+  id: PageName,
+  props?: {
+    path?: string;
+    urlParamsSchema?: never;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: PageProperties<undefined>["beforeShow"];
+    afterHide?: () => Promise<void>;
+  },
+): Page<undefined>;
+function solidPage<U extends UrlParamsSchema>(
+  id: PageName,
+  props: {
+    path?: string;
+    urlParamsSchema: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): PageWithUrlParams<undefined, U>;
+function solidPage<U extends UrlParamsSchema>(
+  id: PageName,
+  props?: {
+    path?: string;
+    urlParamsSchema?: U;
+    loadingOptions?: LoadingOptions;
+    beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
+    afterHide?: () => Promise<void>;
+  },
+): Page<undefined> | PageWithUrlParams<undefined, U> {
+  const path = props?.path ?? `/${id}`;
+  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
+  onDOMReady(() => Skeleton.save(internalId));
+
+  const shared = {
+    id,
+    path,
+    element: qsr(`#${internalId}`),
+    loadingOptions: props?.loadingOptions,
+    afterHide: async () => {
+      Skeleton.remove(internalId);
+      await props?.afterHide?.();
+    },
+  };
+
+  if (props?.urlParamsSchema !== undefined) {
+    return new PageWithUrlParams({
+      ...shared,
+      urlParamsSchema: props.urlParamsSchema,
+      beforeShow: async (options) => {
+        Skeleton.append(internalId, "main");
+        await props.beforeShow?.(options);
+      },
+    });
+  }
+
+  return new Page({
+    ...shared,
+    beforeShow: async (options) => {
+      Skeleton.append(internalId, "main");
+      await props?.beforeShow?.(options);
+    },
+  });
 }

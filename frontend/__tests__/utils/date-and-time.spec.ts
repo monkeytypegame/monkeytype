@@ -79,9 +79,7 @@ describe("date-and-time", () => {
 
           //WHEN/THEN
           expect(DateAndTime.getFirstDayOfTheWeek()).toEqual(
-            firefoxFirstDayOfWeek !== undefined
-              ? firefoxFirstDayOfWeek
-              : firstDayOfWeek,
+            firefoxFirstDayOfWeek ?? firstDayOfWeek,
           );
         },
       );

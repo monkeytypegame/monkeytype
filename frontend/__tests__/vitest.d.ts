@@ -8,6 +8,9 @@ interface ActivityDayMatchers<R = TestActivityDay> {
   toBeFiller: () => ActivityDayMatchers<R>;
 }
 
+/// <reference types="vitest" />
+import "@testing-library/jest-dom";
+
 declare module "vitest" {
   interface Assertion<T = any> extends ActivityDayMatchers<T> {}
   interface AsymmetricMatchersContaining extends ActivityDayMatchers {}

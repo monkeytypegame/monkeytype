@@ -46,7 +46,7 @@ async function updateLeaderboardAndNotifyChanges(
     const isRecentRecord =
       record.timestamp > Date.now() - RECENT_AGE_MILLISECONDS;
 
-    return (userImprovedRank || newUserInTop10) && isRecentRecord;
+    return (userImprovedRank === true || newUserInTop10) && isRecentRecord;
   });
 
   if (newRecords.length > 0) {

@@ -1,43 +1,17 @@
-import Config from "../config";
-import * as Misc from "../utils/misc";
+import { Config } from "../config/store";
+import { qsr } from "../utils/dom";
+import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 
-const el = document.querySelector("#capsWarning") as HTMLElement;
+const el = qsr("#capsWarning");
 
-export let capsState = false;
-
-let visible = false;
-
-function show(): void {
-  if (!visible) {
-    el?.classList.remove("hidden");
-    visible = true;
+function updateCapsWarningVisibility(): void {
+  if (Config.capsLockWarning && isCapsLockOn()) {
+    el.show();
+  } else {
+    el.hide();
   }
 }
 
-function hide(): void {
-  if (visible) {
-    el?.classList.add("hidden");
-    visible = false;
-  }
-}
-
-function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
-  const modState = event?.originalEvent?.getModifierState?.("CapsLock");
-  if (modState !== undefined) {
-    capsState = modState;
-  }
-
-  try {
-    if (Config.capsLockWarning && capsState) {
-      show();
-    } else {
-      hide();
-    }
-  } catch {}
-}
-
-$(document).on("keyup", update);
-
-$(document).on("keydown", (event) => {
-  if (Misc.isMac()) update(event);
+onCapsLockChange(() => {
+  updateCapsWarningVisibility();
 });

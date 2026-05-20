@@ -125,8 +125,9 @@ export class TestActivityCalendar implements TestActivityCalendar {
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
       if (v === null || v === 0) return "0";
-      for (let b = 0; b < 4; b++)
+      for (let b = 0; b < 4; b++) {
         if (v <= (buckets[b] ?? 0)) return (1 + b).toString();
+      }
 
       return "4";
     };

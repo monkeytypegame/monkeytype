@@ -50,7 +50,7 @@ export async function isSubmissionEnabled(
 ): Promise<IsSubmissionEnabledResponse> {
   const { submissionsEnabled } = req.ctx.configuration.quotes;
   return new MonkeyResponse(
-    "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
+    `Quote submission ${submissionsEnabled ? "enabled" : "disabled"}`,
     { isEnabled: submissionsEnabled },
   );
 }
@@ -125,9 +125,7 @@ export async function submitRating(
     shouldUpdateRating,
   );
 
-  if (!userQuoteRatings[language]) {
-    userQuoteRatings[language] = {};
-  }
+  userQuoteRatings[language] ??= {};
   userQuoteRatings[language][quoteId] = rating;
 
   await updateQuoteRatings(uid, userQuoteRatings);

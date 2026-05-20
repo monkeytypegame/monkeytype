@@ -195,9 +195,7 @@ export function isDevEnvironment(): boolean {
 export function getFrontendUrl(): string {
   return isDevEnvironment()
     ? "http://localhost:3000"
-    : process.env["FRONTEND_URL"] !== undefined
-      ? process.env["FRONTEND_URL"]
-      : "https://monkeytype.com";
+    : (process.env["FRONTEND_URL"] ?? "https://monkeytype.com");
 }
 
 /**
@@ -246,7 +244,7 @@ export function omit<T extends object, K extends keyof T>(
 ): Omit<T, K> {
   const result = { ...obj };
   for (const key of keys) {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    // oxlint-disable-next-line no-dynamic-delete
     delete result[key];
   }
   return result;

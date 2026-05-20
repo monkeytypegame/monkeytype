@@ -23,6 +23,21 @@ export function camelCaseToWords(str: string): string {
 }
 
 /**
+ * Converts a string with words separated by spaces to camelCase.
+ * @param str The input string with words separated by spaces.
+ * @returns The camelCase version of the input string.
+ */
+export function wordsToCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/ +/)
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join("");
+}
+
+/**
  * Returns the last character of a string.
  * @param word The input string.
  * @returns The last character of the input string, or an empty string if the input is empty.
@@ -66,6 +81,14 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
  */
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Normalizes free-form names to canonical storage format.
+ * Trims edge whitespace and collapses all inner whitespace runs to underscores.
+ */
+export function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, "_");
 }
 
 /**
@@ -134,7 +157,7 @@ export function getLanguageDisplayString(
   } else {
     out = language;
   }
-  return out.replace(/_/g, " ");
+  return replaceUnderscoresWithSpaces(out);
 }
 
 /**
@@ -214,23 +237,24 @@ export function replaceControlCharacters(textToClear: string): string {
  * @param word the word to check for RTL characters
  * @returns true if the word contains RTL characters, false otherwise
  */
-function hasRTLCharacters(word: string): boolean {
+function hasRTLCharacters(word: string): [boolean, number] {
   if (!word || word.length === 0) {
-    return false;
+    return [false, 0];
   }
 
   // This covers Arabic, Farsi, Urdu, and other RTL scripts
   const rtlPattern =
-    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/;
 
-  return rtlPattern.test(word);
+  const result = rtlPattern.exec(word);
+  return [result !== null, result?.[0].length ?? 0];
 }
 
 /**
  * Cache for word direction to avoid repeated calculations per word
  * Keyed by the stripped core of the word; can be manually cleared when needed
  */
-let wordDirectionCache: Map<string, boolean> = new Map();
+let wordDirectionCache: Map<string, [boolean, number]> = new Map();
 
 export function clearWordDirectionCache(): void {
   wordDirectionCache.clear();
@@ -240,25 +264,33 @@ export function isWordRightToLeft(
   word: string | undefined,
   languageRTL: boolean,
   reverseDirection?: boolean,
-): boolean {
+): [boolean, boolean] {
   if (word === undefined || word.length === 0) {
-    return reverseDirection ? !languageRTL : languageRTL;
+    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
   }
 
   // Strip leading/trailing punctuation and whitespace so attached opposite-direction
   // punctuation like "word؟" or "،word" doesn't flip the direction detection
   // and if only punctuation/symbols/whitespace, use main language direction
   const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0) return reverseDirection ? !languageRTL : languageRTL;
+  if (core.length === 0) {
+    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
+  }
 
   // cache by core to handle variants like "word" vs "word؟"
   const cached = wordDirectionCache.get(core);
-  if (cached !== undefined) return reverseDirection ? !cached : cached;
+  if (cached !== undefined) {
+    return reverseDirection
+      ? [!cached[0], false]
+      : [cached[0], cached[1] === word.length];
+  }
 
   const result = hasRTLCharacters(core);
   wordDirectionCache.set(core, result);
 
-  return reverseDirection ? !result : result;
+  return reverseDirection
+    ? [!result[0], false]
+    : [result[0], result[1] === word.length];
 }
 
 export const CHAR_EQUIVALENCE_SETS = [
@@ -311,13 +343,17 @@ export function areCharactersVisuallyEqual(
 }
 
 export function toHex(buffer: ArrayBuffer): string {
-  // @ts-expect-error modern browsers
-  if (Uint8Array.prototype.toHex !== undefined) {
-    // @ts-expect-error modern browsers
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    return new Uint8Array(buffer).toHex() as string;
+  const u8 = new Uint8Array(buffer);
+
+  // Use native toHex if available (modern browsers / future runtimes)
+  if (
+    "toHex" in u8 &&
+    typeof (u8 as { toHex?: unknown }).toHex === "function"
+  ) {
+    return (u8 as unknown as { toHex(): string }).toHex();
   }
-  const hashArray = Array.from(new Uint8Array(buffer));
+
+  const hashArray = Array.from(u8);
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -354,6 +390,14 @@ export function isSpace(char: string): boolean {
   ]);
 
   return spaces.has(codePoint);
+}
+
+export function replaceUnderscoresWithSpaces(text: string): string {
+  return text.replace(/_/g, " ");
+}
+
+export function replaceSpacesWithUnderscores(text: string): string {
+  return text.replace(/ /g, "_");
 }
 
 export type CharCounts = {

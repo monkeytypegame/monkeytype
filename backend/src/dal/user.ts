@@ -27,7 +27,12 @@ import {
   CountByYearAndDay,
   Friend,
 } from "@monkeytype/schemas/users";
-import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
@@ -246,7 +251,7 @@ export async function updateEmail(
 export async function getUser(uid: string, stack: string): Promise<DBUser> {
   const user = await getUsersCollection().findOne({ uid });
   if (!user) throw new MonkeyError(404, "User not found", stack);
-  return user;
+  return migrateUser(user);
 }
 
 /**
@@ -263,10 +268,16 @@ export async function getPartialUser<K extends keyof DBUser>(
   fields: K[],
 ): Promise<Pick<DBUser, K>> {
   const projection = new Map(fields.map((it) => [it, 1]));
-  const results = await getUsersCollection().findOne({ uid }, { projection });
-  if (results === null) throw new MonkeyError(404, "User not found", stack);
+  const partialUser = await getUsersCollection().findOne(
+    { uid },
+    { projection },
+  );
+  if (partialUser === null) throw new MonkeyError(404, "User not found", stack);
 
-  return results;
+  if (fields.includes("personalBests" as K)) {
+    return migrateUser(partialUser);
+  }
+  return partialUser;
 }
 
 export async function findByName(name: string): Promise<DBUser | undefined> {
@@ -275,7 +286,7 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
     { collation: { locale: "en", strength: 1 } },
   );
 
-  return found !== null ? found : undefined;
+  return found ?? undefined;
 }
 
 export async function isNameAvailable(
@@ -294,7 +305,7 @@ export async function getUserByName(
 ): Promise<DBUser> {
   const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
-  return user;
+  return migrateUser(user);
 }
 
 export async function isDiscordIdAvailable(
@@ -459,8 +470,9 @@ export async function checkIfPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return false;
+  }
 
   if (mode === "quote") {
     return false;
@@ -481,17 +493,14 @@ export async function checkIfPb(
 
   if (!pb.isPb) return false;
 
-  await getUsersCollection().updateOne(
-    { uid },
-    { $set: { personalBests: pb.personalBests } },
-  );
-
+  const setFields: Record<string, unknown> = {
+    personalBests: pb.personalBests,
+  };
   if (pb.lbPersonalBests) {
-    await getUsersCollection().updateOne(
-      { uid },
-      { $set: { lbPersonalBests: pb.lbPersonalBests } },
-    );
+    setFields["lbPersonalBests"] = pb.lbPersonalBests;
   }
+
+  await getUsersCollection().updateOne({ uid }, { $set: setFields });
   return true;
 }
 
@@ -510,8 +519,9 @@ export async function checkIfTagPb(
     "stopOnLetter" in result &&
     result.stopOnLetter === true &&
     result.acc < 100
-  )
+  ) {
     return [];
+  }
 
   if (mode === "quote") {
     return [];
@@ -605,8 +615,9 @@ export async function linkDiscord(
   discordAvatar?: string,
 ): Promise<void> {
   const updates: Partial<DBUser> = { discordId };
-  if (discordAvatar !== undefined && discordAvatar !== null)
+  if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
+  }
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
@@ -769,7 +780,7 @@ export async function getPersonalBests(
   ]);
 
   if (mode2 !== undefined) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     return user.personalBests?.[mode]?.[mode2] as PersonalBest;
   }
 
@@ -1053,10 +1064,15 @@ export async function updateInbox(
                 .filter((it) => it.type === "badge")
                 .map((it) => it.item);
 
-              if (inventory === null)
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+              if (inventory === null) {
                 inventory = {
                   badges: [],
                 };
+              }
+              // mongo doesnt support ??= i think
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               if (inventory.badges === null) inventory.badges = [];
 
               const uniqueBadgeIds = new Set();
@@ -1100,8 +1116,9 @@ export async function updateInbox(
     { $unset: "tmp" },
   ]);
 
-  if (update.matchedCount !== 1)
+  if (update.matchedCount !== 1) {
     throw new MonkeyError(404, "User not found", "update inbox");
+  }
 }
 
 export async function updateStreak(
@@ -1225,12 +1242,13 @@ async function updateUser(
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(filter, update);
 
-  if (result.matchedCount !== 1)
+  if (result.matchedCount !== 1) {
     throw new MonkeyError(
       error.statusCode ?? 404,
       error.message ?? "User not found",
       error.stack,
     );
+  }
 }
 
 export async function getFriends(uid: string): Promise<DBFriend[]> {
@@ -1348,4 +1366,16 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
       },
     ],
   );
+}
+
+function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
+  user.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
+
+  return user;
 }

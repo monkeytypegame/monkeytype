@@ -33,11 +33,10 @@ import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
 import { MonkeyMail, UserStreak } from "@monkeytype/schemas/users";
 import MonkeyError, { isFirebaseError } from "../../../src/utils/error";
-import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
-import { SuperTest } from "supertest";
+import Test from "supertest/lib/test";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -194,7 +193,7 @@ describe("user controller test", () => {
         ],
       });
     });
-    it("should fail if username contains profanity", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //GIVEN
       const newUser = {
         uid: uid,
@@ -213,7 +212,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -278,7 +277,7 @@ describe("user controller test", () => {
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
-    it("returns 422 if username contains profanity", async () => {
+    it("returns 422 if username contains disallowed word", async () => {
       await mockApp
         .get("/users/checkName/newMiodec")
         //no authentication required
@@ -1140,7 +1139,7 @@ describe("user controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should fail if username contains profanity", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
@@ -1152,7 +1151,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -1815,7 +1814,7 @@ describe("user controller test", () => {
       //THEN
       expect(result.body.message).toEqual("The Discord account is blocked");
 
-      expect(blocklistContainsMock).toBeCalledWith({
+      expect(blocklistContainsMock).toHaveBeenCalledWith({
         discordId: "discordUserId",
       });
     });
@@ -2979,7 +2978,7 @@ describe("user controller test", () => {
 
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3041,7 +3040,7 @@ describe("user controller test", () => {
         ...foundUser,
         profileDetails: { showActivityOnPublicProfile: true },
       } as any);
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3063,7 +3062,7 @@ describe("user controller test", () => {
         ...foundUser,
         profileDetails: { showActivityOnPublicProfile: false },
       } as any);
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3081,7 +3080,7 @@ describe("user controller test", () => {
         banned: true,
       } as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3132,7 +3131,7 @@ describe("user controller test", () => {
       const uid = foundUser.uid;
       getUserMock.mockResolvedValue(foundUser as any);
 
-      const rank = { rank: 24 } as LeaderboardEntry;
+      const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -3311,7 +3310,7 @@ describe("user controller test", () => {
         expect.objectContaining({}),
       );
     });
-    it("should fail with profanity", async () => {
+    it("should fail with disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
@@ -3331,11 +3330,11 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"bio" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"keyboard" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.twitter" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.github" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.website" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (https://i-luv-miodec.com)',
+          '"bio" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"keyboard" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.twitter" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.github" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.website" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
         ],
       });
     });
@@ -3348,11 +3347,11 @@ describe("user controller test", () => {
           bio: new Array(251).fill("x").join(""),
           keyboard: new Array(76).fill("x").join(""),
           socialProfiles: {
-            twitter: new Array(21).fill("x").join(""),
+            twitter: new Array(16).fill("x").join(""),
             github: new Array(40).fill("x").join(""),
-            website:
-              "https://" +
-              new Array(201 - "https://".length).fill("x").join(""),
+            website: `https://${new Array(201 - "https://".length)
+              .fill("x")
+              .join("")}`,
           },
         })
         .expect(422);
@@ -3363,7 +3362,7 @@ describe("user controller test", () => {
         validationErrors: [
           '"bio" String must contain at most 250 character(s)',
           '"keyboard" String must contain at most 75 character(s)',
-          '"socialProfiles.twitter" String must contain at most 20 character(s)',
+          '"socialProfiles.twitter" String must contain at most 15 character(s)',
           '"socialProfiles.github" String must contain at most 39 character(s)',
           '"socialProfiles.website" String must contain at most 200 character(s)',
         ],
@@ -4050,7 +4049,7 @@ async function enableConnectionsEndpoints(enabled: boolean): Promise<void> {
   );
 }
 
-async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+async function expectFailForDisabledEndpoint(call: Test): Promise<void> {
   await enableConnectionsEndpoints(false);
   const { body } = await call.expect(503);
   expect(body.message).toEqual("Connections are not available at this time.");

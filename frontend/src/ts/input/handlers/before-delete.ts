@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
@@ -43,7 +43,7 @@ export function onBeforeDelete(event: InputEvent): void {
   const confidence = Config.confidenceMode;
   const previousWordCorrect =
     (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.get(TestState.activeWordIndex - 1);
+    TestWords.words.getText(TestState.activeWordIndex - 1);
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

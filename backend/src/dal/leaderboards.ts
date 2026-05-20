@@ -85,7 +85,7 @@ export async function get(
 
     return leaderboard;
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -115,15 +115,16 @@ export async function getCount(
       cachedCounts.set(key, count);
       return count;
     } else {
-      return (
-        await aggregateWithAcceptedConnections(
-          {
-            collectionName: getCollectionName({ language, mode, mode2 }),
-            uid,
-          },
-          [{ $project: { _id: true } }],
-        )
-      ).length;
+      const result = await aggregateWithAcceptedConnections<{
+        total: number;
+      }>(
+        {
+          collectionName: getCollectionName({ language, mode, mode2 }),
+          uid,
+        },
+        [{ $count: "total" }],
+      );
+      return result[0]?.total ?? 0;
     }
   }
 }
@@ -162,7 +163,7 @@ export async function getRank(
       return results[0] ?? null;
     }
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // oxlint-disable-next-line no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -393,7 +394,7 @@ async function createIndex(
       Logger.warning(`Index ${key} not matching, dropping and recreating...`);
 
       const existingIndex = (await getUsersCollection().listIndexes().toArray())
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-unsafe-member-access
         .map((it) => it.name as string)
         .find((it) => it.startsWith(key));
 

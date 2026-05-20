@@ -38,19 +38,19 @@ export function secondsToString(
 
   if (showDays) {
     days < 10 && delimiter !== "text"
-      ? (daysString = "0" + days)
+      ? (daysString = `0${days}`)
       : (daysString = days);
   }
   hours < 10 && delimiter !== "text"
-    ? (hoursString = "0" + hours)
+    ? (hoursString = `0${hours}`)
     : (hoursString = hours);
   minutes < 10 && delimiter !== "text"
-    ? (minutesString = "0" + minutes)
+    ? (minutesString = `0${minutes}`)
     : (minutesString = minutes);
   seconds < 10 &&
   (minutes > 0 || hours > 0 || alwaysShowMinutes) &&
   delimiter !== "text"
-    ? (secondsString = "0" + seconds)
+    ? (secondsString = `0${seconds}`)
     : (secondsString = seconds);
 
   let ret = "";
@@ -233,8 +233,8 @@ export function getFirstDayOfTheWeek(): Day {
 
   if ("getWeekInfo" in locale) {
     // @ts-expect-error getWeekInfo is not in the type definition
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return (locale.getWeekInfo().firstDay as number) % 7;
+    // oxlint-disable-next-line no-unsafe-member-access
+    return locale.getWeekInfo().firstDay % 7;
   }
 
   //use fallback generated from date-fns for browsers like firefox

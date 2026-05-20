@@ -1,6 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { SimpleModal } from "../utils/simple-modal";
+import { SimpleModal } from "../elements/simple-modal";
 import Ape from "../ape";
 import {
   intervalToDuration,
@@ -9,62 +9,39 @@ import {
   formatDistanceToNow,
   format,
 } from "date-fns";
-import * as Notifications from "../elements/notifications";
+import {
+  showNoticeNotification,
+  showErrorNotification,
+  showSuccessNotification,
+} from "../states/notifications";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { formatXp, getXpDetails } from "../utils/levels";
 import { secondsToString } from "../utils/date-and-time";
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import Format from "../utils/format";
+import Format from "../singletons/format";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { SortedTable, SortSchema } from "../utils/sorted-table";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { formatTypingStatsRatio } from "../utils/misc";
 import { getLanguageDisplayString } from "../utils/strings";
 import * as DB from "../db";
+import { addFriend, getReceiverUid } from "../db";
 import { getAuthenticatedUser } from "../firebase";
 import * as ServerConfiguration from "../ape/server-configuration";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 import { Connection } from "@monkeytype/schemas/connections";
-import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
-import * as Loader from "../elements/loader";
+import { UserNameWithoutFilterSchema, Friend } from "@monkeytype/schemas/users";
+
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
-
-const pageElement = $(".page.pageFriends");
+import { qs, qsr, onDOMReady } from "../utils/dom";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
 let pendingRequests: Connection[] | undefined;
 let friendsList: Friend[] | undefined;
-
-export function getReceiverUid(
-  connection: Pick<Connection, "initiatorUid" | "receiverUid">,
-): string {
-  const me = getAuthenticatedUser();
-  if (me === null)
-    throw new Error("expected to be authenticated in getReceiverUid");
-
-  if (me.uid === connection.initiatorUid) return connection.receiverUid;
-  return connection.initiatorUid;
-}
-
-export async function addFriend(receiverName: string): Promise<true | string> {
-  const result = await Ape.connections.create({ body: { receiverName } });
-
-  if (result.status !== 200) {
-    return `Friend request failed: ${result.body.message}`;
-  } else {
-    const snapshot = DB.getSnapshot();
-    if (snapshot !== undefined) {
-      const receiverUid = getReceiverUid(result.body.data);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      snapshot.connections[receiverUid] = result.body.data.status;
-      updatePendingConnections();
-    }
-    return true;
-  }
-}
 
 const addFriendModal = new SimpleModal({
   id: "addFriend",
@@ -75,7 +52,7 @@ const addFriendModal = new SimpleModal({
       type: "text",
       initVal: "",
       validation: {
-        schema: UserNameSchema,
+        schema: UserNameWithoutFilterSchema,
         isValid: remoteValidation(
           async (name) => Ape.users.getNameAvailability({ params: { name } }),
           { check: (data) => !data.available || "Unknown user" },
@@ -85,28 +62,28 @@ const addFriendModal = new SimpleModal({
     },
   ],
   buttonText: "request",
-  onlineOnly: true,
   execFn: async (_thisPopup, receiverName) => {
     const result = await addFriend(receiverName);
 
     if (result === true) {
-      return { status: 1, message: `Request sent to ${receiverName}` };
+      updatePendingConnections();
+      return { status: "success", message: `Request sent to ${receiverName}` };
     }
 
-    let status: -1 | 0 | 1 = -1;
+    let status: "error" | "notice" | "success" = "error";
     let message: string = "Unknown error";
 
     if (result.includes("already exists")) {
-      status = 0;
+      status = "notice";
       message = `You are already friends with ${receiverName}`;
     } else if (result.includes("request already sent")) {
-      status = 0;
+      status = "notice";
       message = `You have already sent a friend request to ${receiverName}`;
     } else if (result.includes("blocked by initiator")) {
-      status = 0;
+      status = "notice";
       message = `You have blocked ${receiverName}`;
     } else if (result.includes("blocked by receiver")) {
-      status = 0;
+      status = "notice";
       message = `${receiverName} has blocked you`;
     }
 
@@ -128,14 +105,14 @@ const removeFriendModal = new SimpleModal({
       params: { id: connectionId },
     });
     if (result.status !== 200) {
-      return { status: -1, message: result.body.message };
+      return { status: "error", message: result.body.message };
     } else {
       friendsList = friendsList?.filter(
         (it) => it.connectionId !== connectionId,
       );
       friendsTable?.setData(friendsList ?? []);
       friendsTable?.updateBody();
-      return { status: 1, message: `Friend removed` };
+      return { status: "success", message: `Friend removed` };
     }
   },
 });
@@ -146,7 +123,7 @@ async function fetchPendingConnections(): Promise<void> {
   });
 
   if (result.status !== 200) {
-    Notifications.add("Error getting connections: " + result.body.message, -1);
+    showErrorNotification(`Error getting connections: ${result.body.message}`);
     pendingRequests = undefined;
   } else {
     pendingRequests = result.body.data;
@@ -155,21 +132,19 @@ async function fetchPendingConnections(): Promise<void> {
 }
 
 function updatePendingConnections(): void {
-  $(".pageFriends .pendingRequests").addClass("hidden");
+  qs(".pageFriends .pendingRequests")?.hide();
 
   if (pendingRequests === undefined || pendingRequests.length === 0) {
-    $(".pageFriends .pendingRequests").addClass("hidden");
+    qs(".pageFriends .pendingRequests")?.hide();
   } else {
-    $(".pageFriends .pendingRequests").removeClass("hidden");
+    qs(".pageFriends .pendingRequests")?.show();
 
     const html = pendingRequests
       .map(
         (item) => `<tr data-id="${
           item._id
         }" data-receiver-uid="${getReceiverUid(item)}">
-        <td><a href="${location.origin}/profile/${
-          item.initiatorUid
-        }?isUid" router-link>${item.initiatorName}</a></td>
+        <td><a href="${location.origin}/profile/${item.initiatorName}" router-link>${item.initiatorName}</a></td>
         <td>
           <span data-balloon-pos="up" aria-label="since ${format(
             item.lastModified,
@@ -181,10 +156,10 @@ function updatePendingConnections(): void {
         <td class="actions">
           <button class="accepted" aria-label="accept" data-balloon-pos="up">
             <i class="fas fa-check fa-fw"></i>
-          </button> 
+          </button>
           <button class="rejected" aria-label="reject" data-balloon-pos="up">
             <i class="fas fa-times fa-fw"></i>
-          </button> 
+          </button>
           <button class="blocked" aria-label="block" data-balloon-pos="up">
             <i class="fas fa-shield-alt fa-fw"></i>
           </button>
@@ -193,14 +168,14 @@ function updatePendingConnections(): void {
       )
       .join("\n");
 
-    $(".pageFriends .pendingRequests tbody").html(html);
+    qs(".pageFriends .pendingRequests tbody")?.setHtml(html);
   }
 }
 
 async function fetchFriends(): Promise<void> {
   const result = await Ape.users.getFriends();
   if (result.status !== 200) {
-    Notifications.add("Error getting friends: " + result.body.message, -1);
+    showErrorNotification(`Error getting friends: ${result.body.message}`);
     friendsList = undefined;
   } else {
     friendsList = result.body.data;
@@ -208,21 +183,21 @@ async function fetchFriends(): Promise<void> {
 }
 
 function updateFriends(): void {
-  $(".pageFriends .friends .nodata").addClass("hidden");
-  $(".pageFriends .friends table").addClass("hidden");
+  qs(".pageFriends .friends .nodata")?.hide();
+  qs(".pageFriends .friends table")?.hide();
 
-  $(".pageFriends .friends .error").addClass("hidden");
+  qs(".pageFriends .friends .error")?.hide();
 
   if (friendsList === undefined || friendsList.length === 0) {
-    $(".pageFriends .friends table").addClass("hidden");
-    $(".pageFriends .friends .nodata").removeClass("hidden");
+    qs(".pageFriends .friends table")?.hide();
+    qs(".pageFriends .friends .nodata")?.show();
   } else {
-    $(".pageFriends .friends table").removeClass("hidden");
-    $(".pageFriends .friends .nodata").addClass("hidden");
+    qs(".pageFriends .friends table")?.show();
+    qs(".pageFriends .friends .nodata")?.hide();
 
     if (friendsTable === undefined) {
       friendsTable = new SortedTable<Friend>({
-        table: ".pageFriends .friends table",
+        table: qsr(".pageFriends .friends table"),
         data: friendsList,
         buildRow: buildFriendRow,
         persistence: new LocalStorageWithSchema({
@@ -262,9 +237,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         <td>
           <div class="avatarNameBadge">
             <div class="avatarPlaceholder"></div>
-              <a href="${location.origin}/profile/${
-                entry.uid
-              }?isUid" class="entryName" uid=${entry.uid} router-link>${
+              <a href="${location.origin}/profile/${entry.name}" class="entryName" uid=${entry.uid} router-link>${
                 entry.name
               }</a>            <div class="flagsAndBadge">
             ${getHtmlByUserFlags(entry)}
@@ -278,7 +251,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         </td>
         <td><span data-balloon-pos="up" aria-label="${
           entry.lastModified !== undefined
-            ? "since " + format(entry.lastModified, "dd MMM yyyy HH:mm")
+            ? `since ${format(entry.lastModified, "dd MMM yyyy HH:mm")}`
             : ""
         }">${
           entry.lastModified !== undefined
@@ -302,9 +275,9 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         )}</td>
         <td><span aria-label="${formatStreak(
           entry.streak?.maxLength,
-          "max streak",
+          "longest streak",
         )}" data-balloon-pos="up">
-          ${formatStreak(entry.streak?.length)} 
+          ${formatStreak(entry.streak?.length)}
         </span></td>
         <td class="small"><span aria-label="${
           top15?.details
@@ -318,7 +291,7 @@ function buildFriendRow(entry: Friend): HTMLTableRowElement {
         }<div class="sub">${top60?.acc ?? "-"}</div></span></td>
   <td class="actions">
   ${actions}
-            
+
         </td>
       </tr>`;
 
@@ -367,14 +340,25 @@ function formatPb(entry?: PersonalBest):
     details: "",
   };
 
-  result.details = [
+  const details = [
     `${getLanguageDisplayString(entry.language)}`,
     `${result.wpm} wpm`,
-    `${result.acc} acc`,
-    `${result.raw} raw`,
-    `${result.con} con`,
-    `${dateFormat(entry.timestamp, "dd MMM yyyy")}`,
-  ].join("\n");
+  ];
+
+  if (isSafeNumber(entry.acc)) {
+    details.push(`${result.acc} acc`);
+  }
+  if (isSafeNumber(entry.raw)) {
+    details.push(`${result.raw} raw`);
+  }
+  if (isSafeNumber(entry.consistency)) {
+    details.push(`${result.con} con`);
+  }
+  if (isSafeNumber(entry.timestamp)) {
+    details.push(`${dateFormat(entry.timestamp, "dd MMM yyyy")}`);
+  }
+
+  result.details = details.join("\n");
 
   return result;
 }
@@ -382,30 +366,31 @@ function formatPb(entry?: PersonalBest):
 function formatStreak(length?: number, prefix?: string): string {
   if (length === 1) return "-";
   return isSafeNumber(length)
-    ? `${prefix !== undefined ? prefix + " " : ""}${length} days`
+    ? `${prefix !== undefined ? `${prefix} ` : ""}${length} days`
     : "-";
 }
 
-$(".pageFriends button.friendAdd").on("click", () => {
+qs(".pageFriends button.friendAdd")?.on("click", () => {
   addFriendModal.show(undefined, {});
 });
 
 // need to set the listener for action buttons on the table because the table content is getting replaced
-$(".pageFriends .pendingRequests table").on("click", async (e) => {
-  const action = Array.from(e.target.classList).find((it) =>
+qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
+  const target = e.target as HTMLElement;
+  const action = Array.from(target.classList).find((it) =>
     ["accepted", "rejected", "blocked"].includes(it),
   ) as "accepted" | "rejected" | "blocked";
 
   if (action === undefined) return;
 
-  const row = e.target.closest("tr") as HTMLElement;
+  const row = target.closest("tr") as HTMLElement;
   const id = row.dataset["id"];
   if (id === undefined) {
     throw new Error("Cannot find id of target.");
   }
   row.querySelectorAll("button").forEach((button) => (button.disabled = true));
 
-  Loader.show();
+  showLoaderBar();
   const result =
     action === "rejected"
       ? await Ape.connections.delete({
@@ -415,12 +400,11 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
           params: { id },
           body: { status: action },
         });
-  Loader.hide();
+  hideLoaderBar();
 
   if (result.status !== 200) {
-    Notifications.add(
+    showErrorNotification(
       `Cannot update friend request: ${result.body.message}`,
-      -1,
     );
   } else {
     //remove from cache
@@ -435,7 +419,7 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
       }
 
       if (action === "rejected") {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/no-unsafe-member-access
+        // oxlint-disable-next-line no-dynamic-delete, no-unsafe-member-access
         delete snapshot.connections[receiverUid];
       } else {
         snapshot.connections[receiverUid] = action;
@@ -444,13 +428,13 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
     }
 
     if (action === "blocked") {
-      Notifications.add(`User has been blocked`, 0);
+      showNoticeNotification(`User has been blocked`);
     }
     if (action === "accepted") {
-      Notifications.add(`Request accepted`, 1);
+      showSuccessNotification(`Request accepted`);
     }
     if (action === "rejected") {
-      Notifications.add(`Request rejected`, 0);
+      showNoticeNotification(`Request rejected`);
     }
 
     if (action === "accepted") {
@@ -462,14 +446,15 @@ $(".pageFriends .pendingRequests table").on("click", async (e) => {
   }
 });
 // need to set the listener for action buttons on the table because the table content is getting replaced
-$(".pageFriends .friends table").on("click", async (e) => {
-  const action = Array.from(e.target.classList).find((it) =>
+qs(".pageFriends .friends table")?.on("click", async (e) => {
+  const target = e.target as HTMLElement;
+  const action = Array.from(target.classList).find((it) =>
     ["remove"].includes(it),
   );
 
   if (action === undefined) return;
 
-  const row = e.target.closest("tr") as HTMLElement;
+  const row = target.closest("tr") as HTMLElement;
   const connectionId = row.dataset["connectionId"];
   if (connectionId === undefined) {
     throw new Error("Cannot find id of target.");
@@ -498,7 +483,7 @@ function update(): void {
 export const page = new Page<undefined>({
   id: "friends",
   display: "Friends",
-  element: pageElement,
+  element: qsr(".page.pageFriends"),
   path: "/friends",
   loadingOptions: {
     loadingMode: () => {
@@ -551,11 +536,11 @@ export const page = new Page<undefined>({
   },
 });
 
-$(() => {
+onDOMReady(() => {
   Skeleton.save("pageFriends");
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged" && !event.data.isUserSignedIn) {
     pendingRequests = undefined;
     friendsList = undefined;

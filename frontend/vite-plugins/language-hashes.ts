@@ -4,29 +4,17 @@ import { TextEncoder } from "util";
 import { createHash } from "crypto";
 
 const virtualModuleId = "virtual:language-hashes";
-const resolvedVirtualModuleId = "\0" + virtualModuleId;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
-export function languageHashes(options?: { skip: boolean }): Plugin {
-  return {
-    name: "virtual-language-hashes",
-    resolveId(id) {
-      if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
-    },
-    load(id) {
-      if (id === resolvedVirtualModuleId) {
-        if (options?.skip) {
-          console.log("Skipping language hashing in dev environment.");
-        }
-
-        const hashes: Record<string, string> = options?.skip ? {} : getHashes();
-        return `
-          export const languageHashes = ${JSON.stringify(hashes)};
-        `;
-      }
-      return;
-    },
-  };
+function calcHash(file: string): string {
+  const currentLanguage = JSON.stringify(
+    JSON.parse(readFileSync(`./static/languages/${file}`).toString()),
+    null,
+    0,
+  );
+  const encoder = new TextEncoder();
+  const data = encoder.encode(currentLanguage);
+  return createHash("sha256").update(data).digest("hex");
 }
 
 function getHashes(): Record<string, string> {
@@ -47,15 +35,27 @@ function getHashes(): Record<string, string> {
   return hashes;
 }
 
-function calcHash(file: string): string {
-  const currentLanguage = JSON.stringify(
-    JSON.parse(readFileSync("./static/languages/" + file).toString()),
-    null,
-    0,
-  );
-  const encoder = new TextEncoder();
-  const data = encoder.encode(currentLanguage);
-  return createHash("sha256").update(data).digest("hex");
+export function languageHashes(options?: { skip: boolean }): Plugin {
+  return {
+    name: "virtual-language-hashes",
+    resolveId(id) {
+      if (id === virtualModuleId) return resolvedVirtualModuleId;
+      return;
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        if (options?.skip) {
+          console.log("Skipping language hashing.");
+        }
+
+        const hashes: Record<string, string> = options?.skip ? {} : getHashes();
+        return `
+          export const languageHashes = ${JSON.stringify(hashes)};
+        `;
+      }
+      return;
+    },
+  };
 }
 
 if (import.meta.url.endsWith(process.argv[1] as string)) {

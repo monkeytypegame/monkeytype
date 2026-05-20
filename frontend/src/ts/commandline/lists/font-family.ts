@@ -1,11 +1,11 @@
 import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
-import { applyFontFamily } from "../../controllers/theme-controller";
-import { updateUI } from "../../elements/settings/custom-font-picker";
-import * as Notifications from "../../elements/notifications";
-import Config, * as UpdateConfig from "../../config";
 
+import { showNoticeNotification } from "../../states/notifications";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
+import { applyFontFamily } from "../../ui";
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
 if (fromMeta.subgroup) {
@@ -29,7 +29,7 @@ if (fromMeta.subgroup) {
           exec: ({ input }): void => {
             if (input === undefined || input === "") return;
             const fontName = input.replaceAll(/ /g, "_");
-            UpdateConfig.setFontFamily(fontName);
+            setConfig("fontFamily", fontName);
           },
         },
         {
@@ -60,12 +60,11 @@ if (fromMeta.subgroup) {
 
               // check type
               if (
-                !file.type.match(/font\/(woff|woff2|ttf|otf)/) &&
-                !file.name.match(/\.(woff|woff2|ttf|otf)$/i)
+                !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
+                !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
               ) {
-                Notifications.add(
+                showNoticeNotification(
                   "Unsupported font format, must be woff, woff2, ttf or otf.",
-                  0,
                 );
                 cleanup();
                 return;
@@ -77,11 +76,9 @@ if (fromMeta.subgroup) {
                 try {
                   await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
                   await applyFontFamily();
-                  await updateUI();
                 } catch (e) {
-                  Notifications.add(
-                    "Error uploading font: " + (e as Error).message,
-                    0,
+                  showNoticeNotification(
+                    `Error uploading font: ${(e as Error).message}`,
                   );
                 }
                 cleanup();
@@ -103,12 +100,10 @@ if (fromMeta.subgroup) {
           exec: async (): Promise<void> => {
             try {
               await FileStorage.deleteFile("LocalFontFamilyFile");
-              await updateUI();
               await applyFontFamily();
             } catch (e) {
-              Notifications.add(
-                "Error removing font: " + (e as Error).message,
-                0,
+              showNoticeNotification(
+                `Error removing font: ${(e as Error).message}`,
               );
             }
           },

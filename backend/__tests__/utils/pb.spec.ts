@@ -69,7 +69,7 @@ describe("Pb Utils", () => {
       );
 
       expect(run.isPb).toBe(true);
-      expect(run.personalBests?.["time"]?.["15"]?.[0]).not.toBe(undefined);
+      expect(run.personalBests.time?.["15"]?.[0]).not.toBe(undefined);
       expect(run.lbPersonalBests).not.toBe({});
     });
     it("should not override default pb when saving numbers test", () => {
@@ -113,7 +113,7 @@ describe("Pb Utils", () => {
 
       expect(run.isPb).toBe(true);
 
-      expect(run.personalBests?.["time"]?.["15"]).toEqual(
+      expect(run.personalBests.time?.["15"]).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ numbers: false, wpm: 100 }),
           expect.objectContaining({ numbers: true, wpm: 110 }),

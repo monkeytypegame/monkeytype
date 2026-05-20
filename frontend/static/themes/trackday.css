@@ -1,24 +1,20 @@
-:root {
-  --bg-color: #464d66;
-  --main-color: #e0513e;
-  --caret-color: #475782;
-  --sub-color: #5c7eb9;
-  --sub-alt-color: #3d4359;
-  --text-color: #cfcfcf;
-  --error-color: #e44e4e;
-  --error-extra-color: #fd3f3f;
-  --colorful-error-color: #ff2e2e;
-  --colorful-error-extra-color: #bb2525;
-}
-
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #e0513e;
+  &:hover {
+    color: color-mix(in srgb, #e0513e 75%, white 25%);
+  }
 }
 
-nav > .textButton:nth-child(3) {
-  color: #cfcfcf;
-}
-
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   color: #ccc500;
+  &:hover {
+    color: color-mix(in srgb, #ccc500 75%, white 25%);
+  }
+}
+
+[data-nav-item="about"] {
+  color: #cfcfcf;
+  &:hover {
+    color: color-mix(in srgb, #cfcfcf 75%, white 25%);
+  }
 }
