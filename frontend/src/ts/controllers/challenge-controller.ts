@@ -319,25 +319,17 @@ export async function setup(challengeName: string): Promise<boolean> {
         nosave: true,
       });
     } else if (challenge.type === "funbox") {
-      setConfig("difficulty", "normal", {
-        nosave: true,
-      });
+      const tempConfig: Partial<ConfigType> = {};
+
+      tempConfig.difficulty = "normal";
       if (challenge.parameters[1] === "words") {
-        setConfig("words", challenge.parameters[2] as number, {
-          nosave: true,
-        });
+        tempConfig.words = challenge.parameters[2] as number;
       } else if (challenge.parameters[1] === "time") {
-        setConfig("time", challenge.parameters[2] as number, {
-          nosave: true,
-        });
+        tempConfig.time = challenge.parameters[2] as number;
       }
-      setConfig("mode", challenge.parameters[1] as Mode, {
-        nosave: true,
-      });
+      tempConfig.mode = challenge.parameters[1] as Mode;
       if (challenge.parameters[3] !== undefined) {
-        setConfig("difficulty", challenge.parameters[3] as Difficulty, {
-          nosave: true,
-        });
+        tempConfig.difficulty = challenge.parameters[3] as Difficulty;
       }
 
       const funboxes = challenge.parameters[0] as FunboxName[];
@@ -352,6 +344,12 @@ export async function setup(challengeName: string): Promise<boolean> {
       setConfig("funbox", funboxes, {
         nosave: true,
       });
+
+      for (const [key, value] of Object.entries(tempConfig)) {
+        setConfig(key as keyof ConfigType, value, {
+          nosave: true,
+        });
+      }
     } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
