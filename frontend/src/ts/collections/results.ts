@@ -218,7 +218,6 @@ const resultsCollection = createCollection(
       const tagIds = await getTagsOnce();
 
       const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
-      console.log("###", knownTagIds);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
