@@ -1,0 +1,106 @@
+/* ==========================================================================
+   Boba (Bubble Tea) Theme O3O
+   A cozy, milk-tea inspired palette with dark tapioca contrast. 
+   ========================================================================== */
+
+:root {
+  --bg-color: #f4ebd9; /* creamy milk tea base */
+  --main-color: #c39b7d; /* brown sugar syrup accent */
+  --sub-color: #a68a73; /* taro milky tint */
+  --sub-alt-color: #e9dec7; /* slightly darker cream for panels */
+  --text-color: #3c2f2f; /* dark boba pearl text */
+  --error-color: #d66868; /* strawberry popping boba */
+  --error-bg-color: #f0d3d3;
+  --caret-color: #c39b7d;
+}
+
+/* Make the logo match the two-tone brown sugar style */
+header [data-ui-element="logoText"] {
+  background: linear-gradient(
+    90deg,
+    var(--text-color) 64%,
+    var(--main-color) 36%
+  );
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.1em;
+  line-height: 1;
+}
+
+[data-ui-element="logoSubtext"] {
+  margin-top: 0em;
+}
+
+header [data-ui-element="logo"] svg {
+  color: var(--text-color);
+  padding-bottom: 0.05em;
+}
+
+/* --- Navigation Links & Hover states --- */
+[data-nav-item] {
+  color: var(--main-color);
+  transition: color 0.15s ease;
+}
+
+[data-nav-item]:hover {
+  /* soft overlay highlight when hovering items */
+  color: color-mix(in srgb, var(--main-color) 85%, white 15%);
+}
+
+/* Individual nav item overrides based on core colors */
+[data-nav-item="test"] {
+  color: var(--error-color);
+  &:hover {
+    color: color-mix(in srgb, var(--error-color) 75%, black 25%);
+  }
+}
+
+[data-nav-item="leaderboards"] {
+  color: var(--main-color);
+  &:hover {
+    color: color-mix(in srgb, var(--main-color) 75%, black 25%);
+  }
+}
+
+[data-nav-item="about"] {
+  color: var(--sub-color);
+  &:hover {
+    color: color-mix(in srgb, var(--sub-color) 75%, black 25%);
+  }
+}
+
+[data-nav-item="settings"] {
+  color: var(--caret-color);
+  &:hover {
+    color: color-mix(in srgb, var(--caret-color) 75%, black 25%);
+  }
+}
+
+/* Account buttons layout styling */
+[data-nav-item="alerts"],
+[data-nav-item="account"],
+[data-nav-item="login"] {
+  --themable-button-text: var(--main-color);
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    black 25%
+  );
+}
+
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  & [data-ui-element="notificationBubble"] {
+    box-shadow: none;
+    background: var(--sub-alt-color);
+  }
+}
+
+/* Tiny spacing tweaks to prevent clipping issues */
+nav {
+  padding-bottom: 0.2em;
+}
+
+header {
+  margin-bottom: -0.1em;
+}
