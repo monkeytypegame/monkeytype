@@ -347,7 +347,7 @@ export async function setup(challengeName: string): Promise<boolean> {
           throw new Error("Funbox isn't compatible with the current config");
         }
       }
-      setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+      setConfig("funbox", funboxes, {
         nosave: true,
       });
     } else if (challenge.type === "other") {
