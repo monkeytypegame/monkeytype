@@ -334,24 +334,22 @@ export async function setup(challengeName: string): Promise<boolean> {
 
       const funboxes = challenge.parameters[0] as FunboxName[];
 
-      const fullTempConfig = { ...Config, ...tempConfig };
       for (const funbox of funboxes) {
-        if (!canSetFunboxWithConfig(funbox, fullTempConfig).ok) {
+        if (!canSetFunboxWithConfig(funbox, Config).ok) {
           throw new Error(
             `Funbox ${funbox} isn't compatible with the current config`,
           );
         }
       }
+      setConfig("funbox", funboxes, {
+        nosave: true,
+      });
 
       for (const [key, value] of Object.entries(tempConfig)) {
         setConfig(key as keyof ConfigType, value, {
           nosave: true,
         });
       }
-
-      setConfig("funbox", funboxes, {
-        nosave: true,
-      });
     } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
