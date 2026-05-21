@@ -28,6 +28,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { qs } from "../utils/dom";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
+import { canSetFunboxWithConfig } from "../config/funbox-validation";
 
 let challengeLoading = false;
 
@@ -337,6 +338,14 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("difficulty", challenge.parameters[3] as Difficulty, {
           nosave: true,
         });
+      }
+
+      const funboxes = challenge.parameters[0] as FunboxName[];
+
+      for (const funbox of funboxes) {
+        if (!canSetFunboxWithConfig(funbox, Config).ok) {
+          throw new Error("Funbox isn't compatible with the current config");
+        }
       }
       setConfig("funbox", challenge.parameters[0] as FunboxName[], {
         nosave: true,
