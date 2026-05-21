@@ -344,7 +344,9 @@ export async function setup(challengeName: string): Promise<boolean> {
 
       for (const funbox of funboxes) {
         if (!canSetFunboxWithConfig(funbox, Config).ok) {
-          throw new Error("Funbox isn't compatible with the current config");
+          throw new Error(
+            `Funbox ${funbox} isn't compatible with the current config`,
+          );
         }
       }
       setConfig("funbox", funboxes, {
