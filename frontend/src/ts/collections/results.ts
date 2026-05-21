@@ -31,9 +31,9 @@ import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/snapshot";
 import {
   getActiveTagsOnce,
+  getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  __nonReactive as tagsNonReactive,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
 
@@ -215,9 +215,9 @@ const resultsCollection = createCollection(
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
-      const knownTagIds = new Set(
-        tagsNonReactive.getTags().map((it) => it._id),
-      );
+      const tagIds = await getTagsOnce();
+
+      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({

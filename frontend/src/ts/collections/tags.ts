@@ -73,6 +73,13 @@ export async function getActiveTagsOnce() {
   });
 }
 
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getTagsOnce() {
+  return queryOnce((q) => {
+    return q.from({ tag: tagsCollection });
+  });
+}
+
 type ActionType = {
   insertTag: {
     name: string;
@@ -241,6 +248,10 @@ const actions = {
 };
 
 // --- Public API ---
+
+export async function waitForTagsReady(): Promise<void> {
+  await tagsCollection.stateWhenReady();
+}
 
 export async function insertTag(
   params: ActionType["insertTag"],
