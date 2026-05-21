@@ -8,6 +8,13 @@
   src: url("/webfonts/Vazirharf-NL-Regular.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Noto Sans Lao";
+  src: url("/webfonts/NotoSansLao-Regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @each $font, $config in $fonts {
   $dir: "webfonts";
   $previewDir: "webfonts-preview";
