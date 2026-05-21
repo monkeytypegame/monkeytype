@@ -4,6 +4,7 @@ import {
   createCollection,
   createOptimisticAction,
   eq,
+  queryOnce,
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { z } from "zod";
@@ -59,6 +60,23 @@ export function useTagsLiveQuery() {
     return q
       .from({ tag: tagsCollection })
       .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getActiveTagsOnce() {
+  return queryOnce((q) => {
+    return q
+      .from({ tag: tagsCollection })
+      .where(({ tag }) => eq(tag.active, true))
+      .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getTagsOnce() {
+  return queryOnce((q) => {
+    return q.from({ tag: tagsCollection });
   });
 }
 
@@ -240,6 +258,10 @@ const actions = {
 };
 
 // --- Public API ---
+
+export async function waitForTagsReady(): Promise<void> {
+  await tagsCollection.stateWhenReady();
+}
 
 export async function insertTag(
   params: ActionType["insertTag"],
