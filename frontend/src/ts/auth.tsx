@@ -10,6 +10,7 @@ import {
 
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
+import { waitForTagsReady } from "./collections/tags";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
 import { authEvent } from "./events/auth";
@@ -66,8 +67,9 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     const snapshot = await DB.initSnapshot();
-    //TODO: always load presets for now, remove when __nonReactive is removed from  presets collection
+    //TODO: always load presets and tags  for now, remove when __nonReactive is removed from  presets collection
     await waitForPresetsReady();
+    await waitForTagsReady();
 
     if (snapshot === false) {
       throw new Error(

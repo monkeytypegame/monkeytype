@@ -31,9 +31,9 @@ import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/snapshot";
 import {
   getActiveTagsOnce,
+  getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  useTagsLiveQuery,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
 
@@ -209,15 +209,16 @@ function normalizeResult(
   } as SnapshotResult<Mode>;
 }
 
-const tagsQuery = useTagsLiveQuery();
-
 const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
-      const knownTagIds = new Set([...tagsQuery().map((it) => it._id)]);
+      const tagIds = await getTagsOnce();
+
+      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
+      console.log("###", knownTagIds);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
