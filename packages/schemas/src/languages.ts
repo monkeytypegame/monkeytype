@@ -447,6 +447,7 @@ export const LanguageSchema = z.enum(
     "code_vhdl",
     "lao",
     "code_objective_c",
+    "code_6502_assembly",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
