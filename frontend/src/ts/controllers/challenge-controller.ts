@@ -28,7 +28,6 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { qs } from "../utils/dom";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
-import { canSetFunboxWithConfig } from "../config/funbox-validation";
 
 let challengeLoading = false;
 
@@ -340,18 +339,13 @@ export async function setup(challengeName: string): Promise<boolean> {
         });
       }
 
-      const funboxes = challenge.parameters[0] as FunboxName[];
-
-      for (const funbox of funboxes) {
-        if (!canSetFunboxWithConfig(funbox, Config).ok) {
-          throw new Error(
-            `Funbox ${funbox} isn't compatible with the current config`,
-          );
-        }
+      if (
+        !setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+          nosave: true,
+        })
+      ) {
+        throw new Error("Can't load challenge with current config");
       }
-      setConfig("funbox", funboxes, {
-        nosave: true,
-      });
     } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
