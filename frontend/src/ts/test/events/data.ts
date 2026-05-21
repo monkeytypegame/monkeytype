@@ -251,10 +251,11 @@ export function getInputEventsPerWord(
 
     let wordIndex = event.data.wordIndex;
 
-    //special case for deleteWordBackward on the 0th index
-    // because it clears the previous word - so we need to attribute it to the previous word
+    //special case for delete events on the 0th index
+    // because they affect the previous word - so we need to attribute them to the previous word
     if (
-      event.data.inputType === "deleteWordBackward" &&
+      (event.data.inputType === "deleteWordBackward" ||
+        event.data.inputType === "deleteContentBackward") &&
       event.data.charIndex === 0 &&
       wordIndex > 0
     ) {
