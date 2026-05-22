@@ -97,6 +97,7 @@ import {
   getKeypressOverlap,
   getErrorCountHistory,
   getWpmHistory,
+  getAfkDuration,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -900,6 +901,7 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
+//@ts-expect-error testing
 window.buildCompletedEvent2 = buildCompletedEvent2;
 
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
@@ -934,19 +936,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   }
 
   const keypressesPerSecond = getKeypressesPerSecond();
-
-  // let afkDuration = 0;
-  // for (let i = keypressesPerSecond.length - 1; i >= 0; i--) {
-  //   if (keypressesPerSecond[i] === 0) {
-  //     afkDuration++;
-  //   } else {
-  //     break;
-  //   }
-  // }
-
-  // todo: this is not completely done
-  const afkDuration = keypressesPerSecond.filter((kps) => kps === 0).length;
-
+  const afkDuration = getAfkDuration();
   const rawPerSecond = keypressesPerSecond.map((kps) => calculateWpm(kps, 1));
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);

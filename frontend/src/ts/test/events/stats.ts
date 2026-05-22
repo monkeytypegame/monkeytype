@@ -10,7 +10,7 @@ import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
-import { TestEvent } from "./types";
+import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
@@ -352,14 +352,24 @@ export function getWpmHistory(): number[] {
   for (const boundary of timerBoundaries) {
     const eventsPerWord = getInputEventsPerWord(undefined, boundary);
 
+    // Compute simulated inputs first so we can determine the effective last word
+    const wordInputs = new Map<
+      number,
+      { input: string; events: InputEvent[] }
+    >();
     let maxWordIndex = 0;
-    for (const k of eventsPerWord.keys()) {
-      if (k > maxWordIndex) maxWordIndex = k;
+    for (const [k, wordEvents] of eventsPerWord) {
+      const input = getSimulatedInput(wordEvents);
+      wordInputs.set(k, { input, events: wordEvents });
+      // Only count words with non-empty input for maxWordIndex,
+      // so that fully-deleted words don't prevent earlier words
+      // from being treated as the last word
+      if (input.length > 0 && k > maxWordIndex) maxWordIndex = k;
     }
 
     let totalCorrect = 0;
-    for (const [wordIndex, wordEvents] of eventsPerWord) {
-      const input = getSimulatedInput(wordEvents);
+    for (const [wordIndex, { input, events: wordEvents }] of wordInputs) {
+      if (input.length === 0) continue;
 
       const lastEvt = wordEvents[wordEvents.length - 1];
       let adjustedMax = maxWordIndex;
@@ -388,4 +398,30 @@ export function getWpmHistory(): number[] {
   }
 
   return wpmHistory;
+}
+
+export function getAfkDuration(): number {
+  const events = getAllTestEvents();
+
+  const timerBoundaries = getTimerBoundaries(events);
+
+  const afk: boolean[] = [];
+  let eventIndex = 0;
+
+  for (const boundary of timerBoundaries) {
+    let count = 0;
+    while (eventIndex < events.length) {
+      const event = events[eventIndex];
+      if (event === undefined) break;
+      if (event.testMs > boundary) break;
+
+      if (event.type === "input") {
+        count++;
+      }
+      eventIndex++;
+    }
+    afk.push(count === 0);
+  }
+
+  return afk.reduce((total, isAfk) => total + (isAfk ? 1 : 0), 0);
 }
