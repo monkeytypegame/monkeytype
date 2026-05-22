@@ -3,7 +3,7 @@ import { hotkeysDevtoolsPlugin } from "@tanstack/solid-hotkeys-devtools";
 import { SolidQueryDevtoolsPanel } from "@tanstack/solid-query-devtools";
 import { JSXElement } from "solid-js";
 
-import { queryClient } from "../../queries";
+import { nonReactiveQueryClient, queryClient } from "../../queries";
 import { SignalsDevtoolsPlugin } from "./SignalsDevtools";
 
 export function TanStackDevtools(): JSXElement {
@@ -15,6 +15,13 @@ export function TanStackDevtools(): JSXElement {
           name: "TanStack Query",
           render: () => <SolidQueryDevtoolsPanel client={queryClient} />,
           defaultOpen: true,
+        },
+        {
+          id: "tanstack-query-nonreactive",
+          name: "TanStack Query NonReactive",
+          render: () => (
+            <SolidQueryDevtoolsPanel client={nonReactiveQueryClient} />
+          ),
         },
         hotkeysDevtoolsPlugin(),
         SignalsDevtoolsPlugin(),

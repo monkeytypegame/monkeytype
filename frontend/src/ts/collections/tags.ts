@@ -9,7 +9,7 @@ import {
 } from "@tanstack/solid-db";
 import { z } from "zod";
 import Ape from "../ape";
-import { queryClient } from "../queries";
+import { nonReactiveQueryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
@@ -34,9 +34,10 @@ const queryKeys = {
 
 const tagsCollection = createCollection(
   queryCollectionOptions({
-    staleTime: Infinity,
     queryKey: queryKeys.root(),
-    queryClient,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryClient: nonReactiveQueryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
       const activeIds = activeTagsLS.get();

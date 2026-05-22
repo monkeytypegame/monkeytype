@@ -1,3 +1,4 @@
+import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { Preset } from "@monkeytype/schemas/presets";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
@@ -6,12 +7,11 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import Ape from "../ape";
-import { queryClient } from "../queries";
+import { nonReactiveQueryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { ConfigGroupName } from "@monkeytype/schemas/configs";
-import { applyIdWorkaround, tempId } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 
 export type PresetItem = Preset;
 
@@ -30,9 +30,10 @@ export function usePresetsLiveQuery() {
 
 const presetsCollection = createCollection(
   queryCollectionOptions({
-    staleTime: Infinity,
     queryKey: queryKeys.root(),
-    queryClient,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryClient: nonReactiveQueryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
       if (!isAuthenticated()) return [];

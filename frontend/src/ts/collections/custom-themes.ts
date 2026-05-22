@@ -6,10 +6,10 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import Ape from "../ape";
-import { queryClient } from "../queries";
+import { nonReactiveQueryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { applyIdWorkaround, tempId } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 
 export type CustomThemeItem = CustomTheme;
 
@@ -28,11 +28,11 @@ export function useCustomThemesLiveQuery() {
 
 const customThemesCollection = createCollection(
   queryCollectionOptions({
-    staleTime: Infinity,
-    startSync: true,
     queryKey: queryKeys.root(),
-
-    queryClient,
+    startSync: true,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryClient: nonReactiveQueryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
       if (!isAuthenticated()) return [] as CustomThemeItem[];

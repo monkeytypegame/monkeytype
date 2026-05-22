@@ -25,7 +25,7 @@ import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
-import { queryClient } from "../queries";
+import { nonReactiveQueryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/snapshot";
@@ -211,8 +211,10 @@ function normalizeResult(
 
 const resultsCollection = createCollection(
   queryCollectionOptions({
-    staleTime: Infinity,
     queryKey: queryKeys.root(),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryClient: nonReactiveQueryClient,
     queryFn: async () => {
       if (!isAuthenticated()) return [];
       const tagIds = await getTagsOnce();
@@ -241,7 +243,6 @@ const resultsCollection = createCollection(
 
       return results;
     },
-    queryClient,
     getKey: (it) => it._id,
   }),
 );
