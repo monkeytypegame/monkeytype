@@ -41,6 +41,7 @@ const tagsCollection = createCollection(
     queryFn: async () => {
       const activeIds = activeTagsLS.get();
       const userData = await fetchUserFromApi();
+
       if (userData === undefined) return [];
 
       return (userData.tags ?? [])
@@ -70,6 +71,13 @@ export async function getActiveTagsOnce() {
       .from({ tag: tagsCollection })
       .where(({ tag }) => eq(tag.active, true))
       .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getTagsOnce() {
+  return queryOnce((q) => {
+    return q.from({ tag: tagsCollection });
   });
 }
 
@@ -241,6 +249,10 @@ const actions = {
 };
 
 // --- Public API ---
+
+export async function waitForTagsReady(): Promise<void> {
+  await tagsCollection.stateWhenReady();
+}
 
 export async function insertTag(
   params: ActionType["insertTag"],
@@ -541,3 +553,9 @@ export const __nonReactive = {
   getTag,
   getActiveTags,
 };
+
+/**
+ * On prod the collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+const _keepAlive = useTagsLiveQuery();
