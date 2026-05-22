@@ -18,7 +18,7 @@ concurrency:
 jobs:
   main:
     name: check
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.user.login != 'dependabot[bot]' &&
       (github.event.action != 'edited' || github.event.changes.title != null)
