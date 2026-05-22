@@ -36,25 +36,28 @@ function insert(
   });
 }
 
-function deleteBackward(): InputEvent {
-  nextMs += 10;
-  if (charIndex > 0) charIndex--;
-  return {
-    type: "input",
-    ms: nextMs,
-    testMs: nextMs,
-    data: {
-      charIndex,
-      wordIndex,
-      inputType: "deleteContentBackward",
-    },
-  };
+function deleteBackward(count = 1): InputEvent[] {
+  return Array.from({ length: count }, () => {
+    nextMs += 10;
+    const event: InputEvent = {
+      type: "input",
+      ms: nextMs,
+      testMs: nextMs,
+      data: {
+        charIndex,
+        wordIndex,
+        inputType: "deleteContentBackward",
+      },
+    };
+    if (charIndex > 0) charIndex--;
+    return event;
+  });
 }
 
 function deleteWordBackward(): InputEvent {
   nextMs += 10;
   charIndex = 0;
-  return {
+  const event = {
     type: "input",
     ms: nextMs,
     testMs: nextMs,
@@ -63,7 +66,10 @@ function deleteWordBackward(): InputEvent {
       wordIndex,
       inputType: "deleteWordBackward",
     },
-  };
+  } as const;
+  if (wordIndex > 0) wordIndex--;
+
+  return event;
 }
 
 function reset(): void {
@@ -79,32 +85,56 @@ describe("getSimulatedInput", () => {
 
   it("builds string from insertText events", () => {
     expect(getSimulatedInput([...insert("hello")])).toBe("hello");
+  });
+
+  it("builds string from insertText events with trailing space", () => {
     expect(getSimulatedInput([...insert("hello ")])).toBe("hello ");
   });
 
   it("handles deleteContentBackward", () => {
-    expect(getSimulatedInput([...insert("abc"), deleteBackward()])).toBe("ab");
-    expect(getSimulatedInput([...insert("abc "), deleteBackward()])).toBe(
+    expect(getSimulatedInput([...insert("abc"), ...deleteBackward()])).toBe(
+      "ab",
+    );
+  });
+
+  it("handles deleteContentBackward after space", () => {
+    expect(getSimulatedInput([...insert("abc "), ...deleteBackward()])).toBe(
       "abc",
     );
   });
 
   it("handles multiple deletes", () => {
-    expect(
-      getSimulatedInput([...insert("ab"), deleteBackward(), deleteBackward()]),
-    ).toBe("");
-    expect(
-      getSimulatedInput([...insert("ab "), deleteBackward(), deleteBackward()]),
-    ).toBe("a");
+    expect(getSimulatedInput([...insert("ab"), ...deleteBackward(2)])).toBe("");
+  });
+
+  it("handles multiple deletes after space", () => {
+    expect(getSimulatedInput([...insert("ab "), ...deleteBackward(2)])).toBe(
+      "a",
+    );
   });
 
   it("handles deleteWordBackward", () => {
     expect(getSimulatedInput([...insert("hello"), deleteWordBackward()])).toBe(
       "",
     );
+  });
+
+  it("handles deleteWordBackward after space", () => {
     expect(getSimulatedInput([...insert("hello "), deleteWordBackward()])).toBe(
       "",
     );
+  });
+
+  it("handles multiple deleteWordBackward", () => {
+    const events = [
+      ...insert("hello there this is a test"),
+      deleteWordBackward(),
+      deleteWordBackward(),
+      deleteWordBackward(),
+    ];
+
+    console.log(events);
+    expect(getSimulatedInput(events)).toBe("hello there this is");
   });
 
   it("returns empty string for no events", () => {
@@ -112,7 +142,7 @@ describe("getSimulatedInput", () => {
   });
 
   it("handles deleteContentBackward on empty string", () => {
-    const events = [deleteBackward()];
+    const events = [...deleteBackward()];
     expect(getSimulatedInput(events)).toBe("");
   });
 
