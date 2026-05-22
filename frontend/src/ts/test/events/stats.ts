@@ -10,8 +10,48 @@ import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
-import { InputEvent } from "./types";
+import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
+
+function getTimerBoundaries(events: TestEvent[]): number[] {
+  const boundaries: number[] = [];
+  let endMs: number | undefined;
+
+  for (const event of events) {
+    if (event.type !== "timer") continue;
+    if (event.data.event === "step") {
+      boundaries.push(event.testMs);
+    } else if (event.data.event === "end") {
+      endMs = event.testMs;
+    }
+  }
+
+  if (endMs !== undefined) {
+    const last = boundaries[boundaries.length - 1];
+    if (last !== undefined && endMs - last < 500) {
+      // Merge: replace last step with end timestamp
+      boundaries[boundaries.length - 1] = endMs;
+    } else {
+      boundaries.push(endMs);
+    }
+  }
+
+  return boundaries;
+}
+
+function scaleLastInterval(values: number[], boundaries: number[]): void {
+  if (boundaries.length < 2) return;
+  const last = boundaries[boundaries.length - 1];
+  const secondToLast = boundaries[boundaries.length - 2];
+  if (last === undefined || secondToLast === undefined) return;
+  const lastInterval = last - secondToLast;
+  if (lastInterval < 1000 && lastInterval >= 500) {
+    const timescale = 1000 / lastInterval;
+    values[values.length - 1] = Math.round(
+      (values[values.length - 1] as number) * timescale,
+    );
+  }
+}
 
 export function getStartToFirstKeypressMs(): number {
   const events = getAllTestEvents();
@@ -86,28 +126,27 @@ export function getLastKeypressToEndMs(): number {
 
 export function getKeypressesPerSecond(): number[] {
   const events = getAllTestEvents();
-  const testDuration = getTestDurationMs();
-  const expectedLength = Math.round(testDuration / 1000);
+  const timerBoundaries = getTimerBoundaries(events);
 
   const keypresses: number[] = [];
-  for (const event of events) {
-    if (event.type !== "input") {
-      continue;
-    }
+  let eventIndex = 0;
 
-    if (event.data.inputType !== "insertText") {
-      continue;
-    }
+  for (const boundary of timerBoundaries) {
+    let count = 0;
+    while (eventIndex < events.length) {
+      const event = events[eventIndex];
+      if (event === undefined) break;
+      if (event.testMs > boundary) break;
 
-    const time = Math.floor(event.testMs / 1000);
-    const existing = keypresses[time] ?? 0;
-    keypresses[time] = existing + 1;
+      if (event.type === "input" && event.data.inputType === "insertText") {
+        count++;
+      }
+      eventIndex++;
+    }
+    keypresses.push(count);
   }
 
-  // Fill in empty values with 0
-  for (let i = 0; i < expectedLength; i++) {
-    keypresses[i] ??= 0;
-  }
+  scaleLastInterval(keypresses, timerBoundaries);
 
   return keypresses;
 }
@@ -274,41 +313,40 @@ export function getKeypressOverlap(): number {
 }
 
 export function getErrorCountHistory(): number[] {
-  //gets a history of error counts per second, errors from prevoius seconds are carried not over
+  //gets a history of error counts per second, errors from previous seconds are not carried over
   const events = getAllTestEvents();
-  const testDuration = getTestDurationMs();
-  const expectedLength = Math.round(testDuration / 1000);
+  const timerBoundaries = getTimerBoundaries(events);
+
   const errorCounts: number[] = [];
+  let eventIndex = 0;
 
-  for (const event of events) {
-    if (
-      event.type === "input" &&
-      event.data.inputType === "insertText" &&
-      !event.data.correct
-    ) {
-      const eventSecond = Math.floor(event.testMs / 1000);
-      errorCounts[eventSecond] ??= 0;
-      errorCounts[eventSecond]++;
+  for (const boundary of timerBoundaries) {
+    let count = 0;
+    while (eventIndex < events.length) {
+      const event = events[eventIndex];
+      if (event === undefined) break;
+      if (event.testMs > boundary) break;
+
+      if (
+        event.type === "input" &&
+        event.data.inputType === "insertText" &&
+        !event.data.correct
+      ) {
+        count++;
+      }
+      eventIndex++;
     }
+    errorCounts.push(count);
   }
 
-  //fill in empty values with 0
-  const maxTime = errorCounts.length;
-  for (let i = 0; i < maxTime; i++) {
-    errorCounts[i] ??= 0;
-  }
-
-  while (errorCounts.length < expectedLength) {
-    errorCounts.push(0);
-  }
+  scaleLastInterval(errorCounts, timerBoundaries);
 
   return errorCounts;
 }
 
 export function getWpmHistory(): number[] {
   const events = getAllTestEvents();
-  const testDuration = getTestDurationMs();
-  const expectedLength = Math.round(testDuration / 1000);
+  const timerBoundaries = getTimerBoundaries(events);
   const wpmHistory: number[] = [];
 
   // not calculating correctly if get partial credit but then submit incorrect word
@@ -319,14 +357,12 @@ export function getWpmHistory(): number[] {
   const lastEventPerWord: Map<number, InputEvent> = new Map();
   let eventIndex = 0;
 
-  for (let second = 0; second < expectedLength; second++) {
-    const timeLimit = (second + 1) * 1000;
-
-    // Process only new events up to this second's boundary
+  for (const boundary of timerBoundaries) {
+    // Process only new events up to this boundary
     while (eventIndex < events.length) {
       const event = events[eventIndex];
       if (event === undefined) break;
-      if (event.testMs > timeLimit) break;
+      if (event.testMs > boundary) break;
 
       if (event.type === "input") {
         let wordIndex = event.data.wordIndex;
@@ -391,7 +427,8 @@ export function getWpmHistory(): number[] {
       ).correctWord;
     }
 
-    wpmHistory.push(Math.round(calculateWpm(totalCorrect, second + 1)));
+    const durationSeconds = boundary / 1000;
+    wpmHistory.push(Math.round(calculateWpm(totalCorrect, durationSeconds)));
   }
 
   return wpmHistory;
