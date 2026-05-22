@@ -261,11 +261,13 @@ function FieldInput(props: {
   input: GenericSimplerModalInput;
   schema: z.ZodTypeAny;
 }): JSXElement {
-  const formatDate = (date: unknown) =>
-    dateFormat(
-      date as Date,
-      props.input.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
-    );
+  const formatDate = (date: Date | undefined) =>
+    date === undefined
+      ? undefined
+      : dateFormat(
+          date,
+          props.input.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
+        );
   return (
     <Switch
       fallback={
@@ -349,7 +351,7 @@ function FieldInput(props: {
         <input
           type={props.input.type}
           class={cn("w-full", props.input.class)}
-          value={formatDate(props.field().state.value)}
+          value={formatDate(props.field().state.value as Date)}
           disabled={props.input.disabled}
           {...getDateMinAndMax(props.schema, formatDate)}
           onInput={(e) => {
@@ -424,32 +426,35 @@ export function convertFn<T>(
 }
 
 function getMinAndMax(schema: ZodTypeAny): {
-  min: number | undefined;
-  max: number | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
 } {
   // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  const checks: ZodNumber["_def"]["checks"] = schema._def.checks;
-  if (checks === undefined) return { min: undefined, max: undefined };
+  const type = schema._def["typeName"];
+
+  if (type !== ZodFirstPartyTypeKind.ZodNumber) return {};
 
   return {
-    min: checks.find((c) => c.kind === "min")?.value ?? undefined,
-    max: checks.find((c) => c.kind === "max")?.value ?? undefined,
+    min: (schema as ZodNumber).minValue ?? undefined,
+    max: (schema as ZodNumber).maxValue ?? undefined,
   };
 }
 function getDateMinAndMax(
   schema: ZodTypeAny,
-  format: (val: Date) => string,
+  format: (val: Date | undefined) => string,
 ): {
-  min: string | undefined;
-  max: string | undefined;
+  min?: string | undefined;
+  max?: string | undefined;
 } {
-  let min = (schema as ZodDate).minDate;
-  let max = (schema as ZodDate).maxDate;
+  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+  const type = schema._def["typeName"];
+  if (type !== ZodFirstPartyTypeKind.ZodDate) return {};
 
-  console.log("dates", { min, max });
+  const applyFormat = (it: Date | null) =>
+    it === null ? undefined : format(it);
 
   return {
-    min: undefined, //: min !== null ? format(min) : undefined,
-    max: undefined, //: max !== null ? format(max) : undefined,
+    min: applyFormat((schema as ZodDate).minDate),
+    max: applyFormat((schema as ZodDate).maxDate),
   };
 }
