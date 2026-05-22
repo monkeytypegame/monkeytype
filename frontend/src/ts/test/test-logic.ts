@@ -900,6 +900,8 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
+window.buildCompletedEvent2 = buildCompletedEvent2;
+
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars(true);
 
