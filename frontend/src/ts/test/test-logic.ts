@@ -81,7 +81,6 @@ import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
   forceReleaseAllKeys,
   logEventsDataToTheConsole,
-  logTestEvent,
   resetTestEvents,
   testing,
   getKeypressDurations,
@@ -1028,7 +1027,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   TestUI.setResultCalculating(true);
   const now = performance.now();
-  TestTimer.clear();
+  TestTimer.clear(true, now);
   TestStats.setEnd(now);
 
   // fade out the test and show loading
@@ -1073,12 +1072,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-
-  logTestEvent("timer", now, {
-    event: "end",
-    timer: Time.get(),
-    delta: 0,
-  });
 
   forceReleaseAllKeys();
 

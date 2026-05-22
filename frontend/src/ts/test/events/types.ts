@@ -43,12 +43,17 @@ export type TimerEvent = CommonProps<"timer"> & {
   data: TimerEventData;
 };
 
-export type TimerEventData = {
-  event: "start" | "step" | "end";
-  timer: number;
-  delta: number;
-  slowTimer?: true;
-};
+export type TimerEventData =
+  | {
+      event: "step";
+      timer: number;
+      drift: number;
+      slowTimer?: true;
+    }
+  | {
+      event: "start" | "end";
+      timer: number;
+    };
 
 export type InputEvent = CommonProps<"input"> & {
   data: InputEventData;

@@ -41,17 +41,19 @@ const newTimer = createTimer({
     lastLoop = performance.now();
   },
   onLoop: () => {
-    const drift = Math.abs(1000 - (performance.now() - lastLoop));
-    lastLoop = performance.now();
+    const now = performance.now();
+
+    const drift = Math.abs(1000 - (now - lastLoop));
     checkIfTimerIsSlow(drift);
 
-    logTestEvent("timer", performance.now(), {
+    logTestEvent("timer", now, {
       event: "step",
       timer: Time.get(),
-      delta: performance.now() - lastLoop,
       slowTimer: SlowTimer.get() ? true : undefined,
+      drift,
     });
 
+    lastLoop = now;
     timerStep();
   },
 });
@@ -79,10 +81,16 @@ export function enableTimerDebug(): void {
   timerDebug = true;
 }
 
-export function clear(): void {
+export function clear(logEnd = false, now = performance.now()): void {
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
+  if (logEnd) {
+    logTestEvent("timer", now, {
+      event: "end",
+      timer: Time.get(),
+    });
+  }
 }
 
 function premid(): void {
@@ -324,7 +332,6 @@ async function _startNew(): Promise<void> {
   logTestEvent("timer", performance.now(), {
     event: "start",
     timer: Time.get(),
-    delta: 0,
   });
 }
 
@@ -334,7 +341,6 @@ async function _startOld(): Promise<void> {
   logTestEvent("timer", performance.now(), {
     event: "start",
     timer: Time.get(),
-    delta: 0,
   });
   (function loop(): void {
     const delay = expected - performance.now();
@@ -357,7 +363,7 @@ async function _startOld(): Promise<void> {
       logTestEvent("timer", performance.now(), {
         event: "step",
         timer: Time.get(),
-        delta: delay,
+        drift: drift,
         slowTimer: SlowTimer.get() ? true : undefined,
       });
 
