@@ -19,6 +19,8 @@ let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 
+let cachedAllEvents: TestEvent[] | undefined;
+
 let noCodeIndex = 0;
 let pressedKeys: Map<
   string,
@@ -43,6 +45,8 @@ export function logTestEvent(
   };
 
   console.debug("logging test event", event);
+
+  cachedAllEvents = undefined;
 
   if (type === "keydown") {
     const code = (event as KeydownEvent).data.code;
@@ -97,13 +101,22 @@ export function logTestEvent(
 }
 
 export function getAllTestEvents(): TestEvent[] {
-  // return testData300;
-  return [...keydownEvents, ...keyupEvents, ...timerEvents, ...inputEvents]
+  if (cachedAllEvents !== undefined) return cachedAllEvents;
+
+  // cachedAllEvents = testData300;
+  // return cachedAllEvents;
+  cachedAllEvents = [
+    ...keydownEvents,
+    ...keyupEvents,
+    ...timerEvents,
+    ...inputEvents,
+  ]
     .sort((a, b) => a.ms - b.ms)
     .map((event) => {
       event.testMs = event.ms - start;
       return event;
     });
+  return cachedAllEvents;
 }
 
 export function logEventsDataToTheConsole(): void {
@@ -159,6 +172,7 @@ export function resetTestEvents(): void {
   keyupEvents = [];
   timerEvents = [];
   inputEvents = [];
+  cachedAllEvents = undefined;
 }
 
 export function testing(): void {
