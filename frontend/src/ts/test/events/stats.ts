@@ -10,7 +10,7 @@ import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
-import { InputEvent, TestEvent } from "./types";
+import { TestEvent } from "./types";
 import { Config } from "../../config/store";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
@@ -349,65 +349,20 @@ export function getWpmHistory(): number[] {
   const timerBoundaries = getTimerBoundaries(events);
   const wpmHistory: number[] = [];
 
-  // not calculating correctly if get partial credit but then submit incorrect word
-
-  // Running state: simulated input per word, built up incrementally
-  const simulatedInputs: Map<number, string> = new Map();
-  // Track last event per word for space-submission detection
-  const lastEventPerWord: Map<number, InputEvent> = new Map();
-  let eventIndex = 0;
-
   for (const boundary of timerBoundaries) {
-    // Process only new events up to this boundary
-    while (eventIndex < events.length) {
-      const event = events[eventIndex];
-      if (event === undefined) break;
-      if (event.testMs > boundary) break;
+    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
 
-      if (event.type === "input") {
-        let wordIndex = event.data.wordIndex;
-
-        // Match getInputEventsPerWord behavior: deleteWordBackward on
-        // charIndex 0 is attributed to the previous word
-        if (
-          (event.data.inputType === "deleteWordBackward" ||
-            event.data.inputType === "deleteContentBackward") &&
-          event.data.charIndex === 0 &&
-          wordIndex > 0
-        ) {
-          wordIndex -= 1;
-        }
-
-        // Update simulated input for this word
-        const current = simulatedInputs.get(wordIndex) ?? "";
-        if (
-          event.data.inputType === "insertText" ||
-          event.data.inputType === "insertCompositionText"
-        ) {
-          simulatedInputs.set(wordIndex, current + event.data.data);
-        } else if (event.data.inputType === "deleteContentBackward") {
-          simulatedInputs.set(wordIndex, current.slice(0, -1));
-        } else if (event.data.inputType === "deleteWordBackward") {
-          simulatedInputs.set(wordIndex, "");
-        }
-
-        lastEventPerWord.set(wordIndex, event);
-      }
-      eventIndex++;
-    }
-
-    // Compute max word index
     let maxWordIndex = 0;
-    for (const k of simulatedInputs.keys()) {
+    for (const k of eventsPerWord.keys()) {
       if (k > maxWordIndex) maxWordIndex = k;
     }
 
-    // Count correct chars across all words
     let totalCorrect = 0;
-    for (const [wordIndex, input] of simulatedInputs) {
-      // Check if this word's last event was a space submission
+    for (const [wordIndex, wordEvents] of eventsPerWord) {
+      const input = getSimulatedInput(wordEvents);
+
+      const lastEvt = wordEvents[wordEvents.length - 1];
       let adjustedMax = maxWordIndex;
-      const lastEvt = lastEventPerWord.get(wordIndex);
       if (
         lastEvt !== undefined &&
         lastEvt.data.inputType === "insertText" &&
