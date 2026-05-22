@@ -10,6 +10,7 @@ export type ModalId =
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
+  | "SimplerModal"
   | "CustomText"
   | "SaveCustomText"
   | "SavedTexts"

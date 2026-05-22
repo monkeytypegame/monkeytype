@@ -1,157 +1,455 @@
-import { TagNameSchema } from "@monkeytype/schemas/users";
-import { z, ZodTypeAny } from "zod";
+import { AnyFieldApi, createForm } from "@tanstack/solid-form";
+import { format as dateFormat } from "date-fns/format";
+import {
+  Accessor,
+  For,
+  JSXElement,
+  Match,
+  Show,
+  Switch,
+  untrack,
+} from "solid-js";
+import { z, ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
-import { ExecReturn } from "../../states/simple-modal";
-import { Validation } from "../../types/validation";
-import { normalizeName } from "../../utils/strings";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
+import {
+  addNotificationWithLevel,
+  showErrorNotification,
+  showNoticeNotification,
+} from "../../states/notifications";
+import {
+  GenericSimplerModalInput,
+  hideSimplerModal,
+  InputsFromSchema,
+  simplerModalConfig,
+  SimplerModalInput,
+} from "../../states/simpler-modal";
+import { cn } from "../../utils/cn";
+import { typedEntries } from "../../utils/misc";
+import { AnimatedModal } from "../common/AnimatedModal";
+import { Checkbox } from "../ui/form/Checkbox";
+import { InputField } from "../ui/form/InputField";
+import { SubmitButton } from "../ui/form/SubmitButton";
+import { fieldMandatory, fromSchema, handleResult } from "../ui/form/utils";
 
-type InferSchema<T extends ZodTypeAny> = z.infer<T>;
+type SyncValidator = (opts: {
+  value: string | boolean;
+}) => string | string[] | undefined;
 
-type CommonInput<TType, TValue> = {
-  type?: TType;
-  initVal?: TValue;
-  placeholder?: string;
-  hidden?: boolean;
-  disabled?: boolean;
-  optional?: boolean;
-  label?: string;
-  class?: string;
-  oninput?: (event: Event) => void;
-  /**
-   * preprocess is applied before validation and execFn
-   * @param value
-   * @returns
-   */
-  preprocess?: (value: TValue) => TValue;
-  validation?: Omit<Validation<TValue>, "schema">;
+type AsyncValidator = (opts: {
+  value: string | boolean;
+  fieldApi: AnyFieldApi;
+}) => Promise<string | string[] | undefined>;
+
+type SimpleModalValidators = {
+  onChange?: SyncValidator;
+  onChangeAsyncDebounceMs?: number;
+  onChangeAsync?: AsyncValidator;
 };
 
-// strings
-type TextInput<T extends string> = {
-  readOnly?: boolean;
-  clickToSelect?: boolean;
-} & CommonInput<"text", T>;
+export function SimplerModal(): JSXElement {
+  const config = simplerModalConfig;
 
-type TextArea<T extends string> = {
-  readOnly?: boolean;
-  clickToSelect?: boolean;
-} & CommonInput<"textarea", T>;
+  // untrack prevents tanstack's internal createComputed from
+  // re-running api.update() when config changes, which would
+  // cause a re-render cascade during the modal's show animation.
+  const form = createForm(() => ({
+    defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
+    onSubmit: async ({ value }) => {
+      const schema = config()?.schema as z.Schema;
+      // oxlint-disable-next-line typescript/no-explicit-any
+      const inputs = config()?.inputs as InputsFromSchema<any>;
+      const simpleConfig = config();
+      if (simpleConfig === null) return;
 
-type PasswordInput<T extends string> = CommonInput<"password", T>;
-type EmailInput<T extends string> = CommonInput<"email", T>;
+      const converted = Object.fromEntries(
+        Object.entries(value).map(([key, value]) => [
+          key,
+          // @ts-expect-error this is fine
+          // oxlint-disable-next-line typescript/no-unsafe-member-access typescript/no-unsafe-argument
+          convertFn(inputs[key], schema.shape[key])(value as string | boolean),
+        ]),
+      );
 
-type StringTypeInput<T extends string> =
-  | TextInput<T>
-  | TextArea<T>
-  | PasswordInput<T>
-  | EmailInput<T>;
+      showLoaderBar();
+      try {
+        const res = await simpleConfig.execFn(converted);
+        hideLoaderBar();
 
-// numbers
-type NumberInput<T extends number> = {
-  min?: number;
-  max?: number;
-} & CommonInput<"number", T>;
+        if (res.showNotification !== false) {
+          addNotificationWithLevel(
+            res.message,
+            res.status,
+            res.notificationOptions,
+          );
+        }
 
-type RangeInput<T extends number> = {
-  min: number;
-  max: number;
-  step?: number;
-} & CommonInput<"range", T>;
+        if (res.status === "success" || res.alwaysHide) {
+          hideSimplerModal();
+          res.afterHide?.();
+        }
+      } catch (error) {
+        console.error("Error executing simple modal function:", error);
+        showErrorNotification("An unexpected error occurred", {
+          error,
+        });
+        hideLoaderBar();
+      }
+    },
+    onSubmitInvalid: () => {
+      showNoticeNotification("Please fill in all fields");
+    },
+  }));
 
-type NumberTypeInput<T extends number> = NumberInput<T> | RangeInput<T>;
+  const resetForm = (): void => {
+    const defaults = getDefaultValues(config()?.inputs);
+    form.update({ ...form.options, defaultValues: defaults });
+    form.reset();
+  };
 
-// booleans
-type CheckboxInput<T extends boolean> = {
-  label: string;
-  placeholder?: never;
-  description?: string;
-} & CommonInput<"checkbox", T>;
+  const getSchema = (key: string) =>
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    config()?.schema?.shape[key] as z.ZodTypeAny;
 
-type BooleanTypeInput<T extends boolean> = CheckboxInput<T>;
+  return (
+    <AnimatedModal
+      id="SimplerModal"
+      title={config()?.title}
+      focusFirstInput={config()?.focusFirstInput ?? true}
+      beforeShow={resetForm}
+      modalClass={config()?.class}
+    >
+      <form
+        class="grid gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <Show when={config()?.text}>
+          {(text) => (
+            <div
+              class={cn("text-text", config()?.textClass)}
+              {...(config()?.textAllowHtml === true
+                ? { innerHTML: text() }
+                : { textContent: text() })}
+            ></div>
+          )}
+        </Show>
 
-// dates
+        <Show when={Object.keys(config()?.inputs ?? {}).length > 0}>
+          <div class="grid gap-2">
+            <For each={typedEntries(config()?.inputs ?? {})}>
+              {([key, input]) => {
+                const name: string = key;
 
-type DateInput<T extends Date> = { min?: Date; max?: Date } & CommonInput<
-  "date",
-  T
->;
+                return (
+                  <Show when={!input.hidden}>
+                    <form.Field
+                      name={name}
+                      validators={getValidators(input, getSchema(key))}
+                      children={(field) => (
+                        <Show
+                          when={
+                            input.type !== "checkbox" &&
+                            input.label !== undefined &&
+                            input.label !== ""
+                          }
+                          fallback={
+                            <FieldInput
+                              field={field}
+                              input={input}
+                              schema={getSchema(key)}
+                            />
+                          }
+                        >
+                          <label class="grid w-full grid-cols-[1fr_2fr] items-center gap-2 text-sub">
+                            <div>{input.label}</div>
 
-type DateTimeInput<T extends Date> = { min?: Date; max?: Date } & CommonInput<
-  "datetime-local",
-  T
->;
+                            <FieldInput
+                              field={field}
+                              input={input}
+                              schema={getSchema(key)}
+                            />
+                          </label>
+                        </Show>
+                      )}
+                    />
+                  </Show>
+                );
+              }}
+            </For>
+          </div>
+        </Show>
 
-type DateTypeInput<T extends Date> = DateInput<T> | DateTimeInput<T>;
-
-type InputConfig<T> = T extends string
-  ? StringTypeInput<T>
-  : T extends number
-    ? NumberTypeInput<T>
-    : T extends boolean
-      ? BooleanTypeInput<T>
-      : T extends Date
-        ? DateTypeInput<T>
-        : never;
-
-// oxlint-disable-next-line typescript/no-explicit-any
-type InputsFromSchema<S extends z.ZodObject<any>> = {
-  [K in keyof S["shape"]]: InputConfig<z.infer<S["shape"][K]>>;
-};
-
-// oxlint-disable-next-line typescript/no-explicit-any
-export type SimplerModalConfig<S extends z.ZodObject<any>> = {
-  title: string;
-  schema: S;
-  inputs: InputsFromSchema<S>;
-
-  text?: string | { display: string; class?: string; allowHtml?: boolean };
-
-  button?: string | { text: string; alwaysEnabled?: boolean };
-  focusFirstInput?: true | "focusAndSelect";
-
-  execFn: (values: InferSchema<S>) => Promise<ExecReturn>;
-};
-
-// oxlint-disable-next-line typescript/no-explicit-any
-function showSimplerModal<S extends z.ZodObject<any>>(
-  args: SimplerModalConfig<S>,
-) {
-  return args;
+        <Show when={config()?.buttonText !== undefined}>
+          <SubmitButton
+            form={form}
+            variant="button"
+            class="w-full"
+            text={config()?.buttonText}
+            skipUnchangedCheck={
+              config()?.buttonAlwaysEnabled === true ||
+              Object.keys(config()?.inputs ?? {}).length === 0
+            }
+          />
+        </Show>
+      </form>
+    </AnimatedModal>
+  );
 }
 
-const _formConfig = showSimplerModal({
-  title: "Enter minimum and maximum number of words",
-  button: "save",
-  schema: z.object({
-    text: z.string().min(5),
-    min: z.number().safe().positive(),
-    max: z.number().safe().positive(),
-    tagName: TagNameSchema,
-    date: z.date(),
-  }),
-  inputs: {
-    text: {
-      type: "textarea",
-      initVal: "test",
-    },
-    min: {
-      placeholder: "0",
-      initVal: 0,
-    },
-    max: {
-      placeholder: "100",
-    },
-    tagName: {
-      placeholder: "tag name",
-      preprocess: normalizeName,
-    },
-    date: {
-      type: "datetime-local",
-      min: new Date(),
-    },
-  },
-  execFn: async ({ text, date }) => {
-    console.log({ text, date });
-    return { status: "success", message: "Saved custom filter" };
-  },
-});
+function getDefaultValues(
+  // oxlint-disable-next-line typescript/no-explicit-any
+  inputs: InputsFromSchema<any> | undefined,
+): Object {
+  if (inputs === undefined || Object.keys(inputs).length === 0) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(inputs).map(([key, input]) => [key, input.initVal ?? null]),
+  );
+}
+
+function getValidators(
+  input: GenericSimplerModalInput,
+  schema: z.Schema,
+): SimpleModalValidators | undefined {
+  const required =
+    !input.hidden && !schema.isOptional() && input.type !== "checkbox";
+  const isValid = input.validation?.isValid;
+
+  if (schema === undefined && isValid === undefined && !required) {
+    return undefined;
+  }
+
+  const validators: SimpleModalValidators = {};
+  const convert = convertFn(input, schema);
+
+  if (schema !== undefined) {
+    // oxlint-disable-next-line typescript/no-unsafe-argument
+    validators.onChange = fromSchema(schema, {
+      convert,
+    }) as SyncValidator;
+  } else if (required) {
+    validators.onChange = fieldMandatory() as SyncValidator;
+  }
+
+  if (isValid !== undefined) {
+    validators.onChangeAsyncDebounceMs = input.validation?.debounceDelay ?? 100;
+    validators.onChangeAsync = async ({ value, fieldApi }) => {
+      const result = await isValid(String(value));
+      if (result === true) {
+        return undefined;
+      }
+      if (typeof result === "string") {
+        return result;
+      }
+      return handleResult(fieldApi, [
+        { type: "warning", message: result.warning },
+      ]);
+    };
+  }
+
+  return validators;
+}
+
+function FieldInput(props: {
+  field: Accessor<AnyFieldApi>;
+  input: GenericSimplerModalInput;
+  schema: z.ZodTypeAny;
+}): JSXElement {
+  const formatDate = (date: unknown) =>
+    dateFormat(
+      date as Date,
+      props.input.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
+    );
+  return (
+    <Switch
+      fallback={
+        <InputField
+          field={props.field}
+          type={props.input.type}
+          placeholder={props.input.placeholder}
+          disabled={props.input.disabled}
+          readOnly={
+            "readOnly" in props.input
+              ? (props.input as { readOnly?: boolean }).readOnly
+              : undefined
+          }
+          clickToSelect={
+            "clickToSelect" in props.input
+              ? (props.input as { clickToSelect?: boolean }).clickToSelect
+              : undefined
+          }
+          class={props.input.class}
+          autocomplete="off"
+          {...getMinAndMax(props.schema)}
+        />
+      }
+    >
+      <Match when={props.input.type === "checkbox"}>
+        <Checkbox
+          field={props.field}
+          label={(props.input as { label: string }).label}
+          disabled={props.input.disabled}
+          class={props.input.class}
+        />
+      </Match>
+      <Match when={props.input.type === "textarea"}>
+        <textarea
+          class={cn("w-full", props.input.class)}
+          placeholder={props.input.placeholder}
+          value={props.field().state.value as string}
+          disabled={props.input.disabled}
+          readOnly={(props.input as { readOnly?: boolean }).readOnly}
+          autocomplete="off"
+          onInput={(e) => {
+            props.field().handleChange(e.currentTarget.value);
+            props.input.oninput?.(e);
+          }}
+          onClick={(e) => {
+            if ((props.input as { clickToSelect?: boolean }).clickToSelect) {
+              e.currentTarget.select();
+            }
+          }}
+          onBlur={() => props.field().handleBlur()}
+        ></textarea>
+      </Match>
+      <Match when={props.input.type === "range"}>
+        <div class="flex items-center gap-2">
+          <input
+            type="range"
+            class={cn(
+              props.input.hidden && "hidden",
+              "w-full",
+              props.input.class,
+            )}
+            {...getMinAndMax(props.schema)}
+            step={(props.input as { step?: number }).step}
+            value={props.field().state.value as string}
+            disabled={props.input.disabled}
+            onInput={(e) => {
+              props.field().handleChange(e.currentTarget.value);
+              props.input.oninput?.(e);
+            }}
+            onBlur={() => props.field().handleBlur()}
+          />
+          <span class="text-sub">{props.field().state.value as string}</span>
+        </div>
+      </Match>
+
+      <Match
+        when={
+          props.input.type === "datetime-local" || props.input.type === "date"
+        }
+      >
+        <input
+          type={props.input.type}
+          class={cn("w-full", props.input.class)}
+          value={formatDate(props.field().state.value)}
+          disabled={props.input.disabled}
+          {...getDateMinAndMax(props.schema, formatDate)}
+          onInput={(e) => {
+            props.field().handleChange(e.currentTarget.value);
+            props.input.oninput?.(e);
+          }}
+          onBlur={() => props.field().handleBlur()}
+        />
+      </Match>
+    </Switch>
+  );
+}
+
+/**
+ * Creates a converter function that transforms raw user input
+ * (typically a string or boolean from UI components)
+ * into the correct runtime type expected by a given Zod schema.
+ *
+ * The returned function:
+ *   - normalizes the raw value (string → number, string → boolean, etc.)
+ *   - applies optional `input.preprocess`
+ *   - validates the result using the provided Zod schema
+ *   - returns the parsed value as type `T`
+ *
+ * @template T The final inferred type after Zod parsing.
+ *
+ * @param input - A SimplerModalInput<T> describing preprocessing behavior.
+ * @param schema - A Zod schema whose type determines how the value is converted.
+ *
+ * @returns A function that accepts a raw value (string | boolean)
+ *          and returns a validated value of type `T`.
+ */
+export function convertFn<T>(
+  input: SimplerModalInput<T>,
+  schema: z.ZodTypeAny,
+): (val: string | boolean) => T {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+  const type = schema._def["typeName"];
+  const preprocess = (raw: unknown): T => {
+    const value = input.preprocess ? input.preprocess(raw as T) : raw;
+    const parsed = schema.safeParse(value);
+    if (!parsed.success) {
+      return value as T;
+    }
+
+    return parsed.data as T;
+  };
+
+  switch (type) {
+    case ZodFirstPartyTypeKind.ZodBoolean:
+      return (val) => {
+        const bool =
+          typeof val === "boolean" ? val : val === "true" || val === "1";
+        return preprocess(bool);
+      };
+
+    case ZodFirstPartyTypeKind.ZodNumber:
+      return (val) => {
+        const num = typeof val === "string" ? parseFloat(val) : Number(val);
+        return preprocess(num);
+      };
+
+    case ZodFirstPartyTypeKind.ZodDate:
+      return (val) => {
+        const date = new Date(val as string);
+        return preprocess(date);
+      };
+
+    default:
+      return (val) => preprocess(val);
+  }
+}
+
+function getMinAndMax(schema: ZodTypeAny): {
+  min: number | undefined;
+  max: number | undefined;
+} {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+  const checks: ZodNumber["_def"]["checks"] = schema._def.checks;
+  if (checks === undefined) return { min: undefined, max: undefined };
+
+  return {
+    min: checks.find((c) => c.kind === "min")?.value ?? undefined,
+    max: checks.find((c) => c.kind === "max")?.value ?? undefined,
+  };
+}
+function getDateMinAndMax(
+  schema: ZodTypeAny,
+  format: (val: Date) => string,
+): {
+  min: string | undefined;
+  max: string | undefined;
+} {
+  let min = (schema as ZodDate).minDate;
+  let max = (schema as ZodDate).maxDate;
+
+  console.log("dates", { min, max });
+
+  return {
+    min: undefined, //: min !== null ? format(min) : undefined,
+    max: undefined, //: max !== null ? format(max) : undefined,
+  };
+}
