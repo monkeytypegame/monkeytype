@@ -370,7 +370,8 @@ export function getWpmHistory(): number[] {
         // Match getInputEventsPerWord behavior: deleteWordBackward on
         // charIndex 0 is attributed to the previous word
         if (
-          event.data.inputType === "deleteWordBackward" &&
+          (event.data.inputType === "deleteWordBackward" ||
+            event.data.inputType === "deleteContentBackward") &&
           event.data.charIndex === 0 &&
           wordIndex > 0
         ) {
