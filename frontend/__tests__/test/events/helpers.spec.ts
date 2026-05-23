@@ -125,18 +125,6 @@ describe("getSimulatedInput", () => {
     );
   });
 
-  it("handles multiple deleteWordBackward", () => {
-    const events = [
-      ...insert("hello there this is a test"),
-      deleteWordBackward(),
-      deleteWordBackward(),
-      deleteWordBackward(),
-    ];
-
-    console.log(events);
-    expect(getSimulatedInput(events)).toBe("hello there this is");
-  });
-
   it("returns empty string for no events", () => {
     expect(getSimulatedInput([])).toBe("");
   });

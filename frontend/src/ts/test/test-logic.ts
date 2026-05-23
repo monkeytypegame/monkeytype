@@ -78,13 +78,10 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
+import { resetTestEvents, logEventsDataToTheConsoleTable } from "./events/data";
 import {
   forceReleaseAllKeys,
-  resetTestEvents,
   getKeypressDurations,
-  logEventsDataToTheConsoleTable,
-} from "./events/data";
-import {
   getChars,
   getKeypressesPerSecond,
   getLastKeypressToEndMs,

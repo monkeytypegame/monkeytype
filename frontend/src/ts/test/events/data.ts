@@ -11,7 +11,6 @@ import {
   TimerEventData,
 } from "./types";
 import { keysToTrack } from "./helpers";
-import { mean } from "@monkeytype/util/numbers";
 import { start } from "../test-stats";
 
 let keydownEvents: KeydownEvent[] = [];
@@ -183,61 +182,6 @@ export function getInputEvents(): InputEvent[] {
 
 export function getPressedKeys(): Map<string, { timestamp: number }> {
   return pressedKeys;
-}
-
-export function getKeypressDurations(): number[] {
-  const events = getAllTestEvents();
-
-  const keydownTimes: Map<
-    string,
-    {
-      timestamp: number;
-      index: number;
-    }
-  > = new Map();
-  const durations: number[] = [];
-
-  for (const event of events) {
-    if (event.type === "keydown") {
-      keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
-        index: durations.length,
-      });
-      durations.push(0); // placeholder
-    } else if (event.type === "keyup") {
-      const keydownTime = keydownTimes.get(event.data.code);
-      if (keydownTime !== undefined) {
-        const duration = event.ms - keydownTime.timestamp;
-        durations[keydownTime.index] = duration;
-        keydownTimes.delete(event.data.code);
-      }
-    }
-  }
-
-  return durations;
-}
-
-export function forceReleaseAllKeys(): void {
-  const filteredDurations = getKeypressDurations().filter((d) => d > 0);
-
-  let avg: number;
-  if (filteredDurations.length === 0) {
-    // this means the test ended while all keys were still held - probably safe to ignore
-    // since this will result in a "too short" test anyway, but ill just set it to a magic number
-    avg = 80;
-  } else {
-    avg = mean(filteredDurations);
-  }
-
-  for (const [key, { timestamp }] of pressedKeys.entries()) {
-    logTestEvent("keyup", timestamp + avg, {
-      code: key,
-      ctrl: false,
-      shift: false,
-      alt: false,
-      meta: false,
-    });
-  }
 }
 
 export function getInputEventsPerWord(
