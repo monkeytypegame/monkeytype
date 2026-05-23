@@ -75,37 +75,23 @@ export function PbTablesModal(): JSXElement {
       <Table class="border-collapse text-text">
         <TableHeader class="sticky -top-8 z-3 bg-bg text-xs">
           <TableRow>
-            <TableHead scope="col" class="w-[1%]">
-              {mode()}
-            </TableHead>
-            <TableHead scope="col" class="text-right">
+            <TableHead class="w-[1%]">{mode()}</TableHead>
+            <TableHead class="text-right">
               {format().typingSpeedUnit}
               <br />
               <span class="opacity-50">accuracy</span>
             </TableHead>
-            <TableHead scope="col" class="text-right">
+            <TableHead class="text-right">
               raw
               <br />
               <span class="opacity-50">consistency</span>
             </TableHead>
-            <TableHead scope="col" class="text-right">
-              difficulty
-            </TableHead>
-            <TableHead scope="col" class="text-right">
-              language
-            </TableHead>
-            <TableHead scope="col" class="text-center">
-              punctuation
-            </TableHead>
-            <TableHead scope="col" class="text-center">
-              numbers
-            </TableHead>
-            <TableHead scope="col" class="text-right">
-              lazy mode
-            </TableHead>
-            <TableHead scope="col" class="text-right">
-              date
-            </TableHead>
+            <TableHead class="text-right">difficulty</TableHead>
+            <TableHead class="text-right">language</TableHead>
+            <TableHead class="text-center">punctuation</TableHead>
+            <TableHead class="text-center">numbers</TableHead>
+            <TableHead class="text-right">lazy mode</TableHead>
+            <TableHead class="text-right">date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,9 +104,9 @@ export function PbTablesModal(): JSXElement {
                 <TableRow>
                   <Show
                     when={row.showMode2}
-                    fallback={<TableCell class="text-right" />}
+                    fallback={<TableCell class="bg-bg" />}
                   >
-                    <TableCell class="sticky top-[calc(1rem-2px)] z-2 text-right text-2xl">
+                    <TableCell class="sticky top-[calc(1rem-2px)] z-2 bg-bg text-right text-2xl">
                       {row.mode2}
                     </TableCell>
                   </Show>
