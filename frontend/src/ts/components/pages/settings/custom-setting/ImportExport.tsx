@@ -1,4 +1,5 @@
 import { JSXElement } from "solid-js";
+import { z } from "zod";
 
 import { applyConfigFromJson } from "../../../../config/lifecycle";
 import { getConfig } from "../../../../config/store";
@@ -6,7 +7,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
-import { showSimpleModal } from "../../../../states/simple-modal";
+import { showSimplerModal } from "../../../../states/simpler-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
 
@@ -23,16 +24,13 @@ export function ImportExport(): JSXElement {
         <div class="grid grid-cols-2 gap-2">
           <Button
             onClick={() => {
-              showSimpleModal({
+              showSimplerModal({
                 title: "import settings",
                 class: "min-w-2xl",
-                inputs: [
-                  {
-                    type: "text",
-                  },
-                ],
+                schema: z.object({ json: z.string() }),
+                inputs: { json: { type: "text" } },
                 buttonText: "import",
-                execFn: async (json) => {
+                execFn: async ({ json }) => {
                   try {
                     void applyConfigFromJson(json);
                   } catch (e) {}
@@ -63,11 +61,12 @@ export function ImportExport(): JSXElement {
                   );
 
                   setTimeout(() => {
-                    showSimpleModal({
+                    showSimplerModal({
                       title: "Config JSON",
                       class: "max-w-2xl",
-                      inputs: [
-                        {
+                      schema: z.object({ json: z.string() }),
+                      inputs: {
+                        json: {
                           type: "textarea",
                           placeholder: "Config JSON",
                           initVal: JSON.stringify(getConfig),
@@ -75,7 +74,7 @@ export function ImportExport(): JSXElement {
                           readOnly: true,
                           class: "h-50",
                         },
-                      ],
+                      },
                       execFn: async () => {
                         return {
                           status: "success",

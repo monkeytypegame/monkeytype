@@ -7,6 +7,7 @@ import {
   Show,
   on,
 } from "solid-js";
+import { z } from "zod";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
@@ -27,7 +28,7 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 import { showQuoteReportModal } from "../../states/quote-report";
-import { showSimpleModal } from "../../states/simple-modal";
+import { showSimplerModal } from "../../states/simpler-modal";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
@@ -348,21 +349,21 @@ export function QuoteSearchModal(): JSXElement {
   createEffect(
     on(lengthFilter, (lengths) => {
       if (lengths.includes("4") && !hasCustomFilter()) {
-        showSimpleModal({
+        showSimplerModal({
           title: "Enter minimum and maximum number of words",
-          inputs: [
-            { type: "number", placeholder: "1" },
-            { type: "number", placeholder: "100" },
-          ],
           buttonText: "save",
-          execFn: async (min: string, max: string) => {
-            const minNum = parseInt(min, 10);
-            const maxNum = parseInt(max, 10);
-            if (isNaN(minNum) || isNaN(maxNum)) {
-              return { status: "notice", message: "Invalid min/max values" };
-            }
-            setCustomFilterMin(minNum);
-            setCustomFilterMax(maxNum);
+          schema: z.object({
+            min: z.number().int().safe().positive(),
+            max: z.number().int().safe().positive(),
+          }),
+          inputs: {
+            min: { type: "number", placeholder: "1" },
+            max: { type: "number", placeholder: "100" },
+          },
+
+          execFn: async ({ min, max }) => {
+            setCustomFilterMin(min);
+            setCustomFilterMax(max);
             setHasCustomFilter(true);
             return { status: "success", message: "Saved custom filter" };
           },

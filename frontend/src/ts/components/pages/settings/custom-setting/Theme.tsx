@@ -1,6 +1,7 @@
 import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
 import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
+import { z } from "zod";
 
 import {
   addCustomTheme,
@@ -27,10 +28,14 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
-import { showSimpleModal } from "../../../../states/simple-modal";
+import { showSimplerModal } from "../../../../states/simpler-modal";
 import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
+import {
+  replaceSpacesWithUnderscores,
+  replaceUnderscoresWithSpaces,
+} from "../../../../utils/strings";
 import { AnimeSwitch } from "../../../common/anime";
 import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
@@ -118,17 +123,18 @@ export function Theme(): JSXElement {
         <Button
           text="share"
           onClick={() => {
-            showSimpleModal({
+            showSimplerModal({
               title: "Share custom theme",
-              inputs: [
-                {
+              schema: z.object({ includeBackground: z.boolean() }),
+              inputs: {
+                includeBackground: {
                   label: "Include background link, size and filters",
                   type: "checkbox",
                 },
-              ],
+              },
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
-              execFn: async (includeBackground) => {
+              execFn: async ({ includeBackground }) => {
                 const newTheme: {
                   c: string[]; //colors
                   i?: string; //image
@@ -138,7 +144,7 @@ export function Theme(): JSXElement {
                   c: convertThemeToCustomColors(getTheme()),
                 };
 
-                if (includeBackground === "true") {
+                if (includeBackground) {
                   newTheme.i = getConfig.customBackground;
                   newTheme.s = getConfig.customBackgroundSize;
                   newTheme.f = getConfig.customBackgroundFilter;
@@ -160,11 +166,12 @@ export function Theme(): JSXElement {
                   );
 
                   setTimeout(() => {
-                    showSimpleModal({
+                    showSimplerModal({
                       title: "Custom theme URL",
                       class: "max-w-2xl",
-                      inputs: [
-                        {
+                      schema: z.object({ url: z.string() }),
+                      inputs: {
+                        url: {
                           type: "textarea",
                           placeholder: "URL",
                           initVal: link,
@@ -172,7 +179,7 @@ export function Theme(): JSXElement {
                           readOnly: true,
                           class: "h-50",
                         },
-                      ],
+                      },
                       execFn: async () => {
                         return {
                           status: "success",
@@ -343,33 +350,24 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         )}
         onClick={(e) => {
           e.stopPropagation();
-          showSimpleModal({
+          showSimplerModal({
             title: "Update custom theme",
-            inputs: [
-              {
+            schema: z.object({
+              name: CustomThemeNameSchema,
+              updateColors: z.boolean(),
+            }),
+            inputs: {
+              name: {
                 type: "text",
-                initVal: props.theme.name.replace(/_/g, " "),
-                validation: {
-                  // schema: CustomThemeNameSchema,
-                  isValid: async (val) => {
-                    if (
-                      CustomThemeNameSchema.safeParse(val.replace(/ /g, "_"))
-                        .success
-                    ) {
-                      return true;
-                    }
-                    return "Name must be 1-30 characters and can only contain letters, numbers, spaces, underscores and hyphens.";
-                  },
-                  // debounceDelay: 0,
-                },
+                initVal: replaceUnderscoresWithSpaces(props.theme.name),
               },
-              {
+              updateColors: {
                 type: "checkbox",
                 label: "Update custom theme to current colors",
               },
-            ],
+            },
             buttonText: "update",
-            execFn: async (name, updateColors) => {
+            execFn: async ({ name, updateColors }) => {
               if (name === undefined) {
                 return {
                   status: "error",
@@ -378,7 +376,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               }
               editCustomTheme({
                 themeId: props.theme._id,
-                name: name.replace(/ /g, "_"),
+                name: replaceSpacesWithUnderscores(name),
                 colors: updateColors
                   ? convertThemeToCustomColors(untrack(() => getTheme()))
                   : untrack(() => props.theme.colors),
@@ -403,7 +401,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
           });
         }}
       />
-      <div>{props.theme.name.replace(/_/g, " ")}</div>
+      <div>{replaceUnderscoresWithSpaces(props.theme.name)}</div>
       <Button
         variant="text"
         fa={{
@@ -417,9 +415,9 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         )}
         onClick={(e) => {
           e.stopPropagation();
-          showSimpleModal({
+          showSimplerModal({
             title: "Delete custom theme",
-            text: `Are you sure you want to delete the custom theme "${props.theme.name.replace(/_/g, " ")}"? This action cannot be undone.`,
+            text: `Are you sure you want to delete the custom theme "${replaceUnderscoresWithSpaces(props.theme.name)}"? This action cannot be undone.`,
             buttonText: "delete",
             execFn: async () => {
               void deleteCustomTheme({
@@ -500,7 +498,7 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
           />
         </div>
       </div>
-      <div>{props.theme.name.replace(/_/g, " ")}</div>
+      <div>{replaceUnderscoresWithSpaces(props.theme.name)}</div>
       <div
         class={cn(
           "place-self-end self-center opacity-0 transition-opacity duration-125 group-hover/theme:opacity-100",

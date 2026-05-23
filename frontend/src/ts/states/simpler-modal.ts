@@ -100,8 +100,6 @@ export type InputsFromSchema<S extends z.ZodObject<any>> = {
 // oxlint-disable-next-line typescript/no-explicit-any
 export type SimplerModalConfig<S extends z.ZodObject<any>> = {
   title: string;
-  schema: S;
-  inputs: InputsFromSchema<S>;
   text?: string;
   textClass?: string;
   textAllowHtml?: boolean;
@@ -112,7 +110,10 @@ export type SimplerModalConfig<S extends z.ZodObject<any>> = {
   class?: string;
 
   execFn: (values: InferSchema<S>) => Promise<ExecReturn>;
-};
+} & (
+  | { schema: S; inputs: InputsFromSchema<S> }
+  | { schema?: never; inputs?: never }
+);
 
 const [simplerModalConfig, setSimplerModalConfig] =
   // oxlint-disable-next-line typescript/no-explicit-any

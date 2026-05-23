@@ -2,7 +2,7 @@ import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
 import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { hideModal } from "../../states/modals";
-import { showSimpleModal } from "../../states/simple-modal";
+import { showSimplerModal } from "../../states/simpler-modal";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -47,7 +47,7 @@ export function SavedTextsModal(props: {
   };
 
   const handleDelete = (name: string, long: boolean) => {
-    showSimpleModal({
+    showSimplerModal({
       title: "Delete custom text",
       text: `Are you sure you want to delete custom text ${name}?`,
       buttonText: "delete",
@@ -64,7 +64,7 @@ export function SavedTextsModal(props: {
   };
 
   const handleResetProgress = (name: string) => {
-    showSimpleModal({
+    showSimplerModal({
       title: "Reset progress for custom text",
       text: `Are you sure you want to reset your progress for custom text ${name}?`,
       buttonText: "reset",

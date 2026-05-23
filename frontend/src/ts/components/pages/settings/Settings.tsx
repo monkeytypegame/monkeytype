@@ -16,7 +16,7 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
 import { getActivePage, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { showSimpleModal } from "../../../states/simple-modal";
+import { showSimplerModal } from "../../../states/simpler-modal";
 // import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
@@ -230,7 +230,7 @@ export function Settings(): JSXElement {
                   class="w-full"
                   danger
                   onClick={() => {
-                    showSimpleModal({
+                    showSimplerModal({
                       title: "Are you sure?",
                       buttonText: "reset",
                       execFn: async () => {
