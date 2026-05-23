@@ -1,21 +1,17 @@
+import { type Mode, type PersonalBest } from "@monkeytype/schemas/shared";
 import { format as formatDate } from "date-fns/format";
-import {
-  type Mode,
-  type Mode2,
-  type PersonalBest,
-} from "@monkeytype/schemas/shared";
 import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 
-import * as DB from "../../db";
 import { getConfig } from "../../config/store";
+import * as DB from "../../db";
 import { pbTablesMode } from "../../states/pb-tables-modal";
-import { getLanguageDisplayString } from "../../utils/strings";
 import { Formatting } from "../../utils/format";
+import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
 
 type PBWithMode2 = PersonalBest & {
-  mode2: Mode2<Mode>;
+  mode2: string;
 };
 
 type PBRow = {
@@ -24,7 +20,7 @@ type PBRow = {
 };
 
 type PBGroup = {
-  mode2: Mode2<Mode>;
+  mode2: string;
   rows: PBRow[];
 };
 
@@ -43,7 +39,7 @@ function buildGroups(mode: Mode): PBGroup[] {
     pbs.forEach((pb) => {
       list.push({
         ...pb,
-        mode2: key as Mode2<Mode>,
+        mode2: key,
       });
     });
   });
@@ -85,9 +81,7 @@ export function PbTablesModal(): JSXElement {
       <table class="border-collapse border-spacing-0 text-text">
         <thead class="sticky -top-8 z-3 bg-bg text-xs text-sub">
           <tr>
-            <td class="px-2 py-2" width="1%">
-              {mode()}
-            </td>
+            <td class="w-[1%] px-2 py-2">{mode()}</td>
             <td class="px-2 py-2 text-right">
               <span>{format().typingSpeedUnit}</span>
               <br />
