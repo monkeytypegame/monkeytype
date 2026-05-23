@@ -23,13 +23,12 @@ type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
 };
 
-type FlatRow = {
+type PBRow = {
   pb: PBWithMode2;
   showMode2: boolean;
-  mode2: string;
 };
 
-function buildRows(mode: Mode): FlatRow[] {
+function buildRows(mode: Mode): PBRow[] {
   const allmode2 = (
     USE_MOCK_PB_DATA
       ? MOCK_PERSONAL_BESTS[mode as "time" | "words"]
@@ -47,20 +46,20 @@ function buildRows(mode: Mode): FlatRow[] {
     });
   });
 
-  const rows: FlatRow[] = [];
+  const rows: PBRow[] = [];
   let currentMode2: string | undefined;
 
   list.forEach((pb) => {
     const showMode2 = currentMode2 !== pb.mode2;
     currentMode2 = pb.mode2;
-    rows.push({ pb, showMode2, mode2: pb.mode2 });
+    rows.push({ pb, showMode2 });
   });
 
   return rows;
 }
 
 export function PbTablesModal(): JSXElement {
-  const [rows, setRows] = createSignal<FlatRow[]>([]);
+  const [rows, setRows] = createSignal<PBRow[]>([]);
   const format = createMemo(() => new Formatting(getConfig));
   const mode = createMemo(() => pbTablesMode());
 
@@ -101,7 +100,7 @@ export function PbTablesModal(): JSXElement {
                 <TableRow>
                   <Show when={row.showMode2} fallback={<TableCell />}>
                     <TableCell class="text-right text-2xl">
-                      {row.mode2}
+                      {row.pb.mode2}
                     </TableCell>
                   </Show>
                   <TableCell class="text-right">
