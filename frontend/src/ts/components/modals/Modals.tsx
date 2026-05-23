@@ -6,6 +6,7 @@ import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
+import { PbTablesModal } from "./PbTablesModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
 import { EditPresetModal } from "./preset/EditPresetModal";
 import { QuoteRateModal } from "./QuoteRateModal";
@@ -31,6 +32,7 @@ export function Modals(): JSXElement {
       <QuoteSearchModal />
       <CustomTestDurationModal />
       <CustomWordAmountModal />
+      <PbTablesModal />
       <ShareTestSettings />
       <MobileTestConfigModal />
       <CookiesModal />

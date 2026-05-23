@@ -7,7 +7,7 @@ import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import * as PbTablesModal from "../../../modals/pb-tables";
+import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
@@ -176,7 +176,7 @@ function PbTable<M extends "time" | "words">(props: {
             balloon={{ text: "Show all personal bests", position: "left" }}
             class="h-full rounded-none rounded-r text-sub hover:text-bg"
             fa={{ icon: "fa-ellipsis-v" }}
-            onClick={() => PbTablesModal.show(props.mode)}
+            onClick={() => showPbTablesModal(props.mode)}
           />
         </div>
       </Show>
