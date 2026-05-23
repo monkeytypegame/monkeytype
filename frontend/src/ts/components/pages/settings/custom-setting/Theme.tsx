@@ -33,7 +33,7 @@ import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
 import {
-  replaceSpacesWithUnderscores,
+  normalizeName,
   replaceUnderscoresWithSpaces,
 } from "../../../../utils/strings";
 import { AnimeSwitch } from "../../../common/anime";
@@ -360,6 +360,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               name: {
                 type: "text",
                 initVal: replaceUnderscoresWithSpaces(props.theme.name),
+                preprocess: normalizeName,
               },
               updateColors: {
                 type: "checkbox",
@@ -376,7 +377,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               }
               editCustomTheme({
                 themeId: props.theme._id,
-                name: replaceSpacesWithUnderscores(name),
+                name,
                 colors: updateColors
                   ? convertThemeToCustomColors(untrack(() => getTheme()))
                   : untrack(() => props.theme.colors),

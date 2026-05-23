@@ -11,6 +11,7 @@ import {
   useTagsLiveQuery,
 } from "../../../../collections/tags";
 import { showSimpleModal } from "../../../../states/simple-modal";
+import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
 import { showAddTagModal } from "../../../modals/AddTagModal";
 import { Setting } from "../Setting";
@@ -72,6 +73,7 @@ export function Tags(): JSXElement {
                         tagName: {
                           type: "text",
                           initVal: tag.name,
+                          preprocess: normalizeName,
                         },
                       },
                       execFn: async ({ tagName }) => {

@@ -16,7 +16,6 @@ export function InputField(props: {
   dir?: "ltr" | "rtl" | "auto";
   maxLength?: number;
   onFocus?: () => void;
-  nativeType?: boolean;
   /**
    * If user inputs empty string the field is resetted to the default value
    */
