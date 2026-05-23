@@ -99,11 +99,8 @@ export function PbTablesModal(): JSXElement {
             {(row) => {
               return (
                 <TableRow>
-                  <Show
-                    when={row.showMode2}
-                    fallback={<TableCell class="bg-bg" />}
-                  >
-                    <TableCell class="sticky top-[calc(1rem-2px)] z-2 bg-bg text-right text-2xl">
+                  <Show when={row.showMode2} fallback={<TableCell />}>
+                    <TableCell class="text-right text-2xl">
                       {row.mode2}
                     </TableCell>
                   </Show>
