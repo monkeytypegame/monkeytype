@@ -383,7 +383,7 @@ export function CustomTextModal(): JSXElement {
         const text = cleanUpText();
         form.setFieldValue("limitWord", `${text.length}`);
         form.setFieldValue("limitTime", "");
-        form.setFieldValue("limitSection", `${text.length}`);
+        form.setFieldValue("limitSection", "");
       }
     });
   };
