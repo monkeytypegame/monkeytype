@@ -1,6 +1,6 @@
-import { type Mode, type PersonalBest } from "@monkeytype/schemas/shared";
-import { format as formatDate } from "date-fns/format";
 import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
+import { format as formatDate } from "date-fns/format";
+import { Mode2, Mode, PersonalBest } from "@monkeytype/schemas/shared";
 
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
@@ -15,7 +15,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
 
 type PBWithMode2 = PersonalBest & {
-  mode2: string;
+  mode2: Mode2<Mode>;
 };
 
 type PBRow = {
@@ -29,23 +29,22 @@ type PBGroup = {
 };
 
 function buildGroups(mode: Mode): PBGroup[] {
-  const allMode2 = (
+  const allmode2 = (
     USE_MOCK_PB_DATA
       ? MOCK_PERSONAL_BESTS[mode]
       : DB.getSnapshot()?.personalBests?.[mode]
   ) as
     | Record<string, PBWithMode2[]>
     | undefined;
-  if (allMode2 === undefined) return [];
+  if (allmode2 === undefined) return [];
 
   const list: PBWithMode2[] = [];
-  Object.keys(allMode2).forEach((key) => {
-    const pbs = [...(allMode2[key] ?? [])].sort((a, b) => b.wpm - a.wpm);
+  Object.keys(allmode2).forEach((key) => {
+    let pbs = allmode2[key] ?? [];
+    pbs = pbs.sort((a, b) => b.wpm - a.wpm);
     pbs.forEach((pb) => {
-      list.push({
-        ...pb,
-        mode2: key,
-      });
+      pb.mode2 = key;
+      list.push(pb);
     });
   });
 
