@@ -28,6 +28,21 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
     }
   }
 
+  // in zen/bailout, cap to adjusted end to remove trailing afk seconds
+  if (endMs !== undefined && (Config.mode === "zen" || bailedOut)) {
+    const lkte = getRawLastKeypressToEndMs();
+    if (lkte < 7000) {
+      endMs -= lkte;
+      // remove step boundaries past the adjusted end
+      while (
+        boundaries.length > 0 &&
+        (boundaries[boundaries.length - 1] as number) > endMs
+      ) {
+        boundaries.pop();
+      }
+    }
+  }
+
   if (endMs !== undefined) {
     const last = boundaries[boundaries.length - 1];
     if (MERGE_LAST_TIMER_BOUNDARY && last !== undefined && endMs - last < 500) {
@@ -422,10 +437,6 @@ export function getWpmHistory(): number[] {
 }
 
 export function getAfkDuration(): number {
-  if (Config.mode === "zen" || bailedOut) {
-    return 0;
-  }
-
   const events = getAllTestEvents();
 
   const timerBoundaries = getTimerBoundaries(events);
