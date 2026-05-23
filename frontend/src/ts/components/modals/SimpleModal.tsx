@@ -48,165 +48,6 @@ type SimpleModalValidators = {
   onChangeAsync?: AsyncValidator;
 };
 
-export function SimpleModal(): JSXElement {
-  const config = simpleModalConfig;
-
-  // untrack prevents tanstack's internal createComputed from
-  // re-running api.update() when config changes, which would
-  // cause a re-render cascade during the modal's show animation.
-  const form = createForm(() => ({
-    defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
-    onSubmit: async ({ value }) => {
-      const schema = config()?.schema as z.Schema;
-      // oxlint-disable-next-line typescript/no-explicit-any
-      const inputs = config()?.inputs as InputsFromSchema<any>;
-      const simpleConfig = config();
-      if (simpleConfig === null) return;
-
-      const converted = Object.fromEntries(
-        Object.entries(value).map(([key, value]) => [
-          key,
-          // @ts-expect-error this is fine
-          // oxlint-disable-next-line typescript/no-unsafe-member-access typescript/no-unsafe-argument
-          convertFn(inputs[key], schema.shape[key])(value as string | boolean),
-        ]),
-      );
-
-      showLoaderBar();
-      try {
-        const res = await simpleConfig.execFn(converted);
-        hideLoaderBar();
-
-        if (res.showNotification !== false) {
-          addNotificationWithLevel(
-            res.message,
-            res.status,
-            res.notificationOptions,
-          );
-        }
-
-        if (res.status === "success" || res.alwaysHide) {
-          hideSimpleModal();
-          res.afterHide?.();
-        }
-      } catch (error) {
-        console.error("Error executing simple modal function:", error);
-        showErrorNotification("An unexpected error occurred", {
-          error,
-        });
-        hideLoaderBar();
-      }
-    },
-    onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
-    },
-  }));
-
-  const resetForm = (): void => {
-    const defaults = getDefaultValues(config()?.inputs);
-    form.update({ ...form.options, defaultValues: defaults });
-    form.reset();
-  };
-
-  const getSchema = (key: string) =>
-    // oxlint-disable-next-line typescript/no-unsafe-member-access
-    config()?.schema?.shape[key] as z.ZodTypeAny;
-
-  return (
-    <AnimatedModal
-      id="SimpleModal"
-      title={config()?.title}
-      focusFirstInput={config()?.focusFirstInput ?? true}
-      beforeShow={resetForm}
-      modalClass={config()?.class}
-    >
-      <form
-        class="grid gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <Show when={config()?.text}>
-          {(text) => (
-            <div
-              class={cn("text-text", config()?.textClass)}
-              {...(config()?.textAllowHtml === true
-                ? { innerHTML: text() }
-                : { textContent: text() })}
-            ></div>
-          )}
-        </Show>
-
-        <Show when={Object.keys(config()?.inputs ?? {}).length > 0}>
-          <div class="grid gap-2">
-            <For each={typedEntries(config()?.inputs ?? {})}>
-              {([key, input]) => {
-                // simplify the type to prevent typescript error
-                // typescript(TS2589): Type instantiation is excessively deep and possibly infinite.
-                const Field = form.Field as (props: {
-                  name: string;
-                  validators: SimpleModalValidators | undefined;
-                  children: (field: Accessor<AnyFieldApi>) => JSX.Element;
-                }) => JSXElement;
-
-                return (
-                  <Show when={!input.hidden}>
-                    <Field
-                      name={key}
-                      validators={getValidators(input, getSchema(key))}
-                      children={(field) => (
-                        <Show
-                          when={
-                            input.type !== "checkbox" &&
-                            input.label !== undefined &&
-                            input.label !== ""
-                          }
-                          fallback={
-                            <FieldInput
-                              field={field}
-                              input={input}
-                              schema={getSchema(key)}
-                            />
-                          }
-                        >
-                          <label class="grid w-full grid-cols-[1fr_2fr] items-center gap-2 text-sub">
-                            <div>{input.label}</div>
-
-                            <FieldInput
-                              field={field}
-                              input={input}
-                              schema={getSchema(key)}
-                            />
-                          </label>
-                        </Show>
-                      )}
-                    />
-                  </Show>
-                );
-              }}
-            </For>
-          </div>
-        </Show>
-
-        <Show when={config()?.buttonText !== undefined}>
-          <SubmitButton
-            form={form}
-            variant="button"
-            class="w-full"
-            text={config()?.buttonText}
-            skipUnchangedCheck={
-              config()?.buttonAlwaysEnabled === true ||
-              Object.keys(config()?.inputs ?? {}).length === 0
-            }
-          />
-        </Show>
-      </form>
-    </AnimatedModal>
-  );
-}
-
 function getDefaultValues(
   // oxlint-disable-next-line typescript/no-explicit-any
   inputs: InputsFromSchema<any> | undefined,
@@ -369,6 +210,165 @@ function FieldInput(props: {
         />
       </Match>
     </Switch>
+  );
+}
+
+export function SimpleModal(): JSXElement {
+  const config = simpleModalConfig;
+
+  // untrack prevents tanstack's internal createComputed from
+  // re-running api.update() when config changes, which would
+  // cause a re-render cascade during the modal's show animation.
+  const form = createForm(() => ({
+    defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
+    onSubmit: async ({ value }) => {
+      const schema = config()?.schema as z.Schema;
+      // oxlint-disable-next-line typescript/no-explicit-any
+      const inputs = config()?.inputs as InputsFromSchema<any>;
+      const simpleConfig = config();
+      if (simpleConfig === null) return;
+
+      const converted = Object.fromEntries(
+        Object.entries(value).map(([key, value]) => [
+          key,
+          // @ts-expect-error this is fine
+          // oxlint-disable-next-line typescript/no-unsafe-member-access typescript/no-unsafe-argument
+          convertFn(inputs[key], schema.shape[key])(value as string | boolean),
+        ]),
+      );
+
+      showLoaderBar();
+      try {
+        const res = await simpleConfig.execFn(converted);
+        hideLoaderBar();
+
+        if (res.showNotification !== false) {
+          addNotificationWithLevel(
+            res.message,
+            res.status,
+            res.notificationOptions,
+          );
+        }
+
+        if (res.status === "success" || res.alwaysHide) {
+          hideSimpleModal();
+          res.afterHide?.();
+        }
+      } catch (error) {
+        console.error("Error executing simple modal function:", error);
+        showErrorNotification("An unexpected error occurred", {
+          error,
+        });
+        hideLoaderBar();
+      }
+    },
+    onSubmitInvalid: () => {
+      showNoticeNotification("Please fill in all fields");
+    },
+  }));
+
+  const resetForm = (): void => {
+    const defaults = getDefaultValues(config()?.inputs);
+    form.update({ ...form.options, defaultValues: defaults });
+    form.reset();
+  };
+
+  const getSchema = (key: string) =>
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    config()?.schema?.shape[key] as z.ZodTypeAny;
+
+  return (
+    <AnimatedModal
+      id="SimpleModal"
+      title={config()?.title}
+      focusFirstInput={config()?.focusFirstInput ?? true}
+      beforeShow={resetForm}
+      modalClass={config()?.class}
+    >
+      <form
+        class="grid gap-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <Show when={config()?.text}>
+          {(text) => (
+            <div
+              class={cn("text-text", config()?.textClass)}
+              {...(config()?.textAllowHtml === true
+                ? { innerHTML: text() }
+                : { textContent: text() })}
+            ></div>
+          )}
+        </Show>
+
+        <Show when={Object.keys(config()?.inputs ?? {}).length > 0}>
+          <div class="grid gap-2">
+            <For each={typedEntries(config()?.inputs ?? {})}>
+              {([key, input]) => {
+                // simplify the type to prevent typescript error
+                // typescript(TS2589): Type instantiation is excessively deep and possibly infinite.
+                const Field = form.Field as (props: {
+                  name: string;
+                  validators: SimpleModalValidators | undefined;
+                  children: (field: Accessor<AnyFieldApi>) => JSX.Element;
+                }) => JSXElement;
+
+                return (
+                  <Show when={!input.hidden}>
+                    <Field
+                      name={key}
+                      validators={getValidators(input, getSchema(key))}
+                      children={(field) => (
+                        <Show
+                          when={
+                            input.type !== "checkbox" &&
+                            input.label !== undefined &&
+                            input.label !== ""
+                          }
+                          fallback={
+                            <FieldInput
+                              field={field}
+                              input={input}
+                              schema={getSchema(key)}
+                            />
+                          }
+                        >
+                          <label class="grid w-full grid-cols-[1fr_2fr] items-center gap-2 text-sub">
+                            <div>{input.label}</div>
+
+                            <FieldInput
+                              field={field}
+                              input={input}
+                              schema={getSchema(key)}
+                            />
+                          </label>
+                        </Show>
+                      )}
+                    />
+                  </Show>
+                );
+              }}
+            </For>
+          </div>
+        </Show>
+
+        <Show when={config()?.buttonText !== undefined}>
+          <SubmitButton
+            form={form}
+            variant="button"
+            class="w-full"
+            text={config()?.buttonText}
+            skipUnchangedCheck={
+              config()?.buttonAlwaysEnabled === true ||
+              Object.keys(config()?.inputs ?? {}).length === 0
+            }
+          />
+        </Show>
+      </form>
+    </AnimatedModal>
   );
 }
 
