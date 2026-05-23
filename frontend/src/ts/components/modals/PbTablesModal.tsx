@@ -72,7 +72,7 @@ export function PbTablesModal(): JSXElement {
         setRows(buildRows(mode()));
       }}
     >
-      <Table class="border-collapse text-text">
+      <Table>
         <TableHeader class="sticky -top-8 z-3 bg-bg text-xs">
           <TableRow>
             <TableHead class="w-[1%]">{mode()}</TableHead>
@@ -97,9 +97,6 @@ export function PbTablesModal(): JSXElement {
         <TableBody>
           <For each={rows()}>
             {(row) => {
-              const date = () =>
-                row.pb.timestamp ? new Date(row.pb.timestamp) : undefined;
-
               return (
                 <TableRow>
                   <Show
@@ -147,26 +144,19 @@ export function PbTablesModal(): JSXElement {
                   </TableCell>
                   <TableCell class="text-right">
                     <Show
-                      when={date() !== undefined}
+                      when={row.pb.timestamp}
                       fallback={
                         <>
-                          -
-                          <br />
+                          -<br />
                           <span class="opacity-50">-</span>
                         </>
                       }
                     >
-                      <Show when={date()}>
-                        {(safeDate) => (
-                          <>
-                            {formatDate(safeDate(), "dd MMM yyyy")}
-                            <br />
-                            <div class="opacity-50">
-                              {formatDate(safeDate(), "HH:mm")}
-                            </div>
-                          </>
-                        )}
-                      </Show>
+                      {formatDate(row.pb.timestamp, "dd MMM yyyy")}
+                      <br />
+                      <div class="opacity-50">
+                        {formatDate(row.pb.timestamp, "HH:mm")}
+                      </div>
                     </Show>
                   </TableCell>
                 </TableRow>
