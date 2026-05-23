@@ -15,15 +15,91 @@ import {
   ValidationOptions,
 } from "./input-validation";
 import { ElementWithUtils, qsr } from "../utils/dom";
-import { ValidationResult } from "../types/validation";
-import {
-  SimpleModalConfig,
-  SimpleModalInput,
-  ExecReturn as BaseExecReturn,
-} from "../states/simple-modal";
+import { Validation, ValidationResult } from "../types/validation";
 
+import { ExecReturn as BaseExecReturn } from "../states/simpler-modal";
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
+type CommonInput<TType, TValue> = {
+  type: TType;
+  name?: string;
+  initVal?: TValue;
+  placeholder?: string;
+  hidden?: boolean;
+  disabled?: boolean;
+  optional?: boolean;
+  label?: string;
+  class?: string;
+  oninput?: (event: Event) => void;
+  /**
+   * Validate the input value and indicate the validation result next to the input.
+   * If the schema is defined it is always checked first.
+   * Only if the schema validaton is passed or missing the `isValid` method is called.
+   */
+  validation?: Validation<string>;
+};
+
+export type TextInput = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"text", string>;
+export type TextArea = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"textarea", string>;
+export type PasswordInput = CommonInput<"password", string>;
+type EmailInput = CommonInput<"email", string>;
+
+type RangeInput = {
+  min: number;
+  max: number;
+  step?: number;
+} & CommonInput<"range", number>;
+
+type DateTimeInput = {
+  min?: Date;
+  max?: Date;
+} & CommonInput<"datetime-local", Date>;
+
+type DateInput = {
+  min?: Date;
+  max?: Date;
+} & CommonInput<"date", Date>;
+
+type CheckboxInput = {
+  label: string;
+  placeholder?: never;
+  description?: string;
+} & CommonInput<"checkbox", boolean>;
+
+type NumberInput = {
+  min?: number;
+  max?: number;
+} & CommonInput<"number", number>;
+
+type SimpleModalInput =
+  | TextInput
+  | TextArea
+  | PasswordInput
+  | EmailInput
+  | RangeInput
+  | DateTimeInput
+  | DateInput
+  | CheckboxInput
+  | NumberInput;
+
+type SimpleModalConfig = {
+  class?: string;
+  title: string;
+  inputs?: SimpleModalInput[];
+  text?: string;
+  textClass?: string;
+  textAllowHtml?: boolean;
+  buttonText?: string;
+  buttonAlwaysEnabled?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
+  execFn: (...inputValues: string[]) => Promise<ExecReturn>;
+};
 export type ExecReturn = BaseExecReturn & {
   hideOptions?: HideOptions;
 };
