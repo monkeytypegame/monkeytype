@@ -147,31 +147,54 @@ export function getLastKeypressToEndMs(): number {
   return getRawLastKeypressToEndMs();
 }
 
-export function getKeypressesPerSecond(): number[] {
+function countPerInterval(predicate: (event: TestEvent) => boolean): {
+  counts: number[];
+  boundaries: number[];
+} {
   const events = getAllTestEvents();
-  const timerBoundaries = getTimerBoundaries(events);
+  const boundaries = getTimerBoundaries(events);
 
-  const keypresses: number[] = [];
+  const counts: number[] = [];
   let eventIndex = 0;
 
-  for (const boundary of timerBoundaries) {
+  for (const boundary of boundaries) {
     let count = 0;
     while (eventIndex < events.length) {
       const event = events[eventIndex];
       if (event === undefined) break;
       if (event.testMs > boundary) break;
 
-      if (event.type === "input" && event.data.inputType === "insertText") {
+      if (predicate(event)) {
         count++;
       }
       eventIndex++;
     }
-    keypresses.push(count);
+    counts.push(count);
   }
 
-  scaleLastInterval(keypresses, timerBoundaries);
+  return { counts, boundaries };
+}
 
-  return keypresses;
+export function getKeypressesPerSecond(): number[] {
+  const { counts, boundaries } = countPerInterval(
+    (e) => e.type === "input" && e.data.inputType === "insertText",
+  );
+  scaleLastInterval(counts, boundaries);
+  return counts;
+}
+
+export function getRawPerSecond(): number[] {
+  const { counts, boundaries } = countPerInterval(
+    (e) => e.type === "input" && e.data.inputType === "insertText",
+  );
+
+  let prevBoundary = 0;
+  return counts.map((kps, i) => {
+    const boundary = boundaries[i] as number;
+    const intervalSeconds = (boundary - prevBoundary) / 1000;
+    prevBoundary = boundary;
+    return Math.round(calculateWpm(kps, intervalSeconds));
+  });
 }
 
 export function getTestDurationMs(): number {
@@ -345,35 +368,14 @@ export function getKeypressOverlap(): number {
 }
 
 export function getErrorCountHistory(): number[] {
-  //gets a history of error counts per second, errors from previous seconds are not carried over
-  const events = getAllTestEvents();
-  const timerBoundaries = getTimerBoundaries(events);
-
-  const errorCounts: number[] = [];
-  let eventIndex = 0;
-
-  for (const boundary of timerBoundaries) {
-    let count = 0;
-    while (eventIndex < events.length) {
-      const event = events[eventIndex];
-      if (event === undefined) break;
-      if (event.testMs > boundary) break;
-
-      if (
-        event.type === "input" &&
-        event.data.inputType === "insertText" &&
-        !event.data.correct
-      ) {
-        count++;
-      }
-      eventIndex++;
-    }
-    errorCounts.push(count);
-  }
-
-  scaleLastInterval(errorCounts, timerBoundaries);
-
-  return errorCounts;
+  const { counts, boundaries } = countPerInterval(
+    (e) =>
+      e.type === "input" &&
+      e.data.inputType === "insertText" &&
+      !e.data.correct,
+  );
+  scaleLastInterval(counts, boundaries);
+  return counts;
 }
 
 export function getWpmHistory(): number[] {
@@ -435,29 +437,8 @@ export function getWpmHistory(): number[] {
 }
 
 export function getAfkDuration(): number {
-  const events = getAllTestEvents();
-
-  const timerBoundaries = getTimerBoundaries(events);
-
-  const afk: boolean[] = [];
-  let eventIndex = 0;
-
-  for (const boundary of timerBoundaries) {
-    let count = 0;
-    while (eventIndex < events.length) {
-      const event = events[eventIndex];
-      if (event === undefined) break;
-      if (event.testMs > boundary) break;
-
-      if (event.type === "keydown") {
-        count++;
-      }
-      eventIndex++;
-    }
-    afk.push(count === 0);
-  }
-
-  return afk.reduce((total, isAfk) => total + (isAfk ? 1 : 0), 0);
+  const { counts } = countPerInterval((e) => e.type === "keydown");
+  return counts.reduce((total, c) => total + (c === 0 ? 1 : 0), 0);
 }
 
 export function getKeypressDurations(): number[] {

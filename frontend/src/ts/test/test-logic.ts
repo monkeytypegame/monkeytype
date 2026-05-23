@@ -83,7 +83,7 @@ import {
   forceReleaseAllKeys,
   getKeypressDurations,
   getChars,
-  getKeypressesPerSecond,
+  getRawPerSecond,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
   getTestDurationMs,
@@ -930,9 +930,8 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     console.debug("Mode is not custom - rounding to 2. New time: ", duration);
   }
 
-  const keypressesPerSecond = getKeypressesPerSecond();
+  const rawPerSecond = getRawPerSecond();
   const afkDuration = getAfkDuration();
-  const rawPerSecond = keypressesPerSecond.map((kps) => calculateWpm(kps, 1));
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
   let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
