@@ -175,14 +175,6 @@ function countPerInterval(predicate: (event: TestEvent) => boolean): {
   return { counts, boundaries };
 }
 
-export function getKeypressesPerSecond(): number[] {
-  const { counts, boundaries } = countPerInterval(
-    (e) => e.type === "input" && e.data.inputType === "insertText",
-  );
-  scaleLastInterval(counts, boundaries);
-  return counts;
-}
-
 export function getRawPerSecond(): number[] {
   const { counts, boundaries } = countPerInterval(
     (e) => e.type === "input" && e.data.inputType === "insertText",
