@@ -3,6 +3,7 @@ import { format as dateFormat } from "date-fns/format";
 import {
   Accessor,
   For,
+  JSX,
   JSXElement,
   Match,
   Show,
@@ -142,12 +143,18 @@ export function SimplerModal(): JSXElement {
           <div class="grid gap-2">
             <For each={typedEntries(config()?.inputs ?? {})}>
               {([key, input]) => {
-                const name: string = key;
+                // simplify the type to prevent typescript error
+                // typescript(TS2589): Type instantiation is excessively deep and possibly infinite.
+                const Field = form.Field as (props: {
+                  name: string;
+                  validators: SimpleModalValidators | undefined;
+                  children: (field: Accessor<AnyFieldApi>) => JSX.Element;
+                }) => JSXElement;
 
                 return (
                   <Show when={!input.hidden}>
-                    <form.Field
-                      name={name}
+                    <Field
+                      name={key}
                       validators={getValidators(input, getSchema(key))}
                       children={(field) => (
                         <Show
@@ -441,7 +448,7 @@ function getMinAndMax(schema: ZodTypeAny): {
 }
 function getDateMinAndMax(
   schema: ZodTypeAny,
-  format: (val: Date | undefined) => string,
+  format: (val: Date | undefined) => string | undefined,
 ): {
   min?: string | undefined;
   max?: string | undefined;
