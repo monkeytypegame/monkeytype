@@ -7,6 +7,10 @@ import * as DB from "../../db";
 import { pbTablesMode } from "../../states/pb-tables-modal";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
+import {
+  MOCK_PERSONAL_BESTS,
+  USE_MOCK_PB_DATA,
+} from "./PbTablesModal.mock";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
 
@@ -25,10 +29,11 @@ type PBGroup = {
 };
 
 function buildGroups(mode: Mode): PBGroup[] {
-  const snapshot = DB.getSnapshot();
-  if (snapshot === undefined) return [];
-
-  const allMode2 = snapshot.personalBests?.[mode] as
+  const allMode2 = (
+    USE_MOCK_PB_DATA
+      ? MOCK_PERSONAL_BESTS[mode]
+      : DB.getSnapshot()?.personalBests?.[mode]
+  ) as
     | Record<string, PBWithMode2[]>
     | undefined;
   if (allMode2 === undefined) return [];
