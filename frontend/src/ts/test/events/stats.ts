@@ -8,7 +8,7 @@ import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
-import { activeWordIndex } from "../test-state";
+import { activeWordIndex, bailedOut } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
@@ -55,6 +55,8 @@ function scaleLastInterval(values: number[], boundaries: number[]): void {
 }
 
 export function getStartToFirstKeypressMs(): number {
+  if (Config.mode === "zen") return 0;
+
   const events = getAllTestEvents();
 
   let firstKeypress: number | undefined;
@@ -86,7 +88,9 @@ export function getStartToFirstKeypressMs(): number {
   return calc < 0 ? 0 : calc;
 }
 
-export function getLastKeypressToEndMs(): number {
+// raw version is needed internally by getTestDurationMs to adjust
+// duration in zen/bailout — the public version returns 0 for zen
+function getRawLastKeypressToEndMs(): number {
   const events = getAllTestEvents();
 
   let lastKeypress: number | undefined;
@@ -123,6 +127,11 @@ export function getLastKeypressToEndMs(): number {
 
   const calc = end - lastKeypress;
   return calc < 0 ? 0 : calc;
+}
+
+export function getLastKeypressToEndMs(): number {
+  if (Config.mode === "zen") return 0;
+  return getRawLastKeypressToEndMs();
 }
 
 export function getKeypressesPerSecond(): number[] {
@@ -179,6 +188,13 @@ export function getTestDurationMs(): number {
     throw new Error("No end event found");
   }
 
+  if (Config.mode === "zen" || bailedOut) {
+    const lkte = getRawLastKeypressToEndMs();
+    if (lkte < 7000) {
+      end -= lkte;
+    }
+  }
+
   return end;
 }
 
@@ -188,6 +204,7 @@ export function getChars(final: boolean): CharCounts {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   const shouldCountPartialLastWord = !final || (final && isTimedTest);
+  const isZen = Config.mode === "zen";
 
   let allCorrect = 0;
   let correctWord = 0;
@@ -206,8 +223,9 @@ export function getChars(final: boolean): CharCounts {
       simulatedInput = simulatedInput.trimEnd();
     }
 
-    const targetWord =
-      TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+    const targetWord = isZen
+      ? simulatedInput
+      : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
 
     const charCounts = countChars(
       simulatedInput,
@@ -385,7 +403,9 @@ export function getWpmHistory(): number[] {
 
       const trimmed = lastWord ? input.trimEnd() : input;
       const targetWord =
-        TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+        Config.mode === "zen"
+          ? trimmed
+          : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
       totalCorrect += countChars(
         trimmed,
         targetWord,
@@ -402,6 +422,10 @@ export function getWpmHistory(): number[] {
 }
 
 export function getAfkDuration(): number {
+  if (Config.mode === "zen" || bailedOut) {
+    return 0;
+  }
+
   const events = getAllTestEvents();
 
   const timerBoundaries = getTimerBoundaries(events);
