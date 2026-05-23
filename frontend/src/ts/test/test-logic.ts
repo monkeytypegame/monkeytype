@@ -80,10 +80,9 @@ import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
   forceReleaseAllKeys,
-  logEventsDataToTheConsole,
   resetTestEvents,
-  testing,
   getKeypressDurations,
+  logEventsDataToTheConsoleTable,
 } from "./events/data";
 import {
   getChars,
@@ -1075,8 +1074,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   forceReleaseAllKeys();
 
-  logEventsDataToTheConsole();
-  testing();
+  logEventsDataToTheConsoleTable();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {

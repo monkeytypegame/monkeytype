@@ -175,10 +175,6 @@ export function resetTestEvents(): void {
   cachedAllEvents = undefined;
 }
 
-export function testing(): void {
-  // getAllTestEvents().
-}
-
 export function getInputEvents(): InputEvent[] {
   return getAllTestEvents().filter(
     (event): event is InputEvent => event.type === "input",
