@@ -11,6 +11,7 @@ import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
+import { PbTablesModal } from "../../modals/PbTablesModal";
 import { ActivityCalendar } from "./ActivityCalendar";
 import { UserDetails } from "./UserDetails";
 
@@ -56,6 +57,9 @@ export function UserProfile(props: {
         testActivity={props.profile.testActivity}
         isAccountPage={props.isAccountPage}
       />
+      <Show when={props.isAccountPage === true}>
+        <PbTablesModal />
+      </Show>
     </div>
   );
 }
