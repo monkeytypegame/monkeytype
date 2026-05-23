@@ -78,7 +78,7 @@ export function PbTablesModal(): JSXElement {
   return (
     <AnimatedModal
       id="PbTables"
-      modalClass="max-w-full gap-0 overflow-y-scroll p-8"
+      modalClass="max-w-full gap-0 overflow-y-scroll overscroll-y-contain p-8"
       beforeShow={() => {
         setGroups(buildGroups(mode()));
       }}
