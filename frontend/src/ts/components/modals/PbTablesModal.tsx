@@ -1,76 +1,66 @@
-import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
-import { format as formatDate } from "date-fns/format";
 import { Mode2, Mode, PersonalBest } from "@monkeytype/schemas/shared";
+import { format as formatDate } from "date-fns/format";
+import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
 import { pbTablesMode } from "../../states/pb-tables-modal";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
-import {
-  MOCK_PERSONAL_BESTS,
-  USE_MOCK_PB_DATA,
-} from "./PbTablesModal.mock";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "../ui/table/Table";
+import { MOCK_PERSONAL_BESTS, USE_MOCK_PB_DATA } from "./PbTablesModal.mock";
 
 type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
 };
 
-type PBRow = {
-  rowClass: "odd" | "even";
+type FlatRow = {
   pb: PBWithMode2;
-};
-
-type PBGroup = {
+  showMode2: boolean;
   mode2: string;
-  rows: PBRow[];
 };
 
-function buildGroups(mode: Mode): PBGroup[] {
+function buildRows(mode: Mode): FlatRow[] {
   const allmode2 = (
     USE_MOCK_PB_DATA
-      ? MOCK_PERSONAL_BESTS[mode]
+      ? MOCK_PERSONAL_BESTS[mode as "time" | "words"]
       : DB.getSnapshot()?.personalBests?.[mode]
-  ) as
-    | Record<string, PBWithMode2[]>
-    | undefined;
+  ) as Record<string, PBWithMode2[]> | undefined;
   if (allmode2 === undefined) return [];
 
   const list: PBWithMode2[] = [];
   Object.keys(allmode2).forEach((key) => {
     let pbs = allmode2[key] ?? [];
-    pbs = pbs.sort((a, b) => b.wpm - a.wpm);
+    pbs = [...pbs].sort((a, b) => b.wpm - a.wpm);
     pbs.forEach((pb) => {
       pb.mode2 = key;
       list.push(pb);
     });
   });
 
-  const groups: PBGroup[] = [];
-  let currentGroup: PBGroup | undefined;
+  const rows: FlatRow[] = [];
+  let currentMode2: string | undefined;
 
-  list.forEach((pb, index) => {
-    if (currentGroup?.mode2 !== pb.mode2) {
-      currentGroup = {
-        mode2: pb.mode2,
-        rows: [],
-      };
-      groups.push(currentGroup);
-    }
-
-    currentGroup.rows.push({
-      pb,
-      rowClass: index % 2 === 0 ? "odd" : "even",
-    });
+  list.forEach((pb) => {
+    const showMode2 = currentMode2 !== pb.mode2;
+    currentMode2 = pb.mode2;
+    rows.push({ pb, showMode2, mode2: pb.mode2 });
   });
 
-  return groups;
+  return rows;
 }
 
 export function PbTablesModal(): JSXElement {
-  const [groups, setGroups] = createSignal<PBGroup[]>([]);
+  const [rows, setRows] = createSignal<FlatRow[]>([]);
   const format = createMemo(() => new Formatting(getConfig));
   const mode = createMemo(() => pbTablesMode());
 
@@ -79,120 +69,126 @@ export function PbTablesModal(): JSXElement {
       id="PbTables"
       modalClass="max-w-full gap-0 overflow-y-scroll overscroll-y-contain p-8"
       beforeShow={() => {
-        setGroups(buildGroups(mode()));
+        setRows(buildRows(mode()));
       }}
     >
-      <table class="border-collapse border-spacing-0 text-text">
-        <thead class="sticky -top-8 z-3 bg-bg text-xs text-sub">
-          <tr>
-            <td class="w-[1%] px-2 py-2">{mode()}</td>
-            <td class="px-2 py-2 text-right">
-              <span>{format().typingSpeedUnit}</span>
+      <Table class="border-collapse text-text">
+        <TableHeader class="sticky -top-8 z-3 bg-bg text-xs">
+          <TableRow>
+            <TableHead scope="col" class="w-[1%]">
+              {mode()}
+            </TableHead>
+            <TableHead scope="col" class="text-right">
+              {format().typingSpeedUnit}
               <br />
               <span class="opacity-50">accuracy</span>
-            </td>
-            <td class="px-2 py-2 text-right">
+            </TableHead>
+            <TableHead scope="col" class="text-right">
               raw
               <br />
               <span class="opacity-50">consistency</span>
-            </td>
-            <td class="px-2 py-2 text-right">difficulty</td>
-            <td class="px-2 py-2 text-right">language</td>
-            <td class="px-2 py-2 text-center">punctuation</td>
-            <td class="px-2 py-2 text-center">numbers</td>
-            <td class="px-2 py-2 text-right">lazy mode</td>
-            <td class="px-2 py-2 text-right">date</td>
-          </tr>
-        </thead>
-        <For each={groups()}>
-          {(group) => (
-            <tbody class="[clip-path:inset(0)]">
-              <For each={group.rows}>
-                {(row, index) => {
-                  const date = () =>
-                    row.pb.timestamp ? new Date(row.pb.timestamp) : undefined;
-                  const rowBackground =
-                    row.rowClass === "odd" ? "bg-sub-alt" : "bg-bg";
+            </TableHead>
+            <TableHead scope="col" class="text-right">
+              difficulty
+            </TableHead>
+            <TableHead scope="col" class="text-right">
+              language
+            </TableHead>
+            <TableHead scope="col" class="text-center">
+              punctuation
+            </TableHead>
+            <TableHead scope="col" class="text-center">
+              numbers
+            </TableHead>
+            <TableHead scope="col" class="text-right">
+              lazy mode
+            </TableHead>
+            <TableHead scope="col" class="text-right">
+              date
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <For each={rows()}>
+            {(row) => {
+              const date = () =>
+                row.pb.timestamp ? new Date(row.pb.timestamp) : undefined;
 
-                  return (
-                    <tr class={rowBackground}>
-                      <Show
-                        when={index() === 0}
-                        fallback={<td class="px-2 py-2 text-right"></td>}
-                      >
-                        <td
-                          class="sticky top-[calc(1rem-2px)] z-2 px-2 py-2 text-right text-2xl"
-                        >
-                          {group.mode2}
-                        </td>
+              return (
+                <TableRow>
+                  <Show
+                    when={row.showMode2}
+                    fallback={<TableCell class="text-right" />}
+                  >
+                    <TableCell class="sticky top-[calc(1rem-2px)] z-2 text-right text-2xl">
+                      {row.mode2}
+                    </TableCell>
+                  </Show>
+                  <TableCell class="text-right">
+                    {format().typingSpeed(row.pb.wpm)}
+                    <br />
+                    <span class="opacity-50">
+                      {format().accuracy(row.pb.acc)}
+                    </span>
+                  </TableCell>
+                  <TableCell class="text-right">
+                    {format().typingSpeed(row.pb.raw)}
+                    <br />
+                    <span class="opacity-50">
+                      {format().percentage(row.pb.consistency)}
+                    </span>
+                  </TableCell>
+                  <TableCell class="text-right">{row.pb.difficulty}</TableCell>
+                  <TableCell class="text-right">
+                    {row.pb.language
+                      ? getLanguageDisplayString(row.pb.language)
+                      : "-"}
+                  </TableCell>
+                  <TableCell class="text-center">
+                    <Show when={row.pb.punctuation}>
+                      <Fa icon="fa-check" />
+                    </Show>
+                  </TableCell>
+                  <TableCell class="text-center">
+                    <Show when={row.pb.numbers}>
+                      <Fa icon="fa-check" />
+                    </Show>
+                  </TableCell>
+                  <TableCell class="text-right">
+                    <Show when={row.pb.lazyMode}>
+                      <Fa icon="fa-check" />
+                    </Show>
+                  </TableCell>
+                  <TableCell class="text-right">
+                    <Show
+                      when={date() !== undefined}
+                      fallback={
+                        <>
+                          -
+                          <br />
+                          <span class="opacity-50">-</span>
+                        </>
+                      }
+                    >
+                      <Show when={date()}>
+                        {(safeDate) => (
+                          <>
+                            {formatDate(safeDate(), "dd MMM yyyy")}
+                            <br />
+                            <div class="opacity-50">
+                              {formatDate(safeDate(), "HH:mm")}
+                            </div>
+                          </>
+                        )}
                       </Show>
-                      <td class="px-2 py-2 text-right">
-                        {format().typingSpeed(row.pb.wpm)}
-                        <br />
-                        <span class="opacity-50">
-                          {format().accuracy(row.pb.acc)}
-                        </span>
-                      </td>
-                      <td class="px-2 py-2 text-right">
-                        {format().typingSpeed(row.pb.raw)}
-                        <br />
-                        <span class="opacity-50">
-                          {format().percentage(row.pb.consistency)}
-                        </span>
-                      </td>
-                      <td class="px-2 py-2 text-right">{row.pb.difficulty}</td>
-                      <td class="px-2 py-2 text-right">
-                        {row.pb.language
-                          ? getLanguageDisplayString(row.pb.language)
-                          : "-"}
-                      </td>
-                      <td class="px-2 py-2 text-center">
-                        <Show when={row.pb.punctuation}>
-                          <Fa icon="fa-check" />
-                        </Show>
-                      </td>
-                      <td class="px-2 py-2 text-center">
-                        <Show when={row.pb.numbers}>
-                          <Fa icon="fa-check" />
-                        </Show>
-                      </td>
-                      <td class="px-2 py-2 text-right">
-                        <Show when={row.pb.lazyMode}>
-                          <Fa icon="fa-check" />
-                        </Show>
-                      </td>
-                      <td class="px-2 py-2 text-right">
-                        <Show
-                          when={date() !== undefined}
-                          fallback={
-                            <>
-                              -
-                              <br />
-                              <span class="opacity-50">-</span>
-                            </>
-                          }
-                        >
-                          <Show when={date()}>
-                            {(safeDate) => (
-                              <>
-                                {formatDate(safeDate(), "dd MMM yyyy")}
-                                <br />
-                                <div class="opacity-50">
-                                  {formatDate(safeDate(), "HH:mm")}
-                                </div>
-                              </>
-                            )}
-                          </Show>
-                        </Show>
-                      </td>
-                    </tr>
-                  );
-                }}
-              </For>
-            </tbody>
-          )}
-        </For>
-      </table>
+                    </Show>
+                  </TableCell>
+                </TableRow>
+              );
+            }}
+          </For>
+        </TableBody>
+      </Table>
     </AnimatedModal>
   );
 }
