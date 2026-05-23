@@ -222,3 +222,10 @@ export function getInputEventsPerWord(
   }
   return eventsPerWordIndex;
 }
+
+export const __testing = {
+  resetPressedKeys(): void {
+    pressedKeys = new Map();
+    noCodeIndex = 0;
+  },
+};
