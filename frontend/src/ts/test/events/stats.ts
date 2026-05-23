@@ -13,6 +13,8 @@ import { calculateWpm } from "../../utils/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
 
+const MERGE_LAST_TIMER_BOUNDARY = false;
+
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
   let endMs: number | undefined;
@@ -28,8 +30,7 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
 
   if (endMs !== undefined) {
     const last = boundaries[boundaries.length - 1];
-    if (last !== undefined && endMs - last < 500) {
-      // Merge: replace last step with end timestamp
+    if (MERGE_LAST_TIMER_BOUNDARY && last !== undefined && endMs - last < 500) {
       boundaries[boundaries.length - 1] = endMs;
     } else {
       boundaries.push(endMs);
