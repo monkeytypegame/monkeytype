@@ -122,7 +122,7 @@ export function PbTablesModal(): JSXElement {
                         fallback={<td class="px-2 py-2 text-right"></td>}
                       >
                         <td
-                          class={`${rowBackground} sticky top-[calc(1rem-2px)] z-2 px-2 py-2 text-right text-2xl`}
+                          class="sticky top-[calc(1rem-2px)] z-2 px-2 py-2 text-right text-2xl"
                         >
                           {group.mode2}
                         </td>
