@@ -7,7 +7,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
-import { showSimplerModal } from "../../../../states/simpler-modal";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
 
@@ -24,7 +24,7 @@ export function ImportExport(): JSXElement {
         <div class="grid grid-cols-2 gap-2">
           <Button
             onClick={() => {
-              showSimplerModal({
+              showSimpleModal({
                 title: "import settings",
                 class: "min-w-2xl",
                 schema: z.object({ json: z.string() }),
@@ -61,7 +61,7 @@ export function ImportExport(): JSXElement {
                   );
 
                   setTimeout(() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Config JSON",
                       class: "max-w-2xl",
                       schema: z.object({ json: z.string() }),

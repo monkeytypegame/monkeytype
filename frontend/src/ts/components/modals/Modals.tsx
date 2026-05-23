@@ -14,7 +14,6 @@ import { QuoteSearchModal } from "./QuoteSearchModal";
 import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
-import { SimplerModal } from "./SimplerModal";
 import { SupportModal } from "./SupportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
@@ -26,7 +25,6 @@ export function Modals(): JSXElement {
       <RegisterCaptchaModal />
       <SupportModal />
       <SimpleModal />
-      <SimplerModal />
       <CustomTextModal />
       <QuoteRateModal />
       <QuoteReportModal />

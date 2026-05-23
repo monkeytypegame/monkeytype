@@ -10,7 +10,7 @@ import {
   updateTagName,
   useTagsLiveQuery,
 } from "../../../../collections/tags";
-import { showSimplerModal } from "../../../../states/simpler-modal";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { showAddTagModal } from "../../../modals/AddTagModal";
 import { Setting } from "../Setting";
@@ -43,7 +43,7 @@ export function Tags(): JSXElement {
                     icon: "fa-crown",
                   }}
                   onClick={() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Clear personal bests",
                       text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "clear",
@@ -63,7 +63,7 @@ export function Tags(): JSXElement {
                     icon: "fa-pen",
                   }}
                   onClick={() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Edit tag name",
                       buttonText: "save",
                       focusFirstInput: "focusAndSelect",
@@ -93,7 +93,7 @@ export function Tags(): JSXElement {
                     icon: "fa-trash",
                   }}
                   onClick={() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Delete tag",
                       text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "delete",

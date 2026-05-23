@@ -2,7 +2,7 @@ import { JSXElement, Setter, Show } from "solid-js";
 import { z } from "zod";
 
 import { setPage } from "../../../states/leaderboard-selection";
-import { showSimplerModal } from "../../../states/simpler-modal";
+import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -58,7 +58,7 @@ export function Navigation(props: {
       />
       <Button
         onClick={() =>
-          showSimplerModal({
+          showSimpleModal({
             title: "Go to page",
             schema: z.object({
               //not using PageNumberSchema because we don't allow zero here

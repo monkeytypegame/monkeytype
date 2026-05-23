@@ -7,7 +7,7 @@ import {
 import { apply } from "../../../../controllers/preset-controller";
 import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
-import { showSimplerModal } from "../../../../states/simpler-modal";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
 import { Setting } from "../Setting";
 
@@ -49,7 +49,7 @@ export function Presets(): JSXElement {
                     icon: "fa-trash",
                   }}
                   onClick={() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Delete preset",
                       text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
                       buttonText: "delete",

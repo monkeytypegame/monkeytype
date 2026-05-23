@@ -6,7 +6,7 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
-import { showSimplerModal } from "../../../../states/simpler-modal";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
 import { normalizeName } from "../../../../utils/strings";
@@ -165,7 +165,7 @@ export function FontFamily(): JSXElement {
               }
               active={isCustomFont()}
               onClick={() => {
-                showSimplerModal({
+                showSimpleModal({
                   title: "Custom font",
                   text: "Make sure you have the font installed on your computer before applying",
                   buttonText: "apply",

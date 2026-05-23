@@ -17,7 +17,7 @@ import {
 import { ElementWithUtils, qsr } from "../utils/dom";
 import { Validation, ValidationResult } from "../types/validation";
 
-import { ExecReturn as BaseExecReturn } from "../states/simpler-modal";
+import { ExecReturn as BaseExecReturn } from "../states/simple-modal";
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
 type CommonInput<TType, TValue> = {

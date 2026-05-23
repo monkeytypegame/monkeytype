@@ -28,7 +28,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
-import { showSimplerModal } from "../../../../states/simpler-modal";
+import { showSimpleModal } from "../../../../states/simple-modal";
 import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
@@ -123,7 +123,7 @@ export function Theme(): JSXElement {
         <Button
           text="share"
           onClick={() => {
-            showSimplerModal({
+            showSimpleModal({
               title: "Share custom theme",
               schema: z.object({ includeBackground: z.boolean() }),
               inputs: {
@@ -166,7 +166,7 @@ export function Theme(): JSXElement {
                   );
 
                   setTimeout(() => {
-                    showSimplerModal({
+                    showSimpleModal({
                       title: "Custom theme URL",
                       class: "max-w-2xl",
                       schema: z.object({ url: z.string() }),
@@ -350,7 +350,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         )}
         onClick={(e) => {
           e.stopPropagation();
-          showSimplerModal({
+          showSimpleModal({
             title: "Update custom theme",
             schema: z.object({
               name: CustomThemeNameSchema,
@@ -415,7 +415,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         )}
         onClick={(e) => {
           e.stopPropagation();
-          showSimplerModal({
+          showSimpleModal({
             title: "Delete custom theme",
             text: `Are you sure you want to delete the custom theme "${replaceUnderscoresWithSpaces(props.theme.name)}"? This action cannot be undone.`,
             buttonText: "delete",

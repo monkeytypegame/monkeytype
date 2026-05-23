@@ -2,11 +2,11 @@ import { TagNameSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
 import { insertTag } from "../../collections/tags";
-import { showSimplerModal } from "../../states/simpler-modal";
+import { showSimpleModal } from "../../states/simple-modal";
 import { normalizeName } from "../../utils/strings";
 
 export function showAddTagModal(): void {
-  showSimplerModal({
+  showSimpleModal({
     title: "Add new tag",
     buttonText: "add",
     schema: z.object({

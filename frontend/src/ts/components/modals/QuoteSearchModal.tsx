@@ -28,7 +28,7 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 import { showQuoteReportModal } from "../../states/quote-report";
-import { showSimplerModal } from "../../states/simpler-modal";
+import { showSimpleModal } from "../../states/simple-modal";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
@@ -349,7 +349,7 @@ export function QuoteSearchModal(): JSXElement {
   createEffect(
     on(lengthFilter, (lengths) => {
       if (lengths.includes("4") && !hasCustomFilter()) {
-        showSimplerModal({
+        showSimpleModal({
           title: "Enter minimum and maximum number of words",
           buttonText: "save",
           schema: z.object({
