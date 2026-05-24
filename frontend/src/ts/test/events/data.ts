@@ -23,7 +23,7 @@ let cachedAllEvents: TestEvent[] | undefined;
 
 let noCodeIndex = 0;
 let pressedKeys: Map<
-  string,
+  Keycode | "NoCode" | `NoCode${number}`,
   {
     timestamp: number;
   }

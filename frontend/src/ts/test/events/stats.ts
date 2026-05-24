@@ -14,6 +14,7 @@ import { calculateWpm } from "../../utils/numbers";
 import { mean } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
+import { Keycode } from "../../constants/keys";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -245,7 +246,6 @@ export function getChars(final: boolean): CharCounts {
 
     let simulatedInput = getSimulatedInput(events);
 
-    //todo decide if this should be done or not
     if (lastWord) {
       //remove trailing space for last word
       simulatedInput = simulatedInput.trimEnd();
@@ -479,7 +479,7 @@ export function forceReleaseAllKeys(): void {
 
   for (const [key, { timestamp }] of getPressedKeys().entries()) {
     logTestEvent("keyup", timestamp + avg, {
-      code: key,
+      code: key as Keycode | "NoCode" | `NoCode${number}`, //entries is not picking up the type
       ctrl: false,
       shift: false,
       alt: false,
