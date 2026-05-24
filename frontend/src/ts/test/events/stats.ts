@@ -54,20 +54,6 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   return boundaries;
 }
 
-function scaleLastInterval(values: number[], boundaries: number[]): void {
-  if (boundaries.length < 2) return;
-  const last = boundaries[boundaries.length - 1];
-  const secondToLast = boundaries[boundaries.length - 2];
-  if (last === undefined || secondToLast === undefined) return;
-  const lastInterval = last - secondToLast;
-  if (lastInterval < 1000 && lastInterval >= 500) {
-    const timescale = 1000 / lastInterval;
-    values[values.length - 1] = Math.round(
-      (values[values.length - 1] as number) * timescale,
-    );
-  }
-}
-
 export function getStartToFirstKeypressMs(): number {
   if (Config.mode === "zen") return 0;
 
@@ -360,13 +346,12 @@ export function getKeypressOverlap(): number {
 }
 
 export function getErrorCountHistory(): number[] {
-  const { counts, boundaries } = countPerInterval(
+  const { counts } = countPerInterval(
     (e) =>
       e.type === "input" &&
       e.data.inputType === "insertText" &&
       !e.data.correct,
   );
-  scaleLastInterval(counts, boundaries);
   return counts;
 }
 
