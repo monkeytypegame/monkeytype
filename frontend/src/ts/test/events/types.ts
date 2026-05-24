@@ -1,3 +1,4 @@
+import { Keycode } from "../../constants/keys";
 import {
   DeleteInputType,
   InsertInputType,
@@ -18,7 +19,7 @@ export type KeydownEvent = CommonProps<"keydown"> & {
 };
 
 export type KeydownEventData = {
-  code: string;
+  code: Keycode | "NoCode" | `NoCode${number}`;
   ctrl: boolean;
   shift: boolean;
   alt: boolean;
@@ -30,7 +31,7 @@ export type KeyupEvent = CommonProps<"keyup"> & {
 };
 
 export type KeyupEventData = {
-  code: string;
+  code: Keycode | "NoCode" | `NoCode${number}`;
   ctrl: boolean;
   shift: boolean;
   alt: boolean;

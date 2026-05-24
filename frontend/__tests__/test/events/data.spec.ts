@@ -18,12 +18,13 @@ import type {
   KeyupEventData,
   TimerEventData,
 } from "../../../src/ts/test/events/types";
+import { Keycode } from "../../../src/ts/constants/keys";
 
-function keyDown(code = "KeyA"): KeydownEventData {
+function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
   return { code, ctrl: false, shift: false, alt: false, meta: false };
 }
 
-function keyUp(code = "KeyA"): KeyupEventData {
+function keyUp(code: Keycode | "NoCode" = "KeyA"): KeyupEventData {
   return {
     code,
     ctrl: false,
@@ -106,7 +107,7 @@ describe("data.ts", () => {
 
   describe("logTestEvent keydown filtering", () => {
     it("ignores keys not in keysToTrack", () => {
-      logTestEvent("keydown", 1010, keyDown("ControlLeft"));
+      logTestEvent("keydown", 1010, keyDown("Backspace"));
       expect(getAllTestEvents()).toHaveLength(0);
     });
 
@@ -126,7 +127,7 @@ describe("data.ts", () => {
 
   describe("logTestEvent keyup filtering", () => {
     it("ignores keyup for untracked keys", () => {
-      logTestEvent("keyup", 1010, keyUp("ControlLeft"));
+      logTestEvent("keyup", 1010, keyUp("Backspace"));
       expect(getAllTestEvents()).toHaveLength(0);
     });
 

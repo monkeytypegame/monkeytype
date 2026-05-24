@@ -1,7 +1,8 @@
 import { Config } from "../../config/store";
+import { Keycode } from "../../constants/keys";
 import { InputEvent } from "./types";
 
-export const keysToTrack = new Set([
+export const keysToTrack = new Set<Keycode | "NoCode">([
   "NumpadMultiply",
   "NumpadSubtract",
   "NumpadAdd",
@@ -72,7 +73,7 @@ export const keysToTrack = new Set([
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ]);
 
-export function getTestEventCode(event: KeyboardEvent): string {
+export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
     return "Space";
   }
@@ -89,7 +90,7 @@ export function getTestEventCode(event: KeyboardEvent): string {
     return "NoCode";
   }
 
-  return event.code;
+  return event.code as Keycode;
 }
 
 export function getSimulatedInput(events: InputEvent[]): string {

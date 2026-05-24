@@ -37,12 +37,13 @@ import type {
   TimerEventData,
 } from "../../../src/ts/test/events/types";
 import { Config } from "../../../src/ts/config/store";
+import { Keycode } from "../../../src/ts/constants/keys";
 
-function keyDown(code = "KeyA"): KeydownEventData {
+function keyDown(code: Keycode = "KeyA"): KeydownEventData {
   return { code, ctrl: false, shift: false, alt: false, meta: false };
 }
 
-function keyUp(code = "KeyA"): KeyupEventData {
+function keyUp(code: Keycode = "KeyA"): KeyupEventData {
   return {
     code,
     ctrl: false,

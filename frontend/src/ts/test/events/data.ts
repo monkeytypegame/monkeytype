@@ -12,6 +12,7 @@ import {
 } from "./types";
 import { keysToTrack } from "./helpers";
 import { start } from "../test-stats";
+import { Keycode } from "../../constants/keys";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -48,7 +49,7 @@ export function logTestEvent(
   cachedAllEvents = undefined;
 
   if (type === "keydown") {
-    const code = (event as KeydownEvent).data.code;
+    const code = (event as KeydownEvent).data.code as Keycode | "NoCode";
 
     if (!keysToTrack.has(code)) {
       return;
@@ -59,8 +60,7 @@ export function logTestEvent(
       return;
     }
 
-    //todo: move this to input code i think
-    let key = code;
+    let key: Keycode | "NoCode" | `NoCode${number}` = code;
     if (key === "NoCode") {
       key = `NoCode${noCodeIndex}`;
       noCodeIndex++;
@@ -72,7 +72,7 @@ export function logTestEvent(
 
     keydownEvents.push(event as KeydownEvent);
   } else if (type === "keyup") {
-    const code = (event as KeyupEvent).data.code;
+    const code = (event as KeyupEvent).data.code as Keycode | "NoCode";
 
     if (!keysToTrack.has(code)) {
       return;
@@ -83,7 +83,7 @@ export function logTestEvent(
       return;
     }
 
-    let key = code;
+    let key: Keycode | "NoCode" | `NoCode${number}` = code;
     if (key === "NoCode") {
       noCodeIndex--;
       key = `NoCode${noCodeIndex}`;
