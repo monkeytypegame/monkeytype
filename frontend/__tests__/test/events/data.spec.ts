@@ -14,7 +14,9 @@ import {
 } from "../../../src/ts/test/events/data";
 import type {
   InputEventData,
+  KeydownEvent,
   KeydownEventData,
+  KeyupEvent,
   KeyupEventData,
   TimerEventData,
 } from "../../../src/ts/test/events/types";
@@ -146,15 +148,41 @@ describe("data.ts", () => {
       expect(events).toHaveLength(2);
     });
 
-    // NoCode keyups are silently dropped because pressedKeys stores
-    // "NoCode0"/"NoCode1" but the keyup check looks for "NoCode"
-    it("drops NoCode keyups due to key name mismatch", () => {
+    it("tracks NoCode keyup after keydown", () => {
       logTestEvent("keydown", 1010, keyDown("NoCode"));
       logTestEvent("keyup", 1020, keyUp("NoCode"));
 
       const events = getAllTestEvents();
-      expect(events).toHaveLength(1);
+      expect(events).toHaveLength(2);
       expect(events[0]!.type).toBe("keydown");
+      expect(events[1]!.type).toBe("keyup");
+    });
+
+    it("stores indexed code on keydown events", () => {
+      logTestEvent("keydown", 1010, keyDown("NoCode"));
+      logTestEvent("keydown", 1020, keyDown("NoCode"));
+
+      const events = getAllTestEvents() as KeydownEvent[];
+      expect(events[0]!.data.code).toBe("NoCode0");
+      expect(events[1]!.data.code).toBe("NoCode1");
+    });
+
+    it("stores matching indexed code on keyup events", () => {
+      logTestEvent("keydown", 1010, keyDown("NoCode"));
+      logTestEvent("keydown", 1020, keyDown("NoCode"));
+      logTestEvent("keyup", 1030, keyUp("NoCode"));
+      logTestEvent("keyup", 1040, keyUp("NoCode"));
+
+      const events = getAllTestEvents();
+      // keyups are LIFO — second keydown (NoCode1) is released first
+      expect((events[2] as KeyupEvent).data.code).toBe("NoCode1");
+      expect((events[3] as KeyupEvent).data.code).toBe("NoCode0");
+    });
+
+    it("ignores NoCode keyup when no matching keydown exists", () => {
+      logTestEvent("keyup", 1010, keyUp("NoCode"));
+
+      expect(getAllTestEvents()).toHaveLength(0);
     });
   });
 

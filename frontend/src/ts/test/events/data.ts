@@ -38,18 +38,11 @@ export function logTestEvent(
     | TimerEventData
     | InputEventData,
 ): void {
-  let event: Omit<TestEvent, "testMs"> = {
-    type,
-    ms: now,
-    data: eventData,
-  };
-
-  console.debug("logging test event", event);
-
   cachedAllEvents = undefined;
 
   if (type === "keydown") {
-    const code = (event as KeydownEvent).data.code as Keycode | "NoCode";
+    const data = eventData as KeydownEventData;
+    const code = data.code as Keycode | "NoCode";
 
     if (!keysToTrack.has(code)) {
       return;
@@ -70,16 +63,17 @@ export function logTestEvent(
       timestamp: now,
     });
 
-    keydownEvents.push(event as KeydownEvent);
+    keydownEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: { ...data, code: key },
+    });
   } else if (type === "keyup") {
-    const code = (event as KeyupEvent).data.code as Keycode | "NoCode";
+    const data = eventData as KeyupEventData;
+    const code = data.code as Keycode | "NoCode";
 
     if (!keysToTrack.has(code)) {
-      return;
-    }
-
-    if (!pressedKeys.has(code)) {
-      //not pressed - ignore
       return;
     }
 
@@ -89,13 +83,33 @@ export function logTestEvent(
       key = `NoCode${noCodeIndex}`;
     }
 
+    if (!pressedKeys.has(key)) {
+      //not pressed - ignore
+      return;
+    }
+
     pressedKeys.delete(key);
 
-    keyupEvents.push(event as KeyupEvent);
+    keyupEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: { ...data, code: key },
+    });
   } else if (type === "timer") {
-    timerEvents.push(event as TimerEvent);
+    timerEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: eventData as TimerEventData,
+    });
   } else if (type === "input") {
-    inputEvents.push(event as InputEvent);
+    inputEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: eventData as InputEventData,
+    });
   }
 }
 
