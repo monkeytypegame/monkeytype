@@ -67,7 +67,7 @@ export function getStartToFirstKeypressMs(): number {
       break;
     }
 
-    if (firstKeypress === undefined && event.type === "input") {
+    if (firstKeypress === undefined && event.type === "keydown") {
       firstKeypress = event.testMs;
     }
 
@@ -108,7 +108,7 @@ function getRawLastKeypressToEndMs(): number {
       break;
     }
 
-    if (lastKeypress === undefined && event.type === "input") {
+    if (lastKeypress === undefined && event.type === "keydown") {
       lastKeypress = event.testMs;
     }
 
