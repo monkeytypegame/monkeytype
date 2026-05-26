@@ -213,12 +213,12 @@ export function getTestDurationMs(): number {
   return end;
 }
 
-export function getChars(final: boolean): CharCounts {
+export function getChars(): CharCounts {
   const eventsPerWordIndex = getInputEventsPerWord();
   const isTimedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  const shouldCountPartialLastWord = !final || (final && isTimedTest);
+  const shouldCountPartialLastWord = isTimedTest;
   const isZen = Config.mode === "zen";
 
   let allCorrect = 0;

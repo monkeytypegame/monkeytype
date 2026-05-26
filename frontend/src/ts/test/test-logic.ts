@@ -900,7 +900,7 @@ function buildCompletedEvent(
 window.buildCompletedEvent2 = buildCompletedEvent2;
 
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
-  const chars = getChars(true);
+  const chars = getChars();
 
   //tags
   const activeTagsIds: string[] = __nonReactive
