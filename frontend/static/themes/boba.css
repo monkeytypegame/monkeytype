@@ -1,6 +1,6 @@
 /* ==========================================================================
    Boba (Bubble Tea) Theme O3O
-   A cozy, milk-tea inspired palette with dark tapioca contrast. 
+   A cozy, milk-tea inspired palette with dark tapioca contrast. :)
    ========================================================================== */
 
 :root {
@@ -14,27 +14,7 @@
   --caret-color: #c39b7d;
 }
 
-/* Make the logo match the two-tone brown sugar style */
-header [data-ui-element="logoText"] {
-  background: linear-gradient(
-    90deg,
-    var(--text-color) 64%,
-    var(--main-color) 36%
-  );
-  background-clip: text;
-  color: transparent;
-  padding-bottom: 0.1em;
-  line-height: 1;
-}
-
-[data-ui-element="logoSubtext"] {
-  margin-top: 0em;
-}
-
-header [data-ui-element="logo"] svg {
-  color: var(--text-color);
-  padding-bottom: 0.05em;
-}
+/* removed the logo changes 
 
 /* --- Navigation Links & Hover states --- */
 [data-nav-item] {
