@@ -4,7 +4,14 @@ import {
   InsertInputType,
 } from "../../input/helpers/input-type";
 
-export type TestEventType = "keydown" | "keyup" | "input" | "timer";
+export type TestEventType =
+  | "keydown"
+  | "keyup"
+  | "input"
+  | "timer"
+  | "compositionStart"
+  | "compositionUpdate"
+  | "compositionEnd";
 
 type CommonProps<T extends TestEventType> = {
   type: T;
@@ -12,7 +19,22 @@ type CommonProps<T extends TestEventType> = {
   testMs: number;
 };
 
-export type TestEvent = KeydownEvent | KeyupEvent | TimerEvent | InputEvent;
+export type TestEvent =
+  | KeydownEvent
+  | KeyupEvent
+  | TimerEvent
+  | InputEvent
+  | CompositionStartTestEvent
+  | CompositionUpdateTestEvent
+  | CompositionEndTestEvent;
+
+export type TestEventData =
+  | KeydownEventData
+  | KeyupEventData
+  | TimerEventData
+  | InputEventData
+  | CompositionUpdateTestEventData
+  | CompositionEndTestEventData;
 
 export type KeydownEvent = CommonProps<"keydown"> & {
   data: KeydownEventData;
@@ -74,3 +96,23 @@ export type InputEventData = {
       inputType: DeleteInputType;
     }
 );
+
+export type CompositionStartTestEvent = CommonProps<"compositionStart"> & {
+  data?: undefined;
+};
+
+export type CompositionUpdateTestEvent = CommonProps<"compositionUpdate"> & {
+  data: CompositionUpdateTestEventData;
+};
+
+export type CompositionUpdateTestEventData = {
+  data: string;
+};
+
+export type CompositionEndTestEvent = CommonProps<"compositionEnd"> & {
+  data: CompositionEndTestEventData;
+};
+
+export type CompositionEndTestEventData = {
+  data: string;
+};

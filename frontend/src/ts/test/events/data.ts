@@ -1,4 +1,9 @@
 import {
+  CompositionEndTestEvent,
+  CompositionEndTestEventData,
+  CompositionStartTestEvent,
+  CompositionUpdateTestEvent,
+  CompositionUpdateTestEventData,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -6,6 +11,7 @@ import {
   KeyupEvent,
   KeyupEventData,
   TestEvent,
+  TestEventData,
   TestEventType,
   TimerEvent,
   TimerEventData,
@@ -18,6 +24,11 @@ let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
+let compositionEvents: (
+  | CompositionStartTestEvent
+  | CompositionUpdateTestEvent
+  | CompositionEndTestEvent
+)[] = [];
 
 let cachedAllEvents: TestEvent[] | undefined;
 
@@ -32,11 +43,7 @@ let pressedKeys: Map<
 export function logTestEvent(
   type: TestEventType,
   now: number,
-  eventData:
-    | KeydownEventData
-    | KeyupEventData
-    | TimerEventData
-    | InputEventData,
+  eventData: TestEventData,
 ): void {
   cachedAllEvents = undefined;
 
@@ -110,6 +117,24 @@ export function logTestEvent(
       testMs: 0,
       data: eventData as InputEventData,
     });
+  } else if (type === "compositionStart") {
+    compositionEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: undefined,
+    });
+  } else if (type === "compositionUpdate" || type === "compositionEnd") {
+    compositionEvents.push({
+      type,
+      ms: now,
+      testMs: 0,
+      data: eventData as
+        | CompositionUpdateTestEventData
+        | CompositionEndTestEventData,
+    });
+  } else {
+    throw new Error(`Unsupported event type: ${type}`);
   }
 }
 
@@ -123,6 +148,7 @@ export function getAllTestEvents(): TestEvent[] {
     ...keyupEvents,
     ...timerEvents,
     ...inputEvents,
+    ...compositionEvents,
   ]
     .sort((a, b) => a.ms - b.ms)
     .map((event) => {
@@ -140,9 +166,7 @@ export function logEventsDataToTheConsole(): void {
         ...event,
         ...event.data,
       };
-      // @ts-expect-error just for logging to the console
       delete e.data;
-      // @ts-expect-error just for logging to the console
       e = {
         ...e,
         ...d,
@@ -160,9 +184,7 @@ export function logEventsDataToTheConsoleTable(): void {
         ...event,
         ...event.data,
       };
-      // @ts-expect-error just for logging to the console
       delete e.data;
-      // @ts-expect-error just for logging to the console
       e = {
         ...e,
         ...d,
@@ -185,6 +207,7 @@ export function resetTestEvents(): void {
   keyupEvents = [];
   timerEvents = [];
   inputEvents = [];
+  compositionEvents = [];
   cachedAllEvents = undefined;
 }
 
