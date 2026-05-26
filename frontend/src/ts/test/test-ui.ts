@@ -1877,7 +1877,7 @@ export function onTestStart(): void {
     (Config.liveSpeedStyle === "text" || Config.liveAccStyle === "text")
   ) {
     showNoticeNotification(
-      "Monkey is not compatible with text-style live speed or accuracy",
+      'Monkey is not compatible with text-style live speed or accuracy. Consider changing the live speed/accuracy style away from "text" in Settings.',
     );
   }
   Monkey.show();
