@@ -150,13 +150,15 @@ export function calculateTestSeconds(now?: number): number {
 export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
+  testSecondsOverride?: number,
 ): {
   wpm: number;
   raw: number;
 } {
-  const testSeconds = calculateTestSeconds(
-    TestState.isActive ? performance.now() : end,
-  );
+  const testSeconds =
+    testSecondsOverride ??
+    calculateTestSeconds(TestState.isActive ? performance.now() : end);
+
   const chars = countChars(final);
   const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,
@@ -413,7 +415,7 @@ export function calculateFinalStats(): Stats {
 
   //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
