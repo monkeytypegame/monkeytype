@@ -290,6 +290,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     correct,
     wordIndex,
     charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding === true,
   });
 
   if (lastInMultiOrSingle) {

@@ -68,6 +68,7 @@ export type InputEventData = {
       inputType: InsertInputType;
       data: string;
       correct: boolean;
+      isCompositionEnding: boolean;
     }
   | {
       inputType: DeleteInputType;
