@@ -1872,6 +1872,14 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
+  if (
+    Config.monkey &&
+    (Config.liveSpeedStyle === "text" || Config.liveAccStyle === "text")
+  ) {
+    showNoticeNotification(
+      "Monkey is not compatible with text-style live speed or accuracy",
+    );
+  }
   Monkey.show();
   TimerProgress.show();
   LiveSpeed.show();
