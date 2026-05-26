@@ -403,7 +403,7 @@ export function calculateFinalStats(): Stats {
     wpmRaw: isNaN(raw) ? 0 : raw,
     acc: acc,
     correctChars: chars.correctWordChars,
-    incorrectChars: chars.incorrectChars,
+    incorrectChars: chars.incorrectChars + chars.spaces - chars.correctSpaces,
     missedChars: chars.missedChars,
     extraChars: chars.extraChars,
     allChars:
