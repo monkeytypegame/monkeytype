@@ -862,4 +862,115 @@ describe("string utils", () => {
       });
     });
   });
+
+  describe("countChars", () => {
+    it("counts all correct for exact match", () => {
+      const result = Strings.countChars("hello ", "hello ", false, false);
+      expect(result).toEqual({
+        allCorrect: 6,
+        correctWord: 6,
+        incorrect: 0,
+        extra: 0,
+        missed: 0,
+      });
+    });
+
+    it("counts incorrect chars", () => {
+      const result = Strings.countChars("hxllo ", "hello ", false, false);
+      expect(result).toEqual({
+        allCorrect: 4,
+        correctWord: 0,
+        incorrect: 2, // 'x' + space (word not correct)
+        extra: 0,
+        missed: 0,
+      });
+    });
+
+    it("counts extra chars", () => {
+      const result = Strings.countChars("helloo ", "hello ", false, false);
+      expect(result).toEqual({
+        allCorrect: 5,
+        correctWord: 0,
+        incorrect: 1, // space in wrong position
+        extra: 1,
+        missed: 0,
+      });
+    });
+
+    it("counts missed chars", () => {
+      const result = Strings.countChars("hel", "hello", false, false);
+      expect(result).toEqual({
+        allCorrect: 3,
+        correctWord: 0,
+        incorrect: 0,
+        extra: 0,
+        missed: 2,
+      });
+    });
+
+    it("space counts as incorrect when word is wrong", () => {
+      const result = Strings.countChars("hell ", "hello ", false, false);
+      expect(result.incorrect).toBe(1); // space matched but word wrong
+    });
+
+    it("space counts as correct when word matches", () => {
+      const result = Strings.countChars("hello ", "hello ", false, false);
+      expect(result.allCorrect).toBe(6);
+    });
+
+    it("last word partial match counts correctWord when shouldLastPartialWordCount", () => {
+      const result = Strings.countChars("hel", "hello", true, true);
+      expect(result).toEqual({
+        allCorrect: 3,
+        correctWord: 3,
+        incorrect: 0,
+        extra: 0,
+        missed: 0, // missed chars not counted for partial last word
+      });
+    });
+
+    it("last word partial match does not count correctWord without shouldLastPartialWordCount", () => {
+      const result = Strings.countChars("hel", "hello", true, false);
+      expect(result).toEqual({
+        allCorrect: 3,
+        correctWord: 0,
+        incorrect: 0,
+        extra: 0,
+        missed: 2,
+      });
+    });
+
+    it("non-last word ignores shouldLastPartialWordCount", () => {
+      const result = Strings.countChars("hel", "hello", false, true);
+      expect(result).toEqual({
+        allCorrect: 3,
+        correctWord: 0,
+        incorrect: 0,
+        extra: 0,
+        missed: 2,
+      });
+    });
+
+    it("empty input counts all as missed", () => {
+      const result = Strings.countChars("", "hello", false, false);
+      expect(result).toEqual({
+        allCorrect: 0,
+        correctWord: 0,
+        incorrect: 0,
+        extra: 0,
+        missed: 5,
+      });
+    });
+
+    it("empty target counts all as extra", () => {
+      const result = Strings.countChars("hello", "", false, false);
+      expect(result).toEqual({
+        allCorrect: 0,
+        correctWord: 0,
+        incorrect: 0,
+        extra: 5,
+        missed: 0,
+      });
+    });
+  });
 });
