@@ -80,7 +80,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 2,
     properties: [
       "hasCssFile",
-      "noLigatures",
+      "noJoiningScript",
       "conflictsWithSymmetricChars",
       "ignoreReducedMotion",
     ],
@@ -163,7 +163,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures", "ignoreReducedMotion"],
+    properties: ["hasCssFile", "noJoiningScript", "ignoreReducedMotion"],
     name: "earthquake",
     cssModifications: ["words"],
   },
@@ -400,7 +400,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Go back to the 1980s",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noJoiningScript"],
     frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "crt",
     cssModifications: ["body"],
@@ -423,7 +423,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["noLigatures"],
+    properties: ["noJoiningScript"],
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
   },
@@ -463,7 +463,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Practice american sign language.",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noJoiningScript"],
     name: "asl",
     cssModifications: ["words"],
   },
@@ -511,7 +511,7 @@ export function getFunbox(
     //@ts-expect-error sanity check
     if (out.includes(undefined)) {
       throw new Error(
-        "One of the funboxes is invalid: " + nameOrNames.toString(),
+        `One of the funboxes is invalid: ${nameOrNames.toString()}`,
       );
     }
 
@@ -520,7 +520,7 @@ export function getFunbox(
     const out = getObject()[nameOrNames];
 
     if (out === undefined) {
-      throw new Error("Invalid funbox name: " + nameOrNames);
+      throw new Error(`Invalid funbox name: ${nameOrNames}`);
     }
 
     return out;

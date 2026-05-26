@@ -95,7 +95,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    showNoticeNotification("Failed to load theme from URL: " + error.message);
+    showNoticeNotification(`Failed to load theme from URL: ${error.message}`);
     return;
   }
 
@@ -178,7 +178,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (error) {
     console.error("Failed to parse test settings:", error);
     showNoticeNotification(
-      "Failed to load test settings from URL: " + error.message,
+      `Failed to load test settings from URL: ${error.message}`,
     );
     return;
   }
@@ -317,12 +317,18 @@ export async function loadChallengeFromUrl(
   ).toLowerCase();
   if (getValue === "") return;
 
-  const result = await ChallengeController.setup(getValue);
-  if (result) {
-    restartTest({
-      nosave: true,
+  ChallengeController.setup(getValue)
+    .then((result) => {
+      if (result) {
+        restartTest({
+          nosave: true,
+        });
+      }
+    })
+    .catch((e: unknown) => {
+      showErrorNotification("Failed to load challenge");
+      console.error(e);
     });
-  }
 }
 
 authEvent.subscribe(async (event) => {

@@ -1,3 +1,4 @@
+import { PageNumberSchema } from "@monkeytype/schemas/util";
 import { JSXElement, Setter, Show } from "solid-js";
 
 import { setPage } from "../../../states/leaderboard-selection";
@@ -5,6 +6,7 @@ import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
+
 export function Navigation(props: {
   lastPage: number;
   userPage?: number;
@@ -62,6 +64,18 @@ export function Navigation(props: {
               {
                 type: "number",
                 placeholder: "Page number",
+                validation: {
+                  isValid: async (page) => {
+                    const validationResult = PageNumberSchema.safeParse(
+                      Number.parseInt(page),
+                    );
+
+                    if (validationResult.success) return true;
+                    return validationResult.error.errors
+                      .map((err) => err.message)
+                      .join(", ");
+                  },
+                },
               },
             ],
             buttonText: "Go",
@@ -73,7 +87,7 @@ export function Navigation(props: {
               setPage(page - 1);
               return {
                 status: "success",
-                message: "Navigating to page " + page,
+                message: `Navigating to page ${page}`,
                 showNotification: false,
               };
             },
@@ -82,7 +96,10 @@ export function Navigation(props: {
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass}
         disabled={props.lastPage <= 1}
-      />
+      >
+        {" "}
+        {props.currentPage + 1}
+      </Button>
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}

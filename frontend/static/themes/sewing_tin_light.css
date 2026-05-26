@@ -7,7 +7,7 @@
 }
 
 header [data-ui-element="logoText"] {
-  background-color: #ffffff; /* fallback */
+  background: #ffffff; /* fallback */
   background: linear-gradient(
     #2d2076,
     #2d2076 25%,

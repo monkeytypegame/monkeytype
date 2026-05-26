@@ -1,7 +1,6 @@
 {
   "name": "hawaiian_1k",
   "rightToLeft": false,
-  "ligatures": false,
   "orderedByFrequency": true,
   "bcp47": "haw",
   "words": [

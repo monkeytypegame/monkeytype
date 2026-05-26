@@ -16,6 +16,7 @@ function makeField(name: string, value = "") {
         errors: [],
       },
     },
+    options: {},
     handleBlur: vi.fn(),
     handleChange: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
@@ -83,12 +84,11 @@ describe("InputField", () => {
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
-  it("shows FieldIndicator when showIndicator is true", () => {
+  it("shows FieldIndicator", () => {
     const field = makeField("name");
+    field.options = { validators: { onChange: () => undefined } };
     field.state.meta.isValidating = true;
-    const { container } = render(() => (
-      <InputField field={() => field} showIndicator />
-    ));
+    const { container } = render(() => <InputField field={() => field} />);
 
     expect(container.querySelector(".fa-circle-notch")).toBeInTheDocument();
   });

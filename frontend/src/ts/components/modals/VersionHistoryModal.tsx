@@ -34,13 +34,13 @@ export function VersionHistoryModal(): JSXElement {
       onScroll={fetchMoreVersions}
     >
       <AsyncContent
-        query={releases}
+        queries={{ releases }}
         errorMessage="Failed to load version history"
       >
-        {(data) => (
+        {({ releasesData }) => (
           <>
             <div class="releases">
-              <For each={data.pages.flatMap((it) => it.releases)}>
+              <For each={releasesData().pages.flatMap((it) => it.releases)}>
                 {(release) => <ReleaseItem {...release} />}
               </For>
             </div>

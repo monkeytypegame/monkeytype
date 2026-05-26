@@ -20,6 +20,7 @@ import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
+import { LabeledField } from "../ui/form/LabeledField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import SlimSelect from "../ui/SlimSelect";
 
@@ -135,7 +136,7 @@ export function WordFilterModal(props: {
         }
 
         const regincl = exactMatchOnly
-          ? new RegExp("^[" + filterin + "]+$", "i")
+          ? new RegExp(`^[${filterin}]+$`, "i")
           : new RegExp(filterin, "i");
 
         let filterout = Misc.escapeRegExp(value.exclude.trim());
@@ -228,15 +229,15 @@ export function WordFilterModal(props: {
         }}
       >
         <fieldset disabled={loading()} class="grid gap-4">
-          <div class="grid gap-1">
-            <div class="text-sub">language</div>
+          <LabeledField label="language">
             <SlimSelect
+              appendTo="container"
               options={languageOptions}
               selected={language()}
               onChange={setLanguage}
               disabled={loading()}
             />
-          </div>
+          </LabeledField>
           <div class="text-xs text-sub">
             You can manually filter words by length, words or characters
             (separated by spaces) on the left side. On the right side you can
@@ -246,21 +247,18 @@ export function WordFilterModal(props: {
           <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
             <div class="grid gap-4 self-start">
               <div class="grid grid-cols-2 gap-4">
-                <div class="grid gap-1">
-                  <div class="text-sub">min length</div>
+                <LabeledField label="min length">
                   <form.Field name="minLength">
                     {(field) => <InputField field={field} type="number" />}
                   </form.Field>
-                </div>
-                <div class="grid gap-1">
-                  <div class="text-sub">max length</div>
+                </LabeledField>
+                <LabeledField label="max length">
                   <form.Field name="maxLength">
                     {(field) => <InputField field={field} type="number" />}
                   </form.Field>
-                </div>
+                </LabeledField>
               </div>
-              <div class="grid gap-1">
-                <div class="text-sub">include</div>
+              <LabeledField label="include">
                 <form.Field name="include">
                   {(field) => <InputField field={field} />}
                 </form.Field>
@@ -283,39 +281,38 @@ export function WordFilterModal(props: {
                     />
                   )}
                 </form.Field>
-              </div>
-              <div class="grid gap-1">
-                <div class="text-sub">exclude</div>
+              </LabeledField>
+              <LabeledField label="exclude">
                 <form.Field name="exclude">
                   {(field) => (
                     <InputField field={field} disabled={isExactMatch()} />
                   )}
                 </form.Field>
-              </div>
+              </LabeledField>
             </div>
 
             <Separator vertical class="hidden md:block" />
             <Separator class="block md:hidden" />
 
             <div class="grid gap-4 self-start">
-              <div class="grid gap-1">
-                <div class="text-sub">presets</div>
+              <LabeledField label="presets">
                 <SlimSelect
+                  appendTo="container"
                   options={presetOptions}
                   selected={preset()}
                   onChange={setPreset}
                   disabled={loading()}
                 />
-              </div>
-              <div class="grid gap-1">
-                <div class="text-sub">layout</div>
+              </LabeledField>
+              <LabeledField label="layout">
                 <SlimSelect
+                  appendTo="container"
                   options={layoutOptions}
                   selected={layout()}
                   onChange={setLayout}
                   disabled={loading()}
                 />
-              </div>
+              </LabeledField>
               <Button
                 variant="button"
                 text="apply"
@@ -336,7 +333,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="set"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "set")}
             />
@@ -345,7 +342,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="add"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "add")}
             />

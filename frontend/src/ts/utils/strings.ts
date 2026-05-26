@@ -23,6 +23,21 @@ export function camelCaseToWords(str: string): string {
 }
 
 /**
+ * Converts a string with words separated by spaces to camelCase.
+ * @param str The input string with words separated by spaces.
+ * @returns The camelCase version of the input string.
+ */
+export function wordsToCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/ +/)
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join("");
+}
+
+/**
  * Returns the last character of a string.
  * @param word The input string.
  * @returns The last character of the input string, or an empty string if the input is empty.
@@ -142,7 +157,7 @@ export function getLanguageDisplayString(
   } else {
     out = language;
   }
-  return out.replace(/_/g, " ");
+  return replaceUnderscoresWithSpaces(out);
 }
 
 /**
@@ -375,6 +390,14 @@ export function isSpace(char: string): boolean {
   ]);
 
   return spaces.has(codePoint);
+}
+
+export function replaceUnderscoresWithSpaces(text: string): string {
+  return text.replace(/_/g, " ");
+}
+
+export function replaceSpacesWithUnderscores(text: string): string {
+  return text.replace(/ /g, "_");
 }
 
 // Export testing utilities for unit tests
