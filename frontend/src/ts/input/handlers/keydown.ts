@@ -27,6 +27,7 @@ import {
 import { Keycode } from "../../constants/keys";
 import { wordsHaveTab } from "../../states/test";
 import { logTestEvent } from "../../test/events/data";
+import { getTestEventCode } from "../../test/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -135,7 +136,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   TestInput.recordKeydownTime(now, event);
 
   logTestEvent("keydown", now, {
-    code: "NoCode",
+    code: getTestEventCode(event),
     ctrl: event.ctrlKey,
     shift: event.shiftKey,
     alt: event.altKey,
