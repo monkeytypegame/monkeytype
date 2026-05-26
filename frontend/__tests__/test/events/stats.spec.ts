@@ -111,15 +111,15 @@ describe("stats.ts", () => {
   });
 
   describe("getStartToFirstKeypressMs", () => {
-    it("returns time from start to first input", () => {
+    it("returns time from start to first keydown", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("input", 1150, input());
+      logTestEvent("keydown", 1150, keyDown());
 
       expect(getStartToFirstKeypressMs()).toBe(150);
     });
 
-    it("returns 0 if input comes before start", () => {
-      logTestEvent("input", 900, input());
+    it("returns 0 if keydown comes before start", () => {
+      logTestEvent("keydown", 900, keyDown());
       logTestEvent("timer", 1000, timer("start", 0));
 
       expect(getStartToFirstKeypressMs()).toBe(0);
@@ -128,7 +128,7 @@ describe("stats.ts", () => {
     it("returns 0 in zen mode", () => {
       (Config as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("input", 1150, input());
+      logTestEvent("keydown", 1150, keyDown());
 
       expect(getStartToFirstKeypressMs()).toBe(0);
     });
@@ -139,10 +139,11 @@ describe("stats.ts", () => {
   });
 
   describe("getLastKeypressToEndMs", () => {
-    it("returns time from last input to end", () => {
+    it("returns time from last keydown to end", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("input", 1500, input());
-      logTestEvent("input", 1800, input({ charIndex: 1 }));
+      logTestEvent("keydown", 1500, keyDown());
+      logTestEvent("keyup", 1600, keyUp());
+      logTestEvent("keydown", 1800, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
 
       expect(getLastKeypressToEndMs()).toBe(200);
@@ -151,7 +152,7 @@ describe("stats.ts", () => {
     it("returns 0 in zen mode", () => {
       (Config as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("input", 1500, input());
+      logTestEvent("keydown", 1500, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
 
       expect(getLastKeypressToEndMs()).toBe(0);
@@ -161,7 +162,7 @@ describe("stats.ts", () => {
   describe("getTestDurationMs", () => {
     it("returns end testMs", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("input", 1500, input());
+      logTestEvent("keydown", 1500, keyDown());
       logTestEvent("timer", 4000, timer("end", 3));
 
       expect(getTestDurationMs()).toBe(3000);
