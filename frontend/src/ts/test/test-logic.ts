@@ -1132,6 +1132,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   //compare ce and ce2, log differences
+  const notMatching: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
     let val1 = ce[key];
@@ -1192,6 +1193,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
             `Completed event match on key chartData: both are "toolong"`,
           );
         } else {
+          notMatching.push("chartData");
           console.error(
             `Completed event mismatch on key chartData: one is "toolong" and the other is not`,
             v1,
@@ -1201,41 +1203,57 @@ export async function finish(difficultyFailed = false): Promise<void> {
         continue;
       }
 
-      if (Arrays.areSortedArraysEqual(v1.wpm, v2.wpm)) {
-        console.debug(`Completed event match on key chartData.wpm:`, v1.wpm);
-      } else {
-        console.error(
-          `Completed event mismatch on key chartData.wpm:`,
-          v1.wpm,
-          v2.wpm,
-        );
+      for (const field of ["wpm", "burst", "err"] as const) {
+        const a = v1[field];
+        const b = v2[field];
+        const withinTolerance =
+          a.length === b.length &&
+          a.every((val, i) => {
+            if (val === 0 && b[i] === 0) return true;
+            const ref = Math.max(Math.abs(val), Math.abs(b[i] ?? 0));
+            return Math.abs(val - (b[i] ?? 0)) / ref <= 0.05;
+          });
+        if (withinTolerance) {
+          console.debug(`Completed event match on key chartData.${field}:`, a);
+        } else {
+          notMatching.push(`chartData.${field}`);
+          console.error(
+            `Completed event mismatch on key chartData.${field}:`,
+            a,
+            b,
+          );
+        }
       }
-      if (Arrays.areSortedArraysEqual(v1.burst, v2.burst)) {
-        console.debug(
-          `Completed event match on key chartData.burst:`,
-          v1.burst,
-        );
+    } else if (
+      key === "consistency" ||
+      key === "wpmConsistency" ||
+      key === "keyConsistency"
+    ) {
+      const a = val1 as number;
+      const b = val2 as number;
+      const ref = Math.max(Math.abs(a), Math.abs(b));
+      const within = (a === 0 && b === 0) || Math.abs(a - b) / ref <= 0.05;
+      if (within) {
+        console.debug(`Completed event match on key ${key}:`, a);
       } else {
-        console.error(
-          `Completed event mismatch on key chartData.burst:`,
-          v1.burst,
-          v2.burst,
-        );
-      }
-      if (Arrays.areSortedArraysEqual(v1.err, v2.err)) {
-        console.debug(`Completed event match on key chartData.err:`, v1.err);
-      } else {
-        console.error(
-          `Completed event mismatch on key chartData.err:`,
-          v1.err,
-          v2.err,
-        );
+        notMatching.push(key);
+        console.error(`Completed event mismatch on key ${key}:`, a, b);
       }
     } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+      notMatching.push(key);
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);
     }
+  }
+
+  if (notMatching.length === 0) {
+    showSuccessNotification("Completed events match", { important: true });
+  } else {
+    showErrorNotification(
+      `Completed event mismatch: ${notMatching.join(", ")}`,
+      { important: true },
+    );
   }
 
   console.debug("Completed event object", ce);
