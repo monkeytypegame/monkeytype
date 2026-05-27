@@ -6,9 +6,11 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo } from "solid-js";
 
+import { rejectConnection } from "../../../collections/connections";
 import { getConfig } from "../../../config/store";
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getActivePage } from "../../../states/core";
+import { showSimpleModal } from "../../../states/simple-modal";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -202,9 +204,19 @@ function getColumns({
         //check the row is our own user
         info.getValue() !== undefined ? (
           <Button
-            onClick={() => {
-              //removeFriend(info.getValue() as string, info.row.original.name);
-            }}
+            onClick={() =>
+              showSimpleModal({
+                title: `remove user ${info.row.original.name}?`,
+                buttonText: "remove friend",
+                execFn: async () => {
+                  await rejectConnection({ id: info.getValue() as string });
+                  return {
+                    status: "success",
+                    message: `User ${info.row.original.name} removed`,
+                  };
+                },
+              })
+            }
             balloon={{ text: "remove friend" }}
             fa={{ icon: "fa-user-times", fixedWidth: true }}
           />

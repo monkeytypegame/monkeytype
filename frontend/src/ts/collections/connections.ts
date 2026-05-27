@@ -60,6 +60,20 @@ export function usePendingConnectionsQuery() {
       .orderBy(({ connections }) => connections.lastModified, "desc"),
   );
 }
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useBlockedConnectionsQuery() {
+  return useLiveQuery((q) =>
+    q
+      .from({ connections: connectionsCollection })
+      .where(({ connections }) =>
+        and(
+          eq(connections.status, "blocked"),
+          not(eq(connections.initiatorUid, getUserId())),
+        ),
+      )
+      .orderBy(({ connections }) => connections.lastModified, "desc"),
+  );
+}
 
 type ActionType = {
   acceptConnection: {
@@ -159,7 +173,7 @@ export async function blockConnection(
 }
 
 export function isFriend(uid: string | undefined): boolean {
-  if (uid === undefined) return false;
+  if (uid === undefined || uid === getUserId()) return false;
   return (
     connectionsQuery().find(
       (it) =>
