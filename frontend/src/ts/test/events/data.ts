@@ -117,14 +117,14 @@ export function logTestEvent(
       testMs: 0,
       data: eventData as InputEventData,
     });
-  } else if (type === "compositionStart") {
+  } else if (type === "compositionstart") {
     compositionEvents.push({
       type,
       ms: now,
       testMs: 0,
       data: undefined,
     });
-  } else if (type === "compositionUpdate" || type === "compositionEnd") {
+  } else if (type === "compositionupdate" || type === "compositionend") {
     compositionEvents.push({
       type,
       ms: now,
