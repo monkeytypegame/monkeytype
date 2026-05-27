@@ -142,6 +142,55 @@ export function getAllTestEvents(): TestEvent[] {
       event.testMs = roundTo2(event.ms - start);
       return event;
     });
+
+  //remove all pre-start keydown/keyup events except the last keydown
+  const timerStartIndex = cachedAllEvents.findIndex(
+    (e) => e.type === "timer" && e.data.event === "start",
+  );
+  if (timerStartIndex !== -1) {
+    // find the last keydown before timer start
+    let lastPreStartKeydownIndex = -1;
+    for (let i = timerStartIndex - 1; i >= 0; i--) {
+      if (cachedAllEvents[i]?.type === "keydown") {
+        lastPreStartKeydownIndex = i;
+        break;
+      }
+    }
+    cachedAllEvents = cachedAllEvents.filter((e, index) => {
+      if (index >= timerStartIndex) return true;
+      if (e.type === "keydown") return index === lastPreStartKeydownIndex;
+      if (e.type === "keyup") return false;
+      return true;
+    });
+  }
+
+  //remove all input events after timer end
+  const timerEndIndex = cachedAllEvents.findIndex(
+    (e) => e.type === "timer" && e.data.event === "end",
+  );
+  if (timerEndIndex !== -1) {
+    cachedAllEvents = cachedAllEvents.filter(
+      (e, index) => !(e.type === "input" && index > timerEndIndex),
+    );
+  }
+
+  //remove keydowns after timer end, and their associated keyups
+  if (timerEndIndex !== -1) {
+    const keydownsAfterTimerEnd = new Set(
+      cachedAllEvents
+        .filter((e, index) => e.type === "keydown" && index > timerEndIndex)
+        .map((e) => (e.data as KeydownEventData).code),
+    );
+    cachedAllEvents = cachedAllEvents.filter((e, index) => {
+      if (index <= timerEndIndex) return true;
+      if (e.type === "keydown") return false;
+      if (e.type === "keyup") {
+        return !keydownsAfterTimerEnd.has(e.data.code);
+      }
+      return true;
+    });
+  }
+
   return cachedAllEvents;
 }
 
