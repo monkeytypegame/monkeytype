@@ -51,8 +51,6 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
     }
   }
 
-  console.log(boundaries);
-
   return boundaries;
 }
 
