@@ -317,12 +317,22 @@ export function getAccuracy(): {
 export function getKeypressSpacing(): number[] {
   const events = getAllTestEvents();
 
+  const hasTimerStart = events.some(
+    (e) => e.type === "timer" && e.data.event === "start",
+  );
+  let testStarted = !hasTimerStart;
   const spacings: number[] = [];
   let lastKeydownTime: number | undefined;
-
   for (const event of events) {
+    if (
+      !testStarted &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      testStarted = true;
+    }
     if (event.type === "keydown") {
-      if (lastKeydownTime !== undefined) {
+      if (testStarted && lastKeydownTime !== undefined) {
         const spacing = event.ms - lastKeydownTime;
         spacings.push(spacing);
       }
@@ -441,6 +451,11 @@ export function getAfkDuration(): number {
 export function getKeypressDurations(): number[] {
   const events = getAllTestEvents();
 
+  const hasTimerStart = events.some(
+    (e) => e.type === "timer" && e.data.event === "start",
+  );
+  let testStarted = !hasTimerStart;
+
   const keydownTimes: Map<
     string,
     {
@@ -451,6 +466,27 @@ export function getKeypressDurations(): number[] {
   const durations: number[] = [];
 
   for (const event of events) {
+    if (
+      !testStarted &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      testStarted = true;
+      // keep only the last pre-start keydown (still held)
+      const lastKey =
+        keydownTimes.size > 0
+          ? [...keydownTimes.entries()].reduce((a, b) =>
+              a[1].timestamp > b[1].timestamp ? a : b,
+            )
+          : undefined;
+      keydownTimes.clear();
+      durations.length = 0;
+      if (lastKey !== undefined) {
+        lastKey[1].index = 0;
+        keydownTimes.set(lastKey[0], lastKey[1]);
+        durations.push(0);
+      }
+    }
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
         timestamp: event.ms,
