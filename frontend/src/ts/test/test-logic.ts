@@ -1093,7 +1093,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   PaceCaret.setLastTestWpm(stats.wpm);
 
   // if the last second was not rounded, add another data point to the history
-  if (TestStats.lastSecondNotRound && !difficultyFailed) {
+  if (
+    TestStats.lastSecondNotRound &&
+    !difficultyFailed &&
+    stats.time % 1 >= 0.5
+  ) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
