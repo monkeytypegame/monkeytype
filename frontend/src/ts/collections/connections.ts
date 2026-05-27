@@ -13,6 +13,11 @@ import Ape from "../ape";
 import { applyIdWorkaround } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
+import {
+  configurationPromise,
+  get as getServerConfiguration,
+} from "../ape/server-configuration";
+
 const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
 };
@@ -25,6 +30,8 @@ const connectionsCollection = createCollection(
     getKey: (it) => it._id,
     queryFn: async () => {
       if (!isAuthenticated()) return [];
+      await configurationPromise;
+      if (!getServerConfiguration()?.connections.enabled) return [];
       const response = await Ape.connections.get();
       if (response.status !== 200) {
         throw new Error(`Error fetching connections:${response.body.message}`);
@@ -33,6 +40,10 @@ const connectionsCollection = createCollection(
       return response.body.data.map(applyIdWorkaround);
     },
   }),
+);
+
+const connectionsQuery = useLiveQuery((q) =>
+  q.from({ connections: connectionsCollection }),
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
@@ -145,4 +156,15 @@ export async function blockConnection(
 ): Promise<void> {
   const transaction = actions.blockConnection(params);
   await transaction.isPersisted.promise;
+}
+
+export function isFriend(uid: string | undefined): boolean {
+  if (uid === undefined) return false;
+  return (
+    connectionsQuery().find(
+      (it) =>
+        it.status === "accepted" &&
+        (it.receiverUid === uid || it.initiatorUid === uid),
+    ) !== undefined
+  );
 }

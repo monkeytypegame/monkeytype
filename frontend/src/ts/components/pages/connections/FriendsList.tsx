@@ -167,7 +167,7 @@ function getColumns({
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => ({
-          "data-balloon-pos": "down",
+          "data-balloon-pos": "up",
           "data-balloon-break": "",
           "aria-label": formatPb(row.top15 as PersonalBest, { format })
             ?.details,
@@ -189,7 +189,7 @@ function getColumns({
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => ({
-          "data-balloon-pos": "down",
+          "data-balloon-pos": "up",
           "data-balloon-break": "",
           "aria-label": formatPb(row.top60, { format })?.details,
         }),

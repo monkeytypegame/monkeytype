@@ -38,13 +38,6 @@
       }
     }
   }
-
-  .pageFriends {
-    .content .friends table,
-    .content .pendingRequests table {
-      font-size: 0.75rem;
-    }
-  }
 }
 @media (pointer: coarse) and (max-width: 778px) {
   #restartTestButton {

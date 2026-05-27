@@ -7,8 +7,8 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
+import { isFriend } from "../../../collections/connections";
 import { getConfig } from "../../../config/store";
-import { isFriend } from "../../../db";
 import { createEffectOn } from "../../../hooks/effects";
 import { bp, BreakpointKey } from "../../../states/breakpoints";
 import { getUserId } from "../../../states/core";
