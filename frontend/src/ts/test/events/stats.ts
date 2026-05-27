@@ -346,6 +346,11 @@ export function getKeypressSpacing(): number[] {
 export function getKeypressOverlap(): number {
   const events = getAllTestEvents();
 
+  const hasTimerStart = events.some(
+    (e) => e.type === "timer" && e.data.event === "start",
+  );
+  let testStarted = !hasTimerStart;
+
   const keydownTimes: Map<
     string,
     {
@@ -356,6 +361,26 @@ export function getKeypressOverlap(): number {
   let lastStartTime: number | undefined;
 
   for (const event of events) {
+    if (
+      !testStarted &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      testStarted = true;
+      // keep only the last pre-start keydown
+      const lastEntry =
+        keydownTimes.size > 0
+          ? [...keydownTimes.entries()].reduce((a, b) =>
+              a[1].timestamp > b[1].timestamp ? a : b,
+            )
+          : undefined;
+      keydownTimes.clear();
+      overlap = 0;
+      lastStartTime = undefined;
+      if (lastEntry !== undefined) {
+        keydownTimes.set(lastEntry[0], lastEntry[1]);
+      }
+    }
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
         timestamp: event.ms,
