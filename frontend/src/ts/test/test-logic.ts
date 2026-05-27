@@ -1096,7 +1096,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (
     TestStats.lastSecondNotRound &&
     !difficultyFailed &&
-    stats.time % 1 >= 0.5
+    Math.round(stats.time % 1) >= 0.5
   ) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
