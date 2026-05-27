@@ -50,7 +50,6 @@ function keyUp(code: Keycode = "KeyA"): KeyupEventData {
     shift: false,
     alt: false,
     meta: false,
-    repeat: false,
   };
 }
 
