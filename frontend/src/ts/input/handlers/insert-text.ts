@@ -226,6 +226,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     increasedWordIndex = result.increasedWordIndex;
   }
 
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding === true,
+    inputStopped: removeLastChar,
+  });
+
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
    - spaceOrNewLine: did the user input a space or a new line?
@@ -283,16 +293,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       void TestLogic.finish();
     }
   }
-
-  logTestEvent("input", now, {
-    inputType: "insertText",
-    data,
-    correct,
-    wordIndex,
-    charIndex: testInput.length,
-    isCompositionEnding: isCompositionEnding === true,
-    inputStopped: removeLastChar,
-  });
 
   if (lastInMultiOrSingle) {
     TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
