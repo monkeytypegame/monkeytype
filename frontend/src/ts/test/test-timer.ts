@@ -45,6 +45,8 @@ const newTimer = createTimer({
 
     const drift = Math.abs(1000 - (now - lastLoop));
     checkIfTimerIsSlow(drift);
+    lastLoop = now;
+    timerStep();
 
     logTestEvent("timer", now, {
       event: "step",
@@ -52,9 +54,6 @@ const newTimer = createTimer({
       slowTimer: SlowTimer.get() ? true : undefined,
       drift,
     });
-
-    lastLoop = now;
-    timerStep();
   },
 });
 
