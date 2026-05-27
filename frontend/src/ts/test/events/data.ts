@@ -16,6 +16,7 @@ import {
 import { keysToTrack } from "./helpers";
 import { start } from "../test-stats";
 import { Keycode } from "../../constants/keys";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -39,6 +40,8 @@ export function logTestEvent(
   eventData: TestEventData,
 ): void {
   cachedAllEvents = undefined;
+
+  now = roundTo2(now);
 
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
@@ -136,7 +139,7 @@ export function getAllTestEvents(): TestEvent[] {
   ]
     .sort((a, b) => a.ms - b.ms)
     .map((event) => {
-      event.testMs = event.ms - start;
+      event.testMs = roundTo2(event.ms - start);
       return event;
     });
   return cachedAllEvents;

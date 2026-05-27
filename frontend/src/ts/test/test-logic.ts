@@ -925,11 +925,6 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
   let duration = getTestDurationMs() / 1000;
 
-  if (Config.mode !== "custom") {
-    duration = Numbers.roundTo2(duration);
-    console.debug("Mode is not custom - rounding to 2. New time: ", duration);
-  }
-
   const rawPerSecond = getRawPerSecond();
   const afkDuration = getAfkDuration();
   const stddev = Numbers.stdDev(rawPerSecond);

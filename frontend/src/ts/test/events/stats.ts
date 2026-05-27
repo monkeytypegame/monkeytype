@@ -11,7 +11,7 @@ import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex, bailedOut } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
-import { mean } from "@monkeytype/util/numbers";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
 import { Keycode } from "../../constants/keys";
@@ -85,7 +85,7 @@ export function getStartToFirstKeypressMs(): number {
   }
 
   const calc = firstKeypress - start;
-  return calc < 0 ? 0 : calc;
+  return calc < 0 ? 0 : roundTo2(calc);
 }
 
 // raw version is needed internally by getTestDurationMs to adjust
@@ -126,7 +126,7 @@ function getRawLastKeypressToEndMs(): number {
   }
 
   const calc = end - lastKeypress;
-  return calc < 0 ? 0 : calc;
+  return calc < 0 ? 0 : roundTo2(calc);
 }
 
 export function getLastKeypressToEndMs(): number {
@@ -208,6 +208,10 @@ export function getTestDurationMs(): number {
     if (lkte < 7000) {
       end -= lkte;
     }
+  }
+
+  if (Config.mode !== "custom") {
+    end = roundTo2(end / 1000) * 1000;
   }
 
   return end;
@@ -358,7 +362,7 @@ export function getKeypressOverlap(): number {
       }
     }
   }
-  return overlap;
+  return roundTo2(overlap);
 }
 
 export function getErrorCountHistory(): number[] {
