@@ -23,7 +23,7 @@ export const MOCK_PERSONAL_BESTS: Pick<PersonalBests, "time" | "words"> = {
         acc: 99.1,
         consistency: 89.5,
         difficulty: "expert",
-        language: "english",
+        language: "english commonly misspelled",
         punctuation: true,
         numbers: false,
         lazyMode: false,

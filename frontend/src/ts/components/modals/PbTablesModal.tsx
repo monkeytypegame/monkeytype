@@ -74,7 +74,7 @@ export function PbTablesModal(): JSXElement {
       <Table>
         <TableHeader class="sticky -top-8 z-3 bg-bg text-xs">
           <TableRow>
-            <TableHead class="w-[1%]">{mode()}</TableHead>
+            <TableHead class="w-[1%] text-right">{mode()}</TableHead>
             <TableHead class="text-right">
               {format().typingSpeedUnit}
               <br />
@@ -89,7 +89,7 @@ export function PbTablesModal(): JSXElement {
             <TableHead class="text-right">language</TableHead>
             <TableHead class="text-center">punctuation</TableHead>
             <TableHead class="text-center">numbers</TableHead>
-            <TableHead class="text-right">lazy mode</TableHead>
+            <TableHead class="text-center">lazy mode</TableHead>
             <TableHead class="text-right">date</TableHead>
           </TableRow>
         </TableHeader>
@@ -133,7 +133,7 @@ export function PbTablesModal(): JSXElement {
                       <Fa icon="fa-check" />
                     </Show>
                   </TableCell>
-                  <TableCell class="text-right">
+                  <TableCell class="text-center">
                     <Show when={row.pb.lazyMode}>
                       <Fa icon="fa-check" />
                     </Show>
