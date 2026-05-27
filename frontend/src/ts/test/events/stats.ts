@@ -273,6 +273,10 @@ export function getChars(): CharCounts {
     incorrect += charCounts.incorrect;
     extra += charCounts.extra;
     missed += charCounts.missed;
+
+    if (lastWord) {
+      break;
+    }
   }
 
   return {
