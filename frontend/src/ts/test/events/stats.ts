@@ -469,7 +469,9 @@ export function getWpmHistory(): number[] {
 }
 
 export function getAfkDuration(): number {
-  const { counts } = countPerInterval((e) => e.type === "keydown");
+  const { counts } = countPerInterval(
+    (e) => e.type === "keydown" || e.type === "input",
+  );
   return counts.reduce((total, c) => total + (c === 0 ? 1 : 0), 0);
 }
 
