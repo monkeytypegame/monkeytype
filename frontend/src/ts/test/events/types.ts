@@ -9,9 +9,7 @@ export type TestEventType =
   | "keyup"
   | "input"
   | "timer"
-  | "compositionstart"
-  | "compositionupdate"
-  | "compositionend";
+  | "composition";
 
 type CommonProps<T extends TestEventType> = {
   type: T;
@@ -24,17 +22,14 @@ export type TestEvent =
   | KeyupEvent
   | TimerEvent
   | InputEvent
-  | CompositionStartTestEvent
-  | CompositionUpdateTestEvent
-  | CompositionEndTestEvent;
+  | CompositionTestEvent;
 
 export type TestEventData =
   | KeydownEventData
   | KeyupEventData
   | TimerEventData
   | InputEventData
-  | CompositionUpdateTestEventData
-  | CompositionEndTestEventData;
+  | CompositionTestEventData;
 
 export type KeydownEvent = CommonProps<"keydown"> & {
   data: KeydownEventData;
@@ -97,22 +92,15 @@ export type InputEventData = {
     }
 );
 
-export type CompositionStartTestEvent = CommonProps<"compositionstart"> & {
-  data?: undefined;
+export type CompositionTestEvent = CommonProps<"composition"> & {
+  data: CompositionTestEventData;
 };
 
-export type CompositionUpdateTestEvent = CommonProps<"compositionupdate"> & {
-  data: CompositionUpdateTestEventData;
-};
-
-export type CompositionUpdateTestEventData = {
-  data: string;
-};
-
-export type CompositionEndTestEvent = CommonProps<"compositionend"> & {
-  data: CompositionEndTestEventData;
-};
-
-export type CompositionEndTestEventData = {
-  data: string;
-};
+export type CompositionTestEventData =
+  | {
+      event: "start";
+    }
+  | {
+      event: "update" | "end";
+      data: string;
+    };

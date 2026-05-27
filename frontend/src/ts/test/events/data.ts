@@ -1,9 +1,6 @@
 import {
-  CompositionEndTestEvent,
-  CompositionEndTestEventData,
-  CompositionStartTestEvent,
-  CompositionUpdateTestEvent,
-  CompositionUpdateTestEventData,
+  CompositionTestEvent,
+  CompositionTestEventData,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -24,11 +21,7 @@ let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
 let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
-let compositionEvents: (
-  | CompositionStartTestEvent
-  | CompositionUpdateTestEvent
-  | CompositionEndTestEvent
-)[] = [];
+let compositionEvents: CompositionTestEvent[] = [];
 
 let cachedAllEvents: TestEvent[] | undefined;
 
@@ -117,21 +110,12 @@ export function logTestEvent(
       testMs: 0,
       data: eventData as InputEventData,
     });
-  } else if (type === "compositionstart") {
+  } else if (type === "composition") {
     compositionEvents.push({
       type,
       ms: now,
       testMs: 0,
-      data: undefined,
-    });
-  } else if (type === "compositionupdate" || type === "compositionend") {
-    compositionEvents.push({
-      type,
-      ms: now,
-      testMs: 0,
-      data: eventData as
-        | CompositionUpdateTestEventData
-        | CompositionEndTestEventData,
+      data: eventData as CompositionTestEventData,
     });
   } else {
     throw new Error(`Unsupported event type: ${type}`);
@@ -166,7 +150,9 @@ export function logEventsDataToTheConsole(): void {
         ...event,
         ...event.data,
       };
+      //@ts-expect-error just for logging
       delete e.data;
+      //@ts-expect-error just for logging
       e = {
         ...e,
         ...d,
@@ -184,7 +170,9 @@ export function logEventsDataToTheConsoleTable(): void {
         ...event,
         ...event.data,
       };
+      //@ts-expect-error just for logging
       delete e.data;
+      //@ts-expect-error just for logging
       e = {
         ...e,
         ...d,

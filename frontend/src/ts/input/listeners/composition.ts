@@ -30,8 +30,8 @@ inputEl.addEventListener("compositionstart", (event) => {
     TestInput.setBurstStart(now);
   }
 
-  logTestEvent("compositionstart", now, {
-    data: event.data,
+  logTestEvent("composition", now, {
+    event: "start",
   });
 });
 
@@ -47,7 +47,8 @@ inputEl.addEventListener("compositionupdate", (event) => {
 
   const now = performance.now();
 
-  logTestEvent("compositionupdate", now, {
+  logTestEvent("composition", now, {
+    event: "update",
     data: event.data,
   });
 });
@@ -71,7 +72,8 @@ inputEl.addEventListener("compositionend", async (event) => {
     });
   }
 
-  logTestEvent("compositionend", now, {
+  logTestEvent("composition", now, {
+    event: "end",
     data: event.data,
   });
 });
