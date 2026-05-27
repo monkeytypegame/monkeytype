@@ -403,18 +403,6 @@ describe("stats.ts", () => {
 
       expect(getKeypressSpacing()).toEqual([]);
     });
-
-    it("only grabs the last keydown before the test starts", () => {
-      logTestEvent("keydown", 900, keyDown("KeyA"));
-      logTestEvent("keyup", 910, keyUp("KeyA"));
-      logTestEvent("keydown", 950, keyDown("KeyS"));
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keyup", 1100, keyUp("KeyS"));
-      logTestEvent("keydown", 1200, keyDown("KeyD"));
-      logTestEvent("keyup", 1300, keyUp("KeyD"));
-
-      expect(getKeypressSpacing()).toEqual([250]);
-    });
   });
 
   describe("getKeypressOverlap", () => {
@@ -436,23 +424,6 @@ describe("stats.ts", () => {
 
       expect(getKeypressOverlap()).toBe(0);
     });
-
-    it("ignores overlap from pre-start keydowns", () => {
-      // two keys held before test starts — overlap should be discarded
-      logTestEvent("keydown", 900, keyDown("KeyA"));
-      logTestEvent("keydown", 920, keyDown("KeyS"));
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keyup", 1010, keyUp("KeyA"));
-      logTestEvent("keyup", 1020, keyUp("KeyS"));
-      // real overlap after test starts
-      logTestEvent("keydown", 1100, keyDown("KeyD"));
-      logTestEvent("keydown", 1130, keyDown("KeyF"));
-      // both held from 1130-1160 = 30ms overlap
-      logTestEvent("keyup", 1160, keyUp("KeyD"));
-      logTestEvent("keyup", 1180, keyUp("KeyF"));
-
-      expect(getKeypressOverlap()).toBe(30);
-    });
   });
 
   describe("getKeypressDurations", () => {
@@ -471,18 +442,6 @@ describe("stats.ts", () => {
 
       const durations = getKeypressDurations();
       expect(durations).toEqual([0]);
-    });
-
-    it("only grabs the last keydown before the test starts", () => {
-      logTestEvent("keydown", 900, keyDown("KeyA"));
-      logTestEvent("keyup", 920, keyUp("KeyA"));
-      logTestEvent("keydown", 950, keyDown("KeyS"));
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keyup", 1100, keyUp("KeyS"));
-      logTestEvent("keydown", 1200, keyDown("KeyD"));
-      logTestEvent("keyup", 1300, keyUp("KeyD"));
-
-      expect(getKeypressDurations()).toEqual([150, 100]);
     });
   });
 });

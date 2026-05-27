@@ -9,6 +9,7 @@ import {
   getAllTestEvents,
   getInputEvents,
   getInputEventsPerWord,
+  cleanupData,
   resetTestEvents,
   __testing,
 } from "../../../src/ts/test/events/data";
@@ -264,77 +265,163 @@ describe("data.ts", () => {
     });
   });
 
-  describe("pre-start event filtering", () => {
-    it("removes all pre-start keydowns except the last", () => {
-      logTestEvent("keydown", 900, keyDown("KeyA"));
-      logTestEvent("keyup", 910, keyUp("KeyA"));
-      logTestEvent("keydown", 950, keyDown("KeyS"));
-      logTestEvent("timer", 1000, timerData("start", 0));
-      logTestEvent("keyup", 1100, keyUp("KeyS"));
+  describe("cleanupData", () => {
+    describe("pre-start filtering", () => {
+      it("removes all pre-start keydowns except the last", () => {
+        logTestEvent("keydown", 900, keyDown("KeyA"));
+        logTestEvent("keyup", 910, keyUp("KeyA"));
+        logTestEvent("keydown", 950, keyDown("KeyS"));
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keyup", 1100, keyUp("KeyS"));
 
-      const events = getAllTestEvents();
-      const keydowns = events.filter((e) => e.type === "keydown");
-      expect(keydowns).toHaveLength(1);
-      expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyS");
+        cleanupData();
+        const events = getAllTestEvents();
+        const keydowns = events.filter((e) => e.type === "keydown");
+        expect(keydowns).toHaveLength(1);
+        expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyS");
+      });
+
+      it("removes all pre-start keyups", () => {
+        logTestEvent("keydown", 900, keyDown("KeyA"));
+        logTestEvent("keyup", 910, keyUp("KeyA"));
+        logTestEvent("timer", 1000, timerData("start", 0));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        const keyups = events.filter((e) => e.type === "keyup");
+        expect(keyups).toHaveLength(0);
+      });
+
+      it("keeps pre-start non-key events (timer, input)", () => {
+        logTestEvent("input", 900, inputData());
+        logTestEvent("keydown", 950, keyDown("KeyA"));
+        logTestEvent("timer", 1000, timerData("start", 0));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        expect(events.filter((e) => e.type === "input")).toHaveLength(1);
+      });
+
+      it("does nothing when no timer start exists", () => {
+        logTestEvent("keydown", 1000, keyDown("KeyA"));
+        logTestEvent("keyup", 1050, keyUp("KeyA"));
+        logTestEvent("keydown", 1100, keyDown("KeyS"));
+        logTestEvent("keyup", 1150, keyUp("KeyS"));
+
+        cleanupData();
+        expect(getAllTestEvents()).toHaveLength(4);
+      });
+
+      it("removes all pre-start keydowns when there are none", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keydown", 1100, keyDown("KeyA"));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        expect(events.filter((e) => e.type === "keydown")).toHaveLength(1);
+      });
     });
 
-    it("removes pre-start keyups", () => {
-      logTestEvent("keydown", 900, keyDown("KeyA"));
-      logTestEvent("keyup", 910, keyUp("KeyA"));
-      logTestEvent("timer", 1000, timerData("start", 0));
+    describe("post-end filtering", () => {
+      it("removes input events after timer end", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("input", 1100, inputData());
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("input", 2100, inputData({ charIndex: 1 }));
 
-      const events = getAllTestEvents();
-      const keyups = events.filter((e) => e.type === "keyup");
-      expect(keyups).toHaveLength(0);
+        cleanupData();
+        const events = getAllTestEvents();
+        const inputs = events.filter((e) => e.type === "input");
+        expect(inputs).toHaveLength(1);
+      });
+
+      it("removes keydowns after timer end", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keydown", 1100, keyDown("KeyA"));
+        logTestEvent("keyup", 1200, keyUp("KeyA"));
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("keydown", 2100, keyDown("KeyS"));
+        logTestEvent("keyup", 2200, keyUp("KeyS"));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        const keydowns = events.filter((e) => e.type === "keydown");
+        expect(keydowns).toHaveLength(1);
+        expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyA");
+      });
+
+      it("removes keyups associated with post-end keydowns", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("keydown", 2100, keyDown("KeyA"));
+        logTestEvent("keyup", 2200, keyUp("KeyA"));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        expect(events.filter((e) => e.type === "keyup")).toHaveLength(0);
+      });
+
+      it("keeps keyups for keydowns that started before timer end", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keydown", 1900, keyDown("KeyA"));
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("keyup", 2100, keyUp("KeyA"));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        const keyups = events.filter((e) => e.type === "keyup");
+        expect(keyups).toHaveLength(1);
+        expect((keyups[0] as KeyupEvent).data.code).toBe("KeyA");
+      });
+
+      it("keeps timer end event itself", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("timer", 2000, timerData("end", 1));
+
+        cleanupData();
+        const events = getAllTestEvents();
+        expect(events).toHaveLength(2);
+      });
+
+      it("does nothing when no timer end exists", () => {
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keydown", 1100, keyDown("KeyA"));
+        logTestEvent("input", 1200, inputData());
+
+        cleanupData();
+        expect(getAllTestEvents()).toHaveLength(3);
+      });
     });
 
-    it("keeps all events when no timer start", () => {
-      logTestEvent("keydown", 1000, keyDown("KeyA"));
-      logTestEvent("keyup", 1050, keyUp("KeyA"));
-      logTestEvent("keydown", 1100, keyDown("KeyS"));
-      logTestEvent("keyup", 1150, keyUp("KeyS"));
+    describe("combined pre-start and post-end", () => {
+      it("filters both pre-start and post-end events", () => {
+        logTestEvent("keydown", 900, keyDown("KeyA"));
+        logTestEvent("keyup", 910, keyUp("KeyA"));
+        logTestEvent("keydown", 950, keyDown("KeyS"));
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("input", 1100, inputData());
+        logTestEvent("keyup", 1200, keyUp("KeyS"));
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("input", 2100, inputData({ charIndex: 1 }));
+        logTestEvent("keydown", 2200, keyDown("KeyD"));
+        logTestEvent("keyup", 2300, keyUp("KeyD"));
 
-      const events = getAllTestEvents();
-      expect(events).toHaveLength(4);
-    });
-  });
+        cleanupData();
+        const events = getAllTestEvents();
 
-  describe("post-end event filtering", () => {
-    it("removes input events after timer end", () => {
-      logTestEvent("timer", 1000, timerData("start", 0));
-      logTestEvent("input", 1100, inputData());
-      logTestEvent("timer", 2000, timerData("end", 1));
-      logTestEvent("input", 2100, inputData({ charIndex: 1 }));
+        // pre-start: only last keydown (KeyS) kept, keyup removed
+        // post-end: input, keydown (KeyD), keyup (KeyD) removed
+        const keydowns = events.filter((e) => e.type === "keydown");
+        expect(keydowns).toHaveLength(1);
+        expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyS");
 
-      const events = getAllTestEvents();
-      const inputs = events.filter((e) => e.type === "input");
-      expect(inputs).toHaveLength(1);
-    });
+        const inputs = events.filter((e) => e.type === "input");
+        expect(inputs).toHaveLength(1);
 
-    it("removes keydowns after timer end", () => {
-      logTestEvent("timer", 1000, timerData("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1200, keyUp("KeyA"));
-      logTestEvent("timer", 2000, timerData("end", 1));
-      logTestEvent("keydown", 2100, keyDown("KeyS"));
-      logTestEvent("keyup", 2200, keyUp("KeyS"));
-
-      const events = getAllTestEvents();
-      const keydowns = events.filter((e) => e.type === "keydown");
-      expect(keydowns).toHaveLength(1);
-      expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyA");
-    });
-
-    it("keeps keyups for keydowns that started before timer end", () => {
-      logTestEvent("timer", 1000, timerData("start", 0));
-      logTestEvent("keydown", 1900, keyDown("KeyA"));
-      logTestEvent("timer", 2000, timerData("end", 1));
-      logTestEvent("keyup", 2100, keyUp("KeyA"));
-
-      const events = getAllTestEvents();
-      const keyups = events.filter((e) => e.type === "keyup");
-      expect(keyups).toHaveLength(1);
-      expect((keyups[0] as KeyupEvent).data.code).toBe("KeyA");
+        const keyups = events.filter((e) => e.type === "keyup");
+        expect(keyups).toHaveLength(1);
+        expect((keyups[0] as KeyupEvent).data.code).toBe("KeyS");
+      });
     });
   });
 
