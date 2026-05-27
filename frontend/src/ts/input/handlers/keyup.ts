@@ -13,7 +13,6 @@ export async function onKeyup(event: KeyboardEvent): Promise<void> {
     shift: event.shiftKey,
     alt: event.altKey,
     meta: event.metaKey,
-    repeat: event.repeat,
   });
 
   // allow arrows in arrows funbox

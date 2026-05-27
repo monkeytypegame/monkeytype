@@ -53,7 +53,6 @@ export type KeyupEventData = {
   shift: boolean;
   alt: boolean;
   meta: boolean;
-  repeat: boolean;
   estimated?: true; // true if this event never happend, but was estimated (force keyup on test end)
 };
 
