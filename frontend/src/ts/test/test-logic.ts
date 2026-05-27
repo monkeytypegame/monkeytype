@@ -78,9 +78,12 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import { resetTestEvents, logEventsDataToTheConsoleTable } from "./events/data";
 import {
-  forceReleaseAllKeys,
+  resetTestEvents,
+  logEventsDataToTheConsoleTable,
+  cleanupData,
+} from "./events/data";
+import {
   getKeypressDurations,
   getChars,
   getRawPerSecond,
@@ -93,6 +96,7 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
+  forceReleaseAllKeys,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -1052,6 +1056,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
+  forceReleaseAllKeys();
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
   if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
@@ -1063,7 +1068,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setActive(false);
   Replay.stopReplayRecording();
 
-  forceReleaseAllKeys();
+  cleanupData();
 
   logEventsDataToTheConsoleTable();
 
@@ -1143,8 +1148,51 @@ export async function finish(difficultyFailed = false): Promise<void> {
     let val2 = ce2[key];
 
     if (key === "keyDuration" || key === "keySpacing") {
-      val1 = (val1 as number[]).map((v) => Numbers.roundTo2(v));
-      val2 = (val2 as number[]).map((v) => Numbers.roundTo2(v));
+      const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
+      const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
+      const total = Math.max(a.length, b.length);
+      let mismatchCount = 0;
+      if (a.length !== b.length) {
+        mismatchCount = total;
+        console.error(
+          `Completed event length mismatch on key ${key}: ${a.length} vs ${b.length}`,
+        );
+      } else {
+        for (let i = 0; i < total; i++) {
+          if (a[i] !== b[i]) mismatchCount++;
+        }
+      }
+      if (mismatchCount === 0) {
+        console.debug(`Completed event match on key ${key}:`, a);
+      } else {
+        notMatching.push(`${key} (${mismatchCount}/${total} elements differ)`);
+        console.error(
+          `Completed event mismatch on key ${key}: ${mismatchCount}/${total} elements differ`,
+          a,
+          b,
+        );
+      }
+      continue;
+    }
+
+    if (key === "charStats") {
+      const a = val1 as number[];
+      const b = val2 as number[];
+      const labels = ["correct", "incorrect", "extra", "missed"];
+      const diffs: string[] = [];
+      for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        if (a[i] !== b[i]) {
+          const label = labels[i] ?? `[${i}]`;
+          diffs.push(`${label}: ${a[i]} vs ${b[i]}`);
+        }
+      }
+      if (diffs.length === 0) {
+        console.debug(`Completed event match on key charStats:`, a);
+      } else {
+        notMatching.push(`charStats (${diffs.join(", ")})`);
+        console.error(`Completed event mismatch on key charStats:`, a, b);
+      }
+      continue;
     }
 
     if (key === "keyOverlap") {
@@ -1197,7 +1245,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
             `Completed event match on key chartData: both are "toolong"`,
           );
         } else {
-          notMatching.push("chartData");
+          notMatching.push("chartData (one is 'toolong' and the other is not)");
           console.error(
             `Completed event mismatch on key chartData: one is "toolong" and the other is not`,
             v1,
@@ -1220,7 +1268,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
         if (withinTolerance) {
           console.debug(`Completed event match on key chartData.${field}:`, a);
         } else {
-          notMatching.push(`chartData.${field}`);
+          notMatching.push(`chartData.${field} (values differ)`);
           console.error(
             `Completed event mismatch on key chartData.${field}:`,
             a,
@@ -1240,11 +1288,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
       if (within) {
         console.debug(`Completed event match on key ${key}:`, a);
       } else {
-        notMatching.push(key);
+        const diff = Numbers.roundTo2(Math.abs(a - b));
+        notMatching.push(`${key} (off by ${diff})`);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       }
     } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
-      notMatching.push(key);
+      if (typeof val1 === "number" && typeof val2 === "number") {
+        const diff = Numbers.roundTo2(Math.abs(val1 - val2));
+        notMatching.push(`${key} (off by ${diff})`);
+      } else {
+        notMatching.push(`${key} (values differ)`);
+      }
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);

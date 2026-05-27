@@ -305,17 +305,23 @@ export function forceKeyup(now: number): void {
   const keypressDurations = keypressTimings.duration.array.filter(
     (_, index) => !indexesToRemove.has(index),
   );
+  let avg: number;
   if (keypressDurations.length === 0) {
     // this means the test ended while all keys were still held - probably safe to ignore
     // since this will result in a "too short" test anyway
-    return;
+    // or we should use a magic number
+    avg = 80;
+  } else {
+    avg = roundTo2(mean(keypressDurations));
   }
-
-  const avg = roundTo2(mean(keypressDurations));
 
   const orderedKeys = Object.entries(keyDownData).sort(
     (a, b) => a[1].timestamp - b[1].timestamp,
   );
+
+  console.log("old system");
+  console.log("forcing release with duration", avg);
+  console.log("releasing keys", Object.keys(keyDownData));
 
   for (const [key, { index }] of orderedKeys) {
     keypressTimings.duration.array[index] = avg;

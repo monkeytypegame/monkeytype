@@ -125,23 +125,19 @@ export function logTestEvent(
   }
 }
 
-export function getAllTestEvents(): TestEvent[] {
-  if (cachedAllEvents !== undefined) return cachedAllEvents;
+function invalidateCache(): void {
+  cachedAllEvents = undefined;
+}
 
-  // cachedAllEvents = testData300;
-  // return cachedAllEvents;
-  cachedAllEvents = [
-    ...keydownEvents,
-    ...keyupEvents,
-    ...timerEvents,
-    ...inputEvents,
-    ...compositionEvents,
-  ]
-    .sort((a, b) => a.ms - b.ms)
-    .map((event) => {
-      event.testMs = roundTo2(event.ms - start);
-      return event;
-    });
+export function cleanupData(): void {
+  invalidateCache();
+  getAllTestEvents();
+
+  if (cachedAllEvents === undefined) {
+    throw new Error(
+      "cachedAllEvents should not be undefined after getAllTestEvents",
+    );
+  }
 
   //remove all pre-start keydown/keyup events except the last keydown
   const timerStartIndex = cachedAllEvents.findIndex(
@@ -190,6 +186,25 @@ export function getAllTestEvents(): TestEvent[] {
       return true;
     });
   }
+}
+
+export function getAllTestEvents(): TestEvent[] {
+  if (cachedAllEvents !== undefined) return cachedAllEvents;
+
+  // cachedAllEvents = testData300;
+  // return cachedAllEvents;
+  cachedAllEvents = [
+    ...keydownEvents,
+    ...keyupEvents,
+    ...timerEvents,
+    ...inputEvents,
+    ...compositionEvents,
+  ]
+    .sort((a, b) => a.ms - b.ms)
+    .map((event) => {
+      event.testMs = roundTo2(event.ms - start);
+      return event;
+    });
 
   return cachedAllEvents;
 }

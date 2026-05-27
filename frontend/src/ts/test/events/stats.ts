@@ -484,8 +484,12 @@ export function forceReleaseAllKeys(): void {
     // since this will result in a "too short" test anyway, but ill just set it to a magic number
     avg = 80;
   } else {
-    avg = mean(filteredDurations);
+    avg = roundTo2(mean(filteredDurations));
   }
+
+  console.log("new system");
+  console.log("forcing release with duration", avg);
+  console.log("releasing keys", Array.from(getPressedKeys().keys()));
 
   for (const [key, { timestamp }] of getPressedKeys().entries()) {
     logTestEvent("keyup", timestamp + avg, {
@@ -494,6 +498,7 @@ export function forceReleaseAllKeys(): void {
       shift: false,
       alt: false,
       meta: false,
+      estimated: true,
     });
   }
 }
