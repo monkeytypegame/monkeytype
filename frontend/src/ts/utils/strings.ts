@@ -446,7 +446,7 @@ export function countChars(
       }
     } else if (inputChar === undefined) {
       //missed char
-      if (!(lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)) {
+      if (!(lastWord && shouldLastPartialWordCount)) {
         missed += 1;
       }
     } else if (targetChar === undefined) {

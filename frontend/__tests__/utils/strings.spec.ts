@@ -929,6 +929,17 @@ describe("string utils", () => {
       });
     });
 
+    it("last incorrect partial word doesn't count missed", () => {
+      const result = Strings.countChars("xxx", "hello", true, true);
+      expect(result).toEqual({
+        allCorrect: 0,
+        correctWord: 0,
+        incorrect: 3,
+        extra: 0,
+        missed: 0, // missed chars not counted for partial last word
+      });
+    });
+
     it("last word partial match does not count correctWord without shouldLastPartialWordCount", () => {
       const result = Strings.countChars("hel", "hello", true, false);
       expect(result).toEqual({
