@@ -5,6 +5,7 @@ import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
 import { pbTablesMode } from "../../states/pb-tables-modal";
+import { cn } from "../../utils/cn";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -98,11 +99,14 @@ export function PbTablesModal(): JSXElement {
             {(row) => {
               return (
                 <TableRow>
-                  <Show when={row.showMode2} fallback={<TableCell />}>
-                    <TableCell class="text-right text-2xl">
-                      {row.pb.mode2}
-                    </TableCell>
-                  </Show>
+                  <TableCell
+                    class={cn(
+                      "text-right text-xl font-light text-text/40",
+                      row.showMode2 && "font-normal text-text",
+                    )}
+                  >
+                    {row.pb.mode2}
+                  </TableCell>
                   <TableCell class="text-right">
                     {format().typingSpeed(row.pb.wpm)}
                     <br />
