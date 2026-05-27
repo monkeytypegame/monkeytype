@@ -33,7 +33,6 @@ function keyUp(code: Keycode | "NoCode" = "KeyA"): KeyupEventData {
     shift: false,
     alt: false,
     meta: false,
-    repeat: false,
   };
 }
 
