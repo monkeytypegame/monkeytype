@@ -6,7 +6,7 @@ import {
   logTestEvent,
 } from "./data";
 import * as TestWords from "../../test/test-words";
-import { CharCounts, countChars } from "../../utils/strings";
+import { CharCounts, countChars, getLastChar } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getSimulatedInput } from "./helpers";
 import { activeWordIndex, bailedOut } from "../test-state";
@@ -213,13 +213,31 @@ export function getTestDurationMs(): number {
   return end;
 }
 
+function getTargetWord(
+  wordIndex: number,
+  simulatedInput: string,
+  lastWord: boolean,
+): string {
+  if (Config.mode === "zen") {
+    return simulatedInput;
+  } else {
+    const word = TestWords.words.getText(wordIndex);
+
+    if (getLastChar(word) === "\n") {
+      // for multiline, dont add space
+      return word;
+    }
+
+    return word + (lastWord ? "" : " ");
+  }
+}
+
 export function getChars(): CharCounts {
   const eventsPerWordIndex = getInputEventsPerWord();
   const isTimedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   const shouldCountPartialLastWord = isTimedTest;
-  const isZen = Config.mode === "zen";
 
   let allCorrect = 0;
   let correctWord = 0;
@@ -237,9 +255,7 @@ export function getChars(): CharCounts {
       simulatedInput = simulatedInput.trimEnd();
     }
 
-    const targetWord = isZen
-      ? simulatedInput
-      : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+    const targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
 
     const charCounts = countChars(
       simulatedInput,
