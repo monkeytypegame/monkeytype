@@ -16,6 +16,7 @@ vi.mock("../../../src/ts/config/store", () => ({
 import {
   logTestEvent,
   resetTestEvents,
+  getAllTestEvents,
   __testing,
 } from "../../../src/ts/test/events/data";
 import {
@@ -29,6 +30,7 @@ import {
   getErrorCountHistory,
   getAfkDuration,
   getKeypressDurations,
+  __testing as statsTesting,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -111,6 +113,86 @@ describe("stats.ts", () => {
     resetTestEvents();
     __testing.resetPressedKeys();
     (Config as { mode: string }).mode = "words";
+  });
+
+  describe("getTimerBoundaries", () => {
+    it("returns step boundaries and end", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 3000, timer("step", 2));
+      logTestEvent("timer", 4000, timer("step", 3));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      const events = getAllTestEvents();
+      // end testMs=3000, last step testMs=3000 — gap is 0 < 500, end skipped
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([
+        1000, 2000, 3000,
+      ]);
+    });
+
+    it("includes end as boundary when far enough from last step", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 3000, timer("end", 2));
+
+      const events = getAllTestEvents();
+      // end at testMs 2000, last step at testMs 1000 — gap is 1000 >= 500
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 2000]);
+    });
+
+    it("skips end when too close to last step", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2400, timer("end", 1));
+
+      const events = getAllTestEvents();
+      // end at testMs 1400, last step at testMs 1000 — gap is 400 < 500
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("excludes short trailing interval (<500ms) for non-round test duration", () => {
+      // 1.35s test: step at 1s, end at 1.35s — remainder 350ms < 500
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2350, timer("end", 1));
+
+      const events = getAllTestEvents();
+      // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("excludes short trailing interval (<500ms) for sub one second test duration", () => {
+      // 1.35s test: step at 1s, end at 1.35s — remainder 350ms < 500
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 1350, timer("end", 0));
+
+      const events = getAllTestEvents();
+      // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([]);
+    });
+
+    it("returns empty when no timer events", () => {
+      logTestEvent("keydown", 1000, keyDown());
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([]);
+    });
+
+    it("adjusts end in zen mode by removing trailing afk", () => {
+      (Config as { mode: string }).mode = "zen";
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("keydown", 1500, keyDown());
+      logTestEvent("keyup", 1600, keyUp());
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 3000, timer("step", 2));
+      // last keypress at testMs 500, end at testMs 4000 → lkte = 3500
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const events = getAllTestEvents();
+      const boundaries = statsTesting.getTimerBoundaries(events);
+      // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
+      expect(boundaries).toEqual([500]);
+    });
   });
 
   describe("getStartToFirstKeypressMs", () => {

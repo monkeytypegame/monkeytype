@@ -46,10 +46,12 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
 
   if (endMs !== undefined) {
     const last = boundaries[boundaries.length - 1];
-    if (last === undefined || endMs - last >= 500) {
+    if (endMs - (last ?? 0) >= 500) {
       boundaries.push(endMs);
     }
   }
+
+  console.log(boundaries);
 
   return boundaries;
 }
@@ -553,3 +555,7 @@ export function forceReleaseAllKeys(): void {
     });
   }
 }
+
+export const __testing = {
+  getTimerBoundaries,
+};
