@@ -85,6 +85,7 @@ export type InputEventData = {
       data: string;
       correct: boolean;
       isCompositionEnding: boolean;
+      inputStopped: boolean;
     }
   | {
       inputType: DeleteInputType;

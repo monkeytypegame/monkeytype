@@ -98,9 +98,11 @@ export function getSimulatedInput(events: InputEvent[]): string {
 
   for (const event of events) {
     if (event.data.inputType === "insertText") {
+      if (event.data.inputStopped) continue;
       simulatedInput += event.data.data;
     }
     if (event.data.inputType === "insertCompositionText") {
+      if (event.data.inputStopped) continue;
       simulatedInput += event.data.data;
     }
     if (event.data.inputType === "deleteContentBackward") {

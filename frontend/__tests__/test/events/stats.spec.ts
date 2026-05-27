@@ -60,6 +60,8 @@ function input(
     data: string;
     correct: boolean;
     inputType: string;
+    isCompositionEnding: boolean;
+    inputStopped: boolean;
   }> = {},
 ): InputEventData {
   return {
@@ -68,6 +70,8 @@ function input(
     inputType: "insertText",
     data: "a",
     correct: true,
+    isCompositionEnding: false,
+    inputStopped: false,
     ...overrides,
   } as InputEventData;
 }
@@ -282,6 +286,20 @@ describe("stats.ts", () => {
       const acc = getAccuracy();
       expect(acc.correct).toBe(1);
       expect(acc.incorrect).toBe(0);
+    });
+
+    it("counts inputStopped events in accuracy", () => {
+      logTestEvent("input", 1100, input());
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 1, correct: false, inputStopped: true }),
+      );
+
+      const acc = getAccuracy();
+      expect(acc.correct).toBe(1);
+      expect(acc.incorrect).toBe(1);
+      expect(acc.percentage).toBe(50);
     });
   });
 

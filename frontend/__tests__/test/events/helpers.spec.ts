@@ -10,6 +10,7 @@ let wordIndex = 0;
 function insert(
   chars: string,
   inputType: InsertInputType = "insertText",
+  overrides: Partial<{ inputStopped: boolean }> = {},
 ): InputEvent[] {
   return [...chars].map((char) => {
     nextMs += 10;
@@ -23,6 +24,9 @@ function insert(
         inputType,
         data: char,
         correct: true,
+        isCompositionEnding: false,
+        inputStopped: false,
+        ...overrides,
       },
     };
     if (char !== " ") {
@@ -132,6 +136,16 @@ describe("getSimulatedInput", () => {
   it("handles deleteContentBackward on empty string", () => {
     const events = [...deleteBackward()];
     expect(getSimulatedInput(events)).toBe("");
+  });
+
+  it("skips inputStopped events", () => {
+    expect(
+      getSimulatedInput([
+        ...insert("he"),
+        ...insert("x", "insertText", { inputStopped: true }),
+        ...insert("llo"),
+      ]),
+    ).toBe("hello");
   });
 
   // it("handles insertCompositionText events", () => {
