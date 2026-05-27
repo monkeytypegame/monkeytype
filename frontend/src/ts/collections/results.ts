@@ -30,9 +30,10 @@ import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/snapshot";
 import {
+  getActiveTagsOnce,
+  getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  __nonReactive as tagsNonReactive,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
 
@@ -214,9 +215,9 @@ const resultsCollection = createCollection(
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
-      const knownTagIds = new Set(
-        tagsNonReactive.getTags().map((it) => it._id),
-      );
+      const tagIds = await getTagsOnce();
+
+      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -236,6 +237,12 @@ const resultsCollection = createCollection(
           acc === undefined || acc.timestamp < cur.timestamp ? cur : acc,
         );
         setLastResult(lastResult);
+      }
+
+      if (_keepAlive === null) {
+        _keepAlive = useLiveQuery((q) =>
+          q.from({ results: resultsCollection }),
+        );
       }
 
       return results;
@@ -586,13 +593,13 @@ export async function getUserAverage10(
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
 
+  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+
   const result = await queryOnce((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: buildSettingsResultsQuery(options, {
-          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-        })
+        last10: buildSettingsResultsQuery(options, { tagIds })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
@@ -609,11 +616,10 @@ export async function getUserDailyBest(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
 
   const result = await queryOnce(() =>
-    buildSettingsResultsQuery(options, {
-      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-    })
+    buildSettingsResultsQuery(options, { tagIds })
       .where(({ r }) => gte(r.timestamp, Date.now() - 24 * 60 * 60 * 1000))
       .orderBy(({ r }) => r.wpm, "desc")
       .limit(1)
@@ -683,3 +689,10 @@ function getResults(): SnapshotResult<Mode>[] {
 export const __nonReactive = {
   getResults,
 };
+
+/**
+ * The collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+// oxlint-disable-next-line typescript/no-explicit-any
+let _keepAlive: any = null;

@@ -87,8 +87,14 @@ describe("PresetController", () => {
 
       //THEN
       expect(tagsClearMock).toHaveBeenCalled();
-      expect(tagsSetMock).toHaveBeenNthCalledWith(1, "tagOne", true, false);
-      expect(tagsSetMock).toHaveBeenNthCalledWith(2, "tagTwo", true, false);
+      expect(tagsSetMock).toHaveBeenNthCalledWith(1, {
+        tagId: "tagOne",
+        active: true,
+      });
+      expect(tagsSetMock).toHaveBeenNthCalledWith(2, {
+        tagId: "tagTwo",
+        active: true,
+      });
       expect(tagsSaveActiveMock).toHaveBeenCalled();
     });
 
@@ -141,8 +147,14 @@ describe("PresetController", () => {
 
       //THEN
       expect(tagsClearMock).toHaveBeenCalled();
-      expect(tagsSetMock).toHaveBeenNthCalledWith(1, "tagOne", true, false);
-      expect(tagsSetMock).toHaveBeenNthCalledWith(2, "tagTwo", true, false);
+      expect(tagsSetMock).toHaveBeenNthCalledWith(1, {
+        tagId: "tagOne",
+        active: true,
+      });
+      expect(tagsSetMock).toHaveBeenNthCalledWith(2, {
+        tagId: "tagTwo",
+        active: true,
+      });
       expect(tagsSaveActiveMock).toHaveBeenCalled();
     });
 

@@ -14,7 +14,7 @@ import {
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
-import { isAuthenticated } from "../../../states/core";
+import { getActivePage, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 // import { hotkeys } from "../../../states/hotkeys";
@@ -60,197 +60,200 @@ export function Settings(): JSXElement {
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),
   );
+  const isOpen = (): boolean => getActivePage() === "settings";
 
   return (
-    <div class="grid gap-8">
-      <QuickNav />
-      <Show when={getConfig.showKeyTips}>
-        <div class="text-center text-sub">
-          tip: You can also change all these settings quickly using the command
-          line
-          <br />( <CommandlineHotkey /> )
+    <Show when={isOpen()}>
+      <div class="grid gap-8">
+        <QuickNav />
+        <Show when={getConfig.showKeyTips}>
+          <div class="text-center text-sub">
+            tip: You can also change all these settings quickly using the
+            command line
+            <br />( <CommandlineHotkey /> )
+          </div>
+        </Show>
+        <AccountSettingsNotice />
+        <div>
+          <Section title="behavior">
+            <Show when={isAuthenticated()}>
+              <Tags />
+              <Presets />
+              <AutoSetting key="resultSaving" />
+            </Show>
+            <AutoSetting key="difficulty" />
+            <AutoSetting key="quickRestart" />
+            <AutoSetting key="repeatQuotes" />
+            <AutoSetting key="blindMode" />
+            <AutoSetting key="alwaysShowWordsHistory" />
+            <AutoSetting key="singleListCommandLine" />
+            <MinSpeed />
+            <MinAcc />
+            <MinBurst />
+            <AutoSetting key="britishEnglish" />
+            <Language />
+            <Funbox />
+            <CustomLayoutfluid />
+            <CustomPolyglot />
+          </Section>
+          <Section title="input">
+            <AutoSetting key="freedomMode" />
+            <AutoSetting key="strictSpace" />
+            <AutoSetting key="oppositeShiftMode" />
+            <AutoSetting key="stopOnError" />
+            <AutoSetting key="confidenceMode" />
+            <AutoSetting key="quickEnd" />
+            <AutoSetting key="indicateTypos" />
+            <AutoSetting key="hideExtraLetters" />
+            <AutoSetting key="compositionDisplay" />
+            <AutoSetting key="lazyMode" />
+            <Layout />
+            <AutoSetting key="codeUnindentOnBackspace" />
+          </Section>
+          <Section title="sound">
+            <SoundVolume />
+            <AutoSetting
+              key="playSoundOnClick"
+              wide
+              onOptionClick={(option) => {
+                if (option === "off") return;
+                void previewClick(option);
+              }}
+            />
+            <AutoSetting
+              key="playSoundOnError"
+              wide
+              onOptionClick={(option) => {
+                if (option === "off") return;
+                void previewError(option);
+              }}
+            />
+            <AutoSetting
+              key="playTimeWarning"
+              wide
+              onOptionClick={(option) => {
+                if (option === "off") return;
+                void playTimeWarning();
+              }}
+            />
+          </Section>
+          <Section title="caret">
+            <AutoSetting key="smoothCaret" />
+            <AutoSetting key="caretStyle" wide />
+            <PaceCaret />
+            <AutoSetting key="repeatedPace" />
+            <AutoSetting key="paceCaretStyle" wide />
+          </Section>
+          <Section title="appearance">
+            <AutoSetting key="timerStyle" wide />
+            <AutoSetting key="liveSpeedStyle" />
+            <AutoSetting key="liveAccStyle" />
+            <AutoSetting key="liveBurstStyle" />
+            <AutoSetting key="timerColor" />
+            <AutoSetting key="timerOpacity" />
+            <AutoSetting key="highlightMode" wide />
+            <AutoSetting key="typedEffect" />
+            <AutoSetting key="tapeMode" />
+            <AutoSetting key="tapeMargin" />
+            <AutoSetting key="smoothLineScroll" />
+            <AutoSetting key="showAllLines" />
+            <AutoSetting key="alwaysShowDecimalPlaces" />
+            <AutoSetting key="typingSpeedUnit" />
+            <AutoSetting key="startGraphsAtZero" />
+            <MaxLineWidth />
+            <AutoSetting key="fontSize" />
+            <FontFamily />
+            <AutoSetting key="keymapMode" />
+            <Show when={getConfig.keymapMode !== "off"}>
+              <KeymapLayout />
+              <AutoSetting key="keymapStyle" wide />
+              <AutoSetting key="keymapLegendStyle" wide />
+              <AutoSetting key="keymapShowTopRow" wide />
+              <KeymapSize />
+            </Show>
+          </Section>
+          <Section title="theme">
+            <AutoSetting key="flipTestColors" />
+            <AutoSetting key="colorfulMode" />
+            <CustomBackground />
+            <Show when={getConfig.customBackground !== "" || hasLocalBg()}>
+              <CustomBackgroundFilters />
+            </Show>
+            <AutoSwitchTheme />
+            <AutoSetting key="randomTheme" wide />
+            <Theme />
+          </Section>
+          <Section title="hide elements">
+            <AutoSetting key="showKeyTips" />
+            <AutoSetting key="showOutOfFocusWarning" />
+            <AutoSetting key="capsLockWarning" />
+            <AutoSetting key="showAverage" />
+          </Section>
+          <Section title="danger zone">
+            <ImportExport />
+            <AutoSetting key="ads" />
+            <Setting
+              key="cookies"
+              title="update cookie preferences"
+              description="If you changed your mind about which cookies you consent to, you can change your preferences here."
+              fa={{
+                icon: "fa-cookie-bite",
+              }}
+              inputs={
+                <Button
+                  class="w-full"
+                  onClick={() => {
+                    showModal("Cookies");
+                  }}
+                >
+                  open
+                </Button>
+              }
+            />
+            <AnimationFpsLimit />
+            <Setting
+              key="resetSettings"
+              title="reset settings"
+              description={
+                <div>
+                  Resets settings to the default (but doesn&apos;t touch your
+                  tags and presets).
+                  <br />
+                  <div class="text-error">You can&apos;t undo this!</div>
+                </div>
+              }
+              fa={{
+                icon: "fa-undo",
+              }}
+              inputs={
+                <Button
+                  class="w-full"
+                  danger
+                  onClick={() => {
+                    showSimpleModal({
+                      title: "Are you sure?",
+                      buttonText: "reset",
+                      execFn: async () => {
+                        await resetConfig();
+                        await fileStorage.deleteFile("LocalBackgroundFile");
+                        return {
+                          status: "success",
+                          message: "Settings reset",
+                        };
+                      },
+                    });
+                  }}
+                >
+                  reset settings
+                </Button>
+              }
+            />
+          </Section>
         </div>
-      </Show>
-      <AccountSettingsNotice />
-      <div>
-        <Section title="behavior">
-          <Show when={isAuthenticated()}>
-            <Tags />
-            <Presets />
-            <AutoSetting key="resultSaving" />
-          </Show>
-          <AutoSetting key="difficulty" />
-          <AutoSetting key="quickRestart" />
-          <AutoSetting key="repeatQuotes" />
-          <AutoSetting key="blindMode" />
-          <AutoSetting key="alwaysShowWordsHistory" />
-          <AutoSetting key="singleListCommandLine" />
-          <MinSpeed />
-          <MinAcc />
-          <MinBurst />
-          <AutoSetting key="britishEnglish" />
-          <Language />
-          <Funbox />
-          <CustomLayoutfluid />
-          <CustomPolyglot />
-        </Section>
-        <Section title="input">
-          <AutoSetting key="freedomMode" />
-          <AutoSetting key="strictSpace" />
-          <AutoSetting key="oppositeShiftMode" />
-          <AutoSetting key="stopOnError" />
-          <AutoSetting key="confidenceMode" />
-          <AutoSetting key="quickEnd" />
-          <AutoSetting key="indicateTypos" />
-          <AutoSetting key="hideExtraLetters" />
-          <AutoSetting key="compositionDisplay" />
-          <AutoSetting key="lazyMode" />
-          <Layout />
-          <AutoSetting key="codeUnindentOnBackspace" />
-        </Section>
-        <Section title="sound">
-          <SoundVolume />
-          <AutoSetting
-            key="playSoundOnClick"
-            wide
-            onOptionClick={(option) => {
-              if (option === "off") return;
-              void previewClick(option);
-            }}
-          />
-          <AutoSetting
-            key="playSoundOnError"
-            wide
-            onOptionClick={(option) => {
-              if (option === "off") return;
-              void previewError(option);
-            }}
-          />
-          <AutoSetting
-            key="playTimeWarning"
-            wide
-            onOptionClick={(option) => {
-              if (option === "off") return;
-              void playTimeWarning();
-            }}
-          />
-        </Section>
-        <Section title="caret">
-          <AutoSetting key="smoothCaret" />
-          <AutoSetting key="caretStyle" wide />
-          <PaceCaret />
-          <AutoSetting key="repeatedPace" />
-          <AutoSetting key="paceCaretStyle" wide />
-        </Section>
-        <Section title="appearance">
-          <AutoSetting key="timerStyle" wide />
-          <AutoSetting key="liveSpeedStyle" />
-          <AutoSetting key="liveAccStyle" />
-          <AutoSetting key="liveBurstStyle" />
-          <AutoSetting key="timerColor" />
-          <AutoSetting key="timerOpacity" />
-          <AutoSetting key="highlightMode" wide />
-          <AutoSetting key="typedEffect" />
-          <AutoSetting key="tapeMode" />
-          <AutoSetting key="tapeMargin" />
-          <AutoSetting key="smoothLineScroll" />
-          <AutoSetting key="showAllLines" />
-          <AutoSetting key="alwaysShowDecimalPlaces" />
-          <AutoSetting key="typingSpeedUnit" />
-          <AutoSetting key="startGraphsAtZero" />
-          <MaxLineWidth />
-          <AutoSetting key="fontSize" />
-          <FontFamily />
-          <AutoSetting key="keymapMode" />
-          <Show when={getConfig.keymapMode !== "off"}>
-            <KeymapLayout />
-            <AutoSetting key="keymapStyle" wide />
-            <AutoSetting key="keymapLegendStyle" wide />
-            <AutoSetting key="keymapShowTopRow" wide />
-            <KeymapSize />
-          </Show>
-        </Section>
-        <Section title="theme">
-          <AutoSetting key="flipTestColors" />
-          <AutoSetting key="colorfulMode" />
-          <CustomBackground />
-          <Show when={getConfig.customBackground !== "" || hasLocalBg()}>
-            <CustomBackgroundFilters />
-          </Show>
-          <AutoSwitchTheme />
-          <AutoSetting key="randomTheme" wide />
-          <Theme />
-        </Section>
-        <Section title="hide elements">
-          <AutoSetting key="showKeyTips" />
-          <AutoSetting key="showOutOfFocusWarning" />
-          <AutoSetting key="capsLockWarning" />
-          <AutoSetting key="showAverage" />
-        </Section>
-        <Section title="danger zone">
-          <ImportExport />
-          <AutoSetting key="ads" />
-          <Setting
-            key="cookies"
-            title="update cookie preferences"
-            description="If you changed your mind about which cookies you consent to, you can change your preferences here."
-            fa={{
-              icon: "fa-cookie-bite",
-            }}
-            inputs={
-              <Button
-                class="w-full"
-                onClick={() => {
-                  showModal("Cookies");
-                }}
-              >
-                open
-              </Button>
-            }
-          />
-          <AnimationFpsLimit />
-          <Setting
-            key="resetSettings"
-            title="reset settings"
-            description={
-              <div>
-                Resets settings to the default (but doesn&apos;t touch your tags
-                and presets).
-                <br />
-                <div class="text-error">You can&apos;t undo this!</div>
-              </div>
-            }
-            fa={{
-              icon: "fa-undo",
-            }}
-            inputs={
-              <Button
-                class="w-full"
-                danger
-                onClick={() => {
-                  showSimpleModal({
-                    title: "Are you sure?",
-                    buttonText: "reset",
-                    execFn: async () => {
-                      await resetConfig();
-                      await fileStorage.deleteFile("LocalBackgroundFile");
-                      return {
-                        status: "success",
-                        message: "Settings reset",
-                      };
-                    },
-                  });
-                }}
-              >
-                reset settings
-              </Button>
-            }
-          />
-        </Section>
-      </div>
 
-      <AccountSettingsNotice />
-    </div>
+        <AccountSettingsNotice />
+      </div>
+    </Show>
   );
 }
 
@@ -262,7 +265,7 @@ function AccountSettingsNotice(): JSXElement {
   });
   return (
     <Show when={!dismissed()}>
-      <div class="grid grid-cols-[auto_1fr_auto] items-center gap-8 rounded px-8 py-4 ring-4 ring-sub-alt">
+      <div class="grid grid-cols-[auto_1fr] items-center gap-4 rounded px-4 py-4 ring-4 ring-sub-alt md:grid-cols-[auto_1fr_auto] md:gap-8">
         <Fa icon="fa-user-cog" class="text-4xl text-sub" />
         <div>
           Account settings have moved. You can now access them by hovering over
@@ -272,7 +275,7 @@ function AccountSettingsNotice(): JSXElement {
         <Button
           text="go to account settings"
           href="/account-settings"
-          class="p-4"
+          class="col-span-2 p-4 md:col-span-1"
           router-link
           onClick={() => {
             setDismissed(true);

@@ -203,3 +203,9 @@ export const __nonReactive = {
   getPresets,
   getPreset,
 };
+
+/**
+ * The collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+const _keepAlive = usePresetsLiveQuery();
