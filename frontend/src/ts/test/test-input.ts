@@ -319,10 +319,6 @@ export function forceKeyup(now: number): void {
     (a, b) => a[1].timestamp - b[1].timestamp,
   );
 
-  console.log("old system");
-  console.log("forcing release with duration", avg);
-  console.log("releasing keys", Object.keys(keyDownData));
-
   for (const [key, { index }] of orderedKeys) {
     keypressTimings.duration.array[index] = avg;
 
