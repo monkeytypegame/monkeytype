@@ -154,5 +154,6 @@ export function calculateWpm(
   charCount: number,
   durationSeconds: number,
 ): number {
+  if (durationSeconds <= 0) return 0;
   return charCount / 5 / (durationSeconds / 60);
 }
