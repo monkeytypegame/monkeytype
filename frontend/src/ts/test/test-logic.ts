@@ -1205,6 +1205,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
       continue;
     }
 
+    if (key === "consistency") {
+      continue;
+    }
+
     // if (key === "chartData") {
     //   val1 = {
     //     //@ts-expect-error temp
@@ -1295,11 +1299,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
           );
         }
       }
-    } else if (
-      key === "consistency" ||
-      key === "wpmConsistency" ||
-      key === "keyConsistency"
-    ) {
+    } else if (key === "wpmConsistency" || key === "keyConsistency") {
       const a = val1 as number;
       const b = val2 as number;
       const ref = Math.max(
