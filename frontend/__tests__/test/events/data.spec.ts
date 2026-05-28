@@ -458,6 +458,42 @@ describe("data.ts", () => {
       });
     });
 
+    describe("source array sync", () => {
+      it("cleanup persists after cache invalidation", () => {
+        logTestEvent("keydown", 900, keyDown("KeyA"));
+        logTestEvent("keyup", 910, keyUp("KeyA"));
+        logTestEvent("keydown", 950, keyDown("KeyS"));
+        logTestEvent("timer", 1000, timerData("start", 0));
+        logTestEvent("keyup", 1100, keyUp("KeyS"));
+        logTestEvent("timer", 2000, timerData("end", 1));
+        logTestEvent("input", 2100, inputData({ charIndex: 1 }));
+        logTestEvent("keydown", 2200, keyDown("KeyD"));
+        logTestEvent("keyup", 2300, keyUp("KeyD"));
+
+        cleanupData();
+
+        // simulate cache invalidation + rebuild by logging a new event
+        logTestEvent("timer", 2500, timerData("step", 2));
+        const events = getAllTestEvents();
+
+        // pre-start KeyA keydown/keyup should still be gone
+        const keydowns = events.filter((e) => e.type === "keydown");
+        expect(keydowns).toHaveLength(1);
+        expect((keydowns[0] as KeydownEvent).data.code).toBe("KeyS");
+
+        // post-end input and KeyD keydown/keyup should still be gone
+        const inputs = events.filter((e) => e.type === "input");
+        expect(inputs).toHaveLength(0);
+        expect(
+          events.filter(
+            (e) =>
+              e.type === "keydown" &&
+              (e.data as KeydownEventData).code === "KeyD",
+          ),
+        ).toHaveLength(0);
+      });
+    });
+
     describe("combined pre-start and post-end", () => {
       it("filters both pre-start and post-end events", () => {
         logTestEvent("keydown", 900, keyDown("KeyA"));

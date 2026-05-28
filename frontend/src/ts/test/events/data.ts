@@ -200,6 +200,23 @@ export function cleanupData(): void {
       return true;
     });
   }
+
+  // sync source arrays back from cleaned cache
+  keydownEvents = cachedAllEvents.filter(
+    (e): e is KeydownEvent => e.type === "keydown",
+  );
+  keyupEvents = cachedAllEvents.filter(
+    (e): e is KeyupEvent => e.type === "keyup",
+  );
+  timerEvents = cachedAllEvents.filter(
+    (e): e is TimerEvent => e.type === "timer",
+  );
+  inputEvents = cachedAllEvents.filter(
+    (e): e is InputEvent => e.type === "input",
+  );
+  compositionEvents = cachedAllEvents.filter(
+    (e): e is CompositionTestEvent => e.type === "composition",
+  );
 }
 
 export function getAllTestEvents(): TestEvent[] {
