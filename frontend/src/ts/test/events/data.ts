@@ -17,6 +17,7 @@ import { keysToTrack } from "./helpers";
 import { start } from "../test-stats";
 import { Keycode } from "../../constants/keys";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { resultCalculating } from "../test-ui";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -53,6 +54,10 @@ export function logTestEvent(
 
     if (pressedKeys.has(code)) {
       //already pressed - ignore
+      return;
+    }
+
+    if (resultCalculating) {
       return;
     }
 
@@ -123,6 +128,7 @@ export function logTestEvent(
   } else {
     throw new Error(`Unsupported event type: ${type}`);
   }
+  console.debug(`Test events - logTestEvent - ${now}ms - ${type}`, eventData);
 }
 
 function invalidateCache(): void {
