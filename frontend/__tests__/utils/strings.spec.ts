@@ -848,6 +848,151 @@ describe("string utils", () => {
             missed: 0,
           },
         },
+        {
+          description: "single incorrect char",
+          input: {
+            inputWord: "hxllo ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "one extra char",
+          input: {
+            inputWord: "helloo ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "missed chars, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description:
+            "last partial match counts correctWord, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 3,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last incorrect partial word doesn't count missed",
+          input: {
+            inputWord: "xxx",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last partial no count, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "non-last word ignores shouldLastPartialWordCount",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "empty input counts all as missed",
+          input: {
+            inputWord: "",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 5,
+          },
+        },
+        {
+          description: "empty target counts all as extra",
+          input: {
+            inputWord: "hello",
+            targetWord: "",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 5,
+            missed: 0,
+          },
+        },
       ];
 
       it.each(testCases)("$description", ({ input, expected }) => {
@@ -861,127 +1006,10 @@ describe("string utils", () => {
         ).toEqual(expected);
       });
     });
-  });
-
-  describe("countChars", () => {
-    it("counts all correct for exact match", () => {
-      const result = Strings.countChars("hello ", "hello ", false, false);
-      expect(result).toEqual({
-        allCorrect: 6,
-        correctWord: 6,
-        incorrect: 0,
-        extra: 0,
-        missed: 0,
-      });
-    });
-
-    it("counts incorrect chars", () => {
-      const result = Strings.countChars("hxllo ", "hello ", false, false);
-      expect(result).toEqual({
-        allCorrect: 4,
-        correctWord: 0,
-        incorrect: 2, // 'x' + space (word not correct)
-        extra: 0,
-        missed: 0,
-      });
-    });
-
-    it("counts extra chars", () => {
-      const result = Strings.countChars("helloo ", "hello ", false, false);
-      expect(result).toEqual({
-        allCorrect: 5,
-        correctWord: 0,
-        incorrect: 1, // space in wrong position
-        extra: 1,
-        missed: 0,
-      });
-    });
-
-    it("counts missed chars", () => {
-      const result = Strings.countChars("hel", "hello", false, false);
-      expect(result).toEqual({
-        allCorrect: 3,
-        correctWord: 0,
-        incorrect: 0,
-        extra: 0,
-        missed: 2,
-      });
-    });
 
     it("space counts as incorrect when word is wrong", () => {
       const result = Strings.countChars("hell ", "hello ", false, false);
-      expect(result.incorrect).toBe(1); // space matched but word wrong
-    });
-
-    it("space counts as correct when word matches", () => {
-      const result = Strings.countChars("hello ", "hello ", false, false);
-      expect(result.allCorrect).toBe(6);
-    });
-
-    it("last word partial match counts correctWord when shouldLastPartialWordCount", () => {
-      const result = Strings.countChars("hel", "hello", true, true);
-      expect(result).toEqual({
-        allCorrect: 3,
-        correctWord: 3,
-        incorrect: 0,
-        extra: 0,
-        missed: 0, // missed chars not counted for partial last word
-      });
-    });
-
-    it("last incorrect partial word doesn't count missed", () => {
-      const result = Strings.countChars("xxx", "hello", true, true);
-      expect(result).toEqual({
-        allCorrect: 0,
-        correctWord: 0,
-        incorrect: 3,
-        extra: 0,
-        missed: 0, // missed chars not counted for partial last word
-      });
-    });
-
-    it("last word partial match does not count correctWord without shouldLastPartialWordCount", () => {
-      const result = Strings.countChars("hel", "hello", true, false);
-      expect(result).toEqual({
-        allCorrect: 3,
-        correctWord: 0,
-        incorrect: 0,
-        extra: 0,
-        missed: 2,
-      });
-    });
-
-    it("non-last word ignores shouldLastPartialWordCount", () => {
-      const result = Strings.countChars("hel", "hello", false, true);
-      expect(result).toEqual({
-        allCorrect: 3,
-        correctWord: 0,
-        incorrect: 0,
-        extra: 0,
-        missed: 2,
-      });
-    });
-
-    it("empty input counts all as missed", () => {
-      const result = Strings.countChars("", "hello", false, false);
-      expect(result).toEqual({
-        allCorrect: 0,
-        correctWord: 0,
-        incorrect: 0,
-        extra: 0,
-        missed: 5,
-      });
-    });
-
-    it("empty target counts all as extra", () => {
-      const result = Strings.countChars("hello", "", false, false);
-      expect(result).toEqual({
-        allCorrect: 0,
-        correctWord: 0,
-        incorrect: 0,
-        extra: 5,
-        missed: 0,
-      });
+      expect(result.incorrect).toBe(1);
     });
   });
 });
