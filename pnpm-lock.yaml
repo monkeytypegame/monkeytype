@@ -306,9 +306,6 @@ importers:
       '@sentry/vite-plugin':
         specifier: 5.2.0
         version: 5.2.0(encoding@0.1.13)(rollup@2.80.0)
-      '@solid-devtools/overlay':
-        specifier: 0.33.5
-        version: 0.33.5(solid-js@1.9.10)
       '@solid-primitives/refs':
         specifier: 1.1.3
         version: 1.1.3(solid-js@1.9.10)
@@ -327,24 +324,15 @@ importers:
       '@tanstack/solid-db':
         specifier: 0.2.19
         version: 0.2.19(solid-js@1.9.10)(typescript@6.0.2)
-      '@tanstack/solid-devtools':
-        specifier: 0.8.2
-        version: 0.8.2(csstype@3.2.3)(solid-js@1.9.10)
       '@tanstack/solid-form':
         specifier: 1.29.1
         version: 1.29.1(solid-js@1.9.10)
       '@tanstack/solid-hotkeys':
         specifier: 0.9.1
         version: 0.9.1(solid-js@1.9.10)
-      '@tanstack/solid-hotkeys-devtools':
-        specifier: 0.6.6
-        version: 0.6.6(@tanstack/hotkeys@0.7.1)(@types/react@19.2.14)(csstype@3.2.3)(react@18.3.1)(solid-js@1.9.10)
       '@tanstack/solid-query':
         specifier: 5.100.3
         version: 5.100.3(solid-js@1.9.10)
-      '@tanstack/solid-query-devtools':
-        specifier: 5.100.3
-        version: 5.100.3(@tanstack/solid-query@5.100.3(solid-js@1.9.10))(solid-js@1.9.10)
       '@tanstack/solid-table':
         specifier: 8.21.3
         version: 8.21.3(solid-js@1.9.10)
@@ -442,6 +430,9 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
+      '@solid-devtools/overlay':
+        specifier: 0.33.5
+        version: 0.33.5(solid-js@1.9.10)
       '@solidjs/testing-library':
         specifier: 0.8.10
         version: 0.8.10(solid-js@1.9.10)
@@ -451,6 +442,15 @@ importers:
       '@tanstack/eslint-plugin-query':
         specifier: 5.100.3
         version: 5.100.3(eslint@9.39.1(jiti@2.6.1))(typescript@6.0.2)
+      '@tanstack/solid-devtools':
+        specifier: 0.8.2
+        version: 0.8.2(csstype@3.2.3)(solid-js@1.9.10)
+      '@tanstack/solid-hotkeys-devtools':
+        specifier: 0.6.6
+        version: 0.6.6(@tanstack/hotkeys@0.7.1)(@types/react@19.2.14)(csstype@3.2.3)(react@18.3.1)(solid-js@1.9.10)
+      '@tanstack/solid-query-devtools':
+        specifier: 5.100.3
+        version: 5.100.3(@tanstack/solid-query@5.100.3(solid-js@1.9.10))(solid-js@1.9.10)
       '@testing-library/dom':
         specifier: 10.4.1
         version: 10.4.1
