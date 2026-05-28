@@ -495,10 +495,6 @@ export function forceReleaseAllKeys(): void {
     avg = roundTo2(mean(filteredDurations));
   }
 
-  console.log("new system");
-  console.log("forcing release with duration", avg);
-  console.log("releasing keys", Array.from(getPressedKeys().keys()));
-
   for (const [key, { timestamp }] of getPressedKeys().entries()) {
     logTestEvent("keyup", timestamp + avg, {
       code: key as Keycode | "NoCode" | `NoCode${number}`, //entries is not picking up the type
