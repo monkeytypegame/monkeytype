@@ -206,7 +206,11 @@ export function getAllTestEvents(): TestEvent[] {
     ...inputEvents,
     ...compositionEvents,
   ]
-    .sort((a, b) => a.ms - b.ms)
+    .sort(
+      (a, b) =>
+        a.ms - b.ms ||
+        (a.type === "timer" ? 1 : 0) - (b.type === "timer" ? 1 : 0),
+    )
     .map((event) => {
       event.testMs = roundTo2(event.ms - start);
       return event;

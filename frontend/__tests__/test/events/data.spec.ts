@@ -89,6 +89,17 @@ describe("data.ts", () => {
       expect(events[2]!.type).toBe("input");
     });
 
+    it("input events with the same ms as timer end are kept", () => {
+      logTestEvent("timer", 1000, timerData("start", 0));
+      logTestEvent("timer", 2000, timerData("end", 1));
+      logTestEvent("input", 2000, inputData());
+
+      cleanupData();
+      const events = getAllTestEvents();
+      const inputs = events.filter((e) => e.type === "input");
+      expect(inputs).toHaveLength(1);
+    });
+
     it("computes testMs relative to start", () => {
       logTestEvent("timer", 1500, timerData("start", 0));
       const events = getAllTestEvents();
