@@ -79,16 +79,24 @@ export function logTestEvent(
     });
   } else if (type === "keyup") {
     const data = eventData as KeyupEventData;
-    const code = data.code as Keycode | "NoCode";
-
-    if (!keysToTrack.has(code)) {
-      return;
-    }
+    const code = data.code;
 
     let key: Keycode | "NoCode" | `NoCode${number}` = code;
-    if (key === "NoCode") {
-      noCodeIndex--;
-      key = `NoCode${noCodeIndex}`;
+
+    if (/^NoCode\d+$/.test(code)) {
+      // already indexed (e.g. from forceReleaseAllKeys)
+    } else {
+      if (!keysToTrack.has(code as Keycode | "NoCode")) {
+        return;
+      }
+
+      if (code === "NoCode") {
+        key = `NoCode${noCodeIndex - 1}`;
+        if (!pressedKeys.has(key)) {
+          return;
+        }
+        noCodeIndex--;
+      }
     }
 
     if (!pressedKeys.has(key)) {

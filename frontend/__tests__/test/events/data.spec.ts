@@ -195,6 +195,60 @@ describe("data.ts", () => {
 
       expect(getAllTestEvents()).toHaveLength(0);
     });
+
+    it("stray NoCode keyup does not corrupt noCodeIndex", () => {
+      // stray keyup with no matching keydown
+      logTestEvent("keyup", 1010, keyUp("NoCode"));
+
+      // subsequent keydown/keyup should still work correctly
+      logTestEvent("keydown", 1020, keyDown("NoCode"));
+      logTestEvent("keyup", 1030, keyUp("NoCode"));
+
+      const events = getAllTestEvents();
+      expect(events).toHaveLength(2);
+      expect((events[0] as KeydownEvent).data.code).toBe("NoCode0");
+      expect((events[1] as KeyupEvent).data.code).toBe("NoCode0");
+    });
+
+    it("accepts already-indexed NoCode keyup", () => {
+      logTestEvent("keydown", 1010, keyDown("NoCode"));
+      logTestEvent("keydown", 1020, keyDown("NoCode"));
+
+      // simulate forceReleaseAllKeys passing indexed codes directly
+      logTestEvent("keyup", 1030, {
+        code: "NoCode0",
+        ctrl: false,
+        shift: false,
+        alt: false,
+        meta: false,
+      } as KeyupEventData);
+      logTestEvent("keyup", 1040, {
+        code: "NoCode1",
+        ctrl: false,
+        shift: false,
+        alt: false,
+        meta: false,
+      } as KeyupEventData);
+
+      const events = getAllTestEvents();
+      expect(events).toHaveLength(4);
+      const keyups = events.filter((e) => e.type === "keyup");
+      expect(keyups).toHaveLength(2);
+      expect((keyups[0] as KeyupEvent).data.code).toBe("NoCode0");
+      expect((keyups[1] as KeyupEvent).data.code).toBe("NoCode1");
+    });
+
+    it("rejects indexed NoCode keyup with no matching keydown", () => {
+      logTestEvent("keyup", 1010, {
+        code: "NoCode0",
+        ctrl: false,
+        shift: false,
+        alt: false,
+        meta: false,
+      } as KeyupEventData);
+
+      expect(getAllTestEvents()).toHaveLength(0);
+    });
   });
 
   describe("getInputEvents", () => {
