@@ -282,7 +282,10 @@ export function getInputEvents(): InputEvent[] {
   );
 }
 
-export function getPressedKeys(): Map<string, { timestamp: number }> {
+export function getPressedKeys(): Map<
+  Keycode | "NoCode" | `NoCode${number}`,
+  { timestamp: number }
+> {
   return pressedKeys;
 }
 
