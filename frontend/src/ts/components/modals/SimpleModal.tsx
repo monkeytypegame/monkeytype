@@ -10,7 +10,14 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import { z, ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
+import {
+  z,
+  ZodDate,
+  ZodDefault,
+  ZodFirstPartyTypeKind,
+  ZodNumber,
+  ZodTypeAny,
+} from "zod";
 
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -426,6 +433,11 @@ export function convertFn<T>(
         const date = new Date(val as string);
         return preprocess(date);
       };
+
+    case ZodFirstPartyTypeKind.ZodDefault: {
+      const defaultSchema = schema as ZodDefault<ZodTypeAny>;
+      return convertFn(input, defaultSchema._def.innerType);
+    }
 
     default:
       return (val) => preprocess(val);

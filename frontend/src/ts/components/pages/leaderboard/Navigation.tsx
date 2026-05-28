@@ -1,4 +1,3 @@
-import { PageNumberSchema } from "@monkeytype/schemas/util";
 import { JSXElement, Setter, Show } from "solid-js";
 import { z } from "zod";
 
@@ -62,18 +61,18 @@ export function Navigation(props: {
           showSimpleModal({
             title: "Go to page",
             schema: z.object({
-              pageNumber: PageNumberSchema,
+              //not using PageNumberSchema because we don't allow zero here
+              pageNumber: z.number().int().safe().min(1),
             }),
             inputs: {
               pageNumber: {
                 type: "number",
                 placeholder: "Page number",
-                preprocess: (it) => it - 1,
               },
             },
             buttonText: "Go",
             execFn: async ({ pageNumber }) => {
-              setPage(pageNumber);
+              setPage(pageNumber - 1);
               return {
                 status: "success",
                 message: `Navigating to page ${pageNumber}`,
