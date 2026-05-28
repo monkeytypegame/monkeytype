@@ -85,12 +85,20 @@ export type GenericSimpleModalInput = SimpleModalInput<any>;
 
 export type ExecReturn = {
   status: "success" | "notice" | "error";
-  message: string;
-  showNotification?: false;
-  notificationOptions?: AddNotificationOptions;
   afterHide?: () => void;
   alwaysHide?: boolean;
-};
+} & (
+  | {
+      message?: never;
+      showNotification: false;
+      notificationOptions?: never;
+    }
+  | {
+      message: string;
+      showNotification?: never;
+      notificationOptions?: AddNotificationOptions;
+    }
+);
 
 // oxlint-disable-next-line typescript/no-explicit-any
 export type InputsFromSchema<S extends z.ZodObject<any>> = {

@@ -36,7 +36,6 @@ export function ImportExport(): JSXElement {
                   } catch (e) {}
                   return {
                     status: "success",
-                    message: "Import",
                     showNotification: false,
                   };
                 },
@@ -78,7 +77,6 @@ export function ImportExport(): JSXElement {
                       execFn: async () => {
                         return {
                           status: "success",
-                          message: "Copied",
                           showNotification: false,
                         };
                       },

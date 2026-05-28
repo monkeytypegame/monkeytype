@@ -75,7 +75,6 @@ export function Navigation(props: {
               setPage(pageNumber - 1);
               return {
                 status: "success",
-                message: `Navigating to page ${pageNumber}`,
                 showNotification: false,
               };
             },

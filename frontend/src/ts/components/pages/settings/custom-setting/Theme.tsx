@@ -183,7 +183,6 @@ export function Theme(): JSXElement {
                       execFn: async () => {
                         return {
                           status: "success",
-                          message: "Copied",
                           showNotification: false,
                         };
                       },
@@ -194,7 +193,6 @@ export function Theme(): JSXElement {
 
                 return {
                   status: "success",
-                  message: "Copied",
                   showNotification: false,
                 };
               },
@@ -395,7 +393,6 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
 
               return {
                 status: "success",
-                message: "",
                 showNotification: false,
               };
             },

@@ -377,9 +377,9 @@ export class SimpleModal {
     const vals: string[] = this.inputs.map((it) => it.currentValue());
     void this.execFn(this, ...vals).then((res) => {
       hideLoaderBar();
-      if (res.showNotification ?? true) {
+      if (!res.showNotification) {
         addNotificationWithLevel(
-          res.message,
+          res.message as string,
           res.status,
           res.notificationOptions,
         );
