@@ -1339,6 +1339,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
       `Completed event mismatch: ${notMatching.join(", ")}`,
       { important: true },
     );
+    try {
+      void Ape.results.reportCompletedEventMismatch({
+        body: {
+          notMatching,
+          // ce: ce as Record<string, unknown>,
+          // ce2: ce2 as Record<string, unknown>,
+        },
+      });
+    } catch {}
   }
 
   console.debug("Completed event object", ce);

@@ -59,6 +59,15 @@ export const AddResultRequestSchema = z.object({
 });
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
+export const ReportCompletedEventMismatchRequestSchema = z.object({
+  notMatching: z.array(z.string()),
+  // ce: z.record(z.unknown()),
+  // ce2: z.record(z.unknown()),
+});
+export type ReportCompletedEventMismatchRequest = z.infer<
+  typeof ReportCompletedEventMismatchRequestSchema
+>;
+
 export const AddResultResponseSchema = responseWithData(
   PostResultResponseSchema,
 );
@@ -159,6 +168,20 @@ export const resultsContract = c.router(
       },
       metadata: meta({
         rateLimit: "resultsTagsUpdate",
+      }),
+    },
+    reportCompletedEventMismatch: {
+      summary: "report completed event mismatch",
+      description:
+        "Report a mismatch between old and new completed event builders.",
+      method: "POST",
+      path: "/mismatch",
+      body: ReportCompletedEventMismatchRequestSchema.strict(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: meta({
+        rateLimit: "resultsMismatchReport",
       }),
     },
     deleteAll: {

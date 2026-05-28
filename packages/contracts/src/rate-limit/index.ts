@@ -165,6 +165,11 @@ export const limits = {
     max: 10,
   },
 
+  resultsMismatchReport: {
+    window: 15 * 60 * 1000, // 15 min
+    max: 1,
+  },
+
   resultsLeaderboardGet: {
     window: "hour",
     max: 60,
