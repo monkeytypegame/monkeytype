@@ -1225,7 +1225,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     keySpacing: keypressSpacing,
     keyDuration: getKeypressDurations(),
     keyOverlap: getKeypressOverlap(),
-  } as unknown as Omit<CompletedEvent, "hash" | "uid">;
+  } as Omit<CompletedEvent, "hash" | "uid">;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
