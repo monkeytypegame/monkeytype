@@ -78,11 +78,7 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import {
-  resetTestEvents,
-  logEventsDataToTheConsoleTable,
-  cleanupData,
-} from "./events/data";
+import { resetTestEvents, cleanupData } from "./events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -1068,7 +1064,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   cleanupData();
 
-  logEventsDataToTheConsoleTable();
+  // logEventsDataToTheConsoleTable();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
