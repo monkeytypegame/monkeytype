@@ -49,7 +49,7 @@ export function AccountPage(): JSXElement {
   const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
 
   return (
-    <Page id="account">
+    <Page id="account" needsAuthentication>
       <div class="flex flex-col gap-8">
         <VerifyNotice />
         <MyProfile />
