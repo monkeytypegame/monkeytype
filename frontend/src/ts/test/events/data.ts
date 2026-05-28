@@ -267,14 +267,6 @@ export function logEventsDataToTheConsoleTable(): void {
   );
 }
 
-//@ts-expect-error testing
-window["testevents"] = {
-  getAllTestEvents,
-  getInputEvents,
-  logEventsDataToTheConsole,
-  logEventsDataToTheConsoleTable,
-};
-
 export function resetTestEvents(): void {
   keydownEvents = [];
   keyupEvents = [];
