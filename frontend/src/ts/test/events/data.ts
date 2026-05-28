@@ -291,6 +291,8 @@ export function resetTestEvents(): void {
   inputEvents = [];
   compositionEvents = [];
   cachedAllEvents = undefined;
+  pressedKeys = new Map();
+  noCodeIndex = 0;
 }
 
 export function getInputEvents(): InputEvent[] {
