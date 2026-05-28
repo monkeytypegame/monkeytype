@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/solid-query";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, Show } from "solid-js";
+import { z } from "zod";
 
 import Ape from "../../../ape";
 import {
@@ -56,30 +57,30 @@ export function FriendsList() {
           onClick={() =>
             showSimpleModal({
               title: "Add a friend",
-              inputs: [
-                {
+              schema: z.object({ receiverName: UserNameSchema }),
+              inputs: {
+                receiverName: {
                   placeholder: "user name",
                   type: "text",
                   initVal: "",
+
                   validation: {
-                    schema: UserNameSchema,
                     isValid: remoteValidation(
-                      async (name) =>
+                      async (name: string) =>
                         Ape.users.getNameAvailability({ params: { name } }),
                       { check: (data) => !data.available || "Unknown user" },
                     ),
                     debounceDelay: 1000,
                   },
                 },
-              ],
+              },
               buttonText: "request",
-              execFn: async (receiverName: string) => {
+              execFn: async ({ receiverName }) => {
                 await addConnection({ receiverName });
 
                 return {
                   showNotification: false,
                   status: "success",
-                  message: "",
                 };
               },
             })
