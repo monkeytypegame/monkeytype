@@ -14,7 +14,6 @@ import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
-import { Keycode } from "../../constants/keys";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -497,7 +496,7 @@ export function forceReleaseAllKeys(): void {
 
   for (const [key, { timestamp }] of getPressedKeys().entries()) {
     logTestEvent("keyup", timestamp + avg, {
-      code: key as Keycode | "NoCode" | `NoCode${number}`, //entries is not picking up the type
+      code: key, //entries is not picking up the type
       ctrl: false,
       shift: false,
       alt: false,
