@@ -17,7 +17,7 @@ import { keysToTrack } from "./helpers";
 import { start } from "../test-stats";
 import { Keycode } from "../../constants/keys";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { resultCalculating } from "../test-ui";
+import { resultCalculating } from "../test-state";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];

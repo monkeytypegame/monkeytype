@@ -28,7 +28,6 @@ import { Keycode } from "../../constants/keys";
 import { wordsHaveTab } from "../../states/test";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
-import { resultCalculating } from "../../test/test-ui";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -134,7 +133,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   }
 
   const now = performance.now();
-  if (!resultCalculating) {
+  if (!TestState.resultCalculating) {
     TestInput.recordKeydownTime(now, event);
   }
 
