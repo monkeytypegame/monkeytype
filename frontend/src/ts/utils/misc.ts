@@ -475,6 +475,12 @@ export function typedKeys<T extends object>(
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
 }
 
+export function typedEntries<T extends object>(
+  obj: T,
+): { [K in keyof T]: [K, T[K]] }[keyof T][] {
+  return Object.entries(obj) as { [K in keyof T]: [K, T[K]] }[keyof T][];
+}
+
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
