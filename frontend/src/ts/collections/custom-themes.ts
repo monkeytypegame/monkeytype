@@ -180,7 +180,7 @@ export const __nonReactive = {
 };
 
 /**
- * On prod the collection gets cleaned up after a while.
+ * The collection gets cleaned up after a while.
  * Keeping a query active fixes that. Remove when removing __nonReactive
  */
 // oxlint-disable-next-line typescript/no-explicit-any
