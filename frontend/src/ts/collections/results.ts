@@ -667,10 +667,6 @@ export async function waitForResultsReady(): Promise<void> {
   await resultsCollection.stateWhenReady();
 }
 
-export function getResultsSize(): number {
-  return resultsCollection.size;
-}
-
 /**
  *
  */
