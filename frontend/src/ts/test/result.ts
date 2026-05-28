@@ -1114,7 +1114,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestUI.setResultCalculating(false);
+  TestState.setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }
