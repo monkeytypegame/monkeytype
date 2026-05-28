@@ -1283,7 +1283,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       const a = val1 as number;
       const b = val2 as number;
-      const ref = Math.max(Math.abs(a), Math.abs(b));
+      const ref = Math.max(
+        Numbers.roundTo2(Math.abs(a)),
+        Numbers.roundTo2(Math.abs(b)),
+      );
       const within = (a === 0 && b === 0) || Math.abs(a - b) / ref <= 0.05;
       if (within) {
         console.debug(`Completed event match on key ${key}:`, a);
@@ -1292,13 +1295,18 @@ export async function finish(difficultyFailed = false): Promise<void> {
         notMatching.push(`${key} (off by ${diff})`);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       }
-    } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
-      if (typeof val1 === "number" && typeof val2 === "number") {
-        const diff = Numbers.roundTo2(Math.abs(val1 - val2));
+    } else if (typeof val1 === "number" && typeof val2 === "number") {
+      const a = Numbers.roundTo2(val1);
+      const b = Numbers.roundTo2(val2);
+      if (a !== b) {
+        const diff = Numbers.roundTo2(Math.abs(a - b));
         notMatching.push(`${key} (off by ${diff})`);
+        console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
-        notMatching.push(`${key} (values differ)`);
+        console.debug(`Completed event match on key ${key}:`, a);
       }
+    } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+      notMatching.push(`${key} (values differ)`);
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);
