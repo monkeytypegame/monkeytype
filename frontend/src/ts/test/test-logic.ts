@@ -901,9 +901,6 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-//@ts-expect-error testing
-window.buildCompletedEvent2 = buildCompletedEvent2;
-
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars();
 
