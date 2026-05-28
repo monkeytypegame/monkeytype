@@ -30,8 +30,6 @@ import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { logTestEvent } from "./events/data";
 
-//todo check if the logtestevent is correct after the merge
-
 let lastLoop = 0;
 const newTimer = createTimer({
   duration: 1000,
