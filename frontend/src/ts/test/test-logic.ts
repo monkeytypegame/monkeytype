@@ -934,8 +934,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
   const keypressSpacing = getKeypressSpacing();
 
-  //todo: why slice?
-  let keyConsistencyArray = keypressSpacing.slice();
+  let keyConsistencyArray = [...keypressSpacing];
   if (keypressSpacing.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
