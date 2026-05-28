@@ -1333,12 +1333,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   if (notMatching.length === 0) {
-    showSuccessNotification("Completed events match", { important: true });
+    // showSuccessNotification("Completed events match", { important: true });
   } else {
-    showErrorNotification(
-      `Completed event mismatch: ${notMatching.join(", ")}`,
-      { important: true },
-    );
+    // showErrorNotification(
+    //   `Completed event mismatch: ${notMatching.join(", ")}`,
+    //   { important: true },
+    // );
     try {
       void Ape.results.reportCompletedEventMismatch({
         body: {
