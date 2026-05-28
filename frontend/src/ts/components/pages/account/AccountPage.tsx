@@ -45,13 +45,11 @@ export function AccountPage(): JSXElement {
   );
   const [isExporting, setIsExporting] = createSignal(false);
 
-  const queryLimit = createMemo(() => limit() + 1);
   const resultsQuery = useResultsLiveQuery({
     queryState,
     sorting,
-    limit: queryLimit,
+    limit: () => limit() + 1,
   });
-  const hasMoreResults = createMemo(() => resultsQuery()?.length > limit());
 
   return (
     <Show when={isAuthenticated() && isOpen()}>
@@ -128,7 +126,10 @@ export function AccountPage(): JSXElement {
                   />
                   <Button
                     text="load more"
-                    disabled={resultsQuery.isLoading || !hasMoreResults()}
+                    disabled={
+                      resultsQuery.isLoading ||
+                      resultsQueryData().length <= limit()
+                    }
                     onClick={() => setLimit((limit) => limit + 10)}
                     class="w-full text-center"
                   />
