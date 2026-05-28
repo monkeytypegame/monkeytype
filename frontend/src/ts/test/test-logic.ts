@@ -97,6 +97,7 @@ import {
   getWpmHistory,
   getAfkDuration,
   forceReleaseAllKeys,
+  getKeypressesPerSecond,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -1255,7 +1256,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
         continue;
       }
 
-      for (const field of ["wpm", "burst", "err"] as const) {
+      for (const field of ["wpm", "err"] as const) {
         const a = v1[field];
         const b = v2[field];
         const withinTolerance =
@@ -1271,6 +1272,24 @@ export async function finish(difficultyFailed = false): Promise<void> {
           notMatching.push(`chartData.${field} (values differ)`);
           console.error(
             `Completed event mismatch on key chartData.${field}:`,
+            a,
+            b,
+          );
+        }
+      }
+
+      {
+        const a = TestInput.keypressCountHistory;
+        const b = getKeypressesPerSecond();
+        if (a.length === b.length && a.every((val, i) => val === b[i])) {
+          console.debug(
+            `Completed event match on key keypressCountHistory:`,
+            a,
+          );
+        } else {
+          notMatching.push(`keypressCountHistory (values differ)`);
+          console.error(
+            `Completed event mismatch on key keypressCountHistory:`,
             a,
             b,
           );
