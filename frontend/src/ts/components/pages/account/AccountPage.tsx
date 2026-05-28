@@ -4,7 +4,6 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 import {
   createResultsQueryState,
   getResultsQueryOnce,
-  getResultsSize,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
@@ -124,7 +123,8 @@ export function AccountPage(): JSXElement {
                   <Button
                     text="load more"
                     disabled={
-                      resultsQuery.isLoading || getResultsSize() < limit() + 10
+                      resultsQuery.isLoading ||
+                      resultsQueryData().length < limit()
                     }
                     onClick={() => setLimit((limit) => limit + 10)}
                     class="w-full text-center"
