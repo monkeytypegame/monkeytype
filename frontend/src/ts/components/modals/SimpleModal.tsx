@@ -402,8 +402,7 @@ export function convertFn<T>(
   input: SimpleModalInput<T>,
   schema: z.ZodTypeAny,
 ): (val: string | boolean) => T {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  const type = schema._def["typeName"];
+  const type = getZodType(schema);
   const preprocess = (raw: unknown): T => {
     const value = input.preprocess ? input.preprocess(raw as T) : raw;
     const parsed = schema.safeParse(value);
@@ -445,13 +444,10 @@ export function convertFn<T>(
 }
 
 function getMinAndMax(schema: ZodTypeAny): {
-  min?: number | undefined;
-  max?: number | undefined;
+  min?: number;
+  max?: number;
 } {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  const type = schema._def["typeName"];
-
-  if (type !== ZodFirstPartyTypeKind.ZodNumber) return {};
+  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
 
   return {
     min: (schema as ZodNumber).minValue ?? undefined,
@@ -462,12 +458,10 @@ function getDateMinAndMax(
   schema: ZodTypeAny,
   format: (val: Date | undefined) => string | undefined,
 ): {
-  min?: string | undefined;
-  max?: string | undefined;
+  min?: string;
+  max?: string;
 } {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  const type = schema._def["typeName"];
-  if (type !== ZodFirstPartyTypeKind.ZodDate) return {};
+  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
 
   const applyFormat = (it: Date | null) =>
     it === null ? undefined : format(it);
@@ -476,4 +470,9 @@ function getDateMinAndMax(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
+}
+
+function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+  return schema._def["typeName"] as ZodFirstPartyTypeKind;
 }
