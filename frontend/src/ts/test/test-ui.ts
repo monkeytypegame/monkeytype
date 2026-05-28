@@ -84,11 +84,6 @@ export let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
 let lineTransition = false;
 let currentTestLine = 0;
-export let resultCalculating = false;
-
-export function setResultCalculating(val: boolean): void {
-  resultCalculating = val;
-}
 
 export function focusWords(force = false): void {
   if (force) {

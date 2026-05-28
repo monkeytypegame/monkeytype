@@ -206,7 +206,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (TestState.testRestarting || TestUI.resultCalculating) {
+  if (TestState.testRestarting || TestState.resultCalculating) {
     options.event?.preventDefault();
     return;
   }
@@ -880,7 +880,7 @@ function buildCompletedEvent(
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
-  TestUI.setResultCalculating(true);
+  TestState.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear();
   TestStats.setEnd(now);
@@ -1408,7 +1408,7 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
-  if (TestUI.resultCalculating) return;
+  if (TestState.resultCalculating) return;
   if (
     TestState.isActive &&
     Config.repeatQuotes === "typing" &&
