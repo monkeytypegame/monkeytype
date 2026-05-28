@@ -262,7 +262,7 @@ function AccountSettingsNotice(): JSXElement {
   });
   return (
     <Show when={!dismissed()}>
-      <div class="grid grid-cols-[auto_1fr_auto] items-center gap-8 rounded px-8 py-4 ring-4 ring-sub-alt">
+      <div class="grid grid-cols-[auto_1fr] items-center gap-4 rounded px-4 py-4 ring-4 ring-sub-alt md:grid-cols-[auto_1fr_auto] md:gap-8">
         <Fa icon="fa-user-cog" class="text-4xl text-sub" />
         <div>
           Account settings have moved. You can now access them by hovering over
@@ -272,7 +272,7 @@ function AccountSettingsNotice(): JSXElement {
         <Button
           text="go to account settings"
           href="/account-settings"
-          class="p-4"
+          class="col-span-2 p-4 md:col-span-1"
           router-link
           onClick={() => {
             setDismissed(true);
