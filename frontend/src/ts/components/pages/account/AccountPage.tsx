@@ -45,7 +45,13 @@ export function AccountPage(): JSXElement {
   );
   const [isExporting, setIsExporting] = createSignal(false);
 
-  const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
+  const queryLimit = createMemo(() => limit() + 1);
+  const resultsQuery = useResultsLiveQuery({
+    queryState,
+    sorting,
+    limit: queryLimit,
+  });
+  const hasMoreResults = createMemo(() => resultsQuery()?.length > limit());
 
   return (
     <Show when={isAuthenticated() && isOpen()}>
@@ -116,16 +122,13 @@ export function AccountPage(): JSXElement {
               {({ resultsQueryData }) => (
                 <>
                   <Table
-                    data={[...resultsQueryData()]}
+                    data={resultsQueryData().slice(0, limit())}
                     onSortingChange={(val) => setSorting(val)}
                     selectedRowId={selectedResultId}
                   />
                   <Button
                     text="load more"
-                    disabled={
-                      resultsQuery.isLoading ||
-                      resultsQueryData().length < limit()
-                    }
+                    disabled={resultsQuery.isLoading || !hasMoreResults()}
                     onClick={() => setLimit((limit) => limit + 10)}
                     class="w-full text-center"
                   />
