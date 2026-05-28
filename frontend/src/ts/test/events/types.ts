@@ -53,7 +53,7 @@ export type KeyupEventData = {
   shift: boolean;
   alt: boolean;
   meta: boolean;
-  estimated?: true; // true if this event never happend, but was estimated (force keyup on test end)
+  estimated?: true; // true if this event never happened, but was estimated (force keyup on test end)
 };
 
 export type TimerEvent = CommonProps<"timer"> & {
