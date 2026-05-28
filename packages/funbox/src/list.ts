@@ -207,19 +207,19 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["getWord"],
     name: "specials",
   },
-  plus_one: {
-    description: "Only one future word is visible.",
-    canGetPb: true,
-    difficultyLevel: 0,
-    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
-    name: "plus_one",
-  },
   plus_zero: {
     description: "React quickly! Only the current word is visible.",
     canGetPb: true,
     difficultyLevel: 1,
     properties: ["changesWordsVisibility", "toPush:1", "noInfiniteDuration"],
     name: "plus_zero",
+  },
+  plus_one: {
+    description: "Only one future word is visible.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
+    name: "plus_one",
   },
   plus_two: {
     description: "Only two future words are visible.",

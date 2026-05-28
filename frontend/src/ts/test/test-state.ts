@@ -14,6 +14,7 @@ export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
 export let restartCount = 0;
+export let resultCalculating = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -100,4 +101,8 @@ export function resetIncomplete(): void {
   restartCount = 0;
   incompleteSeconds = 0;
   incompleteTests = [];
+}
+
+export function setResultCalculating(val: boolean): void {
+  resultCalculating = val;
 }

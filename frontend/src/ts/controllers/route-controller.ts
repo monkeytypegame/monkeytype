@@ -1,5 +1,4 @@
 import * as PageController from "./page-controller";
-import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../legacy-states/page-transition";
 import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
@@ -163,14 +162,14 @@ export async function navigate(
   if (
     !options.force &&
     (TestState.testRestarting ||
-      TestUI.resultCalculating ||
+      TestState.resultCalculating ||
       PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${
         TestState.testRestarting
       }, resultCalculating: ${
-        TestUI.resultCalculating
+        TestState.resultCalculating
       }, pageTransition: ${PageTransition.get()})`,
     );
     return;
