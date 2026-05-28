@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/solid-query";
 import { baseKey } from "./utils/keys";
 import Ape from "../ape";
+import { queryClient } from ".";
 
 const queryKeys = {
   root: () => baseKey("friendsList", { isUserSpecific: true }),
@@ -20,3 +21,9 @@ export const getFriendsListQuery = () =>
       return response.body.data;
     },
   });
+
+export async function invalidateFriendsList(): Promise<void> {
+  await queryClient.invalidateQueries({
+    queryKey: queryKeys.root(),
+  });
+}

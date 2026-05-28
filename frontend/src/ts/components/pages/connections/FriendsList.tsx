@@ -1,12 +1,16 @@
 import { PersonalBest } from "@monkeytype/schemas/shared";
-import { Friend } from "@monkeytype/schemas/users";
+import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { useQuery } from "@tanstack/solid-query";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
-import { createMemo } from "solid-js";
+import { createMemo, Show } from "solid-js";
 
-import { rejectConnection } from "../../../collections/connections";
+import Ape from "../../../ape";
+import {
+  addConnection,
+  rejectConnection,
+} from "../../../collections/connections";
 import { getConfig } from "../../../config/store";
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getActivePage } from "../../../states/core";
@@ -15,10 +19,12 @@ import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
+import { remoteValidation } from "../../../utils/remote-validation";
 import { getLanguageDisplayString } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
@@ -38,7 +44,48 @@ export function FriendsList() {
 
   return (
     <div>
-      <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
+      <div class="items-bottom flex">
+        <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
+        <Show when={query.isRefetching}>
+          <LoadingCircle />
+        </Show>
+        <Button
+          fa={{ icon: "fa-plus", fixedWidth: true }}
+          class="ml-auto"
+          text="add friend"
+          onClick={() =>
+            showSimpleModal({
+              title: "Add a friend",
+              inputs: [
+                {
+                  placeholder: "user name",
+                  type: "text",
+                  initVal: "",
+                  validation: {
+                    schema: UserNameSchema,
+                    isValid: remoteValidation(
+                      async (name) =>
+                        Ape.users.getNameAvailability({ params: { name } }),
+                      { check: (data) => !data.available || "Unknown user" },
+                    ),
+                    debounceDelay: 1000,
+                  },
+                },
+              ],
+              buttonText: "request",
+              execFn: async (receiverName: string) => {
+                await addConnection({ receiverName });
+
+                return {
+                  showNotification: false,
+                  status: "success",
+                  message: "",
+                };
+              },
+            })
+          }
+        />
+      </div>
       <AsyncContent queries={{ query }}>
         {({ queryData }) => (
           <DataTable

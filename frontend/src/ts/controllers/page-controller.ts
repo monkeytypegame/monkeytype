@@ -31,6 +31,7 @@ import { getSnapshot } from "../db";
 import * as TodayTracker from "../test/today-tracker";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
 import {
+  invalidateConnections,
   isConnectionsReady,
   waitForConnectionsReady,
 } from "../collections/connections";
@@ -108,6 +109,9 @@ const pages = {
   }),
   profileSearch: solidPage("profileSearch"),
   friends: solidPage("friends", {
+    beforeShow: async () => {
+      await invalidateConnections();
+    },
     loadingOptions: {
       loadingMode: () => (isConnectionsReady() ? "none" : "sync"),
       loadingPromise: async () => {

@@ -22,7 +22,7 @@ export function UserBadge(props: {
     <Show when={badge() !== undefined}>
       <Balloon
         class={cn(
-          "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs",
+          "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs whitespace-nowrap",
           props.class,
         )}
         text={props.hideDescription ? "" : (badge()?.description ?? "")}

@@ -10,13 +10,21 @@ import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
-import { applyIdWorkaround } from "./utils/misc";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
 import {
   configurationPromise,
   get as getServerConfiguration,
 } from "../ape/server-configuration";
+import { getSnapshot } from "../states/snapshot";
+import { Connection } from "@monkeytype/schemas/connections";
+import {
+  addNotificationWithLevel,
+  NotificationLevel,
+  showNoticeNotification,
+} from "../states/notifications";
+import { invalidateFriendsList } from "../queries/friends";
 
 const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
@@ -85,6 +93,9 @@ type ActionType = {
   blockConnection: {
     id: string;
   };
+  addConnection: {
+    receiverName: string;
+  };
 };
 
 const actions = {
@@ -106,6 +117,8 @@ const actions = {
         _id: id,
         status: "accepted",
       });
+
+      await invalidateFriendsList();
     },
   }),
   blockConnection: createOptimisticAction<ActionType["blockConnection"]>({
@@ -138,6 +151,49 @@ const actions = {
         );
       }
       connectionsCollection.utils.writeDelete(id);
+
+      await invalidateFriendsList();
+    },
+  }),
+  addConnection: createOptimisticAction<ActionType["addConnection"]>({
+    onMutate: ({ receiverName }) => {
+      connectionsCollection.insert({
+        _id: tempId(),
+        status: "pending",
+        receiverName,
+        receiverUid: tempId(),
+        initiatorName: getSnapshot()?.name ?? "",
+        initiatorUid: getSnapshot()?.uid ?? "",
+        lastModified: Date.now(),
+      });
+    },
+    mutationFn: async ({ receiverName }) => {
+      const response = await Ape.connections.create({ body: { receiverName } });
+
+      if (response.status === 200) {
+        connectionsCollection.utils.writeInsert(response.body.data);
+        showNoticeNotification(`Request sent to ${receiverName}`);
+      } else {
+        const result = response.body.message;
+        let level: NotificationLevel = "error";
+        let message = "Unknown error";
+
+        if (result.includes("already exists")) {
+          level = "notice";
+          message = `You are already friends with ${receiverName}`;
+        } else if (result.includes("request already sent")) {
+          level = "notice";
+          message = `You have already sent a friend request to ${receiverName}`;
+        } else if (result.includes("blocked by initiator")) {
+          level = "notice";
+          message = `You have blocked ${receiverName}`;
+        } else if (result.includes("blocked by receiver")) {
+          level = "notice";
+          message = `${receiverName} has blocked you`;
+        }
+
+        addNotificationWithLevel(message, level);
+      }
     },
   }),
 };
@@ -172,13 +228,29 @@ export async function blockConnection(
   await transaction.isPersisted.promise;
 }
 
-export function isFriend(uid: string | undefined): boolean {
+export async function addConnection(
+  params: ActionType["addConnection"],
+): Promise<void> {
+  const transaction = actions.addConnection(params);
+  await transaction.isPersisted.promise;
+}
+
+export function hasConnection(
+  uid: string | undefined,
+  status?: Connection["status"],
+): boolean {
   if (uid === undefined || uid === getUserId()) return false;
   return (
     connectionsQuery().find(
       (it) =>
-        it.status === "accepted" &&
+        (status === undefined || it.status === status) &&
         (it.receiverUid === uid || it.initiatorUid === uid),
     ) !== undefined
   );
+}
+
+export async function invalidateConnections(): Promise<void> {
+  await queryClient.invalidateQueries({
+    queryKey: queryKeys.root(),
+  });
 }

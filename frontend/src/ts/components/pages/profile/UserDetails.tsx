@@ -12,9 +12,9 @@ import { isSafeNumber } from "@monkeytype/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
-import { isFriend } from "../../../collections/connections";
+import { addConnection, hasConnection } from "../../../collections/connections";
 import { Snapshot } from "../../../constants/default-snapshot";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
@@ -33,7 +33,6 @@ import { Button } from "../../common/Button";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
-import { showAddFriendModal } from "../../modals/AddFriendModal";
 import { EditProfile } from "../../modals/EditProfileModal";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
@@ -112,17 +111,12 @@ function ActionButtons(props: {
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
 
-  const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
-    isAuthenticated() && !isUsersProfile() && !hasFriendRequest();
-
-  createEffect(() => {
-    setHasFriendRequest(!isUsersProfile() && isFriend(props.profile.uid));
-  });
+    isAuthenticated() && !isUsersProfile() && !hasConnection(props.profile.uid);
 
   const handleAddFriend = () => {
-    const friendName = props.profile.name;
-    showAddFriendModal(friendName);
+    const receiverName = props.profile.name;
+    void addConnection({ receiverName });
   };
 
   return (
@@ -279,7 +273,7 @@ function AvatarAndName(props: {
           <div class="flex flex-row gap-1 pl-1 text-sub">
             <UserFlags
               {...props.profile}
-              isFriend={isFriend(props.profile.uid)}
+              isFriend={hasConnection(props.profile.uid, "accepted")}
             />
           </div>
         </AutoShrink>

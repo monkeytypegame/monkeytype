@@ -7,7 +7,7 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
-import { isFriend } from "../../../collections/connections";
+import { hasConnection } from "../../../collections/connections";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { bp, BreakpointKey } from "../../../states/breakpoints";
@@ -173,7 +173,7 @@ const userColumn = ({
           avatarColor="sub"
           flagsColor="sub"
           user={info.row.original}
-          isFriend={isFriend(info.row.original.uid)}
+          isFriend={hasConnection(info.row.original.uid, "accepted")}
           class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
           linkToProfile={true}
         />
