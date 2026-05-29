@@ -25,6 +25,7 @@ export type ModalId =
   | "CustomWordAmount"
   | "MobileTestConfig"
   | "MiniResultChartModal"
+  | "PractiseWords"
   | "Cookies"
   | "AddPresetModal"
   | "EditPresetModal"
