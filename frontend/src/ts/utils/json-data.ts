@@ -28,7 +28,7 @@ async function fetchJson<T>(url: string): Promise<T> {
       throw new Error(`${res.status} ${res.statusText}`);
     }
   } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
+    console.error(`Error fetching JSON: ${url}`, e);
     throw e;
   }
 }
@@ -82,7 +82,7 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
 // used for polyglot wordset language-specific properties
 export type LanguageProperties = Pick<
   LanguageObject,
-  "noLazyMode" | "ligatures" | "rightToLeft" | "additionalAccents"
+  "noLazyMode" | "joiningScript" | "rightToLeft" | "additionalAccents"
 >;
 
 let currentLanguage: LanguageObject;

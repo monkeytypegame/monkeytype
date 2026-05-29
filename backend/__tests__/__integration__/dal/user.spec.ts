@@ -128,8 +128,8 @@ describe("UserDal", () => {
 
   it("isNameAvailable should correctly check if a username is available", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const { uid: user1 } = await UserTestData.createUser({ name: name1 });
     await UserTestData.createUser({ name: name2 });
 
@@ -160,8 +160,8 @@ describe("UserDal", () => {
 
   it("updatename should not allow unavailable usernames", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
     const _decoy = await UserTestData.createUser();
@@ -173,8 +173,8 @@ describe("UserDal", () => {
   });
 
   it("same usernames (different casing) should be available only for the same user", async () => {
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
 
@@ -192,8 +192,8 @@ describe("UserDal", () => {
 
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
-    const name = "user" + new ObjectId().toHexString();
-    const renamed = "renamed" + new ObjectId().toHexString();
+    const name = `user${new ObjectId().toHexString()}`;
+    const renamed = `renamed${new ObjectId().toHexString()}`;
     const testUser = await UserTestData.createUser({ name: name });
 
     // when
@@ -1696,7 +1696,7 @@ describe("UserDal", () => {
 
     it("increments bananas", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const { uid } = await UserTestData.createUser({
         name,
         bananas: 1,

@@ -14,6 +14,7 @@ export function UserBadge(props: {
   class?: string;
   balloon?: Omit<BalloonProps, "text">;
   hideTextOnSmallScreens?: boolean;
+  hideDescription?: boolean;
 }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
@@ -24,7 +25,7 @@ export function UserBadge(props: {
           "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs",
           props.class,
         )}
-        text={badge()?.description ?? ""}
+        text={props.hideDescription ? "" : (badge()?.description ?? "")}
         {...props.balloon}
         style={{
           background: badge()?.background ?? "inherit",

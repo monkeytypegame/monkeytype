@@ -4,9 +4,13 @@ import { ZodSchema } from "zod";
 export type ValidationResult = { type: "error" | "warning"; message: string };
 export function fromSchema<T>(
   schema: ZodSchema<T>,
+  options?: {
+    convert?: (value: T) => T;
+  },
 ): (args: { value: T }) => undefined | string[] {
   return ({ value }) => {
-    const result = schema.safeParse(value);
+    const convertedValue = options?.convert?.(value) ?? value;
+    const result = schema.safeParse(convertedValue);
     return result.success
       ? undefined
       : result.error.issues.map((it) => it.message);

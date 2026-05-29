@@ -144,6 +144,7 @@ export function QuoteReportModal(): JSXElement {
           children={(field) => (
             <LabeledField label="reason">
               <SlimSelect
+                appendTo="container"
                 options={[
                   { value: "Grammatical error", text: "Grammatical error" },
                   { value: "Duplicate quote", text: "Duplicate quote" },

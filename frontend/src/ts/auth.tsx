@@ -9,6 +9,8 @@ import {
 } from "firebase/auth";
 
 import Ape from "./ape";
+import { waitForPresetsReady } from "./collections/presets";
+import { waitForTagsReady } from "./collections/tags";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
 import { authEvent } from "./events/auth";
@@ -22,7 +24,7 @@ import {
   resetIgnoreAuthCallback,
 } from "./firebase";
 import * as Sentry from "./sentry";
-import { isAuthenticated } from "./states/core";
+import { isAuthenticated, setUserId } from "./states/core";
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import {
   showNoticeNotification,
@@ -30,6 +32,7 @@ import {
   showSuccessNotification,
 } from "./states/notifications";
 import { createErrorMessage } from "./utils/error";
+import { SnapshotInitError } from "./utils/snapshot-init-error";
 
 export type AuthResult =
   | {
@@ -64,6 +67,9 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     const snapshot = await DB.initSnapshot();
+    //TODO: preload collections for now, remove when __nonReactive is removed from collections
+    await waitForPresetsReady();
+    await waitForTagsReady();
 
     if (snapshot === false) {
       throw new Error(
@@ -77,7 +83,7 @@ async function getDataAndInit(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof DB.SnapshotInitError) {
+    if (error instanceof SnapshotInitError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -93,7 +99,7 @@ async function getDataAndInit(): Promise<boolean> {
         );
       }
 
-      showErrorNotification("Failed to get user data: " + error.message);
+      showErrorNotification(`Failed to get user data: ${error.message}`);
     } else {
       showErrorNotification("Failed to get user data", { error });
     }
@@ -120,8 +126,10 @@ export async function onAuthStateChanged(
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     if (user) {
+      setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
+      setUserId(null);
       DB.setSnapshot(undefined);
     }
   }
