@@ -15,13 +15,13 @@ vi.mock("../../../src/ts/config/store", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {
-  const list: string[] = [];
+  const list: Word[] = [];
   return {
     words: {
       list,
       getText(i?: number) {
-        if (i === undefined) return list;
-        return list[i];
+        if (i === undefined) return this.list.map((w) => w.text);
+        return list[i]?.text ?? "";
       },
       getCurrentText() {
         return list[list.length - 1] ?? "";
@@ -66,7 +66,7 @@ import type {
 import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
-import { words as TestWords } from "../../../src/ts/test/test-words";
+import { words as TestWords, type Word } from "../../../src/ts/test/test-words";
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
   return { code, ctrl: false, shift: false, alt: false, meta: false };
@@ -133,6 +133,19 @@ function setupBasicTest(): void {
   logTestEvent("input", 3200, input({ charIndex: 5 }));
   logTestEvent("timer", 4000, timer("step", 3));
   logTestEvent("timer", 4000, timer("end", 3));
+}
+
+function testWordsPush(...words: string[]) {
+  TestWords.list.push(
+    ...words.map(
+      (word, i) =>
+        ({
+          text: word,
+          direction: "ltr",
+          sectionIndex: i,
+        }) as Word,
+    ),
+  );
 }
 
 describe("stats.ts", () => {
@@ -504,7 +517,7 @@ describe("stats.ts", () => {
 
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
-      TestWords.list.push("hello");
+      testWordsPush("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -525,7 +538,7 @@ describe("stats.ts", () => {
     });
 
     it("counts incorrect chars", () => {
-      TestWords.list.push("ab");
+      testWordsPush("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -546,7 +559,7 @@ describe("stats.ts", () => {
     });
 
     it("counts extra chars", () => {
-      TestWords.list.push("ab");
+      testWordsPush("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -571,7 +584,7 @@ describe("stats.ts", () => {
     });
 
     it("counts missed chars for completed non-last words", () => {
-      TestWords.list.push("hello", "world");
+      testWordsPush("hello", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -612,7 +625,7 @@ describe("stats.ts", () => {
 
   describe("getWpmHistory", () => {
     it("returns wpm at each timer boundary", () => {
-      TestWords.list.push("hello");
+      testWordsPush("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -633,7 +646,7 @@ describe("stats.ts", () => {
     });
 
     it("returns cumulative wpm across boundaries", () => {
-      TestWords.list.push("ab", "cd");
+      testWordsPush("ab", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
