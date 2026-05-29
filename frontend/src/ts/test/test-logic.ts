@@ -1082,7 +1082,8 @@ function compareCompletedEvents(
         console.debug(`Completed event match on key ${key}:`, a);
       } else {
         const diff = Numbers.roundTo2(Math.abs(a - b));
-        notMatching.push(`${key} (off by ${diff})`);
+        const dir = a > b ? "ce1 larger" : "ce2 larger";
+        notMatching.push(`${key} (off by ${diff}, ${dir})`);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       }
     } else if (typeof val1 === "number" && typeof val2 === "number") {
@@ -1090,7 +1091,8 @@ function compareCompletedEvents(
       const b = Numbers.roundTo2(val2);
       if (a !== b) {
         const diff = Numbers.roundTo2(Math.abs(a - b));
-        notMatching.push(`${key} (off by ${diff})`);
+        const dir = a > b ? "ce1 larger" : "ce2 larger";
+        notMatching.push(`${key} (off by ${diff}, ${dir})`);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
         console.debug(`Completed event match on key ${key}:`, a);
@@ -1114,6 +1116,10 @@ function compareCompletedEvents(
       .reportCompletedEventMismatch({
         body: {
           notMatching,
+          mode: ce.mode,
+          mode2: ce.mode2,
+          difficulty: ce.difficulty,
+          duration: ce.testDuration,
           // ce: ce as Record<string, unknown>,
           // ce2: ce2 as Record<string, unknown>,
         },

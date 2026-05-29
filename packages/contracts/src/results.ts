@@ -61,6 +61,10 @@ export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const ReportCompletedEventMismatchRequestSchema = z.object({
   notMatching: z.array(z.string().max(100)).max(50),
+  mode: z.string().optional(),
+  mode2: z.string().optional(),
+  difficulty: z.string().optional(),
+  duration: z.number().optional(),
   // ce: z.record(z.unknown()),
   // ce2: z.record(z.unknown()),
 });
