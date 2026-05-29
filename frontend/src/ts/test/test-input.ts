@@ -295,13 +295,15 @@ export function forceKeyup(now: number): void {
   const keypressDurations = keypressTimings.duration.array.filter(
     (_, index) => !indexesToRemove.has(index),
   );
+  let avg: number;
   if (keypressDurations.length === 0) {
     // this means the test ended while all keys were still held - probably safe to ignore
     // since this will result in a "too short" test anyway
-    return;
+    // or we should use a magic number
+    avg = 80;
+  } else {
+    avg = roundTo2(mean(keypressDurations));
   }
-
-  const avg = roundTo2(mean(keypressDurations));
 
   const orderedKeys = Object.entries(keyDownData).sort(
     (a, b) => a[1].timestamp - b[1].timestamp,
@@ -361,7 +363,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
 
   if (key === "NoCode") {
     noCodeIndex--;
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
   }
 
   const keyDownDataForKey = keyDownData[key];
@@ -404,7 +406,7 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
   }
 
   if (key === "NoCode") {
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
     noCodeIndex++;
   }
 

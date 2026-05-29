@@ -375,7 +375,7 @@ async function main() {
   let final = "";
 
   if (contributorCount > 0) {
-    final += header + "\n\n\n";
+    final += `${header}\n\n\n`;
   }
 
   const sections = [];
@@ -390,7 +390,7 @@ async function main() {
 
   const footer = buildFooter(log);
   if (footer) {
-    final += "\n" + footer;
+    final += `\n${footer}`;
   }
 
   console.log(final);

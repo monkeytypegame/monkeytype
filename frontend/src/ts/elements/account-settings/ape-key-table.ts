@@ -99,7 +99,6 @@ const viewApeKey = new SimpleModal({
   execFn: async (_thisPopup) => {
     return {
       status: "success",
-      message: "Key generated",
       showNotification: false,
       hideOptions: {
         clearModalChain: true,

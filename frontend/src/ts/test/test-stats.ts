@@ -5,9 +5,9 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
+import { getLastResult } from "../states/test";
 
 type CharCount = {
   spaces: number;
@@ -33,21 +33,14 @@ export type Stats = {
   correctSpaces: number;
 };
 
-export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
-
-export function setLastResult(result: CompletedEvent): void {
-  lastResult = result;
-}
-
 export function getStats(): unknown {
   const ret = {
-    lastResult,
+    lastResult: getLastResult(),
     start,
     end,
     start3,
@@ -105,35 +98,11 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
-  invalid = false;
+  start2 = 0;
+  end2 = 0;
+  start3 = 0;
+  end3 = 0;
   lastSecondNotRound = false;
-}
-
-export let restartCount = 0;
-export let incompleteSeconds = 0;
-
-export let incompleteTests: IncompleteTest[] = [];
-
-export function incrementRestartCount(): void {
-  restartCount++;
-}
-
-export function incrementIncompleteSeconds(val: number): void {
-  incompleteSeconds += val;
-}
-
-export function pushIncompleteTest(acc: number, seconds: number): void {
-  incompleteTests.push({ acc, seconds });
-}
-
-export function resetIncomplete(): void {
-  restartCount = 0;
-  incompleteSeconds = 0;
-  incompleteTests = [];
-}
-
-export function setInvalid(): void {
-  invalid = true;
 }
 
 export function calculateTestSeconds(now?: number): number {
@@ -149,13 +118,15 @@ export function calculateTestSeconds(now?: number): number {
 export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
+  testSecondsOverride?: number,
 ): {
   wpm: number;
   raw: number;
 } {
-  const testSeconds = calculateTestSeconds(
-    TestState.isActive ? performance.now() : end,
-  );
+  const testSeconds =
+    testSecondsOverride ??
+    calculateTestSeconds(TestState.isActive ? performance.now() : end);
+
   const chars = countChars(final);
   const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,
@@ -189,12 +160,7 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    if (Config.mode === "time") {
-      extraAfk =
-        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
-    } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
-    }
+    extraAfk = Math.round(testSeconds) - TestInput.keypressCountHistory.length;
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -412,14 +378,14 @@ export function calculateFinalStats(): Stats {
 
   //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,
     acc: acc,
     correctChars: chars.correctWordChars,
-    incorrectChars: chars.incorrectChars,
+    incorrectChars: chars.incorrectChars + chars.spaces - chars.correctSpaces,
     missedChars: chars.missedChars,
     extraChars: chars.extraChars,
     allChars:

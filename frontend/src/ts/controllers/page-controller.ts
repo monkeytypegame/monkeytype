@@ -5,8 +5,6 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as Settings from "../pages/settings";
-import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as Friends from "../pages/friends";
@@ -30,6 +28,9 @@ import {
   readGetParameters,
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
+import { getSnapshot } from "../db";
+import * as TodayTracker from "../test/today-tracker";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
 
 type ChangeOptions = {
   force?: boolean;
@@ -41,9 +42,61 @@ type ChangeOptions = {
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
-  settings: Settings.page,
+  settings: solidPage("settings", {
+    beforeShow: async () => {
+      // clear any previous highlight
+      const prev = document.querySelector<HTMLElement>(
+        '[data-component="settingspage"] .settings-highlight',
+      );
+      if (prev !== null) {
+        prev.classList.remove("settings-highlight");
+      }
+
+      const highlight = new URLSearchParams(window.location.search).get(
+        "highlight",
+      );
+      if (highlight === null) return;
+
+      const element = document.querySelector<HTMLElement>(
+        `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
+      );
+      if (element === null) return;
+
+      setTimeout(() => {
+        element.scrollIntoView({ block: "center", behavior: "auto" });
+        element.classList.add("settings-highlight");
+      }, 250);
+    },
+  }),
   about: solidPage("about"),
-  account: Account.page,
+  account: solidPage("account", {
+    loadingOptions: {
+      loadingMode: () => {
+        if (isResultsReady()) {
+          return "none";
+        } else {
+          return "sync";
+        }
+      },
+      loadingPromise: async () => {
+        if (getSnapshot() === null || getSnapshot() === undefined) {
+          throw new Error(
+            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+          );
+        }
+        await waitForResultsReady();
+        TodayTracker.addAllFromToday();
+      },
+      style: "bar",
+      keyframes: [
+        {
+          percentage: 90,
+          durationMs: 2000,
+          text: "Downloading results...",
+        },
+      ],
+    },
+  }),
   login: solidPage("login"),
   profile: solidPage("profile", {
     beforeShow: async (options) => {

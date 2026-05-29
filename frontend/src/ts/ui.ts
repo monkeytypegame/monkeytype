@@ -19,9 +19,7 @@ let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' +
-      font.replaceAll(/_/g, " ") +
-      '", "Roboto Mono", "Vazirharf", "monospace"',
+    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "Vazirharf", "monospace"`,
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
@@ -73,7 +71,7 @@ export function setMediaQueryDebugLevel(level: number): void {
 
 if (isDevEnvironment()) {
   qs("head title")?.setText(
-    (qs("head title")?.native.textContent ?? "") + " (localhost)",
+    `${qs("head title")?.native.textContent ?? ""} (localhost)`,
   );
   qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
@@ -129,7 +127,7 @@ window.addEventListener("resize", () => {
 
 createEffect(() => {
   qsr("#app").setStyle({
-    paddingTop: getGlobalOffsetTop() + convertRemToPixels(2) + "px",
+    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
   });
 });
 

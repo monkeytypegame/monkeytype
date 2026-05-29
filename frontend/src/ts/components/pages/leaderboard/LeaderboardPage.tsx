@@ -25,6 +25,7 @@ import {
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { LoadingCircle } from "../../common/LoadingCircle";
+import { Page } from "../../common/Page";
 import { Separator } from "../../common/Separator";
 import { Navigation } from "./Navigation";
 import { NextUpdate } from "./NextUpdate";
@@ -66,7 +67,7 @@ export function LeaderboardPage(): JSXElement {
 
   //update url after the data is loaded
   createEffect(() => {
-    if (isOpen() && dataQuery.isSuccess) {
+    if (isOpen() && entriesQuery.isSuccess) {
       updateGetParameters(getSelection(), getPage());
     }
   });
@@ -90,7 +91,7 @@ export function LeaderboardPage(): JSXElement {
     }
   });
 
-  const dataQuery = useQuery(() => ({
+  const entriesQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...getSelection(),
       page: getPage() ?? 0,
@@ -167,16 +168,21 @@ export function LeaderboardPage(): JSXElement {
   };
 
   return (
-    <Show when={isOpen()}>
+    <Page id="leaderboards">
       <div class="content-grid flex flex-col gap-8 lg:flex-row">
         <div class="w-full shrink-0 lg:w-60 2xl:w-75">
-          <AsyncContent query={serverConfigurationQuery}>
-            {(config) => (
+          <AsyncContent queries={{ serverConfigurationQuery }}>
+            {({ serverConfigurationQueryData }) => (
               <Sidebar
                 selection={getSelection}
                 onSelect={onSelectionChange}
-                validModeRules={config.dailyLeaderboards.validModeRules ?? []}
-                connectionsEnabled={config.connections.enabled}
+                validModeRules={
+                  serverConfigurationQueryData().dailyLeaderboards
+                    .validModeRules ?? []
+                }
+                connectionsEnabled={
+                  serverConfigurationQueryData().connections.enabled
+                }
               />
             )}
           </AsyncContent>
@@ -191,51 +197,61 @@ export function LeaderboardPage(): JSXElement {
           />
 
           <Show
-            when={isAuthenticated() && !dataQuery.isLoading}
+            when={isAuthenticated() && !entriesQuery.isLoading}
             fallback={<Separator />}
           >
             <AsyncContent
               queries={{
-                data: dataQuery,
-                rank: rankQuery,
-                config: serverConfigurationQuery,
+                entriesQuery,
+                rankQuery,
+                serverConfigurationQuery,
               }}
               alwaysShowContent
               errorClass="rounded bg-sub-alt p-4"
             >
-              {({ data, rank, config }) => (
-                <UserRank
-                  type={getSelection().type === "weekly" ? "xp" : "speed"}
-                  data={rank}
-                  friendsOnly={getSelection().friendsOnly}
-                  total={data?.count}
-                  minWpm={
-                    data && "minWpm" in data
-                      ? (data.minWpm as number)
-                      : undefined
-                  }
-                  memoryDifference={getLbMemoryDifference(
-                    getSelection(),
-                    rank?.rank,
-                  )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
-                  minTimeTyping={config?.leaderboards.minTimeTyping ?? 0}
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
-                />
-              )}
+              {({
+                entriesQueryData,
+                rankQueryData,
+                serverConfigurationQueryData,
+              }) => {
+                const minWpm = () => {
+                  const d = entriesQueryData();
+                  return d && "minWpm" in d ? (d.minWpm as number) : undefined;
+                };
+
+                return (
+                  <UserRank
+                    type={getSelection().type === "weekly" ? "xp" : "speed"}
+                    data={rankQueryData()}
+                    friendsOnly={getSelection().friendsOnly}
+                    total={entriesQueryData()?.count}
+                    minWpm={minWpm()}
+                    memoryDifference={getLbMemoryDifference(
+                      getSelection(),
+                      rankQueryData()?.rank,
+                    )}
+                    isLbOptOut={getSnapshot()?.lbOptOut ?? false}
+                    isBanned={getSnapshot()?.banned ?? false}
+                    minTimeTyping={
+                      serverConfigurationQueryData()?.leaderboards
+                        .minTimeTyping ?? 0
+                    }
+                    userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                  />
+                );
+              }}
             </AsyncContent>
           </Show>
 
           <AsyncContent
-            query={dataQuery}
+            queries={{ entriesQuery }}
             loader={
               <div class="flex justify-center pt-4 text-4xl">
                 <LoadingCircle />
               </div>
             }
           >
-            {(data) => (
+            {({ entriesQueryData }) => (
               <div>
                 <div
                   class={cn(
@@ -245,11 +261,13 @@ export function LeaderboardPage(): JSXElement {
                   <NextUpdate type={getSelection().type} />
                   <Navigation
                     isLoading={
-                      dataQuery.isLoading ||
-                      dataQuery.isFetching ||
-                      dataQuery.isRefetching
+                      entriesQuery.isLoading ||
+                      entriesQuery.isFetching ||
+                      entriesQuery.isRefetching
                     }
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil(
+                      (entriesQueryData()?.count ?? 0) / pageSize,
+                    )}
                     userPage={userPage()}
                     currentPage={getPage()}
                     onPageChange={setPage}
@@ -261,7 +279,7 @@ export function LeaderboardPage(): JSXElement {
                 <div>
                   <Table
                     type={getSelection().type === "weekly" ? "xp" : "speed"}
-                    entries={data?.entries ?? []}
+                    entries={entriesQueryData()?.entries ?? []}
                     friendsOnly={getSelection().friendsOnly}
                     scrollToUser={scrollToUser}
                     onScrolledToUser={() => setScrollToUser(false)}
@@ -270,7 +288,9 @@ export function LeaderboardPage(): JSXElement {
 
                 <div class="mt-4 grid grid-cols-1 items-center justify-between text-sm sm:text-base">
                   <Navigation
-                    lastPage={Math.ceil((data?.count ?? 0) / pageSize)}
+                    lastPage={Math.ceil(
+                      (entriesQueryData()?.count ?? 0) / pageSize,
+                    )}
                     currentPage={getPage()}
                     onPageChange={setPage}
                     onScrollToUser={setScrollToUser}
@@ -282,6 +302,6 @@ export function LeaderboardPage(): JSXElement {
           </AsyncContent>
         </div>
       </div>
-    </Show>
+    </Page>
   );
 }

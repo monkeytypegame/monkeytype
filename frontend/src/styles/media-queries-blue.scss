@@ -38,28 +38,7 @@
       }
     }
   }
-  .pageAccount {
-    .triplegroup.stats {
-      .title {
-        font-size: 0.75rem;
-      }
-      .val {
-        font-size: 1.5rem;
-      }
-    }
-    .group.estimatedWordsTyped {
-      .val {
-        font-size: 2rem;
-      }
-    }
-    .group.history table thead td:nth-child(7),
-    .group.history table tbody td:nth-child(7) {
-      display: none;
-    }
-    .group.filterButtons {
-      grid-template-columns: 1fr;
-    }
-  }
+
   .pageAccountSettings {
     .main {
       grid-template-columns: 1fr;
@@ -72,47 +51,6 @@
           justify-content: center;
           padding: 1em 0.5em;
         }
-      }
-    }
-  }
-
-  .pageSettings {
-    .accountSettingsNotice {
-      button {
-        grid-column: -1/1;
-      }
-    }
-    .section {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "text" "buttons";
-
-      &.themes {
-        grid-template-columns: 1fr 1fr;
-        gap: 1em;
-        .tabContainer .tabContent.customTheme {
-          .customThemeInputs {
-            grid-template-columns: 1fr;
-            .customThemeInput {
-              grid-template-columns: 1fr 1fr;
-            }
-          }
-          .customThemeButtons {
-            grid-template-columns: 1fr;
-          }
-        }
-      }
-    }
-    .section[data-config-name="fontFamily"] {
-      grid-template-areas:
-        "title"
-        "text"
-        "tabs"
-        "buttons";
-      .topRight {
-        grid-area: tabs;
-        align-self: start;
       }
     }
   }

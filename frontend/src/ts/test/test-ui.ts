@@ -52,7 +52,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
-import * as Ligatures from "./break-ligatures";
+import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
@@ -81,13 +81,9 @@ const resultWordsHistoryEl = qsr(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
 export let activeWordHeight = 0;
-export let lineTransition = false;
-export let currentTestLine = 0;
-export let resultCalculating = false;
-
-export function setResultCalculating(val: boolean): void {
-  resultCalculating = val;
-}
+let wordTopBeforeLineJump = 0;
+let lineTransition = false;
+let currentTestLine = 0;
 
 export function focusWords(force = false): void {
   if (force) {
@@ -147,7 +143,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
-          Ligatures.set(previousActiveWord, true);
+          Joining.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
         }
@@ -164,30 +160,30 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
-    Ligatures.set(newActiveWord, false);
+    Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
     activeWordHeight = newActiveWord.getOffsetHeight();
 
-    updateWordsInputPosition();
+    if (previousActiveWordTop !== null) {
+      const isTimedTest =
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
 
-    if (previousActiveWordTop === null) return;
-
-    const isTimedTest =
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-    if (isTimedTest || !Config.showAllLines) {
-      const newActiveWordTop = newActiveWord.getOffsetTop();
-      if (newActiveWordTop > previousActiveWordTop) {
-        await lineJump(previousActiveWordTop);
+      if (isTimedTest || !Config.showAllLines) {
+        const newActiveWordTop = newActiveWord.getOffsetTop();
+        if (newActiveWordTop > previousActiveWordTop) {
+          await lineJump(previousActiveWordTop);
+        }
       }
     }
 
     if (!initial && Config.tapeMode !== "off") {
       await scrollTape();
     }
+
+    updateWordsInputPosition();
   });
 }
 
@@ -284,8 +280,7 @@ async function joinOverlappingHints(
         (wordDirection === "ltr" ? 0 : block1Letter1.getOffsetWidth());
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
-      hintBlock1.style.left =
-        block1Letter1Pos + bothBlocksLettersWidthHalved + "px";
+      hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
 
       hintBlock1.insertAdjacentHTML("beforeend", hintBlock2.innerHTML);
       hintBlock2.remove();
@@ -388,7 +383,7 @@ function buildWordHTML(word: WordTextWithDirection, wordIndex: number): string {
       newlineafter = true;
       retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
-      retval += "<letter>" + char + "</letter>";
+      retval += `<letter>${char}</letter>`;
     }
   }
   retval += "</div>";
@@ -449,7 +444,7 @@ function updateWordWrapperClasses(): void {
 
   qsa(
     "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).setStyle({ fontSize: Config.fontSize + "rem" });
+  ).setStyle({ fontSize: `${Config.fontSize}rem` });
 
   if (TestState.isLanguageRightToLeft) {
     wordsEl.addClass("rightToLeftTest");
@@ -470,10 +465,10 @@ function updateWordWrapperClasses(): void {
           !className.startsWith("typed-effect-"),
       ) ?? [];
   if (Config.highlightMode !== null) {
-    existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+    existing.push(`highlight-${Config.highlightMode.replaceAll("_", "-")}`);
   }
   if (Config.typedEffect !== null) {
-    existing.push("typed-effect-" + Config.typedEffect.replaceAll("_", "-"));
+    existing.push(`typed-effect-${Config.typedEffect.replaceAll("_", "-")}`);
   }
 
   wordsEl.native.className = existing.join(" ");
@@ -552,12 +547,12 @@ export function updateWordsInputPosition(): void {
     el.style.maxWidth = "";
   }
   if (activeWord.getOffsetWidth() < letterHeight) {
-    el.style.width = letterHeight + "px";
+    el.style.width = `${letterHeight}px`;
   } else {
-    el.style.width = activeWord.getOffsetWidth() + "px";
+    el.style.width = `${activeWord.getOffsetWidth()}px`;
   }
 
-  el.style.top = targetTop + "px";
+  el.style.top = `${targetTop}px`;
 
   if (Config.tapeMode !== "off") {
     el.style.left = `${
@@ -565,9 +560,9 @@ export function updateWordsInputPosition(): void {
     }px`;
   } else {
     if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
-      el.style.left = activeWord.getOffsetLeft() - letterHeight + "px";
+      el.style.left = `${activeWord.getOffsetLeft() - letterHeight}px`;
     } else {
-      el.style.left = Math.max(0, activeWord.getOffsetLeft()) + "px";
+      el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
     }
   }
 
@@ -633,7 +628,7 @@ export function updateWordsWrapperHeight(force = false): void {
     wordsWrapperEl.setStyle({ height: "" });
   } else if (Config.mode === "zen") {
     //zen mode, showAllLines off
-    wordsWrapperEl.setStyle({ height: wordHeight * 2 + "px" });
+    wordsWrapperEl.setStyle({ height: `${wordHeight * 2}px` });
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
@@ -657,19 +652,19 @@ export function updateWordsWrapperHeight(force = false): void {
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
       //limit to 3 lines
-      wordsWrapperEl.setStyle({ height: wrapperHeight + "px" });
+      wordsWrapperEl.setStyle({ height: `${wrapperHeight}px` });
     } else {
       //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
       if (wordsHaveNewline()) {
-        wordsWrapperEl.setStyle({ height: wordHeight * 3 + "px" });
+        wordsWrapperEl.setStyle({ height: `${wordHeight * 3}px` });
       } else {
         const wordsHeight = wordsEl.getOffsetHeight() ?? wordHeight;
-        wordsWrapperEl.setStyle({ height: wordsHeight + "px" });
+        wordsWrapperEl.setStyle({ height: `${wordsHeight}px` });
       }
     }
   }
 
-  outOfFocusEl.style.maxHeight = wordHeight * 3 + "px";
+  outOfFocusEl.style.maxHeight = `${wordHeight * 3}px`;
 }
 
 function updateWordsMargin(): void {
@@ -806,15 +801,14 @@ export async function updateWordLetters({
             }
             ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
           } else {
-            ret +=
-              `<letter class="incorrect ${tabChar}${nlChar}">` +
-              (Config.indicateTypos === "replace" ||
+            ret += `<letter class="incorrect ${tabChar}${nlChar}">${
+              Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
                 ? inputChars[i] === " " || inputChars[i] === "\t"
                   ? "_"
                   : inputChars[i]
-                : currentLetter) +
-              "</letter>";
+                : currentLetter
+            }</letter>`;
             if (
               Config.indicateTypos === "below" ||
               Config.indicateTypos === "both"
@@ -859,7 +853,7 @@ export async function updateWordLetters({
           } else if (currentLetter === "\n") {
             ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
           } else {
-            ret += `<letter>` + currentLetter + "</letter>";
+            ret += `<letter>${currentLetter}</letter>`;
           }
         }
       }
@@ -904,7 +898,14 @@ export async function updateWordLetters({
         if (!Config.showAllLines) {
           const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
           if (wordTopAfterUpdate > activeWordTop) {
-            await lineJump(activeWordTop, true);
+            let jump = false;
+            if (!lineTransition) {
+              wordTopBeforeLineJump = wordTopAfterUpdate;
+              jump = true;
+            } else if (wordTopAfterUpdate > wordTopBeforeLineJump) {
+              jump = true;
+            }
+            if (jump) await lineJump(activeWordTop);
           }
         }
       }
@@ -957,6 +958,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   const widthRemovedFromLine: number[] = [];
   const afterNewlinesNewMargins: number[] = [];
   const toRemove: ElementWithUtils[] = [];
+  let removedAfterNewlines = 0;
 
   /* remove leading `.afterNewline` elements */
   for (const child of wordsChildrenArr) {
@@ -972,6 +974,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
       toRemove.push(child);
       leadingNewLine = true;
       lastAfterNewLineElement = child;
+      removedAfterNewlines++;
     }
   }
 
@@ -980,7 +983,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   // index of the active word in all #words.children
   // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
   const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
-  // this will be 0 or 1
+  // this will between 0 and 2
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
     .filter((child) => child.hasClass("afterNewline")).length;
@@ -1006,16 +1009,12 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     const child = wordsChildrenArr[i] as ElementWithUtils;
     if (child.hasClass("word")) {
       leadingNewLine = false;
-      const childComputedStyle = window.getComputedStyle(child.native);
-      const wordOuterWidth =
-        child.getOffsetWidth() +
-        parseFloat(childComputedStyle.marginRight) +
-        parseFloat(childComputedStyle.marginLeft);
-      const forWordLeft = Math.floor(child.getOffsetLeft());
-      const forWordWidth = Math.floor(child.getOffsetWidth());
+      const wordOuterWidth = child.getOuterWidth();
+      const wordLeft = Math.floor(child.getOffsetLeft());
+      const wordWidth = Math.floor(child.getOffsetWidth());
       if (
-        (!isTestRightToLeft && forWordLeft < 0 - forWordWidth) ||
-        (isTestRightToLeft && forWordLeft > wordsWrapperWidth)
+        (!isTestRightToLeft && wordLeft < 0 - wordWidth) ||
+        (isTestRightToLeft && wordLeft > wordsWrapperWidth)
       ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
@@ -1053,6 +1052,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   /* remove overflown elements */
   if (toRemove.length > 0) {
     for (const el of toRemove) el.remove();
+    afterNewLineEls.splice(0, removedAfterNewlines);
     for (let i = 0; i < widthRemovedFromLine.length; i++) {
       const afterNewlineEl = afterNewLineEls[i] as ElementWithUtils;
       const currentLineIndent =
@@ -1141,7 +1141,7 @@ export function updatePremid(): void {
   const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let fbtext = "";
   if (Config.funbox.length > 0) {
-    fbtext = " " + Config.funbox.join(" ");
+    fbtext = ` ${Config.funbox.join(" ")}`;
   }
   qs(".pageTest #premidTestMode")?.setText(
     `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
@@ -1165,19 +1165,13 @@ function removeTestElements(lastElementIndexToRemove: number): void {
 
 let currentLinesJumping = 0;
 
-export async function lineJump(
-  currentTop: number,
-  force = false,
-): Promise<void> {
+async function lineJump(currentTop: number, force = false): Promise<void> {
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop;
 
     const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) {
-      // resolve();
-      return;
-    }
+    if (!activeWordEl) return;
 
     // index of the active word in all #words.children
     // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
@@ -1242,15 +1236,15 @@ export async function lineJump(
   return;
 }
 
-export function setLigatures(isEnabled: boolean): void {
+export function setJoiningClass(isEnabled: boolean): void {
   if (isEnabled || Config.mode === "custom" || Config.mode === "zen") {
-    wordsEl.addClass("withLigatures");
-    qs("#resultWordsHistory .words")?.addClass("withLigatures");
-    qs("#resultReplay .words")?.addClass("withLigatures");
+    wordsEl.addClass("joiningScript");
+    qs("#resultWordsHistory .words")?.addClass("joiningScript");
+    qs("#resultReplay .words")?.addClass("joiningScript");
   } else {
-    wordsEl.removeClass("withLigatures");
-    qs("#resultWordsHistory .words")?.removeClass("withLigatures");
-    qs("#resultReplay .words")?.removeClass("withLigatures");
+    wordsEl.removeClass("joiningScript");
+    qs("#resultWordsHistory .words")?.removeClass("joiningScript");
+    qs("#resultReplay .words")?.removeClass("joiningScript");
   }
 }
 
@@ -1306,29 +1300,25 @@ function buildWordLettersHTML(
         ) {
           out += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
         } else {
-          out +=
-            `<letter class="corrected ${extraCorrected}">` +
-            inputCharacters[c] +
-            "</letter>";
+          out += `<letter class="corrected ${extraCorrected}">${
+            inputCharacters[c]
+          }</letter>`;
         }
       } else {
         if (inputCharacters[c] === TestInput.input.current) {
-          out +=
-            `<letter class='correct ${extraCorrected}'>` +
-            wordCharacters[c] +
-            "</letter>";
+          out += `<letter class='correct ${extraCorrected}'>${
+            wordCharacters[c]
+          }</letter>`;
         } else if (inputCharacters[c] === undefined) {
-          out += "<letter>" + wordCharacters[c] + "</letter>";
+          out += `<letter>${wordCharacters[c]}</letter>`;
         } else {
-          out +=
-            `<letter class="incorrect ${extraCorrected}">` +
-            wordCharacters[c] +
-            "</letter>";
+          out += `<letter class="incorrect ${extraCorrected}">${
+            wordCharacters[c]
+          }</letter>`;
         }
       }
     } else {
-      out +=
-        '<letter class="incorrect extra">' + inputCharacters[c] + "</letter>";
+      out += `<letter class="incorrect extra">${inputCharacters[c]}</letter>`;
     }
   }
   return out;
@@ -1541,7 +1531,7 @@ export async function applyBurstHeatmap(): Promise<void> {
         }
       }
 
-      qs("#resultWordsHistory .heatmapLegend .box" + index)?.setHtml(
+      qs(`#resultWordsHistory .heatmapLegend .box${index}`)?.setHtml(
         `<div>${Misc.escapeHTML(string)}</div>`,
       );
     });
@@ -1608,7 +1598,7 @@ function updateWordsWidth(): void {
       };
     } else {
       css = {
-        "max-width": Config.maxLineWidth + "ch",
+        "max-width": `${Config.maxLineWidth}ch`,
       };
     }
   } else {
@@ -1640,7 +1630,7 @@ function updateLiveStatsMargin(): void {
   } else {
     qs("#liveStatsMini")?.setStyle({
       justifyContent: "center",
-      marginLeft: Config.tapeMargin + "%",
+      marginLeft: `${Config.tapeMargin}%`,
     });
   }
 }
@@ -2087,7 +2077,7 @@ configEvent.subscribe(({ key, newValue }) => {
   ) {
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
-      Ligatures.update(key, wordsEl);
+      Joining.update(key, wordsEl);
     }
   }
   if (["tapeMode", "tapeMargin"].includes(key)) {
