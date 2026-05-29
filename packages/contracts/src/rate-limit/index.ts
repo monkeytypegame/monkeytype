@@ -166,7 +166,7 @@ export const limits = {
   },
 
   resultsMismatchReport: {
-    window: 5 * 60 * 1000, // 15 min
+    window: 5 * 60 * 1000, // 5 min
     max: 1,
   },
 
