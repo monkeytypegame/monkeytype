@@ -142,7 +142,7 @@ describe("AsyncContent", () => {
       query: {
         result: string | Error;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<Props<{ result: string }>, "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -160,12 +160,18 @@ describe("AsyncContent", () => {
         }));
 
         return (
-          <AsyncContent query={myQuery} {...(options as Props<string>)}>
-            {(data: string | undefined) => (
+          <AsyncContent
+            queries={{ result: myQuery }}
+            {...(options as Props<{ result: string | undefined }>)}
+          >
+            {({ resultData }) => (
               <>
                 static content
-                <Show when={data !== undefined} fallback={<div>no data</div>}>
-                  <div data-testid="content">{data}</div>
+                <Show
+                  when={resultData() !== undefined}
+                  fallback={<div>no data</div>}
+                >
+                  <div data-testid="content">{resultData()}</div>
                 </Show>
               </>
             )}
@@ -318,7 +324,10 @@ describe("AsyncContent", () => {
         first: string | Error | undefined;
         second: string | Error | undefined;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<
+        Props<{ first: string; second: string }>,
+        "queries" | "children"
+      >,
     ): {
       container: HTMLElement;
     } {
@@ -347,24 +356,20 @@ describe("AsyncContent", () => {
         }));
 
         type Q = { first: string | undefined; second: string | undefined };
+
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             {...(options as Props<Q>)}
           >
-            {(results: {
-              first: string | undefined;
-              second: string | undefined;
-            }) => (
+            {({ firstData, secondData }) => (
               <>
                 <Show
-                  when={
-                    results.first !== undefined && results.second !== undefined
-                  }
+                  when={firstData() !== undefined && secondData() !== undefined}
                   fallback={<div>no data</div>}
                 >
-                  <div data-testid="first">{results.first}</div>
-                  <div data-testid="second">{results.second}</div>
+                  <div data-testid="first">{firstData()}</div>
+                  <div data-testid="second">{secondData()}</div>
                 </Show>
               </>
             )}

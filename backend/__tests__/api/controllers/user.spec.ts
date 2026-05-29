@@ -3347,11 +3347,11 @@ describe("user controller test", () => {
           bio: new Array(251).fill("x").join(""),
           keyboard: new Array(76).fill("x").join(""),
           socialProfiles: {
-            twitter: new Array(21).fill("x").join(""),
+            twitter: new Array(16).fill("x").join(""),
             github: new Array(40).fill("x").join(""),
-            website:
-              "https://" +
-              new Array(201 - "https://".length).fill("x").join(""),
+            website: `https://${new Array(201 - "https://".length)
+              .fill("x")
+              .join("")}`,
           },
         })
         .expect(422);
@@ -3362,7 +3362,7 @@ describe("user controller test", () => {
         validationErrors: [
           '"bio" String must contain at most 250 character(s)',
           '"keyboard" String must contain at most 75 character(s)',
-          '"socialProfiles.twitter" String must contain at most 20 character(s)',
+          '"socialProfiles.twitter" String must contain at most 15 character(s)',
           '"socialProfiles.github" String must contain at most 39 character(s)',
           '"socialProfiles.website" String must contain at most 200 character(s)',
         ],

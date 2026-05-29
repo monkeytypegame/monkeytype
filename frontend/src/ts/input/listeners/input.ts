@@ -67,7 +67,7 @@ inputEl.addEventListener("beforeinput", async (event) => {
       event.preventDefault();
     }
   } else {
-    throw new Error("Unhandled beforeinput type: " + inputType);
+    throw new Error(`Unhandled beforeinput type: ${inputType}`);
   }
 });
 
@@ -116,7 +116,7 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onDelete(inputType);
+    onDelete(inputType, now);
   } else if (
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"
@@ -125,7 +125,7 @@ inputEl.addEventListener("input", async (event) => {
     const inputPlusComposition =
       TestInput.input.current + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
-      TestWords.words.getCurrent() === inputPlusComposition;
+      TestWords.words.getCurrentText() === inputPlusComposition;
 
     // composition quick end
     // if the user typed the entire word correctly but is still in composition
@@ -147,6 +147,6 @@ inputEl.addEventListener("input", async (event) => {
       TestUI.afterTestCompositionUpdate();
     }
   } else {
-    throw new Error("Unhandled input type: " + inputType);
+    throw new Error(`Unhandled input type: ${inputType}`);
   }
 });

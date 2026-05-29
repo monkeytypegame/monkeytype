@@ -4,13 +4,15 @@ export let isRepeated = false;
 export let isPaceRepeat = false;
 export let isActive = false;
 export let bailedOut = false;
-export let selectedQuoteId = 1;
+export let selectedQuoteId =
+  parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let resultCalculating = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -30,6 +32,7 @@ export function setBailedOut(tf: boolean): void {
 
 export function setSelectedQuoteId(id: number): void {
   selectedQuoteId = id;
+  localStorage.setItem("selectedQuoteId", id.toString());
 }
 
 export function setActiveWordIndex(index: number): void {
@@ -75,4 +78,8 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function setResultCalculating(val: boolean): void {
+  resultCalculating = val;
 }

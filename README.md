@@ -27,17 +27,17 @@ Monkeytype is a minimalistic and customizable [typing test](https://www.monkeyty
 
 # Features
 
-- minimalistic design, with optional advertisements and focus mode while typing
-- type what you see, see what you type
-- live errors, wpm, and accuracy displays
-- a variety of test lengths and languages
-- punctuation and numbers modes
-- quotes
-- themes
-- smooth caret
-- account system
-- challenges and just-for-fun test modifiers
-- and much more
+- Minimalistic design, with optional advertisements and focus mode while typing
+- Type what you see, see what you type
+- Live errors, wpm, and accuracy displays
+- A variety of test lengths and languages
+- Punctuation and numbers modes
+- Quotes
+- Themes
+- Smooth caret
+- Account system
+- Challenges and just-for-fun test modifiers
+- And much more
 
 # Discord bot
 
@@ -69,4 +69,4 @@ All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/co
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype), or [buy a t-shirt](https://www.monkeytype.store/).

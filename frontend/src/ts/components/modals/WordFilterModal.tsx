@@ -136,7 +136,7 @@ export function WordFilterModal(props: {
         }
 
         const regincl = exactMatchOnly
-          ? new RegExp("^[" + filterin + "]+$", "i")
+          ? new RegExp(`^[${filterin}]+$`, "i")
           : new RegExp(filterin, "i");
 
         let filterout = Misc.escapeRegExp(value.exclude.trim());
@@ -231,6 +231,7 @@ export function WordFilterModal(props: {
         <fieldset disabled={loading()} class="grid gap-4">
           <LabeledField label="language">
             <SlimSelect
+              appendTo="container"
               options={languageOptions}
               selected={language()}
               onChange={setLanguage}
@@ -296,6 +297,7 @@ export function WordFilterModal(props: {
             <div class="grid gap-4 self-start">
               <LabeledField label="presets">
                 <SlimSelect
+                  appendTo="container"
                   options={presetOptions}
                   selected={preset()}
                   onChange={setPreset}
@@ -304,6 +306,7 @@ export function WordFilterModal(props: {
               </LabeledField>
               <LabeledField label="layout">
                 <SlimSelect
+                  appendTo="container"
                   options={layoutOptions}
                   selected={layout()}
                   onChange={setLayout}
@@ -330,7 +333,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="set"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "set")}
             />
@@ -339,7 +342,7 @@ export function WordFilterModal(props: {
               variant="button"
               text="add"
               class="flex-1"
-              skipDirtyCheck
+              skipUnchangedCheck
               disabled={loading()}
               onClick={() => (submitAction = "add")}
             />

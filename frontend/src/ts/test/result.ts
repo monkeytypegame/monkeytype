@@ -45,7 +45,12 @@ import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../constants/default-snapshot";
+import {
+  getLocalTagPB,
+  saveLocalTagPB,
+  type TagItem,
+  __nonReactive,
+} from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
@@ -56,6 +61,7 @@ import * as ConnectionState from "../legacy-states/connection";
 import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { isTestInvalid } from "../states/test";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -152,7 +158,7 @@ async function updateChartData(): Promise<void> {
     for (const fb of getActiveFunboxes()) {
       content += fb.name;
       if (fb.functions?.getResultContent) {
-        content += "(" + fb.functions.getResultContent() + ")";
+        content += `(${fb.functions.getResultContent()})`;
       }
       content += " ";
     }
@@ -312,7 +318,7 @@ export async function updateChartPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors.sub + "55",
+    borderColor: `${themecolors.sub}55`,
     borderWidth: 1,
     // borderDash: [4, 16],
     label: {
@@ -356,18 +362,18 @@ function updateWpmAndAcc(): void {
     if (Config.typingSpeedUnit !== "wpm") {
       qs("#result .stats .wpm .bottom")?.setAttribute(
         "aria-label",
-        result.wpm.toFixed(2) + " wpm",
+        `${result.wpm.toFixed(2)} wpm`,
       );
       qs("#result .stats .raw .bottom")?.setAttribute(
         "aria-label",
-        result.rawWpm.toFixed(2) + " wpm",
+        `${result.rawWpm.toFixed(2)} wpm`,
       );
     } else {
       qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
       qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
     }
 
-    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
@@ -388,8 +394,8 @@ function updateWpmAndAcc(): void {
     let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
     if (Config.typingSpeedUnit !== "wpm") {
-      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
-      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
+      wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
+      rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
     }
 
     qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
@@ -437,7 +443,7 @@ function updateTime(): void {
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
     qs("#result .stats .time .bottom .afk")?.setText(
-      afkSecondsPercent + "% afk",
+      `${afkSecondsPercent}% afk`,
     );
   }
   qs("#result .stats .time .bottom")?.setAttribute(
@@ -446,13 +452,13 @@ function updateTime(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     qs("#result .stats .time .bottom .text")?.setText(time);
   } else {
-    let time = Math.round(result.testDuration) + "s";
+    let time = `${Math.round(result.testDuration)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Math.round(result.testDuration));
     }
@@ -474,13 +480,9 @@ export function updateTodayTracker(): void {
 
 function updateKey(): void {
   qs("#result .stats .key .bottom")?.setText(
-    result.charStats[0] +
-      "/" +
-      result.charStats[1] +
-      "/" +
-      result.charStats[2] +
-      "/" +
-      result.charStats[3],
+    `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
+      result.charStats[3]
+    }`,
   );
 }
 
@@ -530,7 +532,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       console.debug("Showing pending crown");
       showCrown("pending");
       updateCrownText(
-        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true }),
+        `+${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
       );
     }
   } else {
@@ -662,15 +664,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: SnapshotUserTag[] = [];
-  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
-  try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag);
-      }
-    });
-  } catch (e) {}
+  const activeTags: TagItem[] = __nonReactive.getActiveTags();
+  const userTagsCount = __nonReactive.getTags().length;
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();
@@ -697,7 +692,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   for (const tag of activeTags) {
-    const tpb = await DB.getLocalTagPB(
+    const tpb = getLocalTagPB(
       tag._id,
       Config.mode,
       result.mode2,
@@ -708,7 +703,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.lazyMode,
     );
     qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
@@ -718,7 +713,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        await DB.saveLocalTagPB(
+        saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -735,7 +730,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`)?.show();
         qs(
           `#result .stats .tags .bottom div[tagid="${tag._id}"]`,
-        )?.setAttribute("aria-label", "+" + Numbers.roundTo2(result.wpm - tpb));
+        )?.setAttribute("aria-label", `+${Numbers.roundTo2(result.wpm - tpb)}`);
         // console.log("new pb for tag " + tag.display);
       } else {
         const themecolors = getTheme();
@@ -745,7 +740,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors.sub + "55",
+          borderColor: `${themecolors.sub}55`,
           borderWidth: 1,
           // borderDash: [4, 16],
           label: {
@@ -763,7 +758,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             display: true,
-            content: `${tag.display} PB: ${Numbers.roundTo2(
+            content: `${tag.name} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
@@ -786,17 +781,17 @@ function updateTestType(randomQuote: Quote | null): void {
   testType += Config.mode;
 
   if (Config.mode === "time") {
-    testType += " " + Config.time;
+    testType += ` ${Config.time}`;
   } else if (Config.mode === "words") {
-    testType += " " + Config.words;
+    testType += ` ${Config.words}`;
   } else if (Config.mode === "quote") {
     if (randomQuote?.group !== undefined) {
-      testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
+      testType += ` ${["short", "medium", "long", "thicc"][randomQuote.group]}`;
     }
   }
   const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + Strings.getLanguageDisplayString(result.language);
+    testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -811,8 +806,7 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += "<br>lazy";
   }
   if (Config.funbox.length > 0) {
-    testType +=
-      "<br>" + Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ");
+    testType += `<br>${Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ")}`;
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
@@ -840,7 +834,7 @@ function updateOther(
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
-  if (TestStats.invalid) {
+  if (isTestInvalid()) {
     otherText += "<br>invalid";
     const extra: string[] = [];
     if (
@@ -1121,7 +1115,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestUI.setResultCalculating(false);
+  TestState.setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }
@@ -1268,11 +1262,10 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
-        }
-      });
+      const localTag = __nonReactive.getTag(tag);
+      if (localTag !== undefined) {
+        tagNames.push(localTag.name);
+      }
     }
   }
 

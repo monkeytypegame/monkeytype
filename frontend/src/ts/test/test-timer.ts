@@ -14,6 +14,7 @@ import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
+  removeNotification,
 } from "../states/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
@@ -27,6 +28,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { logTestEvent } from "./events/data";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -37,10 +39,19 @@ const newTimer = createTimer({
     lastLoop = performance.now();
   },
   onLoop: () => {
-    const drift = Math.abs(1000 - (performance.now() - lastLoop));
-    lastLoop = performance.now();
+    const now = performance.now();
+
+    const drift = Math.abs(1000 - (now - lastLoop));
     checkIfTimerIsSlow(drift);
+    lastLoop = now;
     timerStep();
+
+    logTestEvent("timer", now, {
+      event: "step",
+      timer: Time.get(),
+      slowTimer: SlowTimer.get() ? true : undefined,
+      drift,
+    });
   },
 });
 
@@ -52,6 +63,7 @@ type TimerStats = {
 };
 
 let slowTimerCount = 0;
+let slowTimerNotifIds: number[] = [];
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
@@ -66,10 +78,16 @@ export function enableTimerDebug(): void {
   timerDebug = true;
 }
 
-export function clear(): void {
+export function clear(logEnd = false, now = performance.now()): void {
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
+  if (logEnd) {
+    logTestEvent("timer", now, {
+      event: "end",
+      timer: Time.get(),
+    });
+  }
 }
 
 function premid(): void {
@@ -142,7 +160,9 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+            TestWords.words
+              .getCurrentText()
+              .charAt(TestInput.input.current.length),
           );
         }, 1);
       }
@@ -282,8 +302,10 @@ function checkIfTimerIsSlow(drift: number): void {
         'This could be caused by "efficiency mode" on Microsoft Edge.',
       );
 
-      showErrorNotification(
-        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+      slowTimerNotifIds.push(
+        showErrorNotification(
+          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+        ),
       );
 
       timerEvent.dispatch({ key: "fail", value: "slow timer" });
@@ -294,17 +316,29 @@ function checkIfTimerIsSlow(drift: number): void {
 export async function start(): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
+  for (const id of slowTimerNotifIds) {
+    removeNotification(id, "clear");
+  }
+  slowTimerNotifIds = [];
   void _startNew();
   // void _startOld();
 }
 
 async function _startNew(): Promise<void> {
   newTimer.play();
+  logTestEvent("timer", performance.now(), {
+    event: "start",
+    timer: Time.get(),
+  });
 }
 
 async function _startOld(): Promise<void> {
   timerStats = [];
   expected = TestStats.start + interval;
+  logTestEvent("timer", performance.now(), {
+    event: "start",
+    timer: Time.get(),
+  });
   (function loop(): void {
     const delay = expected - performance.now();
     timerStats.push({
@@ -322,6 +356,13 @@ async function _startOld(): Promise<void> {
         slowTimerCount = 0;
         return;
       }
+
+      logTestEvent("timer", performance.now(), {
+        event: "step",
+        timer: Time.get(),
+        drift: drift,
+        slowTimer: SlowTimer.get() ? true : undefined,
+      });
 
       timerStep();
 

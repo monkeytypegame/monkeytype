@@ -507,8 +507,9 @@ async function showCommands(): Promise<void> {
       if (command.configValue !== undefined || command.active !== undefined) {
         display = display.replace(
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
-          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
-            configIconHtml,
+          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
+            configIconHtml
+          }`,
         );
       }
     }
@@ -1029,11 +1030,6 @@ createEffect(() => {
           isAnimating = false;
           subgroupOverride = null;
           setCommandlineSubgroup(null);
-
-          // After animation completes, notify store to show pending modal
-          if (visibility?.chained) {
-            storeHideModal(MODAL_STORE_ID);
-          }
         },
       });
     }

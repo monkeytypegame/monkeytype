@@ -5,7 +5,7 @@ export async function createConnection(
   data: Partial<ConnectionsDal.DBConnection>,
   maxPerUser = 25,
 ): Promise<ConnectionsDal.DBConnection> {
-  const defaultName = "user" + new ObjectId().toHexString();
+  const defaultName = `user${new ObjectId().toHexString()}`;
   const result = await ConnectionsDal.create(
     {
       uid: data.initiatorUid ?? new ObjectId().toHexString(),

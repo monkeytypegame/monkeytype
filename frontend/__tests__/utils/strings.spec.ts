@@ -887,4 +887,429 @@ describe("string utils", () => {
       expect(result).toStrictEqual({ inputPattern: "ّاً", patternStart: 2 });
     });
   });
+
+  describe("countChars", () => {
+    describe("it should count characters correctly", () => {
+      const testCases = [
+        {
+          description: "correct, partial, not last",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
+          description: "correct, partial, last, shouldnt count",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
+          description: "correct, partial, last, should count",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 3,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last no space",
+          input: {
+            inputWord: "hello",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 5,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct with extra characters",
+          input: {
+            inputWord: "helloxxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 3,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "correct, partial, not last, should count (should count last partial)",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
+          description: "early space",
+          input: {
+            inputWord: "hel ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "all incorrect, early space",
+          input: {
+            inputWord: "xxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 4,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "all incorrect, extra",
+          input: {
+            inputWord: "xxxxxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 6,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "some correct, extra",
+          input: {
+            inputWord: "xexlxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 4,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "some correct, early space",
+          input: {
+            inputWord: "xexl ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 1,
+          },
+        },
+        {
+          description: "incorrect, last word, quick end",
+          input: {
+            inputWord: "xello",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "incorrect, last word, noquick end",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct space, incorrect word",
+          input: {
+            inputWord: "helol ",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "single incorrect char",
+          input: {
+            inputWord: "hxllo ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "one extra char",
+          input: {
+            inputWord: "helloo ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "missed chars, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description:
+            "last partial match counts correctWord, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 3,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last incorrect partial word doesn't count missed",
+          input: {
+            inputWord: "xxx",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last partial no count, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "non-last word ignores shouldLastPartialWordCount",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "empty input counts all as missed",
+          input: {
+            inputWord: "",
+            targetWord: "hello",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 5,
+          },
+        },
+        {
+          description: "empty target counts all as extra",
+          input: {
+            inputWord: "hello",
+            targetWord: "",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 5,
+            missed: 0,
+          },
+        },
+      ];
+
+      it.each(testCases)("$description", ({ input, expected }) => {
+        expect(
+          Strings.countChars(
+            input.inputWord,
+            input.targetWord,
+            input.lastWord,
+            input.shouldLastPartialWordCount,
+          ),
+        ).toEqual(expected);
+      });
+    });
+
+    it("space counts as incorrect when word is wrong", () => {
+      const result = Strings.countChars("hell ", "hello ", false, false);
+      expect(result.incorrect).toBe(1);
+    });
+  });
 });

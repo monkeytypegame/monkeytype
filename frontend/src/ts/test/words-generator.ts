@@ -69,10 +69,10 @@ export async function punctuateWord(
     if (currentLanguage === "spanish") {
       const rand = random();
       if (rand > 0.9) {
-        word = "¿" + word;
+        word = `¿${word}`;
         spanishSentenceTracker = "?";
       } else if (rand > 0.8) {
-        word = "¡" + word;
+        word = `¡${word}`;
         spanishSentenceTracker = "!";
       }
     }
@@ -602,7 +602,7 @@ type GenerateWordsReturn = {
   hasTab: boolean;
   hasNewline: boolean;
   allRightToLeft?: boolean;
-  allLigatures?: boolean;
+  allJoiningScript?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -625,7 +625,7 @@ export async function generateWords(
     hasTab: false,
     hasNewline: false,
     allRightToLeft: language.rightToLeft,
-    allLigatures: language.ligatures ?? false,
+    allJoiningScript: language.joiningScript ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -661,10 +661,10 @@ export async function generateWords(
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
       currentWordset = polyglotResult;
-      // set allLigatures if any language in languageProperties has ligatures true
-      ret.allLigatures = Array.from(
+      // set allJoiningScript if any language in languageProperties has joiningScript: true
+      ret.allJoiningScript = Array.from(
         polyglotResult.languageProperties.values(),
-      ).some((props) => !!props.ligatures);
+      ).some((props) => !!props.joiningScript);
     } else {
       currentWordset = result;
     }

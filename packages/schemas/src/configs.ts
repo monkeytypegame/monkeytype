@@ -144,6 +144,16 @@ export const PlaySoundOnClickSchema = z.enum([
   "14",
   "15",
   "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "21",
+  "22",
+  "23",
+  "24",
+  "25",
+  "26",
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
@@ -292,8 +302,8 @@ export const FunboxNameSchema = z.enum([
   "gibberish",
   "ascii",
   "specials",
-  "plus_one",
   "plus_zero",
+  "plus_one",
   "plus_two",
   "plus_three",
   "read_ahead_easy",

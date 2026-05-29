@@ -14,8 +14,8 @@ export function update(acc: number): void {
     if (Config.blindMode) {
       number = 100;
     }
-    miniEl?.setHtml(number + "%");
-    textEl?.setHtml(number + "%");
+    miniEl?.setHtml(`${number}%`);
+    textEl?.setHtml(`${number}%`);
   });
 }
 

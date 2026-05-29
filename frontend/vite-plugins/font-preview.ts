@@ -23,22 +23,21 @@ async function generateSubset(
 }
 
 async function generatePreviewFonts(debug: boolean = false): Promise<void> {
-  const srcDir = __dirname + "/../static/webfonts";
-  const targetDir = __dirname + "/../static/webfonts-preview";
+  const srcDir = `${__dirname}/../static/webfonts`;
+  const targetDir = `${__dirname}/../static/webfonts-preview`;
   fs.mkdirSync(targetDir, { recursive: true });
 
   for (const name of Object.keys(Fonts)) {
     const font = Fonts[name as KnownFontName];
     if (font.systemFont) continue;
 
-    const includedCharacters =
-      (font.display ?? name.replaceAll("_", " ")) + "Fontfamily";
+    const includedCharacters = `${font.display ?? name.replaceAll("_", " ")}Fontfamily`;
 
     const fileName = font.fileName;
 
     await generateSubset(
-      srcDir + "/" + fileName,
-      targetDir + "/" + fileName,
+      `${srcDir}/${fileName}`,
+      `${targetDir}/${fileName}`,
       includedCharacters,
     );
     if (debug) {

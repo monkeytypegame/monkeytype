@@ -631,6 +631,7 @@ describe("result controller test", () => {
         xp: 0,
         dailyXpBonus: false,
         xpBreakdown: {
+          configMultiplier: 0,
           accPenalty: 28,
           base: 20,
           incomplete: 5,

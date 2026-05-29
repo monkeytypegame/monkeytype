@@ -67,7 +67,7 @@ async function submit(): Promise<void> {
       hideLoaderBar();
       if (result.status !== 200) {
         showErrorNotification(
-          "Failed to send password reset email: " + result.body.message,
+          `Failed to send password reset email: ${result.body.message}`,
         );
         return;
       }

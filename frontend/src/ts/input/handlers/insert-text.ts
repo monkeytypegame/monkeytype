@@ -41,6 +41,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
+import { logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -89,7 +90,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] !==
+    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
       options.data
   ) {
     // replace the data with the override
@@ -105,7 +106,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = TestInput.input.current;
-  let currentWord = TestWords.words.getCurrent();
+  let currentWord = TestWords.words.getCurrentText();
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
@@ -172,7 +173,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrent().length;
+    (testInput + data).length === TestWords.words.getCurrentText().length;
   const shouldGoToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
@@ -190,7 +191,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   TestInput.pushKeypressWord(wordIndex);
   if (!correct) {
     TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrent());
+    TestInput.pushMissedWord(TestWords.words.getCurrentText());
   }
   if (Config.keymapMode === "react") {
     flash(data, correct);
@@ -246,6 +247,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     increasedWordIndex = result.increasedWordIndex;
   }
 
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding === true,
+    inputStopped: removeLastChar,
+  });
+
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
    - spaceOrNewLine: did the user input a space or a new line?
@@ -257,7 +268,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
-  const nextWord = TestWords.words.getCurrent();
+  const nextWord = TestWords.words.getCurrentText();
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
   const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
 
