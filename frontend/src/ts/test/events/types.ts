@@ -11,10 +11,11 @@ export type TestEventType =
   | "timer"
   | "composition";
 
-type CommonProps<T extends TestEventType> = {
+type EventProps<T extends TestEventType, TData> = {
   type: T;
   ms: number;
   testMs: number;
+  data: TData;
 };
 
 export type TestEvent =
@@ -31,9 +32,7 @@ export type TestEventData =
   | InputEventData
   | CompositionTestEventData;
 
-export type KeydownEvent = CommonProps<"keydown"> & {
-  data: KeydownEventData;
-};
+export type KeydownEvent = EventProps<"keydown", KeydownEventData>;
 
 export type KeydownEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
@@ -43,9 +42,7 @@ export type KeydownEventData = {
   meta: boolean;
 };
 
-export type KeyupEvent = CommonProps<"keyup"> & {
-  data: KeyupEventData;
-};
+export type KeyupEvent = EventProps<"keyup", KeyupEventData>;
 
 export type KeyupEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
@@ -56,9 +53,7 @@ export type KeyupEventData = {
   estimated?: true; // true if this event never happened, but was estimated (force keyup on test end)
 };
 
-export type TimerEvent = CommonProps<"timer"> & {
-  data: TimerEventData;
-};
+export type TimerEvent = EventProps<"timer", TimerEventData>;
 
 export type TimerEventData =
   | {
@@ -72,9 +67,7 @@ export type TimerEventData =
       timer: number;
     };
 
-export type InputEvent = CommonProps<"input"> & {
-  data: InputEventData;
-};
+export type InputEvent = EventProps<"input", InputEventData>;
 
 export type InputEventData = {
   charIndex: number;
@@ -92,9 +85,10 @@ export type InputEventData = {
     }
 );
 
-export type CompositionTestEvent = CommonProps<"composition"> & {
-  data: CompositionTestEventData;
-};
+export type CompositionTestEvent = EventProps<
+  "composition",
+  CompositionTestEventData
+>;
 
 export type CompositionTestEventData =
   | {
