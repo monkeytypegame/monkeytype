@@ -1106,15 +1106,17 @@ function compareCompletedEvents(
     //   `Completed event mismatch: ${notMatching.join(", ")}`,
     //   { important: true },
     // );
-    try {
-      void Ape.results.reportCompletedEventMismatch({
+    Ape.results
+      .reportCompletedEventMismatch({
         body: {
           notMatching,
           // ce: ce as Record<string, unknown>,
           // ce2: ce2 as Record<string, unknown>,
         },
+      })
+      .catch(() => {
+        //
       });
-    } catch {}
   }
 
   console.debug("Completed event object2", ce2);
