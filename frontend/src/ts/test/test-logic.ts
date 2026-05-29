@@ -29,6 +29,13 @@ import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
 import { getActivePage, isAuthenticated } from "../states/core";
 import {
+  getIncompleteSeconds,
+  getIncompleteTests,
+  getRestartCount,
+  pushIncompleteTest,
+  resetIncompleteTests,
+  setIsTestInvalid,
+  setLastResult,
   setResultVisible,
   setWordsHaveNewline,
   setWordsHaveTab,
@@ -271,10 +278,8 @@ export function restart(options = {} as RestartOptions): void {
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      TestState.incrementIncompleteSeconds(tt);
-      TestState.incrementRestartCount();
       const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-      TestState.pushIncompleteTest(acc, tt);
+      pushIncompleteTest({ acc, seconds: tt });
     }
   }
 
@@ -316,6 +321,7 @@ export function restart(options = {} as RestartOptions): void {
 
   resetTestEvents();
   TestTimer.clear();
+  setIsTestInvalid(false);
   TestStats.restart();
   TestInput.restart();
   TestInput.corrected.reset();
@@ -865,12 +871,10 @@ function buildCompletedEvent(
     lazyMode: Config.lazyMode,
     timestamp: Date.now(),
     language: language,
-    restartCount: TestState.restartCount,
-    incompleteTests: TestState.incompleteTests,
+    restartCount: getRestartCount(),
+    incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
-      TestState.incompleteSeconds < 0
-        ? 0
-        : Numbers.roundTo2(TestState.incompleteSeconds),
+      getIncompleteSeconds() < 0 ? 0 : Numbers.roundTo2(getIncompleteSeconds()),
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     tags: activeTagsIds,
@@ -1383,7 +1387,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
-  TestStats.setLastResult(structuredClone(completedEvent));
+  setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready
 
@@ -1406,7 +1410,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ) {
     showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   } else if (difficultyFailed) {
     showNoticeNotification(`Test failed - ${failReason}`, {
@@ -1433,16 +1437,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     showNoticeNotification("Test invalid - too short");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
     showNoticeNotification("Test invalid - AFK detected");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   } else if (TestState.isRepeated) {
     showNoticeNotification("Test invalid - repeated");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   } else if (
     completedEvent.wpm < 0 ||
@@ -1454,7 +1458,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - wpm");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   } else if (
     completedEvent.rawWpm < 0 ||
@@ -1466,7 +1470,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - raw");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   } else if (
     (!DB.getSnapshot()?.lbOptOut &&
@@ -1475,7 +1479,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");
-    TestStats.setInvalid();
+    setIsTestInvalid(true);
     dontSave = true;
   }
 
@@ -1488,9 +1492,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = completedEvent.acc;
-      TestState.incrementIncompleteSeconds(tt);
-      TestState.incrementRestartCount();
-      TestState.pushIncompleteTest(acc, tt);
+      pushIncompleteTest({ acc, seconds: tt });
     }
   }
 
@@ -1550,7 +1552,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (dontSave) {
       void AnalyticsController.log("testCompletedInvalid");
     } else {
-      TestState.resetIncomplete();
+      resetIncompleteTests();
 
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);

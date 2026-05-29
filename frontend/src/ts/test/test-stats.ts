@@ -5,9 +5,9 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
+import { getLastResult } from "../states/test";
 
 type CharCount = {
   spaces: number;
@@ -33,21 +33,14 @@ export type Stats = {
   correctSpaces: number;
 };
 
-export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
-
-export function setLastResult(result: CompletedEvent): void {
-  lastResult = result;
-}
-
 export function getStats(): unknown {
   const ret = {
-    lastResult,
+    lastResult: getLastResult(),
     start,
     end,
     start3,
@@ -110,12 +103,7 @@ export function restart(): void {
   end2 = 0;
   start3 = 0;
   end3 = 0;
-  invalid = false;
   lastSecondNotRound = false;
-}
-
-export function setInvalid(): void {
-  invalid = true;
 }
 
 export function calculateTestSeconds(now?: number): number {
