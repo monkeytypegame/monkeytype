@@ -80,7 +80,7 @@ export function getStartToFirstKeypressMs(): number {
   }
 
   if (firstKeypress === undefined || start === undefined) {
-    throw new Error("No keypresses or start event found");
+    return 0;
   }
 
   const calc = firstKeypress - start;
@@ -121,7 +121,7 @@ function getRawLastKeypressToEndMs(): number {
   }
 
   if (lastKeypress === undefined || end === undefined) {
-    throw new Error("No keypresses or end event found");
+    return 0;
   }
 
   const calc = end - lastKeypress;
@@ -207,7 +207,7 @@ export function getTestDurationMs(): number {
   }
 
   if (end === undefined) {
-    throw new Error("No end event found");
+    return 0;
   }
 
   if (Config.mode === "zen" || bailedOut) {
