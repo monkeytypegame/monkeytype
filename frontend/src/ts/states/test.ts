@@ -5,6 +5,8 @@ import { getActivePage } from "./core";
 import { canQuickRestart } from "../utils/quick-restart";
 import { getData as getCustomTextData } from "../test/custom-text";
 import { isCustomTextLong } from "../legacy-states/custom-text-name";
+import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -13,8 +15,33 @@ export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-
+export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
+export const [getLastResult, setLastResult] = createSignal<Omit<
+  CompletedEvent,
+  "hash" | "uid"
+> | null>(null);
+export const [
+  getRestartCount,
+  { increment: incrementRestartCount, reset: resetRestartCount },
+] = createSignalWithSetters(0)({
+  increment: (set) => set((n) => n + 1),
+  reset: (set) => set(0),
+});
+export const [
+  getIncompleteSeconds,
+  { increment: incrementIncompleteSeconds, reset: resetIncompleteSeconds },
+] = createSignalWithSetters(0)({
+  increment: (set, val: number) => set((n) => n + val),
+  reset: (set) => set(0),
+});
+export const [
+  getIncompleteTests,
+  { push: pushIncompleteTest, reset: resetIncompleteTests },
+] = createSignalWithSetters<IncompleteTest[]>([])({
+  push: (set, val: IncompleteTest) => set((arr) => [...arr, val]),
+  reset: (set) => set([]),
+});
 
 createEffect(() => {
   getActivePage(); // depend on active page

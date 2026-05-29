@@ -5,9 +5,9 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
+import { getLastResult } from "../states/test";
 
 type CharCount = {
   spaces: number;
@@ -33,21 +33,14 @@ export type Stats = {
   correctSpaces: number;
 };
 
-export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
-
-export function setLastResult(result: CompletedEvent): void {
-  lastResult = result;
-}
-
 export function getStats(): unknown {
   const ret = {
-    lastResult,
+    lastResult: getLastResult(),
     start,
     end,
     start3,
@@ -106,35 +99,7 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
-  invalid = false;
   lastSecondNotRound = false;
-}
-
-export let restartCount = 0;
-export let incompleteSeconds = 0;
-
-export let incompleteTests: IncompleteTest[] = [];
-
-export function incrementRestartCount(): void {
-  restartCount++;
-}
-
-export function incrementIncompleteSeconds(val: number): void {
-  incompleteSeconds += val;
-}
-
-export function pushIncompleteTest(acc: number, seconds: number): void {
-  incompleteTests.push({ acc, seconds });
-}
-
-export function resetIncomplete(): void {
-  restartCount = 0;
-  incompleteSeconds = 0;
-  incompleteTests = [];
-}
-
-export function setInvalid(): void {
-  invalid = true;
 }
 
 export function calculateTestSeconds(now?: number): number {
