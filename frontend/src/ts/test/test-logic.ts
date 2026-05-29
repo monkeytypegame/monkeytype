@@ -1216,12 +1216,10 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     stopOnLetter: Config.stopOnError === "letter",
-    restartCount: TestState.restartCount,
-    incompleteTests: TestState.incompleteTests,
+    restartCount: getRestartCount(),
+    incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
-      TestState.incompleteSeconds < 0
-        ? 0
-        : Numbers.roundTo2(TestState.incompleteSeconds),
+      getIncompleteSeconds() < 0 ? 0 : Numbers.roundTo2(getIncompleteSeconds()),
 
     consistency: consistency,
     wpmConsistency: wpmConsistency,
@@ -1354,10 +1352,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const ce = buildCompletedEvent(stats, rawPerSecond);
 
-  if (getAuthenticatedUser() !== null) {
-    compareCompletedEvents(ce);
-  }
-
   console.debug("Completed event object", ce);
 
   function countUndefined(input: unknown): number {
@@ -1484,6 +1478,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  if (
+    getAuthenticatedUser() !== null &&
+    !dontSave &&
+    !difficultyFailed &&
+    Config.resultSaving
+  ) {
+    compareCompletedEvents(ce);
+  }
 
   if (TestState.isRepeated || difficultyFailed) {
     if (Config.resultSaving) {
