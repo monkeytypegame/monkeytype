@@ -10,10 +10,9 @@ import {
   ApeKeyNameSchema,
 } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
-import { SimpleModal } from "../simple-modal";
+import { SimpleModal, TextArea } from "../simple-modal";
 import { isAuthenticated } from "../../states/core";
 import { qs, qsr } from "../../utils/dom";
-import { TextArea } from "../../states/simple-modal";
 
 const editApeKey = new SimpleModal({
   id: "editApeKey",
@@ -100,7 +99,6 @@ const viewApeKey = new SimpleModal({
   execFn: async (_thisPopup) => {
     return {
       status: "success",
-      message: "Key generated",
       showNotification: false,
       hideOptions: {
         clearModalChain: true,

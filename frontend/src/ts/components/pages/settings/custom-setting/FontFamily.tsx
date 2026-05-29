@@ -1,5 +1,6 @@
 import { ConfigSchema } from "@monkeytype/schemas/configs";
 import { createResource, For, JSXElement, Show } from "solid-js";
+import { z } from "zod";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
@@ -8,6 +9,7 @@ import { showNoticeNotification } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
+import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
@@ -167,14 +169,18 @@ export function FontFamily(): JSXElement {
                   title: "Custom font",
                   text: "Make sure you have the font installed on your computer before applying",
                   buttonText: "apply",
-                  inputs: [
-                    {
+                  schema: z.object({
+                    fontName: z.string(),
+                  }),
+                  inputs: {
+                    fontName: {
                       type: "text",
                       placeholder: "font name",
+                      preprocess: normalizeName,
                     },
-                  ],
-                  execFn: async (fontName) => {
-                    setConfig("fontFamily", fontName.replace(/\s/g, "_"));
+                  },
+                  execFn: async ({ fontName }) => {
+                    setConfig("fontFamily", fontName);
                     return {
                       status: "success",
                       message: "Font applied",

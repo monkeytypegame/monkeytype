@@ -6,7 +6,6 @@ import {
 } from "../../../../collections/presets";
 import { apply } from "../../../../controllers/preset-controller";
 import { showEditPresetModal } from "../../../../states/edit-preset-modal";
-import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { showModal } from "../../../../states/modals";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
@@ -55,9 +54,8 @@ export function Presets(): JSXElement {
                       text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
                       buttonText: "delete",
                       execFn: async () => {
-                        showLoaderBar();
                         await deletePreset({ presetId: preset._id });
-                        hideLoaderBar();
+
                         return {
                           status: "success",
                           message: "Preset deleted",

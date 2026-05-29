@@ -37,6 +37,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
+import { logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -224,6 +225,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
   }
+
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding === true,
+    inputStopped: removeLastChar,
+  });
 
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:

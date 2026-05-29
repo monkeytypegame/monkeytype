@@ -20,6 +20,8 @@ export function InputField(props: {
    * If user inputs empty string the field is resetted to the default value
    */
   resetToDefaultIfEmptyOnBlur?: boolean;
+  min?: number;
+  max?: number;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -82,6 +84,8 @@ export function InputField(props: {
         onFocus={() => props.onFocus?.()}
         dir={props.dir}
         maxLength={props.maxLength}
+        min={props.min}
+        max={props.max}
       />
       <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />
