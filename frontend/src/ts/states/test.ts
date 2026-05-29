@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, createEffect, createMemo } from "solid-js";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { getConfig } from "../config/store";
 import { getActivePage } from "./core";
@@ -22,26 +22,17 @@ export const [getLastResult, setLastResult] = createSignal<Omit<
   "hash" | "uid"
 > | null>(null);
 export const [
-  getRestartCount,
-  { increment: incrementRestartCount, reset: resetRestartCount },
-] = createSignalWithSetters(0)({
-  increment: (set) => set((n) => n + 1),
-  reset: (set) => set(0),
-});
-export const [
-  getIncompleteSeconds,
-  { increment: incrementIncompleteSeconds, reset: resetIncompleteSeconds },
-] = createSignalWithSetters(0)({
-  increment: (set, val: number) => set((n) => n + val),
-  reset: (set) => set(0),
-});
-export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
 ] = createSignalWithSetters<IncompleteTest[]>([])({
   push: (set, val: IncompleteTest) => set((arr) => [...arr, val]),
   reset: (set) => set([]),
 });
+
+export const getRestartCount = createMemo(() => getIncompleteTests().length);
+export const getIncompleteSeconds = createMemo(() =>
+  getIncompleteTests().reduce((sum, test) => sum + test.seconds, 0),
+);
 
 createEffect(() => {
   getActivePage(); // depend on active page

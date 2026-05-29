@@ -32,12 +32,8 @@ import {
   getIncompleteSeconds,
   getIncompleteTests,
   getRestartCount,
-  incrementIncompleteSeconds,
-  incrementRestartCount,
   pushIncompleteTest,
-  resetIncompleteSeconds,
   resetIncompleteTests,
-  resetRestartCount,
   setIsTestInvalid,
   setLastResult,
   setResultVisible,
@@ -264,8 +260,6 @@ export function restart(options = {} as RestartOptions): void {
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      incrementIncompleteSeconds(tt);
-      incrementRestartCount();
       const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
@@ -1128,8 +1122,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = completedEvent.acc;
-      incrementIncompleteSeconds(tt);
-      incrementRestartCount();
       pushIncompleteTest({ acc, seconds: tt });
     }
   }
@@ -1191,8 +1183,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       void AnalyticsController.log("testCompletedInvalid");
     } else {
       resetIncompleteTests();
-      resetRestartCount();
-      resetIncompleteSeconds();
 
       if (!completedEvent.bailedOut) {
         const challenge = ChallengeContoller.verify(completedEvent);
