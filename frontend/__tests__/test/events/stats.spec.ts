@@ -219,8 +219,8 @@ describe("stats.ts", () => {
       expect(getStartToFirstKeypressMs()).toBe(0);
     });
 
-    it("throws if no events", () => {
-      expect(() => getStartToFirstKeypressMs()).toThrow();
+    it("returns 0 if no events", () => {
+      expect(getStartToFirstKeypressMs()).toBe(0);
     });
   });
 
@@ -254,9 +254,9 @@ describe("stats.ts", () => {
       expect(getTestDurationMs()).toBe(3000);
     });
 
-    it("throws if no end event", () => {
+    it("returns 0 if no end event", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      expect(() => getTestDurationMs()).toThrow();
+      expect(getTestDurationMs()).toBe(0);
     });
   });
 
