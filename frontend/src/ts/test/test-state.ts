@@ -1,3 +1,4 @@
+import { IncompleteTest } from "@monkeytype/schemas/results";
 import { promiseWithResolvers } from "../utils/misc";
 
 export let isRepeated = false;
@@ -12,6 +13,7 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let restartCount = 0;
 export let resultCalculating = false;
 
 export function setRepeated(tf: boolean): void {
@@ -78,6 +80,27 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function incrementRestartCount(): void {
+  restartCount++;
+}
+
+export let incompleteSeconds = 0;
+export let incompleteTests: IncompleteTest[] = [];
+
+export function incrementIncompleteSeconds(val: number): void {
+  incompleteSeconds += val;
+}
+
+export function pushIncompleteTest(acc: number, seconds: number): void {
+  incompleteTests.push({ acc, seconds });
+}
+
+export function resetIncomplete(): void {
+  restartCount = 0;
+  incompleteSeconds = 0;
+  incompleteTests = [];
 }
 
 export function setResultCalculating(val: boolean): void {

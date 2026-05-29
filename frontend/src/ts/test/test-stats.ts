@@ -99,6 +99,10 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
+  start2 = 0;
+  end2 = 0;
+  start3 = 0;
+  end3 = 0;
   lastSecondNotRound = false;
 }
 
@@ -157,12 +161,7 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    if (Config.mode === "time") {
-      extraAfk =
-        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
-    } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
-    }
+    extraAfk = Math.round(testSeconds) - TestInput.keypressCountHistory.length;
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
