@@ -40,7 +40,7 @@ export function logTestEvent(
   now: number,
   eventData: TestEventData,
 ): void {
-  cachedAllEvents = undefined;
+  invalidateCache();
 
   now = roundTo2(now);
 
@@ -290,7 +290,7 @@ export function resetTestEvents(): void {
   timerEvents = [];
   inputEvents = [];
   compositionEvents = [];
-  cachedAllEvents = undefined;
+  invalidateCache();
   pressedKeys = new Map();
   noCodeIndex = 0;
 }
