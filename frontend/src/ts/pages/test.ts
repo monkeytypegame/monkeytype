@@ -6,11 +6,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
-import {
-  resetIncompleteSeconds,
-  resetIncompleteTests,
-  resetRestartCount,
-} from "../states/test";
+import { resetIncompleteTests } from "../states/test";
 
 export const page = new Page({
   id: "test",
@@ -30,8 +26,6 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     updateFooterAndVerticalAds(false);
     resetIncompleteTests();
-    resetIncompleteSeconds();
-    resetRestartCount();
     TestLogic.restart({
       noAnim: true,
     });
