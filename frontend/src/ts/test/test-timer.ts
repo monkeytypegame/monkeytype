@@ -166,7 +166,6 @@ function checkIfFailed(
   acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
-  TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   if (

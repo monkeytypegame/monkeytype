@@ -104,7 +104,6 @@ import {
   getWpmHistory,
   getAfkDuration,
   forceReleaseAllKeys,
-  getKeypressesPerSecond,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -274,7 +273,6 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving) {
-      TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
       TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
@@ -1071,44 +1069,6 @@ function compareCompletedEvents(
     }
   }
 
-  {
-    const a = TestInput.keypressCountHistory;
-    const b = getKeypressesPerSecond();
-    if (a.length === b.length && a.every((val, i) => val === b[i])) {
-      console.debug(`Completed event match on key keypressCountHistory:`, a);
-    } else {
-      notMatching.push(`keypressCountHistory (values differ)`);
-      mismatchedKeys.push("keypressCountHistory");
-      console.error(
-        `Completed event mismatch on key keypressCountHistory:`,
-        a,
-        b,
-      );
-    }
-  }
-
-  {
-    const a = TestInput.keypressCountHistory.reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    const b = getKeypressesPerSecond().reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    if (a === b) {
-      console.debug(`Completed event match on totalKeypressCountHistory:`, a);
-    } else {
-      notMatching.push(`totalKeypressCountHistory (${a} vs ${b})`);
-      mismatchedKeys.push("totalKeypressCountHistory");
-      console.error(
-        `Completed event mismatch on totalKeypressCountHistory:`,
-        a,
-        b,
-      );
-    }
-  }
-
   if (notMatching.length === 0) {
     if (ALWAYSREPORT) {
       showSuccessNotification("Completed events match", { important: true });
@@ -1305,11 +1265,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // logEventsDataToTheConsoleTable();
 
-  //remove afk from zen
-  if (Config.mode === "zen" || TestState.bailedOut) {
-    TestStats.removeAfkData();
-  }
-
   // stats
   const stats = TestStats.calculateFinalStats();
   if (
@@ -1330,31 +1285,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     !difficultyFailed &&
     Math.round(stats.time % 1) >= 0.5
   ) {
-    TestInput.pushKeypressesToHistory();
     TestInput.pushErrorToHistory();
     TestInput.pushAfkToHistory();
   }
 
-  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60),
-  );
-
-  //adjust last second if last second is not round
-  // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    stats.time % 1 >= 0.5
-  ) {
-    const timescale = 1 / (stats.time % 1);
-
-    //multiply last element of rawBefore by scale, and round it
-    rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale,
-    );
-  }
-
-  const ce = buildCompletedEvent(stats, rawPerSecond);
+  const ce = buildCompletedEvent(stats, []);
 
   console.debug("Completed event object", ce);
 
@@ -1749,7 +1684,6 @@ export function fail(reason: string): void {
   failReason = reason;
   // input.pushHistory();
   // corrected.pushHistory();
-  TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   void finish(true);

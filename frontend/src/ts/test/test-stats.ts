@@ -47,7 +47,6 @@ export function getStats(): unknown {
     end3,
     afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
-    keypressCountHistory: TestInput.keypressCountHistory,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
@@ -127,7 +126,7 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    extraAfk = Math.round(testSeconds) - TestInput.keypressCountHistory.length;
+    extraAfk = Math.round(testSeconds);
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -150,11 +149,6 @@ export function calculateAccuracy(): number {
       (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
     100;
   return isNaN(acc) ? 100 : acc;
-}
-
-export function removeAfkData(): void {
-  const testSeconds = calculateTestSeconds();
-  TestInput.keypressCountHistory.splice(testSeconds);
 }
 
 function getInputWords(): string[] {

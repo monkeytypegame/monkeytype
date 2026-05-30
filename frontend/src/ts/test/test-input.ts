@@ -117,8 +117,6 @@ class Corrected {
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let keypressCountHistory: number[] = [];
-let currentKeypressCount = 0;
 type MissedWordsType = Record<string, number>;
 // We're using Object.create(null) to make sure that __proto__ won't have any special meaning when it's used to index the missedWords object (so if a user mistypes the word __proto__ it will appear in the practise words test)
 export let missedWords: MissedWordsType = Object.create(
@@ -143,10 +141,6 @@ let currentErrorHistory: ErrorHistoryObject = {
 export let afkHistory: boolean[] = [];
 let currentAfk = true;
 
-export function incrementKeypressCount(): void {
-  currentKeypressCount++;
-}
-
 export function setCurrentNotAfk(): void {
   currentAfk = false;
 }
@@ -157,11 +151,6 @@ export function incrementKeypressErrors(): void {
 
 export function pushKeypressWord(wordIndex: number): void {
   currentErrorHistory.words.push(wordIndex);
-}
-
-export function pushKeypressesToHistory(): void {
-  keypressCountHistory.push(currentKeypressCount);
-  currentKeypressCount = 0;
 }
 
 export function pushAfkToHistory(): void {
@@ -194,8 +183,6 @@ export function pushMissedWord(word: string): void {
 }
 
 export function restart(): void {
-  keypressCountHistory = [];
-  currentKeypressCount = 0;
   afkHistory = [];
   currentAfk = true;
   errorHistory = [];
