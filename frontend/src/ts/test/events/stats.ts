@@ -303,11 +303,8 @@ export function getCurrentAccuracy(): number {
   return total === 0 ? 100 : (correct / total) * 100;
 }
 
-export function getWordBurst(wordIndex: number, now?: number): number {
-  //todo: composition start must be the start time for burst calculation
-
-  const events = getInputEventsPerWord().get(wordIndex) ?? [];
-
+//todo: composition start must be the start time for burst calculation
+function computeBurst(events: InputEvent[], now?: number): number {
   const input = getSimulatedInput(events);
 
   let inputLength = input.length;
@@ -337,7 +334,7 @@ export function getWordBurst(wordIndex: number, now?: number): number {
     lastKeypressTime = undefined;
   }
 
-  let endTime = lastKeypressTime ?? now ?? performance.now();
+  const endTime = lastKeypressTime ?? now ?? performance.now();
 
   const durationSeconds = (endTime - firstKeypressTime) / 1000;
   if (durationSeconds <= 0) return Infinity;
@@ -345,10 +342,16 @@ export function getWordBurst(wordIndex: number, now?: number): number {
   return Math.round(calculateWpm(inputLength, durationSeconds));
 }
 
+export function getWordBurst(wordIndex: number, now?: number): number {
+  const events = getInputEventsPerWord().get(wordIndex) ?? [];
+  return computeBurst(events, now);
+}
+
 export function getBurstHistory(): number[] {
-  let burstHistory: number[] = [];
+  const eventsPerWord = getInputEventsPerWord();
+  const burstHistory: number[] = [];
   for (let i = 0; i < TestWords.words.length; i++) {
-    burstHistory.push(getWordBurst(i));
+    burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
   }
   return burstHistory;
 }
