@@ -923,10 +923,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // logEventsDataToTheConsoleTable();
 
-  const stats = TestStats.calculateFinalStats();
-  PaceCaret.setLastTestWpm(stats.wpm);
-
   const ce = buildCompletedEvent();
+  PaceCaret.setLastTestWpm(ce.wpm);
 
   console.debug("Completed event object", ce);
 
