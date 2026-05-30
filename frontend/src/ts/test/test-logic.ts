@@ -177,7 +177,6 @@ export function startTest(now: number): boolean {
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
-  TestInput.carryoverFirstKeypress();
   Time.set(0);
   TestTimer.clear();
 
@@ -776,42 +775,13 @@ function buildCompletedEvent(
   stats: TestStats.Stats,
   rawPerSecond: number[],
 ): Omit<CompletedEvent, "hash" | "uid"> {
-  //build completed event object
-  let stfk = Numbers.roundTo2(
-    TestInput.keypressTimings.spacing.first - TestStats.start,
-  );
-  if (stfk < 0 || Config.mode === "zen") {
-    stfk = 0;
-  }
-
-  let lkte = Numbers.roundTo2(
-    TestStats.end - TestInput.keypressTimings.spacing.last,
-  );
-  if (lkte < 0 || Config.mode === "zen") {
-    lkte = 0;
-  }
-
   //consistency
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
   let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
-  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
-  if (keyConsistencyArray.length > 0) {
-    keyConsistencyArray = keyConsistencyArray.slice(
-      0,
-      keyConsistencyArray.length - 1,
-    );
-  }
-  let keyConsistency = Numbers.roundTo2(
-    Numbers.kogasa(
-      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray),
-    ),
-  );
+
   if (!consistency || isNaN(consistency)) {
     consistency = 0;
-  }
-  if (!keyConsistency || isNaN(keyConsistency)) {
-    keyConsistency = 0;
   }
 
   const chartErr = [];
@@ -882,14 +852,14 @@ function buildCompletedEvent(
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     tags: activeTagsIds,
-    keySpacing: TestInput.keypressTimings.spacing.array,
-    keyDuration: TestInput.keypressTimings.duration.array,
+    keySpacing: [],
+    keyDuration: [],
     keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd: lkte,
-    startToFirstKey: stfk,
+    lastKeyToEnd: 0,
+    startToFirstKey: 0,
     consistency: consistency,
     wpmConsistency: wpmConsistency,
-    keyConsistency: keyConsistency,
+    keyConsistency: 0,
     funbox: Config.funbox,
     bailedOut: TestState.bailedOut,
     chartData: chartData,
@@ -1324,13 +1294,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
-  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
   forceReleaseAllKeys();
-
-  const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
-    TestStats.setEnd(TestInput.keypressTimings.spacing.last);
-  }
 
   setResultVisible(true);
   TestState.setResultVisible(true);

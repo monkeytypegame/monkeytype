@@ -51,7 +51,6 @@ export function getStats(): unknown {
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
-    keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
     wordsHistory: TestWords.words.list.slice(
       0,
@@ -59,35 +58,6 @@ export function getStats(): unknown {
     ),
     inputHistory: TestInput.input.getHistory(),
   };
-
-  try {
-    // @ts-expect-error ---
-    ret.keypressTimings.spacing.average =
-      TestInput.keypressTimings.spacing.array.reduce(
-        (previous, current) => (current += previous),
-      ) / TestInput.keypressTimings.spacing.array.length;
-
-    // @ts-expect-error ---
-    ret.keypressTimings.spacing.sd = Numbers.stdDev(
-      TestInput.keypressTimings.spacing.array,
-    );
-  } catch (e) {
-    //
-  }
-  try {
-    // @ts-expect-error ---
-    ret.keypressTimings.duration.average =
-      TestInput.keypressTimings.duration.array.reduce(
-        (previous, current) => (current += previous),
-      ) / TestInput.keypressTimings.duration.array.length;
-
-    // @ts-expect-error ---
-    ret.keypressTimings.duration.sd = Numbers.stdDev(
-      TestInput.keypressTimings.duration.array,
-    );
-  } catch (e) {
-    //
-  }
 
   return ret;
 }
