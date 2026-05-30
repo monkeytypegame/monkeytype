@@ -1,4 +1,5 @@
 import { replaceHomoglyphs } from "./homoglyphs";
+import { sanitizeString } from "@monkeytype/util/strings";
 import { ZodEffects, ZodString } from "zod";
 
 // Sorry for the bad words
@@ -390,18 +391,6 @@ const disallowedWords = [
   "wichser",
   "zabourah",
 ];
-
-function sanitizeString(str: string | undefined): string | undefined {
-  if (str === undefined || str === "") {
-    return str;
-  }
-
-  return str
-    .replace(/[\u0300-\u036F]/g, "")
-    .trim()
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/[^\S\r\n]{3,}/g, "  ");
-}
 
 function containsDisallowedWords(
   text: string,

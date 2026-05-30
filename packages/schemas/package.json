@@ -22,6 +22,9 @@
     "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint ."
   },
+  "dependencies": {
+    "@monkeytype/util": "workspace:*"
+  },
   "devDependencies": {
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",

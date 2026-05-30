@@ -749,6 +749,9 @@ importers:
 
   packages/schemas:
     dependencies:
+      '@monkeytype/util':
+        specifier: workspace:*
+        version: link:../util
       zod:
         specifier: 3.23.8
         version: 3.23.8
