@@ -1,8 +1,8 @@
 import { createSignal, JSXElement } from "solid-js";
 
+import { hideModal } from "../../states/modals";
 import * as PractiseWords from "../../test/practise-words";
 import * as TestLogic from "../../test/test-logic";
-import { hideModal } from "../../states/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
@@ -36,7 +36,7 @@ export function PractiseWordsModal(): JSXElement {
       >
         <div class="grid gap-4">
           <div class="grid w-full gap-2">
-            <div class="text-sub lowercase text-sm">
+            <div class="text-sm text-sub lowercase">
               <Fa icon="fa-times" /> missed
             </div>
             <div class="text-sm text-text">
@@ -44,7 +44,6 @@ export function PractiseWordsModal(): JSXElement {
             </div>
             <div class="flex gap-2">
               <Button
-                variant="text"
                 active={missed() === "off"}
                 onClick={() => setMissed("off")}
                 class="flex-1"
@@ -52,7 +51,6 @@ export function PractiseWordsModal(): JSXElement {
                 off
               </Button>
               <Button
-                variant="text"
                 active={missed() === "words"}
                 onClick={() => setMissed("words")}
                 class="flex-1"
@@ -60,7 +58,6 @@ export function PractiseWordsModal(): JSXElement {
                 words
               </Button>
               <Button
-                variant="text"
                 active={missed() === "biwords"}
                 onClick={() => setMissed("biwords")}
                 class="flex-1"
@@ -71,7 +68,7 @@ export function PractiseWordsModal(): JSXElement {
           </div>
 
           <div class="grid w-full gap-2">
-            <div class="text-sub lowercase text-sm">
+            <div class="text-sm text-sub lowercase">
               <Fa icon="fa-tachometer-alt" /> slow
             </div>
             <div class="text-sm text-text">
@@ -79,7 +76,6 @@ export function PractiseWordsModal(): JSXElement {
             </div>
             <div class="flex gap-2">
               <Button
-                variant="text"
                 active={!slow()}
                 onClick={() => setSlow(false)}
                 class="flex-1"
@@ -87,7 +83,6 @@ export function PractiseWordsModal(): JSXElement {
                 off
               </Button>
               <Button
-                variant="text"
                 active={slow()}
                 onClick={() => setSlow(true)}
                 class="flex-1"
