@@ -27,7 +27,6 @@ import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
 import * as TestInput from "./test-input";
-import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import { configEvent } from "../events/config";
@@ -62,7 +61,7 @@ import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { isTestInvalid } from "../states/test";
-import { getRawHistory, getWpmHistory } from "./events/stats";
+import { getRawHistory } from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -111,12 +110,12 @@ async function updateChartData(): Promise<void> {
 
   let labels = [];
 
-  for (let i = 1; i <= getWpmHistory().length; i++) {
-    if (TestStats.lastSecondNotRound && i === 0) {
-      labels.push(Numbers.roundTo2(result.testDuration).toString());
-    } else {
-      labels.push(i.toString());
-    }
+  for (let i = 1; i <= Math.floor(result.testDuration); i++) {
+    labels.push(i.toString());
+  }
+
+  if (result.testDuration % 1 >= 0.5) {
+    labels.push(Numbers.roundTo2(result.testDuration).toString());
   }
 
   const chartData1 = [
@@ -137,16 +136,6 @@ async function updateChartData(): Promise<void> {
   const chartData3 = [
     ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
-
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    result.testDuration % 1 < 0.5
-  ) {
-    labels.pop();
-    chartData1.pop();
-    chartData2.pop();
-  }
 
   const subcolor = getTheme().sub;
 
