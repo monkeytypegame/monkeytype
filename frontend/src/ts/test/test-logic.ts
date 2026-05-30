@@ -101,6 +101,7 @@ import {
   getAfkDuration,
   forceReleaseAllKeys,
   getCurrentAccuracy,
+  getCurrentTestDurationMs,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -270,7 +271,7 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving) {
-      const testSeconds = TestStats.calculateTestSeconds(performance.now());
+      const testSeconds = getCurrentTestDurationMs(performance.now()) / 1000;
       const afkseconds = getAfkDuration();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;

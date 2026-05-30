@@ -49,16 +49,6 @@ export function restart(): void {
   end3 = 0;
 }
 
-export function calculateTestSeconds(now?: number): number {
-  let duration = (end - start) / 1000;
-
-  if (now !== undefined) {
-    duration = (now - start) / 1000;
-  }
-
-  return duration;
-}
-
 export function setEnd(e: number): void {
   end = e;
   end2 = Date.now();
