@@ -4,6 +4,7 @@ import {
   getActivePage,
   setActivePage,
   setSelectedProfileName,
+  setTestPageVisible,
 } from "../states/core";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
@@ -294,6 +295,9 @@ export async function change(
   });
   previousPage.element.hide();
   await previousPage?.afterHide();
+  if (previousPage?.id === "test") {
+    setTestPageVisible(false);
+  }
 
   // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
   const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
@@ -344,6 +348,9 @@ export async function change(
   setActivePage(nextPage.id);
   updateOpenGraphUrl();
   Focus.set(false);
+  if (nextPage.id === "test") {
+    setTestPageVisible(true);
+  }
 
   //next page
   await nextPage?.beforeShow({

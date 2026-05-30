@@ -27,7 +27,11 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage, isAuthenticated } from "../states/core";
+import {
+  getActivePage,
+  isAuthenticated,
+  isTestPageVisible,
+} from "../states/core";
 import {
   getIncompleteSeconds,
   getIncompleteTests,
@@ -451,7 +455,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  if (isTestPageVisible()) {
     await Funbox.activate();
   }
 

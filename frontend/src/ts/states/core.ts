@@ -36,3 +36,7 @@ export const [isUserVerified, setUserVerified] = createSignal(false);
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
+
+export const [isTestPageVisible, setTestPageVisible] = createSignal(
+  getActivePage() === "test",
+);
