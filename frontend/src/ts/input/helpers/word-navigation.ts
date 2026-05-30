@@ -9,19 +9,20 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
-import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
+import { getWordBurst } from "../../test/events/stats";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
   zenNewline?: boolean;
+  now: number;
 };
 
 type GoToNextWordReturn = {
@@ -33,6 +34,7 @@ export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
   zenNewline,
+  now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
@@ -56,8 +58,7 @@ export async function goToNextWord({
   }
 
   //burst calculation and fail
-  const burst: number = TestStats.calculateBurst();
-  TestInput.pushBurstToHistory(burst);
+  const burst = getWordBurst(TestState.activeWordIndex, now);
   ret.lastBurst = burst;
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
@@ -88,7 +89,7 @@ export async function goToNextWord({
 
   setInputElementValue("");
   TestInput.input.syncWithInputElement();
-  void TestUI.afterTestWordChange("forward");
+  void TestUI.afterTestWordChange("forward", burst);
 
   return ret;
 }

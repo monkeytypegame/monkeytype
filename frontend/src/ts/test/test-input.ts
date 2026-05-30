@@ -1,6 +1,5 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import * as TestState from "./test-state";
 import { Config } from "../config/store";
 import { getInputElementValue } from "../input/input-element";
 
@@ -211,7 +210,6 @@ export const corrected = new Corrected();
 
 export let keypressCountHistory: number[] = [];
 let currentKeypressCount = 0;
-export let currentBurstStart = 0;
 type MissedWordsType = Record<string, number>;
 // We're using Object.create(null) to make sure that __proto__ won't have any special meaning when it's used to index the missedWords object (so if a user mistypes the word __proto__ it will appear in the practise words test)
 export let missedWords: MissedWordsType = Object.create(
@@ -235,9 +233,7 @@ export let keyOverlap = {
   total: 0,
   lastStartTime: -1,
 };
-export let wpmHistory: number[] = [];
-export let rawHistory: number[] = [];
-export let burstHistory: number[] = [];
+
 export let errorHistory: ErrorHistoryObject[] = [];
 let currentErrorHistory: ErrorHistoryObject = {
   count: 0,
@@ -261,10 +257,6 @@ export function incrementKeypressErrors(): void {
 
 export function pushKeypressWord(wordIndex: number): void {
   currentErrorHistory.words.push(wordIndex);
-}
-
-export function setBurstStart(time: number): void {
-  currentBurstStart = time;
 }
 
 export function pushKeypressesToHistory(): void {
@@ -518,27 +510,7 @@ export function pushMissedWord(word: string): void {
   }
 }
 
-export function pushToWpmHistory(wpm: number): void {
-  wpmHistory.push(wpm);
-}
-
-export function pushToRawHistory(raw: number): void {
-  rawHistory.push(raw);
-}
-
-export function pushBurstToHistory(speed: number): void {
-  if (burstHistory[TestState.activeWordIndex] === undefined) {
-    burstHistory.push(speed);
-  } else {
-    //repeated word - override
-    burstHistory[TestState.activeWordIndex] = speed;
-  }
-}
-
 export function restart(): void {
-  wpmHistory = [];
-  rawHistory = [];
-  burstHistory = [];
   keypressCountHistory = [];
   currentKeypressCount = 0;
   afkHistory = [];
@@ -548,7 +520,6 @@ export function restart(): void {
     count: 0,
     words: [],
   };
-  currentBurstStart = 0;
   missedWords = Object.create(null) as MissedWordsType;
   accuracy = {
     correct: 0,

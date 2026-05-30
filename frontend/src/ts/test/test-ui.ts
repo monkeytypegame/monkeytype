@@ -34,7 +34,6 @@ import {
 } from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as TestStats from "./test-stats";
 import { highlight } from "../events/keymap";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
@@ -69,6 +68,7 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import { wordsHaveNewline } from "../states/test";
+import { getBurstHistory, getCurrentAccuracy } from "./events/stats";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1312,6 +1312,8 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
+  const burstHistory = getBurstHistory();
+
   const inputHistoryLength = TestInput.input.getHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
@@ -1350,7 +1352,7 @@ async function loadWordsHistory(): Promise<boolean> {
         wordEl.classList.add("error");
       }
 
-      const burstValue = TestInput.burstHistory[i];
+      const burstValue = burstHistory[i];
       if (burstValue !== undefined) {
         wordEl.setAttribute("burst", String(burstValue));
       }
@@ -1459,7 +1461,8 @@ export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     qsa("#resultWordsHistory .heatmapLegend")?.show();
 
-    let burstlist = [...TestInput.burstHistory];
+    const burstHistory = getBurstHistory();
+    let burstlist = [...burstHistory];
 
     burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
@@ -1734,7 +1737,7 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  const acc: number = Numbers.roundTo2(getCurrentAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.mode !== "time") {
@@ -1832,13 +1835,13 @@ export function beforeTestWordChange(
 
 export async function afterTestWordChange(
   direction: "forward" | "back",
+  lastBurst?: number,
 ): Promise<void> {
   updateActiveElement({
     direction,
   });
   Caret.updatePosition();
 
-  const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
   if (Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }

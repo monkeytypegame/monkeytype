@@ -820,7 +820,7 @@ function buildCompletedEvent(
   }
 
   const chartData = {
-    wpm: TestInput.wpmHistory,
+    wpm: [],
     burst: rawPerSecond,
     err: chartErr,
   };
@@ -905,7 +905,7 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-const ALWAYSREPORT = false;
+const ALWAYSREPORT = true;
 
 function compareCompletedEvents(
   ce: Omit<CompletedEvent, "hash" | "uid">,
@@ -1341,12 +1341,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // logEventsDataToTheConsoleTable();
 
-  //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
-    const burst = TestStats.calculateBurst(now);
-    TestInput.pushBurstToHistory(burst);
-  }
-
   //remove afk from zen
   if (Config.mode === "zen" || TestState.bailedOut) {
     TestStats.removeAfkData();
@@ -1372,9 +1366,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     !difficultyFailed &&
     Math.round(stats.time % 1) >= 0.5
   ) {
-    const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-    TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
     TestInput.pushErrorToHistory();
     TestInput.pushAfkToHistory();

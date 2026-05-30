@@ -29,6 +29,7 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { logTestEvent } from "./events/data";
+import { getCurrentWpmAndRaw } from "./events/stats";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -98,17 +99,6 @@ function premid(): void {
     premidSecondsLeft.innerHTML = (Config.time - Time.get()).toString();
   }
   if (timerDebug) console.timeEnd("premid");
-}
-
-function calculateWpmRaw(): { wpm: number; raw: number } {
-  if (timerDebug) console.time("calculate wpm and raw");
-  const wpmAndRaw = TestStats.calculateWpmAndRaw();
-  if (timerDebug) console.timeEnd("calculate wpm and raw");
-  if (timerDebug) console.time("push to history");
-  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-  TestInput.pushToRawHistory(wpmAndRaw.raw);
-  if (timerDebug) console.timeEnd("push to history");
-  return wpmAndRaw;
 }
 
 function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
@@ -258,7 +248,7 @@ function timerStep(): void {
 
   //calc
   Time.increment();
-  const wpmAndRaw = calculateWpmRaw();
+  const wpmAndRaw = getCurrentWpmAndRaw();
   const acc = calculateAcc();
 
   //ui updates

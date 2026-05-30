@@ -175,9 +175,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (Config.keymapMode === "react") {
     flash(data, correct);
   }
-  if (testInput.length === 0 && !isCompositionEnding) {
-    TestInput.setBurstStart(now);
-  }
   if (!shouldGoToNextWord) {
     TestInput.corrected.update(data, correct);
   }
@@ -221,6 +218,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
       zenNewline: charIsNewline && Config.mode === "zen",
+      now,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;

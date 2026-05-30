@@ -9,6 +9,7 @@ import { configEvent } from "../events/config";
 import { setCustomTextName } from "../legacy-states/custom-text-name";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
+import { getBurstHistory } from "./events/stats";
 
 type Before = {
   mode: Mode | null;
@@ -90,10 +91,9 @@ export function init(
       .getText()
       .slice(0, TestInput.input.getHistory().length - 1);
 
-    sortableSlowWords = typedWords.map((e, i) => [
-      e,
-      TestInput.burstHistory[i] ?? 0,
-    ]);
+    const burstHistory = getBurstHistory();
+
+    sortableSlowWords = typedWords.map((e, i) => [e, burstHistory[i] ?? 0]);
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });

@@ -183,6 +183,28 @@ export function getRawPerSecond(): number[] {
   });
 }
 
+export function getCurrentTestDurationMs(now: number): number {
+  const events = getAllTestEvents();
+
+  let start: number | undefined;
+
+  for (const event of events) {
+    if (
+      start === undefined &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      start = event.ms;
+    }
+  }
+
+  if (start === undefined) {
+    return 0;
+  }
+
+  return now - start;
+}
+
 export function getTestDurationMs(): number {
   const events = getAllTestEvents();
 
@@ -243,12 +265,100 @@ function getTargetWord(
   }
 }
 
-export function getChars(): CharCounts {
+export function getCurrentWpmAndRaw(now?: number): {
+  wpm: number;
+  raw: number;
+} {
+  const chars = getChars(true);
+  const currentTestDurationMs = getCurrentTestDurationMs(
+    now ?? performance.now(),
+  );
+  const wpm = Math.round(
+    calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
+  );
+  const raw = Math.round(
+    calculateWpm(
+      chars.allCorrect + chars.extra + chars.incorrect,
+      currentTestDurationMs / 1000,
+    ),
+  );
+  return { wpm, raw };
+}
+
+export function getCurrentAccuracy(): number {
+  const events = getAllTestEvents();
+
+  let correct = 0;
+  let total = 0;
+
+  for (const event of events) {
+    if (event.type === "input" && "correct" in event.data) {
+      total++;
+      if (event.data.correct) {
+        correct++;
+      }
+    }
+  }
+
+  return total === 0 ? 100 : (correct / total) * 100;
+}
+
+export function getWordBurst(wordIndex: number, now?: number): number {
+  //todo: composition start must be the start time for burst calculation
+
+  const events = getInputEventsPerWord().get(wordIndex) ?? [];
+
+  const input = getSimulatedInput(events);
+
+  let inputLength = input.length;
+  if (!input.endsWith(" ")) {
+    inputLength += 1; // account for space that will be added on word submit
+  }
+
+  let firstKeypressTime: number | undefined;
+  let lastKeypressTime: number | undefined;
+
+  for (const event of events) {
+    if (event.type === "input" && event.data.inputType === "insertText") {
+      if (event.data.charIndex === 0) {
+        firstKeypressTime = event.ms;
+      }
+      if (event.data.data === " ") {
+        lastKeypressTime = event.ms;
+      }
+    }
+  }
+
+  if (firstKeypressTime === undefined || input.length === 0) {
+    return 0;
+  }
+
+  if (lastKeypressTime !== undefined && lastKeypressTime < firstKeypressTime) {
+    lastKeypressTime = undefined;
+  }
+
+  let endTime = lastKeypressTime ?? now ?? performance.now();
+
+  const durationSeconds = (endTime - firstKeypressTime) / 1000;
+  if (durationSeconds <= 0) return Infinity;
+
+  return Math.round(calculateWpm(inputLength, durationSeconds));
+}
+
+export function getBurstHistory(): number[] {
+  let burstHistory: number[] = [];
+  for (let i = 0; i < TestWords.words.length; i++) {
+    burstHistory.push(getWordBurst(i));
+  }
+  return burstHistory;
+}
+
+export function getChars(countPartialLastWord = false): CharCounts {
   const eventsPerWordIndex = getInputEventsPerWord();
   const isTimedTest =
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  const shouldCountPartialLastWord = isTimedTest;
+  const shouldCountPartialLastWord = isTimedTest || countPartialLastWord;
 
   let allCorrect = 0;
   let correctWord = 0;

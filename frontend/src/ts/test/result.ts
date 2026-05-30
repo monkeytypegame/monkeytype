@@ -110,8 +110,8 @@ async function updateChartData(): Promise<void> {
 
   let labels = [];
 
-  for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
-    if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
+  for (let i = 1; i <= 0; i++) {
+    if (TestStats.lastSecondNotRound && i === 0) {
       labels.push(Numbers.roundTo2(result.testDuration).toString());
     } else {
       labels.push(i.toString());
@@ -124,11 +124,7 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = [
-    ...TestInput.rawHistory.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
-    ),
-  ];
+  const chartData2: number[] = [];
 
   const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(

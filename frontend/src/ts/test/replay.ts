@@ -1,5 +1,4 @@
 import * as Sound from "../controllers/sound-controller";
-import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
 import { Config } from "../config/store";
@@ -228,7 +227,7 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
 }
 
 function updateStatsString(time: number): void {
-  const wpm = TestInput.wpmHistory[time - 1] ?? 0;
+  const wpm = 0;
   const statsString = `${wpm}wpm\t${time}s`;
   qs("#replayStats")?.setText(statsString);
 }

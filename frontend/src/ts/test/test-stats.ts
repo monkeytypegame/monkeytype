@@ -47,11 +47,7 @@ export function getStats(): unknown {
     end3,
     afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
-    wpmHistory: TestInput.wpmHistory,
-    rawHistory: TestInput.rawHistory,
-    burstHistory: TestInput.burstHistory,
     keypressCountHistory: TestInput.keypressCountHistory,
-    currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
@@ -178,25 +174,6 @@ export function setLastSecondNotRound(): void {
   lastSecondNotRound = true;
 }
 
-export function calculateBurst(endTime: number = performance.now()): number {
-  const containsKorean = TestInput.input.getKoreanStatus();
-  const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
-  if (timeToWrite <= 0) return 0;
-  let wordLength: number;
-  wordLength = !containsKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
-  if (wordLength === 0) {
-    wordLength = !containsKorean
-      ? (TestInput.input.getHistoryLast()?.length ?? 0)
-      : (Hangul.disassemble(TestInput.input.getHistoryLast() as string)
-          ?.length ?? 0);
-  }
-  if (wordLength === 0) return 0;
-  const speed = Numbers.roundTo2((wordLength * (60 / timeToWrite)) / 5);
-  return Math.round(speed);
-}
-
 export function calculateAccuracy(): number {
   const acc =
     (TestInput.accuracy.correct /
@@ -208,8 +185,6 @@ export function calculateAccuracy(): number {
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.keypressCountHistory.splice(testSeconds);
-  TestInput.wpmHistory.splice(testSeconds);
-  TestInput.rawHistory.splice(testSeconds);
 }
 
 function getInputWords(): string[] {
