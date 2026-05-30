@@ -914,6 +914,7 @@ function compareCompletedEvents(
 
   //compare ce and ce2, log differences
   const notMatching: string[] = [];
+  const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
     let val1 = ce[key];
@@ -938,6 +939,7 @@ function compareCompletedEvents(
         console.debug(`Completed event match on key ${key}:`, a);
       } else {
         notMatching.push(`${key} (${mismatchCount}/${total} elements differ)`);
+        mismatchedKeys.push(key);
         console.error(
           `Completed event mismatch on key ${key}: ${mismatchCount}/${total} elements differ`,
           a,
@@ -962,6 +964,7 @@ function compareCompletedEvents(
         console.debug(`Completed event match on key charStats:`, a);
       } else {
         notMatching.push(`charStats (${diffs.join(", ")})`);
+        mismatchedKeys.push("charStats");
         console.error(`Completed event mismatch on key charStats:`, a, b);
       }
       continue;
@@ -1022,6 +1025,7 @@ function compareCompletedEvents(
           );
         } else {
           notMatching.push("chartData (one is 'toolong' and the other is not)");
+          mismatchedKeys.push("chartData");
           console.error(
             `Completed event mismatch on key chartData: one is "toolong" and the other is not`,
             v1,
@@ -1045,6 +1049,7 @@ function compareCompletedEvents(
           console.debug(`Completed event match on key chartData.${field}:`, a);
         } else {
           notMatching.push(`chartData.${field} (values differ)`);
+          mismatchedKeys.push(`chartData.${field}`);
           console.error(
             `Completed event mismatch on key chartData.${field}:`,
             a,
@@ -1063,6 +1068,7 @@ function compareCompletedEvents(
           );
         } else {
           notMatching.push(`keypressCountHistory (values differ)`);
+          mismatchedKeys.push("keypressCountHistory");
           console.error(
             `Completed event mismatch on key keypressCountHistory:`,
             a,
@@ -1084,6 +1090,7 @@ function compareCompletedEvents(
         const diff = Numbers.roundTo2(Math.abs(a - b));
         const dir = a > b ? "ce1 larger" : "ce2 larger";
         notMatching.push(`${key} (off by ${diff}, ${dir})`);
+        mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       }
     } else if (typeof val1 === "number" && typeof val2 === "number") {
@@ -1093,12 +1100,14 @@ function compareCompletedEvents(
         const diff = Numbers.roundTo2(Math.abs(a - b));
         const dir = a > b ? "ce1 larger" : "ce2 larger";
         notMatching.push(`${key} (off by ${diff}, ${dir})`);
+        mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
         console.debug(`Completed event match on key ${key}:`, a);
       }
     } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
       notMatching.push(`${key} (values differ)`);
+      mismatchedKeys.push(key);
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);
@@ -1112,10 +1121,15 @@ function compareCompletedEvents(
     //   `Completed event mismatch: ${notMatching.join(", ")}`,
     //   { important: true },
     // );
+    mismatchedKeys.sort();
+    const groupKey = mismatchedKeys.join(",");
     Ape.results
       .reportCompletedEventMismatch({
         body: {
           notMatching,
+          mismatchedKeys,
+          groupKey,
+          language: ce.language,
           mode: ce.mode,
           mode2: ce.mode2,
           difficulty: ce.difficulty,
