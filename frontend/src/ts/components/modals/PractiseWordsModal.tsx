@@ -35,11 +35,11 @@ export function PractiseWordsModal(): JSXElement {
         }}
       >
         <div class="grid gap-4">
-          <div class="grid w-full gap-2">
-            <div class="text-sm text-sub lowercase">
+          <div class="grid gap-2">
+            <div class="text-sub lowercase">
               <Fa icon="fa-times" /> missed
             </div>
-            <div class="text-sm text-text">
+            <div>
               Include missed words or biwords (which include the previous word).
             </div>
             <div class="flex gap-2">
@@ -67,13 +67,11 @@ export function PractiseWordsModal(): JSXElement {
             </div>
           </div>
 
-          <div class="grid w-full gap-2">
-            <div class="text-sm text-sub lowercase">
+          <div class="grid gap-2">
+            <div class="text-sub lowercase">
               <Fa icon="fa-tachometer-alt" /> slow
             </div>
-            <div class="text-sm text-text">
-              Include words which you typed slower than others.
-            </div>
+            <div>Include words which you typed slower than others.</div>
             <div class="flex gap-2">
               <Button
                 active={!slow()}
