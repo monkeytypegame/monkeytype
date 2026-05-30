@@ -10,7 +10,6 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -29,7 +28,7 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { logTestEvent } from "./events/data";
-import { getCurrentWpmAndRaw } from "./events/stats";
+import { getCurrentAccuracy, getCurrentWpmAndRaw } from "./events/stats";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -106,13 +105,6 @@ function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
   if (timerDebug) console.timeEnd("update monkey");
-}
-
-function calculateAcc(): number {
-  if (timerDebug) console.time("calculate acc");
-  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (timerDebug) console.timeEnd("calculate acc");
-  return acc;
 }
 
 function layoutfluid(): void {
@@ -246,7 +238,7 @@ function timerStep(): void {
   //calc
   Time.increment();
   const wpmAndRaw = getCurrentWpmAndRaw();
-  const acc = calculateAcc();
+  const acc = getCurrentAccuracy();
 
   //ui updates
   requestDebouncedAnimationFrame("test-timer.timerStep", () => {

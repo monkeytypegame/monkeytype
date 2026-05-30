@@ -70,11 +70,3 @@ export function setStart(s: number): void {
   start2 = Date.now();
   start3 = new Date().getTime();
 }
-
-export function calculateAccuracy(): number {
-  const acc =
-    (TestInput.accuracy.correct /
-      (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
-    100;
-  return isNaN(acc) ? 100 : acc;
-}

@@ -100,6 +100,7 @@ import {
   getWpmHistory,
   getAfkDuration,
   forceReleaseAllKeys,
+  getCurrentAccuracy,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -273,7 +274,7 @@ export function restart(options = {} as RestartOptions): void {
       const afkseconds = getAfkDuration();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
+      const acc = Numbers.roundTo2(getCurrentAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
   }
