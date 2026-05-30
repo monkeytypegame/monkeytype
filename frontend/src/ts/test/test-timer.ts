@@ -166,7 +166,6 @@ function checkIfFailed(
   acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
-  TestInput.pushErrorToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&

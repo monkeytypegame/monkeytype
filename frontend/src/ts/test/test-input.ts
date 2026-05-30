@@ -1,11 +1,6 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { getInputElementValue } from "../input/input-element";
 
-type ErrorHistoryObject = {
-  count: number;
-  words: number[];
-};
-
 class Input {
   current: string;
   private history: string[];
@@ -132,28 +127,6 @@ export let keyOverlap = {
   lastStartTime: -1,
 };
 
-export let errorHistory: ErrorHistoryObject[] = [];
-let currentErrorHistory: ErrorHistoryObject = {
-  count: 0,
-  words: [],
-};
-
-export function incrementKeypressErrors(): void {
-  currentErrorHistory.count++;
-}
-
-export function pushKeypressWord(wordIndex: number): void {
-  currentErrorHistory.words.push(wordIndex);
-}
-
-export function pushErrorToHistory(): void {
-  errorHistory.push(currentErrorHistory);
-  currentErrorHistory = {
-    count: 0,
-    words: [],
-  };
-}
-
 export function incrementAccuracy(correctincorrect: boolean): void {
   if (correctincorrect) {
     accuracy.correct++;
@@ -171,11 +144,6 @@ export function pushMissedWord(word: string): void {
 }
 
 export function restart(): void {
-  errorHistory = [];
-  currentErrorHistory = {
-    count: 0,
-    words: [],
-  };
   missedWords = Object.create(null) as MissedWordsType;
   accuracy = {
     correct: 0,

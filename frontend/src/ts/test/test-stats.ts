@@ -45,7 +45,6 @@ export function getStats(): unknown {
     end,
     start3,
     end3,
-    errorHistory: TestInput.errorHistory,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
