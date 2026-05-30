@@ -1,6 +1,6 @@
 import { createSignal, JSXElement } from "solid-js";
 
-import { hideModal } from "../../states/modals";
+import { hideModalAndClearChain } from "../../states/modals";
 import * as PractiseWords from "../../test/practise-words";
 import * as TestLogic from "../../test/test-logic";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -17,7 +17,7 @@ export function PractiseWordsModal(): JSXElement {
 
   const apply = (): void => {
     PractiseWords.init(missed(), slow());
-    hideModal("PractiseWords");
+    hideModalAndClearChain("PractiseWords");
     TestLogic.restart({ practiseMissed: true });
   };
 
