@@ -15,10 +15,6 @@ class Input {
     // this.history = [];
   }
 
-  // resetHistory(): void {
-  //   this.history = [];
-  // }
-
   setKoreanStatus(val: boolean): void {
     this.koreanStatus = val;
   }
@@ -27,86 +23,9 @@ class Input {
     return this.koreanStatus;
   }
 
-  // pushHistory(): void {
-  //   this.history.push(this.current);
-  //   this.current = "";
-  // }
-
-  // popHistory(): string {
-  //   const ret = this.history.pop() ?? "";
-  //   return ret;
-  // }
-
-  // get(index: number): string | undefined {
-  //   return this.history[index];
-  // }
-
-  // getHistory(): string[];
-  // getHistory(i: number): string | undefined;
-  // getHistory(i?: number): unknown {
-  //   if (i === undefined) {
-  //     return this.history;
-  //   } else {
-  //     return this.history[i];
-  //   }
-  // }
-
-  // getHistoryLast(): string | undefined {
-  //   return lastElementFromArray(this.history);
-  // }
-
   syncWithInputElement(): void {
     this.current = getInputElementValue().inputValue;
   }
 }
 
-// class Corrected {
-//   current: string;
-//   private history: string[];
-//   constructor() {
-//     this.current = "";
-//     this.history = [];
-//   }
-
-//   reset(): void {
-//     this.history = [];
-//     this.current = "";
-//   }
-
-//   update(char: string, correct: boolean): void {
-//     if (this.current === "") {
-//       this.current += input.current;
-//     } else {
-//       const currCorrectedTestInputLength = this.current.length;
-
-//       const charIndex = input.current.length - 1;
-
-//       if (charIndex >= currCorrectedTestInputLength) {
-//         this.current += char;
-//       } else if (!correct) {
-//         this.current =
-//           this.current.substring(0, charIndex) +
-//           char +
-//           this.current.substring(charIndex + 1);
-//       }
-//     }
-//   }
-
-//   getHistory(i: number): string | undefined {
-//     return this.history[i];
-//   }
-
-//   popHistory(): string {
-//     const popped = this.history.pop() ?? "";
-//     this.current = popped;
-//     return popped;
-//   }
-
-//   pushHistory(): void {
-//     this.history.push(this.current);
-//     this.current = "";
-//   }
-// }
-
 export const input = new Input();
-// export const corrected = new Corrected();
