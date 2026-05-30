@@ -1063,25 +1063,6 @@ function compareCompletedEvents(
           );
         }
       }
-
-      {
-        const a = TestInput.keypressCountHistory;
-        const b = getKeypressesPerSecond();
-        if (a.length === b.length && a.every((val, i) => val === b[i])) {
-          console.debug(
-            `Completed event match on key keypressCountHistory:`,
-            a,
-          );
-        } else {
-          notMatching.push(`keypressCountHistory (values differ)`);
-          mismatchedKeys.push("keypressCountHistory");
-          console.error(
-            `Completed event mismatch on key keypressCountHistory:`,
-            a,
-            b,
-          );
-        }
-      }
     } else if (key === "wpmConsistency" || key === "keyConsistency") {
       const a = val1 as number;
       const b = val2 as number;
@@ -1117,6 +1098,44 @@ function compareCompletedEvents(
       console.error(`Completed event mismatch on key ${key}:`, val1, val2);
     } else {
       console.debug(`Completed event match on key ${key}:`, val1);
+    }
+  }
+
+  {
+    const a = TestInput.keypressCountHistory;
+    const b = getKeypressesPerSecond();
+    if (a.length === b.length && a.every((val, i) => val === b[i])) {
+      console.debug(`Completed event match on key keypressCountHistory:`, a);
+    } else {
+      notMatching.push(`keypressCountHistory (values differ)`);
+      mismatchedKeys.push("keypressCountHistory");
+      console.error(
+        `Completed event mismatch on key keypressCountHistory:`,
+        a,
+        b,
+      );
+    }
+  }
+
+  {
+    const a = TestInput.keypressCountHistory.reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    const b = getKeypressesPerSecond().reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    if (a === b) {
+      console.debug(`Completed event match on totalKeypressCountHistory:`, a);
+    } else {
+      notMatching.push(`totalKeypressCountHistory (${a} vs ${b})`);
+      mismatchedKeys.push("totalKeypressCountHistory");
+      console.error(
+        `Completed event mismatch on totalKeypressCountHistory:`,
+        a,
+        b,
+      );
     }
   }
 
