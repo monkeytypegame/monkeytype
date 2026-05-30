@@ -1,24 +1,23 @@
-import { lastElementFromArray } from "../utils/arrays";
 import { getInputElementValue } from "../input/input-element";
 
 class Input {
   current: string;
-  private history: string[];
+  // private history: string[];
   koreanStatus: boolean;
   constructor() {
     this.current = "";
-    this.history = [];
+    // this.history = [];
     this.koreanStatus = false;
   }
 
   reset(): void {
     this.current = "";
-    this.history = [];
+    // this.history = [];
   }
 
-  resetHistory(): void {
-    this.history = [];
-  }
+  // resetHistory(): void {
+  //   this.history = [];
+  // }
 
   setKoreanStatus(val: boolean): void {
     this.koreanStatus = val;
@@ -28,33 +27,33 @@ class Input {
     return this.koreanStatus;
   }
 
-  pushHistory(): void {
-    this.history.push(this.current);
-    this.current = "";
-  }
+  // pushHistory(): void {
+  //   this.history.push(this.current);
+  //   this.current = "";
+  // }
 
-  popHistory(): string {
-    const ret = this.history.pop() ?? "";
-    return ret;
-  }
+  // popHistory(): string {
+  //   const ret = this.history.pop() ?? "";
+  //   return ret;
+  // }
 
-  get(index: number): string | undefined {
-    return this.history[index];
-  }
+  // get(index: number): string | undefined {
+  //   return this.history[index];
+  // }
 
-  getHistory(): string[];
-  getHistory(i: number): string | undefined;
-  getHistory(i?: number): unknown {
-    if (i === undefined) {
-      return this.history;
-    } else {
-      return this.history[i];
-    }
-  }
+  // getHistory(): string[];
+  // getHistory(i: number): string | undefined;
+  // getHistory(i?: number): unknown {
+  //   if (i === undefined) {
+  //     return this.history;
+  //   } else {
+  //     return this.history[i];
+  //   }
+  // }
 
-  getHistoryLast(): string | undefined {
-    return lastElementFromArray(this.history);
-  }
+  // getHistoryLast(): string | undefined {
+  //   return lastElementFromArray(this.history);
+  // }
 
   syncWithInputElement(): void {
     this.current = getInputElementValue().inputValue;

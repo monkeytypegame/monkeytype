@@ -193,7 +193,7 @@ function checkIfTimeIsUp(): void {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
-    TestInput.input.pushHistory();
+    // TestInput.input.pushHistory();
     SlowTimer.clear();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "finish" });

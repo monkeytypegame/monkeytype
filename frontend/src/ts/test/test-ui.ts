@@ -72,6 +72,7 @@ import {
   getBurstHistory,
   getCorrectedWords,
   getCurrentAccuracy,
+  getInputHistory,
   getMissedWords,
 } from "./events/stats";
 
@@ -498,7 +499,7 @@ function showWords(): void {
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
-    appendEmptyWordElement();
+    appendEmptyWordElement(0);
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -514,9 +515,7 @@ function showWords(): void {
   PaceCaret.resetCaretPosition();
 }
 
-export function appendEmptyWordElement(
-  index = TestInput.input.getHistory().length,
-): void {
+export function appendEmptyWordElement(index: number): void {
   wordsEl.appendHtml(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
   );
@@ -1317,11 +1316,12 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
+  const inputHistory = getInputHistory();
   const burstHistory = getBurstHistory();
   const correctedHistory = getCorrectedWords();
-  const inputHistoryLength = TestInput.input.getHistory().length;
+  const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
-    const input = TestInput.input.getHistory(i);
+    const input = inputHistory[i];
     const corrected = correctedHistory[i];
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
@@ -1952,11 +1952,11 @@ export function onTestFinish(): void {
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length)
+      .slice(0, getInputHistory().length)
       .join(" ");
   }
   await copyToClipboard(words);
@@ -1965,7 +1965,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = (Object.keys(getMissedWords()) ?? {}).join(" ");
   }

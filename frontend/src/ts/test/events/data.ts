@@ -310,6 +310,30 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
+export function getInputEventsForWord(wordIndex: number): InputEvent[] {
+  const events = getAllTestEvents();
+  const result: InputEvent[] = [];
+  for (const event of events) {
+    if (event.type !== "input") continue;
+
+    let eventWordIndex = event.data.wordIndex;
+
+    if (
+      (event.data.inputType === "deleteWordBackward" ||
+        event.data.inputType === "deleteContentBackward") &&
+      event.data.charIndex === 0 &&
+      eventWordIndex > 0
+    ) {
+      eventWordIndex -= 1;
+    }
+
+    if (eventWordIndex === wordIndex) {
+      result.push(event);
+    }
+  }
+  return result;
+}
+
 export function getInputEventsPerWord(
   startMs?: number,
   testMsLimit?: number,

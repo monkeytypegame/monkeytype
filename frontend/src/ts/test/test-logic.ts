@@ -432,7 +432,7 @@ async function init(): Promise<boolean> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestInput.input.resetHistory();
+  // TestInput.input.resetHistory();
   TestInput.input.current = "";
 
   showLoaderBar();
@@ -654,7 +654,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement();
+    TestUI.appendEmptyWordElement(TestState.activeWordIndex + 1);
     return;
   }
 
@@ -668,7 +668,7 @@ export async function addWord(): Promise<void> {
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
-  if (TestWords.words.length - TestInput.input.getHistory().length > bound) {
+  if (TestWords.words.length - TestState.activeWordIndex > bound) {
     console.debug("Not adding word, enough words already");
     return;
   }
@@ -903,14 +903,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // in case the tests ends with a keypress (not a word submission)
   // we need to push the current input to history
   if (TestInput.input.current.length !== 0) {
-    TestInput.input.pushHistory();
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    // TestInput.input.pushHistory();
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   // in zen mode, ensure the replay words list reflects the typed input history
   // even if the current input was empty at finish (e.g., after submitting a word).
   if (Config.mode === "zen") {
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   forceReleaseAllKeys();
@@ -1071,11 +1071,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      TestInput.input.getHistory().length < TestWords.words.length
+      getInputHistory().length < TestWords.words.length
     ) {
       // They bailed out
 
-      const history = TestInput.input.getHistory();
+      const history = getInputHistory();
       let historyLength = history?.length;
       const wordIndex = historyLength - 1;
 

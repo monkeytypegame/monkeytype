@@ -4,12 +4,15 @@ import { showNoticeNotification } from "../states/notifications";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
-import * as TestInput from "./test-input";
 import { configEvent } from "../events/config";
 import { setCustomTextName } from "../legacy-states/custom-text-name";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
-import { getBurstHistory, getMissedWords } from "./events/stats";
+import {
+  getBurstHistory,
+  getInputHistory,
+  getMissedWords,
+} from "./events/stats";
 
 type Before = {
   mode: Mode | null;
@@ -91,7 +94,7 @@ export function init(
   if (slow) {
     const typedWords = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length - 1);
+      .slice(0, getInputHistory().length - 1);
 
     const burstHistory = getBurstHistory();
 

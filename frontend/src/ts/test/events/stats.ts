@@ -1,6 +1,7 @@
 import {
   getAllTestEvents,
   getInputEvents,
+  getInputEventsForWord,
   getInputEventsPerWord,
   getPressedKeys,
   logTestEvent,
@@ -373,7 +374,7 @@ function computeBurst(events: InputEvent[], now?: number): number {
 }
 
 export function getWordBurst(wordIndex: number, now?: number): number {
-  const events = getInputEventsPerWord().get(wordIndex) ?? [];
+  const events = getInputEventsForWord(wordIndex);
   return computeBurst(events, now);
 }
 
@@ -438,7 +439,14 @@ export function getChars(countPartialLastWord = false): CharCounts {
   };
 }
 
+export function getInputForWord(wordIndex: number): string {
+  const events = getInputEventsForWord(wordIndex);
+  return getSimulatedInput(events).trimEnd();
+}
+
 export function getInputHistory(): string[] {
+  console.log("getting input history");
+  console.trace("getting input");
   const eventsPerWordIndex = getInputEventsPerWord();
   const history: string[] = [];
 

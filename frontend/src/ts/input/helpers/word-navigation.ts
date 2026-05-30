@@ -15,7 +15,7 @@ import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
-import { getWordBurst } from "../../test/events/stats";
+import { getInputForWord, getWordBurst } from "../../test/events/stats";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -65,7 +65,7 @@ export async function goToNextWord({
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
-  TestInput.input.pushHistory();
+  // TestInput.input.pushHistory();
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -107,7 +107,7 @@ export function goToPreviousWord(
 
   Replay.addReplayEvent("backWord");
 
-  const word = TestInput.input.popHistory();
+  const word = getInputForWord(TestState.activeWordIndex);
   TestState.decreaseActiveWordIndex();
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
