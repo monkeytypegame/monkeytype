@@ -12,12 +12,15 @@ export function onBeforeDelete(event: InputEvent): void {
     return;
   }
   if (TestState.testRestarting) {
+    event.preventDefault();
     return;
   }
   if (isAwaitingNextWord()) {
+    event.preventDefault();
     return;
   }
   if (TestState.resultCalculating) {
+    event.preventDefault();
     return;
   }
 
