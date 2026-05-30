@@ -62,6 +62,7 @@ import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { isTestInvalid } from "../states/test";
+import { getRawHistory, getWpmHistory } from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -110,7 +111,7 @@ async function updateChartData(): Promise<void> {
 
   let labels = [];
 
-  for (let i = 1; i <= 0; i++) {
+  for (let i = 1; i <= getWpmHistory().length; i++) {
     if (TestStats.lastSecondNotRound && i === 0) {
       labels.push(Numbers.roundTo2(result.testDuration).toString());
     } else {
@@ -124,7 +125,7 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2: number[] = [];
+  const chartData2: number[] = getRawHistory();
 
   const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(

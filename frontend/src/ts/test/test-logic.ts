@@ -781,15 +781,12 @@ function buildCompletedEvent(
     consistency = 0;
   }
 
-  const chartErr = [];
-  for (const error of TestInput.errorHistory) {
-    chartErr.push(error.count ?? 0);
-  }
+  const wpmHistory = getWpmHistory();
 
   const chartData = {
-    wpm: [],
+    wpm: wpmHistory,
     burst: rawPerSecond,
-    err: chartErr,
+    err: getErrorCountHistory(),
   };
 
   //wpm consistency
@@ -1278,16 +1275,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   PaceCaret.setLastTestWpm(stats.wpm);
 
-  // if the last second was not rounded, add another data point to the history
-  if (
-    TestStats.lastSecondNotRound &&
-    !difficultyFailed &&
-    Math.round(stats.time % 1) >= 0.5
-  ) {
-    TestInput.pushErrorToHistory();
-  }
-
-  const ce = buildCompletedEvent(stats, []);
+  const ce = buildCompletedEvent(stats, getRawPerSecond());
 
   console.debug("Completed event object", ce);
 

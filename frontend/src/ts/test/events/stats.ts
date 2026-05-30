@@ -556,6 +556,62 @@ export function getWpmHistory(): number[] {
   return wpmHistory;
 }
 
+export function getRawHistory(): number[] {
+  const events = getAllTestEvents();
+  const timerBoundaries = getTimerBoundaries(events);
+  const wpmHistory: number[] = [];
+
+  for (const boundary of timerBoundaries) {
+    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+
+    // Compute simulated inputs first so we can determine the effective last word
+    const wordInputs = new Map<
+      number,
+      { input: string; events: InputEvent[] }
+    >();
+    let maxWordIndex = 0;
+    for (const [k, wordEvents] of eventsPerWord) {
+      const input = getSimulatedInput(wordEvents);
+      wordInputs.set(k, { input, events: wordEvents });
+      // Only count words with non-empty input for maxWordIndex,
+      // so that fully-deleted words don't prevent earlier words
+      // from being treated as the last word
+      if (input.length > 0 && k > maxWordIndex) maxWordIndex = k;
+    }
+
+    let totalCorrect = 0;
+    for (const [wordIndex, { input, events: wordEvents }] of wordInputs) {
+      if (input.length === 0) continue;
+
+      const lastEvt = wordEvents[wordEvents.length - 1];
+      let adjustedMax = maxWordIndex;
+      if (
+        lastEvt !== undefined &&
+        lastEvt.data.inputType === "insertText" &&
+        lastEvt.data.data === " "
+      ) {
+        adjustedMax = maxWordIndex + 1;
+      }
+      const lastWord = wordIndex === adjustedMax;
+
+      const trimmed = lastWord ? input.trimEnd() : input;
+      const targetWord =
+        Config.mode === "zen"
+          ? trimmed
+          : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+
+      const count = countChars(trimmed, targetWord, lastWord, true);
+
+      totalCorrect += count.allCorrect + count.extra + count.incorrect;
+    }
+
+    const durationSeconds = boundary / 1000;
+    wpmHistory.push(Math.round(calculateWpm(totalCorrect, durationSeconds)));
+  }
+
+  return wpmHistory;
+}
+
 export function getAfkDuration(): number {
   const { counts } = countPerInterval(
     (e) => e.type === "keydown" || e.type === "input",
