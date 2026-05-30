@@ -56,7 +56,7 @@ export function PractiseWordsModal(): JSXElement {
                     { value: "words", label: "words" },
                     { value: "biwords", label: "biwords" },
                   ]}
-                  class="grid grid-cols-3 gap-2"
+                  class="grid-cols-3"
                 />
               )}
             </form.Field>
@@ -75,7 +75,7 @@ export function PractiseWordsModal(): JSXElement {
                     { value: false, label: "off" },
                     { value: true, label: "on" },
                   ]}
-                  class="grid grid-cols-2 gap-2"
+                  class="grid-cols-2"
                 />
               )}
             </form.Field>
