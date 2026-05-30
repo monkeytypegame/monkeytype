@@ -753,6 +753,29 @@ export function forceReleaseAllKeys(): void {
   }
 }
 
+export function getMissedWords(): Record<string, number> {
+  const events = getAllTestEvents();
+
+  const missedWords: Record<string, number> = {};
+
+  for (const event of events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      const word = TestWords.words.getText(event.data.wordIndex);
+      if (missedWords[word] === undefined) {
+        missedWords[word] = 1;
+      } else {
+        missedWords[word]++;
+      }
+    }
+  }
+
+  return missedWords;
+}
+
 export const __testing = {
   getTimerBoundaries,
 };

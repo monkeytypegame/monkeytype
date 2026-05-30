@@ -68,7 +68,11 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import { wordsHaveNewline } from "../states/test";
-import { getBurstHistory, getCurrentAccuracy } from "./events/stats";
+import {
+  getBurstHistory,
+  getCurrentAccuracy,
+  getMissedWords,
+} from "./events/stats";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1962,7 +1966,7 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   if (Config.mode === "zen") {
     words = TestInput.input.getHistory().join(" ");
   } else {
-    words = Object.keys(TestInput.missedWords ?? {}).join(" ");
+    words = (Object.keys(getMissedWords()) ?? {}).join(" ");
   }
   await copyToClipboard(words);
 });

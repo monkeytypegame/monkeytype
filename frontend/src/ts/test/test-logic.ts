@@ -318,7 +318,6 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  TestInput.restart();
   TestInput.corrected.reset();
   ShiftTracker.reset();
   AltTracker.reset();

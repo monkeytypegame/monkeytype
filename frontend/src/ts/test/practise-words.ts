@@ -9,7 +9,7 @@ import { configEvent } from "../events/config";
 import { setCustomTextName } from "../legacy-states/custom-text-name";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
-import { getBurstHistory } from "./events/stats";
+import { getBurstHistory, getMissedWords } from "./events/stats";
 
 type Before = {
   mode: Mode | null;
@@ -38,11 +38,13 @@ export function init(
     limit = 10;
   }
 
+  const missedWords = getMissedWords();
+
   // missed word, previous word, count
   let sortableMissedWords: [string, number][] = [];
   if (missed === "words") {
-    Object.keys(TestInput.missedWords).forEach((missedWord) => {
-      const missedWordCount = TestInput.missedWords[missedWord];
+    Object.keys(missedWords).forEach((missedWord) => {
+      const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         sortableMissedWords.push([missedWord, missedWordCount]);
       }
@@ -57,7 +59,7 @@ export function init(
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
       const missedWord = TestWords.words.getText(i);
-      const missedWordCount = TestInput.missedWords[missedWord];
+      const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         if (i === 0) {
           sortableMissedBiwords.push([missedWord, "", missedWordCount]);
