@@ -85,7 +85,11 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import { resetTestEvents, cleanupData } from "./events/data";
+import {
+  resetTestEvents,
+  cleanupData,
+  logEventsDataToTheConsoleTable,
+} from "./events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -901,6 +905,8 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
+const ALWAYSREPORT = false;
+
 function compareCompletedEvents(
   ce: Omit<CompletedEvent, "hash" | "uid">,
 ): void {
@@ -1115,12 +1121,16 @@ function compareCompletedEvents(
   }
 
   if (notMatching.length === 0) {
-    // showSuccessNotification("Completed events match", { important: true });
+    if (ALWAYSREPORT) {
+      showSuccessNotification("Completed events match", { important: true });
+    }
   } else {
-    // showErrorNotification(
-    //   `Completed event mismatch: ${notMatching.join(", ")}`,
-    //   { important: true },
-    // );
+    if (ALWAYSREPORT) {
+      showErrorNotification(
+        `Completed event mismatch: ${notMatching.join(", ")}`,
+        { important: true },
+      );
+    }
     mismatchedKeys.sort();
     const groupKey = mismatchedKeys.join(",");
     Ape.results
@@ -1499,11 +1509,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
+  if (ALWAYSREPORT) {
+    logEventsDataToTheConsoleTable();
+  }
+
   if (
-    getAuthenticatedUser() !== null &&
-    !dontSave &&
-    !difficultyFailed &&
-    Config.resultSaving
+    (getAuthenticatedUser() !== null &&
+      !dontSave &&
+      !difficultyFailed &&
+      Config.resultSaving) ||
+    ALWAYSREPORT
   ) {
     compareCompletedEvents(ce);
   }
