@@ -274,7 +274,7 @@ export function restart(options = {} as RestartOptions): void {
 
     if (Config.resultSaving) {
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
-      const afkseconds = 0;
+      const afkseconds = getAfkDuration();
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
