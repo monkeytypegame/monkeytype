@@ -167,9 +167,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (Config.keymapMode === "react") {
     flash(data, correct);
   }
-  if (!shouldGoToNextWord) {
-    TestInput.corrected.update(data, correct);
-  }
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces

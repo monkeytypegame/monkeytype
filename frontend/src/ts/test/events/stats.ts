@@ -776,6 +776,46 @@ export function getMissedWords(): Record<string, number> {
   return missedWords;
 }
 
+export function getCorrectedWords(): string[] {
+  const ev = getInputEventsPerWord();
+  const correctedWords: string[] = [];
+
+  for (const [, events] of ev.entries()) {
+    const correctedChars: string[] = [];
+    const currentChars: string[] = [];
+    let cursorPos = 0;
+
+    for (const event of events) {
+      if (
+        event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText"
+      ) {
+        if (event.data.inputStopped || event.data.data === " ") continue;
+        currentChars[cursorPos] = event.data.data;
+        cursorPos++;
+      } else if (event.data.inputType === "deleteContentBackward") {
+        if (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      } else if (event.data.inputType === "deleteWordBackward") {
+        while (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      }
+    }
+
+    const result: string[] = [];
+    for (let i = 0; i < currentChars.length; i++) {
+      result.push(correctedChars[i] ?? currentChars[i] ?? "");
+    }
+    correctedWords.push(result.join(""));
+  }
+
+  return correctedWords;
+}
+
 export const __testing = {
   getTimerBoundaries,
 };

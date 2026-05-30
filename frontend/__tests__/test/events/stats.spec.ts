@@ -55,6 +55,7 @@ import {
   getChars,
   getWpmHistory,
   forceReleaseAllKeys,
+  getCorrectedWords,
   __testing as statsTesting,
 } from "../../../src/ts/test/events/stats";
 import type {
@@ -674,6 +675,284 @@ describe("stats.ts", () => {
       expect(wpm[0]).toBe(36);
       // at 2s: 3 + 2 ("cd") = 5 correctWord chars → (5/5)*60/2 = 30
       expect(wpm[1]).toBe(30);
+    });
+  });
+
+  describe("getCorrectedWords", () => {
+    it("returns input as-is when no corrections made", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWords()).toEqual(["test"]);
+    });
+
+    it("returns last deleted char per position (xact -> fact)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xact"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1400, {
+        charIndex: 1,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1450, {
+        charIndex: 0,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "fact"
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 0, wordIndex: 0, data: "f" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1600,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1650,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWords()).toEqual(["xact"]);
+    });
+
+    it("returns last deleted char per position across multiple corrections (xest -> west -> test)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xest"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "west"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 0, data: "w" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1600, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "test"
+      logTestEvent(
+        "input",
+        1700,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1750,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1800,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1850,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWords()).toEqual(["west"]);
+    });
+
+    it("handles partial correction (tset -> delete last 2 -> st)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "tset"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete last 2
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "st"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      // pos 0: "t" never deleted, pos 1: "s" never deleted, pos 2: "e" deleted, pos 3: "t" deleted
+      expect(getCorrectedWords()).toEqual(["tset"]);
+    });
+
+    it("handles multiple words", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // word 0: type "ab" correctly
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "b" }),
+      );
+      // word 1: type "xy", delete both, type "zw"
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 0, wordIndex: 1, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 1, wordIndex: 1, data: "y" }),
+      );
+      logTestEvent("input", 1300, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 1, data: "z" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 1, data: "w" }),
+      );
+
+      const result = getCorrectedWords();
+      expect(result[0]).toEqual("ab");
+      expect(result[1]).toEqual("xy");
     });
   });
 

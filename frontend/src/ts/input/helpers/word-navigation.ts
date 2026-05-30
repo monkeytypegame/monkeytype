@@ -66,7 +66,6 @@ export async function goToNextWord({
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
   TestInput.input.pushHistory();
-  TestInput.corrected.pushHistory();
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -110,7 +109,6 @@ export function goToPreviousWord(
 
   const word = TestInput.input.popHistory();
   TestState.decreaseActiveWordIndex();
-  TestInput.corrected.popHistory();
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 

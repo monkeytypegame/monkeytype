@@ -70,6 +70,7 @@ import { skipBreakdownEvent } from "../states/header";
 import { wordsHaveNewline } from "../states/test";
 import {
   getBurstHistory,
+  getCorrectedWords,
   getCurrentAccuracy,
   getMissedWords,
 } from "./events/stats";
@@ -1317,11 +1318,11 @@ async function loadWordsHistory(): Promise<boolean> {
   wordsContainer?.empty();
 
   const burstHistory = getBurstHistory();
-
+  const correctedHistory = getCorrectedWords();
   const inputHistoryLength = TestInput.input.getHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
-    const corrected = TestInput.corrected.getHistory(i);
+    const corrected = correctedHistory[i];
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;

@@ -61,53 +61,53 @@ class Input {
   }
 }
 
-class Corrected {
-  current: string;
-  private history: string[];
-  constructor() {
-    this.current = "";
-    this.history = [];
-  }
+// class Corrected {
+//   current: string;
+//   private history: string[];
+//   constructor() {
+//     this.current = "";
+//     this.history = [];
+//   }
 
-  reset(): void {
-    this.history = [];
-    this.current = "";
-  }
+//   reset(): void {
+//     this.history = [];
+//     this.current = "";
+//   }
 
-  update(char: string, correct: boolean): void {
-    if (this.current === "") {
-      this.current += input.current;
-    } else {
-      const currCorrectedTestInputLength = this.current.length;
+//   update(char: string, correct: boolean): void {
+//     if (this.current === "") {
+//       this.current += input.current;
+//     } else {
+//       const currCorrectedTestInputLength = this.current.length;
 
-      const charIndex = input.current.length - 1;
+//       const charIndex = input.current.length - 1;
 
-      if (charIndex >= currCorrectedTestInputLength) {
-        this.current += char;
-      } else if (!correct) {
-        this.current =
-          this.current.substring(0, charIndex) +
-          char +
-          this.current.substring(charIndex + 1);
-      }
-    }
-  }
+//       if (charIndex >= currCorrectedTestInputLength) {
+//         this.current += char;
+//       } else if (!correct) {
+//         this.current =
+//           this.current.substring(0, charIndex) +
+//           char +
+//           this.current.substring(charIndex + 1);
+//       }
+//     }
+//   }
 
-  getHistory(i: number): string | undefined {
-    return this.history[i];
-  }
+//   getHistory(i: number): string | undefined {
+//     return this.history[i];
+//   }
 
-  popHistory(): string {
-    const popped = this.history.pop() ?? "";
-    this.current = popped;
-    return popped;
-  }
+//   popHistory(): string {
+//     const popped = this.history.pop() ?? "";
+//     this.current = popped;
+//     return popped;
+//   }
 
-  pushHistory(): void {
-    this.history.push(this.current);
-    this.current = "";
-  }
-}
+//   pushHistory(): void {
+//     this.history.push(this.current);
+//     this.current = "";
+//   }
+// }
 
 export const input = new Input();
-export const corrected = new Corrected();
+// export const corrected = new Corrected();

@@ -84,7 +84,11 @@ import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import { resetTestEvents, cleanupData } from "./events/data";
+import {
+  resetTestEvents,
+  cleanupData,
+  logEventsDataToTheConsoleTable,
+} from "./events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -318,7 +322,6 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  TestInput.corrected.reset();
   ShiftTracker.reset();
   AltTracker.reset();
   Caret.hide();
@@ -900,7 +903,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // we need to push the current input to history
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
@@ -919,7 +921,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   cleanupData();
 
-  // logEventsDataToTheConsoleTable();
+  logEventsDataToTheConsoleTable();
 
   const ce = buildCompletedEvent();
   PaceCaret.setLastTestWpm(ce.wpm);
