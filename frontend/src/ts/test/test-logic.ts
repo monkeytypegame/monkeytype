@@ -106,6 +106,7 @@ import {
   getCurrentAccuracy,
   getCurrentTestDurationMs,
   getDateBasedTestDurationMs,
+  getInputHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -922,6 +923,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   cleanupData();
 
   logEventsDataToTheConsoleTable();
+  console.log(getInputHistory());
 
   const ce = buildCompletedEvent();
   PaceCaret.setLastTestWpm(ce.wpm);

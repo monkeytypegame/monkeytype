@@ -438,6 +438,18 @@ export function getChars(countPartialLastWord = false): CharCounts {
   };
 }
 
+export function getInputHistory(): string[] {
+  const eventsPerWordIndex = getInputEventsPerWord();
+  const history: string[] = [];
+
+  for (const events of eventsPerWordIndex.values()) {
+    const simulatedInput = getSimulatedInput(events);
+    history.push(simulatedInput.trimEnd());
+  }
+
+  return history;
+}
+
 export function getAccuracy(): {
   correct: number;
   incorrect: number;
