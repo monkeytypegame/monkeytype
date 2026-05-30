@@ -118,11 +118,6 @@ export let missedWords: MissedWordsType = Object.create(
   null,
 ) as MissedWordsType;
 
-export let keyOverlap = {
-  total: 0,
-  lastStartTime: -1,
-};
-
 export function pushMissedWord(word: string): void {
   if (!Object.keys(missedWords).includes(word)) {
     missedWords[word] = 1;
