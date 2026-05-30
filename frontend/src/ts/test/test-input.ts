@@ -117,23 +117,11 @@ type MissedWordsType = Record<string, number>;
 export let missedWords: MissedWordsType = Object.create(
   null,
 ) as MissedWordsType;
-export let accuracy = {
-  correct: 0,
-  incorrect: 0,
-};
 
 export let keyOverlap = {
   total: 0,
   lastStartTime: -1,
 };
-
-export function incrementAccuracy(correctincorrect: boolean): void {
-  if (correctincorrect) {
-    accuracy.correct++;
-  } else {
-    accuracy.incorrect++;
-  }
-}
 
 export function pushMissedWord(word: string): void {
   if (!Object.keys(missedWords).includes(word)) {
@@ -145,8 +133,4 @@ export function pushMissedWord(word: string): void {
 
 export function restart(): void {
   missedWords = Object.create(null) as MissedWordsType;
-  accuracy = {
-    correct: 0,
-    incorrect: 0,
-  };
 }

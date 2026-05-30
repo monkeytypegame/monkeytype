@@ -26,7 +26,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestInput from "./test-input";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import { configEvent } from "../events/config";
@@ -61,7 +60,7 @@ import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { isTestInvalid } from "../states/test";
-import { getRawHistory } from "./events/stats";
+import { getAccuracy, getRawHistory } from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -344,6 +343,7 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
+  const acc = getAccuracy();
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
       qs("#result .stats .wpm .bottom")?.setAttribute(
@@ -368,7 +368,7 @@ function updateWpmAndAcc(): void {
 
     qs("#result .stats .acc .bottom")?.setAttribute(
       "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`,
+      `${acc.correct} correct\n${acc.incorrect} incorrect`,
     );
   } else {
     //not showing decimal places
@@ -394,9 +394,7 @@ function updateWpmAndAcc(): void {
           result.acc === 100
             ? "100%"
             : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${TestInput.accuracy.correct} correct\n${
-          TestInput.accuracy.incorrect
-        } incorrect`,
+        }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
       )
       ?.setAttribute("data-balloon-break", "");
   }
