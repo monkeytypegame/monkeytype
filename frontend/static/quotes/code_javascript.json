@@ -278,28 +278,16 @@
       "id": 45
     },
     {
-      "text": "console.log(eval(\"3 + 5\"));",
-      "source": "MDN",
-      "length": 27,
-      "id": 46
-    },
-    {
       "text": "(function () {\n\t\"use strict\";\n\t/* Start of your code */\n\tfunction greetMe(yourName) {\n\t\talert(`Hello ${yourName}`);\n\t}\n\n\tgreetMe(\"World\");\n\t/* End of your code */\n})();",
       "source": "MDN",
-      "length": 194,
-      "id": 47
-    },
-    {
-      "text": "const Früh = \"foobar\";",
-      "source": "MDN",
-      "length": 22,
-      "id": 48
+      "length": 168,
+      "id": 46
     },
     {
       "text": "function die(msg) { process.stderr.write(msg + '\n'); process.exit(2); }",
       "source": "Julius Brussee - Caveman",
-      "length": 24,
-      "id": 49
+      "length": 71,
+      "id": 47
     }
   ]
 }
