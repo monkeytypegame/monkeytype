@@ -6,7 +6,6 @@ import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
-import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
@@ -86,6 +85,7 @@ export function clear(logEnd = false, now = performance.now()): void {
     logTestEvent("timer", now, {
       event: "end",
       timer: Time.get(),
+      date: new Date().getTime(),
     });
   }
 }
@@ -308,12 +308,13 @@ async function _startNew(): Promise<void> {
   logTestEvent("timer", performance.now(), {
     event: "start",
     timer: Time.get(),
+    date: new Date().getTime(),
   });
 }
 
 async function _startOld(): Promise<void> {
   timerStats = [];
-  expected = TestStats.start + interval;
+  // expected = TestStats.start + interval;
   logTestEvent("timer", performance.now(), {
     event: "start",
     timer: Time.get(),

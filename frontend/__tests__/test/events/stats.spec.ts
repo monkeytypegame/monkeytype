@@ -112,7 +112,7 @@ function timer(
   if (event === "step") {
     return { event, timer: timerVal, drift: 0 };
   }
-  return { event, timer: timerVal };
+  return { event, timer: timerVal, date: 0 };
 }
 
 // Helper: sets up a basic test with timer start, steps at 1s intervals,

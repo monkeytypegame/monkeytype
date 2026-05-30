@@ -24,11 +24,9 @@ import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
 import {
   showErrorNotification,
-  showSuccessNotification,
   clearAllNotifications,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as TestStats from "../test/test-stats";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -288,22 +286,23 @@ export const commands: CommandsSubgroup = {
         alert(await caches.keys());
       },
     },
-    {
-      id: "copyResultStats",
-      display: "Copy result stats",
-      icon: "fa-cog",
-      visible: false,
-      exec: async (): Promise<void> => {
-        navigator.clipboard
-          .writeText(JSON.stringify(TestStats.getStats()))
-          .then(() => {
-            showSuccessNotification("Copied to clipboard");
-          })
-          .catch((e: unknown) => {
-            showErrorNotification("Failed to copy to clipboard", { error: e });
-          });
-      },
-    },
+    // todo: bring back?
+    // {
+    //   id: "copyResultStats",
+    //   display: "Copy result stats",
+    //   icon: "fa-cog",
+    //   visible: false,
+    //   exec: async (): Promise<void> => {
+    //     navigator.clipboard
+    //       .writeText(JSON.stringify(TestStats.getStats()))
+    //       .then(() => {
+    //         showSuccessNotification("Copied to clipboard");
+    //       })
+    //       .catch((e: unknown) => {
+    //         showErrorNotification("Failed to copy to clipboard", { error: e });
+    //       });
+    //   },
+    // },
     {
       id: "fpsCounter",
       display: "FPS counter...",

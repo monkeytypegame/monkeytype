@@ -12,7 +12,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../legacy-states/custom-text-name";
-import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as AltTracker from "./alt-tracker";
@@ -102,6 +101,7 @@ import {
   forceReleaseAllKeys,
   getCurrentAccuracy,
   getCurrentTestDurationMs,
+  getDateBasedTestDurationMs,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 
@@ -160,7 +160,7 @@ export function setNotSignedInUidAndHash(uid: string): void {
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
-export function startTest(now: number): boolean {
+export function startTest(_now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -190,7 +190,6 @@ export function startTest(now: number): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(now);
   void TestTimer.start();
   TestUI.onTestStart();
   return true;
@@ -319,7 +318,6 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  TestStats.restart();
   TestInput.restart();
   TestInput.corrected.reset();
   ShiftTracker.reset();
@@ -881,7 +879,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
-  TestStats.setEnd(now);
 
   // fade out the test and show loading
   // because the css animation has a delay,
@@ -970,7 +967,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let tooShort = false;
   //fail checks
-  const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
+  const dateDur = getDateBasedTestDurationMs() / 1000;
   if (
     Config.mode === "time" &&
     !TestState.bailedOut &&

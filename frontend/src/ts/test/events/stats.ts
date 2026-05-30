@@ -246,6 +246,36 @@ export function getTestDurationMs(): number {
   return end;
 }
 
+export function getDateBasedTestDurationMs(): number {
+  const events = getAllTestEvents();
+
+  let start: number | undefined;
+  let end: number | undefined;
+
+  for (const event of events) {
+    if (
+      start === undefined &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      start = event.data.date;
+    }
+    if (
+      end === undefined &&
+      event.type === "timer" &&
+      event.data.event === "end"
+    ) {
+      end = event.data.date;
+    }
+  }
+
+  if (start === undefined || end === undefined) {
+    return 0;
+  }
+
+  return end - start;
+}
+
 function getTargetWord(
   wordIndex: number,
   simulatedInput: string,
