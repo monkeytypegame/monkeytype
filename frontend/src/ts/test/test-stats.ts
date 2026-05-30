@@ -36,7 +36,6 @@ export type Stats = {
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
-export let lastSecondNotRound = false;
 
 export function getStats(): unknown {
   const ret = {
@@ -45,7 +44,6 @@ export function getStats(): unknown {
     end,
     start3,
     end3,
-    lastSecondNotRound,
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
     keyOverlap: TestInput.keyOverlap,
@@ -66,7 +64,6 @@ export function restart(): void {
   end2 = 0;
   start3 = 0;
   end3 = 0;
-  lastSecondNotRound = false;
 }
 
 export function calculateTestSeconds(now?: number): number {
@@ -119,10 +116,6 @@ export function setStart(s: number): void {
   start = s;
   start2 = Date.now();
   start3 = new Date().getTime();
-}
-
-export function setLastSecondNotRound(): void {
-  lastSecondNotRound = true;
 }
 
 export function calculateAccuracy(): number {

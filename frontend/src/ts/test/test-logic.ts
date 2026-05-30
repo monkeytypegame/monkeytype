@@ -923,18 +923,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // logEventsDataToTheConsoleTable();
 
-  // stats
   const stats = TestStats.calculateFinalStats();
-  if (
-    stats.time % 1 !== 0 &&
-    !(
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-    )
-  ) {
-    TestStats.setLastSecondNotRound();
-  }
-
   PaceCaret.setLastTestWpm(stats.wpm);
 
   const ce = buildCompletedEvent();
