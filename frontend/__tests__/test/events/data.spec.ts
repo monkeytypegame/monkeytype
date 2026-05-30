@@ -63,7 +63,7 @@ function timerData(
   if (event === "step") {
     return { event, timer, drift: 0 };
   }
-  return { event, timer };
+  return { event, timer, date: 0 };
 }
 
 describe("data.ts", () => {

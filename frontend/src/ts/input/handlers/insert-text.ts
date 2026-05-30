@@ -163,7 +163,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // general per keypress updates
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-  TestInput.incrementAccuracy(correct);
   WeakSpot.updateScore(data, correct);
   if (!correct) {
     TestInput.pushMissedWord(TestWords.words.getCurrentText());
