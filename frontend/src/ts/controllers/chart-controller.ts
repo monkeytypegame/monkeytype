@@ -64,7 +64,7 @@ import { typedKeys } from "../utils/misc";
 import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
-import { getIncorrectWordIndexesForSecond } from "../test/events/stats";
+import { getWordIndexesForSecond } from "../test/events/stats";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -274,8 +274,7 @@ export const result = new ChartWithUpdateColors<
             prevTi = ti;
             try {
               const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              const wordsToHighlight =
-                getIncorrectWordIndexesForSecond(keypressIndex);
+              const wordsToHighlight = getWordIndexesForSecond(keypressIndex);
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];

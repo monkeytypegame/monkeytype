@@ -514,6 +514,28 @@ export function getIncorrectWordIndexesForSecond(second: number): number[] {
   return [...wordIndexes];
 }
 
+export function getWordIndexesForSecond(second: number): number[] {
+  const events = getAllTestEvents();
+  const boundaries = getTimerBoundaries(events);
+
+  const boundary = boundaries[second];
+  if (boundary === undefined) return [];
+
+  const prevBoundary = second > 0 ? boundaries[second - 1] : undefined;
+  const wordIndexes = new Set<number>();
+
+  for (const event of events) {
+    if (prevBoundary !== undefined && event.testMs <= prevBoundary) continue;
+    if (event.testMs > boundary) break;
+
+    if (event.type === "input" && event.data.inputType === "insertText") {
+      wordIndexes.add(event.data.wordIndex);
+    }
+  }
+
+  return [...wordIndexes];
+}
+
 export function getErrorCountHistory(): number[] {
   const { counts } = countPerInterval(
     (e) =>
