@@ -274,9 +274,8 @@ export function restart(options = {} as RestartOptions): void {
 
     if (Config.resultSaving) {
       TestInput.pushErrorToHistory();
-      TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
-      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+      const afkseconds = 0;
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
@@ -816,7 +815,7 @@ function buildCompletedEvent(
     .map((tag) => tag._id);
 
   const duration = parseFloat(stats.time.toString());
-  const afkDuration = TestStats.calculateAfkSeconds(duration);
+  const afkDuration = 0;
   let language = Config.language;
   if (Config.mode === "quote") {
     language = Strings.removeLanguageSize(Config.language);
@@ -1286,7 +1285,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Math.round(stats.time % 1) >= 0.5
   ) {
     TestInput.pushErrorToHistory();
-    TestInput.pushAfkToHistory();
   }
 
   const ce = buildCompletedEvent(stats, []);
@@ -1325,9 +1323,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.length > 0 && kps.every((afk) => afk);
 
+  let afkDetected = false;
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
@@ -1685,7 +1682,6 @@ export function fail(reason: string): void {
   // input.pushHistory();
   // corrected.pushHistory();
   TestInput.pushErrorToHistory();
-  TestInput.pushAfkToHistory();
   void finish(true);
 }
 

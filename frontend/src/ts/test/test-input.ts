@@ -138,24 +138,12 @@ let currentErrorHistory: ErrorHistoryObject = {
   words: [],
 };
 
-export let afkHistory: boolean[] = [];
-let currentAfk = true;
-
-export function setCurrentNotAfk(): void {
-  currentAfk = false;
-}
-
 export function incrementKeypressErrors(): void {
   currentErrorHistory.count++;
 }
 
 export function pushKeypressWord(wordIndex: number): void {
   currentErrorHistory.words.push(wordIndex);
-}
-
-export function pushAfkToHistory(): void {
-  afkHistory.push(currentAfk);
-  currentAfk = true;
 }
 
 export function pushErrorToHistory(): void {
@@ -183,8 +171,6 @@ export function pushMissedWord(word: string): void {
 }
 
 export function restart(): void {
-  afkHistory = [];
-  currentAfk = true;
   errorHistory = [];
   currentErrorHistory = {
     count: 0,

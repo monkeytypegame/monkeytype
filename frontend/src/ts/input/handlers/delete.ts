@@ -19,7 +19,6 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
   TestInput.input.syncWithInputElement();
 
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
-  TestInput.setCurrentNotAfk();
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words

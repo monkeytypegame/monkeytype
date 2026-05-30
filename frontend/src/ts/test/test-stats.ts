@@ -45,7 +45,6 @@ export function getStats(): unknown {
     end,
     start3,
     end3,
-    afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
@@ -121,22 +120,6 @@ export function setStart(s: number): void {
   start = s;
   start2 = Date.now();
   start3 = new Date().getTime();
-}
-
-export function calculateAfkSeconds(testSeconds: number): number {
-  let extraAfk = 0;
-  if (testSeconds !== undefined) {
-    extraAfk = Math.round(testSeconds);
-    if (extraAfk < 0) extraAfk = 0;
-    // console.log("-- extra afk debug");
-    // console.log("should be " + Math.ceil(testSeconds));
-    // console.log(keypressPerSecond.length);
-    // console.log(
-    //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
-    // );
-  }
-  const ret = TestInput.afkHistory.filter((afk) => afk).length;
-  return ret + extraAfk;
 }
 
 export function setLastSecondNotRound(): void {
