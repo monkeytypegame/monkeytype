@@ -180,8 +180,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     isFunboxActiveWithProperty("nospace") &&
     (testInput + data).length === TestWords.words.getCurrentText().length;
   const shouldGoToNextWord =
-    (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce) &&
-    !removeLastChar;
+    !removeLastChar &&
+    (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
