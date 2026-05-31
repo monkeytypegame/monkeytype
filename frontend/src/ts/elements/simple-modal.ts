@@ -9,52 +9,44 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   addNotificationWithLevel,
-  AddNotificationOptions,
 } from "../states/notifications";
 import {
   ValidatedHtmlInputElement,
   ValidationOptions,
 } from "./input-validation";
 import { ElementWithUtils, qsr } from "../utils/dom";
-import {
-  IsValidResponse,
-  Validation,
-  ValidationResult,
-} from "../types/validation";
+import { Validation, ValidationResult } from "../types/validation";
 
+import { ExecReturn as BaseExecReturn } from "../states/simple-modal";
 const simpleModalEl = qsr<HTMLDialogElement>("#simpleModal");
 
 type CommonInput<TType, TValue> = {
   type: TType;
+  name?: string;
   initVal?: TValue;
   placeholder?: string;
   hidden?: boolean;
   disabled?: boolean;
   optional?: boolean;
   label?: string;
+  class?: string;
   oninput?: (event: Event) => void;
   /**
    * Validate the input value and indicate the validation result next to the input.
    * If the schema is defined it is always checked first.
    * Only if the schema validaton is passed or missing the `isValid` method is called.
    */
-  validation?: Omit<Validation<string>, "isValid"> & {
-    /**
-     * Custom async validation method.
-     * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
-     * @param value current input value
-     * @param thisPopup the current modal
-     * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
-     */
-    isValid?: (
-      value: string,
-      thisPopup: SimpleModal,
-    ) => Promise<IsValidResponse>;
-  };
+  validation?: Validation<string>;
 };
 
-export type TextInput = CommonInput<"text", string>;
-export type TextArea = CommonInput<"textarea", string>;
+export type TextInput = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"text", string>;
+export type TextArea = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"textarea", string>;
 export type PasswordInput = CommonInput<"password", string>;
 type EmailInput = CommonInput<"email", string>;
 
@@ -68,6 +60,7 @@ type DateTimeInput = {
   min?: Date;
   max?: Date;
 } & CommonInput<"datetime-local", Date>;
+
 type DateInput = {
   min?: Date;
   max?: Date;
@@ -84,7 +77,7 @@ type NumberInput = {
   max?: number;
 } & CommonInput<"number", number>;
 
-type CommonInputType =
+type SimpleModalInput =
   | TextInput
   | TextArea
   | PasswordInput
@@ -95,27 +88,28 @@ type CommonInputType =
   | CheckboxInput
   | NumberInput;
 
-export type ExecReturn = {
-  status: "success" | "notice" | "error";
-  message: string;
-  showNotification?: false;
-  notificationOptions?: AddNotificationOptions;
+type SimpleModalConfig = {
+  class?: string;
+  title: string;
+  inputs?: SimpleModalInput[];
+  text?: string;
+  textClass?: string;
+  textAllowHtml?: boolean;
+  buttonText?: string;
+  buttonAlwaysEnabled?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
+  execFn: (...inputValues: string[]) => Promise<ExecReturn>;
+};
+export type ExecReturn = BaseExecReturn & {
   hideOptions?: HideOptions;
-  afterHide?: () => void;
-  alwaysHide?: boolean;
 };
 
-type FormInput = CommonInputType & {
+type FormInput = SimpleModalInput & {
   hasError?: boolean;
   currentValue: () => string;
 };
-type SimpleModalOptions = {
+type SimpleModalOptions = Omit<SimpleModalConfig, "execFn"> & {
   id: string;
-  title: string;
-  inputs?: CommonInputType[];
-  text?: string;
-  textAllowHtml?: boolean;
-  buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn?: (thisPopup: SimpleModal) => void;
   beforeShowFn?: (thisPopup: SimpleModal) => void;
@@ -135,7 +129,7 @@ export class SimpleModal {
   inputs: FormInput[];
   text?: string;
   textAllowHtml: boolean;
-  buttonText: string;
+  buttonText?: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
   beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
@@ -183,7 +177,7 @@ export class SimpleModal {
 
     this.initInputs();
 
-    if (this.buttonText === "") {
+    if (this.buttonText === "" || this.buttonText === undefined) {
       this.element.qs(".submitButton")?.remove();
     } else {
       this.element.qs(".submitButton")?.setText(this.buttonText);
@@ -324,7 +318,7 @@ export class SimpleModal {
         }
         inputsEl?.appendHtml(buildTag({ tagname, classes, attributes }));
       }
-      const element = qsr<HTMLInputElement>("#" + attributes["id"]);
+      const element = qsr<HTMLInputElement>(`#${attributes["id"]}`);
 
       const originalOnInput = element.native.oninput;
       element.native.oninput = (e) => {
@@ -383,9 +377,9 @@ export class SimpleModal {
     const vals: string[] = this.inputs.map((it) => it.currentValue());
     void this.execFn(this, ...vals).then((res) => {
       hideLoaderBar();
-      if (res.showNotification ?? true) {
+      if (!res.showNotification) {
         addNotificationWithLevel(
-          res.message,
+          res.message as string,
           res.status,
           res.notificationOptions,
         );

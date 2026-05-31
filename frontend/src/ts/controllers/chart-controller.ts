@@ -336,9 +336,9 @@ async function updateColors<
 
     const raw = c.getDataset("raw");
     raw.backgroundColor = "transparent";
-    raw.borderColor = colors.main + "99";
-    raw.pointBackgroundColor = colors.main + "99";
-    raw.pointBorderColor = colors.main + "99";
+    raw.borderColor = `${colors.main}99`;
+    raw.pointBackgroundColor = `${colors.main}99`;
+    raw.pointBorderColor = `${colors.main}99`;
 
     const error = c.getDataset("error");
     error.backgroundColor = colors.error;
@@ -349,7 +349,7 @@ async function updateColors<
     const burst = c.getDataset("burst");
     burst.backgroundColor = blendTwoHexColors(
       colors.subAlt,
-      colors.subAlt + "00",
+      `${colors.subAlt}00`,
       0.5,
     );
     burst.borderColor = colors.sub;

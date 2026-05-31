@@ -304,7 +304,7 @@ export async function update(): Promise<void> {
   let tagsString = "";
   try {
     __nonReactive.getActiveTags().forEach((tag) => {
-      tagsString += tag.name + ", ";
+      tagsString += `${tag.name}, `;
     });
 
     if (tagsString !== "") {

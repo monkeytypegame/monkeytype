@@ -23,6 +23,21 @@ export function camelCaseToWords(str: string): string {
 }
 
 /**
+ * Converts a string with words separated by spaces to camelCase.
+ * @param str The input string with words separated by spaces.
+ * @returns The camelCase version of the input string.
+ */
+export function wordsToCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/ +/)
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join("");
+}
+
+/**
  * Returns the last character of a string.
  * @param word The input string.
  * @returns The last character of the input string, or an empty string if the input is empty.
@@ -383,6 +398,73 @@ export function replaceUnderscoresWithSpaces(text: string): string {
 
 export function replaceSpacesWithUnderscores(text: string): string {
   return text.replace(/ /g, "_");
+}
+
+export type CharCounts = {
+  allCorrect: number;
+  correctWord: number;
+  incorrect: number;
+  extra: number;
+  missed: number;
+};
+
+export function countChars(
+  inputWord: string,
+  targetWord: string,
+  lastWord: boolean,
+  shouldLastPartialWordCount: boolean,
+): CharCounts {
+  let allCorrect = 0;
+  let correctWord = 0;
+  let incorrect = 0;
+  let extra = 0;
+  let missed = 0;
+
+  const wordCorrect = inputWord === targetWord;
+  const wordPartiallyCorrect = targetWord.startsWith(inputWord);
+
+  for (let i = 0; i < Math.max(inputWord.length, targetWord.length); i++) {
+    const inputChar = inputWord[i];
+    const targetChar = targetWord[i];
+
+    if (inputChar === targetChar) {
+      // do not count correct space characters if the word is not correct
+      if (targetChar === " ") {
+        if (wordCorrect) {
+          allCorrect += 1;
+        } else {
+          incorrect += 1;
+        }
+      } else {
+        allCorrect += 1;
+      }
+      if (
+        wordCorrect ||
+        (lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)
+      ) {
+        correctWord += 1;
+      }
+    } else if (inputChar === undefined) {
+      //missed char
+      if (!(lastWord && shouldLastPartialWordCount)) {
+        missed += 1;
+      }
+    } else if (targetChar === undefined) {
+      //extra char
+      extra += 1;
+    } else {
+      //incorrect char
+      incorrect += 1;
+    }
+  }
+
+  return {
+    allCorrect,
+    correctWord,
+    incorrect,
+    extra,
+    missed,
+  };
 }
 
 // Export testing utilities for unit tests

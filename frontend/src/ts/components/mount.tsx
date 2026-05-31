@@ -18,12 +18,14 @@ import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
+import { SettingsPage } from "./pages/settings/SettingsPage";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
+  settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,

@@ -3,6 +3,8 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   createCollection,
   createOptimisticAction,
+  eq,
+  queryOnce,
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { z } from "zod";
@@ -20,7 +22,9 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { tempId } from "./utils/misc";
+import { applyIdWorkaround, isTempId, tempId } from "./utils/misc";
+import { fetchUserFromApi } from "../ape/user";
+import { updateTagsInFilterStorage } from "../states/result-filters";
 
 export type TagItem = UserTag & { active: boolean };
 
@@ -31,13 +35,22 @@ const queryKeys = {
 const tagsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
-    startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
     getKey: (it) => it._id,
     queryFn: async () => {
-      return [] as TagItem[];
+      const activeIds = activeTagsLS.get();
+      const userData = await fetchUserFromApi();
+
+      if (userData === undefined) return [];
+
+      return (userData.tags ?? [])
+        .map((tag) => ({
+          ...tag,
+          name: tag.name.replace(/_/g, " "),
+          active: activeIds.includes(tag._id),
+        }))
+        .map(applyIdWorkaround);
     },
   }),
 );
@@ -48,6 +61,23 @@ export function useTagsLiveQuery() {
     return q
       .from({ tag: tagsCollection })
       .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getActiveTagsOnce() {
+  return queryOnce((q) => {
+    return q
+      .from({ tag: tagsCollection })
+      .where(({ tag }) => eq(tag.active, true))
+      .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export async function getTagsOnce() {
+  return queryOnce((q) => {
+    return q.from({ tag: tagsCollection });
   });
 }
 
@@ -64,6 +94,18 @@ type ActionType = {
   };
   deleteTag: {
     tagId: string;
+  };
+  toggleTagActive: {
+    tagId: string;
+    noSave?: boolean;
+  };
+  setTagActive: {
+    tagId: string;
+    active: boolean;
+    noSave?: boolean;
+  };
+  clearActiveTags: {
+    noSave?: boolean;
   };
 };
 
@@ -91,6 +133,11 @@ const actions = {
       };
 
       tagsCollection.utils.writeInsert(newTag);
+      updateTagsInFilterStorage(
+        [...tagsCollection.values()]
+          .filter((it) => !isTempId(it._id))
+          .map((it) => it._id),
+      );
     },
   }),
   updateTagName: createOptimisticAction<ActionType["updateTagName"]>({
@@ -157,11 +204,55 @@ const actions = {
         throw new Error(`Failed to delete tag: ${response.body.message}`);
       }
       tagsCollection.utils.writeDelete(tagId);
+      updateTagsInFilterStorage(
+        [...tagsCollection.values()].map((it) => it._id),
+      );
+    },
+  }),
+  toggleTagActive: createOptimisticAction<ActionType["toggleTagActive"]>({
+    onMutate: ({ tagId, noSave }) => {
+      const tag = tagsCollection.get(tagId);
+      if (tag === undefined) return;
+      tagsCollection.utils.writeUpdate({ ...tag, active: !tag.active });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
+    },
+  }),
+  setTagActive: createOptimisticAction<ActionType["setTagActive"]>({
+    onMutate: ({ tagId, active, noSave }) => {
+      const tag = tagsCollection.get(tagId);
+      if (tag === undefined) return;
+      tagsCollection.utils.writeUpdate({ ...tag, active });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
+    },
+  }),
+  clearActiveTags: createOptimisticAction<ActionType["clearActiveTags"]>({
+    onMutate: ({ noSave }) => {
+      tagsCollection.utils.writeBatch(() => {
+        tagsCollection.forEach((tag) => {
+          if (tag.active) {
+            tagsCollection.utils.writeUpdate({ ...tag, active: false });
+          }
+        });
+      });
+      if (!noSave) saveActiveToLocalStorage();
+    },
+    mutationFn: async () => {
+      return;
     },
   }),
 };
 
 // --- Public API ---
+
+export async function waitForTagsReady(): Promise<void> {
+  await tagsCollection.stateWhenReady();
+}
 
 export async function insertTag(
   params: ActionType["insertTag"],
@@ -191,6 +282,27 @@ export async function deleteTag(
   await transaction.isPersisted.promise;
 }
 
+export async function toggleTagActive(
+  params: ActionType["toggleTagActive"],
+): Promise<void> {
+  const transaction = actions.toggleTagActive(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function setTagActive(
+  params: ActionType["setTagActive"],
+): Promise<void> {
+  const transaction = actions.setTagActive(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function clearActiveTags(
+  params: ActionType["clearActiveTags"] = {},
+): Promise<void> {
+  const transaction = actions.clearActiveTags(params);
+  await transaction.isPersisted.promise;
+}
+
 function getTags(): TagItem[] {
   return [...tagsCollection.values()].sort((a, b) =>
     a.name.localeCompare(b.name),
@@ -203,22 +315,6 @@ function getTag(id: string): TagItem | undefined {
 
 function getActiveTags(): TagItem[] {
   return getTags().filter((tag) => tag.active);
-}
-
-export function fillTagsCollection(userTags: UserTag[]): void {
-  const activeIds = activeTagsLS.get();
-
-  const tagItems = userTags.map((tag) => ({
-    ...tag,
-    name: tag.name.replace(/_/g, " "),
-    active: activeIds.includes(tag._id),
-  }));
-
-  tagsCollection.utils.writeBatch(() => {
-    tagItems.forEach((item) => {
-      tagsCollection.utils.writeInsert(item);
-    });
-  });
 }
 
 // --- Active state ---
@@ -235,35 +331,6 @@ export function saveActiveToLocalStorage(): void {
     if (t.active) activeIds.push(t._id);
   });
   activeTagsLS.set(activeIds);
-}
-
-export function toggleTagActive(tagId: string, nosave = false): void {
-  const tag = tagsCollection.get(tagId);
-  if (tag === undefined) return;
-  tagsCollection.utils.writeUpdate({ ...tag, active: !tag.active });
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function setTagActive(
-  tagId: string,
-  state: boolean,
-  nosave = false,
-): void {
-  const tag = tagsCollection.get(tagId);
-  if (tag === undefined) return;
-  tagsCollection.utils.writeUpdate({ ...tag, active: state });
-  if (!nosave) saveActiveToLocalStorage();
-}
-
-export function clearActiveTags(nosave = false): void {
-  tagsCollection.utils.writeBatch(() => {
-    tagsCollection.forEach((tag) => {
-      if (tag.active) {
-        tagsCollection.utils.writeUpdate({ ...tag, active: false });
-      }
-    });
-  });
-  if (!nosave) saveActiveToLocalStorage();
 }
 
 // --- Personal bests ---
@@ -486,3 +553,9 @@ export const __nonReactive = {
   getTag,
   getActiveTags,
 };
+
+/**
+ * The collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+const _keepAlive = useTagsLiveQuery();

@@ -242,7 +242,7 @@ function translateFirebaseError(
       message =
         "Account already exists, but its using a different authentication method. Try signing in with a different method";
     } else {
-      message = "Firebase error: " + error.code;
+      message = `Firebase error: ${error.code}`;
     }
   }
 

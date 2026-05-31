@@ -88,8 +88,8 @@ async function getOrCreateUser(
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
-  const email = username + "@example.com";
-  Logger.success("create user " + username);
+  const email = `${username}@example.com`;
+  Logger.success(`create user ${username}`);
   const { uid } = await FirebaseAdmin().auth().createUser({
     displayName: username,
     password: password,
@@ -285,7 +285,7 @@ async function updateUser(uid: string): Promise<void> {
     }
 
     //update testActivity
-    await updateTestActicity(uid);
+    await updateTestActivity(uid);
   }
 
   //update the user
@@ -317,7 +317,7 @@ function createArray<T>(size: number, builder: () => T): T[] {
   return new Array(size).fill(0).map(() => builder());
 }
 
-async function updateTestActicity(uid: string): Promise<void> {
+async function updateTestActivity(uid: string): Promise<void> {
   await ResultDal.getResultCollection()
     .aggregate(
       [

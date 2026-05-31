@@ -358,7 +358,7 @@ export function authenticateGithubWebhook(
     }
     throw new MonkeyError(
       500,
-      "Failed to authenticate Github webhook: " + (error as Error).message,
+      `Failed to authenticate Github webhook: ${(error as Error).message}`,
     );
   }
 }

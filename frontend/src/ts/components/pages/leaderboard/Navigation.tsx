@@ -1,10 +1,12 @@
 import { JSXElement, Setter, Show } from "solid-js";
+import { z } from "zod";
 
 import { setPage } from "../../../states/leaderboard-selection";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
+
 export function Navigation(props: {
   lastPage: number;
   userPage?: number;
@@ -58,22 +60,21 @@ export function Navigation(props: {
         onClick={() =>
           showSimpleModal({
             title: "Go to page",
-            inputs: [
-              {
+            schema: z.object({
+              //not using PageNumberSchema because we don't allow zero here
+              pageNumber: z.number().int().safe().min(1),
+            }),
+            inputs: {
+              pageNumber: {
                 type: "number",
                 placeholder: "Page number",
               },
-            ],
+            },
             buttonText: "Go",
-            execFn: async (pageNumber) => {
-              const page = parseInt(pageNumber, 10);
-              if (isNaN(page) || page < 1) {
-                return { status: "notice", message: "Invalid page number" };
-              }
-              setPage(page - 1);
+            execFn: async ({ pageNumber }) => {
+              setPage(pageNumber - 1);
               return {
                 status: "success",
-                message: "Navigating to page " + page,
                 showNotification: false,
               };
             },
@@ -82,7 +83,10 @@ export function Navigation(props: {
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass}
         disabled={props.lastPage <= 1}
-      />
+      >
+        {" "}
+        {props.currentPage + 1}
+      </Button>
       <Button
         onClick={() => props.onPageChange((old) => old + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}

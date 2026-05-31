@@ -24,16 +24,18 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
+import { isAuthenticated } from "../states/core";
+import { getLastResult, setLastResult } from "../states/snapshot";
 import {
-  __nonReactive as tagsNonReactive,
+  getActiveTagsOnce,
+  getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
 } from "./tags";
-import { isAuthenticated } from "../states/core";
-import { createEffectOn } from "../hooks/effects";
-import { getLastResult, setLastResult } from "../states/snapshot";
+import { applyIdWorkaround } from "./utils/misc";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -180,9 +182,6 @@ function normalizeResult(
   resultDate.setHours(0);
   resultDate.setMilliseconds(0);
 
-  // @ts-expect-error without this resorting the datatable causes wrong data e.g. tags to show up
-  result.id = result._id;
-
   //results strip default values, add them back
   result.bailedOut ??= false;
   result.blindMode ??= false;
@@ -216,9 +215,9 @@ const resultsCollection = createCollection(
     queryKey: queryKeys.root(),
     queryFn: async () => {
       if (!isAuthenticated()) return [];
-      const knownTagIds = new Set(
-        tagsNonReactive.getTags().map((it) => it._id),
-      );
+      const tagIds = await getTagsOnce();
+
+      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -226,18 +225,24 @@ const resultsCollection = createCollection(
       });
 
       if (response.status !== 200) {
-        throw new Error("Error fetching results:" + response.body.message);
+        throw new Error(`Error fetching results:${response.body.message}`);
       }
 
-      const results = response.body.data.map((result) =>
-        normalizeResult(result, knownTagIds),
-      );
+      const results = response.body.data
+        .map((result) => normalizeResult(result, knownTagIds))
+        .map(applyIdWorkaround);
 
       if (getLastResult() === undefined && results.length > 0) {
         const lastResult = results.reduce((acc, cur) =>
           acc === undefined || acc.timestamp < cur.timestamp ? cur : acc,
         );
         setLastResult(lastResult);
+      }
+
+      if (_keepAlive === null) {
+        _keepAlive = useLiveQuery((q) =>
+          q.from({ results: resultsCollection }),
+        );
       }
 
       return results;
@@ -261,6 +266,9 @@ type ActionType = {
   };
   insertLocalResult: {
     result: SnapshotResult<Mode>;
+  };
+  deleteLocalTag: {
+    tagId: string;
   };
 };
 
@@ -315,10 +323,27 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.insert(result);
-    },
-    mutationFn: async ({ result }) => {
       resultsCollection.utils.writeInsert(normalizeResult(result));
+    },
+    mutationFn: async () => {
+      //we don't sync the changes back to the backend here, it is done already
+      return;
+    },
+  }),
+  deleteLocalTag: createOptimisticAction<ActionType["deleteLocalTag"]>({
+    onMutate: ({ tagId }) => {
+      for (const result of [...resultsCollection.values()].filter((it) =>
+        it.tags.includes(tagId),
+      )) {
+        resultsCollection.utils.writeUpdate({
+          ...result,
+          tags: result.tags.filter((it) => it !== tagId),
+        });
+      }
+    },
+    mutationFn: async () => {
+      //we do not sync the changes back to the backend
+      return;
     },
   }),
 };
@@ -381,6 +406,17 @@ export async function insertLocalResult(
     return;
   }
   const transaction = actions.insertLocalResult(params);
+  await transaction.isPersisted.promise;
+}
+
+export async function deleteLocalTag(
+  params: ActionType["deleteLocalTag"],
+): Promise<void> {
+  if (!resultsCollection.isReady()) {
+    //not loaded yet, don't need to update
+    return;
+  }
+  const transaction = actions.deleteLocalTag(params);
   await transaction.isPersisted.promise;
 }
 
@@ -557,13 +593,13 @@ export async function getUserAverage10(
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
 
+  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+
   const result = await queryOnce((q) =>
     q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: buildSettingsResultsQuery(options, {
-          tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-        })
+        last10: buildSettingsResultsQuery(options, { tagIds })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
@@ -580,11 +616,10 @@ export async function getUserDailyBest(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
+  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
 
   const result = await queryOnce(() =>
-    buildSettingsResultsQuery(options, {
-      tagIds: tagsNonReactive.getActiveTags().map((it) => it._id),
-    })
+    buildSettingsResultsQuery(options, { tagIds })
       .where(({ r }) => gte(r.timestamp, Date.now() - 24 * 60 * 60 * 1000))
       .orderBy(({ r }) => r.wpm, "desc")
       .limit(1)
@@ -624,21 +659,6 @@ function buildSettingsResultsQuery(
   return query;
 }
 
-export function deleteLocalTag(tagId: string): void {
-  resultsCollection.utils.writeBatch(() => {
-    for (const result of [...resultsCollection.values()]) {
-      if (!result.tags.includes(tagId)) {
-        continue;
-      }
-
-      resultsCollection.utils.writeUpdate({
-        ...result,
-        tags: result.tags.filter((it) => it !== tagId),
-      });
-    }
-  });
-}
-
 export function isResultsReady(): boolean {
   return resultsCollection.isReady();
 }
@@ -669,3 +689,10 @@ function getResults(): SnapshotResult<Mode>[] {
 export const __nonReactive = {
   getResults,
 };
+
+/**
+ * The collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+// oxlint-disable-next-line typescript/no-explicit-any
+let _keepAlive: any = null;

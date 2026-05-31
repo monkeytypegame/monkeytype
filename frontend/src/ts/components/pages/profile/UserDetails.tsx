@@ -16,10 +16,10 @@ import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { Snapshot } from "../../../constants/default-snapshot";
 import { addFriend, isFriend } from "../../../db";
-import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -36,6 +36,7 @@ import { Button } from "../../common/Button";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { EditProfile } from "../../modals/EditProfileModal";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -98,6 +99,9 @@ export function UserDetails(props: {
           isAccountPage={props.isAccountPage}
         />
       </div>
+      <Show when={props.isAccountPage === true}>
+        <EditProfile />
+      </Show>
     </div>
   );
 }
@@ -177,7 +181,7 @@ function ActionButtons(props: {
             showNoticeNotification("Banned users cannot edit their profile");
             return;
           }
-          EditProfileModal.show();
+          showModal("EditProfile");
         }}
       />
       <Button
@@ -193,8 +197,9 @@ function ActionButtons(props: {
             },
             function () {
               alert(
-                "Failed to copy using the Clipboard API. Here's the link: " +
-                  url,
+                `Failed to copy using the Clipboard API. Here's the link: ${
+                  url
+                }`,
               );
             },
           );
@@ -354,17 +359,16 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     <div class="col-span-2 flex w-full items-center gap-2">
       <Balloon
         class="shrink-0 text-text"
-        text={formatXp(props.xp ?? 0) + " total xp"}
+        text={`${formatXp(props.xp ?? 0)} total xp`}
       >
         {xpDetails().level}
       </Balloon>
       <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
       <Balloon
         class="shrink-0 text-xs"
-        text={
-          formatXp(xpDetails().levelMaxXp - xpDetails().levelCurrentXp) +
-          " xp until next level"
-        }
+        text={`${formatXp(
+          xpDetails().levelMaxXp - xpDetails().levelCurrentXp,
+        )} xp until next level`}
       >
         {formatXp(xpDetails().levelCurrentXp)}/
         {formatXp(xpDetails().levelMaxXp)}{" "}
