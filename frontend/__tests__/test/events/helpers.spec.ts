@@ -399,8 +399,6 @@ describe("findInputValueMismatches", () => {
   // });
 
   // it("handles composition followed by regular text", () => {
-  //   const events = [
-  //     ...insert("k", "insertCompositionText"),
   //     ...insert("ka", "insertCompositionText"),
   //     ...insert("b"),
   //   ];
