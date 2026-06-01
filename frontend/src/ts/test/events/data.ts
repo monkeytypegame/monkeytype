@@ -308,6 +308,18 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
+export function getInputEventsForWord(wordIndex: number): InputEvent[] {
+  const events = getAllTestEvents();
+  const result: InputEvent[] = [];
+  for (const event of events) {
+    if (event.type !== "input") continue;
+    if (event.data.wordIndex === wordIndex) {
+      result.push(event);
+    }
+  }
+  return result;
+}
+
 export function getInputEventsPerWord(
   startMs?: number,
   testMsLimit?: number,
