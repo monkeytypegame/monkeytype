@@ -10,14 +10,7 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import {
-  z,
-  ZodDate,
-  ZodDefault,
-  ZodFirstPartyTypeKind,
-  ZodNumber,
-  ZodTypeAny,
-} from "zod";
+import { z, ZodDefault, ZodFirstPartyTypeKind, ZodTypeAny } from "zod";
 
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -129,6 +122,7 @@ function FieldInput(props: {
         <InputField
           field={props.field}
           type={props.input.type}
+          schema={props.schema}
           placeholder={props.input.placeholder}
           disabled={props.input.disabled}
           readOnly={
@@ -143,7 +137,6 @@ function FieldInput(props: {
           }
           class={props.input.class}
           autocomplete="off"
-          {...getMinAndMax(props.schema)}
         />
       }
     >
@@ -184,7 +177,6 @@ function FieldInput(props: {
               "w-full",
               props.input.class,
             )}
-            {...getMinAndMax(props.schema)}
             step={(props.input as { step?: number }).step}
             value={props.field().state.value as string}
             disabled={props.input.disabled}
@@ -208,7 +200,6 @@ function FieldInput(props: {
           class={cn("w-full", props.input.class)}
           value={formatDate(props.field().state.value as Date)}
           disabled={props.input.disabled}
-          {...getDateMinAndMax(props.schema, formatDate)}
           onInput={(e) => {
             props.field().handleChange(e.currentTarget.value);
             props.input.oninput?.(e);
@@ -441,35 +432,6 @@ export function convertFn<T>(
     default:
       return (val) => preprocess(val);
   }
-}
-
-function getMinAndMax(schema: ZodTypeAny): {
-  min?: number;
-  max?: number;
-} {
-  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
-
-  return {
-    min: (schema as ZodNumber).minValue ?? undefined,
-    max: (schema as ZodNumber).maxValue ?? undefined,
-  };
-}
-function getDateMinAndMax(
-  schema: ZodTypeAny,
-  format: (val: Date | undefined) => string | undefined,
-): {
-  min?: string;
-  max?: string;
-} {
-  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
-
-  const applyFormat = (it: Date | null) =>
-    it === null ? undefined : format(it);
-
-  return {
-    min: applyFormat((schema as ZodDate).minDate),
-    max: applyFormat((schema as ZodDate).maxDate),
-  };
 }
 
 function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
