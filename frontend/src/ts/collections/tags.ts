@@ -41,6 +41,7 @@ const tagsCollection = createCollection(
     queryFn: async () => {
       const activeIds = activeTagsLS.get();
       const userData = await fetchUserFromApi();
+
       if (userData === undefined) return [];
 
       return (userData.tags ?? [])
@@ -562,3 +563,9 @@ export const __nonReactive = {
   getTag,
   getActiveTags,
 };
+
+/**
+ * The collection gets cleaned up after a while.
+ * Keeping a query active fixes that. Remove when removing __nonReactive
+ */
+const _keepAlive = useTagsLiveQuery();

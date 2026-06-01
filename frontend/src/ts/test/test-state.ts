@@ -10,6 +10,7 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let resultCalculating = false;
 
 export function setActive(tf: boolean): void {
   isActive = tf;
@@ -67,4 +68,8 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function setResultCalculating(val: boolean): void {
+  resultCalculating = val;
 }

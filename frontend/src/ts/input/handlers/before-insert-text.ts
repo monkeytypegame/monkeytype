@@ -25,7 +25,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (TestUI.resultCalculating) {
+  if (TestState.resultCalculating) {
     return true;
   }
 
@@ -85,7 +85,7 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    // if there is pending word data, wwe need to account for that
+    // if there is pending word data, we need to account for that
     const pendingWordData = TestUI.pendingWordData.get(
       TestState.activeWordIndex,
     );

@@ -36,8 +36,12 @@ import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
 import { normalizeName } from "../utils/strings";
 import { IsValidResponse } from "../types/validation";
-import { ExecReturn, SimpleModal } from "../elements/simple-modal";
-import { PasswordInput, TextInput } from "../states/simple-modal";
+import {
+  ExecReturn,
+  SimpleModal,
+  PasswordInput,
+  TextInput,
+} from "../elements/simple-modal";
 
 export { list, showPopup };
 export type { PopupKey };

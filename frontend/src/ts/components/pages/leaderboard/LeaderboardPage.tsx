@@ -25,6 +25,7 @@ import {
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { LoadingCircle } from "../../common/LoadingCircle";
+import { Page } from "../../common/Page";
 import { Separator } from "../../common/Separator";
 import { Navigation } from "./Navigation";
 import { NextUpdate } from "./NextUpdate";
@@ -167,7 +168,7 @@ export function LeaderboardPage(): JSXElement {
   };
 
   return (
-    <Show when={isOpen()}>
+    <Page id="leaderboards">
       <div class="content-grid flex flex-col gap-8 lg:flex-row">
         <div class="w-full shrink-0 lg:w-60 2xl:w-75">
           <AsyncContent queries={{ serverConfigurationQuery }}>
@@ -301,6 +302,6 @@ export function LeaderboardPage(): JSXElement {
           </AsyncContent>
         </div>
       </div>
-    </Show>
+    </Page>
   );
 }

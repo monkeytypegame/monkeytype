@@ -1,5 +1,6 @@
 import { TagNameSchema } from "@monkeytype/schemas/users";
-import { JSXElement, For } from "solid-js";
+import { For, JSXElement } from "solid-js";
+import { z } from "zod";
 
 import { deleteLocalTag } from "../../../../collections/results";
 import {
@@ -9,7 +10,6 @@ import {
   updateTagName,
   useTagsLiveQuery,
 } from "../../../../collections/tags";
-import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
@@ -49,9 +49,8 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "clear",
                       execFn: async () => {
-                        showLoaderBar();
                         await clearTagPBs({ tagId: tag._id });
-                        hideLoaderBar();
+
                         return {
                           status: "success",
                           message: "Personal bests cleared",
@@ -69,30 +68,20 @@ export function Tags(): JSXElement {
                       title: "Edit tag name",
                       buttonText: "save",
                       focusFirstInput: "focusAndSelect",
-                      inputs: [
-                        {
+                      schema: z.object({ tagName: TagNameSchema }),
+                      inputs: {
+                        tagName: {
                           type: "text",
                           initVal: tag.name,
-                          validation: {
-                            isValid: async (tagName) => {
-                              const validationResult = TagNameSchema.safeParse(
-                                normalizeName(tagName),
-                              );
-                              if (validationResult.success) return true;
-                              return validationResult.error.errors
-                                .map((err) => err.message)
-                                .join(", ");
-                            },
-                          },
+                          preprocess: normalizeName,
                         },
-                      ],
-                      execFn: async (name) => {
-                        showLoaderBar();
+                      },
+                      execFn: async ({ tagName }) => {
                         await updateTagName({
                           tagId: tag._id,
-                          newName: normalizeName(name),
+                          newName: tagName,
                         });
-                        hideLoaderBar();
+
                         return {
                           status: "success",
                           message: "Tag name updated",
@@ -111,10 +100,9 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "delete",
                       execFn: async () => {
-                        showLoaderBar();
                         await deleteTag({ tagId: tag._id });
                         await deleteLocalTag({ tagId: tag._id });
-                        hideLoaderBar();
+
                         return {
                           status: "success",
                           message: "Tag deleted",

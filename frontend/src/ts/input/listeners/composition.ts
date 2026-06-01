@@ -6,7 +6,7 @@ import * as TestInput from "../../test/test-input";
 import { setLastInsertCompositionTextData } from "../state";
 import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
-import * as TestUI from "../../test/test-ui";
+import { logTestEvent } from "../../test/events/data";
 
 const inputEl = getInputElement();
 
@@ -16,16 +16,22 @@ inputEl.addEventListener("compositionstart", (event) => {
     data: event.data,
   });
 
-  if (TestState.testRestarting || TestUI.resultCalculating) return;
+  const now = performance.now();
+
+  if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
   if (!TestState.isActive) {
-    TestLogic.startTest(performance.now());
+    TestLogic.startTest(now);
   }
   if (TestInput.input.current.length === 0) {
-    TestInput.setBurstStart(performance.now());
+    TestInput.setBurstStart(now);
   }
+
+  logTestEvent("composition", now, {
+    event: "start",
+  });
 });
 
 inputEl.addEventListener("compositionupdate", (event) => {
@@ -34,15 +40,22 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
-  if (TestState.testRestarting || TestUI.resultCalculating) return;
+  if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setData(event.data);
   CompositionDisplay.update(event.data);
+
+  const now = performance.now();
+
+  logTestEvent("composition", now, {
+    event: "update",
+    data: event.data,
+  });
 });
 
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
 
-  if (TestState.testRestarting || TestUI.resultCalculating) return;
+  if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
   CompositionDisplay.update("");
@@ -57,4 +70,9 @@ inputEl.addEventListener("compositionend", async (event) => {
       isCompositionEnding: true,
     });
   }
+
+  logTestEvent("composition", now, {
+    event: "end",
+    data: event.data,
+  });
 });

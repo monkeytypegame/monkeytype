@@ -17,7 +17,7 @@ export function onBeforeDelete(event: InputEvent): void {
   if (isAwaitingNextWord()) {
     return;
   }
-  if (TestUI.resultCalculating) {
+  if (TestState.resultCalculating) {
     return;
   }
 
