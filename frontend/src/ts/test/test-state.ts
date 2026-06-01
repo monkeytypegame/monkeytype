@@ -13,6 +13,11 @@ export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
 export let resultCalculating = false;
+export let koreanStatus = false;
+
+export function setKoreanStatus(val: boolean): void {
+  koreanStatus = val;
+}
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;

@@ -18,6 +18,8 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   TestInput.input.syncWithInputElement();
 
+  const inputAfterDelete = TestInput.input.current;
+
   Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
   TestInput.setCurrentNotAfk();
 
@@ -33,25 +35,52 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     inputBeforeDelete.length > 0 &&
     beforeDeleteOnlyTabs &&
     allTabsCorrect
-    // (TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-    //   TestWords.words.get(TestState.activeWordIndex - 1) ||
-    //   Config.freedomMode)
   ) {
+    // Clear N+1's tabs (the word the user was in)
+    logTestEvent("input", now, {
+      inputType: "deleteWordBackward",
+      wordIndex: activeWordIndexBeforeDelete,
+      charIndex: inputBeforeDelete.length,
+      inputValue: "",
+    });
+
     setInputElementValue("");
-    TestInput.input.syncWithInputElement();
     goToPreviousWord(inputType, true);
-  } else {
-    //normal backspace
-    if (realInputValue === "") {
-      goToPreviousWord(inputType);
-    }
+
+    // Record the resulting state of the previous word (newline removed)
+    const postNavInputValue = getInputElementValue().inputValue;
+    logTestEvent("input", now, {
+      inputType: "deleteContentBackward",
+      wordIndex: activeWordIndex,
+      charIndex: postNavInputValue.length,
+      inputValue: postNavInputValue,
+    });
+
+    TestUI.afterTestDelete();
+    return;
   }
 
-  logTestEvent("input", now, {
-    inputType: inputType,
-    wordIndex: activeWordIndexBeforeDelete,
-    charIndex: inputBeforeDelete.length,
-  });
+  //normal backspace
+  if (realInputValue === "") {
+    goToPreviousWord(inputType);
+
+    // Record the resulting state of the destination word
+    const postNavInputValue = getInputElementValue().inputValue;
+    logTestEvent("input", now, {
+      inputType: inputType,
+      wordIndex: activeWordIndex,
+      charIndex: postNavInputValue.length,
+      inputValue: postNavInputValue,
+    });
+  } else {
+    // Delete within current word
+    logTestEvent("input", now, {
+      inputType: inputType,
+      wordIndex: activeWordIndexBeforeDelete,
+      charIndex: inputBeforeDelete.length,
+      inputValue: inputAfterDelete,
+    });
+  }
 
   TestUI.afterTestDelete();
 }
