@@ -22,6 +22,7 @@ type GoToNextWordParams = {
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
   zenNewline?: boolean;
+  now: number;
 };
 
 type GoToNextWordReturn = {
@@ -33,6 +34,7 @@ export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
   zenNewline,
+  now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
@@ -56,7 +58,7 @@ export async function goToNextWord({
   }
 
   //burst calculation and fail
-  const burst: number = TestStats.calculateBurst();
+  const burst: number = TestStats.calculateBurst(now);
   TestInput.pushBurstToHistory(burst);
   ret.lastBurst = burst;
 

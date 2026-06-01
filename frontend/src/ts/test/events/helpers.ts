@@ -93,25 +93,92 @@ export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
   return event.code as Keycode;
 }
 
-export function getSimulatedInput(events: InputEvent[]): string {
-  let simulatedInput = "";
+export function applyOp(input: string, event: InputEvent): string {
+  if (event.data.inputType === "insertText") {
+    if (event.data.inputStopped) return input;
+    return input + event.data.data;
+  }
+  if (event.data.inputType === "insertCompositionText") {
+    if (event.data.inputStopped) return input;
+    return input + event.data.data;
+  }
+  if (event.data.inputType === "deleteContentBackward") {
+    return input.slice(0, -1);
+  }
+  if (event.data.inputType === "deleteWordBackward") {
+    return input.replace(/(?:\S+\s*|\s+)$/, "");
+  }
+  return input;
+}
 
+/**
+ * Derives input by applying each event's operation in order. Ignores the
+ * recorded inputValue field. Use for verification, tests, or fallback —
+ * not as source of truth.
+ */
+export function getInputFromEvents(events: InputEvent[]): string {
+  let input = "";
   for (const event of events) {
-    if (event.data.inputType === "insertText") {
-      if (event.data.inputStopped) continue;
-      simulatedInput += event.data.data;
+    input = applyOp(input, event);
+  }
+  return input;
+}
+
+/**
+ * Reads input from the DOM snapshots captured on each event (inputValue),
+ * falling back to op-based derivation for events without a snapshot.
+ * Use this whenever you need the actual current/past input state.
+ *
+ * Walks backward to find the latest event with a captured inputValue, then
+ * replays any subsequent events forward — O(1) when the last event has a
+ * snapshot (the common case), O(n) worst case.
+ */
+export function getInputFromDom(events: InputEvent[]): string {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i] as InputEvent;
+    if (event.data.inputValue !== undefined) {
+      let input = event.data.inputValue;
+      for (let j = i + 1; j < events.length; j++) {
+        input = applyOp(input, events[j] as InputEvent);
+      }
+      return input;
     }
-    if (event.data.inputType === "insertCompositionText") {
-      if (event.data.inputStopped) continue;
-      simulatedInput += event.data.data;
-    }
-    if (event.data.inputType === "deleteContentBackward") {
-      simulatedInput = simulatedInput.slice(0, -1);
-    }
-    if (event.data.inputType === "deleteWordBackward") {
-      simulatedInput = "";
+  }
+  return getInputFromEvents(events);
+}
+
+export type InputValueMismatch = {
+  index: number;
+  derived: string;
+  recorded: string;
+};
+
+/**
+ * Compares event-derived input against the recorded DOM snapshot at each
+ * event. Returns the indices where event-derivation disagreed with what the
+ * DOM captured. Useful for catching op-logic bugs or capture-timing bugs.
+ */
+export function findInputValueMismatches(
+  events: InputEvent[],
+): InputValueMismatch[] {
+  const mismatches: InputValueMismatch[] = [];
+  let derived = "";
+
+  for (let i = 0; i < events.length; i++) {
+    const event = events[i] as InputEvent;
+    derived = applyOp(derived, event);
+
+    if (
+      event.data.inputValue !== undefined &&
+      event.data.inputValue !== derived
+    ) {
+      mismatches.push({
+        index: i,
+        derived,
+        recorded: event.data.inputValue,
+      });
     }
   }
 
-  return simulatedInput;
+  return mismatches;
 }
