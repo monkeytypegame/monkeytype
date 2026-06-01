@@ -22,9 +22,11 @@ import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
+import * as TestWords from "../test/test-words";
 import {
   showErrorNotification,
   clearAllNotifications,
+  showSuccessNotification,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import { Command, CommandsSubgroup } from "./types";
@@ -38,6 +40,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
+import { getAllTestEvents } from "../test/events/data";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -286,23 +289,28 @@ export const commands: CommandsSubgroup = {
         alert(await caches.keys());
       },
     },
-    // todo: bring back?
-    // {
-    //   id: "copyResultStats",
-    //   display: "Copy result stats",
-    //   icon: "fa-cog",
-    //   visible: false,
-    //   exec: async (): Promise<void> => {
-    //     navigator.clipboard
-    //       .writeText(JSON.stringify(TestStats.getStats()))
-    //       .then(() => {
-    //         showSuccessNotification("Copied to clipboard");
-    //       })
-    //       .catch((e: unknown) => {
-    //         showErrorNotification("Failed to copy to clipboard", { error: e });
-    //       });
-    //   },
-    // },
+    {
+      id: "copyResultStats",
+      display: "Copy result data",
+      alias: "stats events",
+      icon: "fa-cog",
+      visible: false,
+      exec: async (): Promise<void> => {
+        navigator.clipboard
+          .writeText(
+            JSON.stringify({
+              events: getAllTestEvents(),
+              words: TestWords.words,
+            }),
+          )
+          .then(() => {
+            showSuccessNotification("Copied to clipboard");
+          })
+          .catch((e: unknown) => {
+            showErrorNotification("Failed to copy to clipboard", { error: e });
+          });
+      },
+    },
     {
       id: "fpsCounter",
       display: "FPS counter...",
