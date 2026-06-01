@@ -18,7 +18,6 @@ import {
   findSingleActiveFunboxWithFunction,
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
-import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -152,7 +151,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
   // general per keypress updates
-  Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
   WeakSpot.updateScore(data, correct);
   if (Config.keymapMode === "react") {
     flash(data, correct);

@@ -2,7 +2,6 @@ import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
-import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
@@ -16,8 +15,6 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
   const activeWordIndexBeforeDelete = activeWordIndex;
 
   const inputAfterDelete = getInputElementValue().inputValue;
-
-  Replay.addReplayEvent("setLetterIndex", inputAfterDelete.length);
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words

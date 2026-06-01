@@ -20,7 +20,7 @@ import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
-import * as Replay from "./replay";
+import * as Replay from "./events/replay-ui";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
@@ -86,7 +86,6 @@ import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
   resetTestEvents,
   cleanupData,
-  getCurrentInput,
   logEventsDataToTheConsoleTable,
 } from "./events/data";
 import {
@@ -177,8 +176,6 @@ export function startTest(_now: number): boolean {
   }
 
   TestState.setActive(true);
-  Replay.startReplayRecording();
-  Replay.replayGetWordsList(TestWords.words.list);
   Time.set(0);
   TestTimer.clear();
 
@@ -327,7 +324,6 @@ export function restart(options = {} as RestartOptions): void {
   AltTracker.reset();
   Caret.hide();
   TestState.setActive(false);
-  Replay.stopReplayRecording();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();
@@ -429,7 +425,6 @@ async function init(): Promise<boolean> {
     return false;
   }
 
-  Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
 
@@ -898,24 +893,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestState.setRepeated(false);
   }
 
-  // in case the tests ends with a keypress (not a word submission)
-  // we need to push the current input to history
-  if (getCurrentInput().length !== 0) {
-    Replay.replayGetWordsList(getInputHistory());
-  }
-
-  // in zen mode, ensure the replay words list reflects the typed input history
-  // even if the current input was empty at finish (e.g., after submitting a word).
-  if (Config.mode === "zen") {
-    Replay.replayGetWordsList(getInputHistory());
-  }
-
   forceReleaseAllKeys();
 
   setResultVisible(true);
   TestState.setResultVisible(true);
   TestState.setActive(false);
-  Replay.stopReplayRecording();
 
   cleanupData();
 

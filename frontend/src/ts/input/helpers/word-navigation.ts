@@ -8,7 +8,6 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
-import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
@@ -45,12 +44,6 @@ export async function goToNextWord({
     correctInsert,
     isCompositionEnding || zenNewline === true,
   );
-
-  if (correctInsert) {
-    Replay.addReplayEvent("submitCorrectWord");
-  } else {
-    Replay.addReplayEvent("submitErrorWord");
-  }
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
@@ -99,8 +92,6 @@ export function goToPreviousWord(
   }
 
   TestUI.beforeTestWordChange("back", null, forceUpdateActiveWordLetters);
-
-  Replay.addReplayEvent("backWord");
 
   TestState.decreaseActiveWordIndex();
   const word = getInputForWord(TestState.activeWordIndex);
