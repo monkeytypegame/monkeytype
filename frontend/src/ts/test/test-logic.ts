@@ -164,7 +164,7 @@ export function setNotSignedInUidAndHash(uid: string): void {
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
-export function startTest(_now: number): boolean {
+export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -192,7 +192,7 @@ export function startTest(_now: number): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  void TestTimer.start();
+  void TestTimer.start(now);
   TestUI.onTestStart();
   return true;
 }

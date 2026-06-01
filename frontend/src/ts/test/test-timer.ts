@@ -287,20 +287,20 @@ function checkIfTimerIsSlow(drift: number): void {
   }
 }
 
-export async function start(): Promise<void> {
+export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
   for (const id of slowTimerNotifIds) {
     removeNotification(id, "clear");
   }
   slowTimerNotifIds = [];
-  void _startNew();
+  void _startNew(now);
   // void _startOld();
 }
 
-async function _startNew(): Promise<void> {
+async function _startNew(now: number): Promise<void> {
   newTimer.play();
-  logTestEvent("timer", performance.now(), {
+  logTestEvent("timer", now, {
     event: "start",
     timer: Time.get(),
     date: new Date().getTime(),
