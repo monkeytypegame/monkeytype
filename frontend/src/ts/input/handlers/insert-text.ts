@@ -228,7 +228,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding === true,
     inputStopped: removeLastChar,
-    inputValue: inputValueAfterEvent + (data === " " ? " " : ""),
+    inputValue: inputValueAfterEvent + (charIsSpace ? " " : ""),
   });
 
   // going to next word
