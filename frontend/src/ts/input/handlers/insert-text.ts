@@ -213,19 +213,13 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     TestInput.input.syncWithInputElement();
   }
 
-  // going to next word
-  let increasedWordIndex: null | boolean = null;
-  let lastBurst: null | number = null;
-  if (shouldGoToNextWord) {
-    const result = await goToNextWord({
-      correctInsert: correct,
-      isCompositionEnding: isCompositionEnding === true,
-      zenNewline: charIsNewline && Config.mode === "zen",
-    });
-    lastBurst = result.lastBurst;
-    increasedWordIndex = result.increasedWordIndex;
-  }
+  // capture DOM before goToNextWord clears it for the new word
+  const inputValueAfterEvent = TestInput.input.current;
 
+  // Log the event BEFORE goToNextWord so readers inside the navigation
+  // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
+  // completed event in derivation. Otherwise the just-typed trigger char
+  // (space/newline) is missing — visible as missing \n element in zen mode.
   logTestEvent("input", now, {
     inputType: "insertText",
     data,
@@ -234,7 +228,22 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding === true,
     inputStopped: removeLastChar,
+    inputValue: inputValueAfterEvent,
   });
+
+  // going to next word
+  let increasedWordIndex: null | boolean = null;
+  let lastBurst: null | number = null;
+  if (shouldGoToNextWord) {
+    const result = await goToNextWord({
+      correctInsert: correct,
+      isCompositionEnding: isCompositionEnding === true,
+      zenNewline: charIsNewline && Config.mode === "zen",
+      now,
+    });
+    lastBurst = result.lastBurst;
+    increasedWordIndex = result.increasedWordIndex;
+  }
 
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
