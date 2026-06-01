@@ -25,7 +25,7 @@ export function InputField(props: {
   schema?: ZodTypeAny;
   min?: number;
   max?: number;
-  step?: string;
+  step?: string | number;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -65,7 +65,6 @@ export function InputField(props: {
         )}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? ""}
-        // oxlint-disable-next-line react/no-unknown-property
         autocomplete={props.autocomplete}
         name={props.field().name as string}
         value={props.field().state.value as string}
@@ -102,7 +101,7 @@ export function InputField(props: {
         {...getDateOptions(props.schema, formatDate)}
         min={props.min}
         max={props.max}
-        step={props.step}
+        step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />

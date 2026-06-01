@@ -1,5 +1,4 @@
 import { AnyFieldApi, createForm } from "@tanstack/solid-form";
-import { format as dateFormat } from "date-fns/format";
 import {
   Accessor,
   For,
@@ -31,6 +30,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import { fieldMandatory, fromSchema, handleResult } from "../ui/form/utils";
 
 type SyncValidator = (opts: {
@@ -109,13 +109,6 @@ function FieldInput(props: {
   input: GenericSimpleModalInput;
   schema: z.ZodTypeAny;
 }): JSXElement {
-  const formatDate = (date: Date | undefined) =>
-    date === undefined
-      ? undefined
-      : dateFormat(
-          date,
-          props.input.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
-        );
   return (
     <Switch
       fallback={
@@ -135,7 +128,14 @@ function FieldInput(props: {
               ? (props.input as { clickToSelect?: boolean }).clickToSelect
               : undefined
           }
-          class={props.input.class}
+          class={cn(
+            {
+              "w-full":
+                props.input.type === "date" ||
+                props.input.type === "datetime-local",
+            },
+            props.input.class,
+          )}
           autocomplete="off"
         />
       }
@@ -149,63 +149,29 @@ function FieldInput(props: {
         />
       </Match>
       <Match when={props.input.type === "textarea"}>
-        <textarea
-          class={cn("w-full", props.input.class)}
+        <TextareaField
+          field={props.field}
           placeholder={props.input.placeholder}
-          value={props.field().state.value as string}
           disabled={props.input.disabled}
-          readOnly={(props.input as { readOnly?: boolean }).readOnly}
           autocomplete="off"
-          onInput={(e) => {
-            props.field().handleChange(e.currentTarget.value);
-            props.input.oninput?.(e);
-          }}
-          onClick={(e) => {
-            if ((props.input as { clickToSelect?: boolean }).clickToSelect) {
-              e.currentTarget.select();
-            }
-          }}
-          onBlur={() => props.field().handleBlur()}
-        ></textarea>
+        />
       </Match>
       <Match when={props.input.type === "range"}>
         <div class="flex items-center gap-2">
-          <input
-            type="range"
+          <InputField
+            field={props.field}
+            type={props.input.type}
+            schema={props.schema}
             class={cn(
               props.input.hidden && "hidden",
               "w-full",
               props.input.class,
             )}
             step={(props.input as { step?: number }).step}
-            value={props.field().state.value as string}
             disabled={props.input.disabled}
-            onInput={(e) => {
-              props.field().handleChange(e.currentTarget.value);
-              props.input.oninput?.(e);
-            }}
-            onBlur={() => props.field().handleBlur()}
           />
           <span class="text-sub">{props.field().state.value as string}</span>
         </div>
-      </Match>
-
-      <Match
-        when={
-          props.input.type === "datetime-local" || props.input.type === "date"
-        }
-      >
-        <input
-          type={props.input.type}
-          class={cn("w-full", props.input.class)}
-          value={formatDate(props.field().state.value as Date)}
-          disabled={props.input.disabled}
-          onInput={(e) => {
-            props.field().handleChange(e.currentTarget.value);
-            props.input.oninput?.(e);
-          }}
-          onBlur={() => props.field().handleBlur()}
-        />
       </Match>
     </Switch>
   );
