@@ -13,10 +13,10 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
-import { keysToTrack } from "./helpers";
+import { getInputFromDom, keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { resultCalculating } from "../test-state";
+import { activeWordIndex, resultCalculating } from "../test-state";
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -140,6 +140,10 @@ export function logTestEvent(
 
 function invalidateCache(): void {
   cachedAllEvents = undefined;
+}
+
+export function getCurrentInput(): string {
+  return getInputFromDom(getInputEventsForWord(activeWordIndex));
 }
 
 export function cleanupData(): void {
@@ -315,19 +319,7 @@ export function getInputEventsForWord(wordIndex: number): InputEvent[] {
   const result: InputEvent[] = [];
   for (const event of events) {
     if (event.type !== "input") continue;
-
-    let eventWordIndex = event.data.wordIndex;
-
-    if (
-      (event.data.inputType === "deleteWordBackward" ||
-        event.data.inputType === "deleteContentBackward") &&
-      event.data.charIndex === 0 &&
-      eventWordIndex > 0
-    ) {
-      eventWordIndex -= 1;
-    }
-
-    if (eventWordIndex === wordIndex) {
+    if (event.data.wordIndex === wordIndex) {
       result.push(event);
     }
   }
@@ -353,18 +345,7 @@ export function getInputEventsPerWord(
       break;
     }
 
-    let wordIndex = event.data.wordIndex;
-
-    //special case for delete events on the 0th index
-    // because they affect the previous word - so we need to attribute them to the previous word
-    if (
-      (event.data.inputType === "deleteWordBackward" ||
-        event.data.inputType === "deleteContentBackward") &&
-      event.data.charIndex === 0 &&
-      wordIndex > 0
-    ) {
-      wordIndex -= 1;
-    }
+    const wordIndex = event.data.wordIndex;
 
     const existing = eventsPerWordIndex.get(wordIndex) ?? [];
     existing.push(event);

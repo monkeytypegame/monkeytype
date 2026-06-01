@@ -40,7 +40,6 @@ import {
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
-import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -87,6 +86,7 @@ import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
   resetTestEvents,
   cleanupData,
+  getCurrentInput,
   logEventsDataToTheConsoleTable,
 } from "./events/data";
 import {
@@ -432,8 +432,6 @@ async function init(): Promise<boolean> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  // TestInput.input.resetHistory();
-  TestInput.input.current = "";
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -902,8 +900,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // in case the tests ends with a keypress (not a word submission)
   // we need to push the current input to history
-  if (TestInput.input.current.length !== 0) {
-    // TestInput.input.pushHistory();
+  if (getCurrentInput().length !== 0) {
     Replay.replayGetWordsList(getInputHistory());
   }
 
@@ -1053,6 +1050,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  logEventsDataToTheConsoleTable();
 
   if (TestState.isRepeated || difficultyFailed) {
     if (Config.resultSaving) {

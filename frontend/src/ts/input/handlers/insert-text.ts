@@ -1,6 +1,5 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
-import * as TestInput from "../../test/test-input";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -37,7 +36,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
-import { logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -66,10 +65,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (options.data.length > 1) {
     // remove the entire data from the input value
-    // make sure to not call TestInput.input.syncWithInputElement in here
-    // it will be updated later in the body of onInsertText
     setInputElementValue(inputValue.slice(0, -options.data.length));
-    TestInput.input.syncWithInputElement();
     for (let i = 0; i < options.data.length; i++) {
       const char = options.data[i] as string;
 
@@ -86,8 +82,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
-      options.data
+    TestWords.words.getCurrentText()[getCurrentInput().length] !== options.data
   ) {
     // replace the data with the override
     setInputElementValue(
@@ -101,7 +96,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // input and target word
-  const testInput = TestInput.input.current;
+  const testInput = getCurrentInput();
   const currentWord = TestWords.words.getCurrentText();
 
   // if the character is visually equal, replace it with the target character
@@ -156,11 +151,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const shouldGoToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
-  // update test input state
-  if (!charIsSpace || shouldInsertSpace) {
-    TestInput.input.syncWithInputElement();
-  }
-
   // general per keypress updates
   Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
   WeakSpot.updateScore(data, correct);
@@ -196,8 +186,25 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (removeLastChar) {
     replaceInputElementLastValueChar("");
-    TestInput.input.syncWithInputElement();
   }
+
+  // capture DOM before goToNextWord clears it for the new word
+  const inputValueAfterEvent = getInputElementValue().inputValue;
+
+  // Log the event BEFORE goToNextWord so readers inside the navigation
+  // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
+  // completed event in derivation. Otherwise the just-typed trigger char
+  // (space/newline) is missing — visible as missing \n element in zen mode.
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding === true,
+    inputStopped: removeLastChar,
+    inputValue: inputValueAfterEvent,
+  });
 
   // going to next word
   let increasedWordIndex: null | boolean = null;
@@ -213,16 +220,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     increasedWordIndex = result.increasedWordIndex;
   }
 
-  logTestEvent("input", now, {
-    inputType: "insertText",
-    data,
-    correct,
-    wordIndex,
-    charIndex: testInput.length,
-    isCompositionEnding: isCompositionEnding === true,
-    inputStopped: removeLastChar,
-  });
-
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
    - spaceOrNewLine: did the user input a space or a new line?
@@ -236,7 +233,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   //this COULD be the next word because we are awaiting goToNextWord
   const nextWord = TestWords.words.getCurrentText();
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
-  const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
+  const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
 
   //code mode - auto insert tabs
   if (
@@ -313,8 +310,6 @@ export async function emulateInsertText(
   }
 
   // default is prevented so we need to manually update the input value.
-  // remember to not call TestInput.input.syncWithInputElement in here
-  // it will be called later be updated in onInsertText
   appendToInputElementValue(options.data);
 
   await onInsertText(options);

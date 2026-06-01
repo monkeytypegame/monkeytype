@@ -9,11 +9,11 @@ import {
 import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
+import { getCurrentInput } from "../../test/events/data";
 
 const inputEl = getInputElement();
 
@@ -123,7 +123,7 @@ inputEl.addEventListener("input", async (event) => {
   ) {
     const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
     const inputPlusComposition =
-      TestInput.input.current + (CompositionState.getData() ?? "");
+      getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
       TestWords.words.getCurrentText() === inputPlusComposition;
 

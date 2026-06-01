@@ -6,7 +6,6 @@ import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
-import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import {
@@ -26,7 +25,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { logTestEvent } from "./events/data";
+import { getCurrentInput, logTestEvent } from "./events/data";
 import { getCurrentAccuracy, getCurrentWpmAndRaw } from "./events/stats";
 
 let lastLoop = 0;
@@ -142,9 +141,7 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrentText()
-              .charAt(TestInput.input.current.length),
+            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
           );
         }, 1);
       }
@@ -193,7 +190,6 @@ function checkIfTimeIsUp(): void {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
-    // TestInput.input.pushHistory();
     SlowTimer.clear();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "finish" });

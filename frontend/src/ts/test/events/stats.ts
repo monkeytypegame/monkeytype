@@ -9,7 +9,7 @@ import {
 import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars, getLastChar } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
-import { getSimulatedInput } from "./helpers";
+import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
@@ -336,11 +336,11 @@ export function getCurrentAccuracy(): number {
 
 //todo: composition start must be the start time for burst calculation
 function computeBurst(events: InputEvent[], now?: number): number {
-  const input = getSimulatedInput(events);
+  const input = getInputFromDom(events);
 
   let inputLength = input.length;
-  if (!input.endsWith(" ")) {
-    inputLength += 1; // account for space that will be added on word submit
+  if (!input.endsWith(" ") && !input.endsWith("\n")) {
+    inputLength += 1; // account for trigger char (space/newline) on word submit
   }
 
   let firstKeypressTime: number | undefined;
@@ -403,7 +403,7 @@ export function getChars(countPartialLastWord = false): CharCounts {
   for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
     const lastWord = wordIndex === activeWordIndex;
 
-    let simulatedInput = getSimulatedInput(events);
+    let simulatedInput = getInputFromDom(events);
 
     if (lastWord) {
       //remove trailing space for last word
@@ -441,7 +441,7 @@ export function getChars(countPartialLastWord = false): CharCounts {
 
 export function getInputForWord(wordIndex: number): string {
   const events = getInputEventsForWord(wordIndex);
-  return getSimulatedInput(events).trimEnd();
+  return getInputFromDom(events).trimEnd();
 }
 
 export function getInputHistory(): string[] {
@@ -451,7 +451,7 @@ export function getInputHistory(): string[] {
   const history: string[] = [];
 
   for (const events of eventsPerWordIndex.values()) {
-    const simulatedInput = getSimulatedInput(events);
+    const simulatedInput = getInputFromDom(events);
     history.push(simulatedInput.trimEnd());
   }
 
@@ -611,7 +611,7 @@ export function getWpmHistory(): number[] {
     >();
     let maxWordIndex = 0;
     for (const [k, wordEvents] of eventsPerWord) {
-      const input = getSimulatedInput(wordEvents);
+      const input = getInputFromDom(wordEvents);
       wordInputs.set(k, { input, events: wordEvents });
       // Only count words with non-empty input for maxWordIndex,
       // so that fully-deleted words don't prevent earlier words
@@ -669,7 +669,7 @@ export function getRawHistory(): number[] {
     >();
     let maxWordIndex = 0;
     for (const [k, wordEvents] of eventsPerWord) {
-      const input = getSimulatedInput(wordEvents);
+      const input = getInputFromDom(wordEvents);
       wordInputs.set(k, { input, events: wordEvents });
       // Only count words with non-empty input for maxWordIndex,
       // so that fully-deleted words don't prevent earlier words

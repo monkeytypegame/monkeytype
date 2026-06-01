@@ -6,7 +6,7 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
+import { getCurrentInput } from "./events/data";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -1072,7 +1072,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* calculate current word width to add to #words margin */
   let currentWordWidth = 0;
-  const inputLength = TestInput.input.current.length;
+  const inputLength = getCurrentInput().length;
   if (Config.tapeMode === "letter" && inputLength > 0) {
     const letters = activeWordEl.qsa("letter");
     let lastPositiveLetterWidth = 0;
@@ -1293,7 +1293,7 @@ function buildWordLettersHTML(
           }</letter>`;
         }
       } else {
-        if (inputCharacters[c] === TestInput.input.current) {
+        if (inputCharacters[c] === getCurrentInput()) {
           out += `<letter class='correct ${extraCorrected}'>${
             wordCharacters[c]
           }</letter>`;
@@ -1751,7 +1751,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(TestInput.input.current.length),
+      TestWords.words.getCurrentText().charAt(getCurrentInput().length),
     );
   }
 
@@ -1772,7 +1772,7 @@ export function afterTestTextInput(
 
   if (!increasedWordIndex) {
     void updateWordLetters({
-      input: inputOverride ?? TestInput.input.current,
+      input: inputOverride ?? getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1783,7 +1783,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1793,7 +1793,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1823,7 +1823,7 @@ export function beforeTestWordChange(
     Config.strictSpace
   ) {
     void updateWordLetters({
-      input: TestInput.input.current,
+      input: getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -2058,7 +2058,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: TestInput.input.current,
+        input: getCurrentInput(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

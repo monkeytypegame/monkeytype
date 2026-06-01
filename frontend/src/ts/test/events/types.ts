@@ -70,21 +70,23 @@ export type TimerEventData =
 
 export type InputEvent = EventProps<"input", InputEventData>;
 
-export type InputEventData = {
+type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
-} & (
-  | {
+  inputValue?: string;
+};
+
+export type InputEventData =
+  | (BaseInputEventData & {
       inputType: InsertInputType;
       data: string;
       correct: boolean;
       isCompositionEnding: boolean;
       inputStopped: boolean;
-    }
-  | {
+    })
+  | (BaseInputEventData & {
       inputType: DeleteInputType;
-    }
-);
+    });
 
 export type CompositionTestEvent = EventProps<
   "composition",

@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";
 import * as TestState from "../../test/test-state";
@@ -65,8 +64,6 @@ export async function goToNextWord({
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
-  // TestInput.input.pushHistory();
-
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
     setAwaitingNextWord(true);
@@ -87,7 +84,6 @@ export async function goToNextWord({
   }
 
   setInputElementValue("");
-  TestInput.input.syncWithInputElement();
   void TestUI.afterTestWordChange("forward", burst);
 
   return ret;
@@ -99,7 +95,6 @@ export function goToPreviousWord(
 ): void {
   if (TestState.activeWordIndex === 0) {
     setInputElementValue("");
-    TestInput.input.syncWithInputElement();
     return;
   }
 
@@ -107,8 +102,8 @@ export function goToPreviousWord(
 
   Replay.addReplayEvent("backWord");
 
-  const word = getInputForWord(TestState.activeWordIndex);
   TestState.decreaseActiveWordIndex();
+  const word = getInputForWord(TestState.activeWordIndex);
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
@@ -125,7 +120,5 @@ export function goToPreviousWord(
       setInputElementValue(word);
     }
   }
-  TestInput.input.syncWithInputElement();
-
   void TestUI.afterTestWordChange("back");
 }
