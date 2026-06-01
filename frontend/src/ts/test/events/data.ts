@@ -221,8 +221,18 @@ export function cleanupData(): void {
 export function getAllTestEvents(): TestEvent[] {
   if (cachedAllEvents !== undefined) return cachedAllEvents;
 
+  const firstEventMs = Math.min(
+    ...[
+      keydownEvents[0]?.ms,
+      keyupEvents[0]?.ms,
+      timerEvents[0]?.ms,
+      inputEvents[0]?.ms,
+      compositionEvents[0]?.ms,
+    ].filter((ms): ms is number => ms !== undefined),
+  );
+
   const startEventMs =
-    timerEvents.find((e) => e.data.event === "start")?.ms ?? 0;
+    timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
 
   // cachedAllEvents = testData300;
   // return cachedAllEvents;
