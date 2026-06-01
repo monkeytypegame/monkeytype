@@ -324,7 +324,7 @@ function AutoSetting<T extends keyof Config>(props: {
       [props.key]: getConfig[props.key],
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value[props.key]));
+      const val = parseFloat(String(value[props.key]));
       if (val === getConfig[props.key]) return;
       savedIndicator.flash();
       setConfig(props.key, val as Config[T]);
@@ -350,7 +350,7 @@ function AutoSetting<T extends keyof Config>(props: {
               name={props.key}
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -368,6 +368,7 @@ function AutoSetting<T extends keyof Config>(props: {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={ConfigSchema.shape[props.key]}
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key
                     }

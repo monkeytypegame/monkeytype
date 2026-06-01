@@ -8,6 +8,7 @@ export function TextareaField(props: {
   field: Accessor<AnyFieldApi>;
   ref?: HTMLTextAreaElement | ((el: HTMLTextAreaElement) => void);
   placeholder?: string;
+  autocomplete?: string;
   disabled?: boolean;
   class?: string;
   maxLength?: number;
@@ -28,6 +29,7 @@ export function TextareaField(props: {
         id={props.field().name as string}
         name={props.field().name as string}
         placeholder={props.placeholder ?? ""}
+        autocomplete={props.autocomplete}
         value={props.field().state.value as string}
         onBlur={() => props.field().handleBlur()}
         onInput={(e) => props.field().handleChange(e.currentTarget.value)}

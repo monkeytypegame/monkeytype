@@ -20,7 +20,7 @@ export function MinBurst(): JSXElement {
       minBurstCustomSpeed: getConfig.minBurstCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minBurstCustomSpeed));
+      const val = parseFloat(String(value.minBurstCustomSpeed));
       if (val === getConfig.minBurstCustomSpeed) return;
       if (getConfig.minBurst !== "off") {
         //
@@ -51,7 +51,7 @@ export function MinBurst(): JSXElement {
               name="minBurstCustomSpeed"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -67,6 +67,7 @@ export function MinBurst(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={MinimumBurstCustomSpeedSchema}
                     placeholder={
                       configMetadata.minBurst.displayString ?? "min burst"
                     }

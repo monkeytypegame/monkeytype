@@ -1,5 +1,4 @@
 import { AnyFieldApi, createForm } from "@tanstack/solid-form";
-import { format as dateFormat } from "date-fns/format";
 import {
   Accessor,
   For,
@@ -10,14 +9,7 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import {
-  z,
-  ZodDate,
-  ZodDefault,
-  ZodFirstPartyTypeKind,
-  ZodNumber,
-  ZodTypeAny,
-} from "zod";
+import { z, ZodDefault, ZodFirstPartyTypeKind, ZodTypeAny } from "zod";
 
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -38,6 +30,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import { fieldMandatory, fromSchema, handleResult } from "../ui/form/utils";
 
 type SyncValidator = (opts: {
@@ -116,19 +109,13 @@ function FieldInput(props: {
   input: GenericSimpleModalInput;
   schema: z.ZodTypeAny;
 }): JSXElement {
-  const formatDate = (date: Date | undefined) =>
-    date === undefined
-      ? undefined
-      : dateFormat(
-          date,
-          props.input.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
-        );
   return (
     <Switch
       fallback={
         <InputField
           field={props.field}
           type={props.input.type}
+          schema={props.schema}
           placeholder={props.input.placeholder}
           disabled={props.input.disabled}
           readOnly={
@@ -141,9 +128,15 @@ function FieldInput(props: {
               ? (props.input as { clickToSelect?: boolean }).clickToSelect
               : undefined
           }
-          class={props.input.class}
+          class={cn(
+            {
+              "w-full":
+                props.input.type === "date" ||
+                props.input.type === "datetime-local",
+            },
+            props.input.class,
+          )}
           autocomplete="off"
-          {...getMinAndMax(props.schema)}
         />
       }
     >
@@ -156,65 +149,29 @@ function FieldInput(props: {
         />
       </Match>
       <Match when={props.input.type === "textarea"}>
-        <textarea
-          class={cn("w-full", props.input.class)}
+        <TextareaField
+          field={props.field}
           placeholder={props.input.placeholder}
-          value={props.field().state.value as string}
           disabled={props.input.disabled}
-          readOnly={(props.input as { readOnly?: boolean }).readOnly}
           autocomplete="off"
-          onInput={(e) => {
-            props.field().handleChange(e.currentTarget.value);
-            props.input.oninput?.(e);
-          }}
-          onClick={(e) => {
-            if ((props.input as { clickToSelect?: boolean }).clickToSelect) {
-              e.currentTarget.select();
-            }
-          }}
-          onBlur={() => props.field().handleBlur()}
-        ></textarea>
+        />
       </Match>
       <Match when={props.input.type === "range"}>
         <div class="flex items-center gap-2">
-          <input
-            type="range"
+          <InputField
+            field={props.field}
+            type={props.input.type}
+            schema={props.schema}
             class={cn(
               props.input.hidden && "hidden",
               "w-full",
               props.input.class,
             )}
-            {...getMinAndMax(props.schema)}
             step={(props.input as { step?: number }).step}
-            value={props.field().state.value as string}
             disabled={props.input.disabled}
-            onInput={(e) => {
-              props.field().handleChange(e.currentTarget.value);
-              props.input.oninput?.(e);
-            }}
-            onBlur={() => props.field().handleBlur()}
           />
           <span class="text-sub">{props.field().state.value as string}</span>
         </div>
-      </Match>
-
-      <Match
-        when={
-          props.input.type === "datetime-local" || props.input.type === "date"
-        }
-      >
-        <input
-          type={props.input.type}
-          class={cn("w-full", props.input.class)}
-          value={formatDate(props.field().state.value as Date)}
-          disabled={props.input.disabled}
-          {...getDateMinAndMax(props.schema, formatDate)}
-          onInput={(e) => {
-            props.field().handleChange(e.currentTarget.value);
-            props.input.oninput?.(e);
-          }}
-          onBlur={() => props.field().handleBlur()}
-        />
       </Match>
     </Switch>
   );
@@ -441,35 +398,6 @@ export function convertFn<T>(
     default:
       return (val) => preprocess(val);
   }
-}
-
-function getMinAndMax(schema: ZodTypeAny): {
-  min?: number;
-  max?: number;
-} {
-  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
-
-  return {
-    min: (schema as ZodNumber).minValue ?? undefined,
-    max: (schema as ZodNumber).maxValue ?? undefined,
-  };
-}
-function getDateMinAndMax(
-  schema: ZodTypeAny,
-  format: (val: Date | undefined) => string | undefined,
-): {
-  min?: string;
-  max?: string;
-} {
-  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
-
-  const applyFormat = (it: Date | null) =>
-    it === null ? undefined : format(it);
-
-  return {
-    min: applyFormat((schema as ZodDate).minDate),
-    max: applyFormat((schema as ZodDate).maxDate),
-  };
 }
 
 function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
