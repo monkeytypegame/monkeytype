@@ -1,6 +1,6 @@
 import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
@@ -40,7 +40,7 @@ export function SavedTextsModal(props: {
   };
 
   const handleNameClick = (name: string, long: boolean) => {
-    CustomTextState.setCustomTextName(name, long);
+    setCustomTextIndicator({ name, isLong: long });
     const text = getSavedText(name, long);
     props.setChainedData({ text, long });
     hideModal("SavedTexts");
@@ -53,7 +53,7 @@ export function SavedTextsModal(props: {
       buttonText: "delete",
       execFn: async () => {
         CustomText.deleteCustomText(name, long);
-        CustomTextState.setCustomTextName("", undefined);
+        setCustomTextIndicator(undefined);
         refresh();
         return {
           status: "success",
