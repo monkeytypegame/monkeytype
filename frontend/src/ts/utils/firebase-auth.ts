@@ -11,7 +11,7 @@ import { isDevEnvironment } from "./env";
 import { PasswordSchema } from "@monkeytype/schemas/users";
 import { z, ZodString } from "zod";
 
-type AuthMethod = "password" | "github.com" | "google.com";
+export type AuthMethod = "password" | "github.com" | "google.com";
 
 type ReauthSuccess = {
   status: "success";

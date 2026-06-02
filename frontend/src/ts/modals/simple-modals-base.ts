@@ -3,9 +3,6 @@ import { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal } from "../elements/simple-modal";
 
 export type PopupKey =
-  | "removeGoogleAuth"
-  | "removeGithubAuth"
-  | "removePasswordAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
@@ -19,9 +16,6 @@ export type PopupKey =
   | "devGenerateData";
 
 export const list: Record<PopupKey, SimpleModal | undefined> = {
-  removeGoogleAuth: undefined,
-  removeGithubAuth: undefined,
-  removePasswordAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,

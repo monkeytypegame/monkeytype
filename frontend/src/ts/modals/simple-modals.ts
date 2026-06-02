@@ -5,7 +5,7 @@ import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
 import { isAuthenticated } from "../states/core";
-import { EmailAuthProvider, linkWithCredential, unlink } from "firebase/auth";
+import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
 import { reloadAfter } from "../utils/misc";
 
 import { createErrorMessage } from "../utils/error";
@@ -31,167 +31,12 @@ import {
   TextInput,
 } from "../elements/simple-modal";
 import {
-  isUsingGithubAuthentication,
-  isUsingGoogleAuthentication,
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../utils/firebase-auth";
 
 export { list, showPopup };
 export type { PopupKey };
-
-list.removeGoogleAuth = new SimpleModal({
-  id: "removeGoogleAuth",
-  title: "Remove Google authentication",
-  inputs: [
-    {
-      placeholder: "Password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  buttonText: "remove",
-  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      password,
-      excludeMethod: "google.com",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "google.com");
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to unlink Google account");
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "Google authentication removed",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      if (!isUsingGithubAuthentication()) {
-        thisPopup.buttonText = "";
-        thisPopup.text = "Password or GitHub authentication is not enabled";
-      }
-    }
-  },
-});
-
-list.removeGithubAuth = new SimpleModal({
-  id: "removeGithubAuth",
-  title: "Remove GitHub authentication",
-  inputs: [
-    {
-      placeholder: "Password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  buttonText: "remove",
-  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      password,
-      excludeMethod: "github.com",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "github.com");
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to unlink GitHub account");
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "GitHub authentication removed",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      if (!isUsingGoogleAuthentication()) {
-        thisPopup.buttonText = "";
-        thisPopup.text = "Password or Google authentication is not enabled";
-      }
-    }
-  },
-});
-
-list.removePasswordAuth = new SimpleModal({
-  id: "removePaswordAuth",
-  title: "Remove Password authentication",
-  inputs: [
-    {
-      type: "checkbox",
-      label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
-    },
-  ],
-  buttonText: "reauthenticate to remove",
-  execFn: async (_thisPopup): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      excludeMethod: "password",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "password");
-    } catch (e) {
-      const message = createErrorMessage(
-        e,
-        "Failed to remove password authentication",
-      );
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "Password authentication removed",
-    };
-  },
-  beforeInitFn: (): void => {
-    if (!isAuthenticated()) return;
-  },
-});
 
 list.addPasswordAuth = new SimpleModal({
   id: "addPasswordAuth",

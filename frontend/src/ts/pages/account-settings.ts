@@ -18,6 +18,7 @@ import { addGithubAuth, addGoogleAuth } from "../auth";
 import { showUpdateEmailModal } from "../components/modals/account-settings/UpdateEmailModal";
 import { showUpdateNameModal } from "../components/modals/account-settings/UpdateNameModal";
 import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
+import { showRemoveAuthMethodModal } from "../components/modals/account-settings/RemoveAuthMethodModal";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -194,15 +195,15 @@ qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
-  showPopup("removeGoogleAuth");
+  showRemoveAuthMethodModal({ authMethod: "google.com", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
-  showPopup("removeGithubAuth");
+  showRemoveAuthMethodModal({ authMethod: "github.com", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
-  showPopup("removePasswordAuth");
+  showRemoveAuthMethodModal({ authMethod: "password", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
