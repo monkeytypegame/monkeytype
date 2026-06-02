@@ -15,6 +15,7 @@ import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
+import { isFunboxActive } from "../funbox/list";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -240,7 +241,17 @@ function getTargetWord(
       return word;
     }
 
-    return word + (lastWord ? "" : " ");
+    let wordEnd = "";
+
+    if (!lastWord) {
+      wordEnd = " ";
+    }
+
+    if (isFunboxActive("nospace") || isFunboxActive("underscore_spaces")) {
+      wordEnd = "";
+    }
+
+    return word + wordEnd;
   }
 }
 
@@ -430,10 +441,7 @@ export function getWpmHistory(): number[] {
       const lastWord = wordIndex === adjustedMax;
 
       const trimmed = lastWord ? input.trimEnd() : input;
-      const targetWord =
-        Config.mode === "zen"
-          ? trimmed
-          : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+      const targetWord = getTargetWord(wordIndex, trimmed, lastWord);
       totalCorrect += countChars(
         trimmed,
         targetWord,
@@ -514,4 +522,5 @@ export function forceReleaseAllKeys(): void {
 
 export const __testing = {
   getTimerBoundaries,
+  getTargetWord,
 };
