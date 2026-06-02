@@ -103,7 +103,7 @@
     "eslint-plugin-compat": "7.0.0",
     "eslint-plugin-solid": "0.14.5",
     "firebase-tools": "13.15.1",
-    "fontawesome-subset": "4.4.0",
+    "fontawesome-subset": "4.6.0",
     "happy-dom": "20.8.9",
     "jsdom": "27.4.0",
     "madge": "8.0.0",
