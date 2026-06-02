@@ -73,23 +73,23 @@ export const limits = {
 
   // Quote reporting
   quoteReportSubmit: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   // Quote favorites
   quoteFavoriteGet: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoritePost: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoriteDelete: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
@@ -166,7 +166,7 @@ export const limits = {
   },
 
   resultsMismatchReport: {
-    window: 5 * 60 * 1000, // 5 min
+    window: 5 * 60 * 1000, // 5 minutes
     max: 1,
   },
 
