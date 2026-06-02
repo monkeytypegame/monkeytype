@@ -1,6 +1,5 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
-import { SimpleModal } from "../elements/simple-modal";
 import Ape from "../ape";
 import {
   intervalToDuration,
@@ -37,85 +36,13 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { remoteValidation } from "../utils/remote-validation";
 import { qs, qsr, onDOMReady } from "../utils/dom";
+import { showSimpleModal } from "../states/simple-modal";
+import { z } from "zod";
 
 let friendsTable: SortedTable<Friend> | undefined = undefined;
 
 let pendingRequests: Connection[] | undefined;
 let friendsList: Friend[] | undefined;
-
-const addFriendModal = new SimpleModal({
-  id: "addFriend",
-  title: "Add a friend",
-  inputs: [
-    {
-      placeholder: "user name",
-      type: "text",
-      initVal: "",
-      validation: {
-        schema: UserNameWithoutFilterSchema,
-        isValid: remoteValidation(
-          async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          { check: (data) => !data.available || "Unknown user" },
-        ),
-        debounceDelay: 1000,
-      },
-    },
-  ],
-  buttonText: "request",
-  execFn: async (_thisPopup, receiverName) => {
-    const result = await addFriend(receiverName);
-
-    if (result === true) {
-      updatePendingConnections();
-      return { status: "success", message: `Request sent to ${receiverName}` };
-    }
-
-    let status: "error" | "notice" | "success" = "error";
-    let message: string = "Unknown error";
-
-    if (result.includes("already exists")) {
-      status = "notice";
-      message = `You are already friends with ${receiverName}`;
-    } else if (result.includes("request already sent")) {
-      status = "notice";
-      message = `You have already sent a friend request to ${receiverName}`;
-    } else if (result.includes("blocked by initiator")) {
-      status = "notice";
-      message = `You have blocked ${receiverName}`;
-    } else if (result.includes("blocked by receiver")) {
-      status = "notice";
-      message = `${receiverName} has blocked you`;
-    }
-
-    return { status, message, alwaysHide: true };
-  },
-});
-
-const removeFriendModal = new SimpleModal({
-  id: "confirmUnfriend",
-  title: "Remove friend",
-  buttonText: "remove friend",
-  text: "Are you sure you want to remove as a friend?",
-  beforeInitFn: (thisPopup) => {
-    thisPopup.text = `Are you sure you want to remove ${thisPopup.parameters[1]} as a friend?`;
-  },
-  execFn: async (thisPopup) => {
-    const connectionId = thisPopup.parameters[0] as string;
-    const result = await Ape.connections.delete({
-      params: { id: connectionId },
-    });
-    if (result.status !== 200) {
-      return { status: "error", message: result.body.message };
-    } else {
-      friendsList = friendsList?.filter(
-        (it) => it.connectionId !== connectionId,
-      );
-      friendsTable?.setData(friendsList ?? []);
-      friendsTable?.updateBody();
-      return { status: "success", message: `Friend removed` };
-    }
-  },
-});
 
 async function fetchPendingConnections(): Promise<void> {
   const result = await Ape.connections.get({
@@ -370,9 +297,59 @@ function formatStreak(length?: number, prefix?: string): string {
     : "-";
 }
 
-qs(".pageFriends button.friendAdd")?.on("click", () => {
-  addFriendModal.show(undefined, {});
-});
+qs(".pageFriends button.friendAdd")?.on("click", () =>
+  showSimpleModal({
+    title: "Add a friend",
+    buttonText: "request",
+    schema: z.object({ receiverName: UserNameWithoutFilterSchema }),
+    inputs: {
+      receiverName: {
+        placeholder: "user name",
+        type: "text",
+        initVal: "",
+        validation: {
+          isValid: remoteValidation(
+            async (name: string) =>
+              Ape.users.getNameAvailability({ params: { name } }),
+            { check: (data) => !data.available || "Unknown user" },
+          ),
+          debounceDelay: 1000,
+        },
+      },
+    },
+
+    execFn: async ({ receiverName }) => {
+      const result = await addFriend(receiverName);
+
+      if (result === true) {
+        updatePendingConnections();
+        return {
+          status: "success",
+          message: `Request sent to ${receiverName}`,
+        };
+      }
+
+      let status: "error" | "notice" | "success" = "error";
+      let message: string = "Unknown error";
+
+      if (result.includes("already exists")) {
+        status = "notice";
+        message = `You are already friends with ${receiverName}`;
+      } else if (result.includes("request already sent")) {
+        status = "notice";
+        message = `You have already sent a friend request to ${receiverName}`;
+      } else if (result.includes("blocked by initiator")) {
+        status = "notice";
+        message = `You have blocked ${receiverName}`;
+      } else if (result.includes("blocked by receiver")) {
+        status = "notice";
+        message = `${receiverName} has blocked you`;
+      }
+
+      return { status, message, alwaysHide: true };
+    },
+  }),
+);
 
 // need to set the listener for action buttons on the table because the table content is getting replaced
 qs(".pageFriends .pendingRequests table")?.on("click", async (e) => {
@@ -463,7 +440,27 @@ qs(".pageFriends .friends table")?.on("click", async (e) => {
   if (action === "remove") {
     const name = row.querySelector("a.entryName")?.textContent ?? "";
 
-    removeFriendModal.show([connectionId, name], {});
+    showSimpleModal({
+      title: "Remove friend",
+      buttonText: "remove friend",
+      text: `Are you sure you want to remove ${name} as a friend?`,
+
+      execFn: async () => {
+        const result = await Ape.connections.delete({
+          params: { id: connectionId },
+        });
+        if (result.status !== 200) {
+          return { status: "error", message: result.body.message };
+        } else {
+          friendsList = friendsList?.filter(
+            (it) => it.connectionId !== connectionId,
+          );
+          friendsTable?.setData(friendsList ?? []);
+          friendsTable?.updateBody();
+          return { status: "success", message: `Friend removed` };
+        }
+      },
+    });
   }
 });
 
