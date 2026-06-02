@@ -1,7 +1,7 @@
 import { Mode2, Mode, PersonalBest } from "@monkeytype/schemas/shared";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as formatDate } from "date-fns/format";
-import { createMemo, createSignal, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
@@ -20,7 +20,7 @@ type PBWithMode2 = PersonalBest & {
 
 type PBRow = {
   pb: PBWithMode2;
-  showMode2: boolean;
+  isGroupStart: boolean;
 };
 
 function buildRows(mode: Mode): PBRow[] {
@@ -45,9 +45,9 @@ function buildRows(mode: Mode): PBRow[] {
   let currentMode2: string | undefined;
 
   list.forEach((pb) => {
-    const showMode2 = currentMode2 !== pb.mode2;
+    const isGroupStart = currentMode2 !== pb.mode2;
     currentMode2 = pb.mode2;
-    rows.push({ pb, showMode2 });
+    rows.push({ pb, isGroupStart });
   });
 
   return rows;
@@ -57,11 +57,11 @@ function getColumns(options: {
   format: Formatting;
   mode: Mode;
 }): DataTableColumnDef<PBRow>[] {
-  const col = createColumnHelper<PBRow>().accessor;
+  const defineColumn = createColumnHelper<PBRow>().accessor;
   const { format: f, mode: m } = options;
 
   return [
-    col((row) => row.pb.mode2, {
+    defineColumn((row) => row.pb.mode2, {
       id: "mode2",
       enableSorting: false,
       header: () => m,
@@ -71,12 +71,12 @@ function getColumns(options: {
         cellMeta: (info) => ({
           class: cn(
             "text-xl font-light text-text/40",
-            info.row.showMode2 && "font-normal text-text",
+            info.row.isGroupStart && "font-normal text-text",
           ),
         }),
       },
     }),
-    col((row) => row.pb.wpm, {
+    defineColumn((row) => row.pb.wpm, {
       id: "wpm",
       enableSorting: false,
       header: () => (
@@ -95,7 +95,7 @@ function getColumns(options: {
       ),
       meta: { align: "right" },
     }),
-    col((row) => row.pb.raw, {
+    defineColumn((row) => row.pb.raw, {
       id: "raw",
       enableSorting: false,
       header: () => (
@@ -116,14 +116,14 @@ function getColumns(options: {
       ),
       meta: { align: "right" },
     }),
-    col((row) => row.pb.difficulty, {
+    defineColumn((row) => row.pb.difficulty, {
       id: "difficulty",
       enableSorting: false,
       header: () => "difficulty",
       cell: (info) => info.row.original.pb.difficulty,
       meta: { align: "right" },
     }),
-    col((row) => row.pb.language, {
+    defineColumn((row) => row.pb.language, {
       id: "language",
       enableSorting: false,
       header: () => "language",
@@ -133,7 +133,7 @@ function getColumns(options: {
       },
       meta: { align: "right" },
     }),
-    col((row) => row.pb.punctuation, {
+    defineColumn((row) => row.pb.punctuation, {
       id: "punctuation",
       enableSorting: false,
       header: () => "punctuation",
@@ -141,7 +141,7 @@ function getColumns(options: {
         info.row.original.pb.punctuation ? <Fa icon="fa-check" /> : null,
       meta: { align: "center" },
     }),
-    col((row) => row.pb.numbers, {
+    defineColumn((row) => row.pb.numbers, {
       id: "numbers",
       enableSorting: false,
       header: () => "numbers",
@@ -149,7 +149,7 @@ function getColumns(options: {
         info.row.original.pb.numbers ? <Fa icon="fa-check" /> : null,
       meta: { align: "center" },
     }),
-    col((row) => row.pb.lazyMode, {
+    defineColumn((row) => row.pb.lazyMode, {
       id: "lazyMode",
       enableSorting: false,
       header: () => "lazy mode",
@@ -157,7 +157,7 @@ function getColumns(options: {
         info.row.original.pb.lazyMode ? <Fa icon="fa-check" /> : null,
       meta: { align: "center" },
     }),
-    col((row) => row.pb.timestamp, {
+    defineColumn((row) => row.pb.timestamp, {
       id: "date",
       enableSorting: false,
       header: () => "date",
@@ -185,21 +185,14 @@ function getColumns(options: {
 }
 
 export function PbTablesModal(): JSXElement {
-  const [rows, setRows] = createSignal<PBRow[]>([]);
-  const format = createMemo(() => new Formatting(getConfig));
   const mode = createMemo(() => pbTablesMode());
+  const rows = createMemo(() => buildRows(mode()));
   const columns = createMemo(() =>
-    getColumns({ format: format(), mode: mode() }),
+    getColumns({ format: new Formatting(getConfig), mode: mode() }),
   );
 
   return (
-    <AnimatedModal
-      id="PbTables"
-      modalClass="max-w-full gap-0 p-8"
-      beforeShow={() => {
-        setRows(buildRows(mode()));
-      }}
-    >
+    <AnimatedModal id="PbTables" modalClass="max-w-full gap-0 p-8">
       <DataTable
         id="pbTables"
         columns={columns()}
