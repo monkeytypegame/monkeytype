@@ -1525,8 +1525,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  const customTextName = getCustomTextIndicator()?.name as string;
-  const isLong = getCustomTextIndicator()?.isLong;
+  const customTextName = getCustomTextIndicator()?.name ?? "";
+  const isLong = getCustomTextIndicator()?.isLong === true;
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
