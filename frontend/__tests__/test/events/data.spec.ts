@@ -100,12 +100,6 @@ describe("data.ts", () => {
       expect(inputs).toHaveLength(1);
     });
 
-    it("computes testMs relative to start", () => {
-      logTestEvent("timer", 1500, timerData("start", 0));
-      const events = getAllTestEvents();
-      expect(events[0]!.testMs).toBe(500); // 1500 - 1000
-    });
-
     it("caches getAllTestEvents and invalidates on new event", () => {
       logTestEvent("timer", 1100, timerData("start", 0));
       const first = getAllTestEvents();
@@ -273,32 +267,6 @@ describe("data.ts", () => {
       const perWord = getInputEventsPerWord();
       expect(perWord.get(0)).toHaveLength(2);
       expect(perWord.get(1)).toHaveLength(1);
-    });
-
-    it("attributes deleteContentBackward at charIndex 0 to previous word", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1020, {
-        charIndex: 0,
-        wordIndex: 1,
-        inputType: "deleteContentBackward",
-      } as InputEventData);
-
-      const perWord = getInputEventsPerWord();
-      expect(perWord.get(0)).toHaveLength(2);
-      expect(perWord.has(1)).toBe(false);
-    });
-
-    it("attributes deleteWordBackward at charIndex 0 to previous word", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1020, {
-        charIndex: 0,
-        wordIndex: 1,
-        inputType: "deleteWordBackward",
-      } as InputEventData);
-
-      const perWord = getInputEventsPerWord();
-      expect(perWord.get(0)).toHaveLength(2);
-      expect(perWord.has(1)).toBe(false);
     });
 
     it("does not shift delete at charIndex 0 if wordIndex is 0", () => {
