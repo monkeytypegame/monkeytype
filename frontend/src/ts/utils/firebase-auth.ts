@@ -46,7 +46,6 @@ function isUsingAuthentication(authProvider: AuthMethod): boolean {
   );
 }
 
-//todo maybe move somewhere else? utils/auth?
 export async function reauthenticate(
   options: ReauthenticateOptions,
 ): Promise<ReauthSuccess | ReauthFailed> {
