@@ -15,6 +15,11 @@ import {
 } from "../../../utils/firebase-auth";
 import { reloadAfter } from "../../../utils/misc";
 
+const displayByMethod: Record<AuthMethod, string> = {
+  password: "Password",
+  "github.com": "GitHub",
+  "google.com": "Google",
+};
 export function showRemoveAuthMethodModal(options: {
   authMethod: AuthMethod;
   callback: () => void;
@@ -33,12 +38,7 @@ export function showRemoveAuthMethodModal(options: {
     return;
   }
 
-  const methodDisplay =
-    options.authMethod === "password"
-      ? "Password"
-      : options.authMethod === "github.com"
-        ? "GitHub"
-        : "Google";
+  const methodDisplay = displayByMethod[options.authMethod];
 
   showSimpleModal({
     title: `Remove ${methodDisplay} authentication`,
