@@ -149,12 +149,39 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
+  // handing cases where last char needs to be removed
+  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
+  // like accuracy, keypress errors, and missed words
+  let removeLastChar = false;
+  let visualInputOverride: string | undefined;
+  if (Config.stopOnError === "letter" && !correct) {
+    if (!Config.blindMode) {
+      visualInputOverride = testInput + data;
+    }
+    removeLastChar = true;
+  }
+
+  if (!isSpace(data) && correctShiftUsed === false) {
+    removeLastChar = true;
+    visualInputOverride = undefined;
+    incrementIncorrectShiftsInARow();
+    if (getIncorrectShiftsInARow() >= 5) {
+      showNoticeNotification("Opposite shift mode is on.", {
+        important: true,
+        customTitle: "Reminder",
+      });
+    }
+  } else {
+    resetIncorrectShiftsInARow();
+  }
+
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
     (testInput + data).length === TestWords.words.getCurrentText().length;
   const shouldGoToNextWord =
-    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
+    !removeLastChar &&
+    (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
@@ -180,32 +207,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
   if (!shouldGoToNextWord) {
     TestInput.corrected.update(data, correct);
-  }
-
-  // handing cases where last char needs to be removed
-  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
-  // like accuracy, keypress errors, and missed words
-  let removeLastChar = false;
-  let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
-    if (!Config.blindMode) {
-      visualInputOverride = testInput + data;
-    }
-    removeLastChar = true;
-  }
-
-  if (!isSpace(data) && correctShiftUsed === false) {
-    removeLastChar = true;
-    visualInputOverride = undefined;
-    incrementIncorrectShiftsInARow();
-    if (getIncorrectShiftsInARow() >= 5) {
-      showNoticeNotification("Opposite shift mode is on.", {
-        important: true,
-        customTitle: "Reminder",
-      });
-    }
-  } else {
-    resetIncorrectShiftsInARow();
   }
 
   if (removeLastChar) {
