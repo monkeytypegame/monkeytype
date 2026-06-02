@@ -33,15 +33,15 @@ export function showRemoveAuthMethodModal(options: {
     return;
   }
 
-  const provider =
+  const methodDisplay =
     options.authMethod === "password"
-      ? "password"
+      ? "Password"
       : options.authMethod === "github.com"
-        ? "Github"
+        ? "GitHub"
         : "Google";
 
   showSimpleModal({
-    title: `Remove ${provider} authentication`,
+    title: `Remove ${methodDisplay} authentication`,
     buttonText: "remove",
     buttonAlwaysEnabled: options.authMethod !== "password",
     schema: z.object({
@@ -81,7 +81,7 @@ export function showRemoveAuthMethodModal(options: {
           e,
           options.authMethod === "password"
             ? "Failed to remove password authentication"
-            : `Failed to unlink ${provider} account`,
+            : `Failed to unlink ${methodDisplay} account`,
         );
         return {
           status: "error",
@@ -94,7 +94,7 @@ export function showRemoveAuthMethodModal(options: {
       reloadAfter(3);
       return {
         status: "success",
-        message: `${provider} authentication removed`,
+        message: `${methodDisplay} authentication removed`,
       };
     },
   });
