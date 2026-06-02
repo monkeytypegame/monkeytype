@@ -18,8 +18,7 @@ type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
 };
 
-type PBRow = {
-  pb: PBWithMode2;
+type PBRow = PBWithMode2 & {
   isGroupStart: boolean;
 };
 
@@ -47,7 +46,7 @@ function buildRows(mode: Mode): PBRow[] {
   list.forEach((pb) => {
     const isGroupStart = currentMode2 !== pb.mode2;
     currentMode2 = pb.mode2;
-    rows.push({ pb, isGroupStart });
+    rows.push({ ...pb, isGroupStart });
   });
 
   return rows;
@@ -61,11 +60,10 @@ function getColumns(options: {
   const { format: f, mode: m } = options;
 
   return [
-    defineColumn((row) => row.pb.mode2, {
-      id: "mode2",
+    defineColumn("mode2", {
       enableSorting: false,
       header: () => m,
-      cell: (info) => info.row.original.pb.mode2,
+      cell: (info) => info.getValue(),
       meta: {
         align: "right",
         cellMeta: (info) => ({
@@ -76,8 +74,7 @@ function getColumns(options: {
         }),
       },
     }),
-    defineColumn((row) => row.pb.wpm, {
-      id: "wpm",
+    defineColumn("wpm", {
       enableSorting: false,
       header: () => (
         <>
@@ -88,15 +85,14 @@ function getColumns(options: {
       ),
       cell: (info) => (
         <>
-          {f.typingSpeed(info.row.original.pb.wpm)}
+          {f.typingSpeed(info.getValue())}
           <br />
-          <span class="opacity-50">{f.accuracy(info.row.original.pb.acc)}</span>
+          <span class="opacity-50">{f.accuracy(info.row.original.acc)}</span>
         </>
       ),
       meta: { align: "right" },
     }),
-    defineColumn((row) => row.pb.raw, {
-      id: "raw",
+    defineColumn("raw", {
       enableSorting: false,
       header: () => (
         <>
@@ -107,62 +103,53 @@ function getColumns(options: {
       ),
       cell: (info) => (
         <>
-          {f.typingSpeed(info.row.original.pb.raw)}
+          {f.typingSpeed(info.getValue())}
           <br />
           <span class="opacity-50">
-            {f.percentage(info.row.original.pb.consistency)}
+            {f.percentage(info.row.original.consistency)}
           </span>
         </>
       ),
       meta: { align: "right" },
     }),
-    defineColumn((row) => row.pb.difficulty, {
-      id: "difficulty",
+    defineColumn("difficulty", {
       enableSorting: false,
       header: () => "difficulty",
-      cell: (info) => info.row.original.pb.difficulty,
+      cell: (info) => info.getValue(),
       meta: { align: "right" },
     }),
-    defineColumn((row) => row.pb.language, {
-      id: "language",
+    defineColumn("language", {
       enableSorting: false,
       header: () => "language",
       cell: (info) => {
-        const lang = info.row.original.pb.language;
+        const lang = info.getValue();
         return lang ? getLanguageDisplayString(lang) : "-";
       },
       meta: { align: "right" },
     }),
-    defineColumn((row) => row.pb.punctuation, {
-      id: "punctuation",
+    defineColumn("punctuation", {
       enableSorting: false,
       header: () => "punctuation",
-      cell: (info) =>
-        info.row.original.pb.punctuation ? <Fa icon="fa-check" /> : null,
+      cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
       meta: { align: "center" },
     }),
-    defineColumn((row) => row.pb.numbers, {
-      id: "numbers",
+    defineColumn("numbers", {
       enableSorting: false,
       header: () => "numbers",
-      cell: (info) =>
-        info.row.original.pb.numbers ? <Fa icon="fa-check" /> : null,
+      cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
       meta: { align: "center" },
     }),
-    defineColumn((row) => row.pb.lazyMode, {
-      id: "lazyMode",
+    defineColumn("lazyMode", {
       enableSorting: false,
       header: () => "lazy mode",
-      cell: (info) =>
-        info.row.original.pb.lazyMode ? <Fa icon="fa-check" /> : null,
+      cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
       meta: { align: "center" },
     }),
-    defineColumn((row) => row.pb.timestamp, {
-      id: "date",
+    defineColumn("timestamp", {
       enableSorting: false,
       header: () => "date",
       cell: (info) => {
-        const ts = info.row.original.pb.timestamp;
+        const ts = info.getValue();
         return (
           <Show
             when={ts}
