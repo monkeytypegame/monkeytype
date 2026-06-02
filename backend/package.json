@@ -37,7 +37,7 @@
     "dotenv": "16.4.5",
     "etag": "1.8.1",
     "express": "5.2.0",
-    "express-rate-limit": "7.5.1",
+    "express-rate-limit": "8.5.2",
     "firebase-admin": "12.0.0",
     "helmet": "4.6.0",
     "ioredis": "4.28.5",
