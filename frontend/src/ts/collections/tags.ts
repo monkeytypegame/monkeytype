@@ -81,6 +81,16 @@ export async function getTagsOnce() {
   });
 }
 
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useActiveTagsLiveQuery() {
+  return useLiveQuery((q) => {
+    return q
+      .from({ tag: tagsCollection })
+      .where(({ tag }) => eq(tag.active, true))
+      .orderBy(({ tag }) => tag.name, "asc");
+  });
+}
+
 type ActionType = {
   insertTag: {
     name: string;

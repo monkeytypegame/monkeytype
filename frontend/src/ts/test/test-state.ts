@@ -1,7 +1,5 @@
 import { promiseWithResolvers } from "../utils/misc";
 
-export let isRepeated = false;
-export let isPaceRepeat = false;
 export let isActive = false;
 export let bailedOut = false;
 export let selectedQuoteId =
@@ -17,14 +15,6 @@ export let koreanStatus = false;
 
 export function setKoreanStatus(val: boolean): void {
   koreanStatus = val;
-}
-
-export function setRepeated(tf: boolean): void {
-  isRepeated = tf;
-}
-
-export function setPaceRepeat(tf: boolean): void {
-  isPaceRepeat = tf;
 }
 
 export function setActive(tf: boolean): void {

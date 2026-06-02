@@ -11,7 +11,6 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "../legacy-states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -27,13 +26,22 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import { getActivePage, isAuthenticated } from "../states/core";
 import {
+  getActivePage,
+  getCustomTextIndicator,
+  isAuthenticated,
+} from "../states/core";
+import {
+  getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
   getRestartCount,
+  isPaceRepeat,
+  isRepeated,
   pushIncompleteTest,
   resetIncompleteTests,
+  setIsPaceRepeat,
+  setIsRepeated,
   setIsTestInvalid,
   setLastResult,
   setResultVisible,
@@ -186,10 +194,7 @@ export function startTest(now: number): boolean {
   }
 
   try {
-    if (
-      Config.paceCaret !== "off" ||
-      (Config.repeatedPace && TestState.isPaceRepeat)
-    ) {
+    if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat())) {
       PaceCaret.start();
     }
   } catch (e) {}
@@ -248,7 +253,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.words,
           Config.time,
           CustomText.getData(),
-          CustomTextState.isCustomTextLong() ?? false,
+          getCustomTextIndicator()?.isLong ?? false,
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -270,7 +275,7 @@ export function restart(options = {} as RestartOptions): void {
       }
     }
 
-    if (TestState.isRepeated) {
+    if (isRepeated()) {
       options.withSameWordset = true;
     }
 
@@ -287,10 +292,11 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
+  const currentQuote = getCurrentQuote();
   if (
     Config.mode === "quote" &&
-    TestWords.currentQuote !== null &&
-    Config.language.startsWith(TestWords.currentQuote.language) &&
+    currentQuote !== null &&
+    Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
   ) {
@@ -381,8 +387,8 @@ export function restart(options = {} as RestartOptions): void {
         repeatWithPace = true;
       }
 
-      TestState.setRepeated(options.withSameWordset ?? false);
-      TestState.setPaceRepeat(repeatWithPace);
+      setIsRepeated(options.withSameWordset ?? false);
+      setIsPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
       TestState.setTestInitSuccess(true);
       const initResult = await init();
@@ -541,7 +547,7 @@ async function init(): Promise<boolean> {
     mode: Config.mode,
     mode2: Misc.getMode2(Config, null),
     funbox: Config.funbox,
-    currentQuote: TestWords.currentQuote,
+    currentQuote: getCurrentQuote(),
   });
 
   let wordsHaveTab = false;
@@ -647,8 +653,7 @@ export function areAllTestWordsGenerated(): boolean {
       TestWords.words.length >= CustomText.getLimitValue() &&
       CustomText.getLimitValue() !== 0) ||
     (Config.mode === "quote" &&
-      TestWords.words.length >=
-        (TestWords.currentQuote?.textSplit?.length ?? 0)) ||
+      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "section" &&
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
@@ -854,7 +859,7 @@ function buildCompletedEvent(
     language = Strings.removeLanguageSize(Config.language);
   }
 
-  const quoteLength = TestWords.currentQuote?.group ?? -1;
+  const quoteLength = getCurrentQuote()?.group ?? -1;
 
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: stats.wpm,
@@ -868,7 +873,7 @@ function buildCompletedEvent(
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, TestWords.currentQuote),
+    mode2: Misc.getMode2(Config, getCurrentQuote()),
     quoteLength: quoteLength,
     punctuation: Config.punctuation,
     numbers: Config.numbers,
@@ -1239,6 +1244,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     err: getErrorCountHistory(),
   };
 
+  const currentQuote = getCurrentQuote();
   const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
     rawWpm: Numbers.roundTo2(
@@ -1252,7 +1258,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     lastKeyToEnd: getLastKeypressToEndMs(),
     startToFirstKey: getStartToFirstKeypressMs(),
     afkDuration: afkDuration,
-    quoteLength: TestWords.currentQuote?.group ?? -1,
+    quoteLength: currentQuote?.group ?? -1,
     customText: customText,
     tags: activeTagsIds,
     punctuation: Config.punctuation,
@@ -1260,7 +1266,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     lazyMode: Config.lazyMode,
     timestamp: Date.now(),
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, TestWords.currentQuote),
+    mode2: Misc.getMode2(Config, currentQuote),
     bailedOut: TestState.bailedOut,
     funbox: Config.funbox,
     difficulty: Config.difficulty,
@@ -1307,8 +1313,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   TestUI.onTestFinish();
 
-  if (TestState.isRepeated && Config.mode === "quote") {
-    TestState.setRepeated(false);
+  if (isRepeated() && Config.mode === "quote") {
+    setIsRepeated(false);
   }
 
   // in case the tests ends with a keypress (not a word submission)
@@ -1488,7 +1494,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     showNoticeNotification("Test invalid - AFK detected");
     setIsTestInvalid(true);
     dontSave = true;
-  } else if (TestState.isRepeated) {
+  } else if (isRepeated()) {
     showNoticeNotification("Test invalid - repeated");
     setIsTestInvalid(true);
     dontSave = true;
@@ -1543,7 +1549,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     compareCompletedEvents(ce);
   }
 
-  if (TestState.isRepeated || difficultyFailed) {
+  if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
       const testSeconds = completedEvent.testDuration;
       const afkseconds = completedEvent.afkDuration;
@@ -1554,8 +1560,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  const customTextName = CustomTextState.getCustomTextName();
-  const isLong = CustomTextState.isCustomTextLong();
+  const customTextName = getCustomTextIndicator()?.name ?? "";
+  const isLong = getCustomTextIndicator()?.isLong === true;
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
@@ -1641,9 +1647,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     difficultyFailed,
     failReason,
     afkDetected,
-    TestState.isRepeated,
+    isRepeated(),
     tooShort,
-    TestWords.currentQuote,
+    getCurrentQuote(),
     dontSave,
   );
 
@@ -1742,7 +1748,7 @@ async function saveResult(
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
-    const localPb = await DB.getLocalPB(
+    const localPb = DB.getLocalPB(
       result.mode,
       result.mode2,
       result.punctuation,
@@ -1824,14 +1830,6 @@ const debouncedZipfCheck = debounce(250, async () => {
     );
   }
 });
-
-qs(".pageTest")?.onChild(
-  "click",
-  "#testModesNotice .textButton.restart",
-  () => {
-    restart();
-  },
-);
 
 qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   restart();
