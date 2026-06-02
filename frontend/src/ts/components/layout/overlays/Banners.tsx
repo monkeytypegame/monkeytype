@@ -13,7 +13,7 @@ import { setGlobalOffsetTop } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
-import { showUpdateNameModal } from "../../modals/account-settings/UpdateName";
+import { showUpdateNameModal } from "../../modals/account-settings/UpdateNameModal";
 
 function Banner(props: BannerType): JSXElement {
   const remove = (): void => {

@@ -1,5 +1,5 @@
 import Ape from "../ape";
-import * as AccountController from "../auth";
+
 import * as DB from "../db";
 import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
@@ -7,7 +7,7 @@ import { showNoticeNotification } from "../states/notifications";
 import { isAuthenticated } from "../states/core";
 import { EmailAuthProvider, linkWithCredential, unlink } from "firebase/auth";
 import { reloadAfter } from "../utils/misc";
-import { isDevEnvironment } from "../utils/env";
+
 import { createErrorMessage } from "../utils/error";
 import * as ThemeController from "../controllers/theme-controller";
 import * as CustomThemes from "../collections/custom-themes";
@@ -16,11 +16,9 @@ import * as AccountSettings from "../pages/account-settings";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
   CustomThemeNameSchema,
-  PasswordSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import FileStorage from "../utils/file-storage";
-import { z } from "zod";
 
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
@@ -192,87 +190,6 @@ list.removePasswordAuth = new SimpleModal({
   },
   beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
-  },
-});
-
-list.updatePassword = new SimpleModal({
-  id: "updatePassword",
-  title: "Update password",
-  inputs: [
-    {
-      placeholder: "current password",
-      type: "password",
-      initVal: "",
-    },
-    {
-      placeholder: "new password",
-      type: "password",
-      initVal: "",
-      validation: {
-        schema: isDevEnvironment() ? z.string().min(6) : PasswordSchema,
-      },
-    },
-    {
-      placeholder: "confirm new password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  buttonText: "update",
-  execFn: async (
-    _thisPopup,
-    previousPass,
-    newPassword,
-    newPassConfirm,
-  ): Promise<ExecReturn> => {
-    if (newPassword !== newPassConfirm) {
-      return {
-        status: "notice",
-        message: "New passwords don't match",
-      };
-    }
-
-    if (newPassword === previousPass) {
-      return {
-        status: "notice",
-        message: "New password must be different from previous password",
-      };
-    }
-
-    const reauth = await reauthenticate({ password: previousPass });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    const response = await Ape.users.updatePassword({
-      body: { newPassword },
-    });
-
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to update password",
-        notificationOptions: { response },
-      };
-    }
-
-    AccountController.signOut();
-
-    return {
-      status: "success",
-      message: "Password updated",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      thisPopup.buttonText = "";
-      thisPopup.text = "Password authentication is not enabled";
-    }
   },
 });
 
