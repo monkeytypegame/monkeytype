@@ -20,6 +20,8 @@ import { showUpdateNameModal } from "../components/modals/account-settings/Updat
 import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
 import { showRemoveAuthMethodModal } from "../components/modals/account-settings/RemoveAuthMethodModal";
 import { showAddPasswordAuthModal } from "../components/modals/account-settings/AddPasswordAuthModal";
+import { showDeleteAccountModal } from "../components/modals/account-settings/DeleteAccountModal";
+import { showResetAccountModal } from "../components/modals/account-settings/ResetAccountModal";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -224,11 +226,11 @@ qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
-  showPopup("deleteAccount");
+  showDeleteAccountModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
-  showPopup("resetAccount");
+  showResetAccountModal();
 });
 
 qs(".pageAccountSettings")?.onChild(

@@ -1,9 +1,9 @@
 import Ape from "../ape";
 
 import * as DB from "../db";
-import { resetConfig } from "../config/lifecycle";
+
 import { setConfig } from "../config/setters";
-import { showNoticeNotification } from "../states/notifications";
+
 import { isAuthenticated } from "../states/core";
 import { reloadAfter } from "../utils/misc";
 import * as ThemeController from "../controllers/theme-controller";
@@ -15,7 +15,6 @@ import {
   CustomThemeNameSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
-import FileStorage from "../utils/file-storage";
 
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
@@ -34,105 +33,6 @@ import {
 
 export { list, showPopup };
 export type { PopupKey };
-
-list.deleteAccount = new SimpleModal({
-  id: "deleteAccount",
-  title: "Delete account",
-  inputs: [
-    {
-      placeholder: "password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
-  buttonText: "delete",
-  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({ password });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    showNoticeNotification("Deleting all data...");
-    const response = await Ape.users.delete();
-
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to delete user data",
-        notificationOptions: { response },
-      };
-    }
-
-    reloadAfter(3);
-
-    return {
-      status: "success",
-      message: "Account deleted, goodbye",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      thisPopup.buttonText = "reauthenticate to delete";
-    }
-  },
-});
-
-list.resetAccount = new SimpleModal({
-  id: "resetAccount",
-  title: "Reset account",
-  inputs: [
-    {
-      placeholder: "password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
-  buttonText: "reset",
-  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({ password });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    showNoticeNotification("Resetting settings...");
-    await resetConfig();
-    await FileStorage.deleteFile("LocalBackgroundFile");
-
-    showNoticeNotification("Resetting account...");
-    const response = await Ape.users.reset();
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to reset account",
-        notificationOptions: { response },
-      };
-    }
-
-    reloadAfter(3);
-
-    return {
-      status: "success",
-      message: "Account reset",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      thisPopup.buttonText = "reauthenticate to reset";
-    }
-  },
-});
 
 list.optOutOfLeaderboards = new SimpleModal({
   id: "optOutOfLeaderboards",
