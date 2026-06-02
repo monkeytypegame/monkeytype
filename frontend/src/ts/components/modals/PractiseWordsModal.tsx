@@ -39,9 +39,9 @@ export function PractiseWordsModal(): JSXElement {
           void form.handleSubmit();
         }}
       >
-        <div class="grid gap-6">
+        <div class="grid gap-8">
           <div class="grid gap-2">
-            <div class="text-sub lowercase">
+            <div class="text-sub">
               <Fa icon="fa-times" /> missed
             </div>
             <div>
@@ -63,7 +63,7 @@ export function PractiseWordsModal(): JSXElement {
           </div>
 
           <div class="grid gap-2">
-            <div class="text-sub lowercase">
+            <div class="text-sub">
               <Fa icon="fa-tachometer-alt" /> slow
             </div>
             <div>Include words which you typed slower than others.</div>
