@@ -33,13 +33,11 @@ export function showUpdateNameModal(): void {
       password: {
         placeholder: "password",
         type: "password",
-        initVal: "",
         hidden: !isUsingPasswordAuthentication(),
       },
       newName: {
         placeholder: "new name",
         type: "text",
-        initVal: "",
         validation: {
           isValid: remoteValidation(
             async (name: string) =>

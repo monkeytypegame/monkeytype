@@ -94,6 +94,7 @@ export function showAddPasswordAuthModal(options: {
       }
 
       options.callback();
+
       return {
         status: "success",
         message: "Password authentication added",

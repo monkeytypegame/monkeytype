@@ -266,7 +266,6 @@ export function Filters(props: {
                   name: {
                     placeholder: "Preset Name",
                     type: "text",
-                    initVal: "",
                     preprocess: normalizeName,
                   },
                 },

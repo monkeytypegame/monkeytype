@@ -306,7 +306,6 @@ qs(".pageFriends button.friendAdd")?.on("click", () =>
       receiverName: {
         placeholder: "user name",
         type: "text",
-        initVal: "",
         validation: {
           isValid: remoteValidation(
             async (name: string) =>

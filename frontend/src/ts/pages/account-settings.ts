@@ -13,15 +13,20 @@ import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
 import { authEvent } from "../events/auth";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
-import { showPopup } from "../modals/simple-modals-base";
 import { addGithubAuth, addGoogleAuth } from "../auth";
 import { showUpdateEmailModal } from "../components/modals/account-settings/UpdateEmailModal";
 import { showUpdateNameModal } from "../components/modals/account-settings/UpdateNameModal";
 import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
 import { showRemoveAuthMethodModal } from "../components/modals/account-settings/RemoveAuthMethodModal";
 import { showAddPasswordAuthModal } from "../components/modals/account-settings/AddPasswordAuthModal";
-import { showDeleteAccountModal } from "../components/modals/account-settings/DeleteAccountModal";
-import { showResetAccountModal } from "../components/modals/account-settings/ResetAccountModal";
+import {
+  showDeleteAccountModal,
+  showOptOutOfLeaderboardsModal,
+  showResetAccountModal,
+  showResetPersonalBestsModal,
+  showRevokeAllTokensModal,
+} from "../components/modals/account-settings/ReauthConfirmModals";
+import { showUnlinkDiscordModal } from "../components/modals/account-settings/UnlinkDiscordModal";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -194,7 +199,7 @@ qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
-  showPopup("unlinkDiscord");
+  showUnlinkDiscordModal({ callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
@@ -237,19 +242,19 @@ qs(".pageAccountSettings")?.onChild(
   "click",
   "#optOutOfLeaderboardsButton",
   () => {
-    showPopup("optOutOfLeaderboards");
+    showOptOutOfLeaderboardsModal();
   },
 );
 
 qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
+  showRevokeAllTokensModal();
 });
 
 qs(".pageAccountSettings")?.onChild(
   "click",
   "#resetPersonalBestsButton",
   () => {
-    showPopup("resetPersonalBests");
+    showResetPersonalBestsModal();
   },
 );
 

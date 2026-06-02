@@ -9,7 +9,13 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import { z, ZodDefault, ZodFirstPartyTypeKind, ZodTypeAny } from "zod";
+import {
+  z,
+  ZodDefault,
+  ZodFirstPartyTypeKind,
+  ZodOptional,
+  ZodTypeAny,
+} from "zod";
 
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -57,7 +63,10 @@ function getDefaultValues(
   }
 
   return Object.fromEntries(
-    Object.entries(inputs).map(([key, input]) => [key, input.initVal ?? null]),
+    Object.entries(inputs).map(([key, input]) => [
+      key,
+      input.initVal ?? undefined,
+    ]),
   );
 }
 
@@ -370,6 +379,7 @@ export function convertFn<T>(
     return parsed.data as T;
   };
 
+  console.log("###", { type });
   switch (type) {
     case ZodFirstPartyTypeKind.ZodBoolean:
       return (val) => {
@@ -392,6 +402,11 @@ export function convertFn<T>(
 
     case ZodFirstPartyTypeKind.ZodDefault: {
       const defaultSchema = schema as ZodDefault<ZodTypeAny>;
+      return convertFn(input, defaultSchema._def.innerType);
+    }
+
+    case ZodFirstPartyTypeKind.ZodOptional: {
+      const defaultSchema = schema as ZodOptional<ZodTypeAny>;
       return convertFn(input, defaultSchema._def.innerType);
     }
 

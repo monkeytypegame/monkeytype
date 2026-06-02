@@ -142,7 +142,6 @@ function refreshList(): void {
           name: {
             type: "text",
             placeholder: "name",
-            initVal: "",
           },
         },
 
@@ -220,7 +219,6 @@ qs(".pageAccountSettings")?.onChild("click", "#generateNewApeKey", () => {
       name: {
         type: "text",
         placeholder: "Name",
-        initVal: "",
       },
     },
 

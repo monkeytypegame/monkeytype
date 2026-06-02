@@ -31,17 +31,14 @@ export function showUpdateEmailModal(): void {
       password: {
         placeholder: "Password",
         type: "password",
-        initVal: "",
       },
       email: {
         type: "text",
         placeholder: "New email",
-        initVal: "",
       },
       emailConfirm: {
         type: "text",
         placeholder: "Confirm new email",
-        initVal: "",
       },
     },
 
