@@ -297,7 +297,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "behavior",
     description:
-      "Disable result saving, in case you want to practice without affecting your account stats.",
+      'Set this setting to "off" in case you want to practice without saving new results to your account and affecting your statistics.',
   },
   blindMode: {
     key: "blindMode",

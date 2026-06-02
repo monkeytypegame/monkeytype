@@ -179,7 +179,7 @@ export function setLastSecondNotRound(): void {
 }
 
 export function calculateBurst(endTime: number = performance.now()): number {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
   const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
@@ -213,7 +213,7 @@ export function removeAfkData(): void {
 }
 
 function getInputWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
   let inputWords = [...TestInput.input.getHistory()];
 
@@ -229,7 +229,7 @@ function getInputWords(): string[] {
 }
 
 function getTargetWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
     ...(Config.mode === "zen"

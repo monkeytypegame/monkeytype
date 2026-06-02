@@ -1,6 +1,7 @@
 import {
   getAllTestEvents,
   getInputEvents,
+  getInputEventsForWord,
   getInputEventsPerWord,
   getPressedKeys,
   logTestEvent,
@@ -8,12 +9,13 @@ import {
 import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars, getLastChar } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
-import { getSimulatedInput } from "./helpers";
+import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
+import { isFunboxActive } from "../funbox/list";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -239,7 +241,17 @@ function getTargetWord(
       return word;
     }
 
-    return word + (lastWord ? "" : " ");
+    let wordEnd = "";
+
+    if (!lastWord) {
+      wordEnd = " ";
+    }
+
+    if (isFunboxActive("nospace") || isFunboxActive("underscore_spaces")) {
+      wordEnd = "";
+    }
+
+    return word + wordEnd;
   }
 }
 
@@ -259,7 +271,7 @@ export function getChars(): CharCounts {
   for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
     const lastWord = wordIndex === activeWordIndex;
 
-    let simulatedInput = getSimulatedInput(events);
+    let simulatedInput = getInputFromDom(events);
 
     if (lastWord) {
       //remove trailing space for last word
@@ -293,6 +305,11 @@ export function getChars(): CharCounts {
     extra: extra,
     missed: missed,
   };
+}
+
+export function getInputForWord(wordIndex: number): string {
+  const events = getInputEventsForWord(wordIndex);
+  return getInputFromDom(events).trimEnd();
 }
 
 export function getAccuracy(): {
@@ -400,7 +417,7 @@ export function getWpmHistory(): number[] {
     >();
     let maxWordIndex = 0;
     for (const [k, wordEvents] of eventsPerWord) {
-      const input = getSimulatedInput(wordEvents);
+      const input = getInputFromDom(wordEvents);
       wordInputs.set(k, { input, events: wordEvents });
       // Only count words with non-empty input for maxWordIndex,
       // so that fully-deleted words don't prevent earlier words
@@ -424,10 +441,7 @@ export function getWpmHistory(): number[] {
       const lastWord = wordIndex === adjustedMax;
 
       const trimmed = lastWord ? input.trimEnd() : input;
-      const targetWord =
-        Config.mode === "zen"
-          ? trimmed
-          : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
+      const targetWord = getTargetWord(wordIndex, trimmed, lastWord);
       totalCorrect += countChars(
         trimmed,
         targetWord,
@@ -508,4 +522,5 @@ export function forceReleaseAllKeys(): void {
 
 export const __testing = {
   getTimerBoundaries,
+  getTargetWord,
 };
