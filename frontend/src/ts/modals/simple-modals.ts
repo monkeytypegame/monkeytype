@@ -5,10 +5,7 @@ import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
 import { isAuthenticated } from "../states/core";
-import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
 import { reloadAfter } from "../utils/misc";
-
-import { createErrorMessage } from "../utils/error";
 import * as ThemeController from "../controllers/theme-controller";
 import * as CustomThemes from "../collections/custom-themes";
 import * as AccountSettings from "../pages/account-settings";
@@ -37,98 +34,6 @@ import {
 
 export { list, showPopup };
 export type { PopupKey };
-
-list.addPasswordAuth = new SimpleModal({
-  id: "addPasswordAuth",
-  title: "Add password authentication",
-  inputs: [
-    {
-      placeholder: "email",
-      type: "email",
-      initVal: "",
-    },
-    {
-      placeholder: "confirm email",
-      type: "email",
-      initVal: "",
-    },
-    {
-      placeholder: "new password",
-      type: "password",
-      initVal: "",
-    },
-    {
-      placeholder: "confirm new password",
-      type: "password",
-      initVal: "",
-    },
-  ],
-  buttonText: "reauthenticate to add",
-  execFn: async (
-    _thisPopup,
-    email,
-    emailConfirm,
-    password,
-    passConfirm,
-  ): Promise<ExecReturn> => {
-    if (email !== emailConfirm) {
-      return {
-        status: "notice",
-        message: "Emails don't match",
-      };
-    }
-
-    if (password !== passConfirm) {
-      return {
-        status: "notice",
-        message: "Passwords don't match",
-      };
-    }
-
-    const reauth = await reauthenticate({ password });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      const credential = EmailAuthProvider.credential(email, password);
-      await linkWithCredential(reauth.user, credential);
-    } catch (e) {
-      const message = createErrorMessage(
-        e,
-        "Failed to add password authentication",
-      );
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    const response = await Ape.users.updateEmail({
-      body: {
-        newEmail: email,
-        previousEmail: reauth.user.email as string,
-      },
-    });
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message:
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
-        notificationOptions: { response },
-      };
-    }
-
-    AccountSettings.updateUI();
-    return {
-      status: "success",
-      message: "Password authentication added",
-    };
-  },
-});
 
 list.deleteAccount = new SimpleModal({
   id: "deleteAccount",

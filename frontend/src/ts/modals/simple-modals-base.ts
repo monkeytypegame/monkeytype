@@ -3,7 +3,6 @@ import { ShowOptions } from "../utils/animated-modal";
 import { SimpleModal } from "../elements/simple-modal";
 
 export type PopupKey =
-  | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
   | "optOutOfLeaderboards"
@@ -16,7 +15,6 @@ export type PopupKey =
   | "devGenerateData";
 
 export const list: Record<PopupKey, SimpleModal | undefined> = {
-  addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
   optOutOfLeaderboards: undefined,

@@ -19,6 +19,7 @@ import { showUpdateEmailModal } from "../components/modals/account-settings/Upda
 import { showUpdateNameModal } from "../components/modals/account-settings/UpdateNameModal";
 import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
 import { showRemoveAuthMethodModal } from "../components/modals/account-settings/RemoveAuthMethodModal";
+import { showAddPasswordAuthModal } from "../components/modals/account-settings/AddPasswordAuthModal";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -207,7 +208,7 @@ qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
-  showPopup("addPasswordAuth");
+  showAddPasswordAuthModal({ callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
