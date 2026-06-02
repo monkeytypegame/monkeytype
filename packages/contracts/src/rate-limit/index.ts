@@ -13,7 +13,7 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 5000,
+    window: 5000, // 5 seconds
     max: 1,
   },
 
@@ -120,7 +120,7 @@ export const limits = {
     max: 60,
   },
 
-  // get public speed stats
+  // Get public speed stats
   publicStatsGet: {
     window: "minute",
     max: 60,
