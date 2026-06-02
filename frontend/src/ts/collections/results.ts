@@ -611,7 +611,6 @@ export function useUserAverage10LiveQuery(options: {
         last10: buildSettingsResultsQuery(settingsFilter(), {
           tagIds: activeTagsQuery().map((it) => it._id),
         })
-        })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
