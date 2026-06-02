@@ -381,9 +381,12 @@ export function CustomTextModal(): JSXElement {
         form.setFieldValue("limitSection", "");
       } else if (previousMode === "simple") {
         const text = cleanUpText();
-        form.setFieldValue("limitWord", `${text.length}`);
         form.setFieldValue("limitTime", "");
-        form.setFieldValue("limitSection", "");
+        if (form.getFieldValue("pipeDelimiter")) {
+          form.setFieldValue("limitSection", `${text.length}`);
+        } else {
+          form.setFieldValue("limitWord", `${text.length}`);
+        }
       }
     });
   };
