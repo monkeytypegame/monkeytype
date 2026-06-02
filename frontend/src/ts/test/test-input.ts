@@ -99,11 +99,9 @@ type ErrorHistoryObject = {
 class Input {
   current: string;
   private history: string[];
-  koreanStatus: boolean;
   constructor() {
     this.current = "";
     this.history = [];
-    this.koreanStatus = false;
   }
 
   reset(): void {
@@ -113,14 +111,6 @@ class Input {
 
   resetHistory(): void {
     this.history = [];
-  }
-
-  setKoreanStatus(val: boolean): void {
-    this.koreanStatus = val;
-  }
-
-  getKoreanStatus(): boolean {
-    return this.koreanStatus;
   }
 
   pushHistory(): void {

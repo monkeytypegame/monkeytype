@@ -5,9 +5,12 @@ import * as TestState from "./test/test-state";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { getActivePage, getGlobalOffsetTop } from "./states/core";
+import {
+  getActivePage,
+  getCustomTextIndicator,
+  getGlobalOffsetTop,
+} from "./states/core";
 import { isDevEnvironment } from "./utils/env";
-import { isCustomTextLong } from "./legacy-states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
 import { qs, qsr } from "./utils/dom";
@@ -86,7 +89,7 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false,
+      getCustomTextIndicator()?.isLong ?? false,
     )
   ) {
     //ignore

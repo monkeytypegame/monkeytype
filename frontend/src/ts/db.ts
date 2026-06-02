@@ -181,7 +181,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     setSolidSnapshot(dbSnapshot);
   }
 }
-export async function getLocalPB<M extends Mode>(
+export function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
@@ -190,7 +190,7 @@ export async function getLocalPB<M extends Mode>(
   difficulty: Difficulty,
   lazyMode: boolean,
   funboxes: FunboxMetadata[],
-): Promise<PersonalBest | undefined> {
+): PersonalBest | undefined {
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }

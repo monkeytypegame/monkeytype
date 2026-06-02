@@ -1,13 +1,13 @@
 import { Config } from "../../config/store";
+import { getCustomTextIndicator } from "../../states/core";
 import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
-import * as CustomTextState from "../../legacy-states/custom-text-name";
 import { Command, CommandsSubgroup } from "../types";
 
 function canBailOut(): boolean {
   return (
-    (Config.mode === "custom" && CustomTextState.isCustomTextLong() === true) ||
+    (Config.mode === "custom" && getCustomTextIndicator()?.isLong === true) ||
     (Config.mode === "custom" &&
       (CustomText.getLimitMode() === "word" ||
         CustomText.getLimitMode() === "section") &&

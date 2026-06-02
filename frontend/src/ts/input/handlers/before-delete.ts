@@ -12,12 +12,15 @@ export function onBeforeDelete(event: InputEvent): void {
     return;
   }
   if (TestState.testRestarting) {
+    event.preventDefault();
     return;
   }
   if (isAwaitingNextWord()) {
+    event.preventDefault();
     return;
   }
   if (TestState.resultCalculating) {
+    event.preventDefault();
     return;
   }
 
@@ -25,6 +28,12 @@ export function onBeforeDelete(event: InputEvent): void {
   const inputIsEmpty = inputValue === "";
 
   if (inputIsEmpty) {
+    // we are on the first word, just prevent default, nothing to go back to
+    if (TestState.activeWordIndex === 0) {
+      event.preventDefault();
+      return;
+    }
+
     // this is nested because we only wanna pull the element from the dom if needed
     const previousWordElement = TestUI.getWordElement(
       TestState.activeWordIndex - 1,

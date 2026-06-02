@@ -11,7 +11,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: "" },
+  Config: { mode: "words", funbox: [] as string[] },
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {
@@ -140,6 +140,7 @@ describe("stats.ts", () => {
     resetTestEvents();
     __testing.resetPressedKeys();
     (Config as { mode: string }).mode = "words";
+    (Config as { funbox: string[] }).funbox = [];
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
     TestWords.list.length = 0;
   });
@@ -502,6 +503,40 @@ describe("stats.ts", () => {
     });
   });
 
+  describe("getTargetWord", () => {
+    it("returns simulatedInput in zen mode", () => {
+      (Config as { mode: string }).mode = "zen";
+      expect(statsTesting.getTargetWord(0, "anything", false)).toBe("anything");
+    });
+
+    it("returns word without trailing space when it ends with newline", () => {
+      TestWords.list.push("hello\n");
+      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello\n");
+    });
+
+    it("appends trailing space for non-last word", () => {
+      TestWords.list.push("hello");
+      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello ");
+    });
+
+    it("does not append trailing space for last word", () => {
+      TestWords.list.push("hello");
+      expect(statsTesting.getTargetWord(0, "hello", true)).toBe("hello");
+    });
+
+    it("does not append trailing space when nospace funbox is active", () => {
+      TestWords.list.push("hello");
+      (Config as { funbox: string[] }).funbox = ["nospace"];
+      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello");
+    });
+
+    it("does not append trailing space when underscore_spaces funbox is active", () => {
+      TestWords.list.push("hello");
+      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
+      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello");
+    });
+  });
+
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
       TestWords.list.push("hello");
@@ -674,6 +709,74 @@ describe("stats.ts", () => {
       expect(wpm[0]).toBe(36);
       // at 2s: 3 + 2 ("cd") = 5 correctWord chars → (5/5)*60/2 = 30
       expect(wpm[1]).toBe(30);
+    });
+
+    it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
+      (Config as { funbox: string[] }).funbox = ["nospace"];
+      TestWords.list.push("ab", "cd");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "ab" then "cd" with no space between (nospace mode)
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 1, wordIndex: 0, data: "b" }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 1, wordIndex: 1, data: "d" }),
+      );
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2000, timer("end", 1));
+
+      const wpm = getWpmHistory();
+      // both words fully correct → 4 correctWord chars in 1s = (4/5)*60 = 48
+      expect(wpm).toEqual([48]);
+    });
+
+    it("counts multiline word as correct when target ends in newline", () => {
+      TestWords.list.push("hello\n", "world");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "hello\n"
+      const word1 = "hello\n";
+      for (let i = 0; i < word1.length; i++) {
+        logTestEvent(
+          "input",
+          1100 + i * 50,
+          input({ charIndex: i, wordIndex: 0, data: word1[i] as string }),
+        );
+      }
+      // type "world"
+      const word2 = "world";
+      for (let i = 0; i < word2.length; i++) {
+        logTestEvent(
+          "input",
+          1500 + i * 50,
+          input({ charIndex: i, wordIndex: 1, data: word2[i] as string }),
+        );
+      }
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2000, timer("end", 1));
+
+      const wpm = getWpmHistory();
+      // word 0: "hello\n" target matches input "hello\n" → 6 correctWord
+      // word 1: "world" (last word) matches → 5 correctWord
+      // 11 chars in 1s = (11/5)*60 = 132
+      expect(wpm).toEqual([132]);
     });
   });
 
