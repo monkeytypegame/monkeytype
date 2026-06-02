@@ -39,7 +39,7 @@
     "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
     "@tanstack/pacer-lite": "0.2.1",
-    "@tanstack/query-db-collection": "1.0.36",
+    "@tanstack/query-db-collection": "1.0.38",
     "@tanstack/solid-db": "0.2.19",
     "@tanstack/solid-devtools": "0.8.2",
     "@tanstack/solid-form": "1.29.1",
