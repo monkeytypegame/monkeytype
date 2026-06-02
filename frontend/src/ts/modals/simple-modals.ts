@@ -173,6 +173,51 @@ async function reauthenticate(
   }
 }
 
+const providorToName = {
+  password: "password",
+  "google.com": "Google",
+  "github.com": "GitHub",
+};
+
+async function removeAuth(
+  providor: AuthMethod,
+  password?: string,
+): Promise<ExecReturn> {
+  const reauth = await reauthenticate({
+    password: password,
+    excludeMethod: providor,
+  });
+  if (reauth.status !== "success") {
+    return {
+      status: reauth.status,
+      message: reauth.message,
+    };
+  }
+
+  const providorName = providorToName[providor];
+
+  try {
+    await unlink(reauth.user, providor);
+  } catch (e) {
+    const message = createErrorMessage(
+      e,
+      `Failed to unlink ${providorName} account`,
+    );
+    return {
+      status: "error",
+      message,
+    };
+  }
+
+  AccountSettings.updateUI();
+
+  reloadAfter(3);
+  return {
+    status: "success",
+    message: `${providorName.charAt(0).toUpperCase() + providorName.slice(1)} authentication removed`,
+  };
+}
+
 list.updateEmail = new SimpleModal({
   id: "updateEmail",
   title: "Update email",
@@ -265,34 +310,7 @@ list.removeGoogleAuth = new SimpleModal({
   ],
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      password,
-      excludeMethod: "google.com",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "google.com");
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to unlink Google account");
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "Google authentication removed",
-    };
+    return removeAuth("google.com", password);
   },
   beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
@@ -318,34 +336,7 @@ list.removeGithubAuth = new SimpleModal({
   ],
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      password,
-      excludeMethod: "github.com",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "github.com");
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to unlink GitHub account");
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "GitHub authentication removed",
-    };
+    return removeAuth("github.com", password);
   },
   beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
@@ -370,36 +361,7 @@ list.removePasswordAuth = new SimpleModal({
   ],
   buttonText: "reauthenticate to remove",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({
-      excludeMethod: "password",
-    });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    try {
-      await unlink(reauth.user, "password");
-    } catch (e) {
-      const message = createErrorMessage(
-        e,
-        "Failed to remove password authentication",
-      );
-      return {
-        status: "error",
-        message,
-      };
-    }
-
-    AccountSettings.updateUI();
-
-    reloadAfter(3);
-    return {
-      status: "success",
-      message: "Password authentication removed",
-    };
+    return removeAuth("password");
   },
   beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
