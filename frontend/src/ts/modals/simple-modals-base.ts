@@ -4,7 +4,6 @@ import { SimpleModal } from "../elements/simple-modal";
 
 export type PopupKey =
   | "updateEmail"
-  | "updateName"
   | "updatePassword"
   | "removeGoogleAuth"
   | "removeGithubAuth"
@@ -23,7 +22,6 @@ export type PopupKey =
 
 export const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
-  updateName: undefined,
   updatePassword: undefined,
   removeGoogleAuth: undefined,
   removeGithubAuth: undefined,

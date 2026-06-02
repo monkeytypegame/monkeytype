@@ -4,17 +4,8 @@ import * as DB from "../db";
 import { resetConfig } from "../config/lifecycle";
 import { setConfig } from "../config/setters";
 import { showNoticeNotification } from "../states/notifications";
-import { FirebaseError } from "firebase/app";
-import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
-import {
-  EmailAuthProvider,
-  User,
-  linkWithCredential,
-  reauthenticateWithCredential,
-  reauthenticateWithPopup,
-  unlink,
-} from "firebase/auth";
+import { EmailAuthProvider, linkWithCredential, unlink } from "firebase/auth";
 import { reloadAfter } from "../utils/misc";
 import { isDevEnvironment } from "../utils/env";
 import { createErrorMessage } from "../utils/error";
@@ -31,7 +22,7 @@ import {
 } from "@monkeytype/schemas/users";
 import FileStorage from "../utils/file-storage";
 import { z } from "zod";
-import { remoteValidation } from "../utils/remote-validation";
+
 import { list, PopupKey, showPopup } from "./simple-modals-base";
 import { getTheme } from "../states/theme";
 import { normalizeName } from "../utils/strings";
@@ -42,136 +33,15 @@ import {
   PasswordInput,
   TextInput,
 } from "../elements/simple-modal";
+import {
+  isUsingGithubAuthentication,
+  isUsingGoogleAuthentication,
+  isUsingPasswordAuthentication,
+  reauthenticate,
+} from "../utils/firebase-auth";
 
 export { list, showPopup };
 export type { PopupKey };
-
-type AuthMethod = "password" | "github.com" | "google.com";
-
-type ReauthSuccess = {
-  status: "success";
-  message: string;
-  user: User;
-};
-
-type ReauthFailed = {
-  status: "error" | "notice";
-  message: string;
-};
-
-type ReauthenticateOptions = {
-  excludeMethod?: AuthMethod;
-  password?: string;
-};
-
-function getPreferredAuthenticationMethod(
-  exclude?: AuthMethod,
-): AuthMethod | undefined {
-  const authMethods = ["password", "github.com", "google.com"] as AuthMethod[];
-  const filteredMethods = authMethods.filter((it) => it !== exclude);
-  for (const method of filteredMethods) {
-    if (isUsingAuthentication(method)) return method;
-  }
-  return undefined;
-}
-
-function isUsingPasswordAuthentication(): boolean {
-  return isUsingAuthentication("password");
-}
-
-function isUsingGithubAuthentication(): boolean {
-  return isUsingAuthentication("github.com");
-}
-
-function isUsingGoogleAuthentication(): boolean {
-  return isUsingAuthentication("google.com");
-}
-
-function isUsingAuthentication(authProvider: AuthMethod): boolean {
-  return (
-    getAuthenticatedUser()?.providerData.some(
-      (p) => p.providerId === authProvider,
-    ) ?? false
-  );
-}
-
-async function reauthenticate(
-  options: ReauthenticateOptions,
-): Promise<ReauthSuccess | ReauthFailed> {
-  if (!isAuthAvailable()) {
-    return {
-      status: "error",
-      message: "Authentication is not initialized",
-    };
-  }
-
-  const user = getAuthenticatedUser();
-  if (user === null) {
-    return {
-      status: "error",
-      message: "User is not signed in",
-    };
-  }
-
-  const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
-
-  try {
-    if (authMethod === undefined) {
-      return {
-        status: "error",
-        message:
-          "Failed to reauthenticate: there is no valid authentication present on the account.",
-      };
-    }
-
-    if (authMethod === "password") {
-      if (options.password === undefined) {
-        return {
-          status: "error",
-          message: "Failed to reauthenticate using password: password missing.",
-        };
-      }
-      const credential = EmailAuthProvider.credential(
-        user.email as string,
-        options.password,
-      );
-      await reauthenticateWithCredential(user, credential);
-    } else {
-      const authProvider =
-        authMethod === "github.com"
-          ? AccountController.githubProvider
-          : AccountController.gmailProvider;
-      await reauthenticateWithPopup(user, authProvider);
-    }
-
-    return {
-      status: "success",
-      message: "Reauthenticated",
-      user,
-    };
-  } catch (e) {
-    const typedError = e as FirebaseError;
-    if (typedError.code === "auth/wrong-password") {
-      return {
-        status: "notice",
-        message: "Incorrect password",
-      };
-    } else if (typedError.code === "auth/invalid-credential") {
-      return {
-        status: "notice",
-        message:
-          "Password is incorrect or your account does not have password authentication enabled.",
-      };
-    } else {
-      return {
-        status: "error",
-        message: `Failed to reauthenticate: ${
-          typedError?.message ?? JSON.stringify(e)
-        }`,
-      };
-    }
-  }
-}
 
 list.updateEmail = new SimpleModal({
   id: "updateEmail",
@@ -403,79 +273,6 @@ list.removePasswordAuth = new SimpleModal({
   },
   beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
-  },
-});
-
-list.updateName = new SimpleModal({
-  id: "updateName",
-  title: "Update name",
-  inputs: [
-    {
-      placeholder: "password",
-      type: "password",
-      initVal: "",
-    },
-    {
-      placeholder: "new name",
-      type: "text",
-      initVal: "",
-      validation: {
-        schema: UserNameSchema,
-        isValid: remoteValidation(
-          async (name) => Ape.users.getNameAvailability({ params: { name } }),
-          { check: (data) => data.available || "Name not available" },
-        ),
-        debounceDelay: 1000,
-      },
-    },
-  ],
-  buttonText: "update",
-  execFn: async (_thisPopup, password, newName): Promise<ExecReturn> => {
-    const reauth = await reauthenticate({ password });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    const response = await Ape.users.updateName({
-      body: { name: newName },
-    });
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to update name",
-        notificationOptions: { response },
-      };
-    }
-
-    const snapshot = DB.getSnapshot();
-    if (snapshot) {
-      snapshot.name = newName;
-      DB.setSnapshot(snapshot);
-      if (snapshot.needsToChangeName) {
-        reloadAfter(2);
-      }
-    }
-
-    return {
-      status: "success",
-      message: "Name updated",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
-    if (!isUsingPasswordAuthentication()) {
-      (thisPopup.inputs[0] as PasswordInput).hidden = true;
-      thisPopup.buttonText = "reauthenticate to update";
-    }
-    if (snapshot.needsToChangeName === true) {
-      thisPopup.text =
-        "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience.";
-    }
   },
 });
 

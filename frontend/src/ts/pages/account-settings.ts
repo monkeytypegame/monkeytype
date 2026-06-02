@@ -242,10 +242,6 @@ qs(".pageAccountSettings")?.onChild(
   },
 );
 
-qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
 qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
