@@ -594,7 +594,7 @@ export type CurrentSettingsFilter = {
 export function useUserAverage10LiveQuery(options: {
   isEnabled: Accessor<boolean>;
 }) {
-  const queryOptions = createMemo(() => ({
+  const settingsFilter = createMemo(() => ({
     ...getConfig,
     mode2: getMode2(getConfig, getCurrentQuote()),
   }));
@@ -608,8 +608,9 @@ export function useUserAverage10LiveQuery(options: {
     return q
       .from({
         //we use sub-query to filter first and then aggregate
-        last10: buildSettingsResultsQuery(queryOptions(), {
+        last10: buildSettingsResultsQuery(settingsFilter(), {
           tagIds: activeTagsQuery().map((it) => it._id),
+        })
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
