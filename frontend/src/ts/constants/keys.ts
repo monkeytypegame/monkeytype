@@ -12,6 +12,7 @@ export type Keycode =
   | "Digit0"
   | "Minus"
   | "Equal"
+  | "Tab"
   | "KeyQ"
   | "KeyW"
   | "KeyE"
