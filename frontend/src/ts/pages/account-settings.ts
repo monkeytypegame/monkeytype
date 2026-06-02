@@ -15,6 +15,8 @@ import { authEvent } from "../events/auth";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
 import { showPopup } from "../modals/simple-modals-base";
 import { addGithubAuth, addGoogleAuth } from "../auth";
+import { showUpdateEmailModal } from "../components/modals/account-settings/UpdateEmail";
+import { showUpdateNameModal } from "../components/modals/account-settings/UpdateName";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -206,8 +208,12 @@ qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
 
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
+  showUpdateNameModal();
+});
+
 qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
-  showPopup("updateEmail");
+  showUpdateEmailModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {

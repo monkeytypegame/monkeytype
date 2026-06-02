@@ -7,6 +7,9 @@ import {
 } from "firebase/auth";
 import { getAuthenticatedUser, isAuthAvailable } from "../firebase";
 import { FirebaseError } from "firebase/app";
+import { isDevEnvironment } from "./env";
+import { PasswordSchema } from "@monkeytype/schemas/users";
+import { z, ZodString } from "zod";
 
 type AuthMethod = "password" | "github.com" | "google.com";
 
@@ -133,4 +136,8 @@ function getPreferredAuthenticationMethod(
     if (isUsingAuthentication(method)) return method;
   }
   return undefined;
+}
+
+export function getPasswordSchema(): ZodString {
+  return isDevEnvironment() ? z.string().min(6) : PasswordSchema;
 }

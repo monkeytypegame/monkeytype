@@ -17,7 +17,6 @@ import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import {
   CustomThemeNameSchema,
   PasswordSchema,
-  UserEmailSchema,
   UserNameSchema,
 } from "@monkeytype/schemas/users";
 import FileStorage from "../utils/file-storage";
@@ -42,86 +41,6 @@ import {
 
 export { list, showPopup };
 export type { PopupKey };
-
-list.updateEmail = new SimpleModal({
-  id: "updateEmail",
-  title: "Update email",
-  inputs: [
-    {
-      placeholder: "Password",
-      type: "password",
-      initVal: "",
-    },
-    {
-      type: "text",
-      placeholder: "New email",
-      initVal: "",
-      validation: {
-        schema: UserEmailSchema,
-      },
-    },
-    {
-      type: "text",
-      placeholder: "Confirm new email",
-      initVal: "",
-      validation: {
-        schema: UserEmailSchema,
-      },
-    },
-  ],
-  buttonText: "update",
-  execFn: async (
-    _thisPopup,
-    password,
-    email,
-    emailConfirm,
-  ): Promise<ExecReturn> => {
-    if (email !== emailConfirm) {
-      return {
-        status: "notice",
-        message: "Emails don't match",
-      };
-    }
-
-    const reauth = await reauthenticate({ password });
-    if (reauth.status !== "success") {
-      return {
-        status: reauth.status,
-        message: reauth.message,
-      };
-    }
-
-    const response = await Ape.users.updateEmail({
-      body: {
-        newEmail: email,
-        previousEmail: reauth.user.email as string,
-      },
-    });
-
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to update email",
-        notificationOptions: { response },
-      };
-    }
-
-    AccountController.signOut();
-
-    return {
-      status: "success",
-      message: "Email updated",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    if (!isAuthenticated()) return;
-    if (!isUsingPasswordAuthentication()) {
-      thisPopup.inputs = [];
-      thisPopup.buttonText = "";
-      thisPopup.text = "Password authentication is not enabled";
-    }
-  },
-});
 
 list.removeGoogleAuth = new SimpleModal({
   id: "removeGoogleAuth",
