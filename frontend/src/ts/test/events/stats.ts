@@ -15,7 +15,7 @@ import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
-import { isFunboxActive } from "../funbox/list";
+import { isFunboxActiveWithProperty } from "../funbox/list";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -247,7 +247,7 @@ function getTargetWord(
       wordEnd = " ";
     }
 
-    if (isFunboxActive("nospace") || isFunboxActive("underscore_spaces")) {
+    if (isFunboxActiveWithProperty("nospace")) {
       wordEnd = "";
     }
 

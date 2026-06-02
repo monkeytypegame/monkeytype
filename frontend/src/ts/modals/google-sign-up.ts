@@ -17,7 +17,7 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { googleSignUpEvent } from "../events/google-sign-up";
 import AnimatedModal from "../utils/animated-modal";
-import { resetIgnoreAuthCallback } from "../firebase";
+import { resetIgnoreAuthCallback, setUserState } from "../firebase";
 import { ValidatedHtmlInputElement } from "../elements/input-validation";
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { remoteValidation } from "../utils/remote-validation";
@@ -105,6 +105,7 @@ async function apply(): Promise<void> {
     }
 
     if (response.status === 200) {
+      setUserState(signedInUser.user);
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       showSuccessNotification("Account created");
