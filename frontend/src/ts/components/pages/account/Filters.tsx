@@ -1,12 +1,13 @@
 import { QuoteLength } from "@monkeytype/schemas/configs";
+import { PresetNameSchema } from "@monkeytype/schemas/presets";
 import {
-  ResultFilterPresetNameSchema,
   ResultFilters,
   ResultFiltersGroupItem,
   ResultFiltersKeys,
 } from "@monkeytype/schemas/users";
 import { createMemo, createSignal, For, JSXElement, Show } from "solid-js";
 import { SetStoreFunction, unwrap } from "solid-js/store";
+import { z } from "zod";
 
 import {
   deleteResultFilterPreset,
@@ -16,9 +17,8 @@ import {
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
-import { SimpleModal } from "../../../elements/simple-modal";
+import { showSimpleModal } from "../../../states/simple-modal";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { IsValidResponse } from "../../../types/validation";
 import { cn } from "../../../utils/cn";
 import { createErrorMessage } from "../../../utils/error";
 import {
@@ -33,63 +33,6 @@ import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
 import SlimSelect from "../../ui/SlimSelect";
 import { verifyResultFiltersStructure } from "./utils";
-
-const presetNameValidation = async (
-  tagName: string,
-): Promise<IsValidResponse> => {
-  const validationResult = ResultFilterPresetNameSchema.safeParse(
-    normalizeName(tagName),
-  );
-  if (validationResult.success) return true;
-  return validationResult.error.errors.map((err) => err.message).join(", ");
-};
-const newFilterPresetModal = new SimpleModal({
-  id: "newFilterPresetModal",
-  title: "New Filter Preset",
-  inputs: [
-    {
-      placeholder: "Preset Name",
-      type: "text",
-      initVal: "",
-      validation: {
-        isValid: presetNameValidation,
-        debounceDelay: 0,
-      },
-    },
-  ],
-  buttonText: "add",
-  execFn: async (thisPopup, name) => {
-    const filters = thisPopup.context as ResultFilters;
-
-    try {
-      await insertResultFilterPreset({ name: normalizeName(name), filters });
-      return { status: "success", message: "Filter preset created" };
-    } catch (e) {
-      const message = createErrorMessage(e, "Error creating filter preset");
-      return { status: "error", message };
-    }
-  },
-});
-
-const deleteResultFilterPresetModal = new SimpleModal({
-  id: "removeFilterPresetModal",
-  title: "Delete Filter Preset",
-  buttonText: "delete",
-  beforeInitFn: (thisPopup) => {
-    thisPopup.text = `Are you sure you want to delete preset ${thisPopup.parameters[1]}?`;
-  },
-  execFn: async (thisPopup) => {
-    try {
-      await deleteResultFilterPreset({
-        presetId: thisPopup.parameters[0] as string,
-      });
-      return { status: "success", message: `Filter preset removed` };
-    } catch (e) {
-      const message = createErrorMessage(e, "Error deleting filter preset");
-      return { status: "error", message };
-    }
-  },
-});
 
 export function Filters(props: {
   filters: ResultFilters;
@@ -119,10 +62,29 @@ export function Filters(props: {
                   <Button
                     fa={{ icon: "fa-trash", fixedWidth: true }}
                     onClick={() =>
-                      deleteResultFilterPresetModal.show(
-                        [preset._id, preset.name],
-                        {},
-                      )
+                      showSimpleModal({
+                        title: "Delete Filter Preset",
+                        buttonText: "delete",
+                        text: `Are you sure you want to delete preset ${preset.name}?`,
+
+                        execFn: async () => {
+                          try {
+                            await deleteResultFilterPreset({
+                              presetId: preset._id,
+                            });
+                            return {
+                              status: "success",
+                              message: `Filter preset removed`,
+                            };
+                          } catch (e) {
+                            const message = createErrorMessage(
+                              e,
+                              "Error deleting filter preset",
+                            );
+                            return { status: "error", message };
+                          }
+                        },
+                      })
                     }
                   />
                 </div>
@@ -296,8 +258,39 @@ export function Filters(props: {
           <Button
             text="save as preset"
             onClick={() =>
-              newFilterPresetModal.show(undefined, {
-                context: { ...unwrap(props.filters), _id: "tmp" },
+              showSimpleModal({
+                title: "New Filter Preset",
+                buttonText: "add",
+                schema: z.object({ name: PresetNameSchema }),
+                inputs: {
+                  name: {
+                    placeholder: "Preset Name",
+                    type: "text",
+                    initVal: "",
+                    preprocess: normalizeName,
+                  },
+                },
+
+                execFn: async ({ name }) => {
+                  const filters = { ...unwrap(props.filters), _id: "tmp" };
+
+                  try {
+                    await insertResultFilterPreset({
+                      name: normalizeName(name),
+                      filters,
+                    });
+                    return {
+                      status: "success",
+                      message: "Filter preset created",
+                    };
+                  } catch (e) {
+                    const message = createErrorMessage(
+                      e,
+                      "Error creating filter preset",
+                    );
+                    return { status: "error", message };
+                  }
+                },
               })
             }
           />
