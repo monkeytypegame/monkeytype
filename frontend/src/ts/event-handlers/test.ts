@@ -1,4 +1,3 @@
-import * as Commandline from "../commandline/commandline";
 import { Config } from "../config/store";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import { __nonReactive } from "../collections/tags";
@@ -13,23 +12,8 @@ import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getCurrentQuote } from "../states/test";
-import { CommandlineSubgroupKey } from "../commandline/types";
 
 const testPage = qs(".pageTest");
-
-testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
-  const target = event.childTarget as HTMLElement;
-  const attr = target?.getAttribute("commands");
-  if (attr === null) return;
-  Commandline.show({ subgroupOverride: attr as CommandlineSubgroupKey });
-});
-
-testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
-  const target = event.childTarget as HTMLElement;
-  const attr = target?.getAttribute("commandId");
-  if (attr === null) return;
-  Commandline.show({ commandOverride: attr });
-});
 
 testPage?.onChild("click", ".tags .editTagsButton", () => {
   if (__nonReactive.getTags().length > 0) {

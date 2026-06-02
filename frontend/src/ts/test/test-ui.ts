@@ -56,8 +56,6 @@ import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
-import * as ModesNotice from "../elements/modes-notice";
-import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import {
   ElementsWithUtils,
@@ -1894,14 +1892,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();
-
-  if (Config.showAverage !== "off") {
-    void Last10Average.update().then(() => {
-      void ModesNotice.update();
-    });
-  } else {
-    void ModesNotice.update();
-  }
 
   if (source === "resultPage") {
     if (Config.randomTheme !== "off") {

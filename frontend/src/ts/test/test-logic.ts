@@ -1831,14 +1831,6 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-qs(".pageTest")?.onChild(
-  "click",
-  "#testModesNotice .textButton.restart",
-  () => {
-    restart();
-  },
-);
-
 qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   restart();
 });

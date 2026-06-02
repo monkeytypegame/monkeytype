@@ -9,7 +9,6 @@ import {
   saveActiveToLocalStorage,
 } from "../collections/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import * as ModesNotice from "../elements/modes-notice";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
@@ -42,7 +41,6 @@ export async function apply(_id: string): Promise<void> {
       saveActiveToLocalStorage();
     }
   }
-  void ModesNotice.update();
   TestLogic.restart();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
