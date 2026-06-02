@@ -61,6 +61,7 @@ import * as ConnectionState from "../legacy-states/connection";
 import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { isTestInvalid } from "../states/test";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -833,7 +834,7 @@ function updateOther(
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
-  if (TestStats.invalid) {
+  if (isTestInvalid()) {
     otherText += "<br>invalid";
     const extra: string[] = [];
     if (
@@ -1114,7 +1115,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestUI.setResultCalculating(false);
+  TestState.setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }

@@ -2,7 +2,6 @@ import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
 import * as Time from "../legacy-states/time";
 import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
@@ -111,12 +110,12 @@ function getCurrentCount(): number {
       1
     );
   } else {
-    return TestInput.input.getHistory().length;
+    return TestState.activeWordIndex;
   }
 }
 
 function setTimerHtmlToInputLength(el: HTMLElement, wrapInDiv: boolean): void {
-  let historyLength = `${TestInput.input.getHistory().length}`;
+  let historyLength = `${TestState.activeWordIndex}`;
 
   if (wrapInDiv) {
     historyLength = `<div>${historyLength}</div>`;

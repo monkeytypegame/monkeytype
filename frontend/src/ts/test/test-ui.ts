@@ -84,11 +84,6 @@ export let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
 let lineTransition = false;
 let currentTestLine = 0;
-export let resultCalculating = false;
-
-export function setResultCalculating(val: boolean): void {
-  resultCalculating = val;
-}
 
 export function focusWords(force = false): void {
   if (force) {
@@ -498,7 +493,7 @@ function showWords(): void {
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
-    appendEmptyWordElement();
+    appendEmptyWordElement(0);
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -514,9 +509,7 @@ function showWords(): void {
   PaceCaret.resetCaretPosition();
 }
 
-export function appendEmptyWordElement(
-  index = TestInput.input.getHistory().length,
-): void {
+export function appendEmptyWordElement(index: number): void {
   wordsEl.appendHtml(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
   );

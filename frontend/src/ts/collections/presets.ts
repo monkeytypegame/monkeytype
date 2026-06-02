@@ -36,6 +36,7 @@ const presetsCollection = createCollection(
     getKey: (it) => it._id,
     queryFn: async () => {
       if (!isAuthenticated()) return [];
+
       const response = await Ape.presets.get();
 
       if (response.status !== 200) {
@@ -205,7 +206,7 @@ export const __nonReactive = {
 };
 
 /**
- * On prod the collection gets cleaned up after a while.
+ * The collection gets cleaned up after a while.
  * Keeping a query active fixes that. Remove when removing __nonReactive
  */
 const _keepAlive = usePresetsLiveQuery();

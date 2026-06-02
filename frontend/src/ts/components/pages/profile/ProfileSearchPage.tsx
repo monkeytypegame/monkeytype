@@ -1,6 +1,6 @@
 import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
-import { createEffect, createSignal, JSXElement, Show } from "solid-js";
+import { createEffect, createSignal, JSXElement } from "solid-js";
 
 import { navigationEvent } from "../../../events/navigation";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
@@ -9,6 +9,7 @@ import { getUserProfile } from "../../../queries/profile";
 import { getActivePage } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { H2 } from "../../common/Headers";
+import { Page } from "../../common/Page";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import { fromSchema } from "../../ui/form/utils";
@@ -51,7 +52,7 @@ export function ProfileSearchPage(): JSXElement {
   });
 
   return (
-    <Show when={isOpen()}>
+    <Page id="profileSearch">
       <div class="grid min-h-full place-items-center">
         <form
           class="inline-grid w-96 gap-2"
@@ -104,6 +105,6 @@ export function ProfileSearchPage(): JSXElement {
           </div>
         </form>
       </div>
-    </Show>
+    </Page>
   );
 }

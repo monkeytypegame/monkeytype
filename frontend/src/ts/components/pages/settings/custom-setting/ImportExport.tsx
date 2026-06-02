@@ -1,4 +1,5 @@
 import { JSXElement } from "solid-js";
+import { z } from "zod";
 
 import { applyConfigFromJson } from "../../../../config/lifecycle";
 import { getConfig } from "../../../../config/store";
@@ -26,19 +27,15 @@ export function ImportExport(): JSXElement {
               showSimpleModal({
                 title: "import settings",
                 class: "min-w-2xl",
-                inputs: [
-                  {
-                    type: "text",
-                  },
-                ],
+                schema: z.object({ json: z.string() }),
+                inputs: { json: { type: "text" } },
                 buttonText: "import",
-                execFn: async (json) => {
+                execFn: async ({ json }) => {
                   try {
                     void applyConfigFromJson(json);
                   } catch (e) {}
                   return {
                     status: "success",
-                    message: "Import",
                     showNotification: false,
                   };
                 },
@@ -66,8 +63,9 @@ export function ImportExport(): JSXElement {
                     showSimpleModal({
                       title: "Config JSON",
                       class: "max-w-2xl",
-                      inputs: [
-                        {
+                      schema: z.object({ json: z.string() }),
+                      inputs: {
+                        json: {
                           type: "textarea",
                           placeholder: "Config JSON",
                           initVal: JSON.stringify(getConfig),
@@ -75,11 +73,10 @@ export function ImportExport(): JSXElement {
                           readOnly: true,
                           class: "h-50",
                         },
-                      ],
+                      },
                       execFn: async () => {
                         return {
                           status: "success",
-                          message: "Copied",
                           showNotification: false,
                         };
                       },
