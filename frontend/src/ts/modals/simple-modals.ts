@@ -173,19 +173,19 @@ async function reauthenticate(
   }
 }
 
-const providorToName = {
+const authMethodToName = {
   password: "password",
   "google.com": "Google",
   "github.com": "GitHub",
 };
 
 async function removeAuth(
-  providor: AuthMethod,
+  authMethod: AuthMethod,
   password?: string,
 ): Promise<ExecReturn> {
   const reauth = await reauthenticate({
     password: password,
-    excludeMethod: providor,
+    excludeMethod: authMethod,
   });
   if (reauth.status !== "success") {
     return {
@@ -194,14 +194,14 @@ async function removeAuth(
     };
   }
 
-  const providorName = providorToName[providor];
+  const authMethodName = authMethodToName[authMethod];
 
   try {
-    await unlink(reauth.user, providor);
+    await unlink(reauth.user, authMethod);
   } catch (e) {
     const message = createErrorMessage(
       e,
-      `Failed to unlink ${providorName} account`,
+      `Failed to unlink ${authMethodName} account`,
     );
     return {
       status: "error",
@@ -214,7 +214,7 @@ async function removeAuth(
   reloadAfter(3);
   return {
     status: "success",
-    message: `${providorName.charAt(0).toUpperCase() + providorName.slice(1)} authentication removed`,
+    message: `${authMethodName.charAt(0).toUpperCase() + authMethodName.slice(1)} authentication removed`,
   };
 }
 
