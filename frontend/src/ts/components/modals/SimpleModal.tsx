@@ -379,7 +379,6 @@ export function convertFn<T>(
     return parsed.data as T;
   };
 
-  console.log("###", { type });
   switch (type) {
     case ZodFirstPartyTypeKind.ZodBoolean:
       return (val) => {
