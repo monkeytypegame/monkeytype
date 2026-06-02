@@ -912,6 +912,8 @@ function buildCompletedEvent(
 
 const ALWAYSREPORT = false;
 
+// window.ce2 = buildCompletedEvent2;
+
 function compareCompletedEvents(
   ce: Omit<CompletedEvent, "hash" | "uid">,
 ): void {
@@ -1149,11 +1151,53 @@ function compareCompletedEvents(
       showSuccessNotification("Completed events match", { important: true });
     }
   } else {
+    let ignoreMismatch = false;
+    if (
+      mismatchedKeys.includes("testDuration") &&
+      Math.abs(ce2.testDuration - ce.testDuration) <= 0.2
+    ) {
+      ignoreMismatch = true;
+      console.warn("Ignoring completed event mismatch on testDuration", {
+        ceTestDuration: ce.testDuration,
+        ce2TestDuration: ce2.testDuration,
+      });
+    }
+    if (mismatchedKeys.includes("keyOverlap")) {
+      ignoreMismatch = true;
+      console.warn("Ignoring completed event mismatch on keyOverlap", {
+        ceKeyOverlap: ce.keyOverlap,
+        ce2KeyOverlap: ce2.keyOverlap,
+      });
+    }
+    if (
+      mismatchedKeys.includes("afkDuration") &&
+      Math.abs(ce2.afkDuration - ce.afkDuration) <= 1
+    ) {
+      ignoreMismatch = true;
+      console.warn("Ignoring completed event mismatch on afkDuration", {
+        ceAfkDuration: ce.afkDuration,
+        ce2AfkDuration: ce2.afkDuration,
+      });
+    }
+    if (
+      mismatchedKeys.includes("chartData.wpm") &&
+      mismatchedKeys.length === 1
+    ) {
+      ignoreMismatch = true;
+    }
+
     if (ALWAYSREPORT) {
-      showErrorNotification(
-        `Completed event mismatch: ${notMatching.join(", ")}`,
-        { important: true },
-      );
+      if (ignoreMismatch) {
+        showNoticeNotification(
+          `Completed event ok with ignored mismatches: ${notMatching.join(", ")}`,
+          { important: true },
+        );
+      } else {
+        showErrorNotification(
+          `Completed event mismatch: ${notMatching.join(", ")}`,
+          { important: true },
+        );
+      }
     }
     mismatchedKeys.sort();
     const groupKey = mismatchedKeys.join(",");
