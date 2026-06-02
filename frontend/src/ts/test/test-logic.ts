@@ -1163,6 +1163,7 @@ function compareCompletedEvents(
           mode2: ce.mode2,
           difficulty: ce.difficulty,
           duration: ce.testDuration,
+          funboxes: getActiveFunboxNames().join(","),
           // ce: ce as Record<string, unknown>,
           // ce2: ce2 as Record<string, unknown>,
         },

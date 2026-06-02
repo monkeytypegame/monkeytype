@@ -74,6 +74,7 @@ export const ReportCompletedEventMismatchRequestSchema = z.object({
   mode2: Mode2Schema.optional(),
   difficulty: DifficultySchema.optional(),
   duration: z.number().max(200).optional(),
+  funboxes: z.string().max(100).optional(),
   // ce: z.record(z.unknown()),
   // ce2: z.record(z.unknown()),
 });
