@@ -395,7 +395,7 @@ export const limits = {
 
 export type RateLimiterId = keyof typeof limits;
 export type RateLimitIds = {
-  /** rate limiter options for non-apeKey requests */
+  /** Rate limiter options for non-apeKey requests */
   normal: RateLimiterId;
   /** Rate limiter options for apeKey requests */
   apeKey: RateLimiterId;
