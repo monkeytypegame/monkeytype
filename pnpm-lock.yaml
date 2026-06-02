@@ -153,8 +153,8 @@ importers:
         specifier: 4.2.0
         version: 4.2.0
       nodemailer:
-        specifier: 8.0.5
-        version: 8.0.5
+        specifier: 8.0.10
+        version: 8.0.10
       object-hash:
         specifier: 3.0.0
         version: 3.0.0
@@ -220,8 +220,8 @@ importers:
         specifier: 24.9.1
         version: 24.9.1
       '@types/nodemailer':
-        specifier: 6.4.15
-        version: 6.4.15
+        specifier: 8.0.0
+        version: 8.0.0
       '@types/object-hash':
         specifier: 3.0.6
         version: 3.0.6
@@ -4872,8 +4872,8 @@ packages:
   '@types/node@24.9.1':
     resolution: {integrity: sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==}
 
-  '@types/nodemailer@6.4.15':
-    resolution: {integrity: sha512-0EBJxawVNjPkng1zm2vopRctuWVCxk34JcIlRuXSf54habUWdz1FB7wHDqOqvDa8Mtpt0Q3LTXQkAs2LNyK5jQ==}
+  '@types/nodemailer@8.0.0':
+    resolution: {integrity: sha512-fyf8jWULsCo0d0BuoQ75i6IeoHs47qcqxWc7yUdUcV0pOZGjUTTOvwdG1PRXUDqN/8A64yQdQdnA2pZgcdi+cA==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -9112,8 +9112,8 @@ packages:
     resolution: {integrity: sha512-1uiY543L+N7Og4yswvlm5NCKgPKDEXd9AUR9Jh3gen6oOeBsesr6LqhXom1er3eRzSUcVRWXzhv8tSNrIfGHKw==}
     engines: {node: '>=18'}
 
-  nodemailer@8.0.5:
-    resolution: {integrity: sha512-0PF8Yb1yZuQfQbq+5/pZJrtF6WQcjTd5/S4JOHs9PGFxuTqoB/icwuB44pOdURHJbRKX1PPoJZtY7R4VUoCC8w==}
+  nodemailer@8.0.10:
+    resolution: {integrity: sha512-BLFuSth7QtHOkBzyqTehWWyub0NTRDuK2Q2SQfnGLsrJnzyU+Yeh4WpV1eZGuARFj1xQJHIdnTuJZLP+b9R1GQ==}
     engines: {node: '>=6.0.0'}
 
   nodemon@3.1.14:
@@ -16040,7 +16040,7 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/nodemailer@6.4.15':
+  '@types/nodemailer@8.0.0':
     dependencies:
       '@types/node': 24.9.1
 
@@ -21162,7 +21162,7 @@ snapshots:
     dependencies:
       '@babel/parser': 7.29.2
 
-  nodemailer@8.0.5: {}
+  nodemailer@8.0.10: {}
 
   nodemon@3.1.14:
     dependencies:
