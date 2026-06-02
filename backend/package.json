@@ -41,7 +41,7 @@
     "firebase-admin": "12.0.0",
     "helmet": "4.6.0",
     "ioredis": "4.28.5",
-    "lru-cache": "7.10.1",
+    "lru-cache": "11.5.1",
     "mjml": "4.15.0",
     "mongodb": "6.3.0",
     "mustache": "4.2.0",

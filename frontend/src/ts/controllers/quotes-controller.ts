@@ -6,17 +6,14 @@ import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
-import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
-import { RequiredProperties } from "../utils/misc";
+import { QuoteData } from "@monkeytype/schemas/quotes";
+import {
+  Quote as QuoteType,
+  QuoteWithTextSplit as QuoteWithTextSplitType,
+} from "../types/quotes";
 
-export type Quote = QuoteDataQuote & {
-  group: number;
-  language: Language;
-  textSplit?: string[];
-};
-
-export type QuoteWithTextSplit = RequiredProperties<Quote, "textSplit">;
-
+export type Quote = QuoteType;
+export type QuoteWithTextSplit = QuoteWithTextSplitType;
 type QuoteCollection = {
   quotes: Quote[];
   length: number;

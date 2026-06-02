@@ -1,5 +1,5 @@
 import FirebaseAdmin from "./../init/firebase-admin";
-import LRUCache from "lru-cache";
+import { LRUCache } from "lru-cache";
 import {
   recordTokenCacheAccess,
   setTokenCacheLength,
