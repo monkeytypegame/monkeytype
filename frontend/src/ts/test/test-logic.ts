@@ -1199,27 +1199,29 @@ function compareCompletedEvents(
         );
       }
     }
-    mismatchedKeys.sort();
-    const groupKey = mismatchedKeys.join(",");
-    Ape.results
-      .reportCompletedEventMismatch({
-        body: {
-          notMatching,
-          mismatchedKeys,
-          groupKey,
-          language: ce.language,
-          mode: ce.mode,
-          mode2: ce.mode2,
-          difficulty: ce.difficulty,
-          duration: ce.testDuration,
-          funboxes: getActiveFunboxNames().join(","),
-          // ce: ce as Record<string, unknown>,
-          // ce2: ce2 as Record<string, unknown>,
-        },
-      })
-      .catch(() => {
-        //
-      });
+    if (!ignoreMismatch) {
+      mismatchedKeys.sort();
+      const groupKey = mismatchedKeys.join(",");
+      Ape.results
+        .reportCompletedEventMismatch({
+          body: {
+            notMatching,
+            mismatchedKeys,
+            groupKey,
+            language: ce.language,
+            mode: ce.mode,
+            mode2: ce.mode2,
+            difficulty: ce.difficulty,
+            duration: ce.testDuration,
+            funboxes: getActiveFunboxNames().join(","),
+            // ce: ce as Record<string, unknown>,
+            // ce2: ce2 as Record<string, unknown>,
+          },
+        })
+        .catch(() => {
+          //
+        });
+    }
   }
 
   console.debug("Completed event object2", ce2);
