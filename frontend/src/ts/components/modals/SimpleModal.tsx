@@ -256,7 +256,7 @@ export function SimpleModal(): JSXElement {
       title={config()?.title}
       focusFirstInput={config()?.focusFirstInput ?? true}
       beforeShow={resetForm}
-      modalClass={config()?.class}
+      modalClass={cn("max-w-lg", config()?.class)}
     >
       <form
         class="grid gap-4"

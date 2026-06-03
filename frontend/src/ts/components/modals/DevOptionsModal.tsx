@@ -228,8 +228,8 @@ export function DevOptionsModal(): JSXElement {
 function showGenerateDataModal(): void {
   showSimpleModal({
     title: "Generate data",
-    //showLabels: true,
     text: `if create user is checked, user will be created with <name>@example.com and password: password`,
+    class: "max-w-2xl",
     schema: z.object({
       username: UserNameSchema,
       createUser: z.boolean(),
@@ -239,16 +239,16 @@ function showGenerateDataModal(): void {
       maxTestsPerDay: z.number().safe().int().min(0).max(200),
     }),
     inputs: {
-      username: {
-        type: "text",
-        label: "username",
-        placeholder: "username",
-      },
       createUser: {
         type: "checkbox",
         label: "create user",
         description:
           "if checked, user will be created with {username}@example.com and password: password",
+      },
+      username: {
+        type: "text",
+        label: "username",
+        placeholder: "username",
       },
       firstTestTimestamp: {
         type: "date",

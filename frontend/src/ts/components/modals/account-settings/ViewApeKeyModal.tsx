@@ -35,7 +35,9 @@ export function ViewApeKeyModal() {
       closeOnWrapperClick={!isDisabled()}
     >
       <H2 text="Ape key" />
-      <textarea class="h-25">{getLastGeneratedApeKey()}</textarea>
+      <textarea class="h-25 opacity-100" disabled>
+        {getLastGeneratedApeKey()}
+      </textarea>
       <p>
         This is your new Ape Key. Please keep it safe. You will only see it
         once!
