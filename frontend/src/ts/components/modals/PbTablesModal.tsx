@@ -12,7 +12,6 @@ import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
 import { DataTable, DataTableColumnDef } from "../ui/table/DataTable";
-import { MOCK_PERSONAL_BESTS, USE_MOCK_PB_DATA } from "./PbTablesModal.mock";
 
 type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
@@ -23,11 +22,9 @@ type PBRow = PBWithMode2 & {
 };
 
 function buildRows(mode: Mode): PBRow[] {
-  const allmode2 = (
-    USE_MOCK_PB_DATA
-      ? MOCK_PERSONAL_BESTS[mode as "time" | "words"]
-      : DB.getSnapshot()?.personalBests?.[mode]
-  ) as Record<string, PBWithMode2[]> | undefined;
+  const allmode2 = DB.getSnapshot()?.personalBests?.[mode] as
+    | Record<string, PBWithMode2[]>
+    | undefined;
   if (allmode2 === undefined) return [];
 
   const list: PBWithMode2[] = [];
@@ -52,6 +49,7 @@ function buildRows(mode: Mode): PBRow[] {
   return rows;
 }
 
+// oxlint-disable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 function getColumns(options: {
   format: Formatting;
   mode: Mode;
@@ -165,6 +163,7 @@ function getColumns(options: {
     }),
   ];
 }
+// oxlint-enable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 
 export function PbTablesModal(): JSXElement {
   const mode = createMemo(() => pbTablesMode());

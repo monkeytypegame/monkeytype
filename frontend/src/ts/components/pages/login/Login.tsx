@@ -17,7 +17,6 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../states/notifications";
-import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
@@ -150,13 +149,6 @@ export function Login(): JSXElement {
         class="text justify-end text-xs"
         onClick={() => ForgotPasswordModal.show()}
         disabled={!getLoginPageInputsEnabled()}
-      />
-
-      <Button
-        balloon={{ text: "Show all personal bests", position: "left" }}
-        class="h-full rounded-none rounded-r text-sub hover:text-bg"
-        fa={{ icon: "fa-ellipsis-v" }}
-        onClick={() => showPbTablesModal("words")}
       />
     </div>
   );
