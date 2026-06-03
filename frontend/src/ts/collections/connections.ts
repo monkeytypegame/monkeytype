@@ -193,6 +193,8 @@ const actions = {
         }
 
         addNotificationWithLevel(message, level);
+
+        throw new Error(`Failed to add connection: ${message}`);
       }
     },
   }),
