@@ -1,7 +1,7 @@
 import { Mode2, Mode, PersonalBest } from "@monkeytype/schemas/shared";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as formatDate } from "date-fns/format";
-import { createMemo, JSXElement } from "solid-js";
+import { createMemo, createSignal, JSXElement } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
@@ -32,8 +32,7 @@ function buildRows(mode: Mode): PBRow[] {
     let pbs = allmode2[key] ?? [];
     pbs = [...pbs].sort((a, b) => b.wpm - a.wpm);
     pbs.forEach((pb) => {
-      pb.mode2 = key;
-      list.push(pb);
+      list.push({ ...pb, mode2: key });
     });
   });
 
@@ -166,14 +165,19 @@ function getColumns(options: {
 // oxlint-enable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 
 export function PbTablesModal(): JSXElement {
-  const mode = createMemo(() => pbTablesMode());
-  const rows = createMemo(() => buildRows(mode()));
+  const [rows, setRows] = createSignal<PBRow[]>([]);
   const columns = createMemo(() =>
-    getColumns({ format: new Formatting(getConfig), mode: mode() }),
+    getColumns({ format: new Formatting(getConfig), mode: pbTablesMode() }),
   );
 
   return (
-    <AnimatedModal id="PbTables" modalClass="max-w-full gap-0 p-8">
+    <AnimatedModal
+      id="PbTables"
+      modalClass="max-w-full gap-0 p-8"
+      beforeShow={() => {
+        setRows(buildRows(pbTablesMode()));
+      }}
+    >
       <DataTable
         id="pbTables"
         columns={columns()}
