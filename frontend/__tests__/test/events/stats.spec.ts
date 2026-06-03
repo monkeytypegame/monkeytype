@@ -8,6 +8,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
   activeWordIndex: 0,
   bailedOut: false,
   resultCalculating: false,
+  koreanStatus: false,
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
