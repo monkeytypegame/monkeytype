@@ -44,9 +44,10 @@ const resultFilterPresetsCollection = createCollection(
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultFilterPresetsLiveQuery() {
-  return useLiveQuery((q) =>
-    q.from({ presets: resultFilterPresetsCollection }),
-  );
+  return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
+    return q.from({ presets: resultFilterPresetsCollection });
+  });
 }
 
 type ActionType = {

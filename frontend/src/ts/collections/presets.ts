@@ -22,6 +22,7 @@ const queryKeys = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function usePresetsLiveQuery() {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     return q
       .from({ preset: presetsCollection })
       .orderBy(({ preset }) => preset.name, "asc");

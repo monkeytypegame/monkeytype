@@ -63,6 +63,7 @@ const tagsCollection = createCollection(
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useTagsLiveQuery() {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     return q
       .from({ tag: tagsCollection })
       .orderBy(({ tag }) => tag.name, "asc");
