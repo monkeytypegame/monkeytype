@@ -1114,13 +1114,21 @@ function compareCompletedEvents(
     if (a.length === b.length && a.every((val, i) => val === b[i])) {
       console.debug(`Completed event match on key keypressCountHistory:`, a);
     } else {
-      notMatching.push(`keypressCountHistory (values differ)`);
-      mismatchedKeys.push("keypressCountHistory");
-      console.error(
-        `Completed event mismatch on key keypressCountHistory:`,
-        a,
-        b,
-      );
+      if (a.length !== b.length) {
+        notMatching.push(`keypressCountHistory (length differs)`);
+        mismatchedKeys.push("keypressCountHistory_length");
+        console.error(
+          `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
+        );
+      } else {
+        notMatching.push(`keypressCountHistory (values differ)`);
+        mismatchedKeys.push("keypressCountHistory");
+        console.error(
+          `Completed event mismatch on key keypressCountHistory:`,
+          a,
+          b,
+        );
+      }
     }
   }
 
