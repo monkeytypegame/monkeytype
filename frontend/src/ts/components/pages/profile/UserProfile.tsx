@@ -11,6 +11,7 @@ import * as PbTablesModal from "../../../modals/pb-tables";
 import { Formatting } from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
+import { Achievements } from "./Achievements";
 import { ActivityCalendar } from "./ActivityCalendar";
 import { UserDetails } from "./UserDetails";
 
@@ -30,6 +31,7 @@ export function UserProfile(props: {
           top60={props.profile.allTimeLbs?.time?.["60"]?.["english"]}
         />
       </Show>
+      <Achievements profile={props.profile} />
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <PbTable
           mode="time"
