@@ -28,6 +28,7 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { logTestEvent } from "./events/data";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -38,10 +39,19 @@ const newTimer = createTimer({
     lastLoop = performance.now();
   },
   onLoop: () => {
-    const drift = Math.abs(1000 - (performance.now() - lastLoop));
-    lastLoop = performance.now();
+    const now = performance.now();
+
+    const drift = Math.abs(1000 - (now - lastLoop));
     checkIfTimerIsSlow(drift);
+    lastLoop = now;
     timerStep();
+
+    logTestEvent("timer", now, {
+      event: "step",
+      timer: Time.get(),
+      slowTimer: SlowTimer.get() ? true : undefined,
+      drift,
+    });
   },
 });
 
@@ -68,10 +78,16 @@ export function enableTimerDebug(): void {
   timerDebug = true;
 }
 
-export function clear(): void {
+export function clear(logEnd = false, now = performance.now()): void {
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
+  if (logEnd) {
+    logTestEvent("timer", now, {
+      event: "end",
+      timer: Time.get(),
+    });
+  }
 }
 
 function premid(): void {
@@ -297,24 +313,32 @@ function checkIfTimerIsSlow(drift: number): void {
   }
 }
 
-export async function start(): Promise<void> {
+export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
   for (const id of slowTimerNotifIds) {
     removeNotification(id, "clear");
   }
   slowTimerNotifIds = [];
-  void _startNew();
+  void _startNew(now);
   // void _startOld();
 }
 
-async function _startNew(): Promise<void> {
+async function _startNew(now: number): Promise<void> {
   newTimer.play();
+  logTestEvent("timer", now, {
+    event: "start",
+    timer: Time.get(),
+  });
 }
 
 async function _startOld(): Promise<void> {
   timerStats = [];
   expected = TestStats.start + interval;
+  logTestEvent("timer", performance.now(), {
+    event: "start",
+    timer: Time.get(),
+  });
   (function loop(): void {
     const delay = expected - performance.now();
     timerStats.push({
@@ -332,6 +356,13 @@ async function _startOld(): Promise<void> {
         slowTimerCount = 0;
         return;
       }
+
+      logTestEvent("timer", performance.now(), {
+        event: "step",
+        timer: Time.get(),
+        drift: drift,
+        slowTimer: SlowTimer.get() ? true : undefined,
+      });
 
       timerStep();
 

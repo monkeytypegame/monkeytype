@@ -2,7 +2,7 @@ import { createForm } from "@tanstack/solid-form";
 import { Accessor, JSXElement } from "solid-js";
 import { z } from "zod";
 
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -42,7 +42,7 @@ export function SaveCustomTextModal(props: {
 
       const saved = CustomText.setCustomText(value.name, text, value.isLong);
       if (saved) {
-        CustomTextState.setCustomTextName(value.name, value.isLong);
+        setCustomTextIndicator(value);
         showSuccessNotification("Custom text saved");
         hideModal("SaveCustomText");
       } else {

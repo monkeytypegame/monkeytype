@@ -20,14 +20,15 @@ import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
-import { Settings } from "./pages/settings/Settings";
+import { SettingsPage } from "./pages/settings/SettingsPage";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
+import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
-  settingspage: () => <Settings />,
+  settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
@@ -42,7 +43,7 @@ const components: Record<string, () => JSXElement> = {
   devtools: () => <DevTools />,
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
-  solidSettings: () => <Settings />,
+  testmodesnotice: () => <TestModesNotice />,
   friendspage: () => <FriendsPage />,
   blockedusers: () => <BlockedUsers />,
 };

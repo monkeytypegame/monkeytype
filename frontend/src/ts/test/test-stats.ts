@@ -5,9 +5,9 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
+import { getLastResult } from "../states/test";
 
 type CharCount = {
   spaces: number;
@@ -33,21 +33,14 @@ export type Stats = {
   correctSpaces: number;
 };
 
-export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
-
-export function setLastResult(result: CompletedEvent): void {
-  lastResult = result;
-}
-
 export function getStats(): unknown {
   const ret = {
-    lastResult,
+    lastResult: getLastResult(),
     start,
     end,
     start3,
@@ -106,35 +99,11 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
-  invalid = false;
+  start2 = 0;
+  end2 = 0;
+  start3 = 0;
+  end3 = 0;
   lastSecondNotRound = false;
-}
-
-export let restartCount = 0;
-export let incompleteSeconds = 0;
-
-export let incompleteTests: IncompleteTest[] = [];
-
-export function incrementRestartCount(): void {
-  restartCount++;
-}
-
-export function incrementIncompleteSeconds(val: number): void {
-  incompleteSeconds += val;
-}
-
-export function pushIncompleteTest(acc: number, seconds: number): void {
-  incompleteTests.push({ acc, seconds });
-}
-
-export function resetIncomplete(): void {
-  restartCount = 0;
-  incompleteSeconds = 0;
-  incompleteTests = [];
-}
-
-export function setInvalid(): void {
-  invalid = true;
 }
 
 export function calculateTestSeconds(now?: number): number {
@@ -192,12 +161,7 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    if (Config.mode === "time") {
-      extraAfk =
-        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
-    } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
-    }
+    extraAfk = Math.round(testSeconds) - TestInput.keypressCountHistory.length;
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -215,7 +179,7 @@ export function setLastSecondNotRound(): void {
 }
 
 export function calculateBurst(endTime: number = performance.now()): number {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
   const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
@@ -249,7 +213,7 @@ export function removeAfkData(): void {
 }
 
 function getInputWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
   let inputWords = [...TestInput.input.getHistory()];
 
@@ -265,7 +229,7 @@ function getInputWords(): string[] {
 }
 
 function getTargetWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
     ...(Config.mode === "zen"
