@@ -1,4 +1,3 @@
-import { QuoteWithTextSplit } from "../controllers/quotes-controller";
 import * as TestState from "./test-state";
 
 class Words {
@@ -58,11 +57,6 @@ class Words {
 
 export const words = new Words();
 export let hasNumbers = false;
-export let currentQuote = null as QuoteWithTextSplit | null;
-
-export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
-  currentQuote = rq;
-}
 
 export function setHasNumbers(tf: boolean): void {
   hasNumbers = tf;
