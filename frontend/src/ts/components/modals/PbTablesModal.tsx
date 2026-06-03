@@ -1,7 +1,7 @@
 import { Mode2, Mode, PersonalBest } from "@monkeytype/schemas/shared";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as formatDate } from "date-fns/format";
-import { createMemo, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import * as DB from "../../db";
@@ -41,7 +41,7 @@ function buildRows(mode: Mode): PBRow[] {
   });
 
   const rows: PBRow[] = [];
-  let currentMode2: string | undefined;
+  let currentMode2: Mode2<Mode> | undefined;
 
   list.forEach((pb) => {
     const isGroupStart = currentMode2 !== pb.mode2;
@@ -61,9 +61,9 @@ function getColumns(options: {
 
   return [
     defineColumn("mode2", {
-      enableSorting: false,
-      header: () => m,
+      header: m,
       cell: (info) => info.getValue(),
+      enableSorting: false,
       meta: {
         align: "right",
         cellMeta: (info) => ({
@@ -75,97 +75,92 @@ function getColumns(options: {
       },
     }),
     defineColumn("wpm", {
-      enableSorting: false,
       header: () => (
         <>
           {f.typingSpeedUnit}
           <br />
-          <span class="opacity-50">accuracy</span>
+          <span class="text-sub">accuracy</span>
         </>
       ),
       cell: (info) => (
         <>
           {f.typingSpeed(info.getValue())}
           <br />
-          <span class="opacity-50">{f.accuracy(info.row.original.acc)}</span>
+          <span class="text-sub">{f.accuracy(info.row.original.acc)}</span>
         </>
       ),
+      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("raw", {
-      enableSorting: false,
       header: () => (
         <>
           raw
           <br />
-          <span class="opacity-50">consistency</span>
+          <span class="text-sub">consistency</span>
         </>
       ),
       cell: (info) => (
         <>
           {f.typingSpeed(info.getValue())}
           <br />
-          <span class="opacity-50">
+          <span class="text-sub">
             {f.percentage(info.row.original.consistency)}
           </span>
         </>
       ),
+      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("difficulty", {
-      enableSorting: false,
-      header: () => "difficulty",
+      header: "difficulty",
       cell: (info) => info.getValue(),
+      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("language", {
-      enableSorting: false,
-      header: () => "language",
+      header: "language",
       cell: (info) => {
         const lang = info.getValue();
         return lang ? getLanguageDisplayString(lang) : "-";
       },
+      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("punctuation", {
-      enableSorting: false,
-      header: () => "punctuation",
+      header: "punctuation",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
+      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("numbers", {
-      enableSorting: false,
-      header: () => "numbers",
+      header: "numbers",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
+      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("lazyMode", {
-      enableSorting: false,
-      header: () => "lazy mode",
+      header: "lazy mode",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
+      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("timestamp", {
-      enableSorting: false,
-      header: () => "date",
-      cell: (info) => {
-        const ts = info.getValue();
-        return (
-          <Show
-            when={ts}
-            fallback={
-              <>
-                -<br />
-                <span class="opacity-50">-</span>
-              </>
-            }
-          >
-            {formatDate(ts, "dd MMM yyyy")}
+      header: "date",
+      cell: (info) =>
+        info.getValue() ? (
+          <>
+            {formatDate(info.getValue(), "dd MMM yyyy")}
             <br />
-            <div class="opacity-50">{formatDate(ts, "HH:mm")}</div>
-          </Show>
-        );
-      },
+            <div class="text-sub">{formatDate(info.getValue(), "HH:mm")}</div>
+          </>
+        ) : (
+          <>
+            -<br />
+            <span class="text-sub">-</span>
+          </>
+        ),
+      enableSorting: false,
       meta: { align: "right" },
     }),
   ];
