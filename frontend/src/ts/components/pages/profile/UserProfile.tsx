@@ -31,13 +31,13 @@ export function UserProfile(props: {
         />
       </Show>
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <PbTable
+        <PbCard
           mode="time"
           mode2={["15", "30", "60", "120"]}
           pbs={props.profile.personalBests.time}
           isAccountPage={props.isAccountPage}
         />
-        <PbTable
+        <PbCard
           mode="words"
           mode2={["10", "25", "50", "100"]}
           pbs={props.profile.personalBests.words}
@@ -97,7 +97,7 @@ function LeaderboardPosition(props: {
   );
 }
 
-function PbTable<M extends "time" | "words">(props: {
+function PbCard<M extends "time" | "words">(props: {
   mode: M;
   mode2: string[];
   pbs: PersonalBests[M];

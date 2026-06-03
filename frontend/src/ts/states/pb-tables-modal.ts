@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-
 import { Mode } from "@monkeytype/schemas/shared";
 
 import { showModal } from "./modals";
