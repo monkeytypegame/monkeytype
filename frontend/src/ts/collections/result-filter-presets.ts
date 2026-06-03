@@ -14,6 +14,7 @@ import {
 } from "../utils/strings";
 import { applyIdWorkaround, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
+import { isAuthenticated } from "../states/core";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
@@ -24,8 +25,8 @@ const resultFilterPresetsCollection = createCollection(
     staleTime: Infinity,
     startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
       const userData = await fetchUserFromApi();

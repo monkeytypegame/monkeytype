@@ -33,10 +33,9 @@ const presetsCollection = createCollection(
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
-      if (!isAuthenticated()) return [];
-
       const response = await Ape.presets.get();
 
       if (response.status !== 200) {

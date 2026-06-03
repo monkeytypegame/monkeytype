@@ -25,6 +25,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import { applyIdWorkaround, isTempId, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
+import { isAuthenticated } from "../states/core";
 
 export type TagItem = UserTag & { active: boolean };
 
@@ -37,6 +38,7 @@ const tagsCollection = createCollection(
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
       const activeIds = activeTagsLS.get();
@@ -44,13 +46,16 @@ const tagsCollection = createCollection(
 
       if (userData === undefined) return [];
 
-      return (userData.tags ?? [])
+      const results = (userData.tags ?? [])
         .map((tag) => ({
           ...tag,
           name: tag.name.replace(/_/g, " "),
           active: activeIds.includes(tag._id),
         }))
         .map(applyIdWorkaround);
+
+      updateTagsInFilterStorage(results.map((it) => it._id) ?? []);
+      return results;
     },
   }),
 );
@@ -84,6 +89,7 @@ export async function getTagsOnce() {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useActiveTagsLiveQuery() {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     return q
       .from({ tag: tagsCollection })
       .where(({ tag }) => eq(tag.active, true))
