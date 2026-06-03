@@ -10,12 +10,13 @@ import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars, getLastChar } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
-import { activeWordIndex, bailedOut } from "../test-state";
+import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
+import Hangul from "hangul-js";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -273,12 +274,20 @@ export function getChars(): CharCounts {
 
     let simulatedInput = getInputFromDom(events);
 
+    if (koreanStatus) {
+      simulatedInput = Hangul.disassemble(simulatedInput).join("");
+    }
+
     if (lastWord) {
       //remove trailing space for last word
       simulatedInput = simulatedInput.trimEnd();
     }
 
-    const targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
+    let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
+
+    if (koreanStatus) {
+      targetWord = Hangul.disassemble(targetWord).join("");
+    }
 
     const charCounts = countChars(
       simulatedInput,
@@ -426,7 +435,8 @@ export function getWpmHistory(): number[] {
     }
 
     let totalCorrect = 0;
-    for (const [wordIndex, { input, events: wordEvents }] of wordInputs) {
+    for (const [wordIndex, { input: inp, events: wordEvents }] of wordInputs) {
+      let input = inp;
       if (input.length === 0) continue;
 
       const lastEvt = wordEvents[wordEvents.length - 1];
@@ -440,8 +450,15 @@ export function getWpmHistory(): number[] {
       }
       const lastWord = wordIndex === adjustedMax;
 
+      if (koreanStatus) {
+        input = Hangul.disassemble(input).join("");
+      }
+
       const trimmed = lastWord ? input.trimEnd() : input;
-      const targetWord = getTargetWord(wordIndex, trimmed, lastWord);
+      let targetWord = getTargetWord(wordIndex, trimmed, lastWord);
+      if (koreanStatus) {
+        targetWord = Hangul.disassemble(targetWord).join("");
+      }
       totalCorrect += countChars(
         trimmed,
         targetWord,
