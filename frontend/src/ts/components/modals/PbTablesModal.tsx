@@ -48,7 +48,6 @@ function buildRows(mode: Mode): PBRow[] {
   return rows;
 }
 
-// oxlint-disable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 function getColumns(options: {
   format: Formatting;
   mode: Mode;
@@ -155,7 +154,6 @@ function getColumns(options: {
 
   return columns.map((it) => ({ ...it, enableSorting: false }));
 }
-// oxlint-enable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 
 export function PbTablesModal(): JSXElement {
   const [rows, setRows] = createSignal<PBRow[]>([]);
