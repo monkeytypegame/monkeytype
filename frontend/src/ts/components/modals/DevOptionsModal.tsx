@@ -21,6 +21,7 @@ import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
+import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -233,7 +234,7 @@ function showGenerateDataModal(): void {
     schema: z.object({
       username: UserNameSchema,
       createUser: z.boolean(),
-      firstTestTimestamp: z.date().optional(),
+      firstTestTimestamp: z.date().max(new Date()),
       lastTestTimestamp: z.date().max(new Date()).optional(),
       minTestsPerDay: z.number().safe().int().min(0).max(200),
       maxTestsPerDay: z.number().safe().int().min(0).max(200),
@@ -249,6 +250,14 @@ function showGenerateDataModal(): void {
         type: "text",
         label: "username",
         placeholder: "username",
+        validation: {
+          isValid: remoteValidation(
+            async (name: string) =>
+              Ape.users.getNameAvailability({ params: { name } }),
+            { check: (data) => !data.available || "Unknown user" },
+          ),
+          debounceDelay: 1000,
+        },
       },
       firstTestTimestamp: {
         type: "date",

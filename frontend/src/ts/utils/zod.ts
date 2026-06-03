@@ -1,4 +1,4 @@
-import { z, ZodSchema } from "zod";
+import { z, ZodFirstPartyTypeKind, ZodSchema, ZodTypeAny } from "zod";
 
 export function getOptions<T extends ZodSchema>(
   schema: T,
@@ -15,4 +15,27 @@ export function getOptions<T extends ZodSchema>(
       .filter((it) => it !== undefined) as z.infer<T>[];
   }
   return undefined;
+}
+
+export function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+  return schema._def["typeName"] as ZodFirstPartyTypeKind;
+}
+
+/**
+ * Unwraps a Zod schema by removing optional or default wrappers,
+ * returning the underlying inner schema.
+ **/
+export function unwrapSchema<T extends ZodTypeAny>(schema: T): T {
+  const type = getZodType(schema);
+
+  if (
+    type === ZodFirstPartyTypeKind.ZodOptional ||
+    type === ZodFirstPartyTypeKind.ZodDefault
+  ) {
+    // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+    return schema._def["innerType"] as T;
+  }
+
+  return schema;
 }
