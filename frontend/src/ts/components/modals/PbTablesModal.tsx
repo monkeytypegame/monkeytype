@@ -56,11 +56,10 @@ function getColumns(options: {
   const defineColumn = createColumnHelper<PBRow>().accessor;
   const { format: f, mode: m } = options;
 
-  return [
+  const columns = [
     defineColumn("mode2", {
       header: m,
       cell: (info) => info.getValue(),
-      enableSorting: false,
       meta: {
         align: "right",
         cellMeta: (info) => ({
@@ -86,7 +85,6 @@ function getColumns(options: {
           <span class="text-sub">{f.accuracy(info.row.original.acc)}</span>
         </>
       ),
-      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("raw", {
@@ -106,13 +104,11 @@ function getColumns(options: {
           </span>
         </>
       ),
-      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("difficulty", {
       header: "difficulty",
       cell: (info) => info.getValue(),
-      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("language", {
@@ -121,25 +117,21 @@ function getColumns(options: {
         const lang = info.getValue();
         return lang ? getLanguageDisplayString(lang) : "-";
       },
-      enableSorting: false,
       meta: { align: "right" },
     }),
     defineColumn("punctuation", {
       header: "punctuation",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
-      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("numbers", {
       header: "numbers",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
-      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("lazyMode", {
       header: "lazy mode",
       cell: (info) => (info.getValue() ? <Fa icon="fa-check" /> : null),
-      enableSorting: false,
       meta: { align: "center" },
     }),
     defineColumn("timestamp", {
@@ -157,10 +149,11 @@ function getColumns(options: {
             <span class="text-sub">-</span>
           </>
         ),
-      enableSorting: false,
       meta: { align: "right" },
     }),
   ];
+
+  return columns.map((it) => ({ ...it, enableSorting: false }));
 }
 // oxlint-enable typescript/no-unsafe-return, typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/strict-boolean-expressions
 
