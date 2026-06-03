@@ -1114,13 +1114,21 @@ function compareCompletedEvents(
     if (a.length === b.length && a.every((val, i) => val === b[i])) {
       console.debug(`Completed event match on key keypressCountHistory:`, a);
     } else {
-      notMatching.push(`keypressCountHistory (values differ)`);
-      mismatchedKeys.push("keypressCountHistory");
-      console.error(
-        `Completed event mismatch on key keypressCountHistory:`,
-        a,
-        b,
-      );
+      if (a.length !== b.length) {
+        notMatching.push(`keypressCountHistory (length differs)`);
+        mismatchedKeys.push("keypressCountHistory_length");
+        console.error(
+          `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
+        );
+      } else {
+        notMatching.push(`keypressCountHistory (values differ)`);
+        mismatchedKeys.push("keypressCountHistory");
+        console.error(
+          `Completed event mismatch on key keypressCountHistory:`,
+          a,
+          b,
+        );
+      }
     }
   }
 
@@ -1199,27 +1207,30 @@ function compareCompletedEvents(
         );
       }
     }
-    mismatchedKeys.sort();
-    const groupKey = mismatchedKeys.join(",");
-    Ape.results
-      .reportCompletedEventMismatch({
-        body: {
-          notMatching,
-          mismatchedKeys,
-          groupKey,
-          language: ce.language,
-          mode: ce.mode,
-          mode2: ce.mode2,
-          difficulty: ce.difficulty,
-          duration: ce.testDuration,
-          funboxes: getActiveFunboxNames().join(","),
-          // ce: ce as Record<string, unknown>,
-          // ce2: ce2 as Record<string, unknown>,
-        },
-      })
-      .catch(() => {
-        //
-      });
+    if (!ignoreMismatch) {
+      mismatchedKeys.sort();
+      const groupKey = mismatchedKeys.join(",");
+      Ape.results
+        .reportCompletedEventMismatch({
+          body: {
+            notMatching,
+            mismatchedKeys,
+            groupKey,
+            language: ce.language,
+            mode: ce.mode,
+            mode2: ce.mode2,
+            difficulty: ce.difficulty,
+            duration: ce.testDuration,
+            funboxes: getActiveFunboxNames().join(","),
+            version: 1,
+            // ce: ce as Record<string, unknown>,
+            // ce2: ce2 as Record<string, unknown>,
+          },
+        })
+        .catch(() => {
+          //
+        });
+    }
   }
 
   console.debug("Completed event object2", ce2);

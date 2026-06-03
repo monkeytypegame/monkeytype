@@ -10,12 +10,13 @@ import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars, getLastChar } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
-import { activeWordIndex, bailedOut } from "../test-state";
+import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { InputEvent, TestEvent } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
+import Hangul from "hangul-js";
 
 function getTimerBoundaries(events: TestEvent[]): number[] {
   const boundaries: number[] = [];
@@ -47,7 +48,11 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
 
   if (endMs !== undefined) {
     const last = boundaries[boundaries.length - 1];
-    if (endMs - (last ?? 0) >= 500) {
+    // Must match the legacy condition: Math.round(roundTo2(testSeconds) % 1) >= 0.5.
+    // A naive ">= 500ms" check disagrees when the gap is in [495ms, 500ms) — roundTo2
+    // rounds that fraction up to 0.50s and the legacy system pushes an extra bucket,
+    // but a raw millisecond comparison would skip the boundary.
+    if (roundTo2((endMs - (last ?? 0)) / 1000) >= 0.5) {
       boundaries.push(endMs);
     }
   }
@@ -255,56 +260,86 @@ function getTargetWord(
   }
 }
 
-export function getChars(): CharCounts {
-  const eventsPerWordIndex = getInputEventsPerWord();
-  const isTimedTest =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  const shouldCountPartialLastWord = isTimedTest;
+function countCharsForWords(
+  eventsPerWord: Map<number, InputEvent[]>,
+  lastWordIndex: number,
+  shouldCountPartialLastWord: boolean,
+): CharCounts {
+  const acc: CharCounts = {
+    allCorrect: 0,
+    correctWord: 0,
+    incorrect: 0,
+    extra: 0,
+    missed: 0,
+  };
 
-  let allCorrect = 0;
-  let correctWord = 0;
-  let incorrect = 0;
-  let extra = 0;
-  let missed = 0;
-
-  for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
-    const lastWord = wordIndex === activeWordIndex;
+  for (const [wordIndex, events] of eventsPerWord) {
+    const lastWord = wordIndex === lastWordIndex;
 
     let simulatedInput = getInputFromDom(events);
-
+    if (koreanStatus) {
+      simulatedInput = Hangul.disassemble(simulatedInput).join("");
+    }
     if (lastWord) {
-      //remove trailing space for last word
       simulatedInput = simulatedInput.trimEnd();
     }
 
-    const targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
+    let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
+    if (koreanStatus) {
+      targetWord = Hangul.disassemble(targetWord).join("");
+    }
 
-    const charCounts = countChars(
+    const c = countChars(
       simulatedInput,
       targetWord,
       lastWord,
       shouldCountPartialLastWord,
     );
+    acc.allCorrect += c.allCorrect;
+    acc.correctWord += c.correctWord;
+    acc.incorrect += c.incorrect;
+    acc.extra += c.extra;
+    acc.missed += c.missed;
 
-    allCorrect += charCounts.allCorrect;
-    correctWord += charCounts.correctWord;
-    incorrect += charCounts.incorrect;
-    extra += charCounts.extra;
-    missed += charCounts.missed;
-
-    if (lastWord) {
-      break;
-    }
+    if (lastWord) break;
   }
 
-  return {
-    allCorrect: allCorrect,
-    correctWord: correctWord,
-    incorrect: incorrect,
-    extra: extra,
-    missed: missed,
-  };
+  return acc;
+}
+
+function inferActiveWordIndex(
+  eventsPerWord: Map<number, InputEvent[]>,
+): number {
+  let maxWordIndex = -1;
+  let lastWordEvents: InputEvent[] | undefined;
+  for (const [k, wordEvents] of eventsPerWord) {
+    if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
+      maxWordIndex = k;
+      lastWordEvents = wordEvents;
+    }
+  }
+  if (lastWordEvents === undefined) return 0;
+  const lastEvt = lastWordEvents[lastWordEvents.length - 1];
+  // committed trailing space → cursor advanced to the next word
+  if (
+    lastEvt !== undefined &&
+    lastEvt.data.inputType === "insertText" &&
+    lastEvt.data.data === " "
+  ) {
+    return maxWordIndex + 1;
+  }
+  return maxWordIndex;
+}
+
+export function getChars(): CharCounts {
+  const isTimedTest =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+  return countCharsForWords(
+    getInputEventsPerWord(),
+    activeWordIndex,
+    isTimedTest,
+  );
 }
 
 export function getInputForWord(wordIndex: number): string {
@@ -404,54 +439,17 @@ export function getErrorCountHistory(): number[] {
 
 export function getWpmHistory(): number[] {
   const events = getAllTestEvents();
-  const timerBoundaries = getTimerBoundaries(events);
   const wpmHistory: number[] = [];
 
-  for (const boundary of timerBoundaries) {
+  for (const boundary of getTimerBoundaries(events)) {
     const eventsPerWord = getInputEventsPerWord(undefined, boundary);
-
-    // Compute simulated inputs first so we can determine the effective last word
-    const wordInputs = new Map<
-      number,
-      { input: string; events: InputEvent[] }
-    >();
-    let maxWordIndex = 0;
-    for (const [k, wordEvents] of eventsPerWord) {
-      const input = getInputFromDom(wordEvents);
-      wordInputs.set(k, { input, events: wordEvents });
-      // Only count words with non-empty input for maxWordIndex,
-      // so that fully-deleted words don't prevent earlier words
-      // from being treated as the last word
-      if (input.length > 0 && k > maxWordIndex) maxWordIndex = k;
-    }
-
-    let totalCorrect = 0;
-    for (const [wordIndex, { input, events: wordEvents }] of wordInputs) {
-      if (input.length === 0) continue;
-
-      const lastEvt = wordEvents[wordEvents.length - 1];
-      let adjustedMax = maxWordIndex;
-      if (
-        lastEvt !== undefined &&
-        lastEvt.data.inputType === "insertText" &&
-        lastEvt.data.data === " "
-      ) {
-        adjustedMax = maxWordIndex + 1;
-      }
-      const lastWord = wordIndex === adjustedMax;
-
-      const trimmed = lastWord ? input.trimEnd() : input;
-      const targetWord = getTargetWord(wordIndex, trimmed, lastWord);
-      totalCorrect += countChars(
-        trimmed,
-        targetWord,
-        lastWord,
-        true,
-      ).correctWord;
-    }
-
-    const durationSeconds = boundary / 1000;
-    wpmHistory.push(Math.round(calculateWpm(totalCorrect, durationSeconds)));
+    const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+    const { correctWord } = countCharsForWords(
+      eventsPerWord,
+      lastWordIndex,
+      true,
+    );
+    wpmHistory.push(Math.round(calculateWpm(correctWord, boundary / 1000)));
   }
 
   return wpmHistory;

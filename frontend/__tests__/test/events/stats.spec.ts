@@ -8,6 +8,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
   activeWordIndex: 0,
   bailedOut: false,
   resultCalculating: false,
+  koreanStatus: false,
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
@@ -177,6 +178,28 @@ describe("stats.ts", () => {
 
       const events = getAllTestEvents();
       // end at testMs 1400, last step at testMs 1000 — gap is 400 < 500
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("includes end boundary when gap rounds to 0.5s via roundTo2", () => {
+      // 496ms gap: roundTo2(0.496) = 0.5 so this should be treated as a 0.5s remainder
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      const events = getAllTestEvents();
+      // end testMs=1496, last step testMs=1000 — gap 496ms rounds to 0.50s
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 1496]);
+    });
+
+    it("skips end boundary when gap rounds below 0.5s via roundTo2", () => {
+      // 494ms gap: roundTo2(0.494) = 0.49 so this should not be an extra boundary
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2494, timer("end", 1));
+
+      const events = getAllTestEvents();
+      // end testMs=1494, last step testMs=1000 — gap 494ms rounds to 0.49s
       expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
     });
 
@@ -500,6 +523,20 @@ describe("stats.ts", () => {
     it("returns empty for no timer events", () => {
       logTestEvent("input", 1200, input());
       expect(getKeypressesPerSecond()).toEqual([]);
+    });
+
+    it("counts keypresses in last partial second when gap rounds to 0.5s", () => {
+      // mirrors the totalKeypressCountHistory mismatch: legacy pushes for roundTo2 >= 0.5,
+      // but the old boundary check (>= 500ms) skips a 496ms tail
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // first second
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // 496ms tail
+      logTestEvent("input", 2400, input({ charIndex: 2 }));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      // gap = 496ms, roundTo2(0.496) = 0.5 → end boundary added → [1, 2]
+      expect(getKeypressesPerSecond()).toEqual([1, 2]);
     });
   });
 
