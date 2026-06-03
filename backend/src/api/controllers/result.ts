@@ -199,6 +199,7 @@ export async function reportCompletedEventMismatch(
     difficulty,
     duration,
     funboxes,
+    version,
   } = req.body;
   // Logger.warning(
   //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
@@ -217,6 +218,7 @@ export async function reportCompletedEventMismatch(
       difficulty,
       duration,
       funboxes,
+      version,
     },
     uid,
   );
