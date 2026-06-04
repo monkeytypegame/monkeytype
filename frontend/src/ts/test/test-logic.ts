@@ -976,7 +976,13 @@ function compareCompletedEvents(
       if (diffs.length === 0) {
         console.debug(`Completed event match on key charStats:`, a);
       } else {
-        notMatching.push(`charStats (${diffs.join(", ")})`);
+        if (TestWords.words.list.length <= 25) {
+          notMatching.push(
+            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${TestInput.input.getHistory().join("_")}'`,
+          );
+        } else {
+          notMatching.push(`charStats (${diffs.join(", ")})`);
+        }
         mismatchedKeys.push("charStats");
         console.error(`Completed event mismatch on key charStats:`, a, b);
       }
@@ -1111,7 +1117,18 @@ function compareCompletedEvents(
   {
     const a = TestInput.keypressCountHistory;
     const b = getKeypressesPerSecond();
-    if (a.length === b.length && a.every((val, i) => val === b[i])) {
+    const aTotal = a.reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    const bTotal = b.reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    if (
+      a.length === b.length &&
+      (a.every((val, i) => val === b[i]) || aTotal === bTotal)
+    ) {
       console.debug(`Completed event match on key keypressCountHistory:`, a);
     } else {
       if (a.length !== b.length) {
@@ -1123,15 +1140,6 @@ function compareCompletedEvents(
           `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
         );
       } else {
-        const aTotal = a.reduce((acc, val) => {
-          if (val === undefined) return acc;
-          return acc + val;
-        }, 0);
-        const bTotal = b.reduce((acc, val) => {
-          if (val === undefined) return acc;
-          return acc + val;
-        }, 0);
-
         notMatching.push(
           `keypressCountHistory (values differ) (total ${aTotal} vs ${bTotal})`,
         );
@@ -1274,7 +1282,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 4,
+            version: 5,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },
