@@ -89,6 +89,7 @@ export function useResultStatsLiveQuery(
   options?: { lastTen?: true } | { groupByDay?: true },
 ) {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     const state = queryState();
     if (state === undefined) return undefined;
 
@@ -164,6 +165,7 @@ export function useResultsLiveQuery(options: {
   limit: Accessor<number>;
 }) {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     const state = options.queryState();
     const sorting = options.sorting();
     const limit = options.limit();
@@ -217,8 +219,8 @@ const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
     queryKey: queryKeys.root(),
+    enabled: isAuthenticated,
     queryFn: async () => {
-      if (!isAuthenticated()) return [];
       const tagIds = await getTagsOnce();
       const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
@@ -603,6 +605,7 @@ export function useUserAverage10LiveQuery(options: {
 
   return useLiveQuery((q) => {
     //disable query
+    if (!isAuthenticated()) return undefined;
     if (!options.isEnabled()) return undefined;
 
     return q
