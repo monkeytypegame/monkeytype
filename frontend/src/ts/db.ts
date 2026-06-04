@@ -38,7 +38,6 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { __nonReactive } from "./collections/tags";
-import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fetchUserFromApi } from "./ape/user";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
 
@@ -167,8 +166,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
-
-    updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     snap.connections = convertConnections(connectionsData);
     dbSnapshot = snap;
