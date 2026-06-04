@@ -47,12 +47,13 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   }
 
   if (endMs !== undefined) {
-    const last = boundaries[boundaries.length - 1];
-    // Must match the legacy condition: Math.round(roundTo2(testSeconds) % 1) >= 0.5.
-    // A naive ">= 500ms" check disagrees when the gap is in [495ms, 500ms) — roundTo2
-    // rounds that fraction up to 0.50s and the legacy system pushes an extra bucket,
-    // but a raw millisecond comparison would skip the boundary.
-    if (roundTo2((endMs - (last ?? 0)) / 1000) >= 0.5) {
+    // Use endMs % 1000 (fractional ms of total duration) rather than the gap
+    // from the last step. Step drift shifts the gap but not the total duration,
+    // so gap-based checks can falsely fire (early step on .49 test: gap ~495ms
+    // → roundTo2 = 0.50, wrong) or miss (very late step on .99 test: gap
+    // < 500ms, wrong). endMs % 1000 matches the legacy condition exactly:
+    // Math.round(roundTo2(testSeconds) % 1) >= 0.5.
+    if (roundTo2((endMs % 1000) / 1000) >= 0.5) {
       boundaries.push(endMs);
     }
   }

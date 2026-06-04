@@ -161,14 +161,14 @@ describe("stats.ts", () => {
       ]);
     });
 
-    it("includes end as boundary when far enough from last step", () => {
+    it("includes end as boundary when endMs % 1000 >= 500ms", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
-      logTestEvent("timer", 3000, timer("end", 2));
+      logTestEvent("timer", 2500, timer("end", 1));
 
       const events = getAllTestEvents();
-      // end at testMs 2000, last step at testMs 1000 — gap is 1000 >= 500
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 2000]);
+      // endMs=1500 → 1500%1000=500ms → roundTo2(0.5)=0.5 → boundary added
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 1500]);
     });
 
     it("skips end when too close to last step", () => {
@@ -181,26 +181,48 @@ describe("stats.ts", () => {
       expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
     });
 
-    it("includes end boundary when gap rounds to 0.5s via roundTo2", () => {
-      // 496ms gap: roundTo2(0.496) = 0.5 so this should be treated as a 0.5s remainder
+    it("includes end boundary when endMs % 1000 rounds to 0.5s", () => {
+      // endMs=1496 → 1496%1000=496ms → roundTo2(0.496)=0.50 → boundary added
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2496, timer("end", 1));
 
       const events = getAllTestEvents();
-      // end testMs=1496, last step testMs=1000 — gap 496ms rounds to 0.50s
       expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 1496]);
     });
 
-    it("skips end boundary when gap rounds below 0.5s via roundTo2", () => {
-      // 494ms gap: roundTo2(0.494) = 0.49 so this should not be an extra boundary
+    it("skips end boundary when endMs % 1000 rounds below 0.5s", () => {
+      // endMs=1494 → 1494%1000=494ms → roundTo2(0.494)=0.49 → no boundary
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2494, timer("end", 1));
 
       const events = getAllTestEvents();
-      // end testMs=1494, last step testMs=1000 — gap 494ms rounds to 0.49s
       expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("skips end boundary for .49 test even when step fires slightly early (drift)", () => {
+      // Step fires 5ms early (at 995ms instead of 1000ms).
+      // Gap = 1490-995 = 495ms — the old gap-based check would have added a boundary
+      // (roundTo2(0.495)=0.5), but endMs%1000=490ms → roundTo2(0.49)<0.5 → no boundary.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 1995, timer("step", 1));
+      logTestEvent("timer", 2490, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([995]);
+    });
+
+    it("includes end boundary for .99 test even when step fires late (drift)", () => {
+      // Step fires 510ms late (at 1510ms instead of 1000ms).
+      // Gap = 1990-1510 = 480ms — gap-based check would miss the boundary,
+      // but endMs%1000=990ms → roundTo2(0.99)>=0.5 → boundary added.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2510, timer("step", 1));
+      logTestEvent("timer", 2990, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1510, 1990]);
     });
 
     it("excludes short trailing interval (<500ms) for non-round test duration", () => {
@@ -535,7 +557,7 @@ describe("stats.ts", () => {
       logTestEvent("input", 2400, input({ charIndex: 2 }));
       logTestEvent("timer", 2496, timer("end", 1));
 
-      // gap = 496ms, roundTo2(0.496) = 0.5 → end boundary added → [1, 2]
+      // endMs=1496, 1496%1000=496ms → roundTo2(0.496)=0.5 → end boundary added → [1, 2]
       expect(getKeypressesPerSecond()).toEqual([1, 2]);
     });
   });
