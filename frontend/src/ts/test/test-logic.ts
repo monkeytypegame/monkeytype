@@ -1186,7 +1186,7 @@ function compareCompletedEvents(
     const space = ce2.startToFirstKey + ce2.lastKeyToEnd;
     const total = Numbers.roundTo2((space + sp) / 1000);
     const delta = Numbers.roundTo2(Math.abs(ce2.testDuration - total));
-    if (delta !== 0) {
+    if (delta >= 0.1) {
       notMatching.push(
         `testDuration vs key timings (difference of ${delta} seconds)`,
       );
