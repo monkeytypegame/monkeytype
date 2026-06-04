@@ -528,6 +528,8 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "ips",
     "testActivity",
     "suspicious",
+    "lastReultHashes",
+    "lastResultHashes",
   ]) as RelevantUserInfo;
 }
 

@@ -64,7 +64,7 @@ export type DBUser = Omit<
   note?: string;
 
   lastResultHashes?: string[];
-  lastReultHashes?: string[];
+  lastReultHashes?: string[]; // Legacy only
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -587,7 +587,7 @@ export async function updateLastHashes(
         lastResultHashes: lastHashes,
       },
       $unset: {
-        lastReultHashes: "",
+        lastReultHashes: "", // remove Legacy property
       },
     },
   );
@@ -1369,9 +1369,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
   );
 }
 
-function migrateUser<
-  T extends Pick<DBUser, "personalBests" | "lastResultHashes">,
->(user: T): T {
+function migrateUser<T extends DBUser>(user: T): T {
   user.personalBests ??= {
     time: {},
     words: {},
@@ -1381,7 +1379,7 @@ function migrateUser<
   };
 
   if ("lastReultHashes" in user) {
-    user.lastResultHashes = user.lastReultHashes as string[];
+    user.lastResultHashes = user.lastReultHashes;
   }
 
   return user;
