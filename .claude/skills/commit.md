@@ -19,6 +19,7 @@ Trigger: user asks to commit, or uses /commit
    - Add a body (separated by blank line) only if the description alone is insufficient to understand the change.
 4. Show the user the proposed commit message and ask for confirmation before committing.
 5. On confirmation, create the commit. Use a HEREDOC for the message:
+
    ```
    git commit -m "$(cat <<'EOF'
    <type>: <description>
@@ -27,4 +28,5 @@ Trigger: user asks to commit, or uses /commit
    EOF
    )"
    ```
+
 6. Run `git status` after to verify success.

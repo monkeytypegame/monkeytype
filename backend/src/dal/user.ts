@@ -1375,7 +1375,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
 }
 
 function migrateUser<
-  T extends Pick<DBUser, "personalBests" | "lastResultHashes">
+  T extends Pick<DBUser, "personalBests" | "lastResultHashes">,
 >(user: T): T {
   user.personalBests ??= {
     time: {},
