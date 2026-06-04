@@ -27,11 +27,7 @@ import {
   CountByYearAndDay,
   Friend,
 } from "@monkeytype/schemas/users";
-import {
-  Mode,
-  Mode2,
-  PersonalBest,
-} from "@monkeytype/schemas/shared";
+import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
