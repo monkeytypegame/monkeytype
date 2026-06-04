@@ -1,13 +1,14 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
+import { getInputForWord } from "../../test/events/data";
+import { isTestActive } from "../../states/test";
 
 export function onBeforeDelete(event: InputEvent): void {
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     event.preventDefault();
     return;
   }
@@ -50,9 +51,10 @@ export function onBeforeDelete(event: InputEvent): void {
   }
 
   const confidence = Config.confidenceMode;
+  const previousWord = TestWords.words.get(TestState.activeWordIndex - 1);
   const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.getText(TestState.activeWordIndex - 1);
+    getInputForWord(TestState.activeWordIndex - 1) ===
+    previousWord?.textWithCommit;
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

@@ -1,15 +1,34 @@
 import {
   CreateHotkeyOptions,
+  CreateHotkeyDefinition,
   Hotkey,
   HotkeyCallback,
   HotkeyCallbackContext,
   createHotkey as registerHotkey,
+  createHotkeys as registerHotkeys,
 } from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isInputElementFocused } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
 
 export const NoKey = "" as Hotkey;
+
+const defaultOptions: CreateHotkeyOptions = {
+  ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
+  stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
+  preventDefault: false, //we set preventDefault in the callback if the hotkey executes
+  requireReset: true,
+  conflictBehavior: "replace",
+};
+
+function attachBeforeCallback(callback: HotkeyCallback): HotkeyCallback {
+  return (e, context) => {
+    if (handleHotkeyOnInteractiveElement(e, context)) return;
+    e.stopPropagation();
+    e.preventDefault();
+    callback(e, context);
+  };
+}
 
 export function createHotkey(
   hotkey: Hotkey | (() => Hotkey),
@@ -21,24 +40,35 @@ export function createHotkey(
     >
   > = () => ({}),
 ): void {
-  registerHotkey(
-    hotkey,
-    (e, context) => {
-      if (handleHotkeyOnInteractiveElement(e, context)) return;
-      e.stopPropagation();
-      e.preventDefault();
-      callback(e, context);
-    },
-    () => ({
-      ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
-      stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
-      preventDefault: false, //we set preventDefault in the callback if the hotkey executes
-      requireReset: true,
-      conflictBehavior: "replace",
-      enabled: (typeof hotkey === "function" ? hotkey() : hotkey) !== NoKey,
-      ...options(),
-    }),
-  );
+  registerHotkey(hotkey, attachBeforeCallback(callback), () => ({
+    ...defaultOptions,
+    enabled: (typeof hotkey === "function" ? hotkey() : hotkey) !== NoKey,
+    ...options(),
+  }));
+}
+
+export function createHotkeys(
+  hotkeys: CreateHotkeyDefinition[] | (() => CreateHotkeyDefinition[]),
+  commonOptions: () => Partial<
+    Omit<
+      CreateHotkeyOptions,
+      "ignoreInputs" | "stopPropagation" | "preventDefault"
+    >
+  > = () => ({}),
+): void {
+  const modifiedHotkeys = (): CreateHotkeyDefinition[] => {
+    const resolvedHotkeys = typeof hotkeys === "function" ? hotkeys() : hotkeys;
+    resolvedHotkeys.forEach((hotkey) => {
+      hotkey.callback = attachBeforeCallback(hotkey.callback);
+      hotkey.options ??= {};
+      hotkey.options.enabled ??= hotkey.hotkey !== NoKey;
+    });
+    return resolvedHotkeys;
+  };
+  registerHotkeys(modifiedHotkeys, () => ({
+    ...defaultOptions,
+    ...commonOptions(),
+  }));
 }
 
 function isInteractiveElementFocused(): boolean {
@@ -51,7 +81,8 @@ function isInteractiveElementFocused(): boolean {
     document.activeElement?.tagName === "SELECT" ||
     document.activeElement?.tagName === "BUTTON" ||
     document.activeElement?.classList.contains("button") === true ||
-    document.activeElement?.classList.contains("textButton") === true
+    document.activeElement?.classList.contains("textButton") === true ||
+    document.activeElement?.classList.contains("modal") === true
   );
 }
 

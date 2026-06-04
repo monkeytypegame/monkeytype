@@ -1,8 +1,12 @@
 import { ConfigSchema } from "@monkeytype/schemas/configs";
+import { FontNameSchema } from "@monkeytype/schemas/fonts";
 import { createResource, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
-import { configMetadata } from "../../../../config/metadata";
+import {
+  configMetadata,
+  getOptionSearchKeywords,
+} from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
@@ -13,7 +17,7 @@ import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function FontFamily(): JSXElement {
   const [hasLocalFont, { refetch }] = createResource(async () =>
@@ -34,10 +38,11 @@ export function FontFamily(): JSXElement {
   };
 
   return (
-    <Setting
+    <SearchableSetting
       key="fontFamily"
       title={configMetadata.fontFamily.displayString ?? "font family"}
       fa={configMetadata.fontFamily.fa}
+      extraSearchKeywords={getOptionSearchKeywords("fontFamily")}
       description={
         <>
           {configMetadata.fontFamily.description}
@@ -74,7 +79,7 @@ export function FontFamily(): JSXElement {
                 accept="font/woff,font/woff2,font/ttf,font/otf"
                 class="hidden"
                 onChange={async (e) => {
-                  const fileInput = e.target as HTMLInputElement;
+                  const fileInput = e.target;
                   const file = fileInput.files?.[0];
 
                   if (!file) {
@@ -121,10 +126,7 @@ export function FontFamily(): JSXElement {
           <div class="grid grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))] gap-2">
             <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
               {(option) => {
-                const optionsMeta = configMetadata.fontFamily
-                  .optionsMetadata as
-                  | Record<string, { displayString?: string }>
-                  | undefined;
+                const optionsMeta = configMetadata.fontFamily.optionsMetadata;
                 const match = optionsMeta?.[String(option)];
                 const displayString =
                   match?.displayString ?? String(option).replace(/_/g, " ");
@@ -170,7 +172,7 @@ export function FontFamily(): JSXElement {
                   text: "Make sure you have the font installed on your computer before applying",
                   buttonText: "apply",
                   schema: z.object({
-                    fontName: z.string(),
+                    fontName: FontNameSchema,
                   }),
                   inputs: {
                     fontName: {

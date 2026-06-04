@@ -6,9 +6,8 @@ import {
 import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../../config/store";
 import * as PbTablesModal from "../../../modals/pb-tables";
-import { Formatting } from "../../../utils/format";
+import { getFormatting } from "../../../states/core";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
@@ -53,7 +52,9 @@ export function UserProfile(props: {
       </Show>
 
       <ActivityCalendar
-        testActivity={props.profile.testActivity}
+        testActivity={
+          props.isAccountPage ? undefined : props.profile.testActivity
+        }
         isAccountPage={props.isAccountPage}
       />
     </div>
@@ -64,7 +65,7 @@ function LeaderboardPosition(props: {
   top15?: RankAndCount;
   top60?: RankAndCount;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   return (
     <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
@@ -103,7 +104,7 @@ function PbTable<M extends "time" | "words">(props: {
   pbs: PersonalBests[M];
   isAccountPage?: true;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   const bests = createMemo(() =>
     props.mode2.map((mode) => {

@@ -4,6 +4,7 @@ import { Accessor, createSignal, JSXElement, Show } from "solid-js";
 import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
+import { getZodType, unwrapSchema } from "../../../utils/zod";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -26,6 +27,7 @@ export function InputField(props: {
   min?: number;
   max?: number;
   step?: string | number;
+  alwaysShowFieldIndicator?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -67,11 +69,12 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={props.field().state.value as string}
+        value={convertValueToString(props.field().state.value)}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === ""
+            (props.field().state.value === undefined ||
+              props.field().state.value === "")
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -82,7 +85,11 @@ export function InputField(props: {
           props.field().handleBlur();
         }}
         onInput={(e) => {
-          props.field().handleChange(e.target.value);
+          const value: unknown = convertStringToValue(
+            props.field(),
+            e.target.value,
+          );
+          props.field().handleChange(value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -104,18 +111,22 @@ export function InputField(props: {
         step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
-        <FieldIndicator field={props.field()} />
+        <FieldIndicator
+          field={props.field()}
+          alwaysShow={props.alwaysShowFieldIndicator}
+        />
       </Show>
     </div>
   );
 }
 
-function getNumberOptions(schema: ZodTypeAny | undefined): {
+function getNumberOptions(rawSchema: ZodTypeAny | undefined): {
   min?: number;
   max?: number;
   step?: string;
 } {
-  if (schema === undefined) return {};
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
   if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
   const numberSchema = schema as ZodNumber;
 
@@ -127,13 +138,14 @@ function getNumberOptions(schema: ZodTypeAny | undefined): {
 }
 
 function getDateOptions(
-  schema: ZodTypeAny | undefined,
+  rawSchema: ZodTypeAny | undefined,
   format: (val: Date | undefined) => string | undefined,
 ): {
   min?: string;
   max?: string;
 } {
-  if (schema === undefined) return {};
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
   if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
 
   const applyFormat = (it: Date | null) =>
@@ -145,7 +157,25 @@ function getDateOptions(
   };
 }
 
-function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  return schema._def["typeName"] as ZodFirstPartyTypeKind;
+function convertValueToString(input: unknown | undefined): string {
+  if (input === undefined || input === null) return "";
+  if (typeof input === "number") {
+    if (isFinite(input)) return input.toString();
+    else return "";
+  }
+  return input as string;
+}
+
+function convertStringToValue<T extends unknown | undefined>(
+  field: AnyFieldApi,
+  newValue: string,
+): T | undefined {
+  const defaultValue: unknown =
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    field.form.options.defaultValues?.[field.name];
+  if (defaultValue === undefined || defaultValue === null) return newValue as T;
+  if (newValue === "") return undefined;
+  if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
+
+  return newValue as T;
 }
