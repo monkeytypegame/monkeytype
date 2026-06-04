@@ -31,7 +31,6 @@ import {
   Mode,
   Mode2,
   PersonalBest,
-  PersonalBests,
 } from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/schemas/results";
