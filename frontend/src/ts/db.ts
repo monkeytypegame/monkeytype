@@ -128,6 +128,8 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
+    snap.streakLastResultTimestamp =
+      userData?.streak?.lastResultTimestamp ?? undefined;
     snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
@@ -314,6 +316,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   if (data.result !== undefined) {
     void insertLocalResult({ result: data.result });
     setLastResult(data.result);
+    snapshot.streakLastResultTimestamp = data.result.timestamp;
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
     }
