@@ -101,6 +101,7 @@ BACKEND_URL="http://<Your IP>:5005"
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
+
    - The backend Docker scripts read port bindings from this file. If `27017`, `6379`, or `5005` are already in use on your machine, update `DOCKER_DB_PORT`, `DOCKER_REDIS_PORT`, and `DOCKER_SERVER_PORT` before starting Docker.
 
 2. Setup the database server

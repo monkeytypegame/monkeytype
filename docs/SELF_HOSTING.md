@@ -58,7 +58,8 @@ docker compose up -d --force-recreate
 ```
 
 > [!TIP]
-> After updating your configuration and recreating the containers, clear your browser cache or perform a hard reload (Ctrl + F5) to make sure your browser isn't running an old cached version of the frontend.
+>     After updating your configuration and recreating the containers, clear your browser cache or perform a hard reload (Ctrl + F5) to make sure your browser isn't running an old cached version of the frontend.
+
 
 ## Account System
 
