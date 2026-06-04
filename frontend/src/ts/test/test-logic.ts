@@ -865,7 +865,7 @@ function buildCompletedEvent(
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charStats: [
-      stats.correctChars + stats.correctSpaces,
+      stats.correctChars,
       stats.incorrectChars,
       stats.extraChars,
       stats.missedChars,
