@@ -31,8 +31,9 @@ vi.mock("../../../src/ts/test/test-words", () => {
   };
 });
 
+const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
 vi.mock("../../../src/ts/test/custom-text", () => ({
-  getLimit: () => ({ mode: "words", value: 0 }),
+  getLimit: () => customTextLimit,
 }));
 
 import {
@@ -267,6 +268,71 @@ describe("stats.ts", () => {
       const boundaries = statsTesting.getTimerBoundaries(events);
       // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
       expect(boundaries).toEqual([500]);
+    });
+
+    it("skips end boundary in time mode even when endMs %1000 >= 500ms", () => {
+      // 120s time test where timer fires step 120 slightly early at ~119.99s.
+      // Legacy time mode never pushes an extra bucket — CE2 must match by
+      // skipping the end boundary entirely.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 120; i++) {
+        logTestEvent("timer", i * 1000 - 8, timer("step", i));
+      }
+      logTestEvent("timer", 119994, timer("end", 120));
+
+      const events = getAllTestEvents();
+      const boundaries = statsTesting.getTimerBoundaries(events);
+      // 120 step boundaries, no end boundary
+      expect(boundaries).toHaveLength(120);
+    });
+
+    it("skips end boundary in custom time mode", () => {
+      (Config as { mode: string }).mode = "custom";
+      customTextLimit.mode = "time";
+      try {
+        logTestEvent("timer", 0, timer("start", 0));
+        for (let i = 1; i <= 30; i++) {
+          logTestEvent("timer", i * 1000, timer("step", i));
+        }
+        logTestEvent("timer", 29994, timer("end", 30));
+
+        const events = getAllTestEvents();
+        expect(statsTesting.getTimerBoundaries(events)).toHaveLength(30);
+      } finally {
+        customTextLimit.mode = "words";
+      }
+    });
+
+    describe("invariant: boundaries.length === Math.round(endMs / 1000)", () => {
+      // Sanity invariant: for non-timed modes, the number of timer boundaries
+      // must equal Math.round(testDurationSeconds) — matches the legacy
+      // keypressCountHistory length contract. Catches drift-induced extra steps
+      // or off-by-one boundaries.
+      const cases: { name: string; endMs: number }[] = [
+        { name: ".00 (exactly 5s)", endMs: 5000 },
+        { name: ".49 (5.49s)", endMs: 5490 },
+        { name: ".50 (5.50s)", endMs: 5500 },
+        { name: ".99 (5.99s)", endMs: 5990 },
+        { name: "sub-1s .49", endMs: 490 },
+        { name: "sub-1s .99", endMs: 990 },
+      ];
+
+      for (const { name, endMs } of cases) {
+        it(`holds for ${name}`, () => {
+          logTestEvent("timer", 0, timer("start", 0));
+          const fullSeconds = Math.floor(endMs / 1000);
+          for (let i = 1; i <= fullSeconds; i++) {
+            logTestEvent("timer", i * 1000, timer("step", i));
+          }
+          logTestEvent("timer", endMs, timer("end", fullSeconds));
+
+          const events = getAllTestEvents();
+          const boundaries = statsTesting.getTimerBoundaries(events);
+          const roundedDuration = Math.round(endMs / 1000);
+          expect(boundaries).toHaveLength(roundedDuration);
+        });
+      }
     });
   });
 
