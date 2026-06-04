@@ -328,7 +328,7 @@ function countChars(final = false): CharCount {
         missedChars += toAdd.missed;
       }
     }
-    if (i < inputWords.length - 1) {
+    if (i < inputWords.length - 1 && Strings.getLastChar(inputWord) !== "\n") {
       spaces++;
     }
   }
