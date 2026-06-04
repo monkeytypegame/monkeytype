@@ -1115,7 +1115,9 @@ function compareCompletedEvents(
       console.debug(`Completed event match on key keypressCountHistory:`, a);
     } else {
       if (a.length !== b.length) {
-        notMatching.push(`keypressCountHistory (length differs)`);
+        notMatching.push(
+          `keypressCountHistory (length differs ${a.length} vs ${b.length})`,
+        );
         mismatchedKeys.push("keypressCountHistory_length");
         console.error(
           `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
