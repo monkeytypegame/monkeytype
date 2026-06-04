@@ -510,7 +510,6 @@ type RelevantUserInfo = Omit<
   | "nameHistory"
   | "lastNameChange"
   | "_id"
-  | "lastReultHashes" //TODO fix typo
   | "note"
   | "ips"
   | "testActivity"
@@ -525,7 +524,6 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "nameHistory",
     "lastNameChange",
     "_id",
-    "lastReultHashes", //TODO fix typo
     "note",
     "ips",
     "testActivity",

@@ -443,7 +443,10 @@ export async function addResult(
   }
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
-    let lastHashes = user.lastReultHashes ?? [];
+    let lastHashes =
+      user.lastResultHashes ??
+      user.lastReultHashes ??
+      [];
     if (lastHashes.includes(resulthash)) {
       void addLog(
         "duplicate_result",
@@ -690,10 +693,8 @@ export async function addResult(
   if (isPb) {
     void addLog(
       "user_new_pb",
-      `${`${completedEvent.mode} ${completedEvent.mode2}`} ${
-        completedEvent.wpm
-      } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
-        completedEvent.consistency
+      `${`${completedEvent.mode} ${completedEvent.mode2}`} ${completedEvent.wpm
+      } ${completedEvent.acc}% ${completedEvent.rawWpm} ${completedEvent.consistency
       }% (${addedResult.insertedId})`,
       uid,
     );

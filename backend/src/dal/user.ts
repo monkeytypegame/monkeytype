@@ -67,6 +67,9 @@ export type DBUser = Omit<
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
   note?: string;
+
+  lastResultHashes?: string[];
+  lastReultHashes?: string[];
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -586,7 +589,10 @@ export async function updateLastHashes(
     { uid },
     {
       $set: {
-        lastReultHashes: lastHashes, //TODO fix typo
+        lastResultHashes: lastHashes,
+      },
+      $unset: {
+        lastReultHashes: "",
       },
     },
   );
@@ -1368,7 +1374,9 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
   );
 }
 
-function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
+function migrateUser<
+  T extends Pick<DBUser, "personalBests" | "lastResultHashes">
+>(user: T): T {
   user.personalBests ??= {
     time: {},
     words: {},
@@ -1376,6 +1384,10 @@ function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
     zen: {},
     custom: {},
   };
+
+  if ("lastReultHashes" in user) {
+    user.lastResultHashes = user.lastReultHashes as string[];
+  }
 
   return user;
 }
