@@ -318,7 +318,7 @@ export function HistoryChart(props: {
       </div>
       <div class="grid grid-cols-1 items-center lg:grid-cols-[1fr_30rem]">
         <Trend results={props.results} />
-        <div class="grid grid-cols-4 gap-2 text-em-xs">
+        <div class="grid grid-cols-4 gap-2 text-em-xs max-[475px]:grid-cols-2">
           <Button
             fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
             text="Speed"
