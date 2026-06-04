@@ -1123,7 +1123,18 @@ function compareCompletedEvents(
           `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
         );
       } else {
-        notMatching.push(`keypressCountHistory (values differ)`);
+        const aTotal = a.reduce((acc, val) => {
+          if (val === undefined) return acc;
+          return acc + val;
+        }, 0);
+        const bTotal = b.reduce((acc, val) => {
+          if (val === undefined) return acc;
+          return acc + val;
+        }, 0);
+
+        notMatching.push(
+          `keypressCountHistory (values differ) (total ${aTotal} vs ${bTotal})`,
+        );
         mismatchedKeys.push("keypressCountHistory");
         console.error(
           `Completed event mismatch on key keypressCountHistory:`,
@@ -1152,6 +1163,45 @@ function compareCompletedEvents(
         `Completed event mismatch on totalKeypressCountHistory:`,
         a,
         b,
+      );
+    }
+  }
+
+  {
+    const dur = (ce2.keyDuration === "toolong" ? [] : ce2.keyDuration).reduce(
+      (acc, val) => {
+        if (val === undefined) return acc;
+        return acc + val;
+      },
+      0,
+    );
+    const over = ce2.keyOverlap;
+    const sp = (ce2.keySpacing === "toolong" ? [] : ce2.keySpacing).reduce(
+      (acc, val) => {
+        if (val === undefined) return acc;
+        return acc + val;
+      },
+      0,
+    );
+    const space = ce2.startToFirstKey + ce2.lastKeyToEnd;
+    const total = Numbers.roundTo2((space + sp) / 1000);
+    const delta = Numbers.roundTo2(Math.abs(ce2.testDuration - total));
+    if (delta !== 0) {
+      notMatching.push(
+        `testDuration vs key timings (difference of ${delta} seconds)`,
+      );
+      mismatchedKeys.push("testDuration_keyTimings");
+      console.error(
+        `Completed event mismatch on testDuration vs key timings: testDuration ${ce2.testDuration} vs total key timings ${total}`,
+        {
+          testDuration: ce2.testDuration,
+          keyTimingsTotal: total,
+          keyDuration: dur,
+          keyOverlap: over,
+          keySpacing: sp,
+          startToFirstKey: ce2.startToFirstKey,
+          lastKeyToEnd: ce2.lastKeyToEnd,
+        },
       );
     }
   }
@@ -1224,7 +1274,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 3,
+            version: 4,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },
