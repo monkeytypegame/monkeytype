@@ -270,6 +270,21 @@ describe("stats.ts", () => {
       expect(boundaries).toEqual([500]);
     });
 
+    it("skips end boundary when endMs rounds up to whole second", () => {
+      // endMs=19997: roundTo2(19.997)=20.00 → fractional 0 → no extra bucket
+      // Legacy CE1 doesn't push extra because stats.time=20.00 has no fractional.
+      // Naive (endMs % 1000)/1000 = 0.997 → roundTo2 = 1.0 would wrongly add.
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 20; i++) {
+        logTestEvent("timer", i * 1000 - 10, timer("step", i));
+      }
+      logTestEvent("timer", 19997, timer("end", 20));
+
+      const events = getAllTestEvents();
+      // 20 step boundaries, no end boundary (testSeconds rounds to 20.00)
+      expect(statsTesting.getTimerBoundaries(events)).toHaveLength(20);
+    });
+
     it("skips end boundary in time mode even when endMs %1000 >= 500ms", () => {
       // 120s time test where timer fires step 120 slightly early at ~119.99s.
       // Legacy time mode never pushes an extra bucket — CE2 must match by

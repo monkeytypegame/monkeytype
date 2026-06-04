@@ -48,14 +48,17 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
 
   if (endMs !== undefined) {
     // Timed tests never push an extra bucket (legacy skips setLastSecondNotRound
-    // for time mode). For other modes, use endMs % 1000 (fractional ms of total
-    // duration) rather than gap from last step — step drift shifts the gap but
-    // not the total duration, so gap-based checks can falsely fire or miss.
-    // This matches the legacy condition Math.round(roundTo2(testSeconds) % 1) >= 0.5.
+    // for time mode). For other modes, mirror the legacy condition exactly:
+    // Math.round(roundTo2(testSeconds) % 1) >= 0.5. The rounding must happen at
+    // the SECONDS level — taking the fractional ms first and rounding can give
+    // a different answer when the rounded seconds carry into the next integer
+    // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
+    // rounds to 0.5 → wrongly adds a bucket).
     const isTimedTest =
       Config.mode === "time" ||
       (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-    if (!isTimedTest && roundTo2((endMs % 1000) / 1000) >= 0.5) {
+    const testSeconds = roundTo2(endMs / 1000);
+    if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
       boundaries.push(endMs);
     }
   }
