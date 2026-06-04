@@ -993,6 +993,54 @@ describe("string utils", () => {
             missed: 0,
           },
         },
+        {
+          description: "correctly count incorrect newlines",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello\n",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "partial correct, with space",
+          input: {
+            inputWord: "helxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "newlines",
+          input: {
+            inputWord: "hello\n",
+            targetWord: "hello\n",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
       ];
 
       it.each(testCases)("$description", ({ input, expected }) => {
