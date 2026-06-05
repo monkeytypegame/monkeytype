@@ -443,7 +443,7 @@ export async function addResult(
   }
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
-    let lastHashes = user.lastReultHashes ?? [];
+    let lastHashes = user.lastResultHashes ?? [];
     if (lastHashes.includes(resulthash)) {
       void addLog(
         "duplicate_result",

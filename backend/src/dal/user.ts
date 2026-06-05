@@ -62,8 +62,7 @@ export type DBUser = Omit<
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
   note?: string;
-
-  lastReultHashes?: string[]; // Legacy only
+  lastResultHashes?: string[];
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -1378,12 +1377,8 @@ function migrateUser<T extends DBUser>(user: T): T {
   };
 
   if ("lastReultHashes" in user) {
-    (
-      user as T & {
-        lastResultHashes?: string[];
-        lastReultHashes?: string[];
-      }
-    ).lastResultHashes = user.lastReultHashes;
+    user.lastResultHashes = user["lastReultHashes"] as string[];
+    delete user["lastReultHashes"];
   }
 
   return user;

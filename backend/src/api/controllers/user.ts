@@ -510,6 +510,7 @@ type RelevantUserInfo = Omit<
   | "nameHistory"
   | "lastNameChange"
   | "_id"
+  | "lastResultHashes"
   | "note"
   | "ips"
   | "testActivity"
@@ -528,7 +529,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "ips",
     "testActivity",
     "suspicious",
-    "lastReultHashes",
+    "lastResultHashes",
   ]) as RelevantUserInfo;
 }
 
