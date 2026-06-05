@@ -115,6 +115,7 @@ import {
   getKeypressesPerSecond,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
+import { isDevEnvironment } from "../utils/env";
 
 let failReason = "";
 
@@ -910,7 +911,7 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-const ALWAYSREPORT = false;
+const ALWAYSREPORT = isDevEnvironment() || false;
 
 // window.ce2 = buildCompletedEvent2;
 
