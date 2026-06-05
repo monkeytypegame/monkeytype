@@ -285,8 +285,8 @@ function countChars(final = false): CharCount {
       countCharsUtils(
         inputWord,
         targetWord,
-        !final || (i === inputWords.length - 1 && final),
-        isTimedTest,
+        i === inputWords.length - 1,
+        (isTimedTest && final) || !final,
       );
 
     correctWordChars += correctWord;
