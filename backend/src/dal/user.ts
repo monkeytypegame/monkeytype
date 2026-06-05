@@ -63,7 +63,6 @@ export type DBUser = Omit<
   suspicious?: boolean;
   note?: string;
 
-  lastResultHashes?: string[];
   lastReultHashes?: string[]; // Legacy only
 };
 
@@ -1379,7 +1378,7 @@ function migrateUser<T extends DBUser>(user: T): T {
   };
 
   if ("lastReultHashes" in user) {
-    user.lastResultHashes = user.lastReultHashes;
+    (user as any).lastResultHashes = (user as any).lastReultHashes;
   }
 
   return user;
