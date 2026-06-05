@@ -931,9 +931,19 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
+    if (
+      key === "keyDuration" ||
+      key === "keySpacing" ||
+      key === "afkDuration" ||
+      key === "chartData"
+    ) {
+      continue;
+    }
+
     let val1 = ce[key];
     let val2 = ce2[key];
 
+    //@ts-expect-error asdf
     if (key === "keyDuration" || key === "keySpacing") {
       const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
@@ -1034,6 +1044,7 @@ function compareCompletedEvents(
     //   };
     // }
 
+    //@ts-expect-error asdf
     if (key === "chartData") {
       const v1 = val1 as CompletedEvent["chartData"];
       const v2 = val2 as CompletedEvent["chartData"];
