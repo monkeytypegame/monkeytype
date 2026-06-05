@@ -38,7 +38,6 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { __nonReactive } from "./collections/tags";
-import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fetchUserFromApi } from "./ape/user";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
 
@@ -168,8 +167,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
       snap.lbMemory = userData.lbMemory;
     }
 
-    updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
-
     snap.connections = convertConnections(connectionsData);
     dbSnapshot = snap;
 
@@ -181,7 +178,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     setSolidSnapshot(dbSnapshot);
   }
 }
-export async function getLocalPB<M extends Mode>(
+export function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
   punctuation: boolean,
@@ -190,7 +187,7 @@ export async function getLocalPB<M extends Mode>(
   difficulty: Difficulty,
   lazyMode: boolean,
   funboxes: FunboxMetadata[],
-): Promise<PersonalBest | undefined> {
+): PersonalBest | undefined {
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }

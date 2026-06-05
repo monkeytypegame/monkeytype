@@ -1392,29 +1392,6 @@
     pointer-events: none;
   }
 
-  #testModesNotice {
-    font-size: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    color: var(--sub-color);
-    text-align: center;
-    margin-bottom: 0.5rem;
-    transition: opacity 0.125s;
-    justify-content: center;
-    user-select: none;
-
-    .textButton {
-      padding: 0.5em 1em;
-      align-items: center;
-      &.noInteraction {
-        pointer-events: none;
-      }
-    }
-
-    .fas {
-      margin-right: 0.5rem;
-    }
-  }
   #liveStatsMini {
     width: 0;
     justify-content: start;
@@ -1483,9 +1460,6 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice {
-    opacity: 0 !important;
-  }
   #restartTestButton {
     opacity: 0 !important;
     &:focus-visible {

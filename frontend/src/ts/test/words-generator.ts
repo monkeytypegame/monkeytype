@@ -6,7 +6,6 @@ import QuotesController, {
   Quote,
   QuoteWithTextSplit,
 } from "../controllers/quotes-controller";
-import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -28,6 +27,7 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
+import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
 
 //pin implementation
 const random = Math.random;
@@ -375,10 +375,11 @@ async function applyBritishEnglishToWord(
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
+  const currentQuote = getCurrentQuote();
   if (
     Config.mode === "quote" &&
-    TestWords.currentQuote?.britishText !== undefined &&
-    TestWords.currentQuote?.britishText !== ""
+    currentQuote?.britishText !== undefined &&
+    currentQuote?.britishText !== ""
   ) {
     return word;
   }
@@ -424,7 +425,7 @@ export function getLimit(): number {
 
   let limit = 100;
 
-  const currentQuote = TestWords.currentQuote;
+  const currentQuote = getCurrentQuote();
 
   if (Config.mode === "quote" && currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -498,12 +499,12 @@ async function getQuoteWordList(
   language: LanguageObject,
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
-  if (TestState.isRepeated) {
+  if (isRepeated()) {
     if (currentWordset === null) {
       throw new WordGenError("Current wordset is null");
     }
 
-    TestWords.setCurrentQuote(previousRandomQuote);
+    setCurrentQuote(previousRandomQuote);
 
     // need to re-reverse the words if the test is repeated
     // because it will be reversed again in the generateWords function
@@ -579,17 +580,18 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
+  setCurrentQuote(rq as QuoteWithTextSplit);
 
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     throw new WordGenError("Random quote is null");
   }
 
-  if (TestWords.currentQuote.textSplit === undefined) {
+  if (currentQuote.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");
   }
 
-  return TestWords.currentQuote.textSplit;
+  return currentQuote.textSplit;
 }
 
 let currentWordset: Wordset | null = null;
@@ -610,11 +612,11 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
-  if (!TestState.isRepeated) {
+  if (!isRepeated()) {
     previousGetNextWordReturns = [];
   }
-  previousRandomQuote = TestWords.currentQuote;
-  TestWords.setCurrentQuote(null);
+  previousRandomQuote = getCurrentQuote();
+  setCurrentQuote(null);
   currentSection = [];
   sectionIndex = 0;
   sectionHistory = [];
@@ -705,7 +707,7 @@ export async function generateWords(
     i++;
   }
 
-  const quote = TestWords.currentQuote;
+  const quote = getCurrentQuote();
 
   if (Config.mode === "quote" && quote === null) {
     throw new WordGenError("Random quote is null");
@@ -745,7 +747,7 @@ export async function getNextWord(
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
-    isRepeated: TestState.isRepeated,
+    isRepeated: isRepeated(),
     currentWordset,
     wordIndex,
     language: currentLanguage,
@@ -765,7 +767,7 @@ export async function getNextWord(
   //because quote test can be repeated in the middle of a test
   //we cant rely on data inside previousGetNextWordReturns
   //because it might not include the full quote
-  if (TestState.isRepeated && Config.mode !== "quote") {
+  if (isRepeated() && Config.mode !== "quote") {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
