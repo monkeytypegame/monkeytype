@@ -1,17 +1,17 @@
 import { z } from "zod";
 
 import Ape from "../../../ape";
+import {
+  getPasswordSchema,
+  isUsingPasswordAuthentication,
+  reauthenticate,
+} from "../../../auth";
 import { resetConfig } from "../../../config/lifecycle";
 import { getSnapshot } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
 import FileStorage from "../../../utils/file-storage";
-import {
-  getPasswordSchema,
-  isUsingPasswordAuthentication,
-  reauthenticate,
-} from "../../../utils/firebase-auth";
 import { reloadAfter } from "../../../utils/misc";
 
 export function showDeleteAccountModal(): void {

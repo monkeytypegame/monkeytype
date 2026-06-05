@@ -1,25 +1,18 @@
-import { unlink } from "firebase/auth";
 import { z } from "zod";
 
+import {
+  AuthMethod,
+  getAuthMethodDisplay,
+  getPasswordSchema,
+  hasAdditionalAuthMethods,
+  isUsingPasswordAuthentication,
+  removeAuthProvider,
+} from "../../../auth";
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { createErrorMessage } from "../../../utils/error";
-import {
-  AuthMethod,
-  getPasswordSchema,
-  isUsingGithubAuthentication,
-  isUsingGoogleAuthentication,
-  isUsingPasswordAuthentication,
-  reauthenticate,
-} from "../../../utils/firebase-auth";
 import { reloadAfter } from "../../../utils/misc";
 
-const displayByMethod: Record<AuthMethod, string> = {
-  password: "Password",
-  "github.com": "GitHub",
-  "google.com": "Google",
-};
 export function showRemoveAuthMethodModal(options: {
   authMethod: AuthMethod;
   callback: () => void;
@@ -27,22 +20,19 @@ export function showRemoveAuthMethodModal(options: {
   if (!isAuthenticated()) return;
 
   //check there is at least one authentication remaining
-  const hasRemainingAuth = [
-    isUsingPasswordAuthentication() && options.authMethod !== "password",
-    isUsingGithubAuthentication() && options.authMethod !== "github.com",
-    isUsingGoogleAuthentication() && options.authMethod !== "google.com",
-  ].find((it) => it);
+  const hasRemainingAuth = hasAdditionalAuthMethods(options.authMethod);
 
   if (!hasRemainingAuth) {
     showNoticeNotification("No remaining authentication enabled");
     return;
   }
 
-  const methodDisplay = displayByMethod[options.authMethod];
+  const methodDisplay = getAuthMethodDisplay(options.authMethod);
 
   showSimpleModal({
     title: `Remove ${methodDisplay} authentication`,
-    buttonText: "remove",
+    buttonText:
+      options.authMethod !== "password" ? "remove" : "reauthenticate to remove",
     buttonAlwaysEnabled: options.authMethod !== "password",
     schema: z.object({
       password: getPasswordSchema(),
@@ -63,39 +53,15 @@ export function showRemoveAuthMethodModal(options: {
     },
 
     execFn: async ({ password }) => {
-      const reauth = await reauthenticate({
-        password,
-        excludeMethod: options.authMethod,
-      });
-      if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
-      }
-
-      try {
-        await unlink(reauth.user, options.authMethod);
-      } catch (e) {
-        const message = createErrorMessage(
-          e,
-          options.authMethod === "password"
-            ? "Failed to remove password authentication"
-            : `Failed to unlink ${methodDisplay} account`,
-        );
-        return {
-          status: "error",
-          message,
-        };
+      const result = await removeAuthProvider(options.authMethod, { password });
+      if (result.status !== "success") {
+        return result;
       }
 
       options.callback();
 
       reloadAfter(3);
-      return {
-        status: "success",
-        message: `${methodDisplay} authentication removed`,
-      };
+      return result;
     },
   });
 }

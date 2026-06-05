@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
 import Ape from "../../../ape";
-import { signUp } from "../../../auth";
+import { getPasswordSchema, signUp } from "../../../auth";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
@@ -14,7 +14,6 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../states/notifications";
-import { getPasswordSchema } from "../../../utils/firebase-auth";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import { H3 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";

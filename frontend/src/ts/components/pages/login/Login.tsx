@@ -1,12 +1,7 @@
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
-import {
-  AuthResult,
-  signIn,
-  signInWithGitHub,
-  signInWithGoogle,
-} from "../../../auth";
+import { AuthResult, signIn, signInWithProvider } from "../../../auth";
 import * as ForgotPasswordModal from "../../../modals/forgot-password";
 import {
   disableLoginPageInputs,
@@ -75,7 +70,8 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGoogle(form.getFieldValue("rememberMe")),
+              async () =>
+                signInWithProvider("google", form.getFieldValue("rememberMe")),
               "Google",
             )
           }
@@ -85,7 +81,8 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGitHub(form.getFieldValue("rememberMe")),
+              async () =>
+                signInWithProvider("github", form.getFieldValue("rememberMe")),
               "GitHub",
             )
           }

@@ -2,14 +2,14 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
 import Ape from "../../../ape";
-import * as DB from "../../../db";
-import { isAuthenticated } from "../../../states/core";
-import { showSimpleModal } from "../../../states/simple-modal";
 import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
   reauthenticate,
-} from "../../../utils/firebase-auth";
+} from "../../../auth";
+import * as DB from "../../../db";
+import { isAuthenticated } from "../../../states/core";
+import { showSimpleModal } from "../../../states/simple-modal";
 import { reloadAfter } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 

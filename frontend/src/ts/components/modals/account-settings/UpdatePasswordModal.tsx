@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 import Ape from "../../../ape";
-import { signOut } from "../../../auth";
-import { isAuthenticated } from "../../../states/core";
-import { showNoticeNotification } from "../../../states/notifications";
-import { showSimpleModal } from "../../../states/simple-modal";
 import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
   reauthenticate,
-} from "../../../utils/firebase-auth";
+  signOut,
+} from "../../../auth";
+import { isAuthenticated } from "../../../states/core";
+import { showNoticeNotification } from "../../../states/notifications";
+import { showSimpleModal } from "../../../states/simple-modal";
 
 export function showUpdatePasswordModal(): void {
   if (!isAuthenticated()) return;

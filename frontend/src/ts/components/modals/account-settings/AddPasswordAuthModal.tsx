@@ -3,12 +3,9 @@ import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
 import { z } from "zod";
 
 import Ape from "../../../ape";
+import { getPasswordSchema, reauthenticate } from "../../../auth";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { createErrorMessage } from "../../../utils/error";
-import {
-  getPasswordSchema,
-  reauthenticate,
-} from "../../../utils/firebase-auth";
 
 export function showAddPasswordAuthModal(options: {
   callback: () => void;

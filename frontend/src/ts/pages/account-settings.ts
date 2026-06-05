@@ -13,7 +13,7 @@ import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
 import { authEvent } from "../events/auth";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
-import { addGithubAuth, addGoogleAuth } from "../auth";
+import { addAuthProvider } from "../auth";
 import { showUpdateEmailModal } from "../components/modals/account-settings/UpdateEmailModal";
 import { showUpdateNameModal } from "../components/modals/account-settings/UpdateNameModal";
 import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
@@ -203,11 +203,11 @@ qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
-  showRemoveAuthMethodModal({ authMethod: "google.com", callback: updateUI });
+  showRemoveAuthMethodModal({ authMethod: "google", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
-  showRemoveAuthMethodModal({ authMethod: "github.com", callback: updateUI });
+  showRemoveAuthMethodModal({ authMethod: "github", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
@@ -259,11 +259,11 @@ qs(".pageAccountSettings")?.onChild(
 );
 
 qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
-  void addGoogleAuth();
+  void addAuthProvider("google");
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
-  void addGithubAuth();
+  void addAuthProvider("github");
 });
 
 authEvent.subscribe((event) => {
