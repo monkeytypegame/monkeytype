@@ -1,7 +1,9 @@
 import { hotkeys } from "../../states/hotkeys";
 import { showModal } from "../../states/modals";
-import { isAnyPopupVisible } from "../../utils/misc";
+import { isAnyPopupVisible, isFirefox } from "../../utils/misc";
 import { createHotkey } from "./utils";
+
+export const nonFirefoxCommandlineHotkey = "Mod+Shift+P";
 
 function openCommandline(): void {
   if (isAnyPopupVisible()) return;
@@ -9,4 +11,7 @@ function openCommandline(): void {
 }
 
 createHotkey(() => hotkeys.commandline, openCommandline);
-createHotkey("Mod+Shift+P", openCommandline);
+
+if (!isFirefox()) {
+  createHotkey(nonFirefoxCommandlineHotkey, openCommandline);
+}
