@@ -40,6 +40,7 @@ import {
   logTestEvent,
   resetTestEvents,
   getAllTestEvents,
+  cleanupData,
   __testing,
 } from "../../../src/ts/test/events/data";
 import {
@@ -558,6 +559,35 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1000, keyDown());
 
       expect(getKeypressSpacing()).toEqual([]);
+    });
+
+    it("cleanupData drops post-end keydowns so the timing invariant holds", () => {
+      // The compareCompletedEvents check in test-logic.ts relies on:
+      //   startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      // In time mode the user often keeps typing during finish()'s fade
+      // animation. Without filtering, post-end keydowns inflate keySpacing
+      // while getLastKeypressToEndMs clamps the negative diff to 0, breaking
+      // the invariant. finish() calls cleanupData() before the check —
+      // that's the centralised filter; this test exercises the same path.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("keydown", 500, keyDown());
+      logTestEvent("keyup", 580, keyUp());
+      logTestEvent("keydown", 700, keyDown());
+      logTestEvent("keyup", 780, keyUp());
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+      // user keeps typing through the fade
+      logTestEvent("keydown", 1120, keyDown());
+      logTestEvent("keyup", 1170, keyUp());
+
+      cleanupData();
+
+      const sumSpacing = getKeypressSpacing().reduce((a, b) => a + b, 0);
+      const total =
+        getStartToFirstKeypressMs() + sumSpacing + getLastKeypressToEndMs();
+
+      expect(Math.abs(getTestDurationMs() - total)).toBeLessThan(100);
     });
   });
 
