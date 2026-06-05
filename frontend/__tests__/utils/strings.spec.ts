@@ -1041,6 +1041,38 @@ describe("string utils", () => {
             missed: 0,
           },
         },
+        {
+          description: "count extra chars as extra",
+          input: {
+            inputWord: "abcx",
+            targetWord: "abc ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra (with space)",
+          input: {
+            inputWord: "abcx ",
+            targetWord: "abc ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
       ];
 
       it.each(testCases)("$description", ({ input, expected }) => {

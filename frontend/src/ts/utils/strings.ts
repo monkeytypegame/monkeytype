@@ -449,8 +449,11 @@ export function countChars(
       if (!(lastWord && shouldLastPartialWordCount)) {
         missed += 1;
       }
-    } else if (targetChar === undefined) {
-      //extra char
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
       extra += 1;
     } else {
       //incorrect char
