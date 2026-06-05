@@ -1378,7 +1378,12 @@ function migrateUser<T extends DBUser>(user: T): T {
   };
 
   if ("lastReultHashes" in user) {
-    (user as any).lastResultHashes = (user as any).lastReultHashes;
+    (
+      user as T & {
+        lastResultHashes?: string[];
+        lastReultHashes?: string[];
+      }
+    ).lastResultHashes = user.lastReultHashes;
   }
 
   return user;
