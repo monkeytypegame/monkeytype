@@ -6,6 +6,7 @@ export function decompressRequest(): RequestHandler {
     const encoding = req.headers["content-encoding"];
 
     if (encoding === "gzip") {
+      //TODO: try catch
       console.log(req.body);
       const unzip = zlib.createGunzip();
       req.pipe(unzip);
