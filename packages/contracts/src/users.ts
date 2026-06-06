@@ -416,7 +416,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: meta({
-        authenticationOptions: { requireFreshToken: true },
+        authenticationOptions: { requireFreshToken: false },
         rateLimit: "userUpdateName",
       }),
     },

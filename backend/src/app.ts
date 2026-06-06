@@ -12,12 +12,14 @@ import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
 import { COMPATIBILITY_CHECK_HEADER } from "@monkeytype/contracts";
 import { createETagGenerator } from "./utils/etag";
 import { v4RequestBody } from "./middlewares/utility";
+import { decompressRequest } from "./middlewares/request-compression";
 
 const etagFn = createETagGenerator({ weak: true });
 
 function buildApp(): express.Application {
   const app = express();
 
+  app.use(decompressRequest());
   app.use(urlencoded({ extended: true }));
   app.use(json());
   app.use(cors({ exposedHeaders: [COMPATIBILITY_CHECK_HEADER] }));

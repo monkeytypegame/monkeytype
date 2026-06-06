@@ -42,6 +42,21 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           ? timeoutSignal(timeout)
           : AbortSignal.timeout(timeout),
       };
+
+      if (
+        request.body !== null &&
+        request.body !== undefined &&
+        request.contentType === "application/json"
+      ) {
+        console.log("###", request);
+        const enc = new TextDecoder("utf-8");
+        const compressed = await gzipJson(request.body);
+        request.body = undefined;
+        request.rawBody = compressed;
+        request.headers["Content-Encoding"] = "gzip";
+        request.contentType = "application/gzip";
+        console.log("### done compression", request.body);
+      }
       const response = await tsRestFetchApi(request);
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
@@ -109,4 +124,16 @@ export function buildClient<T extends AppRouter>(
       "X-Client-Version": envConfig.clientVersion,
     },
   });
+}
+
+async function gzipJson(data: unknown): Promise<Uint8Array> {
+  const json = JSON.stringify(data);
+
+  const stream = new Blob([json])
+    .stream()
+    .pipeThrough(new CompressionStream("gzip"));
+
+  const compressed = await new Response(stream).arrayBuffer();
+
+  return new Uint8Array(compressed);
 }
