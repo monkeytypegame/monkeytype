@@ -33,7 +33,7 @@ The contents of the file should be as follows:
 ```
 
 It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language.
-`quotationMarks` indicates the quotation marks used for that language, at depth 1 and 2 respectively, and for the left quotation mark and the right one respectevely. For instance, American English uses `“”` at depth 1 and `‘’` at depth 2, in that case it would look like:
+`quotationMarks` indicates the quotation marks used for that language, at depth 1 and 2 respectively, and for the left quotation mark and the right one respectively. For instance, American English uses `“”` at depth 1 and `‘’` at depth 2, in that case it would look like:
 ```json
  "quotationMarks": [
     ["“", "”"],
