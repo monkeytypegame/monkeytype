@@ -7,8 +7,9 @@ import {
   KeydownEventData,
   KeyupEvent,
   KeyupEventData,
-  TestEvent,
+  InputEventNoMs,
   TestEventData,
+  TestEventNoMs,
   TestEventType,
   TimerEvent,
   TimerEventData,
@@ -24,7 +25,7 @@ let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 let compositionEvents: CompositionTestEvent[] = [];
 
-let cachedAllEvents: TestEvent[] | undefined;
+let cachedAllEvents: TestEventNoMs[] | undefined;
 
 let noCodeIndex = 0;
 let pressedKeys: Map<
@@ -218,7 +219,7 @@ export function cleanupData(): void {
   );
 }
 
-export function getAllTestEvents(): TestEvent[] {
+export function getAllTestEvents(): TestEventNoMs[] {
   if (cachedAllEvents !== undefined) return cachedAllEvents;
 
   const firstEventMs = Math.min(
@@ -248,10 +249,10 @@ export function getAllTestEvents(): TestEvent[] {
         a.ms - b.ms ||
         (a.type === "timer" ? 1 : 0) - (b.type === "timer" ? 1 : 0),
     )
-    .map((event) => {
-      event.testMs = roundTo2(event.ms - startEventMs);
-      return event;
-    });
+    .map(({ ms, ...rest }) => ({
+      ...rest,
+      testMs: roundTo2(ms - startEventMs),
+    }));
 
   return cachedAllEvents;
 }
@@ -307,9 +308,9 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
 }
 
-export function getInputEvents(): InputEvent[] {
+export function getInputEvents(): InputEventNoMs[] {
   return getAllTestEvents().filter(
-    (event): event is InputEvent => event.type === "input",
+    (event): event is InputEventNoMs => event.type === "input",
   );
 }
 
@@ -320,9 +321,9 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getInputEventsForWord(wordIndex: number): InputEvent[] {
+export function getInputEventsForWord(wordIndex: number): InputEventNoMs[] {
   const events = getAllTestEvents();
-  const result: InputEvent[] = [];
+  const result: InputEventNoMs[] = [];
   for (const event of events) {
     if (event.type !== "input") continue;
     if (event.data.wordIndex === wordIndex) {
@@ -335,8 +336,8 @@ export function getInputEventsForWord(wordIndex: number): InputEvent[] {
 export function getInputEventsPerWord(
   startMs?: number,
   testMsLimit?: number,
-): Map<number, InputEvent[]> {
-  let eventsPerWordIndex: Map<number, InputEvent[]> = new Map();
+): Map<number, InputEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, InputEventNoMs[]> = new Map();
   const events = getAllTestEvents();
   for (const event of events) {
     if (event.type !== "input") {

@@ -72,17 +72,11 @@ import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function input(
@@ -987,9 +981,9 @@ describe("stats.ts", () => {
       const keyup = events.find(
         (e) => e.type === "keyup" && e.data.code === "KeyD",
       );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500
+      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1500);
+      expect(keyup!.testMs).toBe(500);
     });
 
     it("uses default 80ms when no completed key durations exist", () => {
@@ -1003,7 +997,7 @@ describe("stats.ts", () => {
         (e) => e.type === "keyup" && e.data.code === "KeyA",
       );
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1280);
+      expect(keyup!.testMs).toBe(280);
     });
 
     it("does nothing when no keys are pressed", () => {

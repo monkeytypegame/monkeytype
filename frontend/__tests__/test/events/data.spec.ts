@@ -24,17 +24,11 @@ import type {
 import { Keycode } from "../../../src/ts/constants/keys";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode | "NoCode" = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function inputData(
@@ -211,17 +205,9 @@ describe("data.ts", () => {
       // simulate forceReleaseAllKeys passing indexed codes directly
       logTestEvent("keyup", 1030, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
       logTestEvent("keyup", 1040, {
         code: "NoCode1",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       const events = getAllTestEvents();
@@ -235,10 +221,6 @@ describe("data.ts", () => {
     it("rejects indexed NoCode keyup with no matching keydown", () => {
       logTestEvent("keyup", 1010, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       expect(getAllTestEvents()).toHaveLength(0);
