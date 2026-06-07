@@ -20,6 +20,10 @@ The contents of the file should be as follows:
 ```json
 {
   "name": string,
+  "quotationMarks": tuple[
+    tuple[string, string],
+    tuple[string, string]
+  ],
   "rightToLeft": boolean,
   "joiningScript": boolean,
   "orderedByFrequency": boolean,
@@ -29,6 +33,13 @@ The contents of the file should be as follows:
 ```
 
 It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language.
+`quotationMarks` indicates the quotation marks used for that language, at depth 1 and 2 respectively, and for the left quotation mark and the right one respectevely. For instance, American English uses `“”` at depth 1 and `‘’` at depth 2, in that case it would look like:
+```json
+ "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
+```
 `rightToLeft` indicates how the language is written. If it is written right to left then put `true`, otherwise put `false`.
 `joiningScript` indicates whether the language requires joining letters to render correctly. Set it to `true` if characters must join with surrounding characters or if their shapes change based on position in a word (initial, medial, final, or isolated), or if they use connecting marks (matras/vowel signs) that reshape the base characters. Otherwise, set it to `false.`
 For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag).
