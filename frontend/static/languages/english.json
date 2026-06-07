@@ -1,7 +1,13 @@
 {
   "name": "english",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [

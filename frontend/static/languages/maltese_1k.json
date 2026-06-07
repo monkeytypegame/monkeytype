@@ -1,6 +1,9 @@
 {
   "name": "maltese_1k",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "bcp47": "mt",
   "words": [
     "bħala",

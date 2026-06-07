@@ -1,6 +1,9 @@
 {
   "name": "italian_7k",
-  "quotationMarks": [["«", "»"], ["“", "”"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["“", "”"]
+  ],
   "bcp47": "it-IT",
   "words": [
     "abbagliante",

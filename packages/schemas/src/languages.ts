@@ -460,7 +460,10 @@ export const LanguageObjectSchema = z
   .object({
     name: LanguageSchema,
     quotationMarks: z
-      .tuple([z.tuple([z.string(), z.string()]), z.tuple([z.string(), z.string()])])
+      .tuple([
+        z.tuple([z.string(), z.string()]),
+        z.tuple([z.string(), z.string()]),
+      ])
       .optional(),
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),

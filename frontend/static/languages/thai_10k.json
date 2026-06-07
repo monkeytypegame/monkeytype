@@ -1,6 +1,9 @@
 {
   "name": "thai_10k",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "noLazyMode": true,
   "bcp47": "th-TH",
   "words": [

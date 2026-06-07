@@ -1,6 +1,9 @@
 {
   "name": "ukrainian_latynka_10k",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "noLazyMode": true,
   "words": [
     "i",

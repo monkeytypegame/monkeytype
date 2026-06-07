@@ -1,6 +1,9 @@
 {
   "name": "bosnian",
-  "quotationMarks": [["", ""], ["’", "’"]],
+  "quotationMarks": [
+    ["", ""],
+    ["’", "’"]
+  ],
   "orderedByFrequency": true,
   "words": [
     "ja",

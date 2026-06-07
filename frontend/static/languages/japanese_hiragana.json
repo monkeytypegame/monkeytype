@@ -1,6 +1,9 @@
 {
   "name": "japanese_hiragana",
-  "quotationMarks": [["「", "」"], ["『", "』"]],
+  "quotationMarks": [
+    ["「", "」"],
+    ["『", "』"]
+  ],
   "noLazyMode": true,
   "bcp47": "jp-JP",
   "words": [

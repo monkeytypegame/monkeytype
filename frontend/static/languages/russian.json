@@ -1,6 +1,9 @@
 {
   "name": "russian",
-  "quotationMarks": [["«", "»"], ["„", "“"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["„", "“"]
+  ],
   "bcp47": "ru-RU",
   "orderedByFrequency": true,
   "words": [

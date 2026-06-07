@@ -1,6 +1,9 @@
 {
   "name": "albanian",
-  "quotationMarks": [["„", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["‘", "’"]
+  ],
   "words": [
     "të",
     "e",

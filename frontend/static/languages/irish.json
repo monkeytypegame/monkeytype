@@ -1,6 +1,9 @@
 {
   "name": "irish",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "bcp47": "ga-IE",
   "words": [
     "an",

@@ -1,6 +1,9 @@
 {
   "name": "bulgarian_1k",
-  "quotationMarks": [["„", "”"], ["’", "’"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["’", "’"]
+  ],
   "rightToLeft": false,
   "orderedByFrequency": false,
   "bcp47": "bg",

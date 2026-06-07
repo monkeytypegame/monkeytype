@@ -1,6 +1,9 @@
 {
   "name": "serbian_latin",
-  "quotationMarks": [["„", "”"], ["’", "’"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["’", "’"]
+  ],
   "rightToLeft": false,
   "bcp47": "sr-Latn",
   "additionalAccents": [["đ", "dj"]],

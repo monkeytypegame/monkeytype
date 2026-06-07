@@ -1,6 +1,9 @@
 {
   "name": "portuguese_acentos_e_cedilha",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "bcp47": "pt-PT",
   "words": [
     "bençãos",

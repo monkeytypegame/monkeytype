@@ -1,6 +1,9 @@
 {
   "name": "arabic",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "rightToLeft": true,
   "joiningScript": true,
   "bcp47": "ar-SA",

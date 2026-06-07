@@ -1,6 +1,9 @@
 {
   "name": "polish",
-  "quotationMarks": [["„", "”"], ["»", "«"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["»", "«"]
+  ],
   "bcp47": "pl-PL",
   "words": [
     "jego",

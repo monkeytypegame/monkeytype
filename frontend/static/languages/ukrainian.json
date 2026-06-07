@@ -1,6 +1,9 @@
 {
   "name": "ukrainian",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "noLazyMode": true,
   "words": [
     "і",

@@ -1,6 +1,9 @@
 {
   "name": "french_10k",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "fr-FR",
   "words": [
     "a",

@@ -1,6 +1,9 @@
 {
   "name": "german_1k",
-  "quotationMarks": [["„", "”"], ["‚", "‘"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["‚", "‘"]
+  ],
   "_comment": "http://wortschatz.informatik.uni-leipzig.de/index_js.html",
   "bcp47": "de-DE",
   "additionalAccents": [

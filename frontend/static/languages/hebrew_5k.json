@@ -1,6 +1,9 @@
 {
   "name": "hebrew_5k",
-  "quotationMarks": [["”", "„"], ["’", "‚"]],
+  "quotationMarks": [
+    ["”", "„"],
+    ["’", "‚"]
+  ],
   "rightToLeft": true,
   "joiningScript": true,
   "bcp47": "he-IL",

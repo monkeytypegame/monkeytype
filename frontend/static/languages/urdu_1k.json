@@ -1,6 +1,9 @@
 {
   "name": "urdu_1k",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

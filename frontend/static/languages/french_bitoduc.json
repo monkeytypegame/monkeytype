@@ -1,6 +1,9 @@
 {
   "name": "french_bitoduc",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "fr-fr",
   "words": [
     "adaptatif",

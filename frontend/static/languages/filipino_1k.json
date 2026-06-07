@@ -1,6 +1,9 @@
 {
   "name": "filipino_1k",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "noLazyMode": true,
   "words": [
     "salita",

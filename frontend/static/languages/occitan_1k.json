@@ -1,6 +1,9 @@
 {
   "name": "occitan_1k",
-  "quotationMarks": [["«", "»"], ["“", "”"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["“", "”"]
+  ],
   "bcp47": "oc-FR",
   "words": [
     "de",

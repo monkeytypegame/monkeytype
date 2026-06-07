@@ -1,6 +1,9 @@
 {
   "name": "macedonian_10k",
-  "quotationMarks": [["„", "”"], ["’", "‘"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["’", "‘"]
+  ],
   "noLazyMode": true,
   "words": [
     "и",

@@ -1,6 +1,9 @@
 {
   "name": "amharic_5k",
-  "quotationMarks": [["«", "»"], ["‹", "›"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["‹", "›"]
+  ],
   "bcp47": "am-ET",
   "words": [
     "ሙዚቀኝነት",

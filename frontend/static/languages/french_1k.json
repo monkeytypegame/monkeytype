@@ -1,6 +1,9 @@
 {
   "name": "french_1k",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "fr-FR",
   "words": [
     "a",

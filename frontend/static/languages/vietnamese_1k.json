@@ -1,6 +1,9 @@
 {
   "name": "vietnamese_1k",
-  "quotationMarks": [["“", "”"], ["", ""]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["", ""]
+  ],
   "additionalAccents": [
     ["áàăắằẵẳâấầẫẩãảạặậ", "a"],
     ["đ", "d"],

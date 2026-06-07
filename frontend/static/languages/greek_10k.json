@@ -1,6 +1,9 @@
 {
   "name": "greek_10k",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "el-GR",
   "words": [
     "άγρια",

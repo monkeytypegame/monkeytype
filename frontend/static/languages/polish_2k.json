@@ -1,6 +1,9 @@
 {
   "name": "polish_2k",
-  "quotationMarks": [["„", "”"], ["»", "«"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["»", "«"]
+  ],
   "bcp47": "pl-PL",
   "words": [
     "śmiać",

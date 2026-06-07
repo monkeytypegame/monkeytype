@@ -1,6 +1,9 @@
 {
   "name": "armenian_western",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "hyw",
   "words": [
     "կանանց",

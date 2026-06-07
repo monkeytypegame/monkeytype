@@ -1,6 +1,9 @@
 {
   "name": "spanish",
-  "quotationMarks": [["«", "»"], ["“", "”"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["“", "”"]
+  ],
   "bcp47": "es-ES",
   "words": [
     "como",

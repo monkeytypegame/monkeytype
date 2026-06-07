@@ -1,6 +1,9 @@
 {
   "name": "greek_5k",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "el-GR",
   "words": [
     "άδεια",

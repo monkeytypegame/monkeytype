@@ -1,6 +1,9 @@
 {
   "name": "swedish_diacritics",
-  "quotationMarks": [["”", "”"], ["’", "’"]],
+  "quotationMarks": [
+    ["”", "”"],
+    ["’", "’"]
+  ],
   "bcp47": "sv-SE",
   "words": [
     "blåbär",

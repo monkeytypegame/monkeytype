@@ -1,6 +1,9 @@
 {
   "name": "latvian",
-  "quotationMarks": [["", ""], ["", ""]],
+  "quotationMarks": [
+    ["", ""],
+    ["", ""]
+  ],
   "bcp47": "lv",
   "words": [
     "kā",

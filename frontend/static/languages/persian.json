@@ -1,6 +1,9 @@
 {
   "name": "persian",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

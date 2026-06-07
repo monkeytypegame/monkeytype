@@ -1,6 +1,9 @@
 {
   "name": "greek_koine",
-  "quotationMarks": [["«", "»"], ["", ""]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["", ""]
+  ],
   "bcp47": "el-GR",
   "words": [
     "ὁ",

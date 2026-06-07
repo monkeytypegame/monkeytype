@@ -1,6 +1,9 @@
 {
   "name": "filipino",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "noLazyMode": true,
   "words": [
     "sa",

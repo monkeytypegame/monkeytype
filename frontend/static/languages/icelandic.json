@@ -1,6 +1,9 @@
 {
   "name": "icelandic",
-  "quotationMarks": [["„", "”"], ["", ""]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["", ""]
+  ],
   "orderedByFrequency": true,
   "words": [
     "og",

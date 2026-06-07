@@ -1,6 +1,9 @@
 {
   "name": "urdu_roman",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "rightToLeft": false,
   "orderedByFrequency": false,
   "bcp47": "ur-Latn",

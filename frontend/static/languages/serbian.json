@@ -1,6 +1,9 @@
 {
   "name": "serbian",
-  "quotationMarks": [["„", "”"], ["’", "’"]],
+  "quotationMarks": [
+    ["„", "”"],
+    ["’", "’"]
+  ],
   "noLazyMode": true,
   "rightToLeft": false,
   "bcp47": "sr-Cyrl",

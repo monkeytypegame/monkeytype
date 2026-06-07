@@ -1,6 +1,9 @@
 {
   "name": "spanish_1k",
-  "quotationMarks": [["«", "»"], ["“", "”"]],
+  "quotationMarks": [
+    ["«", "»"],
+    ["“", "”"]
+  ],
   "_comment": "The original source is: http://corpus.rae.es/lfrecuencias.html but that page is a very old study from 1975 to 2004 of clearly political content, meaning the list was outdated and also filled with legal content more than normal language(There were words like -gastropod- but -hello- wasn't. This second version is a manual updated version correction words that are clearly outdated or too formal.",
   "bcp47": "es-ES",
   "words": [

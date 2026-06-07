@@ -1,6 +1,9 @@
 {
   "name": "hebrew",
-  "quotationMarks": [["”", "„"], ["’", "‚"]],
+  "quotationMarks": [
+    ["”", "„"],
+    ["’", "‚"]
+  ],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

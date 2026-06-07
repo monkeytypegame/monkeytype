@@ -1,6 +1,9 @@
 {
   "name": "esperanto_10k",
-  "quotationMarks": [["“", "”"], ["‘", "’"]],
+  "quotationMarks": [
+    ["“", "”"],
+    ["‘", "’"]
+  ],
   "orderedByFrequency": true,
   "words": [
     "la",
