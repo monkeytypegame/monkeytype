@@ -4,10 +4,6 @@
     ["“", "”"],
     ["‘", "’"]
   ],
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [
