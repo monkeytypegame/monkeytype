@@ -97,6 +97,7 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
+  getAllTestEvents,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -1294,7 +1295,11 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 8,
+            version: 9,
+            data: {
+              words: TestWords.words.list.join(" "),
+              events: getAllTestEvents(),
+            },
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },
