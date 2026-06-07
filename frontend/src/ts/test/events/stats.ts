@@ -286,9 +286,6 @@ function countCharsForWords(
     if (koreanStatus) {
       simulatedInput = Hangul.disassemble(simulatedInput).join("");
     }
-    if (lastWord) {
-      simulatedInput = simulatedInput.trimEnd();
-    }
 
     let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
     if (koreanStatus) {
