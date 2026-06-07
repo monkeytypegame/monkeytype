@@ -394,7 +394,9 @@ export function getKeypressSpacing(): number[] {
         const spacing = event.testMs - lastKeydownTime;
         spacings.push(spacing);
       }
-      lastKeydownTime = event.testMs;
+      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
+      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      lastKeydownTime = Math.max(0, event.testMs);
     }
   }
 

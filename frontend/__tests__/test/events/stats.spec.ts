@@ -555,6 +555,30 @@ describe("stats.ts", () => {
       expect(getKeypressSpacing()).toEqual([]);
     });
 
+    it("clamps a pre-start first keydown so the timing invariant holds", () => {
+      // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
+      // pressed seconds before the user starts typing). cleanupData keeps the
+      // last pre-start keydown by design, and getStartToFirstKeypressMs clamps
+      // its negative offset to 0 — so the first spacing must clamp the same
+      // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
+      // the testDuration vs key timings check.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("keydown", -16240, keyDown());
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("input", 0, input());
+      logTestEvent("keyup", 100, keyUp());
+      logTestEvent("keydown", 500, keyDown("KeyS"));
+      logTestEvent("keyup", 580, keyUp("KeyS"));
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+
+      const sumSpacing = getKeypressSpacing().reduce((a, b) => a + b, 0);
+      const total =
+        getStartToFirstKeypressMs() + sumSpacing + getLastKeypressToEndMs();
+
+      expect(Math.abs(getTestDurationMs() - total)).toBeLessThan(100);
+    });
+
     it("cleanupData drops post-end keydowns so the timing invariant holds", () => {
       // The compareCompletedEvents check in test-logic.ts relies on:
       //   startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration

@@ -53,8 +53,13 @@ export function logTestEvent(
     }
 
     if (pressedKeys.has(code)) {
-      //already pressed - ignore
-      return;
+      pressedKeys.delete(code);
+      keyupEvents.push({
+        type: "keyup",
+        ms: now,
+        testMs: 0,
+        data: { ...data, code },
+      });
     }
 
     if (resultCalculating) {
