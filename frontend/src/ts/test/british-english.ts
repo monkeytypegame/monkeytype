@@ -13,7 +13,10 @@ export async function replace(
     "‘": "“",
     "’": "”",
   };
-  word = word.replace(/[“”‘’]/g, (char) => us2ukQuotes[char as keyof typeof us2ukQuotes]);
+  word = word.replace(
+    /[“”‘’]/g,
+    (char) => us2ukQuotes[char as keyof typeof us2ukQuotes],
+  );
 
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure

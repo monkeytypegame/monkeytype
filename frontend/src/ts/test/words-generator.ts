@@ -140,11 +140,7 @@ export async function punctuateWord(
         }
       }
     }
-  } else if (
-    random() < 0.01 &&
-    lastChar !== "," &&
-    lastChar !== "."
-  ) {
+  } else if (random() < 0.01 && lastChar !== "," && lastChar !== ".") {
     if (
       currentLanguage === "amharic" ||
       currentLanguage === "arabic" ||
@@ -171,7 +167,8 @@ export async function punctuateWord(
     } else if (
       currentLanguage === "afrikaans" ||
       currentLanguage === "azerbaijani" ||
-      (currentLanguage === "chinese" && Config.language.split("_")[1] === "simplified") ||
+      (currentLanguage === "chinese" &&
+        Config.language.split("_")[1] === "simplified") ||
       currentLanguage === "dutch" ||
       currentLanguage === "esperanto" ||
       currentLanguage === "english" ||
@@ -209,31 +206,21 @@ export async function punctuateWord(
       currentLanguage === "slovenian"
     ) {
       word = `„${word}”`;
-    } else if (
-      currentLanguage === "finnish" ||
-      currentLanguage === "swedish"
-    ) {
+    } else if (currentLanguage === "finnish" || currentLanguage === "swedish") {
       word = `”${word}”`;
     } else if (
-      (currentLanguage === "chinese" && Config.language.split("_")[1] === "traditional") ||
+      (currentLanguage === "chinese" &&
+        Config.language.split("_")[1] === "traditional") ||
       currentLanguage === "japanese"
     ) {
       word = `「${word}」`;
-    } else if (
-      currentLanguage === "tibetan"
-    ) {
+    } else if (currentLanguage === "tibetan") {
       word = `《${word}》`;
-    } else if (
-      currentLanguage === "welsh"
-    ) {
+    } else if (currentLanguage === "welsh") {
       word = `‘${word}’`;
-    } else if (
-      currentLanguage === "hebrew"
-    ) {
+    } else if (currentLanguage === "hebrew") {
       word = `”${word}„`;
-    } else if (
-      currentLanguage === "lojban"
-    ) {
+    } else if (currentLanguage === "lojban") {
       word = `lu ${word} li'u`;
     } else {
       word = `"${word}"`;
@@ -258,7 +245,8 @@ export async function punctuateWord(
     if (
       currentLanguage === "afrikaans" ||
       currentLanguage === "albanian" ||
-      (currentLanguage === "chinese" && Config.language.split("_")[1] === "simplified") ||
+      (currentLanguage === "chinese" &&
+        Config.language.split("_")[1] === "simplified") ||
       currentLanguage === "croatian" ||
       currentLanguage === "dutch" ||
       currentLanguage === "english" ||
@@ -315,7 +303,8 @@ export async function punctuateWord(
     ) {
       word = `‹${word}›`;
     } else if (
-      (currentLanguage === "chinese" && Config.language.split("_")[1] === "traditional") ||
+      (currentLanguage === "chinese" &&
+        Config.language.split("_")[1] === "traditional") ||
       currentLanguage === "japanese"
     ) {
       word = `『${word}』`;
@@ -324,25 +313,15 @@ export async function punctuateWord(
       currentLanguage === "polish"
     ) {
       word = `»${word}«`;
-    } else if (
-      currentLanguage === "tibetan"
-    ) {
+    } else if (currentLanguage === "tibetan") {
       word = `⟨${word}⟩`;
-    } else if (
-      currentLanguage === "azerbaijani"
-    ) {
+    } else if (currentLanguage === "azerbaijani") {
       word = `"${word}"`;
-    } else if (
-      currentLanguage === "hebrew"
-    ) {
+    } else if (currentLanguage === "hebrew") {
       word = `’${word}‚`;
-    } else if (
-      currentLanguage === "macedonian"
-    ) {
+    } else if (currentLanguage === "macedonian") {
       word = `’${word}‘`;
-    } else if (
-      currentLanguage === "romanian"
-    ) {
+    } else if (currentLanguage === "romanian") {
       word = `«${word}»`;
     } else {
       word = `'${word}'`;
