@@ -97,6 +97,7 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
+  getAllTestEvents,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -1013,6 +1014,19 @@ function compareCompletedEvents(
       continue;
     }
 
+    if (key === "wpm" || key === "rawWpm") {
+      val1 = Numbers.roundTo2(val1 as number);
+      val2 = Numbers.roundTo2(val2 as number);
+      const diff = Numbers.roundTo2(Math.abs(val1 - val2));
+      if (diff <= 0.01) {
+        console.debug(`Completed event match on key ${key}:`, val1);
+      } else {
+        notMatching.push(`${key} (off by ${diff})`);
+        mismatchedKeys.push(key);
+        console.error(`Completed event mismatch on key ${key}:`, val1, val2);
+      }
+    }
+
     // if (key === "chartData") {
     //   val1 = {
     //     //@ts-expect-error temp
@@ -1294,7 +1308,11 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 8,
+            version: 10,
+            data: {
+              words: TestWords.words.list.join(" "),
+              events: getAllTestEvents(),
+            },
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },

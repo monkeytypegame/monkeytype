@@ -24,17 +24,11 @@ import type {
 import { Keycode } from "../../../src/ts/constants/keys";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode | "NoCode" = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function inputData(
@@ -118,10 +112,14 @@ describe("data.ts", () => {
       expect(getAllTestEvents()).toHaveLength(0);
     });
 
-    it("ignores duplicate keydown without keyup", () => {
+    it("synthesizes missing keyup on duplicate keydown", () => {
       logTestEvent("keydown", 1010, keyDown());
       logTestEvent("keydown", 1020, keyDown());
-      expect(getAllTestEvents()).toHaveLength(1);
+      const events = getAllTestEvents();
+      expect(events).toHaveLength(3);
+      expect(events[0]!.type).toBe("keydown");
+      expect(events[1]!.type).toBe("keyup");
+      expect(events[2]!.type).toBe("keydown");
     });
 
     it("allows keydown after keyup", () => {
@@ -211,17 +209,9 @@ describe("data.ts", () => {
       // simulate forceReleaseAllKeys passing indexed codes directly
       logTestEvent("keyup", 1030, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
       logTestEvent("keyup", 1040, {
         code: "NoCode1",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       const events = getAllTestEvents();
@@ -235,10 +225,6 @@ describe("data.ts", () => {
     it("rejects indexed NoCode keyup with no matching keydown", () => {
       logTestEvent("keyup", 1010, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       expect(getAllTestEvents()).toHaveLength(0);
