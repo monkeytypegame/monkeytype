@@ -1,9 +1,9 @@
 {
   "name": "georgian",
-  "quotationMarks": [
-    ["„", "”"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "words": [
     "სახელი",

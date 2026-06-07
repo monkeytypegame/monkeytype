@@ -1,9 +1,9 @@
 {
   "name": "english",
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [

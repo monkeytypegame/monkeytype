@@ -1,9 +1,9 @@
 {
   "name": "persian_romanized",
-  "quotationMarks": [
-    ["«", "»"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "bcp47": "fa",
   "words": [

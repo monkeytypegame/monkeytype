@@ -1,9 +1,9 @@
 {
   "name": "persian_20k",
-  "quotationMarks": [
-    ["«", "»"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

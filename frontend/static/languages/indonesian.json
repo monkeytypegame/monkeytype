@@ -1,9 +1,9 @@
 {
   "name": "indonesian",
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "bcp47": "id-ID",
   "words": [

@@ -1,9 +1,9 @@
 {
   "name": "bulgarian_latin",
-  "quotationMarks": [
-    ["„", "”"],
-    ["’", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["’", "’"]
+  },
   "rightToLeft": false,
   "orderedByFrequency": false,
   "bcp47": "bg",

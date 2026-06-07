@@ -1,9 +1,9 @@
 {
   "name": "macedonian",
-  "quotationMarks": [
-    ["„", "”"],
-    ["’", "‘"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["’", "‘"]
+  },
   "noLazyMode": true,
   "words": [
     "јас",

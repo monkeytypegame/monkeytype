@@ -1,9 +1,9 @@
 {
   "name": "kazakh",
-  "quotationMarks": [
-    ["«", "»"],
-    ["„", "“"]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["„", "“"]
+  },
   "noLazyMode": true,
   "words": [
     "сен",

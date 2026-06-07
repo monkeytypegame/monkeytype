@@ -1,9 +1,9 @@
 {
   "name": "hindi",
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "hi-IN",

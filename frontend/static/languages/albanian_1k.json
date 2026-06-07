@@ -1,9 +1,9 @@
 {
   "name": "albanian_1k",
-  "quotationMarks": [
-    ["„", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‘", "’"]
+  },
   "words": [
     "I",
     "e tij",

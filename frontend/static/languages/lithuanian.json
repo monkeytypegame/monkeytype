@@ -1,9 +1,9 @@
 {
   "name": "lithuanian",
-  "quotationMarks": [
-    ["„", "”"],
-    ["‚", "‘"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‚", "‘"]
+  },
   "words": [
     "ir",
     "jis",

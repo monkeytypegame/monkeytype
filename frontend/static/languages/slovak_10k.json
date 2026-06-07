@@ -1,9 +1,9 @@
 {
   "name": "slovak_10k",
-  "quotationMarks": [
-    ["„", "”"],
-    ["‚", "‘"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‚", "‘"]
+  },
   "bcp47": "sk-SK",
   "words": [
     "to",

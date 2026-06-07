@@ -1,9 +1,9 @@
 {
   "name": "portuguese_1k",
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "_comment": "Sourced from: https://www.corpusdoportugues.org",
   "bcp47": "pt-BR",
   "words": [

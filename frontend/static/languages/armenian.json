@@ -1,9 +1,9 @@
 {
   "name": "armenian",
-  "quotationMarks": [
-    ["«", "»"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "orderedByFrequency": false,
   "words": [

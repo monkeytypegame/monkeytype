@@ -1,9 +1,9 @@
 {
   "name": "tibetan_1k",
-  "quotationMarks": [
-    ["《", "》"],
-    ["⟨", "⟩"]
-  ],
+  "quotationMarks": {
+    "primary": ["《", "》"],
+    "secondary": ["⟨", "⟩"]
+  },
   "rightToLeft": false,
   "joiningScript": true,
   "noLazyMode": true,

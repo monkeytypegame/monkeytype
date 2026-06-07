@@ -1,9 +1,9 @@
 {
   "name": "dutch_1k",
-  "quotationMarks": [
-    ["“", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "bcp47": "nl-NL",
   "words": [

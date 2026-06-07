@@ -1,9 +1,9 @@
 {
   "name": "norwegian_nynorsk_10k",
-  "quotationMarks": [
-    ["«", "»"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["‘", "’"]
+  },
   "orderedByFrequency": true,
   "bcp47": "nn-NO",
   "words": [

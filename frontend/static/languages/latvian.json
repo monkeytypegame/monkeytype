@@ -1,9 +1,9 @@
 {
   "name": "latvian",
-  "quotationMarks": [
-    ["", ""],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["", ""],
+    "secondary": ["", ""]
+  },
   "bcp47": "lv",
   "words": [
     "kā",

@@ -1,9 +1,9 @@
 {
   "name": "catalan_1k",
-  "quotationMarks": [
-    ["«", "»"],
-    ["“", "”"]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["“", "”"]
+  },
   "words": [
     "de",
     "la",

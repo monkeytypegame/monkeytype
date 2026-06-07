@@ -1,9 +1,9 @@
 {
   "name": "amharic_1k",
-  "quotationMarks": [
-    ["«", "»"],
-    ["‹", "›"]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["‹", "›"]
+  },
   "bcp47": "am-ET",
   "words": [
     "መለየት",

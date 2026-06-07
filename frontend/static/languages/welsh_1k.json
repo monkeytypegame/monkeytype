@@ -1,9 +1,9 @@
 {
   "name": "welsh_1k",
-  "quotationMarks": [
-    ["‘", "’"],
-    ["“", "”"]
-  ],
+  "quotationMarks": {
+    "primary": ["‘", "’"],
+    "secondary": ["“", "”"]
+  },
   "words": [
     "yn",
     "y",

@@ -1,9 +1,9 @@
 {
   "name": "khmer",
-  "quotationMarks": [
-    ["«", "»"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "km-KH",

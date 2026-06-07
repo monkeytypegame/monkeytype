@@ -1,9 +1,9 @@
 {
   "name": "bosnian_4k",
-  "quotationMarks": [
-    ["", ""],
-    ["’", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["", ""],
+    "secondary": ["’", "’"]
+  },
   "words": [
     "aah",
     "abortus",

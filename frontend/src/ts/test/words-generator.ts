@@ -143,13 +143,13 @@ export async function punctuateWord(
     }
   } else if (random() < 0.01 && lastChar !== "," && lastChar !== ".") {
     if (language?.quotationMarks !== undefined) {
-      word = `${language.quotationMarks[0][0]}${word}${language.quotationMarks[0][1]}`;
+      word = `${language.quotationMarks.primary[0]}${word}${language.quotationMarks.primary[1]}`;
     } else {
       word = `"${word}"`;
     }
   } else if (random() < 0.011 && lastChar !== "," && lastChar !== ".") {
     if (language?.quotationMarks !== undefined) {
-      word = `${language.quotationMarks[1][0]}${word}${language.quotationMarks[1][1]}`;
+      word = `${language.quotationMarks.secondary[0]}${word}${language.quotationMarks.secondary[1]}`;
     } else {
       word = `'${word}'`;
     }

@@ -1,9 +1,9 @@
 {
   "name": "croatian",
-  "quotationMarks": [
-    ["„", "”"],
-    ["‘", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‘", "’"]
+  },
   "words": [
     "kao",
     "ja",

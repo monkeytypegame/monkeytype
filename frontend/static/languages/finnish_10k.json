@@ -1,9 +1,9 @@
 {
   "name": "finnish_10k",
-  "quotationMarks": [
-    ["”", "”"],
-    ["’", "’"]
-  ],
+  "quotationMarks": {
+    "primary": ["”", "”"],
+    "secondary": ["’", "’"]
+  },
   "bcp47": "fi-FI",
   "words": [
     "aallotar",

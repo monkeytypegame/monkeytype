@@ -1,9 +1,9 @@
 {
   "name": "hebrew_10k",
-  "quotationMarks": [
-    ["”", "„"],
-    ["’", "‚"]
-  ],
+  "quotationMarks": {
+    "primary": ["”", "„"],
+    "secondary": ["’", "‚"]
+  },
   "rightToLeft": true,
   "joiningScript": true,
   "bcp47": "he-IL",

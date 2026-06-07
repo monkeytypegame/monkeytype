@@ -1,9 +1,9 @@
 {
   "name": "german",
-  "quotationMarks": [
-    ["„", "”"],
-    ["‚", "‘"]
-  ],
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‚", "‘"]
+  },
   "bcp47": "de-DE",
   "additionalAccents": [
     ["ä", "ae"],

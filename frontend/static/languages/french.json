@@ -1,9 +1,9 @@
 {
   "name": "french",
-  "quotationMarks": [
-    ["«", "»"],
-    ["", ""]
-  ],
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "bcp47": "fr-FR",
   "words": [
     "a",
