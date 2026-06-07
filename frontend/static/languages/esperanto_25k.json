@@ -1,5 +1,6 @@
 {
   "name": "esperanto_25k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "orderedByFrequency": true,
   "words": [
     "la",

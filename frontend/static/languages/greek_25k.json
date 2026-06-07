@@ -1,5 +1,6 @@
 {
   "name": "greek_25k",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "bcp47": "el-GR",
   "words": [
     "άγγλος",

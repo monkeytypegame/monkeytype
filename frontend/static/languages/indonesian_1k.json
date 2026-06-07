@@ -1,5 +1,6 @@
 {
   "name": "indonesian_1k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "noLazyMode": true,
   "bcp47": "hu-HU",
   "words": [

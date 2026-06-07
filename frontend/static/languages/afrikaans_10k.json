@@ -1,5 +1,6 @@
 {
   "name": "afrikaans_10k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "words": [
     "aan",
     "aanbetref",

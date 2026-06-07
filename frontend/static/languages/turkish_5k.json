@@ -1,5 +1,6 @@
 {
   "name": "turkish_5k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "bcp47": "tr-TR",
   "words": [
     "bağ",

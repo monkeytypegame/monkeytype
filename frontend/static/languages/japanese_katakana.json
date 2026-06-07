@@ -1,5 +1,6 @@
 {
   "name": "japanese_katakana",
+  "quotationMarks": [["「", "」"], ["『", "』"]],
   "noLazyMode": true,
   "bcp47": "jp-JP",
   "words": [

@@ -1,5 +1,6 @@
 {
   "name": "italian",
+  "quotationMarks": [["«", "»"], ["“", "”"]],
   "bcp47": "it-IT",
   "words": [
     "come",

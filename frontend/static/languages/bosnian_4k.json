@@ -1,5 +1,6 @@
 {
   "name": "bosnian_4k",
+  "quotationMarks": [["", ""], ["’", "’"]],
   "words": [
     "aah",
     "abortus",

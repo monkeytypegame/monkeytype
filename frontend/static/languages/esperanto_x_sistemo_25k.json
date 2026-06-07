@@ -1,5 +1,6 @@
 {
   "name": "esperanto_x_sistemo_25k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "noLazyMode": true,
   "words": [
     "la",

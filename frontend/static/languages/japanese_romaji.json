@@ -1,5 +1,6 @@
 {
   "name": "japanese_romaji",
+  "quotationMarks": [["「", "」"], ["『", "』"]],
   "noLazyMode": true,
   "bcp47": "jp-JP",
   "words": [

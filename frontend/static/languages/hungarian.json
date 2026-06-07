@@ -1,5 +1,6 @@
 {
   "name": "hungarian",
+  "quotationMarks": [["„", "”"], ["»", "«"]],
   "orderedByFrequency": false,
   "bcp47": "hu-HU",
   "words": [

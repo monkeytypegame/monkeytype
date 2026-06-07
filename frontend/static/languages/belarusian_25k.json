@@ -1,5 +1,6 @@
 {
   "name": "belarusian_25k",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "bcp47": "be-BY",
   "words": [
     "а",

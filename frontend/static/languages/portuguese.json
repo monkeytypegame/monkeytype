@@ -1,5 +1,6 @@
 {
   "name": "portuguese",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "_comment": "Sourced from: https://www.wordandphrase.info/port",
 
   "bcp47": "pt-PT",

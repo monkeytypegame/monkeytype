@@ -1,5 +1,6 @@
 {
   "name": "welsh",
+  "quotationMarks": [["‘", "’"], ["“", "”"]],
   "words": [
     "yn",
     "y",

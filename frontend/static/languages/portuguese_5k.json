@@ -1,5 +1,6 @@
 {
   "name": "portuguese_5k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "_comment": "Sourced from LibreOffice pt_BR dictionary",
   "noLazyMode": true,
   "bcp47": "pt",

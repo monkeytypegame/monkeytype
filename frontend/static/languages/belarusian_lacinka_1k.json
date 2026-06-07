@@ -1,5 +1,6 @@
 {
   "name": "belarusian_lacinka_1k",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "noLazyMode": false,
   "words": [
     "jon",

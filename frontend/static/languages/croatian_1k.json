@@ -1,5 +1,6 @@
 {
   "name": "croatian_1k",
+  "quotationMarks": [["„", "”"], ["‘", "’"]],
   "bcp47": "hr-HR",
   "words": [
     "u",

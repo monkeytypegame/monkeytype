@@ -1,5 +1,6 @@
 {
   "name": "russian_abbreviations",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "bcp47": "ru-RU",
   "noLazyMode": true,
   "orderedByFrequency": false,

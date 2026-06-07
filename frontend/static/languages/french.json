@@ -1,5 +1,6 @@
 {
   "name": "french",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "bcp47": "fr-FR",
   "words": [
     "a",

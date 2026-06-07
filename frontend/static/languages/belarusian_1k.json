@@ -1,5 +1,6 @@
 {
   "name": "belarusian_1k",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "noLazyMode": true,
   "bcp47": "be-BY",
   "words": [

@@ -1,5 +1,6 @@
 {
   "name": "portuguese_1k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "_comment": "Sourced from: https://www.corpusdoportugues.org",
   "bcp47": "pt-BR",
   "words": [

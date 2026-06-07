@@ -1,5 +1,6 @@
 {
   "name": "tibetan_1k",
+  "quotationMarks": [["《", "》"], ["⟨", "⟩"]],
   "rightToLeft": false,
   "joiningScript": true,
   "noLazyMode": true,

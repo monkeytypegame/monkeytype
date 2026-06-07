@@ -1,5 +1,6 @@
 {
   "name": "chinese_simplified",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "_comment": "Sourced from https://gist.github.com/indiejoseph/eae09c673460aa0b56db",
   "bcp47": "zh-CN",
   "words": [

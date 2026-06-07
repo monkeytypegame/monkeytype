@@ -42,10 +42,11 @@ export async function punctuateWord(
   currentWord: string,
   index: number,
   maxindex: number,
+  language: LanguageObject,
 ): Promise<string> {
   let word = currentWord;
 
-  const currentLanguage = Config.language.split("_")[0];
+  const currentLanguage = language.name.split("_")[0];
 
   const lastChar = Strings.getLastChar(previousWord);
 
@@ -141,188 +142,14 @@ export async function punctuateWord(
       }
     }
   } else if (random() < 0.01 && lastChar !== "," && lastChar !== ".") {
-    if (
-      currentLanguage === "amharic" ||
-      currentLanguage === "arabic" ||
-      currentLanguage === "armenian" ||
-      currentLanguage === "belarusian" ||
-      currentLanguage === "catalan" ||
-      currentLanguage === "french" ||
-      currentLanguage === "galician" ||
-      currentLanguage === "greek" ||
-      currentLanguage === "italian" ||
-      currentLanguage === "kazakh" ||
-      currentLanguage === "khmer" ||
-      currentLanguage === "mongolian" ||
-      currentLanguage === "norwegian" ||
-      currentLanguage === "occitan" ||
-      currentLanguage === "pashto" ||
-      currentLanguage === "persian" ||
-      currentLanguage === "russian" ||
-      currentLanguage === "spanish" ||
-      currentLanguage === "swiss_german" ||
-      currentLanguage === "ukrainian"
-    ) {
-      word = `«${word}»`;
-    } else if (
-      currentLanguage === "afrikaans" ||
-      currentLanguage === "azerbaijani" ||
-      (currentLanguage === "chinese" &&
-        Config.language.split("_")[1] === "simplified") ||
-      currentLanguage === "dutch" ||
-      currentLanguage === "esperanto" ||
-      currentLanguage === "english" ||
-      currentLanguage === "filipino" ||
-      currentLanguage === "hindi" ||
-      currentLanguage === "indonesian" ||
-      currentLanguage === "irish" ||
-      currentLanguage === "korean" ||
-      currentLanguage === "lao" ||
-      currentLanguage === "maltese" ||
-      currentLanguage === "portuguese" ||
-      currentLanguage === "thai" ||
-      currentLanguage === "turkish" ||
-      currentLanguage === "urdu" ||
-      currentLanguage === "uzbek" ||
-      currentLanguage === "vietnamese"
-    ) {
-      word = `“${word}”`;
-    } else if (
-      currentLanguage === "albanian" ||
-      currentLanguage === "bulgarian" ||
-      currentLanguage === "croatian" ||
-      currentLanguage === "czech" ||
-      currentLanguage === "estonian" ||
-      currentLanguage === "georgian" ||
-      currentLanguage === "german" ||
-      currentLanguage === "hungarian" ||
-      currentLanguage === "icelandic" ||
-      currentLanguage === "lithuanian" ||
-      currentLanguage === "macedonian" ||
-      currentLanguage === "polish" ||
-      currentLanguage === "romanian" ||
-      currentLanguage === "serbian" ||
-      currentLanguage === "slovak" ||
-      currentLanguage === "slovenian"
-    ) {
-      word = `„${word}”`;
-    } else if (currentLanguage === "finnish" || currentLanguage === "swedish") {
-      word = `”${word}”`;
-    } else if (
-      (currentLanguage === "chinese" &&
-        Config.language.split("_")[1] === "traditional") ||
-      currentLanguage === "japanese"
-    ) {
-      word = `「${word}」`;
-    } else if (currentLanguage === "tibetan") {
-      word = `《${word}》`;
-    } else if (currentLanguage === "welsh") {
-      word = `‘${word}’`;
-    } else if (currentLanguage === "hebrew") {
-      word = `”${word}„`;
-    } else if (currentLanguage === "lojban") {
-      word = `lu ${word} li'u`;
+    if (language?.quotationMarks !== undefined) {
+      word = `${language.quotationMarks[0][0]}${word}${language.quotationMarks[0][1]}`;
     } else {
       word = `"${word}"`;
     }
-  } else if (
-    random() < 0.011 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    // these languages do not have secondary punctuation symbols
-    currentLanguage !== "arabic" &&
-    currentLanguage !== "armenian" &&
-    currentLanguage !== "estonian" &&
-    currentLanguage !== "georgian" &&
-    currentLanguage !== "khmer" &&
-    currentLanguage !== "lao" &&
-    currentLanguage !== "latvian" &&
-    currentLanguage !== "lojban" &&
-    currentLanguage !== "pashto" &&
-    currentLanguage !== "persian" &&
-    currentLanguage !== "vietnamese"
-  ) {
-    if (
-      currentLanguage === "afrikaans" ||
-      currentLanguage === "albanian" ||
-      (currentLanguage === "chinese" &&
-        Config.language.split("_")[1] === "simplified") ||
-      currentLanguage === "croatian" ||
-      currentLanguage === "dutch" ||
-      currentLanguage === "english" ||
-      currentLanguage === "esperanto" ||
-      currentLanguage === "filipino" ||
-      currentLanguage === "hindi" ||
-      currentLanguage === "indonesian" ||
-      currentLanguage === "irish" ||
-      currentLanguage === "korean " ||
-      currentLanguage === "maltese" ||
-      currentLanguage === "norwegian" ||
-      currentLanguage === "portuguese" ||
-      currentLanguage === "thai" ||
-      currentLanguage === "turkish" ||
-      currentLanguage === "urdu" ||
-      currentLanguage === "uzbek"
-    ) {
-      word = `‘${word}’`;
-    } else if (
-      currentLanguage === "catalan" ||
-      currentLanguage === "galician" ||
-      currentLanguage === "italian" ||
-      currentLanguage === "occitan" ||
-      currentLanguage === "spanish" ||
-      currentLanguage === "welsh"
-    ) {
-      word = `“${word}”`;
-    } else if (
-      currentLanguage === "bosnian" ||
-      currentLanguage === "bulgarian" ||
-      currentLanguage === "finnish" ||
-      currentLanguage === "serbian" ||
-      currentLanguage === "swedish"
-    ) {
-      word = `’${word}’`;
-    } else if (
-      currentLanguage === "belarusian" ||
-      currentLanguage === "kazakh" ||
-      currentLanguage === "mongolian" ||
-      currentLanguage === "russian"
-    ) {
-      word = `„${word}“`;
-    } else if (
-      currentLanguage === "czech" ||
-      currentLanguage === "german" ||
-      currentLanguage === "lithuanian" ||
-      currentLanguage === "slovak" ||
-      currentLanguage === "slovenian"
-    ) {
-      word = `‚${word}‘`;
-    } else if (
-      currentLanguage === "amharic" ||
-      currentLanguage === "swiss_german"
-    ) {
-      word = `‹${word}›`;
-    } else if (
-      (currentLanguage === "chinese" &&
-        Config.language.split("_")[1] === "traditional") ||
-      currentLanguage === "japanese"
-    ) {
-      word = `『${word}』`;
-    } else if (
-      currentLanguage === "hungarian" ||
-      currentLanguage === "polish"
-    ) {
-      word = `»${word}«`;
-    } else if (currentLanguage === "tibetan") {
-      word = `⟨${word}⟩`;
-    } else if (currentLanguage === "azerbaijani") {
-      word = `"${word}"`;
-    } else if (currentLanguage === "hebrew") {
-      word = `’${word}‚`;
-    } else if (currentLanguage === "macedonian") {
-      word = `’${word}‘`;
-    } else if (currentLanguage === "romanian") {
-      word = `«${word}»`;
+  } else if (random() < 0.011 && lastChar !== "," && lastChar !== ".") {
+    if (language?.quotationMarks !== undefined) {
+      word = `${language.quotationMarks[1][0]}${word}${language.quotationMarks[1][1]}`;
     } else {
       word = `'${word}'`;
     }
@@ -1111,6 +938,7 @@ export async function getNextWord(
       randomWord,
       wordIndex,
       wordsBound,
+      currentLanguage,
     );
   }
 

@@ -1,5 +1,6 @@
 {
   "name": "dutch",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "noLazyMode": true,
   "bcp47": "nl-NL",
   "words": [

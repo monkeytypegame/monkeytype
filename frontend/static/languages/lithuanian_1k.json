@@ -1,5 +1,6 @@
 {
   "name": "lithuanian_1k",
+  "quotationMarks": [["„", "”"], ["‚", "‘"]],
   "words": [
     "ir",
     "jis",

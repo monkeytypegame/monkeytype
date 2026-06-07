@@ -1,5 +1,6 @@
 {
   "name": "slovenian",
+  "quotationMarks": [["„", "”"], ["‚", "‘"]],
   "bcp47": "sl-SI",
   "words": [
     "hitro",

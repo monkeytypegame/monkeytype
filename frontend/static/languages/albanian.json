@@ -1,5 +1,6 @@
 {
   "name": "albanian",
+  "quotationMarks": [["„", "”"], ["‘", "’"]],
   "words": [
     "të",
     "e",

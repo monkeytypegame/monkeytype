@@ -1,5 +1,6 @@
 {
   "name": "russian_5k",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "bcp47": "ru-RU",
   "noLazyMode": true,
   "orderedByFrequency": true,

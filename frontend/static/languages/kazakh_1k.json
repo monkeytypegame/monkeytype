@@ -1,5 +1,6 @@
 {
   "name": "kazakh_1k",
+  "quotationMarks": [["«", "»"], ["„", "“"]],
   "noLazyMode": true,
   "words": [
     "факт",

@@ -1,5 +1,6 @@
 {
   "name": "swedish_1k",
+  "quotationMarks": [["”", "”"], ["’", "’"]],
   "bcp47": "sv-SE",
   "words": [
     "jag",

@@ -1,5 +1,6 @@
 {
   "name": "uzbek_70k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "rightToLeft": false,
   "bcp47": "uz-UZ",
   "words": [

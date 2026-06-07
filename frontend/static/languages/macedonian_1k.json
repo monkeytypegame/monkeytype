@@ -1,5 +1,6 @@
 {
   "name": "macedonian_1k",
+  "quotationMarks": [["„", "”"], ["’", "‘"]],
   "noLazyMode": true,
   "words": [
     "јас",

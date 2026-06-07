@@ -1,5 +1,6 @@
 {
   "name": "finnish",
+  "quotationMarks": [["”", "”"], ["’", "’"]],
   "bcp47": "fi-FI",
   "words": [
     "mies",

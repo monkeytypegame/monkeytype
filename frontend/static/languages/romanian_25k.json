@@ -1,5 +1,6 @@
 {
   "name": "romanian_25k",
+  "quotationMarks": [["„", "”"], ["«", "»"]],
   "bcp47": "ro-RO",
   "words": [
     "â",

@@ -1,5 +1,6 @@
 {
   "name": "urdu",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

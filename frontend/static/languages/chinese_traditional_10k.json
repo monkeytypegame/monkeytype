@@ -1,5 +1,6 @@
 {
   "name": "chinese_traditional_10k",
+  "quotationMarks": [["「", "」"], ["『", "』"]],
   "noLazyMode": true,
   "rightToLeft": false,
   "orderedByFrequency": true,

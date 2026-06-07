@@ -1,5 +1,6 @@
 {
   "name": "portuguese_3k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "bcp47": "pt-PT",
   "words": [
     "fel",

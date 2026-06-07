@@ -1,5 +1,6 @@
 {
   "name": "amharic",
+  "quotationMarks": [["«", "»"], ["‹", "›"]],
   "bcp47": "am-ET",
   "words": [
     "እግዚአብሔር",

@@ -1,5 +1,6 @@
 {
   "name": "ukrainian_50k",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "noLazyMode": true,
   "words": [
     "і",

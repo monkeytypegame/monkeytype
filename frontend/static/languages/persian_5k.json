@@ -1,5 +1,6 @@
 {
   "name": "persian_5k",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

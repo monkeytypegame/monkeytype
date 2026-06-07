@@ -1,5 +1,6 @@
 {
   "name": "pashto",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

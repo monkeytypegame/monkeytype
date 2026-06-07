@@ -1,5 +1,6 @@
 {
   "name": "azerbaijani",
+  "quotationMarks": [["“", "”"], ["\"", "\""]],
   "bcp47": "az-AZ",
   "words": [
     "dərs",

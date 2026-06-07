@@ -1,5 +1,6 @@
 {
   "name": "german",
+  "quotationMarks": [["„", "”"], ["‚", "‘"]],
   "bcp47": "de-DE",
   "additionalAccents": [
     ["ä", "ae"],

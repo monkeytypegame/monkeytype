@@ -1,5 +1,6 @@
 {
   "name": "swiss_german",
+  "quotationMarks": [["«", "»"], ["‹", "›"]],
   "bcp47": "de-CH",
   "words": [
     "ich",

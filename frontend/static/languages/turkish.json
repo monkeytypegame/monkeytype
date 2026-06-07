@@ -1,5 +1,6 @@
 {
   "name": "turkish",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "bcp47": "tr-TR",
   "words": [
     "bir",

@@ -1,5 +1,6 @@
 {
   "name": "esperanto_h_sistemo_1k",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [

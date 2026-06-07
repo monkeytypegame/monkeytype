@@ -1,5 +1,6 @@
 {
   "name": "czech_10k",
+  "quotationMarks": [["„", "”"], ["‚", "‘"]],
   "bcp47": "cs-CZ",
   "words": [
     "být",

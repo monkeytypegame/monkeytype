@@ -1,5 +1,6 @@
 {
   "name": "greek",
+  "quotationMarks": [["«", "»"], ["", ""]],
   "bcp47": "el-GR",
   "words": [
     "άρθρο",

@@ -1,5 +1,6 @@
 {
   "name": "english_legal",
+  "quotationMarks": [["“", "”"], ["‘", "’"]],
   "words": [
     "abandonment",
     "abet",

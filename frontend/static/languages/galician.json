@@ -1,5 +1,6 @@
 {
   "name": "galician",
+  "quotationMarks": [["«", "»"], ["“", "”"]],
   "bcp47": "gl-ES",
   "orderedByFrequency": true,
   "words": [

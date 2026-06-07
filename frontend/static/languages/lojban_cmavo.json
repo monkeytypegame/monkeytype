@@ -1,5 +1,6 @@
 {
   "name": "lojban_cmavo",
+  "quotationMarks": [["lu ", " li"u"], ["", ""]],
   "noLazyMode": true,
   "words": [
     "a",
