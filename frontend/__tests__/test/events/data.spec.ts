@@ -112,10 +112,14 @@ describe("data.ts", () => {
       expect(getAllTestEvents()).toHaveLength(0);
     });
 
-    it("ignores duplicate keydown without keyup", () => {
+    it("synthesizes missing keyup on duplicate keydown", () => {
       logTestEvent("keydown", 1010, keyDown());
       logTestEvent("keydown", 1020, keyDown());
-      expect(getAllTestEvents()).toHaveLength(1);
+      const events = getAllTestEvents();
+      expect(events).toHaveLength(3);
+      expect(events[0]!.type).toBe("keydown");
+      expect(events[1]!.type).toBe("keyup");
+      expect(events[2]!.type).toBe("keydown");
     });
 
     it("allows keydown after keyup", () => {

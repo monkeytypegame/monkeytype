@@ -27,6 +27,9 @@ let compositionEvents: CompositionTestEvent[] = [];
 
 let cachedAllEvents: TestEventNoMs[] | undefined;
 
+const sortTieRank = (type: TestEventType): number =>
+  type === "keyup" ? 0 : type === "keydown" ? 1 : type === "timer" ? 3 : 2;
+
 let noCodeIndex = 0;
 let pressedKeys: Map<
   Keycode | "NoCode" | `NoCode${number}`,
@@ -249,11 +252,7 @@ export function getAllTestEvents(): TestEventNoMs[] {
     ...inputEvents,
     ...compositionEvents,
   ]
-    .sort(
-      (a, b) =>
-        a.ms - b.ms ||
-        (a.type === "timer" ? 1 : 0) - (b.type === "timer" ? 1 : 0),
-    )
+    .sort((a, b) => a.ms - b.ms || sortTieRank(a.type) - sortTieRank(b.type))
     .map(({ ms, ...rest }) => ({
       ...rest,
       testMs: roundTo2(ms - startEventMs),
