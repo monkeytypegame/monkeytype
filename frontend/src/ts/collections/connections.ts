@@ -35,9 +35,9 @@ const connectionsCollection = createCollection(
     staleTime: 5 * 60 * 1000,
     queryKey: queryKeys.root(),
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
-      if (!isAuthenticated()) return [];
       await configurationPromise;
       if (!getServerConfiguration()?.connections.enabled) return [];
       const response = await Ape.connections.get();
@@ -51,35 +51,41 @@ const connectionsCollection = createCollection(
 );
 
 const connectionsQuery = useLiveQuery((q) =>
-  q.from({ connections: connectionsCollection }),
+  isAuthenticated()
+    ? q.from({ connections: connectionsCollection })
+    : undefined,
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function usePendingConnectionsQuery() {
   return useLiveQuery((q) =>
-    q
-      .from({ connections: connectionsCollection })
-      .where(({ connections }) =>
-        and(
-          eq(connections.status, "pending"),
-          not(eq(connections.initiatorUid, getUserId())),
-        ),
-      )
-      .orderBy(({ connections }) => connections.lastModified, "desc"),
+    isAuthenticated()
+      ? q
+          .from({ connections: connectionsCollection })
+          .where(({ connections }) =>
+            and(
+              eq(connections.status, "pending"),
+              not(eq(connections.initiatorUid, getUserId())),
+            ),
+          )
+          .orderBy(({ connections }) => connections.lastModified, "desc")
+      : undefined,
   );
 }
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useBlockedConnectionsQuery() {
   return useLiveQuery((q) =>
-    q
-      .from({ connections: connectionsCollection })
-      .where(({ connections }) =>
-        and(
-          eq(connections.status, "blocked"),
-          not(eq(connections.initiatorUid, getUserId())),
-        ),
-      )
-      .orderBy(({ connections }) => connections.lastModified, "desc"),
+    isAuthenticated()
+      ? q
+          .from({ connections: connectionsCollection })
+          .where(({ connections }) =>
+            and(
+              eq(connections.status, "blocked"),
+              not(eq(connections.initiatorUid, getUserId())),
+            ),
+          )
+          .orderBy(({ connections }) => connections.lastModified, "desc")
+      : undefined,
   );
 }
 

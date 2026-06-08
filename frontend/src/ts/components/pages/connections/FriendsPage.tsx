@@ -1,18 +1,14 @@
-import { Show } from "solid-js";
-
-import { getActivePage } from "../../../states/core";
+import { Page } from "../../common/Page";
 import { FriendsList } from "./FriendsList";
 import { PendingRequests } from "./PendingRequests";
 
 export function FriendsPage() {
-  const isOpen = (): boolean => getActivePage() === "friends";
-
   return (
-    <Show when={isOpen()}>
+    <Page id="friends">
       <div class="content-grid grid gap-8">
         <PendingRequests />
         <FriendsList />
       </div>
-    </Show>
+    </Page>
   );
 }
