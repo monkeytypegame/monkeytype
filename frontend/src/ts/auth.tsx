@@ -53,7 +53,7 @@ type AuthMethodInfo = {
 }>;
 
 /**
- * auth methods, keep order from most to least prefered.
+ * auth methods, keep order from most to least preferred.
  * This is used for reauthenticate
  */
 const authMethods = {

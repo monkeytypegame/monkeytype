@@ -1,4 +1,14 @@
-import { z, ZodFirstPartyTypeKind, ZodSchema, ZodTypeAny } from "zod";
+import {
+  z,
+  ZodBranded,
+  ZodDefault,
+  ZodEffects,
+  ZodFirstPartyTypeKind,
+  ZodNullable,
+  ZodOptional,
+  ZodSchema,
+  ZodTypeAny,
+} from "zod";
 
 export function getOptions<T extends ZodSchema>(
   schema: T,
@@ -23,19 +33,36 @@ export function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
 }
 
 /**
- * Unwraps a Zod schema by removing optional or default wrappers,
+ * Unwraps a Zod schema by removing wrappers like optional, default, nullable,
  * returning the underlying inner schema.
  **/
-export function unwrapSchema<T extends ZodTypeAny>(schema: T): T {
-  const type = getZodType(schema);
+export function unwrapSchema(schema: ZodTypeAny): ZodTypeAny {
+  let current = schema;
 
-  if (
-    type === ZodFirstPartyTypeKind.ZodOptional ||
-    type === ZodFirstPartyTypeKind.ZodDefault
-  ) {
-    // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-    return schema._def["innerType"] as T;
+  while (true) {
+    if (current instanceof ZodOptional) {
+      current = current.unwrap() as ZodTypeAny;
+      continue;
+    }
+    if (current instanceof ZodDefault) {
+      current = current.removeDefault() as ZodTypeAny;
+      continue;
+    }
+    if (current instanceof ZodNullable) {
+      current = current.unwrap() as ZodTypeAny;
+      continue;
+    }
+    if (current instanceof ZodEffects) {
+      current = current.innerType() as ZodTypeAny;
+      continue;
+    }
+    if (current instanceof ZodBranded) {
+      current = current.unwrap() as ZodTypeAny;
+      continue;
+    }
+
+    break;
   }
 
-  return schema;
+  return current;
 }
