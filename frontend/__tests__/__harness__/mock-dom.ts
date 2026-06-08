@@ -68,7 +68,6 @@ vi.mock("../../src/ts/utils/dom", async (importOriginal) => {
 
 // Mock document.querySelector to return a div
 // oxlint-disable-next-line typescript/no-deprecated
-// @ts-expect-error okay for testing
-global.document.querySelector = vi
+globalThis.document.querySelector = vi
   .fn()
   .mockReturnValue(document.createElement("div"));
