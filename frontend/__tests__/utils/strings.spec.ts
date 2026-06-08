@@ -345,20 +345,14 @@ describe("string utils", () => {
     });
 
     describe("caching", () => {
-      let mapGetSpy: ReturnType<typeof vi.spyOn>;
-      let mapSetSpy: ReturnType<typeof vi.spyOn>;
-      let mapClearSpy: ReturnType<typeof vi.spyOn>;
-
-      beforeEach(() => {
-        mapGetSpy = vi.spyOn(Map.prototype, "get");
-        mapSetSpy = vi.spyOn(Map.prototype, "set");
-        mapClearSpy = vi.spyOn(Map.prototype, "clear");
-      });
+      const mapGetSpy = vi.spyOn(Map.prototype, "get");
+      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+      const mapClearSpy = vi.spyOn(Map.prototype, "clear");
 
       afterEach(() => {
-        mapGetSpy.mockRestore();
-        mapSetSpy.mockRestore();
-        mapClearSpy.mockRestore();
+        mapGetSpy.mockReset();
+        mapSetSpy.mockReset();
+        mapClearSpy.mockReset();
       });
 
       it("should use cache for repeated calls", () => {

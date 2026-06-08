@@ -1,3 +1,4 @@
+// oxlint-disable typescript/consistent-type-definitions
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
 import { TestActivityDay } from "../src/ts/elements/test-activity-calendar";
 
@@ -12,7 +13,9 @@ interface ActivityDayMatchers<R = TestActivityDay> {
 import "@testing-library/jest-dom";
 
 declare module "vitest" {
+  // oxlint-disable-next-line typescript/no-empty-object-type
   interface Assertion<T = any> extends ActivityDayMatchers<T> {}
+  // oxlint-disable-next-line typescript/no-empty-object-type
   interface AsymmetricMatchersContaining extends ActivityDayMatchers {}
 }
 

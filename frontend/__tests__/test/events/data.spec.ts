@@ -78,9 +78,9 @@ describe("data.ts", () => {
 
       const events = getAllTestEvents();
       expect(events).toHaveLength(3);
-      expect(events[0]!.type).toBe("timer");
-      expect(events[1]!.type).toBe("keydown");
-      expect(events[2]!.type).toBe("input");
+      expect(events[0]?.type).toBe("timer");
+      expect(events[1]?.type).toBe("keydown");
+      expect(events[2]?.type).toBe("input");
     });
 
     it("input events with the same ms as timer end are kept", () => {
@@ -117,9 +117,9 @@ describe("data.ts", () => {
       logTestEvent("keydown", 1020, keyDown());
       const events = getAllTestEvents();
       expect(events).toHaveLength(3);
-      expect(events[0]!.type).toBe("keydown");
-      expect(events[1]!.type).toBe("keyup");
-      expect(events[2]!.type).toBe("keydown");
+      expect(events[0]?.type).toBe("keydown");
+      expect(events[1]?.type).toBe("keyup");
+      expect(events[2]?.type).toBe("keydown");
     });
 
     it("allows keydown after keyup", () => {
@@ -157,8 +157,8 @@ describe("data.ts", () => {
 
       const events = getAllTestEvents();
       expect(events).toHaveLength(2);
-      expect(events[0]!.type).toBe("keydown");
-      expect(events[1]!.type).toBe("keyup");
+      expect(events[0]?.type).toBe("keydown");
+      expect(events[1]?.type).toBe("keyup");
     });
 
     it("stores indexed code on keydown events", () => {
@@ -166,8 +166,8 @@ describe("data.ts", () => {
       logTestEvent("keydown", 1020, keyDown("NoCode"));
 
       const events = getAllTestEvents() as KeydownEvent[];
-      expect(events[0]!.data.code).toBe("NoCode0");
-      expect(events[1]!.data.code).toBe("NoCode1");
+      expect(events[0]?.data.code).toBe("NoCode0");
+      expect(events[1]?.data.code).toBe("NoCode1");
     });
 
     it("stores matching indexed code on keyup events", () => {
@@ -280,7 +280,7 @@ describe("data.ts", () => {
 
       const perWord = getInputEventsPerWord(50);
       expect(perWord.get(0)).toHaveLength(1);
-      expect(perWord.get(0)![0]!.data.charIndex).toBe(1);
+      expect(perWord.get(0)?.[0]?.data.charIndex).toBe(1);
     });
   });
 
@@ -439,11 +439,7 @@ describe("data.ts", () => {
         const inputs = events.filter((e) => e.type === "input");
         expect(inputs).toHaveLength(0);
         expect(
-          events.filter(
-            (e) =>
-              e.type === "keydown" &&
-              (e.data as KeydownEventData).code === "KeyD",
-          ),
+          events.filter((e) => e.type === "keydown" && e.data.code === "KeyD"),
         ).toHaveLength(0);
       });
     });
