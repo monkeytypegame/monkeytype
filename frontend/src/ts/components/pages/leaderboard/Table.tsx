@@ -68,7 +68,6 @@ export function Table(
   }));
 
   const speedColumns = createMemo(() => {
-    console.log("### redefine columns leaderboard");
     return getSpeedColumns({
       friendsOnly: props.friendsOnly,
       format: new Formatting(getConfig),

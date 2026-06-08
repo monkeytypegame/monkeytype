@@ -38,6 +38,8 @@ export function FriendsList() {
   }));
 
   const columns = createMemo(() => {
+    //we need to listen to a single property for this to update. I should figure out why
+    const _unit = getConfig.typingSpeedUnit;
     const format = new Formatting(getConfig);
     console.log("### redefine columns friendList");
     return getColumns({ format });
