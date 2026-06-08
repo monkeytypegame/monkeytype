@@ -18,7 +18,7 @@ export function showDeleteAccountModal(): void {
   showReauthConfirmModal({
     title: "Delete account",
     buttonText: "delete",
-    confirmText: `I understand I will lose access to my Monkeytype account and all my data will be deleted and cannot be recovered.`,
+    confirmText: `I understand that all my data will be deleted and cannot be recovered.`,
     action: async () => {
       showNoticeNotification("Deleting all data...");
       const response = await Ape.users.delete();
@@ -44,7 +44,7 @@ export function showOptOutOfLeaderboardsModal(): void {
   showReauthConfirmModal({
     title: "Opt out of leaderboards",
     buttonText: "opt out",
-    confirmText: `I understand my account will be removed from all leaderboards and this cannot be undone.`,
+    confirmText: `I understand that my account will be removed from all leaderboards and that this cannot be undone.`,
 
     action: async () => {
       const response = await Ape.users.optOutOfLeaderboards();
@@ -70,7 +70,7 @@ export function showResetAccountModal(): void {
   showReauthConfirmModal({
     title: "Reset account",
     buttonText: "reset",
-    confirmText: `I understand all my data will be deleted and cannot be recovered.`,
+    confirmText: `I understand that my account will be completely reset and that this cannot be undone.`,
     action: async () => {
       showNoticeNotification("Resetting settings...");
       await resetConfig();
@@ -101,7 +101,7 @@ export function showResetPersonalBestsModal(): void {
   showReauthConfirmModal({
     title: "Reset personal bests",
     buttonText: "reset",
-    confirmText: `I understand all my personal bests will be deleted and this cannot be undone`,
+    confirmText: `I understand that all my personal bests will be deleted and that this cannot be undone.`,
     action: async () => {
       const response = await Ape.users.deletePersonalBests();
       if (response.status !== 200) {
@@ -139,7 +139,7 @@ export function showResetPersonalBestsModal(): void {
 export function showRevokeAllTokensModal() {
   showReauthConfirmModal({
     title: "Revoke all tokens",
-    confirmText: `I understand that all my tokens will get revoked and I will be logged out of all devices.`,
+    confirmText: `I understand that all my tokens will get revoked and that I will be logged out of all devices.`,
     buttonText: "revoke all",
     action: async () => {
       const response = await Ape.users.revokeAllTokens();
