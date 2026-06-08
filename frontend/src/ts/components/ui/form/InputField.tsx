@@ -68,7 +68,7 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={props.field().state.value as string}
+        value={(props.field().state.value as string) ?? ""}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
