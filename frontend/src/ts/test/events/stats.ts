@@ -340,7 +340,7 @@ export function getChars(): CharCounts {
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
     getInputEventsPerWord(),
-    activeWordIndex,
+    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest,
   );
 }

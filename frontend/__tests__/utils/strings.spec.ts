@@ -1083,6 +1083,23 @@ describe("string utils", () => {
             missed: 0,
           },
         },
+        {
+          description:
+            "incorrect last word, trailing confirm space, timed (stopOnError=word)",
+          input: {
+            inputWord: "jhow ",
+            targetWord: "how",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 1,
+            missed: 0,
+          },
+        },
       ];
 
       it.each(testCases)("$description", ({ input, expected }) => {
