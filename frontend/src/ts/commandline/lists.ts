@@ -29,7 +29,7 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 import { isAuthAvailable, signOut } from "../firebase";
@@ -300,7 +300,7 @@ export const commands: CommandsSubgroup = {
           .writeText(
             JSON.stringify({
               events: getAllTestEvents(),
-              words: TestWords.words,
+              words: TestWords.words.list,
             }),
           )
           .then(() => {
@@ -383,7 +383,7 @@ export const commands: CommandsSubgroup = {
   ],
 };
 
-const lists = {
+const lists: Record<CommandlineListKey, CommandsSubgroup | undefined> = {
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
@@ -403,11 +403,11 @@ export function doesListExist(listName: string): boolean {
     return true;
   }
 
-  return lists[listName as ListsObjectKeys] !== undefined;
+  return lists[listName as CommandlineListKey] !== undefined;
 }
 
 export async function getList(
-  listName: ListsObjectKeys | ConfigKey,
+  listName: CommandlineListKey | ConfigKey,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
@@ -416,7 +416,7 @@ export async function getList(
     return subGroup;
   }
 
-  const list = lists[listName as ListsObjectKeys];
+  const list = lists[listName as CommandlineListKey];
   if (!list) {
     showErrorNotification(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
@@ -431,8 +431,6 @@ stack = [commands];
 export function getStackLength(): number {
   return stack.length;
 }
-
-export type ListsObjectKeys = keyof typeof lists;
 
 export function setStackToDefault(): void {
   setStack([commands]);

@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import { getCurrentInput } from "../events/data";
+import { getCurrentInput, getInputForWord } from "../events/data";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -28,7 +28,6 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
-import { getInputForWord } from "../events/stats";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;

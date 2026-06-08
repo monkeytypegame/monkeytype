@@ -7,8 +7,9 @@ import {
   KeydownEventData,
   KeyupEvent,
   KeyupEventData,
-  TestEvent,
+  InputEventNoMs,
   TestEventData,
+  TestEventNoMs,
   TestEventType,
   TimerEvent,
   TimerEventData,
@@ -24,7 +25,10 @@ let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 let compositionEvents: CompositionTestEvent[] = [];
 
-let cachedAllEvents: TestEvent[] | undefined;
+let cachedAllEvents: TestEventNoMs[] | undefined;
+
+const sortTieRank = (type: TestEventType): number =>
+  type === "keyup" ? 0 : type === "keydown" ? 1 : type === "timer" ? 3 : 2;
 
 let noCodeIndex = 0;
 let pressedKeys: Map<
@@ -52,8 +56,13 @@ export function logTestEvent(
     }
 
     if (pressedKeys.has(code)) {
-      //already pressed - ignore
-      return;
+      pressedKeys.delete(code);
+      keyupEvents.push({
+        type: "keyup",
+        ms: now,
+        testMs: 0,
+        data: { ...data, code },
+      });
     }
 
     if (resultCalculating) {
@@ -146,6 +155,30 @@ export function getCurrentInput(): string {
   return getInputFromDom(getInputEventsForWord(activeWordIndex));
 }
 
+export function getInputForWord(wordIndex: number): string {
+  return getInputFromDom(getInputEventsForWord(wordIndex)).trimEnd();
+}
+
+export function getKeypressSpacing(): number[] {
+  const events = getAllTestEvents();
+
+  const spacings: number[] = [];
+  let lastKeydownTime: number | undefined;
+  for (const event of events) {
+    if (event.type === "keydown") {
+      if (lastKeydownTime !== undefined) {
+        const spacing = event.testMs - lastKeydownTime;
+        spacings.push(spacing);
+      }
+      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
+      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      lastKeydownTime = Math.max(0, event.testMs);
+    }
+  }
+
+  return spacings;
+}
+
 export function cleanupData(): void {
   invalidateCache();
   getAllTestEvents();
@@ -222,11 +255,21 @@ export function cleanupData(): void {
   );
 }
 
-export function getAllTestEvents(): TestEvent[] {
+export function getAllTestEvents(): TestEventNoMs[] {
   if (cachedAllEvents !== undefined) return cachedAllEvents;
 
+  const firstEventMs = Math.min(
+    ...[
+      keydownEvents[0]?.ms,
+      keyupEvents[0]?.ms,
+      timerEvents[0]?.ms,
+      inputEvents[0]?.ms,
+      compositionEvents[0]?.ms,
+    ].filter((ms): ms is number => ms !== undefined),
+  );
+
   const startEventMs =
-    timerEvents.find((e) => e.data.event === "start")?.ms ?? 0;
+    timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
 
   // cachedAllEvents = testData300;
   // return cachedAllEvents;
@@ -237,15 +280,11 @@ export function getAllTestEvents(): TestEvent[] {
     ...inputEvents,
     ...compositionEvents,
   ]
-    .sort(
-      (a, b) =>
-        a.ms - b.ms ||
-        (a.type === "timer" ? 1 : 0) - (b.type === "timer" ? 1 : 0),
-    )
-    .map((event) => {
-      event.testMs = roundTo2(event.ms - startEventMs);
-      return event;
-    });
+    .sort((a, b) => a.ms - b.ms || sortTieRank(a.type) - sortTieRank(b.type))
+    .map(({ ms, ...rest }) => ({
+      ...rest,
+      testMs: roundTo2(ms - startEventMs),
+    }));
 
   return cachedAllEvents;
 }
@@ -301,9 +340,9 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
 }
 
-export function getInputEvents(): InputEvent[] {
+export function getInputEvents(): InputEventNoMs[] {
   return getAllTestEvents().filter(
-    (event): event is InputEvent => event.type === "input",
+    (event): event is InputEventNoMs => event.type === "input",
   );
 }
 
@@ -314,9 +353,9 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getInputEventsForWord(wordIndex: number): InputEvent[] {
+export function getInputEventsForWord(wordIndex: number): InputEventNoMs[] {
   const events = getAllTestEvents();
-  const result: InputEvent[] = [];
+  const result: InputEventNoMs[] = [];
   for (const event of events) {
     if (event.type !== "input") continue;
     if (event.data.wordIndex === wordIndex) {
@@ -329,8 +368,8 @@ export function getInputEventsForWord(wordIndex: number): InputEvent[] {
 export function getInputEventsPerWord(
   startMs?: number,
   testMsLimit?: number,
-): Map<number, InputEvent[]> {
-  let eventsPerWordIndex: Map<number, InputEvent[]> = new Map();
+): Map<number, InputEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, InputEventNoMs[]> = new Map();
   const events = getAllTestEvents();
   for (const event of events) {
     if (event.type !== "input") {
@@ -352,6 +391,10 @@ export function getInputEventsPerWord(
     eventsPerWordIndex.set(wordIndex, existing);
   }
   return eventsPerWordIndex;
+}
+
+export function getTimerStartEventMs(): number | undefined {
+  return timerEvents.find((e) => e.data.event === "start")?.ms;
 }
 
 export const __testing = {

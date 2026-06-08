@@ -13,7 +13,8 @@ import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
-import { getInputForWord, getWordBurst } from "../../test/events/stats";
+import { getWordBurst } from "../../test/events/stats";
+import { getInputForWord } from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;

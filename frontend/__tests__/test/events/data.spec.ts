@@ -24,17 +24,11 @@ import type {
 import { Keycode } from "../../../src/ts/constants/keys";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode | "NoCode" = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function inputData(
@@ -100,12 +94,6 @@ describe("data.ts", () => {
       expect(inputs).toHaveLength(1);
     });
 
-    it("computes testMs relative to start", () => {
-      logTestEvent("timer", 1500, timerData("start", 0));
-      const events = getAllTestEvents();
-      expect(events[0]!.testMs).toBe(500); // 1500 - 1000
-    });
-
     it("caches getAllTestEvents and invalidates on new event", () => {
       logTestEvent("timer", 1100, timerData("start", 0));
       const first = getAllTestEvents();
@@ -124,10 +112,14 @@ describe("data.ts", () => {
       expect(getAllTestEvents()).toHaveLength(0);
     });
 
-    it("ignores duplicate keydown without keyup", () => {
+    it("synthesizes missing keyup on duplicate keydown", () => {
       logTestEvent("keydown", 1010, keyDown());
       logTestEvent("keydown", 1020, keyDown());
-      expect(getAllTestEvents()).toHaveLength(1);
+      const events = getAllTestEvents();
+      expect(events).toHaveLength(3);
+      expect(events[0]!.type).toBe("keydown");
+      expect(events[1]!.type).toBe("keyup");
+      expect(events[2]!.type).toBe("keydown");
     });
 
     it("allows keydown after keyup", () => {
@@ -217,17 +209,9 @@ describe("data.ts", () => {
       // simulate forceReleaseAllKeys passing indexed codes directly
       logTestEvent("keyup", 1030, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
       logTestEvent("keyup", 1040, {
         code: "NoCode1",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       const events = getAllTestEvents();
@@ -241,10 +225,6 @@ describe("data.ts", () => {
     it("rejects indexed NoCode keyup with no matching keydown", () => {
       logTestEvent("keyup", 1010, {
         code: "NoCode0",
-        ctrl: false,
-        shift: false,
-        alt: false,
-        meta: false,
       } as KeyupEventData);
 
       expect(getAllTestEvents()).toHaveLength(0);
@@ -273,32 +253,6 @@ describe("data.ts", () => {
       const perWord = getInputEventsPerWord();
       expect(perWord.get(0)).toHaveLength(2);
       expect(perWord.get(1)).toHaveLength(1);
-    });
-
-    it("attributes deleteContentBackward at charIndex 0 to previous word", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1020, {
-        charIndex: 0,
-        wordIndex: 1,
-        inputType: "deleteContentBackward",
-      } as InputEventData);
-
-      const perWord = getInputEventsPerWord();
-      expect(perWord.get(0)).toHaveLength(2);
-      expect(perWord.has(1)).toBe(false);
-    });
-
-    it("attributes deleteWordBackward at charIndex 0 to previous word", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1020, {
-        charIndex: 0,
-        wordIndex: 1,
-        inputType: "deleteWordBackward",
-      } as InputEventData);
-
-      const perWord = getInputEventsPerWord();
-      expect(perWord.get(0)).toHaveLength(2);
-      expect(perWord.has(1)).toBe(false);
     });
 
     it("does not shift delete at charIndex 0 if wordIndex is 0", () => {

@@ -4,7 +4,7 @@ import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
-import { getInputForWord } from "../../test/events/stats";
+import { getInputForWord } from "../../test/events/data";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!TestState.isActive) {

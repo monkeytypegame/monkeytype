@@ -1,4 +1,4 @@
-import { getKeypressSpacing } from "./events/stats";
+import { getKeypressSpacing } from "./events/data";
 import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char

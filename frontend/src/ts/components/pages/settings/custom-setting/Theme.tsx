@@ -570,7 +570,7 @@ function Picker(props: { color: ColorName }): JSXElement {
     >
       <div>{text()}</div>
       <input
-        // class="text-center"
+        class="w-full"
         type="text"
         value={getTheme()[props.color]}
         onChange={(e) => {

@@ -13,7 +13,6 @@ import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
-import * as CustomTextState from "../../legacy-states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
@@ -25,6 +24,8 @@ import {
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
 import { wordsHaveTab } from "../../states/test";
+
+import { getCustomTextIndicator } from "../../states/core";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
@@ -50,7 +51,7 @@ export async function handleEnter(
         Config.words,
         Config.time,
         CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false,
+        getCustomTextIndicator()?.isLong ?? false,
       )
     ) {
       const delay = Date.now() - getLastBailoutAttempt();
@@ -135,10 +136,10 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   logTestEvent("keydown", now, {
     code: getTestEventCode(event),
-    ctrl: event.ctrlKey,
-    shift: event.shiftKey,
-    alt: event.altKey,
-    meta: event.metaKey,
+    ctrl: event.ctrlKey ? true : undefined,
+    shift: event.shiftKey ? true : undefined,
+    alt: event.altKey ? true : undefined,
+    meta: event.metaKey ? true : undefined,
   });
 
   // allow arrows in arrows funbox

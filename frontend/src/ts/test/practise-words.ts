@@ -5,7 +5,6 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import { configEvent } from "../events/config";
-import { setCustomTextName } from "../legacy-states/custom-text-name";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import {
@@ -13,6 +12,7 @@ import {
   getInputHistory,
   getMissedWords,
 } from "./events/stats";
+import { setCustomTextIndicator } from "../states/core";
 
 type Before = {
   mode: Mode | null;
@@ -170,7 +170,7 @@ export function init(
       5,
   );
 
-  setCustomTextName("practise", undefined);
+  setCustomTextIndicator({ name: "practice", isLong: false });
 
   before.mode = mode;
   before.punctuation = punctuation;

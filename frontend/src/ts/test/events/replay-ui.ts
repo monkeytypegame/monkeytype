@@ -3,8 +3,8 @@ import * as Arrays from "../../utils/arrays";
 import { qs, qsr } from "../../utils/dom";
 import { Config } from "../../config/store";
 import * as TestWords from "../test-words";
-import { getInputEvents } from "./data";
-import { getInputHistory, getInputForWord } from "./stats";
+import { getInputEvents, getInputForWord } from "./data";
+import { getInputHistory } from "./stats";
 
 type ReplayAction =
   | "correctLetter"

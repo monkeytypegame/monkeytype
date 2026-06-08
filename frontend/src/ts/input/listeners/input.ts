@@ -11,6 +11,7 @@ import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
+import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
 import { getCurrentInput } from "../../test/events/data";
@@ -93,6 +94,9 @@ inputEl.addEventListener("input", async (event) => {
     event.preventDefault();
     return;
   }
+
+  // just in case before input doesn't catch this
+  if (TestState.resultCalculating || TestState.testRestarting) return;
 
   const now = performance.now();
 
