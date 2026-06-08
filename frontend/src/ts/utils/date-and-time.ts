@@ -273,5 +273,5 @@ export function formatAge(
     formatted = formatDistanceToNow(timestamp);
   }
 
-  return formatted !== "" ? formatted : "less then a minute";
+  return formatted !== "" ? formatted : "less than a minute";
 }

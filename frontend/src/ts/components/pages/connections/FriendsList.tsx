@@ -38,9 +38,9 @@ export function FriendsList() {
   }));
 
   const columns = createMemo(() => {
-    const config = getConfig;
-    console.log("### redefine column");
-    return getColumns({ format: new Formatting(config) });
+    const format = new Formatting(getConfig);
+    console.log("### redefine columns friendList");
+    return getColumns({ format });
   });
 
   return (

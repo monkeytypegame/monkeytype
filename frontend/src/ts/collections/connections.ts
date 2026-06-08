@@ -95,6 +95,7 @@ type ActionType = {
   };
   addConnection: {
     receiverName: string;
+    receiverUid?: string;
   };
 };
 
@@ -156,12 +157,12 @@ const actions = {
     },
   }),
   addConnection: createOptimisticAction<ActionType["addConnection"]>({
-    onMutate: ({ receiverName }) => {
+    onMutate: ({ receiverName, receiverUid }) => {
       connectionsCollection.insert({
         _id: tempId(),
         status: "pending",
         receiverName,
-        receiverUid: tempId(),
+        receiverUid: receiverUid ?? tempId(),
         initiatorName: getSnapshot()?.name ?? "",
         initiatorUid: getSnapshot()?.uid ?? "",
         lastModified: Date.now(),

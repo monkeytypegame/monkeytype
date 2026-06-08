@@ -67,14 +67,15 @@ export function Table(
           },
   }));
 
-  const speedColumns = createMemo(() =>
-    getSpeedColumns({
+  const speedColumns = createMemo(() => {
+    console.log("### redefine columns leaderboard");
+    return getSpeedColumns({
       friendsOnly: props.friendsOnly,
       format: new Formatting(getConfig),
       userOverride: props.userOverride,
       addHeader: props.userOverride !== undefined && bp().xl,
-    }),
-  );
+    });
+  });
   const xpColumns = createMemo(() =>
     getXpColumns({
       friendsOnly: props.friendsOnly,
