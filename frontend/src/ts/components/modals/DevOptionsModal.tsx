@@ -234,7 +234,7 @@ function showGenerateDataModal(): void {
     schema: z.object({
       username: UserNameSchema,
       createUser: z.boolean(),
-      firstTestTimestamp: z.date().max(new Date()),
+      firstTestTimestamp: z.date().max(new Date()).optional(),
       lastTestTimestamp: z.date().max(new Date()).optional(),
       minTestsPerDay: z.number().safe().int().min(0).max(200),
       maxTestsPerDay: z.number().safe().int().min(0).max(200),
@@ -243,6 +243,7 @@ function showGenerateDataModal(): void {
       createUser: {
         type: "checkbox",
         label: "create user",
+        initVal: false,
         description:
           "if checked, user will be created with {username}@example.com and password: password",
       },
@@ -271,7 +272,6 @@ function showGenerateDataModal(): void {
         type: "range",
         label: "min tests per day",
         initVal: 0,
-
         step: 10,
       },
       maxTestsPerDay: {

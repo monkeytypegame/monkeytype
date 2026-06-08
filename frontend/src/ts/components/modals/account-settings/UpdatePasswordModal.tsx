@@ -15,6 +15,7 @@ export function showUpdatePasswordModal(): void {
   if (!isAuthenticated()) return;
   if (!isUsingPasswordAuthentication()) {
     showNoticeNotification("Password authentication is not enabled");
+    return;
   }
   showSimpleModal({
     title: "Update password",
