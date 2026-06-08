@@ -71,16 +71,16 @@ export function getStartToFirstKeypressMs(): number {
 
   const events = getAllTestEvents();
 
-  let firstInput: number | undefined;
+  let firstKeypress: number | undefined;
   let start: number | undefined;
 
   for (const event of events) {
-    if (firstInput !== undefined && start !== undefined) {
+    if (firstKeypress !== undefined && start !== undefined) {
       break;
     }
 
-    if (firstInput === undefined && event.type === "input") {
-      firstInput = event.testMs;
+    if (firstKeypress === undefined && event.type === "keydown") {
+      firstKeypress = event.testMs;
     }
 
     if (
@@ -92,11 +92,11 @@ export function getStartToFirstKeypressMs(): number {
     }
   }
 
-  if (firstInput === undefined || start === undefined) {
+  if (firstKeypress === undefined || start === undefined) {
     return 0;
   }
 
-  const calc = firstInput - start;
+  const calc = firstKeypress - start;
   return calc < 0 ? 0 : roundTo2(calc);
 }
 
@@ -105,7 +105,7 @@ export function getStartToFirstKeypressMs(): number {
 function getRawLastKeypressToEndMs(): number {
   const events = getAllTestEvents();
 
-  let lastInput: number | undefined;
+  let lastKeypress: number | undefined;
   let end: number | undefined;
 
   for (let i = events.length - 1; i >= 0; i--) {
@@ -116,12 +116,12 @@ function getRawLastKeypressToEndMs(): number {
       break;
     }
 
-    if (lastInput !== undefined && end !== undefined) {
+    if (lastKeypress !== undefined && end !== undefined) {
       break;
     }
 
-    if (lastInput === undefined && event.type === "input") {
-      lastInput = event.testMs;
+    if (lastKeypress === undefined && event.type === "keydown") {
+      lastKeypress = event.testMs;
     }
 
     if (
@@ -133,11 +133,11 @@ function getRawLastKeypressToEndMs(): number {
     }
   }
 
-  if (lastInput === undefined || end === undefined) {
+  if (lastKeypress === undefined || end === undefined) {
     return 0;
   }
 
-  const calc = end - lastInput;
+  const calc = end - lastKeypress;
   return calc < 0 ? 0 : roundTo2(calc);
 }
 
@@ -391,8 +391,8 @@ export function getKeypressSpacing(): number[] {
         const spacing = event.testMs - lastKeydownTime;
         spacings.push(spacing);
       }
-      // clamp pre-start keydowns to 0 so sum(keySpacing) doesn't inflate by
-      // |firstKeydown|, keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
+      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
       lastKeydownTime = Math.max(0, event.testMs);
     }
   }

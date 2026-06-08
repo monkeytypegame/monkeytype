@@ -9,7 +9,7 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import { z, ZodDefault, ZodFirstPartyTypeKind, ZodTypeAny } from "zod";
+import { z, ZodFirstPartyTypeKind } from "zod";
 
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -26,6 +26,7 @@ import {
 } from "../../states/simple-modal";
 import { cn } from "../../utils/cn";
 import { typedEntries } from "../../utils/misc";
+import { getZodType, unwrapSchema } from "../../utils/zod";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/form/InputField";
@@ -57,7 +58,10 @@ function getDefaultValues(
   }
 
   return Object.fromEntries(
-    Object.entries(inputs).map(([key, input]) => [key, input.initVal ?? null]),
+    Object.entries(inputs).map(([key, input]) => [
+      key,
+      input.initVal ?? undefined,
+    ]),
   );
 }
 
@@ -247,7 +251,7 @@ export function SimpleModal(): JSXElement {
       title={config()?.title}
       focusFirstInput={config()?.focusFirstInput ?? true}
       beforeShow={resetForm}
-      modalClass={config()?.class}
+      modalClass={cn("max-w-lg", config()?.class)}
     >
       <form
         class="grid gap-4"
@@ -357,8 +361,9 @@ export function SimpleModal(): JSXElement {
  */
 export function convertFn<T>(
   input: SimpleModalInput<T>,
-  schema: z.ZodTypeAny,
-): (val: string | boolean) => T {
+  rawSchema: z.ZodTypeAny,
+): (val: string | boolean) => T | undefined {
+  const schema = unwrapSchema(rawSchema);
   const type = getZodType(schema);
   const preprocess = (raw: unknown): T => {
     const value = input.preprocess ? input.preprocess(raw as T) : raw;
@@ -373,6 +378,7 @@ export function convertFn<T>(
   switch (type) {
     case ZodFirstPartyTypeKind.ZodBoolean:
       return (val) => {
+        if (val === null || val === undefined) return undefined;
         const bool =
           typeof val === "boolean" ? val : val === "true" || val === "1";
         return preprocess(bool);
@@ -380,27 +386,19 @@ export function convertFn<T>(
 
     case ZodFirstPartyTypeKind.ZodNumber:
       return (val) => {
+        if (val === null || val === undefined) return undefined;
         const num = typeof val === "string" ? parseFloat(val) : Number(val);
         return preprocess(num);
       };
 
     case ZodFirstPartyTypeKind.ZodDate:
       return (val) => {
+        if (val === null || val === undefined) return undefined;
         const date = new Date(val as string);
         return preprocess(date);
       };
 
-    case ZodFirstPartyTypeKind.ZodDefault: {
-      const defaultSchema = schema as ZodDefault<ZodTypeAny>;
-      return convertFn(input, defaultSchema._def.innerType);
-    }
-
     default:
       return (val) => preprocess(val);
   }
-}
-
-function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  return schema._def["typeName"] as ZodFirstPartyTypeKind;
 }

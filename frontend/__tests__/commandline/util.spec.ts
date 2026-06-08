@@ -7,6 +7,7 @@ import type { CommandlineConfigMetadata } from "../../src/ts/commandline/command
 import type { ConfigKey } from "@monkeytype/schemas/configs";
 import type { ConfigMetadata } from "../../src/ts/config/metadata";
 import { z, ZodSchema } from "zod";
+import { Command } from "../../src/ts/commandline/types";
 
 const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
 
@@ -113,7 +114,9 @@ describe("CommandlineUtils", () => {
       it("sets available", () => {
         //GIVEN
         const schema = z.boolean();
-        const isAvailable = (val: any) => (val ? () => true : undefined);
+        const isAvailable = (val: any): (() => true) | undefined =>
+          // oxlint-disable-next-line typescript/strict-boolean-expressions
+          val ? () => true : undefined;
 
         //WHEN
         const cmd = buildCommand({
@@ -135,7 +138,7 @@ describe("CommandlineUtils", () => {
     describe("type subgroupWithInput", () => {
       it("uses commandValues for number schema", () => {
         //GIVEN
-        const afterExec = () => "test";
+        const afterExec = (): string => "test";
         const schema = z.number().int();
 
         //WHEN
@@ -189,7 +192,7 @@ describe("CommandlineUtils", () => {
   describe("type input", () => {
     it("has basic properties", () => {
       //GIVEN
-      const afterExec = () => "test";
+      const afterExec = (): string => "test";
       const schema = z.string();
       //WHEN
       const cmd = buildCommand({
@@ -363,7 +366,7 @@ describe("CommandlineUtils", () => {
     it("uses validation with isValid", () => {
       //GIVEN
       const schema = z.enum(["on", "off"]);
-      const isValid = (_val: any): Promise<boolean | string> =>
+      const isValid = async (_val: any): Promise<boolean | string> =>
         Promise.resolve("error");
 
       //WHEN
@@ -413,7 +416,7 @@ function buildCommand<K extends ConfigKey>({
   configMeta?: Partial<ConfigMetadata<K>>;
   schema?: ZodSchema;
   key?: K;
-}) {
+}): Command {
   return buildCommandForConfigKey(
     key ?? ("" as any),
     configMeta ?? ({} as any),
