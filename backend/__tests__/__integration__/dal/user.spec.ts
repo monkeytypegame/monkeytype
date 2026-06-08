@@ -2084,10 +2084,9 @@ describe("UserDal", () => {
     it("should clear streak hour offset", async () => {
       // given
       const { uid } = await UserTestData.createUser({
-        //@ts-expect-error
         streak: {
           hourOffset: 1,
-        },
+        } as any,
       });
 
       // when

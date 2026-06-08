@@ -161,8 +161,7 @@ describe("middlewares/auth", () => {
     it("should fail with apeKey if apeKeys are disabled", async () => {
       //GIVEN
 
-      //@ts-expect-error
-      mockRequest.ctx.configuration.apeKeys.acceptKeys = false;
+      mockRequest.ctx!.configuration.apeKeys.acceptKeys = false;
 
       //WHEN
       await expect(async () =>
@@ -378,9 +377,7 @@ describe("middlewares/auth", () => {
     });
     it("should allow with apeKey if apeKeys are disabled on dev public endpoint", async () => {
       //GIVEN
-
-      //@ts-expect-error
-      mockRequest.ctx.configuration.apeKeys.acceptKeys = false;
+      mockRequest.ctx!.configuration.apeKeys.acceptKeys = false;
 
       //WHEN
       const result = await authenticate(

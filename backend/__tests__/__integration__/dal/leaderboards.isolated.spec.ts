@@ -123,7 +123,7 @@ describe("LeaderboardsDal", () => {
     it("should remove consistency from results if null", async () => {
       //GIVEN
       const stats = pb(100, 90, 2);
-      //@ts-ignore
+      //@ts-expect-error ok for testing
       stats.consistency = undefined;
 
       await createUser(lbBests(stats));
@@ -470,10 +470,9 @@ function expectedLbEntry(
   time: string,
   { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry,
 ): LeaderboardEntry {
-  // @ts-expect-error
-  const lbBest: PersonalBest =
-    // @ts-expect-error
-    user.lbPersonalBests?.time[Number.parseInt(time)].english;
+  const lbBest: PersonalBest = user.lbPersonalBests?.time[
+    Number.parseInt(time)
+  ]?.["english"] as PersonalBest;
 
   return {
     rank,
