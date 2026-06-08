@@ -72,7 +72,7 @@ describe("middlewares/auth", () => {
       json: vi.fn(),
     };
     nextFunction = vi.fn((error) => {
-      if (error) {
+      if (error !== undefined) {
         throw error;
       }
       return "Next function called";
