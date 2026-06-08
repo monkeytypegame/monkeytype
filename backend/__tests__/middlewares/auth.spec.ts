@@ -104,7 +104,7 @@ describe("middlewares/auth", () => {
       );
 
       //WHEN
-      await expect(() =>
+      await expect(async () =>
         authenticate({}, { requireFreshToken: true }),
       ).rejects.toMatchMonkeyError(expectedError);
 
@@ -149,7 +149,7 @@ describe("middlewares/auth", () => {
     });
     it("should fail with apeKey if apeKey is not supported", async () => {
       //WHEN
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           { headers: { authorization: "ApeKey aWQua2V5" } },
           { acceptApeKeys: false },
@@ -165,7 +165,7 @@ describe("middlewares/auth", () => {
       mockRequest.ctx.configuration.apeKeys.acceptKeys = false;
 
       //WHEN
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           { headers: { authorization: "ApeKey aWQua2V5" } },
           { acceptApeKeys: false },
@@ -246,14 +246,14 @@ describe("middlewares/auth", () => {
       isDevModeMock.mockReturnValue(false);
 
       //WHEN / THEN
-      await expect(() =>
+      await expect(async () =>
         authenticate({ headers: { authorization: "Uid 123" } }),
       ).rejects.toMatchMonkeyError(
         new MonkeyError(401, "Bearer type uid is not supported"),
       );
     });
     it("should fail without authentication", async () => {
-      await expect(() => authenticate({ headers: {} })).rejects.toThrow(
+      await expect(async () => authenticate({ headers: {} })).rejects.toThrow(
         "Unauthorized\nStack: endpoint: /api/v1 no authorization header found",
       );
 
@@ -267,7 +267,7 @@ describe("middlewares/auth", () => {
       );
     });
     it("should fail with empty authentication", async () => {
-      await expect(() =>
+      await expect(async () =>
         authenticate({ headers: { authorization: "" } }),
       ).rejects.toThrow(
         "Unauthorized\nStack: endpoint: /api/v1 no authorization header found",
@@ -283,7 +283,7 @@ describe("middlewares/auth", () => {
       );
     });
     it("should fail with missing authentication token", async () => {
-      await expect(() =>
+      await expect(async () =>
         authenticate({ headers: { authorization: "Bearer" } }),
       ).rejects.toThrow(
         "Missing authentication token\nStack: authenticateWithAuthHeader",
@@ -299,7 +299,7 @@ describe("middlewares/auth", () => {
       );
     });
     it("should fail with unknown authentication scheme", async () => {
-      await expect(() =>
+      await expect(async () =>
         authenticate({ headers: { authorization: "unknown format" } }),
       ).rejects.toThrow(
         'Unknown authentication scheme\nStack: The authentication scheme "unknown" is not implemented',
@@ -415,7 +415,7 @@ describe("middlewares/auth", () => {
       isDevModeMock.mockReturnValue(false);
 
       //THEN
-      await expect(() =>
+      await expect(async () =>
         authenticate({ headers: {} }, { isPublicOnDev: true }),
       ).rejects.toThrow("Unauthorized");
     });
@@ -468,7 +468,7 @@ describe("middlewares/auth", () => {
       vi.stubEnv("GITHUB_WEBHOOK_SECRET", "GITHUB_WEBHOOK_SECRET");
       timingSafeEqualMock.mockReturnValue(false);
 
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           {
             headers: { "x-hub-signature-256": "the-signature" },
@@ -489,7 +489,7 @@ describe("middlewares/auth", () => {
     });
     it("should fail without header when endpoint is using githubwebhook", async () => {
       vi.stubEnv("GITHUB_WEBHOOK_SECRET", "GITHUB_WEBHOOK_SECRET");
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           {
             headers: {},
@@ -510,7 +510,7 @@ describe("middlewares/auth", () => {
     });
     it("should fail with missing GITHUB_WEBHOOK_SECRET when endpoint is using githubwebhook", async () => {
       vi.stubEnv("GITHUB_WEBHOOK_SECRET", "");
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           {
             headers: { "x-hub-signature-256": "the-signature" },
@@ -534,7 +534,7 @@ describe("middlewares/auth", () => {
       timingSafeEqualMock.mockImplementation(() => {
         throw new Error("could not validate");
       });
-      await expect(() =>
+      await expect(async () =>
         authenticate(
           {
             headers: { "x-hub-signature-256": "the-signature" },

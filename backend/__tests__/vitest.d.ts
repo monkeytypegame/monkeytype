@@ -9,7 +9,9 @@ type ExpectedRateLimit = {
   windowMs: number;
 };
 interface RestRequestMatcher<R = Supertest> {
-  toBeRateLimited: (expected: ExpectedRateLimit) => RestRequestMatcher<R>;
+  toBeRateLimited: (
+    expected: ExpectedRateLimit,
+  ) => Promise<RestRequestMatcher<R>>;
 }
 interface ThrowMatcher {
   toMatchMonkeyError: (expected: {

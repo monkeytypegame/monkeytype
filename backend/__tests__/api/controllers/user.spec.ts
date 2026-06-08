@@ -679,7 +679,7 @@ describe("user controller test", () => {
         discordId: "discordId",
         banned: true,
       } as Partial<UserDal.DBUser> as UserDal.DBUser;
-      await getUserMock.mockResolvedValue(user);
+      getUserMock.mockResolvedValue(user);
 
       //WHEN
       await mockApp

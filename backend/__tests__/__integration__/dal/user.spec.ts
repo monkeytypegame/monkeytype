@@ -1581,7 +1581,7 @@ describe("UserDal", () => {
       const count = 100;
       const calls = new Array(count)
         .fill(0)
-        .map(() =>
+        .map(async () =>
           UserDAL.updateInbox(
             user.uid,
             [rewardOne.id, rewardTwo.id, rewardThree.id],
