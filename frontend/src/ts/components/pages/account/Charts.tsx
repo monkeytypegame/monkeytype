@@ -8,6 +8,7 @@ import {
 } from "../../../collections/results";
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
+import { isAuthenticated } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Formatting } from "../../../utils/format";
 import {
@@ -34,6 +35,7 @@ export function Charts(props: {
   const tags = useTagsLiveQuery();
 
   const resultsQuery = useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     const state = props.queryState();
     if (state === undefined) return undefined;
     return q

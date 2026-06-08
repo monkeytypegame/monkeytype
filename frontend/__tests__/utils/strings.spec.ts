@@ -345,20 +345,14 @@ describe("string utils", () => {
     });
 
     describe("caching", () => {
-      let mapGetSpy: ReturnType<typeof vi.spyOn>;
-      let mapSetSpy: ReturnType<typeof vi.spyOn>;
-      let mapClearSpy: ReturnType<typeof vi.spyOn>;
-
-      beforeEach(() => {
-        mapGetSpy = vi.spyOn(Map.prototype, "get");
-        mapSetSpy = vi.spyOn(Map.prototype, "set");
-        mapClearSpy = vi.spyOn(Map.prototype, "clear");
-      });
+      const mapGetSpy = vi.spyOn(Map.prototype, "get");
+      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+      const mapClearSpy = vi.spyOn(Map.prototype, "clear");
 
       afterEach(() => {
-        mapGetSpy.mockRestore();
-        mapSetSpy.mockRestore();
-        mapClearSpy.mockRestore();
+        mapGetSpy.mockReset();
+        mapSetSpy.mockReset();
+        mapClearSpy.mockReset();
       });
 
       it("should use cache for repeated calls", () => {
@@ -817,6 +811,22 @@ describe("string utils", () => {
           },
         },
         {
+          description: "incorrect, last word, early space",
+          input: {
+            inputWord: "he ",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
           description: "incorrect, last word, noquick end",
           input: {
             inputWord: "xello ",
@@ -828,7 +838,7 @@ describe("string utils", () => {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 1,
-            extra: 1,
+            extra: 0,
             missed: 0,
           },
         },
@@ -990,6 +1000,86 @@ describe("string utils", () => {
             correctWord: 0,
             incorrect: 0,
             extra: 5,
+            missed: 0,
+          },
+        },
+        {
+          description: "correctly count incorrect newlines",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello\n",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "partial correct, with space",
+          input: {
+            inputWord: "helxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "newlines",
+          input: {
+            inputWord: "hello\n",
+            targetWord: "hello\n",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra",
+          input: {
+            inputWord: "abcx",
+            targetWord: "abc ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra (with space)",
+          input: {
+            inputWord: "abcx ",
+            targetWord: "abc ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
             missed: 0,
           },
         },

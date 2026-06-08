@@ -12,8 +12,20 @@ import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
 import { authEvent } from "../events/auth";
 import { qs, qsa, qsr, onDOMReady } from "../utils/dom";
-import { showPopup } from "../modals/simple-modals-base";
-import { addGithubAuth, addGoogleAuth } from "../auth";
+import { addAuthProvider } from "../auth";
+import { showUpdateEmailModal } from "../components/modals/account-settings/UpdateEmailModal";
+import { showUpdateNameModal } from "../components/modals/account-settings/UpdateNameModal";
+import { showUpdatePasswordModal } from "../components/modals/account-settings/UpdatePasswordModal";
+import { showRemoveAuthMethodModal } from "../components/modals/account-settings/RemoveAuthMethodModal";
+import { showAddPasswordAuthModal } from "../components/modals/account-settings/AddPasswordAuthModal";
+import {
+  showDeleteAccountModal,
+  showOptOutOfLeaderboardsModal,
+  showResetAccountModal,
+  showResetPersonalBestsModal,
+  showRevokeAllTokensModal,
+} from "../components/modals/account-settings/ReauthConfirmModals";
+import { showUnlinkDiscordModal } from "../components/modals/account-settings/UnlinkDiscordModal";
 
 const pageElement = qsr(".page.pageAccountSettings");
 
@@ -185,71 +197,71 @@ qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#unlinkDiscordButton", () => {
-  showPopup("unlinkDiscord");
+  showUnlinkDiscordModal({ callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGoogleAuth", () => {
-  showPopup("removeGoogleAuth");
+  showRemoveAuthMethodModal({ authMethod: "google", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removeGithubAuth", () => {
-  showPopup("removeGithubAuth");
+  showRemoveAuthMethodModal({ authMethod: "github", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#removePasswordAuth", () => {
-  showPopup("removePasswordAuth");
+  showRemoveAuthMethodModal({ authMethod: "password", callback: updateUI });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addPasswordAuth", () => {
-  showPopup("addPasswordAuth");
+  showAddPasswordAuthModal({ callback: updateUI });
+});
+
+qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
+  showUpdateNameModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#emailPasswordAuth", () => {
-  showPopup("updateEmail");
+  showUpdateEmailModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#passPasswordAuth", () => {
-  showPopup("updatePassword");
+  showUpdatePasswordModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#deleteAccount", () => {
-  showPopup("deleteAccount");
+  showDeleteAccountModal();
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#resetAccount", () => {
-  showPopup("resetAccount");
+  showResetAccountModal();
 });
 
 qs(".pageAccountSettings")?.onChild(
   "click",
   "#optOutOfLeaderboardsButton",
   () => {
-    showPopup("optOutOfLeaderboards");
+    showOptOutOfLeaderboardsModal();
   },
 );
 
 qs(".pageAccountSettings")?.onChild("click", "#revokeAllTokens", () => {
-  showPopup("revokeAllTokens");
+  showRevokeAllTokensModal();
 });
 
 qs(".pageAccountSettings")?.onChild(
   "click",
   "#resetPersonalBestsButton",
   () => {
-    showPopup("resetPersonalBests");
+    showResetPersonalBestsModal();
   },
 );
 
-qs(".pageAccountSettings")?.onChild("click", "#updateAccountName", () => {
-  showPopup("updateName");
-});
-
 qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
-  void addGoogleAuth();
+  void addAuthProvider("google");
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
-  void addGithubAuth();
+  void addAuthProvider("github");
 });
 
 authEvent.subscribe((event) => {

@@ -138,7 +138,7 @@ describe("Daily Leaderboards", () => {
         await Promise.all(
           new Array(maxResults - 1)
             .fill(0)
-            .map(() => givenResult({ wpm: 20 + Math.random() * 100 })),
+            .map(async () => givenResult({ wpm: 20 + Math.random() * 100 })),
         );
         expect(
           await lb.getResults(0, 5, dailyLeaderboardsConfig, true),

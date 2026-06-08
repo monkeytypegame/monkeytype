@@ -449,8 +449,28 @@ export function countChars(
       if (!(lastWord && shouldLastPartialWordCount)) {
         missed += 1;
       }
-    } else if (targetChar === undefined) {
-      //extra char
+    } else if (
+      lastWord &&
+      inputChar === " " &&
+      targetChar === undefined &&
+      !targetWord.endsWith(" ")
+    ) {
+      // trailing confirm space on incorrect last word — not counted
+    } else if (
+      lastWord &&
+      inputChar === " " &&
+      targetChar !== undefined &&
+      targetChar !== " "
+    ) {
+      // early submit space on last word — count slot as missed, not incorrect
+      if (!(lastWord && shouldLastPartialWordCount)) {
+        missed += 1;
+      }
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
       extra += 1;
     } else {
       //incorrect char

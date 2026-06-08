@@ -18,8 +18,8 @@ describe("QuotesController", () => {
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
   const logsAddLogMock = vi.spyOn(LogsDal, "addLog");
 
-  beforeEach(() => {
-    enableQuotes(true);
+  beforeEach(async () => {
+    await enableQuotes(true);
 
     const user = { quoteMod: true, name: "Bob" } as any;
     getPartialUserMock.mockClear().mockResolvedValue(user);
@@ -128,7 +128,6 @@ describe("QuotesController", () => {
   describe("isSubmissionsEnabled", () => {
     it("should return for quotes enabled without authentication", async () => {
       //GIVEN
-      enableQuotes(true);
 
       //WHEN
       const { body } = await mockApp
@@ -202,7 +201,7 @@ describe("QuotesController", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableQuotes(false);
+      await enableQuotes(false);
 
       //WHEN
       const { body } = await mockApp
@@ -755,8 +754,8 @@ describe("QuotesController", () => {
     const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
     const createReportMock = vi.spyOn(ReportDal, "createReport");
 
-    beforeEach(() => {
-      enableQuoteReporting(true);
+    beforeEach(async () => {
+      await enableQuoteReporting(true);
 
       verifyCaptchaMock.mockClear().mockResolvedValue(true);
       createReportMock.mockClear().mockResolvedValue();
@@ -843,7 +842,7 @@ describe("QuotesController", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableQuoteReporting(false);
+      await enableQuoteReporting(false);
 
       //WHEN
       const { body } = await mockApp
