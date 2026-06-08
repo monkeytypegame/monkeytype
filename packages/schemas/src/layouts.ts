@@ -145,6 +145,7 @@ export const LayoutNameSchema = z.enum(
     "koy",
     "3l",
     "korean",
+    "korean_phonetic",
     "ekverto_b",
     "nerps",
     "sturdy_angle_ansi",
