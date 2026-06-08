@@ -5,9 +5,9 @@ import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
-import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import * as EditResultTagsModal from "../../../modals/edit-result-tags";
+import { getFormatting } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
@@ -36,7 +36,7 @@ export function Table<M extends Mode>(props: {
 
   const columns = createMemo(() =>
     getColumns<M>({
-      format: new Formatting(getConfig),
+      format: getFormatting(),
       tags: tags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);

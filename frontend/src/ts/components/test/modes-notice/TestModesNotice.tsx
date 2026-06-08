@@ -5,6 +5,7 @@ import * as Commandline from "../../../commandline/commandline";
 import { getConfig } from "../../../config/store";
 import {
   getCustomTextIndicator,
+  getFormatting,
   showCommandLineForConfig,
 } from "../../../states/core";
 import { hotkeys } from "../../../states/hotkeys";
@@ -19,7 +20,6 @@ import {
 } from "../../../states/test";
 import { getActiveFunboxNames } from "../../../test/funbox/list";
 import { cn } from "../../../utils/cn";
-import { Formatting } from "../../../utils/format";
 import {
   getLanguageDisplayString,
   replaceUnderscoresWithSpaces,
@@ -219,7 +219,7 @@ function PaceCaretNotice() {
     if (type === "off") type = "custom";
     else if (type === "tagPb") type = "tag pb";
 
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
     const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
@@ -243,7 +243,7 @@ function PaceCaretNotice() {
 
 function MinSpeed() {
   const displaySpeed = createMemo(() => {
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
     const speed = format.typingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
@@ -264,7 +264,7 @@ function MinSpeed() {
 
 function MinAcc() {
   const displayAcc = createMemo(() => {
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
     const acc = format.accuracy(getConfig.minAccCustom, {
       showDecimalPlaces: false,
       suffix: " acc",
@@ -285,7 +285,7 @@ function MinAcc() {
 
 function MinBurst() {
   const displaySpeed = createMemo(() => {
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
     const speed = format.typingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,

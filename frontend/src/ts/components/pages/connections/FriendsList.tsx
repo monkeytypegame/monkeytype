@@ -12,9 +12,8 @@ import {
   addConnection,
   rejectConnection,
 } from "../../../collections/connections";
-import { getConfig } from "../../../config/store";
 import { getFriendsListQuery } from "../../../queries/friends";
-import { getActivePage } from "../../../states/core";
+import { getActivePage, getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
@@ -38,11 +37,7 @@ export function FriendsList() {
   }));
 
   const columns = createMemo(() => {
-    //we need to listen to a single property for this to update. I should figure out why
-    const _unit = getConfig.typingSpeedUnit;
-    const format = new Formatting(getConfig);
-    console.log("### redefine columns friendList");
-    return getColumns({ format });
+    return getColumns({ format: getFormatting() });
   });
 
   return (

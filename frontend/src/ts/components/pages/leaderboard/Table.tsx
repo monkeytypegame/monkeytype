@@ -8,10 +8,9 @@ import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
 import { hasConnection } from "../../../collections/connections";
-import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { bp, BreakpointKey } from "../../../states/breakpoints";
-import { getUserId } from "../../../states/core";
+import { getFormatting, getUserId } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { qs } from "../../../utils/dom";
@@ -70,7 +69,7 @@ export function Table(
   const speedColumns = createMemo(() => {
     return getSpeedColumns({
       friendsOnly: props.friendsOnly,
-      format: new Formatting(getConfig),
+      format: getFormatting(),
       userOverride: props.userOverride,
       addHeader: props.userOverride !== undefined && bp().xl,
     });
