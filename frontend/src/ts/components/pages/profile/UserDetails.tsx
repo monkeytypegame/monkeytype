@@ -115,8 +115,10 @@ function ActionButtons(props: {
     isAuthenticated() && !isUsersProfile() && !hasConnection(props.profile.uid);
 
   const handleAddFriend = () => {
-    const receiverName = props.profile.name;
-    void addConnection({ receiverName });
+    void addConnection({
+      receiverName: props.profile.name,
+      receiverUid: props.profile.uid,
+    });
   };
 
   return (
