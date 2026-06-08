@@ -67,8 +67,7 @@
         "typescript/no-unsafe-member-access": "off", //133
         "typescript/no-unsafe-argument": "off", //96
         "typescript/no-confusing-void-expression": "off", //30
-        "typescript/no-floating-promises": "off", //16
-        "typescript/no-unsafe-call": "off", //5
+
         "consistent-type-definitions": "off", //5
         "explicit-function-return-type": "off", //4
         "eqeqeq": "off", //2

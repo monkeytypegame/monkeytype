@@ -1544,8 +1544,8 @@ describe("user controller test", () => {
   describe("get oauth link", () => {
     const getOauthLinkMock = vi.spyOn(DiscordUtils, "getOauthLink");
     const url = "http://example.com:1234?test";
-    beforeEach(() => {
-      enableDiscordIntegration(true);
+    beforeEach(async () => {
+      await enableDiscordIntegration(true);
       getOauthLinkMock.mockClear().mockResolvedValue(url);
     });
 
@@ -1565,7 +1565,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
-      enableDiscordIntegration(false);
+      await enableDiscordIntegration(false);
 
       //WHEN
       const { body } = await mockApp
@@ -2066,7 +2066,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
@@ -2086,8 +2086,8 @@ describe("user controller test", () => {
       "removeResultFilterPreset",
     );
 
-    beforeEach(() => {
-      enableResultFilterPresets(true);
+    beforeEach(async () => {
+      await enableResultFilterPresets(true);
       removeResultFilterPresetMock.mockClear().mockResolvedValue();
     });
 
@@ -2107,7 +2107,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
 
       //WHEN
       const { body } = await mockApp
@@ -3900,14 +3900,14 @@ describe("user controller test", () => {
   describe("get friends", () => {
     const getFriendsMock = vi.spyOn(UserDal, "getFriends");
 
-    beforeEach(() => {
-      enableConnectionsEndpoints(true);
+    beforeEach(async () => {
+      await enableConnectionsEndpoints(true);
       getFriendsMock.mockClear();
     });
 
     it("gets with premium enabled", async () => {
       //GIVEN
-      enablePremiumFeatures(true);
+      await enablePremiumFeatures(true);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,
@@ -3926,7 +3926,7 @@ describe("user controller test", () => {
 
     it("gets with premium disabled", async () => {
       //GIVEN
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,
