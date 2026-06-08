@@ -1079,7 +1079,7 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
       const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
@@ -1097,7 +1097,7 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
       const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
@@ -1117,7 +1117,7 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       const year2024 = read["2024"] as any;
       expect(year2024[93]).toEqual(2);
     });
