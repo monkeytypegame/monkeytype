@@ -12,6 +12,7 @@ import { LbPersonalBests } from "../../../src/utils/pb";
 import { pb } from "../../__testData__/users";
 import { createConnection } from "../../__testData__/connections";
 import { omit } from "../../../src/utils/misc";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
 describe("LeaderboardsDal", () => {
   afterEach(async () => {
@@ -468,7 +469,7 @@ describe("LeaderboardsDal", () => {
 function expectedLbEntry(
   time: string,
   { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry,
-) {
+): LeaderboardEntry {
   // @ts-expect-error
   const lbBest: PersonalBest =
     // @ts-expect-error
@@ -523,7 +524,7 @@ function lbBests(pb15?: PersonalBest, pb60?: PersonalBest): LbPersonalBests {
   return result;
 }
 
-function premium(expirationDeltaSeconds: number) {
+function premium(expirationDeltaSeconds: number): Partial<UserDal.DBUser> {
   return {
     premium: {
       startTimestamp: 0,

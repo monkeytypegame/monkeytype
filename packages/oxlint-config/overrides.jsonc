@@ -68,11 +68,6 @@
         "typescript/no-unsafe-argument": "off", //96
         "typescript/no-confusing-void-expression": "off", //30
 
-        "consistent-type-definitions": "off", //5
-        "explicit-function-return-type": "off", //4
-        "eqeqeq": "off", //2
-        "no-empty-object-type": "off", //2
-
         "typescript/strict-void-return": "off",
         "prefer-nullish-coalescing": "off",
         "no-shadow": "off",
