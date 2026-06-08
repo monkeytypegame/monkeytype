@@ -69,6 +69,7 @@ describe("handleResult", () => {
     expect(result).toBeUndefined();
     expect(mockSetMeta).toHaveBeenCalledOnce();
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const updater = mockSetMeta.mock.calls[0]![0];
     // oxlint-disable-next-line typescript/no-unsafe-call
     const newMeta = updater({ existing: true });

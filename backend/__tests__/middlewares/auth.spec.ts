@@ -17,6 +17,7 @@ import {
 import * as Prometheus from "../../src/utils/prometheus";
 import { TsRestRequestWithContext } from "../../src/api/types";
 import { enableMonkeyErrorExpects } from "../__testData__/monkey-error";
+import { Context } from "../../src/middlewares/context";
 
 enableMonkeyErrorExpects();
 const mockDecodedToken: DecodedIdToken = {
@@ -161,7 +162,7 @@ describe("middlewares/auth", () => {
     it("should fail with apeKey if apeKeys are disabled", async () => {
       //GIVEN
 
-      mockRequest.ctx!.configuration.apeKeys.acceptKeys = false;
+      (mockRequest.ctx as Context).configuration.apeKeys.acceptKeys = false;
 
       //WHEN
       await expect(async () =>
@@ -377,7 +378,7 @@ describe("middlewares/auth", () => {
     });
     it("should allow with apeKey if apeKeys are disabled on dev public endpoint", async () => {
       //GIVEN
-      mockRequest.ctx!.configuration.apeKeys.acceptKeys = false;
+      (mockRequest.ctx as Context).configuration.apeKeys.acceptKeys = false;
 
       //WHEN
       const result = await authenticate(
