@@ -1126,7 +1126,7 @@ function compareCompletedEvents(
       if (a !== b) {
         const diff = Numbers.roundTo2(Math.abs(a - b));
         const dir = a > b ? "ce1 larger" : "ce2 larger";
-        notMatching.push(`${key} (off by ${diff}, ${dir})`);
+        notMatching.push(`${key} (off by ${diff}, ${dir}, ${a} vs ${b})`);
         mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
@@ -1281,6 +1281,10 @@ function compareCompletedEvents(
       ignoreMismatch = true;
     }
 
+    if (Config.mode === "zen") {
+      ignoreMismatch = true;
+    }
+
     if (ALWAYSREPORT) {
       if (ignoreMismatch) {
         showNoticeNotification(
@@ -1309,7 +1313,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 11,
+            version: 12,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
