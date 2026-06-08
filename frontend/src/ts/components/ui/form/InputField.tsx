@@ -1,7 +1,10 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
+import { format as dateFormat } from "date-fns/format";
 import { Accessor, createSignal, JSXElement, Show } from "solid-js";
+import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
+import { getZodType, unwrapSchema } from "../../../utils/zod";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -20,6 +23,10 @@ export function InputField(props: {
    * If user inputs empty string the field is resetted to the default value
    */
   resetToDefaultIfEmptyOnBlur?: boolean;
+  schema?: ZodTypeAny;
+  min?: number;
+  max?: number;
+  step?: string | number;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -32,6 +39,14 @@ export function InputField(props: {
       setTimeout(() => setShake(false), 300);
     }
   };
+
+  const formatDate = (date: Date | undefined) =>
+    date === undefined
+      ? undefined
+      : dateFormat(
+          date,
+          props.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
+        );
 
   return (
     <div
@@ -51,10 +66,9 @@ export function InputField(props: {
         )}
         type={props.type ?? "text"}
         placeholder={props.placeholder ?? ""}
-        // oxlint-disable-next-line react/no-unknown-property
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={props.field().state.value as string}
+        value={(props.field().state.value as string) ?? ""}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
@@ -68,7 +82,9 @@ export function InputField(props: {
           shakeItIfYouWantIt();
           props.field().handleBlur();
         }}
-        onInput={(e) => props.field().handleChange(e.target.value)}
+        onInput={(e) => {
+          props.field().handleChange(e.target.value);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             shakeItIfYouWantIt();
@@ -82,10 +98,52 @@ export function InputField(props: {
         onFocus={() => props.onFocus?.()}
         dir={props.dir}
         maxLength={props.maxLength}
+        {...getNumberOptions(props.schema)}
+        {...getDateOptions(props.schema, formatDate)}
+        min={props.min}
+        max={props.max}
+        step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />
       </Show>
     </div>
   );
+}
+
+function getNumberOptions(rawSchema: ZodTypeAny | undefined): {
+  min?: number;
+  max?: number;
+  step?: string;
+} {
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
+  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
+  const numberSchema = schema as ZodNumber;
+
+  return {
+    min: numberSchema.minValue ?? undefined,
+    max: numberSchema.maxValue ?? undefined,
+    step: numberSchema.isInt ? "1" : "any",
+  };
+}
+
+function getDateOptions(
+  rawSchema: ZodTypeAny | undefined,
+  format: (val: Date | undefined) => string | undefined,
+): {
+  min?: string;
+  max?: string;
+} {
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
+  if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
+
+  const applyFormat = (it: Date | null) =>
+    it === null ? undefined : format(it);
+
+  return {
+    min: applyFormat((schema as ZodDate).minDate),
+    max: applyFormat((schema as ZodDate).maxDate),
+  };
 }

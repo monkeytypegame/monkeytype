@@ -33,8 +33,7 @@ describe("PresetController", () => {
           showAverage: "off",
         },
       };
-      //@ts-expect-error
-      getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
+      getPresetsMock.mockResolvedValue([presetOne, presetTwo] as any);
 
       //WHEN
       const { body } = await mockApp

@@ -297,15 +297,15 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "behavior",
     description:
-      "Disable result saving, in case you want to practice without affecting your account stats.",
+      'Set this setting to "off" in case you want to practice without saving new results to your account and affecting your statistics.',
   },
   blindMode: {
     key: "blindMode",
     fa: { icon: "fa-eye-slash" },
     optionsMetadata: {
       true: {
-        // Need to have space here so that the `on` button for blind mode will have the
-        // same height on both Chromium and Firefox.
+        // Use an `&ensp;` here so that the `on` button for blind mode will
+        // have the same height on both Chromium and Firefox.
         displayString: " ",
       },
     },

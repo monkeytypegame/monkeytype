@@ -2,7 +2,6 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
-import * as ModesNotice from "../elements/modes-notice";
 
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { Config } from "../config/store";
@@ -302,9 +301,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   oppositeShiftMode: {
     subgroup: {
       options: "fromSchema",
-      afterExec: () => {
-        void ModesNotice.update();
-      },
     },
   },
   stopOnError: {

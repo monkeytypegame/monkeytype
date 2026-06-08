@@ -14,18 +14,17 @@ import {
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
-import { getActivePage, isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
-// import { hotkeys } from "../../../states/hotkeys";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
-// import { isFirefox } from "../../../utils/misc";
 import { getOptions } from "../../../utils/zod";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { Page } from "../../common/Page";
 import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
@@ -33,7 +32,6 @@ import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
-// import { Kbd } from "../../common/Kbd";
 import { CustomLayoutfluid } from "./custom-setting/CustomLayoutfluid";
 import { CustomPolyglot } from "./custom-setting/CustomPolyglot";
 import { FontFamily } from "./custom-setting/FontFamily";
@@ -55,15 +53,14 @@ import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
 
-export function Settings(): JSXElement {
+export function SettingsPage(): JSXElement {
   const [hasLocalBg] = createResource(
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),
   );
-  const isOpen = (): boolean => getActivePage() === "settings";
 
   return (
-    <Show when={isOpen()}>
+    <Page id="settings">
       <div class="grid gap-8">
         <QuickNav />
         <Show when={getConfig.showKeyTips}>
@@ -253,7 +250,7 @@ export function Settings(): JSXElement {
 
         <AccountSettingsNotice />
       </div>
-    </Show>
+    </Page>
   );
 }
 
@@ -265,7 +262,7 @@ function AccountSettingsNotice(): JSXElement {
   });
   return (
     <Show when={!dismissed()}>
-      <div class="grid grid-cols-[auto_1fr_auto] items-center gap-8 rounded px-8 py-4 ring-4 ring-sub-alt">
+      <div class="grid grid-cols-[auto_1fr] items-center gap-4 rounded px-4 py-4 ring-4 ring-sub-alt md:grid-cols-[auto_1fr_auto] md:gap-8">
         <Fa icon="fa-user-cog" class="text-4xl text-sub" />
         <div>
           Account settings have moved. You can now access them by hovering over
@@ -275,7 +272,7 @@ function AccountSettingsNotice(): JSXElement {
         <Button
           text="go to account settings"
           href="/account-settings"
-          class="p-4"
+          class="col-span-2 p-4 md:col-span-1"
           router-link
           onClick={() => {
             setDismissed(true);
@@ -327,7 +324,7 @@ function AutoSetting<T extends keyof Config>(props: {
       [props.key]: getConfig[props.key],
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value[props.key]));
+      const val = parseFloat(String(value[props.key]));
       if (val === getConfig[props.key]) return;
       savedIndicator.flash();
       setConfig(props.key, val as Config[T]);
@@ -353,7 +350,7 @@ function AutoSetting<T extends keyof Config>(props: {
               name={props.key}
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -371,6 +368,7 @@ function AutoSetting<T extends keyof Config>(props: {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={ConfigSchema.shape[props.key]}
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key
                     }

@@ -2,14 +2,13 @@ import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
 import { DBUser, getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
-import { TsRestRequestHandler } from "@ts-rest/express";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
   PermissionId,
 } from "@monkeytype/contracts/util/api";
 import { isDevEnvironment } from "../utils/misc";
-import { getMetadata } from "./utility";
+import { AsyncTsRestRequestHandler, getMetadata } from "./utility";
 import { TsRestRequestWithContext } from "../api/types";
 import { DecodedToken } from "./auth";
 import { AppRoute, AppRouter } from "@ts-rest/core";
@@ -73,7 +72,7 @@ const permissionChecks: Record<PermissionId, PermissionCheck> = {
 
 export function verifyPermissions<
   T extends AppRouter | AppRoute,
->(): TsRestRequestHandler<T> {
+>(): AsyncTsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,
     _res: Response,

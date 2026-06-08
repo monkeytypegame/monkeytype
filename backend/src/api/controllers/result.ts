@@ -43,6 +43,7 @@ import {
   GetResultsResponse,
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
+  ReportCompletedEventMismatchRequest,
 } from "@monkeytype/contracts/results";
 import {
   CompletedEvent,
@@ -182,6 +183,48 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
+}
+
+export async function reportCompletedEventMismatch(
+  req: MonkeyRequest<undefined, ReportCompletedEventMismatchRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    notMatching,
+    mismatchedKeys,
+    groupKey,
+    language,
+    mode,
+    mode2,
+    difficulty,
+    duration,
+    funboxes,
+    version,
+    data,
+  } = req.body;
+  // Logger.warning(
+  //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
+  // );
+  // Logger.warning(`Old CE: ${JSON.stringify(ce)}`);
+  // Logger.warning(`New CE: ${JSON.stringify(ce2)}`);
+  void addLog(
+    "completed_event_mismatch",
+    {
+      notMatching,
+      mismatchedKeys,
+      groupKey,
+      language,
+      mode,
+      mode2,
+      difficulty,
+      duration,
+      funboxes,
+      version,
+      data,
+    },
+    uid,
+  );
+  return new MonkeyResponse("Mismatch reported", null);
 }
 
 export async function addResult(

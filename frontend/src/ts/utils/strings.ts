@@ -400,6 +400,93 @@ export function replaceSpacesWithUnderscores(text: string): string {
   return text.replace(/ /g, "_");
 }
 
+export type CharCounts = {
+  allCorrect: number;
+  correctWord: number;
+  incorrect: number;
+  extra: number;
+  missed: number;
+};
+
+export function countChars(
+  inputWord: string,
+  targetWord: string,
+  lastWord: boolean,
+  shouldLastPartialWordCount: boolean,
+): CharCounts {
+  let allCorrect = 0;
+  let correctWord = 0;
+  let incorrect = 0;
+  let extra = 0;
+  let missed = 0;
+
+  const wordCorrect = inputWord === targetWord;
+  const wordPartiallyCorrect = targetWord.startsWith(inputWord);
+
+  for (let i = 0; i < Math.max(inputWord.length, targetWord.length); i++) {
+    const inputChar = inputWord[i];
+    const targetChar = targetWord[i];
+
+    if (inputChar === targetChar) {
+      // do not count correct space characters if the word is not correct
+      if (targetChar === " ") {
+        if (wordCorrect) {
+          allCorrect += 1;
+        } else {
+          incorrect += 1;
+        }
+      } else {
+        allCorrect += 1;
+      }
+      if (
+        wordCorrect ||
+        (lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)
+      ) {
+        correctWord += 1;
+      }
+    } else if (inputChar === undefined) {
+      //missed char
+      if (!(lastWord && shouldLastPartialWordCount)) {
+        missed += 1;
+      }
+    } else if (
+      lastWord &&
+      inputChar === " " &&
+      targetChar === undefined &&
+      !targetWord.endsWith(" ")
+    ) {
+      // trailing confirm space on incorrect last word — not counted
+    } else if (
+      lastWord &&
+      inputChar === " " &&
+      targetChar !== undefined &&
+      targetChar !== " "
+    ) {
+      // early submit space on last word — count slot as missed, not incorrect
+      if (!(lastWord && shouldLastPartialWordCount)) {
+        missed += 1;
+      }
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
+      extra += 1;
+    } else {
+      //incorrect char
+      incorrect += 1;
+    }
+  }
+
+  return {
+    allCorrect,
+    correctWord,
+    incorrect,
+    extra,
+    missed,
+  };
+}
+
 // Export testing utilities for unit tests
 export const __testing = {
   hasRTLCharacters,

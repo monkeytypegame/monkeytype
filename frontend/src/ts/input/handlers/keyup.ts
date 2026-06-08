@@ -1,10 +1,19 @@
 import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as Monkey from "../../test/monkey";
+import { logTestEvent } from "../../test/events/data";
+import { getTestEventCode } from "../../test/events/helpers";
 
 export async function onKeyup(event: KeyboardEvent): Promise<void> {
   const now = performance.now();
   TestInput.recordKeyupTime(now, event);
+  logTestEvent("keyup", now, {
+    code: getTestEventCode(event),
+    ctrl: event.ctrlKey ? true : undefined,
+    shift: event.shiftKey ? true : undefined,
+    alt: event.altKey ? true : undefined,
+    meta: event.metaKey ? true : undefined,
+  });
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");

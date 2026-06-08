@@ -40,7 +40,7 @@ const inboxCollection = createCollection(
   queryCollectionOptions({
     staleTime: 1000 * 60 * 5,
     queryKey: queryKeys.root(),
-
+    enabled: isAuthenticated,
     queryFn: async () => {
       const addStatus = (item: MonkeyMail): InboxItem => ({
         ...item,

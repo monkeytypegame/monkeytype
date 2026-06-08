@@ -5,8 +5,8 @@ import { getConnection } from "../../src/init/redis";
 
 process.env["MODE"] = "dev";
 
-let db: Db;
-let client: MongoClient;
+let db: Db | undefined;
+let client: MongoClient | undefined;
 
 beforeAll(async () => {
   client = new MongoClient(process.env["TEST_DB_URL"] as string);
@@ -15,9 +15,9 @@ beforeAll(async () => {
 
   vi.mock("../../src/init/db", () => ({
     __esModule: true,
-    getDb: (): Db => db,
+    getDb: (): Db => db as Db,
     collection: <T>(name: string): Collection<WithId<T>> =>
-      db.collection<WithId<T>>(name),
+      (db as Db).collection<WithId<T>>(name),
     close: () => {
       //
     },
@@ -35,9 +35,8 @@ afterEach(async () => {
 
 afterAll(async () => {
   await client?.close();
-  // @ts-ignore
+
   db = undefined;
-  //@ts-ignore
   client = undefined;
 
   await getConnection()?.quit();
