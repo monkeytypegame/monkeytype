@@ -305,9 +305,6 @@ function showGenerateDataModal(): void {
       return {
         status: result.status === 200 ? "success" : "error",
         message: result.body.message,
-        hideOptions: {
-          clearModalChain: true,
-        },
       };
     },
   });

@@ -126,9 +126,6 @@ function refreshList(): void {
           return {
             status: "success",
             message: "Key deleted",
-            hideOptions: {
-              clearModalChain: true,
-            },
           };
         },
       });
@@ -160,9 +157,6 @@ function refreshList(): void {
           return {
             status: "success",
             message: "Key updated",
-            hideOptions: {
-              clearModalChain: true,
-            },
           };
         },
       });
@@ -241,10 +235,6 @@ qs(".pageAccountSettings")?.onChild("click", "#generateNewApeKey", () => {
       return {
         status: "success",
         message: "Key generated",
-        hideOptions: {
-          clearModalChain: true,
-          animationMode: "modalOnly",
-        },
         afterHide: (): void => {
           setLastGeneratedApeKey(data.apeKey);
           showModal("ViewApeKey");
