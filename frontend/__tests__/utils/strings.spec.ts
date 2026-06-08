@@ -811,6 +811,22 @@ describe("string utils", () => {
           },
         },
         {
+          description: "incorrect, last word, early space",
+          input: {
+            inputWord: "he ",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
           description: "incorrect, last word, noquick end",
           input: {
             inputWord: "xello ",
@@ -822,7 +838,7 @@ describe("string utils", () => {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 1,
-            extra: 1,
+            extra: 0,
             missed: 0,
           },
         },
