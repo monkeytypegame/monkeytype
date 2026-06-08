@@ -439,11 +439,7 @@ describe("data.ts", () => {
         const inputs = events.filter((e) => e.type === "input");
         expect(inputs).toHaveLength(0);
         expect(
-          events.filter(
-            (e) =>
-              e.type === "keydown" &&
-              (e.data as KeydownEventData).code === "KeyD",
-          ),
+          events.filter((e) => e.type === "keydown" && e.data.code === "KeyD"),
         ).toHaveLength(0);
       });
     });

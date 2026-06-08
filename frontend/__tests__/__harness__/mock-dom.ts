@@ -55,10 +55,10 @@ vi.mock("../../src/ts/utils/dom", async (importOriginal) => {
     };
   };
 
-  const actual = await importOriginal();
+  const actual = (await importOriginal()) as any;
 
+  // oxlint-disable-next-line typescript/no-unsafe-return
   return {
-    //@ts-expect-error - mocking private method
     ...actual,
     qsr: vi.fn().mockImplementation(() => createMockElement()),
     qs: vi.fn().mockImplementation(() => createMockElement()),
@@ -67,7 +67,8 @@ vi.mock("../../src/ts/utils/dom", async (importOriginal) => {
 });
 
 // Mock document.querySelector to return a div
-// oxlint-disable-next-line no-deprecated
+// oxlint-disable-next-line typescript/no-deprecated
+// @ts-expect-error okay for testing
 global.document.querySelector = vi
   .fn()
   .mockReturnValue(document.createElement("div"));

@@ -1,4 +1,5 @@
 import { render } from "@solidjs/testing-library";
+import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect } from "vitest";
 
 import { FieldIndicator } from "../../../../src/ts/components/ui/form/FieldIndicator";
@@ -11,7 +12,7 @@ function makeField(overrides: {
   errors?: string[];
   hasWarning?: boolean;
   warnings?: string[];
-}) {
+}): AnyFieldApi {
   return {
     state: {
       meta: {
@@ -26,7 +27,7 @@ function makeField(overrides: {
       hasWarning: overrides.hasWarning ?? false,
       warnings: overrides.warnings ?? [],
     }),
-  } as any;
+  } as unknown as AnyFieldApi;
 }
 
 describe("FieldIndicator", () => {
