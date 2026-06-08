@@ -8,6 +8,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
   activeWordIndex: 0,
   bailedOut: false,
   resultCalculating: false,
+  koreanStatus: false,
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
@@ -30,14 +31,16 @@ vi.mock("../../../src/ts/test/test-words", () => {
   };
 });
 
+const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
 vi.mock("../../../src/ts/test/custom-text", () => ({
-  getLimit: () => ({ mode: "words", value: 0 }),
+  getLimit: () => customTextLimit,
 }));
 
 import {
   logTestEvent,
   resetTestEvents,
   getAllTestEvents,
+  cleanupData,
   __testing,
 } from "../../../src/ts/test/events/data";
 import {
@@ -69,17 +72,11 @@ import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function input(
@@ -160,14 +157,14 @@ describe("stats.ts", () => {
       ]);
     });
 
-    it("includes end as boundary when far enough from last step", () => {
+    it("includes end as boundary when endMs % 1000 >= 500ms", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
-      logTestEvent("timer", 3000, timer("end", 2));
+      logTestEvent("timer", 2500, timer("end", 1));
 
       const events = getAllTestEvents();
-      // end at testMs 2000, last step at testMs 1000 — gap is 1000 >= 500
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 2000]);
+      // endMs=1500 → 1500%1000=500ms → roundTo2(0.5)=0.5 → boundary added
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 1500]);
     });
 
     it("skips end when too close to last step", () => {
@@ -178,6 +175,50 @@ describe("stats.ts", () => {
       const events = getAllTestEvents();
       // end at testMs 1400, last step at testMs 1000 — gap is 400 < 500
       expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("includes end boundary when endMs % 1000 rounds to 0.5s", () => {
+      // endMs=1496 → 1496%1000=496ms → roundTo2(0.496)=0.50 → boundary added
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 1496]);
+    });
+
+    it("skips end boundary when endMs % 1000 rounds below 0.5s", () => {
+      // endMs=1494 → 1494%1000=494ms → roundTo2(0.494)=0.49 → no boundary
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2494, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+    });
+
+    it("skips end boundary for .49 test even when step fires slightly early (drift)", () => {
+      // Step fires 5ms early (at 995ms instead of 1000ms).
+      // Gap = 1490-995 = 495ms — the old gap-based check would have added a boundary
+      // (roundTo2(0.495)=0.5), but endMs%1000=490ms → roundTo2(0.49)<0.5 → no boundary.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 1995, timer("step", 1));
+      logTestEvent("timer", 2490, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([995]);
+    });
+
+    it("includes end boundary for .99 test even when step fires late (drift)", () => {
+      // Step fires 510ms late (at 1510ms instead of 1000ms).
+      // Gap = 1990-1510 = 480ms — gap-based check would miss the boundary,
+      // but endMs%1000=990ms → roundTo2(0.99)>=0.5 → boundary added.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2510, timer("step", 1));
+      logTestEvent("timer", 2990, timer("end", 1));
+
+      const events = getAllTestEvents();
+      expect(statsTesting.getTimerBoundaries(events)).toEqual([1510, 1990]);
     });
 
     it("excludes short trailing interval (<500ms) for non-round test duration", () => {
@@ -222,6 +263,86 @@ describe("stats.ts", () => {
       const boundaries = statsTesting.getTimerBoundaries(events);
       // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
       expect(boundaries).toEqual([500]);
+    });
+
+    it("skips end boundary when endMs rounds up to whole second", () => {
+      // endMs=19997: roundTo2(19.997)=20.00 → fractional 0 → no extra bucket
+      // Legacy CE1 doesn't push extra because stats.time=20.00 has no fractional.
+      // Naive (endMs % 1000)/1000 = 0.997 → roundTo2 = 1.0 would wrongly add.
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 20; i++) {
+        logTestEvent("timer", i * 1000 - 10, timer("step", i));
+      }
+      logTestEvent("timer", 19997, timer("end", 20));
+
+      const events = getAllTestEvents();
+      // 20 step boundaries, no end boundary (testSeconds rounds to 20.00)
+      expect(statsTesting.getTimerBoundaries(events)).toHaveLength(20);
+    });
+
+    it("skips end boundary in time mode even when endMs %1000 >= 500ms", () => {
+      // 120s time test where timer fires step 120 slightly early at ~119.99s.
+      // Legacy time mode never pushes an extra bucket — CE2 must match by
+      // skipping the end boundary entirely.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 120; i++) {
+        logTestEvent("timer", i * 1000 - 8, timer("step", i));
+      }
+      logTestEvent("timer", 119994, timer("end", 120));
+
+      const events = getAllTestEvents();
+      const boundaries = statsTesting.getTimerBoundaries(events);
+      // 120 step boundaries, no end boundary
+      expect(boundaries).toHaveLength(120);
+    });
+
+    it("skips end boundary in custom time mode", () => {
+      (Config as { mode: string }).mode = "custom";
+      customTextLimit.mode = "time";
+      try {
+        logTestEvent("timer", 0, timer("start", 0));
+        for (let i = 1; i <= 30; i++) {
+          logTestEvent("timer", i * 1000, timer("step", i));
+        }
+        logTestEvent("timer", 29994, timer("end", 30));
+
+        const events = getAllTestEvents();
+        expect(statsTesting.getTimerBoundaries(events)).toHaveLength(30);
+      } finally {
+        customTextLimit.mode = "words";
+      }
+    });
+
+    describe("invariant: boundaries.length === Math.round(endMs / 1000)", () => {
+      // Sanity invariant: for non-timed modes, the number of timer boundaries
+      // must equal Math.round(testDurationSeconds) — matches the legacy
+      // keypressCountHistory length contract. Catches drift-induced extra steps
+      // or off-by-one boundaries.
+      const cases: { name: string; endMs: number }[] = [
+        { name: ".00 (exactly 5s)", endMs: 5000 },
+        { name: ".49 (5.49s)", endMs: 5490 },
+        { name: ".50 (5.50s)", endMs: 5500 },
+        { name: ".99 (5.99s)", endMs: 5990 },
+        { name: "sub-1s .49", endMs: 490 },
+        { name: "sub-1s .99", endMs: 990 },
+      ];
+
+      for (const { name, endMs } of cases) {
+        it(`holds for ${name}`, () => {
+          logTestEvent("timer", 0, timer("start", 0));
+          const fullSeconds = Math.floor(endMs / 1000);
+          for (let i = 1; i <= fullSeconds; i++) {
+            logTestEvent("timer", i * 1000, timer("step", i));
+          }
+          logTestEvent("timer", endMs, timer("end", fullSeconds));
+
+          const events = getAllTestEvents();
+          const boundaries = statsTesting.getTimerBoundaries(events);
+          const roundedDuration = Math.round(endMs / 1000);
+          expect(boundaries).toHaveLength(roundedDuration);
+        });
+      }
     });
   });
 
@@ -433,6 +554,59 @@ describe("stats.ts", () => {
 
       expect(getKeypressSpacing()).toEqual([]);
     });
+
+    it("clamps a pre-start first keydown so the timing invariant holds", () => {
+      // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
+      // pressed seconds before the user starts typing). cleanupData keeps the
+      // last pre-start keydown by design, and getStartToFirstKeypressMs clamps
+      // its negative offset to 0 — so the first spacing must clamp the same
+      // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
+      // the testDuration vs key timings check.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("keydown", -16240, keyDown());
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("input", 0, input());
+      logTestEvent("keyup", 100, keyUp());
+      logTestEvent("keydown", 500, keyDown("KeyS"));
+      logTestEvent("keyup", 580, keyUp("KeyS"));
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+
+      const sumSpacing = getKeypressSpacing().reduce((a, b) => a + b, 0);
+      const total =
+        getStartToFirstKeypressMs() + sumSpacing + getLastKeypressToEndMs();
+
+      expect(Math.abs(getTestDurationMs() - total)).toBeLessThan(100);
+    });
+
+    it("cleanupData drops post-end keydowns so the timing invariant holds", () => {
+      // The compareCompletedEvents check in test-logic.ts relies on:
+      //   startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      // In time mode the user often keeps typing during finish()'s fade
+      // animation. Without filtering, post-end keydowns inflate keySpacing
+      // while getLastKeypressToEndMs clamps the negative diff to 0, breaking
+      // the invariant. finish() calls cleanupData() before the check —
+      // that's the centralised filter; this test exercises the same path.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("keydown", 500, keyDown());
+      logTestEvent("keyup", 580, keyUp());
+      logTestEvent("keydown", 700, keyDown());
+      logTestEvent("keyup", 780, keyUp());
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+      // user keeps typing through the fade
+      logTestEvent("keydown", 1120, keyDown());
+      logTestEvent("keyup", 1170, keyUp());
+
+      cleanupData();
+
+      const sumSpacing = getKeypressSpacing().reduce((a, b) => a + b, 0);
+      const total =
+        getStartToFirstKeypressMs() + sumSpacing + getLastKeypressToEndMs();
+
+      expect(Math.abs(getTestDurationMs() - total)).toBeLessThan(100);
+    });
   });
 
   describe("getKeypressOverlap", () => {
@@ -500,6 +674,20 @@ describe("stats.ts", () => {
     it("returns empty for no timer events", () => {
       logTestEvent("input", 1200, input());
       expect(getKeypressesPerSecond()).toEqual([]);
+    });
+
+    it("counts keypresses in last partial second when gap rounds to 0.5s", () => {
+      // mirrors the totalKeypressCountHistory mismatch: legacy pushes for roundTo2 >= 0.5,
+      // but the old boundary check (>= 500ms) skips a 496ms tail
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // first second
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // 496ms tail
+      logTestEvent("input", 2400, input({ charIndex: 2 }));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      // endMs=1496, 1496%1000=496ms → roundTo2(0.496)=0.5 → end boundary added → [1, 2]
+      expect(getKeypressesPerSecond()).toEqual([1, 2]);
     });
   });
 
@@ -817,9 +1005,9 @@ describe("stats.ts", () => {
       const keyup = events.find(
         (e) => e.type === "keyup" && e.data.code === "KeyD",
       );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500
+      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1500);
+      expect(keyup!.testMs).toBe(500);
     });
 
     it("uses default 80ms when no completed key durations exist", () => {
@@ -833,7 +1021,7 @@ describe("stats.ts", () => {
         (e) => e.type === "keyup" && e.data.code === "KeyA",
       );
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1280);
+      expect(keyup!.testMs).toBe(280);
     });
 
     it("does nothing when no keys are pressed", () => {
