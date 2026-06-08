@@ -457,7 +457,6 @@ export async function reauthenticate(
 function getPreferredAuthenticationMethod(
   exclude?: AuthMethod,
 ): AuthMethod | undefined {
-  //ordered by most to least prefered
   const filteredMethods = typedKeys(authMethods).filter((it) => it !== exclude);
   for (const method of filteredMethods) {
     if (isUsingAuthentication(method)) return method;
