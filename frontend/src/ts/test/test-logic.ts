@@ -1025,6 +1025,7 @@ function compareCompletedEvents(
         mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, val1, val2);
       }
+      continue;
     }
 
     // if (key === "chartData") {
