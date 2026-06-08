@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { RequireConfiguration } from "@monkeytype/contracts/require-configuration/index";
-import { verifyRequiredConfiguration } from "../../src/middlewares/configuration";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { Response } from "express";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { TsRestRequestWithContext } from "../../src/api/types";
+import { verifyRequiredConfiguration } from "../../src/middlewares/configuration";
 import MonkeyError from "../../src/utils/error";
-import { TsRestRequest } from "../../src/api/types";
 import { enableMonkeyErrorExpects } from "../__testData__/monkey-error";
 
 enableMonkeyErrorExpects();
@@ -193,9 +193,9 @@ describe("configuration middleware", () => {
 function givenRequest(
   requireConfiguration: RequireConfiguration | RequireConfiguration[],
   configuration: Partial<Configuration>,
-): TsRestRequest {
+): TsRestRequestWithContext {
   return {
     tsRestRoute: { metadata: { requireConfiguration } },
-    ctx: { configuration },
-  } as any;
+    ctx: { configuration: configuration },
+  } as TsRestRequestWithContext;
 }
