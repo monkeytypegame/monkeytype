@@ -464,6 +464,7 @@ export const LanguageObjectSchema = z
         primary: z.tuple([z.string(), z.string()]),
         secondary: z.tuple([z.string(), z.string()]),
       })
+      .strict()
       .optional(),
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),
