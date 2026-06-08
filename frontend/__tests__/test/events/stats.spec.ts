@@ -253,16 +253,17 @@ describe("stats.ts", () => {
       (Config as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
+      logTestEvent("input", 1510, input());
       logTestEvent("keyup", 1600, keyUp());
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 3000, timer("step", 2));
-      // last keypress at testMs 500, end at testMs 4000 → lkte = 3500
+      // last input at testMs 510, end at testMs 4000 → lkte = 3490
       logTestEvent("timer", 5000, timer("end", 4));
 
       const events = getAllTestEvents();
       const boundaries = statsTesting.getTimerBoundaries(events);
-      // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
-      expect(boundaries).toEqual([500]);
+      // adjusted end = 4000 - 3490 = 510, steps at 1000 and 2000 are past it
+      expect(boundaries).toEqual([510]);
     });
 
     it("skips end boundary when endMs rounds up to whole second", () => {
@@ -347,15 +348,17 @@ describe("stats.ts", () => {
   });
 
   describe("getStartToFirstKeypressMs", () => {
-    it("returns time from start to first keydown", () => {
+    it("returns time from start to first input", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1150, keyDown());
+      logTestEvent("input", 1160, input());
 
-      expect(getStartToFirstKeypressMs()).toBe(150);
+      expect(getStartToFirstKeypressMs()).toBe(160);
     });
 
-    it("returns 0 if keydown comes before start", () => {
+    it("returns 0 if input comes before start", () => {
       logTestEvent("keydown", 900, keyDown());
+      logTestEvent("input", 910, input());
       logTestEvent("timer", 1000, timer("start", 0));
 
       expect(getStartToFirstKeypressMs()).toBe(0);
@@ -364,7 +367,7 @@ describe("stats.ts", () => {
     it("returns 0 in zen mode", () => {
       (Config as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1150, keyDown());
+      logTestEvent("input", 1160, input());
 
       expect(getStartToFirstKeypressMs()).toBe(0);
     });
@@ -375,20 +378,20 @@ describe("stats.ts", () => {
   });
 
   describe("getLastKeypressToEndMs", () => {
-    it("returns time from last keydown to end", () => {
+    it("returns time from last input to end", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1500, keyDown());
-      logTestEvent("keyup", 1600, keyUp());
-      logTestEvent("keydown", 1800, keyDown());
+      logTestEvent("input", 1510, input());
+      logTestEvent("input", 1810, input({ charIndex: 1 }));
+      logTestEvent("keydown", 1900, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
 
-      expect(getLastKeypressToEndMs()).toBe(200);
+      expect(getLastKeypressToEndMs()).toBe(190);
     });
 
     it("returns 0 in zen mode", () => {
       (Config as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1500, keyDown());
+      logTestEvent("input", 1510, input());
       logTestEvent("timer", 2000, timer("end", 1));
 
       expect(getLastKeypressToEndMs()).toBe(0);
@@ -558,16 +561,16 @@ describe("stats.ts", () => {
     it("clamps a pre-start first keydown so the timing invariant holds", () => {
       // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
       // pressed seconds before the user starts typing). cleanupData keeps the
-      // last pre-start keydown by design, and getStartToFirstKeypressMs clamps
-      // its negative offset to 0 — so the first spacing must clamp the same
-      // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
-      // the testDuration vs key timings check.
+      // last pre-start keydown by design — keySpacing clamps its negative
+      // offset to 0 so sum(keySpacing) doesn't inflate by |firstKeydown|
+      // and break the testDuration vs key timings check.
       (Config as { mode: string }).mode = "time";
       logTestEvent("keydown", -16240, keyDown());
       logTestEvent("timer", 0, timer("start", 0));
       logTestEvent("input", 0, input());
       logTestEvent("keyup", 100, keyUp());
       logTestEvent("keydown", 500, keyDown("KeyS"));
+      logTestEvent("input", 500, input({ charIndex: 1 }));
       logTestEvent("keyup", 580, keyUp("KeyS"));
       logTestEvent("timer", 1000, timer("step", 1));
       logTestEvent("timer", 1000, timer("end", 1));
@@ -590,13 +593,16 @@ describe("stats.ts", () => {
       (Config as { mode: string }).mode = "time";
       logTestEvent("timer", 0, timer("start", 0));
       logTestEvent("keydown", 500, keyDown());
+      logTestEvent("input", 510, input());
       logTestEvent("keyup", 580, keyUp());
       logTestEvent("keydown", 700, keyDown());
+      logTestEvent("input", 710, input({ charIndex: 1 }));
       logTestEvent("keyup", 780, keyUp());
       logTestEvent("timer", 1000, timer("step", 1));
       logTestEvent("timer", 1000, timer("end", 1));
       // user keeps typing through the fade
       logTestEvent("keydown", 1120, keyDown());
+      logTestEvent("input", 1130, input({ charIndex: 2 }));
       logTestEvent("keyup", 1170, keyUp());
 
       cleanupData();
