@@ -828,7 +828,7 @@ describe("string utils", () => {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 1,
-            extra: 1,
+            extra: 0,
             missed: 0,
           },
         },
