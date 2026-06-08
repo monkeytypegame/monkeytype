@@ -217,7 +217,7 @@ export async function signIn(
 
 export async function signInWithProvider(
   authMethod: AuthMethod,
-  rememberMe: boolean,
+  options: { rememberMe: boolean },
 ): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
@@ -231,7 +231,9 @@ export async function signInWithProvider(
     };
   }
 
-  const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
+  const { error } = await tryCatch(
+    signInWithPopup(provider, options.rememberMe),
+  );
 
   if (error !== null) {
     return { success: false, message: error.message };
