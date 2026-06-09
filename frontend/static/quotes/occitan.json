@@ -1,0 +1,1331 @@
+{
+  "language": "occitan",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Es la cadeno dis Aupiho, encenturado d’óulivié coume uno roucaredo grèco, un veritable miradou de glòri e de legèndo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 117,
+      "id": 1
+    },
+    {
+      "text": "E si troufèu vitouriau, à Sant-Roumié sus lis Antico, i’a dous milo an que ié roussejon.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 88,
+      "id": 2
+    },
+    {
+      "text": "Li meinagié, au païs d’Arle, formon uno classo à part: sorto d’aristoucracìo que fai la transicioun entre païsan e bourgés, e que, coume touto autro, a soun ourguei de casto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 174,
+      "id": 3
+    },
+    {
+      "text": "Moun paire, devengu véuse de sa proumiero femo, que ié dounè dous enfant, avié cinquanto-cinq an, quand se remaridè, e siéu lou crèis d’aquéu segound lié.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 154,
+      "id": 4
+    },
+    {
+      "text": "Un vòu de glanarello seguien li meissounié, acampant lis espigolo qu’escapavon au rastèu.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 89,
+      "id": 5
+    },
+    {
+      "text": "E ‘m’ acò moun segne paire remarquè ‘no bello chato que restavo darrié, coume s’avié vergougno de glena coume lis autro.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 120,
+      "id": 6
+    },
+    {
+      "text": "Es uno grando planto que sort à bèlli mato au ribeirés dis aigo, emé de lòngui fueio en formo de coutello e de bèlli flour jauno requinquihado en l’èr coume d’alabardo d’or.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 173,
+      "id": 7
+    },
+    {
+      "text": "Es toujour qu’un jour d’estiéu, quauque tèms après meissoun, nòsti garbo se caucavon, e tóuti li gènt dóu mas èron dins l’iero que travaiavon.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 142,
+      "id": 8
+    },
+    {
+      "text": "Aquéu galant travai se fasié gaiamen, en Au daut de l’iero, pourta pèr li tres cambo d’uno cabro rustico, fourmado emé tres barro, i’avié lou drai penja.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 153,
+      "id": 9
+    },
+    {
+      "text": "Ah! quand vesiéu lou móusèire, susarènt, estroupa, sourti de la vanado en pourtant à la man la lachouiro escumouso e coumoulo de la, landave, agroumandi pèr lou chucha tout caud.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 178,
+      "id": 10
+    },
+    {
+      "text": "E ‘m’ acò, en semblant de m’escala dessus, lou farcejaire, dins l’esquino, me bacelavo dóu taloun.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 98,
+      "id": 11
+    },
+    {
+      "text": "Ansinto s’entrinè, au mitan di galejage de nòsti travaiadou, e n’ai pas de regrèt, Coume èro gai, comme èro san, aquéu mitan de rusticage!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 138,
+      "id": 12
+    },
+    {
+      "text": "Pièi fini lou repas lou proumié carretié barravo soun Moun paire, aquéli pacan, li douminavo tóuti, pèr la taio pèr lou sèn, emai pèr la noublesso.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 147,
+      "id": 13
+    },
+    {
+      "text": "Au plus marrit de la Terrour, èro esta requeri pèr pourta de blad à Paris, que i’avié la famino.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 96,
+      "id": 14
+    },
+    {
+      "text": "E, quau d’eici e quau d’eila, tout acò gratavo camin, pèr ana pausa cacho-fiòo, dins sis endré, à sis oustau.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 109,
+      "id": 15
+    },
+    {
+      "text": "Alègre! e ‘m’ acò se pausavo l’aubre sus li disié moun paire en se signant, e tóuti nous metian à taulo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 104,
+      "id": 16
+    },
+    {
+      "text": "Oh! la taulado santo, veritablamen santo, emé, tout à l’entour, la famiho coumplèto, pacifico e urouso!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 103,
+      "id": 17
+    },
+    {
+      "text": "De chasque bout, dins un sietoun, verdoulejavo un bruei de blad que, lou jour de santo Barbo, s’èro mes greia dins l’aigo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 122,
+      "id": 18
+    },
+    {
+      "text": "La vihado, en esperant la messo de miejo-niue, èro longo, aquéu jour, e loungamen, autour dóu fiò, se ié parlavo dis ancian e se lausavo sis acioun.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 148,
+      "id": 19
+    },
+    {
+      "text": "Dono Renaudo - Li Trèvo de la niue - Lou Chivau de Cambaud - Li Masc - Es deman la fèsto di Rèi!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 96,
+      "id": 20
+    },
+    {
+      "text": "E pourtavian en man, que nous l’avien recoumanda, de fougasso pèr li La cisampo siblavo: es vous dire que fasié fre, lou soulèu davalavo, fouscarin vers lou Rose.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 162,
+      "id": 21
+    },
+    {
+      "text": "Rèn pareissié, que quauque fais d’auriolo empourta pèr lou vènt dins lis estoublo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 82,
+      "id": 22
+    },
+    {
+      "text": "E de courre, e de courre à l’endavans di Rèi, emé nòsti tourtoun, emé nòsti Pièi lou jour falissié.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 99,
+      "id": 23
+    },
+    {
+      "text": "Un regiscle, un triounfle de coulour ufanouso, enfioucavo, embrasavo la lono pounenteso.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 88,
+      "id": 24
+    },
+    {
+      "text": "Ah! coume acò ‘ro bèu, s’avias vist, s’avias vist, quand soun intra dins Maiano!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 80,
+      "id": 25
+    },
+    {
+      "text": "Nous-autre, apetega nous enfaufilavian, entre li coutihoun di femo, enjusquo à la capello de la Nativeta.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 105,
+      "id": 26
+    },
+    {
+      "text": "Souvènti-fes, despièi, m’es arriba, quand vèn li Rèi, de m’ana passeja, à jour fali, au Camin d’Arle.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 101,
+      "id": 27
+    },
+    {
+      "text": "Diéu! se falié toujour cava lou pous de verita, autant vaudrié tourna, ma fisto, au Mejan-Age, que, partènt dóu countràri de la sciènci mouderno, èro arriba à la memo Mai basto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 177,
+      "id": 28
+    },
+    {
+      "text": "E aquéu moussèu, eici, m’es avis que La vièio Renaudo se souleio, assetado sus un plot, davans soun oustalet.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 109,
+      "id": 29
+    },
+    {
+      "text": "Mïan, bèn d’acatoun, s’aprocho mai de la galino que semblavo s’aclata pèr se faire aganta.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 90,
+      "id": 30
+    },
+    {
+      "text": "D’uno espèci de gènt qu’anavon à miejo-niue faire lou brande dins lis erme, pièi bevien à-de-rèng à la Tasso d’Argènt.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 118,
+      "id": 31
+    },
+    {
+      "text": "Veguè, dins la cousino d’aquéu vièi mas abandouna, veguè d’ome que jougavon à la paumo emé d’enfant, d’enfantoun tóuti nus qu’avien pres dins lou brès e que se li Mai de que?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 174,
+      "id": 32
+    },
+    {
+      "text": "Acò, Ai toujour ausi dire qu’un vèspre à la vihado, moun paure ouncle Cadet, que s’anavo coucha, veguè dins la lugano uno espèci de cat negre que travessavo la carriero.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 169,
+      "id": 33
+    },
+    {
+      "text": "Mai lou cat, de-reviroun, ié diguè à noste ouncle en lou regachant de caire: As touca Roubert!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 94,
+      "id": 34
+    },
+    {
+      "text": "I’avié la Chaucho Vièio, que, la niue, s’agrouvavo aqui sus voste piés e que vous levavo l’alen.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 96,
+      "id": 35
+    },
+    {
+      "text": "Moun paire veguè lèu, car èro pas nouvèu em’ aquéli trevanço, qu’èro lou Fantasti que li menavo béure.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 102,
+      "id": 36
+    },
+    {
+      "text": "Mai, l’endeman Ço qu’atiro lou Fantasti dins lis establarié, dison qu’es li cascavèu.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 85,
+      "id": 37
+    },
+    {
+      "text": "Lou brut di cascavèu lou fai rire, rire, rire, coume un enfant d’un an, quand ié boulegon lou jouguet.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 102,
+      "id": 38
+    },
+    {
+      "text": "Mai se, pèr destinèmbre, dins l’estable, à l’asard, desrenjas quaucarèn contro sa voulounta, ai! ai! ai! la niue venènto, vous fai un sabatòri de la maladicioun!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 161,
+      "id": 39
+    },
+    {
+      "text": "Mai (moun paire lou sabié) aquéu travai patet à la fin ié venguè ‘n òdi, e desbanquè de la feniero, que jamai lou veguerian plus.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 129,
+      "id": 40
+    },
+    {
+      "text": "M’encourreguère coume uno folo e, Es egau, te responde que, quand venié la niue, e qu’autour dóu calèu se recitavo d’aquéli causo, riscavo pas que sourtiguessian!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 162,
+      "id": 41
+    },
+    {
+      "text": "E desempièi, te dise, ai plus ausi parla Verai que, desempièi, avèn agu proun obro pèr nous leva lou làngui.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 108,
+      "id": 42
+    },
+    {
+      "text": "Es causo deliciouso, incoumparablo, en aquel age de se senti mèstre assoulu, la brido sus lou còu e li quatre pèd blanc!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 120,
+      "id": 43
+    },
+    {
+      "text": "I’a de gourrinot que passon pèr li mas ounte soun pas couneigu e ié demandon la retirado.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 89,
+      "id": 44
+    },
+    {
+      "text": "Passon lou jour, ajassa dins li blad, dins li salat, dins li mihero, souto li pont o dins li capitello.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 103,
+      "id": 45
+    },
+    {
+      "text": "Vèngue la fam: manjon d’amouro, de petovin, d’agreno, d’amelo de rapugo o d’alo de lambrusco.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 93,
+      "id": 46
+    },
+    {
+      "text": "E lou prègo-Diéu, estirant la pauto, vous fai signe vers la colo. - A toun oustau? que noun ié tournes! lou fin limbert a l’èr de dire, e zóu!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 142,
+      "id": 47
+    },
+    {
+      "text": "E aro, mounte fau ana? à l’oustau? ié sariéu pas retourna pèr cènt cebo, que vesiéu, me semblavo, à la man de moun paire, v e rgueja la redorto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 144,
+      "id": 48
+    },
+    {
+      "text": "Veguère aperalin moun loup que tabouscavo e, regardas li causo! me trouvère au Pont Nòu, sus la routo que vai de Maiano à Sant-Roumié, à-n-un quart d’ouro de noste mas.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 168,
+      "id": 49
+    },
+    {
+      "text": "Fau crèire que la bouto avié Es pas necite de vous dire qu’après de tàlis acipado, la famouso redorto noun me fasié plus gaire pòu.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 131,
+      "id": 50
+    },
+    {
+      "text": "Se redreissè ‘n - Ah! boujarroun! courre lèu vers ta maire, que noun a rèn dourmi d’aniue.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 90,
+      "id": 51
+    },
+    {
+      "text": "Mai quand fuguère au rode di voulur, de la bouto emé dóu - Eh! badau, me diguèron, veses pas qu’es la pòu que t’a fa sounja tout acò?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 133,
+      "id": 52
+    },
+    {
+      "text": "Mai avien bèu campaneja, degun mountavo à sis óufice, car li gènt i’avien pas fe.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 81,
+      "id": 53
+    },
+    {
+      "text": "Ero un vièi jouvenome mouracho e palinas, emé de péu pounchu, lou nas escagassa, grand bouco, gròssi dènt, longo levito negro e li soulié brounza.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 146,
+      "id": 54
+    },
+    {
+      "text": "Nous-autre, nòsti gènt venien souvènt nous vèire e, pèr nòsti gousta, nous carrejavon de privadié.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 98,
+      "id": 55
+    },
+    {
+      "text": "Mai Agnèu, aurias di qu’avié ges de parènt, car jamai n’en parlavo, e res venié lou vèire ni degun i’adusié rèn.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 112,
+      "id": 56
+    },
+    {
+      "text": "Sant-Michèu, d’aquéu tèms, èro forco mens grand que ço que vuei l’on pòu lou vèire.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 83,
+      "id": 57
+    },
+    {
+      "text": "E es aqui que lou matin, tóuti li matin de l’an, à cinq ouro l’estiéu, à sièis ouro l’ivèr nous menavon à la messo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 115,
+      "id": 58
+    },
+    {
+      "text": "Es aqui que, lou dimenche, cantavian messo e vèspro, en tenènt à la man nòsti libre de messo o nòsti vesperau.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 110,
+      "id": 59
+    },
+    {
+      "text": "Dins li coulège, d’ourdinàri lis escoulié soun encasta dins de gràndi court frejo, entre quatre muraio.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 103,
+      "id": 60
+    },
+    {
+      "text": "Quand venié lou dijòu o memamen lis ouro de la recreacioun tau qu’un troupèu nous alargavon, e zóu! batian la colo, d’aqui-que la campano sounèsse lou rabaiet.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 159,
+      "id": 61
+    },
+    {
+      "text": "Tambèn au bout de quauque tèms erian, ma fisto, assóuvagi, coume uno garenado de couniéu de garrigo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 100,
+      "id": 62
+    },
+    {
+      "text": "Uno fes foro de l’estùdi partian coume de perdigau, dins li valoun o sus li mourre.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 83,
+      "id": 63
+    },
+    {
+      "text": "Ço que fan lis angeloun. Sorton dóu paradis e, coume soun davans la porto, s’abrivon en cridant: Li biòu! li biòu! oh! tè! oh! tè! li ferre! - Hoi! tron de goi! Mai eici fan courre li biòu? dis, abrivo! E se lanço vers la porto coume un fouletoun, e sort, paure bedigas! dóu paradis.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 283,
+      "id": 64
+    },
+    {
+      "text": "Et, en l'an mil CXIIII, sant Bernard comensec l'ordre dels Cisteus et, en l'an mil CXXI, un sant homme appelat Robert fondec l'ordre de la cavalaria dels Templiers à Paris, que pueix fen tantas malas obras.",
+      "source": "Lo ters comte de Foix",
+      "length": 206,
+      "id": 65
+    },
+    {
+      "text": "Et apres lodit Mossen Bernat, comte de Foix, lo medeys an, donec al martyr Sant Volzia la gleisa de Garano, Cos, Campredou, Cadirac, Ferrieras, la gleisa de Serras, ab sos delmes, et la villa de Sant Johan de Verges ab sos delmes et premissas. Et aqueste Mossen Bernard aguec un fil, appelat Roger, de Madona Beatrix, sa molher.",
+      "source": "Lo premier comte de Foix",
+      "length": 328,
+      "id": 66
+    },
+    {
+      "text": "Mossen Roger foc fil de Mossen Roger Bernard lo Gran et de Madona Brunissen de Castelbo et foc marit de Madona Brunissen de Cardonna. Et foc feyt comte l'an MCCXLI et foc noble cavalier et valen et, lo meteys an, fec le pariatge ab l'abbat de Lezat, ab l'abbat del Mas, ab l'abbat de Combalonga et ab l'abbat de Borbona.",
+      "source": "Lo septen comte de Foix",
+      "length": 320,
+      "id": 67
+    },
+    {
+      "text": "Mai avans de s’endraia, anè devoutamen ausi la santo messo; e quau vous ai pas di qu’en sourtènt de la glèiso, trouvè sus lou lindau un bèu jouvènt que ié venguè: - Emai iéu, vès, coulègo: s’acò vous agradavo, poudrian faire routo ensèmble.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 240,
+      "id": 68
+    },
+    {
+      "text": "Acò, tóuti li sero, revenié dins la prègo que moun paire fasié davans que s’ana jaire... E tambèn, à sis óussèqui, li pàuri gènt emé resoun pousquèron dire en lou plagnènt: « Tant de panoun nous a douna, tant d’ange dins lou cèu l’acoumpagnon!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 243,
+      "id": 69
+    },
+    {
+      "text": "A peine nous sortions des portes de Trézène... - De Trégène...- Il était sur son char... - sur chon sar... - ses gardes affligés... - afflizès... - imitaient son silence autour de - Si, tout naïvamen ma maire respoundié: saup la sourneto de Jan dóu porc.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 254,
+      "id": 70
+    },
+    {
+      "text": "Et en l'an mil CCIX comensec la iretgia a Paris per certans clercs, mestres en teologia, contra la fe, que sustenian que los angels et Diu eran tota una causa. La iretgia foc semenada per lo realme et autras parts, don lo rey fec cremar sieix mestres en teologia, que l'avian comensada. Ab lo coseilh del papa et del rey, commissio foc dada sus lo pays de Lengadoc a sant Guilhem, avesque de Bourges, et a sant Doumenge, que comensec l'ordre dels Predicadors.",
+      "source": "Lo quint comte de Foix",
+      "length": 459,
+      "id": 71
+    },
+    {
+      "text": "Aqueste seignor Mossen Ramond Roger aguec un fil, Mossen Roger Bernat lo Gran, et una filha appelada Madona Esclarmonda, que foc molher del rey de Malhorca et, ab dot de CL(M) sos de Molgares et maridada per Mossen Roger Bernat lo Gran, son fraire, l'an mil CLXXVII. Lo rey d'Arago al comte de Foix, son dilect nebot, per amor et copulacio de la parentelha, que era entre els, et per los servicis que feyts li avia, li donec et ratifiquec totas aquelas convenensas que, lo rey En Peyre li avia feytas de la donacio del vescomtat de Narbonna, et li autrejec aissy meteys lo pays de Fenolas et Peyra Pertusa et Pertuses, ab condicio que, si moria sens enfans, que tornes al rey d'Arago.",
+      "source": "Lo quint comte de Foix",
+      "length": 684,
+      "id": 72
+    },
+    {
+      "text": "Et en l'an mil CXCIX Mossen Bernard, comte de Comenges, reconeguec a Mossen Ramond Roger que tout so que tenia en Volvestre, homes et fennas, tot ac tenia del comte de Foix et de sa ma et lyn fec homatge et reconeguec que, qui que sia comte de Comenges, deu esse home del comte de Foix per ladita terra de Volvestre, recebuda en lo mes de jul lodit an.",
+      "source": "Lo quint comte de Foix",
+      "length": 352,
+      "id": 73
+    },
+    {
+      "text": "En l'an MCCXLVIII, exilec de son pays Mossen Guilhem d'Arnava, cavalier, cum fals et malvat et desobeissen. Et, en l'an MCCXLIX, lo darrier Mossen Ramond, comte de Tolosa, moric en Avigno, venen de Marseilha, per febres, et foc sevelit al monastier de Sant Ebordy ab Madona Johanna, sa mayre, filha del rey de Anglaterra. Et succedec en lo comtat de Tolosa dona Johanna sa filha, que era molher de Mossen Alfonso, frayre del rey Sant Loys. Et, apres morta Madona Johanna, aissy cum lo comte Ramond avia ordenat, tornec (lodit comtat) et succedec a la casa real de Fransa. Laqual dona moric l'an MCCLXX. Et apres Phelip, fil del rey Sant Loys, intrec a Tolosa prendre la possessio l'an MCCLXXI.",
+      "source": "Lo septen comte de Foix",
+      "length": 693,
+      "id": 74
+    },
+    {
+      "text": "Lo comte de Foix conquestec Bezes et Carcassonna et auciguec Mossen Ramon Trenquabeilh, comte de Carcassonna, a la gleisa de Bezes et subjuguec las gens de Bezes et de Carcassonna et las fec venir en camisas davan lu. Et apres, en l'an mil CCX, lo rey et lo papa donen la conquesta contra los iretges al comte Simon de Montfort, cum auzirets plus a pla avan, que tant longamen durec la guerra. Et en l'an mil CCXXII, la feria segonda de Mars, Mossen Pey Roger ab Isarn, son fils, seignor de Mirapeys, redec lo caste de Mirapeys al comte de Foix et ly fec l'homenatge accostumat per lodit castel de Mirapeys. En lo sety del dit castel, lo comte de Foix prenguec la malautia de que moric.",
+      "source": "Lo quint comte de Foix",
+      "length": 686,
+      "id": 75
+    },
+    {
+      "text": "Li riche, à si bescaume, espandissien li paradouiro de sedo damassado e broudado: li paure sourtien à si fenèstro si vano carrelado e si vanoun pica; au Pourtau Maianen e dins li bas quartié, garnissien li muraio emé de linçòu blanc redoulènt de bugado, e De liuen en liuen pièi s’aubouravo li pausadou mounumentau, aut coume de piramido, carga de candelabre e de vas de bouquet. Li gènt, davans sis oustau, asseta au fres sus de cadiero, en manjant de pastissoun, esperavon lou courtege. Lou jouvènt, li calignaire, artisanot e moussurot, balin-balan se passejavon, en alucant li chato e ié trasènt de roso, souto li tèndo di carriero tóuti embaussemado dóu fum dis encensié.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 676,
+      "id": 76
+    },
+    {
+      "text": "Lo rey Sant Loys demorec heritier et venguec a Tolosa, y tenguec lo seti et aguec per gran afam, et apres conquestec Marmanda et tout lo pays entro Avigno, et tout Avigno taves, et Proensa, que aussi ben eran iretges, et derroguec las muralhas d'Avigno; et tornen a la obediensa del legat del papa. Et apres lo rey s'en tornec a Paris ab lo comte de Tolosa per l'accord del matrimoni de la filha del comte de Tolosa ab Alfonso, fray del rey. Et per aqui es vengut la successio al rey del comtat de Tolosa et dugat de Narbonna.",
+      "source": "Lo sieze comte de Foix",
+      "length": 526,
+      "id": 77
+    },
+    {
+      "text": "Los comtes que son estats a Tolosa, lo premier foc Torsons, et lo premier appelat Ramond foc lo septe, que foc comte l'an MXIII et moric l'an MXXXVII; lo segon Ramond foc comte l'an MLX et foc, ab Godofre de Bouilhon, a la Terra Santa, et lo comte de Foix ab lu, et moric l'an MCI. Lo ters comte Ramond et lo tretze foc comte l'an MCXVI et moric l'an MCXLIIII. Lo quart Ramond et lo quatorze foc comte l'an MCXCIIII et moric l'an MCCXXII et jats a Tolosa, escomenjat, a l'ordre de Sant Johan. Lo quint Ramond et lo quinze es lo dernier comte que dessus ez feyta mencio.",
+      "source": "Lo septen comte de Foix",
+      "length": 569,
+      "id": 78
+    },
+    {
+      "text": "Aqueste Mossen Roger Bernard aguec doas filhas, la una, Madona Agnes, que foc molher de Mossen Esquivat, comte de Begorra, et l'autra Madona Phelippa, que foc molher de Mossen Arnaud d'Espagna, vescomte de Cozerans, en l'an MCCLVII; et loqual Mossen Arnaud d'Espagna metec en la ma del comte de Foix la villa et terra de Sant-Girons. Lo dit Mossen Arnaud al comte de Begorra la liurec seignoralamen, (que) la recevec en fiu de lu, cum (appar) per la lettra qu'es al quaisso de Bearn, en lo cartulary de Foix.",
+      "source": "Lo hoeite comte de Foix",
+      "length": 508,
+      "id": 79
+    },
+    {
+      "text": "Aqueste Mossen Roger Bernard desera(va) anar a la Santa Terra de Jerusalem contra los Turcs et Sarrasis. Et, en l'an MCCL, lo rey Sant Loys passec la mar ab sa potestat sus los Turcs et Sarrasis; lo comte de Foix y passec ab sas gens. Et prengueren la ciutat de Damieta, et per la permissio de Diu, foren deviuves et s'en torneren arrer los Sarrasis ab gran multitut et infinits de Turcs.",
+      "source": "Lo septen comte de Foix",
+      "length": 388,
+      "id": 80
+    },
+    {
+      "text": "Mossen Bernard foc fil de Mossen Roger, comte de Carcassonna et de Barsalona, et foc marit de dona Beatrix de Bezes, et foc feyt lo premier comte de Foix par la man del comte Ramond de Tolosa et duc de Narbonna, en l'an de Nostre Seignor Diu MLXII; car de per davan era appelat seignor dels Foixens. Et foc tres bon cavalier, valen et ardit, et, en son atge de quaranta ans, foc feyt lo premier comte de Foix.",
+      "source": "Lo premier comte de Foix",
+      "length": 409,
+      "id": 81
+    },
+    {
+      "text": "Lo cinquiesme jorn d'avril, lo rey foc pres et redut al soldan de Babilonia ab sos dos frays Alfonso de Poytou, et Carles, comte, que nulh nou escapec sinou lo legat del papa. Et apres los Sarrasis auciguen lo soldan appelat Mabec Escahudin; lo rey finec un gran pres d'aur, et los dits Sarrasis lo se parten, et lor redec Damieta et demorec en la Terra Santa cinq ans.",
+      "source": "Lo septen comte de Foix",
+      "length": 369,
+      "id": 82
+    },
+    {
+      "text": "Mossen Roger Bernard lo Gros foc fil de Mossen Roger et de Madona Eyssemena et foc feyt comte l'an mil CXLIIII, regnan lo septe Loys, rey de Fransa, dit lo Menut; et foc marit de Madona Cecila, filha de Mossen Ramon Trinquabel, vescomte de Bezes, ab cosseilh de Mossen Ramon, comte de Barsalona, son cosy, et li donec en dot MC sols de Molgares et mes lo castel de Santa Gavela, lo castel de Montaut et mes lo castel de Borbonna ab la seignoria de Auzapans entro a l'Arieja, ab carta publiqua, et asso en l'an mil CLI.",
+      "source": "Lo quart comte de Foix",
+      "length": 518,
+      "id": 83
+    },
+    {
+      "text": "Pensave d’escala pèr un rousié (sabes? d’aquéli rousié que flourisson en trihage) jusquo à-n-uno fenèstro ounte devié, ma segnouresso pourgi lou bras à mi poutoun. Escalave deja; lou tifo-tafo, pos crèire, me batié... O bèu Diéu! la fenèstro, tout-en-un cop, plan- plan, s’entre-duerb, li listèu de la jalousié s’enausson; uno man, Frederi, uno man... (Ah!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 356,
+      "id": 84
+    },
+    {
+      "text": "Eh! bèn, es elo! l’Estello dóu Pastre, I’Estello de l’Aubo, que nous fai lume à l’aubo quand alargan l’avé o de-vèspre quand embarran; es elo lou Lugar, la Bello Estello, Magalouno, la Bello Magalouno, que se courron après emé Pèire de Prouvènço, La counjouncioun, iéu crese, de Vènus emé Jou o ‘mé Saturne, de fes que i’a. Coume voudrés... Mai, tè, Labrit! dóu tèms que charravian, li fedo se soun estraiado, tè, tè, reviro-lèi!... Oh! lou marrit couquin de chin: es uno carogno finido! vese que me ié fau ana... Ah! ço, moussu Frederi, vous, anas plan de vous pas perdre!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 573,
+      "id": 85
+    },
+    {
+      "text": "Coume dins li vilo d’ltàli, uno fes pèr semano, i’avié ‘n penitènt negre qu’en brandant soun cacho-maio passavo en tóuti lis oustau e, la cagoulo sus la caro emé dous Pèr carriero, èro rare que noun vous aciplessias en de tipe loucau coume la sorre Bouto-couire, soun panié barradis au bras, soun crucifis d’argènt pendoula sus soun gros piés, o coume lou gipié Barret que, dins uno bagarro emé li Liberau agùent perdu soun capèu avié jura de pus jamai pourta capèu enjusquo qu’Enri V mountèsse sus lou trone, e que, touto sa vido, s’enanè tèsto nuso. Mai lou mai que rescountravias, emé si grand capèu mounta e si lòngui capoto bluio, èro lis invalide abitant Avignoun, (ounte i’avié ‘no sucursalo de l’Hôtel de Paris), veneràbli debris de nòsti vièii guerro, borgne, panard, manchet, que plan-plan martelavon, de si cambo de bos, li calado pounchudo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 852,
+      "id": 86
+    },
+    {
+      "text": "Et foc valen cavalier en armas, ardit et pros, et tenia son pays en pax et concordia, que negun no li volia ostar res del sieu. Et, en l'an mil CXLIIII avia donat al glorios Sant Volzia la villa de Bebre et certas rendas en aquela, Aspira, La Voix, lo castel de Perlas, la maytat de la leuda del pont de Foix, - so era en lo temps que lo pont se ediffiquec, - regnan Loys, rey de Fransa. Et pueix ly donec la maytat dels forns de Foix, ab pactes que fossan tenguts de alenhar a communs despens, et aussy ben que, si se fasian molis del pont de Foix entro a Ganac, que fossan communs, et sy del pont d'Arieja entro al pont d'Arget se fasian molis, que aquels sian de Sant Volsia. Et plus li donec los delmes de Cadarcet et de Baulou entro a la Font comtal, lo castel dels Esties et Serras, lo delme et las premissias de Serras et de La Barra, lo castel de La Barra de mietj riu Alsas entro al fluvi d'Arieja, et la villa de Savignac.",
+      "source": "Lo quart comte de Foix",
+      "length": 932,
+      "id": 87
+    },
+    {
+      "text": "Autant liuen que me rapelle, vese davans mis iue, au miejour, eilalin, uno bancado de mountagno que, dóu matin au vèspre, si mourre, si calanc, si baus e si valoun, quouro clar, quouro encre, bluiejon en oundado. Es la cadeno dis Aupiho, encenturado d’óulivié coume uno roucaredo grèco, un veritable miradou de glòri e de legèndo. Lou sauvadou de Roumo, Càius Màius (coume nòsti païsan apellon Caius Marius), encaro poupulàri dins touto l’encountrado, es au pèd d’aquéu bàrri qu’esperè li Barbare, darrié li paret de soun camp. E si troufèu vitouriau, à Sant-Roumié sus lis Antico, i’a dous milo an que ié roussejon. Es au pendis d’aquelo costo que rescountras li tros dóu grand ouide rouman que menavo, à ço que conton, lis aigo de Vau-Cluso dins lis Areno d’Arle: coundu que li gènt noumon Ouide di Sarrasin, pèr-ço-que li Mouracho prenguèron Arle pèr aqui. Es sus li baus d’aquéli colo que li prince Baussen avien soun castelas. Es dins li redoulènci d’aquéli valounado, i Baus, à Roumanin e à Roco-Martino, que tenien Court d’Amour li bèlli castelano dóu tèms di Troubadou. Es à Mount-Majour que dormon, souto li bard di clastro, nòsti rèi arlatan. Es dins aquéli baumo dóu Valoun d’Infèr, de Cordo, que nòsti Fado trèvon. Es souto aquéli rouino, o roumano o baussenco, que jais la Cabro d’Or.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1297,
+      "id": 88
+    },
+    {
+      "text": "Aquéu fraire Felip, - l’aprenguerian plus tard -, fasié partido, à ço que parèis, d’aquélis ermitan qu’avien óucupa Sant-Michèu quàuquis annado avans nous-autre e qu’avien mes uno campano au clouchié vuege. Pièi quand avien abandouna, estènt que s’emporto pas, acò, coume un cascavèu, la campano èro restado amoundaut sus la Frai Felip èro un bon-ome que s’èro douna pèr pres-fa de remetre en estamen lis ermitage en rouino que i’a, d’eici, d’eila, dins li mountagno de Prouvènço. L ’ a i rescountra quàuqui fes, long-tèms après, grand, maigre, un pau courba, pau-parlo, emé sa soutano pedassado, soun capèu negre à làrgis alo, quistant de porto en porto e pourtant sus l’espalo, mita davans, mita darrié, un long sa de telo bluio.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 731,
+      "id": 89
+    },
+    {
+      "text": "E Esperit se revihè. L’ange avié despareigu. Aguè bèu l’espera, lou cerca, lou demanda, lou trouvè plus en-liò, e fauguè que tout soulet se retournèsse de Roumo. Alor se gandiguè vers la ribo de la mar, acampè de couquihage, n’en garniguè soun àbi e soun capèu, e ‘m’ acò plan-planet, pèr draio e pèr camin, pèr coumbo e pèr Es ansin qu’arribè à soun endré e à soun oustau. I’avié dous an que n’en mancavo. Tout meigrinèu, pecaire! abasani, póussous, espeiandra, descaus, emé sa coucourdeto au bout de soun bourdoun, soun capelet e si couquiho, èro descouneissable e res lou couneiguè. E ‘m’ acò venguè tout dre à la porto de si gènt e diguè douçamen: - Hòu! sa maire cridè, venès en òdi! tóuti li jour n’en passo, d’aquéli bòni-voio, - Ai! las! mouié, faguè lou bon vièi Archimbaud dóu founs de sa litocho, douno-ié quaucarèn: quau saup se noste drole es pas, d’aquéstis ouro, dins lou meme besoun!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 899,
+      "id": 90
+    },
+    {
+      "text": "Arribavian i Jasso d’Aubaroun, ounte nous arresterian pèr faire manja li bèsti, au bourras, davans la rodo. Li chato de Bèu-Caire que i’avié sus li carreto, si tèsto enribanado de tóuti li coulour, entanterin venguèron, autour d’Alardo, faire un brande: E, li bras leva, la pauro partiguè davans elo, risènt coume uno folo e cridant: Mai lou tèms, que despièi l’aubo èro à la macarié, de mai en mai s’encabanavo. Lou Marin, en boufant, fasié mounta vers Arle de nivoulado grèvo qu’à cha pau ennegravon tout l’estendard dóu cèu. En palun, li granouio e li grapaud cantavon. La longo tirassiero de nosto caravano s’emplanavo, perdudo, dins li champias d’engano, dins li sansouiro blanquinouso, sus un camin terren, bourda de tamarisso à flourisoun rousenco. La terro sentié lou frescun. E de vòu d’alabran, de vòu de bouis e de sarcello, - Ha! l’ome respoundié, lis iue en l’èr, proun soucitous, uno fes plóuguè qu’èro - Eh! bèn, saren poulido, se la raisso nous pren au mitan de la Camargo!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 989,
+      "id": 91
+    },
+    {
+      "text": "Aqueste seignor Mossen Ramond Roger aguec un fil, Mossen Roger Bernat lo Gran, et una filha appelada Madona Esclarmonda, que foc molher del rey de Malhorca et, ab dot de CL(M) sos de Molgares et maridada per Mossen Roger Bernat lo Gran, son fraire, l'an mil CLXXVII. Lo rey d'Arago al comte de Foix, son dilect nebot, per amor et copulacio de la parentelha, que era entre els, et per los servicis que feyts li avia, li donec et ratifiquec totas aquelas convenensas que, lo rey En Peyre li avia feytas de la donacio del vescomtat de Narbonna, et li autrejec aissy meteys lo pays de Fenolas et Peyra Pertusa et Pertuses, ab condicio que, si moria sens enfans, que tornes al rey d'Arago. Et Mossen Ramond Roger moric l'an MCCXXIII et foc comte trenta-cinq ans.",
+      "source": "Lo quint comte de Foix",
+      "length": 757,
+      "id": 92
+    },
+    {
+      "text": "Mossen Roger Bernard foc lo hoeite comte de Foix et fil de Mossen Roger et de Madona Brunisen de Cardonna, foc marit de Madona Mengard de Narbonna, foc feyt comte l'an MCCLVI, et foc valen cavalier, pros et ardit et deserec anar contra los Sarrazis. Et, en l'an MCCLX, lo rey de Fransa avia feyt assemblar a Paris, al temps de Pasquas, baros, prelats, cavaliers de son realme, per so que lo papa lu avia escrit et mandat per so que los (Tartares) a las partidas de la Terra Santa d'outra mar eran venguts per (secorer) los Sarrazis et avian soubmes Arminia, Antiocha, Othe, Triple, Damas, Alapa, et tropas autras terras, et que perilh era de la ciutat d'Acre cum a la Crestianitat. Per so lo rey ordenec que y anessan ab gran nombre arquiers, balestiers et gens d'armas, on foc lo comte de Foix ab d'autres seignors del realme per deffendre la ciutat d'Acre. Et Mossen Gaston de Bearn foc capitani de la artilharia del rey.",
+      "source": "Lo hoeite comte de Foix",
+      "length": 923,
+      "id": 93
+    },
+    {
+      "text": "Mossen Roger, fil de Mossen Roger et de Madona Arsenda, foc lo ters comte de Foix et foc marit de Madona Estifana. Et foc feyt comte de Foix l'an mil CXI, regnan Pascal papa, et Loys, rey de Fransa, et foc seignor de las marcas de la bassa Proensa. Et foc tres valen en armas et tropas causas conquestec en sa vida. Aquel an fec lo pariatge ab l'abbat de Sant Antoni de Pamias, et l'abbat lu donec lo castel de Pamias à lu et als sieus. Et Mossen Roger donec al conven de Sant Antoni, per cascun an, à la festa del glorios sant, mietj muech de net formen, un muech de bon vi et una vacca grassa et quatre porcs ou quatre sols. Et los canonges deven tenir lo castel del soleilh levan entro al soleilh colguat et lo deven rendre al comte de Foix ou à sos comes, liberalamen, cascun an. Et aussy ben Mossen Roger donec al dit conven la villa de Fredelas per los damnatges que sos ancestres, comtes de Foix et de Carcassonna, lor avian donats. Et aussy ben donec à sant Volzia de Foix alcuns cazals, que avia à Cos prop de Foix. Et aguec un fil de Madona Eyssemena, sa segonda molher, appelat Roger Bernard lo Gros.",
+      "source": "Lo ters comte de Foix",
+      "length": 1111,
+      "id": 94
+    },
+    {
+      "text": "Iéu me l’esplicariéu de la façoun que vau vous dire. Un segnour de Maiano, óuriginàri d’Arle, Guihèn di Pourcelet, fuguè, d’après l’istòri, lou soulet espargna i Vèspro Siciliano en counsideracioun de sa drechuro e prudoumié. Aurien-ti pas pouscu, éu o si descendènt nous adurre lou culte de la vierge Cataneso? Es toujour qu’en Sicilo Santo-Agueto es envoucado contro li fiò de l’Etna e à Maiano contro lou tron e l’encèndi. Un ounour recerca pèr nòsti Maianenco es, avans soun mariage, d’èstre tres an priéuresso (coume dirian preiresso de l’autar de Santo-Agueto). E, ço qu’es bèn galant, es, la vèio de la fèsto, li parèu, la jouinesso, qu’avans de durbi li danso vènon tóutis ensèn douna ‘no serenado, davans la glèiso, à Santo-Agueto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 740,
+      "id": 95
+    },
+    {
+      "text": "Et en l'an mil CCVIII, quinto Idus de Genier, conquestec Mossen Ramon Roger la terra de Donaza per donacio que li foc feyta per lo rey En Peyre d'Arago. Et en l'an mil CXCIX Mossen Bernard, comte de Comenges, reconeguec a Mossen Ramond Roger que tout so que tenia en Volvestre, homes et fennas, tot ac tenia del comte de Foix et de sa ma et lyn fec homatge et reconeguec que, qui que sia comte de Comenges, deu esse home del comte de Foix per ladita terra de Volvestre, recebuda en lo mes de jul lodit an. Et en l'an mil CCIX comensec la iretgia a Paris per certans clercs, mestres en teologia, contra la fe, que sustenian que los angels et Diu eran tota una causa. La iretgia foc semenada per lo realme et autras parts, don lo rey fec cremar sieix mestres en teologia, que l'avian comensada. Ab lo coseilh del papa et del rey, commissio foc dada sus lo pays de Lengadoc a sant Guilhem, avesque de Bourges, et a sant Doumenge, que comensec l'ordre dels Predicadors.",
+      "source": "Lo quint comte de Foix",
+      "length": 965,
+      "id": 96
+    },
+    {
+      "text": "L’ouncle Benòni - La farandoulo au cemèntèri - Lou viage en Avignoun - Lou Siège de Caderousso - La proumiero coumunioun - Madamiselo Presseto - Lou roumavage de Sant-Gènt -Au Coulège Reiau - Lou pouèto Jaussemin - E alor fauguè mai que me cerquèsson uno escolo pas trop liuencho de Maiano nimai trop à la grando, car nous-àutri, gènt de mas, erian pas d’acò fièr. E me boutèron en Avignoun, encò de moussu Mihet, que tenié pensiounat à la carriero Petramalo. Aquesto fes es l’ouncle Benòni que councluguè lou viage. Maiano, emai noun fugue qu’à tres lègo d’Avignoun, d’aquéu tèms, que i’avié ges de camin de ferre, que li routo èron abimado pèr li brancan di roulié e que falié passa, sus uno barco à traio lou large lié de la Durènço, lou viage d’Avignoun èro encaro un afaire.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 779,
+      "id": 97
+    },
+    {
+      "text": "Jóusè Roumaniho - Nosto amiganço - Li pouèto dóu Boui-Abaisso - Pèr muda mai li catoun, ma maire, à la rintrado de l’annado escoulàri, m’aduguè vers Moussu Dupuy, un bericlet Carpentrassen, que tenié ‘n autre pensiounat, toujour en Avignoun, au quartié dóu Pont-Trauca. Mai eici, mi goust de prouvençalisto en erbo, Moussu Dupuy èro lou fraire d’aquéu Charles Dupuy mort, deputa de la Droumo, autour dóu Pichot parpaioun un di moussèu delicat de nosto antoulougìo prouvençalo mouderno. Éu, lou cadet Dupuy, tant rimejavo en prouvençau, mai, e avié resoun, se Vèn que, quauque tèms après, nous arribè de Niouns un jouine proufessour à fino barbo negro, qu’ èro de Sant-Roumié. Ié disien Jóusè Roumaniho. Coume erian vesin d’endré, Maiano e Sant-Roumié soun dóu meme cantoun, e que nòsti parènt tóuti gènt de la terro, se couneissien de longo toco, fuguerian lèu coutrìo. Mai pamens sabiéu pas que lou Sant-Roumieren s’óucupèsse éu perèu de pouësìo prouvençalo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 959,
+      "id": 98
+    },
+    {
+      "text": "Tournavo prene courso e, i’ avié proun de que, ma fisto! calavo mai: - O póutroun, ié cridè lou ferouge Mount-Brun, dins dous cop qu’as pres vanc, - Mounsegne, repliquè lou paure catouli, se voulias assaja iéu vous lou baiariéu en E Mount-Brun, pèr la repartido, se dis que ié dounè sa gràci. Anerian vesita lou castèu dóu baroun que Francés li faguè destruire. Ié rèsto quàuqui fresco atribuïdo à-n-Andriéu del Sarto. E, sus lou badarèu, nous moustrèron lou rode d’ounte, pèr s’amusa, lou segnour uganaud, emé soun arquebuso, acanavo li mouine qu’avau, dins lou jardin d’un couvènt que i’avié, legissien soun breviàri. Enfin, de-long dóu Toulourenc, riéu que, darrié Ventour, despartis la Prouvènco d’emé lou Dóufinat, aguènt représ nosto tournado, venguerian, en passant au pèd dóu Ventouret e ‘n ribejant lou Gouro dis Oulo, destrauca dins la valado risouleto de Saut.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 871,
+      "id": 99
+    },
+    {
+      "text": "Mossen Roger foc fil de Mossen Roger Bernard lo Gran et de Madona Brunissen de Castelbo et foc marit de Madona Brunissen de Cardonna. Et foc feyt comte l'an MCCXLI et foc noble cavalier et valen et, lo meteys an, fec le pariatge ab l'abbat de Lezat, ab l'abbat del Mas, ab l'abbat de Combalonga et ab l'abbat de Borbona. En l'an MCCXLVIII, exilec de son pays Mossen Guilhem d'Arnava, cavalier, cum fals et malvat et desobeissen. Et, en l'an MCCXLIX, lo darrier Mossen Ramond, comte de Tolosa, moric en Avigno, venen de Marseilha, per febres, et foc sevelit al monastier de Sant Ebordy ab Madona Johanna, sa mayre, filha del rey de Anglaterra. Et succedec en lo comtat de Tolosa dona Johanna sa filha, que era molher de Mossen Alfonso, frayre del rey Sant Loys. Et, apres morta Madona Johanna, aissy cum lo comte Ramond avia ordenat, tornec (lodit comtat) et succedec a la casa real de Fransa. Laqual dona moric l'an MCCLXX. Et apres Phelip, fil del rey Sant Loys, intrec a Tolosa prendre la possessio l'an MCCLXXI.",
+      "source": "Lo septen comte de Foix",
+      "length": 1014,
+      "id": 100
+    },
+    {
+      "text": "Un gardian à chivau que, lou ficheiroun en man, viravo si brau negre esparouia Li blesin coumencavon. Pièi à cha pau la plueio se ié boutè de bon. E zóu, d’aigo! En rèn de tèms, dins aquéli plano basso, i’aguè plus que d’eigatiho. Nous-autre, d’asseta souto la tèndo di carreto, vesian pereilalin li manado de rosso, espóussant si creniero e si lòngui co flusso, gagna li levadoun e li mountiho de sablas. E zóu, d’aigo! Lou camin, ennega pèr lou glavas, fasié tira toujour que mai. Li rodo se plantavon. Li bèsti s’arrestavon. A la fin, à perdo de visto, se vesié plus qu’un estagnas; e li carretié - Anen, fau davala! femo, fiho, au sòu, tóuti! Se voulès pas coucha au mitan di - A pèd descaus, li bello, gagnarés lou Grand Perdoun: que n’avès de besoun, E lou fihan, lou femelan, jouine e vièi, descendeguèron. Emé de rire, emé de siéule, tout acò, pèr gafa, se descaussè e s’estroupè. Li carretié prenguèron lis enfant à Sant-Cristou. E Mathiéu, pourgènt l’esquino à la maire dóu pougau qu’èro dins nosto - Tenès, metès-vous aqui, bravo femo, ié faguè, vous pourtarai à la cabro morto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1089,
+      "id": 101
+    },
+    {
+      "text": "Entre avé destala, au mitan di mountiho, cuberto de blanqueto emé de tamarisso, cridavon de Mount-pelierenco, que vendien, davans la porto, de cire, de candeleto, La glèiso, pleno coume un iòu, de gènt dóu Lengadò, de femo dóu coustat d’Arle, d’infierme, de bóumiano, tóuti lis un sus lis autre! Es li bóumian, dóu rèsto, que fan brula li plus gros cire, mai esclusivamen à l’autar de Santo Saro, que, d’après sa cresènço, èro de sa nacioun. Memamen es i Santo qu’aquéli barrulaire tènon sis assemblado e fan, de liuen en liuen, l’eleicioun de sa rèino. Pèr intra aguerian proun obro. De femasso de Nimes, emé la couifo negro, qu’avien tirassa ‘m’ éli si couissin de flausino pèr coucha dins la glèiso, se disputavon li cadiero: - Iéu l’aviéu avans vous! - E iéu l’aviéu lougado! - Un prèire fasié beisa, de bouco en bouco, lou sant bras; i malaut se pourgié de goubelet d’aigo saumastro, d’aigo dóu pous di Santo, qu’es au cors de la glèiso, e qu’aquéu jour, dison, vèn douço.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 977,
+      "id": 102
+    },
+    {
+      "text": "A Marsiho, lis amatour de trivialeta, li rimaire barbo-blanc, li jalous, li renaire, s’acampavon de vèspre dins la rèire-boutigo dóu bouquinisto Boy pèr gemi amaramen sus la supressioun dis S e agusa lis armo contro li nouvatour. Roumaniho, gaiardamen, de-longo sus la brèco, lançavo is aversàri lou fiò-grè qu’alestissian, un pau l’un, un pau l’autre, au fournelet dóu Gai-Sabé. E, coume avian pèr nous-autre, outro li bòni resoun, la fe, l’entousiasme, l’enavans dóu jouvènt, emé quaucarèn autre, finiguerian pèr resta, Un tantost que dins la court, emé li cambarado, jougavian i tres saut, intrè e s’avancè de noste roudelet un nouvèu pensiounàri, finamen pecouia, lou nas à l’Enri IV, lou capèu sus l’auriho, l’èr un pau vieianchoun, em’ un bout de cigaro amoussa dins la bouco; e, li man dins li pòchi de sa vèsto redouno, sènso mai de façoun que s’èro esta di - Eh! bèn, dis! que fasèn? Voulès qu’assaje un pau, iéu, i tres saut?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 935,
+      "id": 103
+    },
+    {
+      "text": "A taulo, se parlè mai, coume èro l’habitudo, de ço que faudrié pèr tira noste lengage dóu cativié mounte jasié, despièi que, trahissènt l’ounour de la Prouvènço, li moussu l’avien redu, pecaire, à servi mèstre. E adounc, counsiderant que, di dous darrié Coungrès, aquéu d’Arle e aquéu d’Ais, noun èro rèn sourti que faguèsse prevèire un acord pèr adurre lou reabilimen de la lengo prouvençalo; qu’au countràri, li reformo prepausado pèr li jouine de l’escolo avignounenco se i’èron visto, encò de forço, mau- vengudo e mau-vougudo, li sèt de Font-Segugno, d’uno voues, deliberèron de faire bando à despart e agantant lou le, de lou jita mounte voulien. - Soulamen, diguè Glaup, d’abord que fasèn sang de-nòu, avèn besoun d’un noum nouvèu. Car, lou vesès: entre rimaire, emai trobon rèn de tout, tout acò se dis troubaire.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 821,
+      "id": 104
+    },
+    {
+      "text": "Tres de mi tanto emé ma maire, l’ouncle Benòni e iéu, tóuti bèn ajassa sus uno trousso longo de paio de civado que rambourravo la carreto, partiguerian en caravano un Ai di: tres de mi tanto. N’i’a gaire efetivamen que se fugon vist un cop tant de tanto coume iéu, n’aviéu touto uno dougeno: i’avié la Grand Mistralo, la tanto Janetoun, la tanto Madeloun, la tanto Verounico, la tanto Poulineto, la tanto Bourdeto, la tanto Franceso, la tanto Marìo, la tanto Rioun, la tanto Terèso, la tanto Melan emé la tanto Lisa. Aro tout acò ‘s mort e enterra; mai m’es de-bon de redire eici li noum d’aquéli bòni femo, qu’ai visto varaia coume autant de bòni fado, caduno emé soun gàubi, à l’entour de moun brès. Apoundès à nòsti tanto lou meme noumbre d’ouncle emé li cousin e cousino que n’èron eissama e aurés uno idèio de nosto parentèlo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 831,
+      "id": 105
+    },
+    {
+      "text": "Aqueste Mossen Roger, comte de Foix, fec translatar lo cos de Mosseignor Sant Antony de Lezat et portec los osses en son mantel, el meteys, devan touta la processio ecclesiastiqual, al monastier de Lezat. Et apres, en l'an mil CXI, en la quarta feria de genier, fec translatar lo cos de Sant Volzia, que repausava prop del castel de Foix; on foren Mossen Amiel, avesque de Tholosa, Mossen Ramon, avesque de Barbasta, Mossen Roger, comte de Foix, et tropes autres del pays, clercs et capellas et infinidas gens de longas terras et proensas, et ab gran gauch et ab gran gloria. Et, per la gracia et espiracio de Diu, agut coseilh, apres porten las reliquas ab gran gloria à la gleisa de Montgausy, on fec infinits miragles, entre altres, quand lo pausen à la peyra bolthorar, un home que era orb et contreict, passec dejos lo cos sant, crobec la besio et la sanitat del cos. Diverses autres orbs, paleficats et endemoniats croben la sanitat, cum plus à ple es contengut en la siua legenda. Et apres, à la nouvela basiliqua en la prop la gleisa de Foix, que era fondada en la honor del glorios Sant Nazary, honorablemen foc repausat et colloquat. Et Mossen Roger et dona Arsenda, sa molher, donen à Sant Volzia la villa de Ganac ab (certs) cazals de Amplaing.",
+      "source": "Lo segond comte de Foix",
+      "length": 1256,
+      "id": 106
+    },
+    {
+      "text": "Tenès, un astre bèu es aquéu que fouguejo adamount pas liuen dóu Càrri: es lou Pau enchau. Aro, aqui sus lou nord, agachas, aquelo estello que beluguejo tout- bèu-just: es l’Estello Marino o, s’amas miés, la Tremountano. Se vèi toujour e sièr de signau i marin, que se veson perdu, quand an perdu la Tremountano. L’Estello dóu Pole, coume tambèn se ié dis, se trovo dounc dins la Pichoto Ourso; e coume l’auro vèn d’aqui, li marin de Prouvènço, coume aquéli d’ltàli, dison que van à Reviren-nous: veiren parpeleja la Pouciniero, o! se voulès, lou Pesouié. Que li sabènt noumon Pleiado e li Gascoun la Carreto di Can. Acò ‘s acò. Un pau plus bas trelusisson lis Ensigne, que principalamen marcon lis ouro i pastre. N’i’a que ié dison li Tres Rèi, d’autre li Tres Bourdoun o lou Rastèu o lou Basto, encaro plus bas, toujour vers lou miejour briho Jan de Milan.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 858,
+      "id": 107
+    },
+    {
+      "text": "Mossen Bernard foc fil de Mossen Roger, comte de Carcassonna et de Barsalona, et foc marit de dona Beatrix de Bezes, et foc feyt lo premier comte de Foix par la man del comte Ramond de Tolosa et duc de Narbonna, en l'an de Nostre Seignor Diu MLXII; car de per davan era appelat seignor dels Foixens. Et foc tres bon cavalier, valen et ardit, et, en son atge de quaranta ans, foc feyt lo premier comte de Foix. Et apres lodit Mossen Bernat, comte de Foix, lo medeys an, donec al martyr Sant Volzia la gleisa de Garano, Cos, Campredou, Cadirac, Ferrieras, la gleisa de Serras, ab sos delmes, et la villa de Sant Johan de Verges ab sos delmes et premissas. Et aqueste Mossen Bernard aguec un fil, appelat Roger, de Madona Beatrix, sa molher.",
+      "source": "Lo premier comte de Foix",
+      "length": 738,
+      "id": 108
+    },
+    {
+      "text": "Lo comte de Foix perdec l'heritatge de Carcassonna et de Bezes et de las marcas de la bassa Proensa per causa de ladita iretgia, car lo comte de Montfort aguec la conquesta don lo rey a agut la successio, et aussy ben de las autras terras de Corcorbes et aussy ben de l'homenatge que li fasia lo seignor de Mirapeys. Car Mossen Guilhem de Levis, mareschal de Fransa, conquestec aquela terra de Mirapeys, et lo rey se retenguec l'homenatge; et per so, al comte de Foix no demorec sinou lo comtat de Foix, loqual ab l'espasa avia deffendut, et per aquel fec l'homatge tan solamen al rey. Et apres, en l'an MCCXXX, donec Madona Esclarmonda, sa filha, al vescomte de Cardona, et donec Madona Cecila al comte d'Urgel ab XXV mil sols Molgares. Et lo comte de Cardona donec Madona Brunissen a Roger, fil del comte de Foys.",
+      "source": "Lo sieze comte de Foix",
+      "length": 815,
+      "id": 109
+    },
+    {
+      "text": "Lou Felibrige, coume vesès, noun coungreiavo pas malancounié ni pessimisme. E tout se ié fasié de gaieta de cor, sènso rèire-pensado de proufié ni de glòri. Li coulabouradou di proumiés armana, aurian pres tóuti de faus-noum: lou felibre di Jardin (Roumaniho), lou felibre de la Mióugrano (Aubanèu), lou felibre di Poutoun (Mathiéu), lou felibre Ajougui (Glaup), lou felibre dóu Mas o bèn de Bello-Visto (Mistral), lou felibre de l’Armado (Tavan, qu’avié tira marrit), lou felibre de l’Arc-de-Sedo (J. Brunet qu’èro pintre); pièi peréu tóuti aquéli que, pau à pau venien groussi lou bataioun: lou felibre de Vèire (D. Cassan), lou felibre dis Aglan (T. Poussel), lou felibre de la Santo Braso (E. Garcin), lou felibre de Luseno (Crousillat, de Seloun), lou felibre de l’Aiet (J.- B. Martin, subre-nouma lou Grè ), lou felibre di Meloun (V. Martin, de Cavaioun), la felibresso dóu Cauloun (fiho dóu precedènt), lou felibre Adoulenti (B. Laurèns), lou felibre dis Encartamen (Achard, archivisto de Vau-Cluso), lou felibre dóu Pountias (B.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1036,
+      "id": 110
+    },
+    {
+      "text": "Un souveni de la caserno o de quand, pèr campagno, èron campa souto la tèndo. Un autre que n’en sabié, de sourneto, à plus fini, èro lou vièi Devot, au quau me fai plasé de paga moun dèute eici, car, tant simplo que fuguèsse, iéu, ié dève la dounado de moun E perqué sian sus li vihado, voulès que n’en touquen un mot? Dins nòsti vilage, aro, li païsan, après soupa, van au cafè faire sa partido de bihard, de maniho o de ço que voudrés. E, di vihado anciano, tout-escas se n’en rèsto uno espèci de semblant vers quàuqui mesteirau que travaion au lume, tau que li menusié o bèn li courdounié. Mai d’aquéu tèms, la modo d’aquélis acamp galoi èro liuen d’èstre perdudo; e se tenien en generau dins lis estable o dins li jasso, pèr-ço-qu’aqui, ‘mé lou bestiàri, l’on se trouvavo caud. Chasque vihaire o viharello, à-de-rèng, èro l’usage, fournissié la candèlo, e falié que la candèlo durèsse dos vesprado, de maniero que quand la vesien à mita Soulamen, pèr que la candèlo s’abenèsse pas trop vite se ié metié sus lou mou, sabès dequé? un grun de sau. La pausavon sus lou quiéu d’uno cournudo o d’un tinèu; e li femo que fielavon, o que bressavon si pichot (car li maire adusien li brès à la vihado), emé sis ome e sis enfant, à l’entour s’assetavon, sus lou paiun o sus de plot.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1276,
+      "id": 111
+    },
+    {
+      "text": "Los comtes que son estats a Tolosa, lo premier foc Torsons, et lo premier appelat Ramond foc lo septe, que foc comte l'an MXIII et moric l'an MXXXVII; lo segon Ramond foc comte l'an MLX et foc, ab Godofre de Bouilhon, a la Terra Santa, et lo comte de Foix ab lu, et moric l'an MCI. Lo ters comte Ramond et lo tretze foc comte l'an MCXVI et moric l'an MCXLIIII. Lo quart Ramond et lo quatorze foc comte l'an MCXCIIII et moric l'an MCCXXII et jats a Tolosa, escomenjat, a l'ordre de Sant Johan. Lo quint Ramond et lo quinze es lo dernier comte que dessus ez feyta mencio. Aqueste Mossen Roger Bernard desera(va) anar a la Santa Terra de Jerusalem contra los Turcs et Sarrasis. Et, en l'an MCCL, lo rey Sant Loys passec la mar ab sa potestat sus los Turcs et Sarrasis; lo comte de Foix y passec ab sas gens. Et prengueren la ciutat de Damieta, et per la permissio de Diu, foren deviuves et s'en torneren arrer los Sarrasis ab gran multitut et infinits de Turcs.",
+      "source": "Lo septen comte de Foix",
+      "length": 958,
+      "id": 112
+    },
+    {
+      "text": "Mossen Roger foc lo segond comte de Foix, fil de Mossen Bernard et de Madona Beatrix de Bezes, foc marit de Madona Arsenda et foc feyt comte de Foix l'an mil XCVI, regnan lo premier rey Phelip, rey de Fransa; et foc notable cavalier, valen et ardit, conquestec Carcassonna et apres restituec lo comtat de Carcassonna à Madona Mengard, vescomtessa de Bezes, sa cosina germana, et à Bernard Ato son fil. Et fen pactes que, sy demoressan sens enfans de leyal matrimoni, Mossen Roger laissaria à Madona Mengard, sa cosina, vescomtessa de Bezes et à Bernard Ato, son fil, aprop sa mort, Foix, Fredelas qu'es jos lo castel de Pamias, Lordat, Castel Penent, lo castel de Du, lo castel de Mirapeys, et las honors que avia en lo comtat de Comenge et en Cozerans, exceptat so que ja era siu en lo pays de Carcasses, Arsens et Layrac, Fontia, ab lors terminis à la carta contenguts, que demoressan al dit Mossen Roger, per ne fa sas volentats; aussy ben demores lo vescomtat de Bezes à Mossen Roger, comte de Foix, ab lo comtat de Carcassonna. Asso foc feyt XX kalendas de may, l'an mil XCVII.",
+      "source": "Lo segond comte de Foix",
+      "length": 1082,
+      "id": 113
+    },
+    {
+      "text": "Aquel an, Godofre de Bouilhon, duc de Loreina, conquestec la Terra Santa de Jerusalem et foc cap et governador de la conquesta; et foren ab luy sos dos frays Ostacy et Baudoyn, et ab els Ancelain de Richemond, Baudouyn, lo comte de Ribamont, Robert, lo comte de Flandras, Esteve, lo comte de Blois, Huc lo Gran, frayre de Phelip, rey de Fransa, lo comte de Vermandoys, Robert, lo duc de Normandia, fray de Guilhem, lo rey d'Anglaterra, lo comte Ramond de Tolosa et de Sant Gely, duc de Narbonna, Bernard, lo comte de Foix, Richemond, lo duc de Pulha, et l'autre son frayre, fil de Robert Guiscard lo Normand, (que) la Pulha et Calabria conquestec, Arpin de Borgas, que aquela ciutat vendec à Phelip, lo rey, per anar outramar ab d'autres valens princes, que tants et merveilloses feits firen en la Terra Santa et prengueren Jerusalem et mantas autras ciutats et reys Sarrazis, que se fen crestias. Et en l'an de Nostre Seignor Diu mil XCIX foc presa la ciutat de Jerusalem, et Godofre de Bouilhon foc elegit rey et regnec un an; et Baudoyn, son fray, regnec apres lu dex hoeit ans en Jerusalem.",
+      "source": "Lo premier comte de Foix",
+      "length": 1094,
+      "id": 114
+    },
+    {
+      "text": "Talamen que mouriguè ‘mé soun flahutet en man e que ié lou meteguèron, pecaire, dins sa caisso. Causo que dounè liò, l’endeman de sa mort, à l’istòri que veici. A la fabrico de sedo, ounte anavon travaia li fiho de Maiano, l’endeman que moun ouncle fuguè ‘sta mes en terro, uno escarrabihado, lou matin, en intrant, em’ un èr - Oh! teisas-vous: nous-autre, mi bello, que restan pas liuen dóu cementèri, avèn pas plega l’iue. Figuras-vous que lou vièi Benòni, au cop de miejo-niue a pres soun flahutet, que i’avien mes dins sa caisso, es sourti de soun cros, e s’es mes à jouga ‘no farandoulo endemouniado. Tóuti li mort se soun leva; an carreja si caisso au mitan dóu Grand Claus; lis an, pèr se caufa, abrado au fiò de Sant-Eume; e ‘m’ acò, au rigaudoun que Benòni jougavo, an dansa ‘n brande fòu, autour dóu fiò, enjusquo à l’aubo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 833,
+      "id": 115
+    },
+    {
+      "text": "Ai di qu’èro peresous, moun ouncle: quand! à la bono dóu jour, anavo à soun jardin pèr fouire o pèr reclaure, toujour pourtavo soun fleitet. Au bout d’uno passado, jitavo soun eissado, s’assetavo à l’oumbrino, e assajavo un rigaudoun. Li chato, que travaiavon dins li terrado à l’entour, courrien lèu à la musico e ‘m’ acò ié fasié dansa la - Eh! dis, bèn amaga, bèn caud dins voste lié, mounte poudès miés èstre? - Oh! pas mai: quand ai som, dorme; uno fes qu’ai plus som, dise de saume pèr li E, ço qu’èro singulié, es qu’aquel ome galoi mancavo pas un mourtalage; e facho la ceremounié, restavo au cementèri toujour lou bèu darrié. Pièi s’envenié soulet en pregant, soulitàri, pèr li siéu e pèr lis autre, ço que noun l’empachavo de repeti chasco - Eh! dis, toujour quaucun qu’à Santo-Repausolo venèn de carreja.. A soun tour, éu pamens, fauguè bèn que i’anèsse. Avié quatre-vint-tres an; e lou - Ato! diguè Benòni, que servirié de s’esfraia? n’en mourira, ma fisto, que lou - Que fasès d’aquéu fifre, moun ouncle, ié diguère, un jour que l’anave vèire? - Aquéli gargamèu, dis, m’avien douna ‘no esquerlo, pèr que la bouleguèsse quand auriéu besoun de tisano. De quant vau mai moun fifre, entre que vole béure, en- liogo de crida o de campaneja prene moun fifre e jogue un èr.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1279,
+      "id": 116
+    },
+    {
+      "text": "Lo cinquiesme jorn d'avril, lo rey foc pres et redut al soldan de Babilonia ab sos dos frays Alfonso de Poytou, et Carles, comte, que nulh nou escapec sinou lo legat del papa. Et apres los Sarrasis auciguen lo soldan appelat Mabec Escahudin; lo rey finec un gran pres d'aur, et los dits Sarrasis lo se parten, et lor redec Damieta et demorec en la Terra Santa cinq ans. Apres se levec un poble que l'on appelava los Pastorels, so es en l'an MCCLI, ab lo capitani de Ongria, et fazian crezer a las gens que volian anar al secors de la Terra Santa. Et touts eran layros et murtriers, et quand intravan en las vilas et castels, levavan las espasas et pigassas, que no era res que no los dobtes. Et se entremetian de absolver de touts pecats, de far et deffar los matrimonis et trops altres mals. Et touts los pastors que se podian trobar anavan en lor companha; et quand foren en gran nombre, fasian gran res de mals. Et la regina Blanqua, mayre del rey, mandec que touts fossan morts; et aissi ac firen per tout lo realme de Fransa, que degun no escapec, et comensen a Borges, a Orlenx et a Tolosa.",
+      "source": "Lo septen comte de Foix",
+      "length": 1096,
+      "id": 117
+    },
+    {
+      "text": "Ço qu’es esta. Au daut de l’oustau de ma bello, i’a, coume en forço oustau, un d’aquéli souleié mounte se fai seca lou linge. E iéu, tóuti li jour, n’ai qu’à mounta sus li cubert, e ‘m’ acò, de gorgo en gorgo, vau trouva ma bloundino qu’espandis o que plego sa pichoto bugado; e aqui, bèn tranquile, bouqueto sus bouqueto, la man quichant la man, courtesamen toujour coume entre dono e chivalié, sian dins lou paradis. » Vès-aqui coume noste Ansèume, futur felibre di poutoun, en estudiant à l’aise lou Breviàri d’Amour, tout plan-planet passè si classo sus li téulisso d’Avignoun. Perqu’ ai parla di proucessioun, e avans que de quita la ciéuta pountificalo, fau pamens dire un mot d’aquéli poumpo religiouso que, dins noste jouine tèms, touto uno quingenado, metien Avignoun en aio. Nosto-Damo de Dom, qu’acò ‘s la metroupòli, e li quatre parròqui: Sant-Agricò, Sant-Pèire, Sant-Deidié, Sant-Sifourian se picavon à quau Entre que lou grand-clerc emé sa campaneto s’èro fa ausi dins li carriero ounte devié passa lou Bon Diéu e lou pàli, s’escoubavo, s’arrousavo, s’enramavo, se tendavo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1088,
+      "id": 118
+    },
+    {
+      "text": "E ansin me degrunavon lis un après lis autre, li raconte abituau de la routo d’Avignoun: lou Pont de la Foulié, ounte li Masc fasien lou brande; li Crousiero, ounte s’arrestavo; e la Crous de la Lègo e lou Roucas d’Aguïo. A la lin, arriberian is arenié de la Durènço. Li gròssis aigo, un an avans, avien empourta lou pont, e falié passa la ribiero em’ uno barco à traio. Aqui, atrouverian, qu’esperavon soun tour belèu mai de cènt carreto. Espererian coume lis autre, un parèu d’ouro, au trepadou; e pièi nous embarquerian, après avé coucha, en ié cridant: au mas! noste gros chin Jusiòu que nous Èro mai de miejour, quand fuguerian en Avignoun. Anerian establa, coume li gènt de noste endré, à l’Hôtel de Prouvènço, qu’èro uno pichoto aubergo de la plaço dóu Cors-Sant; e lou restant dóu jour, anerian bada pèr la vilo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 820,
+      "id": 119
+    },
+    {
+      "text": "Sabès, o sabès pas, qu’à la desfacho de Robespierre, li moudera toumbèron sus li bon patrioto e n’empliguèron li presoun. A Tarascoun, faguèron escala li presounié, tóuti nus coume de verme, à la cimo dóu Castèu, e d’aqui li fourçavon, à cop de baiouneto de sauta dins lou Rose pèr un fenestroun que i’a. Es alor que Viéutard, de Gravesoun, qu’es enca ‘n vido estènt demoura darrié pèr faire lou cabus, aproufichè ‘n moumen ounte l’avien leissa soulet, pèr quita sa camiso, que jitè sus lis autro; e ‘m’ acò anè s’escoundre dins un canoun de chaminèio de façoun que li bregand, quouro tournèron d’amoundaut e que coumtèron li camiso, creseguèron d’avé tóuti nega e s’enanèron. Mai Viéutard, la niue vengudo, éu, mountè sus lou castèu; pèr uno cordo qu’avié facho emé li vestimen dis autre, davalè bas tant que pousquè; cabussè dins lou Rose que travessè ‘n nadant; e venguè dins Bèu-Caire, pica à la porto d’un ami que ié dounè la retirado.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 940,
+      "id": 120
+    },
+    {
+      "text": "Fidèu is us ancian, ah! pèr éu la majo fèsto èro la vèio de Nouvè. Aquéu jour, de bono ouro, li bouié desjougnien. Ma maire ié dounavo, en chascun, dins uno servieto, uno bello fougasso à l’òli, uno roundello de nougat, uno jounchado de figo seco, un froumajoun, un àpi, em’ uno fiolo de vin kiue. E, quau d’eici e quau d’eila, tout acò gratavo camin, pèr ana pausa cacho-fiòo, dins sis endré, à sis oustau. Au mas noun demouravo que li pàuri marrit qu’avien ges de famiho; e meme, de parènt, quauque vièi jouvenome, arribavon de fes, au toumba de la niue, en disènt: « Bòni fèsto! venian Tóutis ensèn anavian querre, jouious, lou Cacho-fiò, que falié que fuguèsse, sèmpre, un aubre fruchau. L’adusian dins lou mas, tóuti arrengueira, lou plus einat d’un bout, iéu lou cago-nis de l’autre; tres cop ié fasian faire lou tour de la cousino; pièi, arriba davans la lar o paiasso dóu fiò, soulennamen moun paire i’escampavo dessus un E tóuti cridavian: Alègre! Alègre! Alègre! e ‘m’ acò se pausavo l’aubre sus li disié moun paire en se signant, e tóuti nous metian à taulo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1069,
+      "id": 121
+    },
+    {
+      "text": "Mai avans de s’endraia, anè devoutamen ausi la santo messo; e quau vous ai pas di qu’en sourtènt de la glèiso, trouvè sus lou lindau un bèu jouvènt que ié venguè: - Emai iéu, vès, coulègo: s’acò vous agradavo, poudrian faire routo ensèmble. Esperit emé l’ange prenguèron dounc lou Camin Roumiéu; e ‘m’ acò, tout gaiamen, quouro au soulèu, quouro à l’eigagno, en demandant soun pan e cantant de cantico, emé sa coucourdeto au bout de soun bastoun, arribèron enfin à la ciéuta de Quand se fuguèron pausa, faguèron si devoucioun à la grand glèiso de Sant-Pèire; vesitèron à-de-rèng tóuti li baselico, li capello, óuradou, rougadou e signadou; beisèron li relicle dis aposto Pèire e Pau, di vierge, di martir e de la veritablo Crous; basto, avans de reparti, anèron pièi vèire lou papo que ié dounè sa benedicioun. E ‘m’ acò Esperit, emé soun coumpagnoun, anèron se coucha souto lou porge de Or, veici qu’en dourmènt lou roumiéu veguè pèr sounge si fraire emai sa maire que brulavon dins l’infèr, e se veguè éu-meme asseta ‘mé soun paire dins la glòri eterno - Ai! moun Diéu! alor cridè, voudriéu bèn tira dóu fiò ma pauro maire emai mi - Ti fraire, es pas poussible, Diéu ié respoundeguè, car an desóubeï à moun coumandamen; mai ta maire, belèu, se pos, avans que more, ié faire faire tres carita.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1294,
+      "id": 122
+    },
+    {
+      "text": "Sant-Pèire vitamen barro e pestello e, boutant pièi la tèsto au fenestroun: - Eh! bèn, Jarjaio, ié dis en galejant, coume te troves! aro? - Ho! replico Jarjaio, es egau! se fuguèsse li biòu, auriéu pas regreta ma part de Lou coulègo Pignoulet, coumpagnoun menusié, subre-nouma « La Flour de Grasso », un tantost dóu mes de Jun, revenié, tout galoi, de faire soun Tour de Franco. Fasié ‘no caud que vous toumbavo; e, sa cano à la man garnido de riban, emé soun afustage, cisèu, rabot, masseto, plega darrié l’esquino dins soun faudau de telo, Pignoulet escalavo lou grand camin de Grasso, de mounte èro parti, poudié i’avé tres o Venié, coume es l’usage di Coumpagnoun dóu Devé, de mounta à la Santo- Baumo pèr vèire e saluda lou toumbèu de Mèste Jacque, paire di Coumpagnoun. Pièi, après avé ‘scri soun subre-noum sus uno roco, èro davala eilabas jusquo à Sant- Meissemin, pèr prene si coulour encò de Mèste Fabre, lou manescau que sacro lis Enfant dóu Devé. E, fièr coume un Cesar, lou moucadou sus lou coutet, em’ un flo d’escaleto de tóuti li coulour que ié floucavon lou capèu, e, pendoula is auriho, dous pichot coumpas d’argènt, fasié tibla la guèto dins quatre pan de póusso. N’èro tout blanc.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1200,
+      "id": 123
+    },
+    {
+      "text": "Es toujour qu’un jour d’estiéu, quauque tèms après meissoun, nòsti garbo se caucavon, e tóuti li gènt dóu mas èron dins l’iero que travaiavon. Autour dóu cavalin e de la mulataio, que trepavon, ardènt, à l’entour dóu gardian, i’avié belèu vint ome que, li bras estroupa, de dous en dous, de quatre en quatre, en caminant au pas, viravon lis espigo o levavon la paio emé de fourco de bos. Aquéu galant travai se fasié gaiamen, en Au daut de l’iero, pourta pèr li tres cambo d’uno cabro rustico, fourmado emé tres barro, i’avié lou drai penja. Dos o tres femo o fiho, emé de canestèu, jitavon dins l’arescle lou blad mescla de póusso, e lou mèstre (moun paire), revoi e d’auto taio, brandavo lou drai au vènt, en fasènt emé biais veni la moundiho au rode. E quand lou vènt moulavo, o que, pèr escoutado, de fes, boufavo plus, moun paire, emé lou drai estadis entre li man, se reviravo vers lou vènt; e serious, l’iue dins l’espàci, coume s’avié parla, ma fisto, à-n-un diéu ami, ié disié: « Anen, boufo, boufo, boufo, mignot! » e ‘m’ acò lou mistrau, óubeïssènt au patriarcho, zóu! alenavo mai en empourtant la póusso; e lou bèu blad de Diéu toumbavo en raisso rousso sus lou mouloun redoun qu’à visto d’iue mountavo entre li cambo dóu draiaire.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1243,
+      "id": 124
+    },
+    {
+      "text": "Nous serviguèron pas trop mau... E, sabès? Quand sias jouine, ami coume de gréu e countènt d’èstre en vido, i’a rèn coume la taulo pèr descadaula lou rire emé li I’a quaucarèn, tant soulamen, que nous fichimassejavo. Un garçoun en àbi negre, la tèsto empoumadado, emé dous favourit tau que de destaragnadou, èro à noste entour de-longo, la servieto sus lou bras, que nous quitavo pas de l’iue e, souto lou pretèste de chanja nòsti sieto, simplamen escoutavo tout ço que disian de fòu. - Voulès que lou faguen parti, aquel espèci de manèfle? diguè Daudet - Pèr ié metre un viedase! Daudet ié repliquè d’uno voues retrounanto. Lou chanjaire de sieto esperè pas soun rèsto, e dóu cop nous leissè tranquile.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 703,
+      "id": 125
+    },
+    {
+      "text": "E tout-d’un-tèms, pas mai geina qu’acò, vai prene courso e, lóugié coume un cat, passo de belèu tres pan la marco dóu plus fort que venié de sauta. Tóuti piquerian di - Sorte, dis, de Castèu-Nòu, que i’a de tant bon vin... N’avès jamai ausi parla, de E ‘m’ acò lou boujarroun mandè si dos man dins si pòchi, e li sourtiguè pleno de vièi bout de cigalo qu’emé galantarié, d’un biais risènt, delibera, éu à-de-rèng, nous E nous-àutri qu’encaro, jamai, pèr la pluspart avian ausa fuma (senoun coume lis enfant, quauco racino d’amourié), sus-lou-cop prenguerian en grand councideracioun lou nouvèu que fasié tant largamen li causo e que, n’avié tout l`èr, devié counèisse la Es ansin qu’emé Mathiéu, lou gènt autour de La Farandoulo, faguerian couneissènco au pensiounat Dupuy. E, uno fes que lou countave à noste ami Daudet, qu’amavo bravamen Mathiéu, acò ié plaseguè tant que, dins soun rouman de Jack, éu a mes à l’ounour de soun pichot prince negre la galantarié di bout de cigalo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 981,
+      "id": 126
+    },
+    {
+      "text": "Emé li calignaire venian peréu nous-autre, après li menestrié, au lume arrage di fanau, au boucan di petard, serpentèu e fusado, óufri nòstis óumage à la patrouno de Maiano... E me siéu agu di, à prepaus d’aquéli sant, ounoura sus l’autar, dins li vilo e vilage, d’aqui, d’eila, d’amount, d’avau, despièi de milo e de cènts an: qu’es, à coustat d’acò, nosto glòri moundano, de pouèto, d’artisto, de sabènt, de guerrié, tout-au-mai couneigudo de quàuquis amiraire! Vitour Hugo éu-meme, jamai aura lou culte dóu mendre sant de l’armana, sarié-ti que Sant-Gènt, que vèi, tóuti lis an, desempièi sèt cènts an de milié de fidèu veni lou suplica dins sa coumbo perdudo! E tambèn l’autour di Contemplations, uno fes qu’à sa taulo avien, quàuqui manèfle, pausa ‘questo questioun: I’a-ti, en aquest mounde, glòri superiouro à-n-aquelo dóu pouèto? Aquelo dóu sant, Anavian dounc, pèr Santo-Agueto, au bal vèire dansa lou coulègo Mathiéu emé Gango, Vileto e Lali mi cousino. Anavian, dins lou prat dóu moulin, vèire li locho, au li lucho d’ome e de miech-ome, ounte mèste Jesèto qu’èro regardadou, viravo e reviravo à l’entour di luchaire, apouncheira l’un contro l’autre, nus, li jarret tiblant, ié rapelant de-fes à voues sevèro lou precète: estrassamen de car es defendu.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1263,
+      "id": 127
+    },
+    {
+      "text": "Enfin lou noum de Magali, uno abreviacioun de Margarido, l’entendeguère un jour que m’enveniéu de Sant-Roumié. Uno pastoureleto gardavo soun avé long de la - O Magali! vènes pancaro? ié cridè ‘n garçounet que passavo au camin... E tant me pareiguè poulit aquéu noum linde que sus-lou-cop cantère: Es quauque tèms après que, proumiero brumour de ma claro jouvènço, aguère la doulour de perdre moun vièi paire. I darrièri Calèndo, éu que la fèsto de Nouvè emplissié toujour de joio, aro devengu avugle, l’avian vist d’uno tristesso que nous faguè traire peno. De-bado, sus la taulo e sus la napo blanco, lusien, coume d’usage, li candèlo sacrado. De-bado i’aviéu pourgi lou vin cue pèr dire: alègre! En tastejant, pecaire, emé si grand bras maigre, s’èro asseta sènso muta. E aguè bèu ma maire, i’óufri, un après l’autre, li fricot de Nouvè, lou plat de cacalaus, lou muge dóu Martegue, lou nougat amelen e la fougasso à l’òli: lou paure vièi avié soupa, pensamentous, dins lou silènci. Uno oumbro avans-courrèiro de la mort, i’èro subre. Avié perdu la visto en plen.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1065,
+      "id": 128
+    },
+    {
+      "text": "Quau me rendra lou chale, l’emparadisamen de moun amo ignourènto, quand, talo qu’uno flour, se durbié touto novo i cansoun, i sourneto, i coumplancho, i fablèu, que ma maire en fielant, iéu amata sus si geinoui, me disié, me cantavo en douço lengo de Prouvènço: lou Pater de Calèndo, Marìo-Madaleno la pauro pecairis, lou Mòssi de Marsiho, la Pourqueireto, lou Marrit Riche, e tant d’àutri recit e legèndo e cresènço de nosto raço prouvençalo, que bressoulèron moun jouine age d’un balans de pantai e d’esmougudo pouësìo! Après lou la de soun nourri, m’abarissié, la santo femo, ansin Vuei, em’ aquéu sistèmo estrechan e brutau que vòu plus teni comte dis alo de l’enfanço, dis istint angelen de l’imaginacioun neissènto, de soun besoun de meraviho, que fai li sant e lis eros e li pouèto e lis artisto, à l’enfantoun, vuei, entre naisse, emé la sciènci nuso e cruso vous i’entre-secon amo e cor... Eh! pàuri tantalòri! emé l’age e l’escolo, e subre-tout l’escolo de la vido vidanto, s’apren bèn que trop lèu la verita escasso, e la desilusioun analitico, scientifico, de tout ço que nous encantè.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1097,
+      "id": 129
+    },
+    {
+      "text": "A la longo pamens, arribavian en visto dóu Castèu d’Avignoun, lou lavàssi calè, lou tèms s’esclargiguè, lou camin s’eidraquè; se remountè sus li carreto; e, peraqui vers li quatre ouro, tout-d’un-cop veguerian s’enaura, dins l’azur de la mar e dóu cèu, emé li tres fenèstro de soun clouchié rouman, si merlet rous e sis ancoulo, la glèiso di Sànti- I’aguè qu’un crid: « O gràndi Santo! » car aquéu santuàri, esmara peralin au founs dóu Vacarés, dins li sablas de la marino, es, coume dirian, la Mèco de tout lou Gou dóu Lioun. E aqui, ço que frapo, pèr sa grandour armouniouso, pèr soun arcas desmesura, es aquéu plan-païs de terraire e de mar ounte l’iue, miés qu’en-liò pòu embrassa lou ciéucle - Arribaren just à tèms pèr davala li Caisso, Lamourous nous diguè, car es pas que noun sachés, messiés, que li Bèu-Cairen avèn lou dre, avans que tóuti, de vira lou palanc Pèr la coumprenesoun d’aquéu prepaus, fau dire que li relicle venera de Marìo Jacoubè, de Marìo Saloumè e de sa servènto Saro soun rejoun, sus l’arc-vout dóu Cor e de l’absido, dins uno capello auto, d’ounte, pèr un engrau que douno dins la glèiso, em’ uno tourtouiero, la vèio de la fèsto, li davalon plan-plan sus la foulo abramado.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1204,
+      "id": 130
+    },
+    {
+      "text": "Anavo, pèr eisèmple, à Gravesoun, à Tarascoun, à Barbentano o à Sant-Pèire, atrouva ‘n meinagié qu’avié de drole: Vous fau assaupre, ié venié, qu’ai dubert un pensiounat à Sant-Michèu de Ferigoulet. Avès aqui, à vosto pourtado, uno eicelènto istitucioun pèr aprene vòstis enfant e ié faire passa si classo. - Hòu! moussu, respoundié lou paire de famiho, acò ‘s bon pèr li gènt riche: nous- àutri sian pas fa pèr douna tant de leituro, coume acò, à nòsti chat... N’en saubran - Vès, fasié moussu Dounat, i’a rèn de plus bèu que l’estrucioun. Noun tirés peno pèr la pago: me baiarés pèr an tant de saumado de blad, tant de barrau de vin o tant de E lou bon meinagié mandavo si pichot à Sant-Michèu di Ferigoulo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 709,
+      "id": 131
+    },
+    {
+      "text": "Mai pas pulèu, d’ageinouioun, iéu à la siho m’amourrave, flòu! emé sa manasso Rouquet me cabussavo la tèsto jusquo còu; e, barboutant, avugle, lou péu emé lou mourre blanc de la, regoulant, espeloufi, courriéu coume un cadèu, dins l’erbo me viéutoula e m’eissuga, en jurant entre iéu que m’atrapariéu plus... d’aqui-que - Pichot, ai trouva ‘n nis de pico-taloun: se me vos faire courbo-seto, iéu gardarai -Ve, l’ome me fasié, veses aquelo borno au daut d’aquéu gros sause? es aqui que E me courbave, la tèsto contro l’aubre. E ‘m’ acò, en semblant de m’escala dessus, lou farcejaire, dins l’esquino, me bacelavo dóu taloun. Ansinto s’entrinè, au mitan di galejage de nòsti travaiadou, e n’ai pas de regrèt, Coume èro gai, comme èro san, aquéu mitan de rusticage! Chasco sesoun de l’an renouvelavo li travai. Lou labour, li semènço, la toundesoun, la sègo, li magnan, li meissoun, lis iero, li vendèmi emé lis óulivado, ié desplegavon à mis iue lis ate majestous de la vido ruralo, eternalamen duro, mai eternalamen independènto e siavo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1036,
+      "id": 132
+    },
+    {
+      "text": "Oh! la taulado santo, veritablamen santo, emé, tout à l’entour, la famiho coumplèto, pacifico e urouso! En liogo dóu calèu, pendoulant de la moco, que, dins lou courrènt de l’an, menut, nous fasié lume, aquéu jour, sus la taulo, brihavon tres candèlo... E lou mou, se viravo, pèr cop, de-vers quaucun, acò ‘ro uno marrido marco. De chasque bout, dins un sietoun, verdoulejavo un bruei de blad que, lou jour de santo Barbo, s’èro mes greia dins l’aigo. Sus la triplo touaio blanco pareissien, à-de-rèng, li plat sacramentau: li cacalauso, que chascun, em’ un long clavèu nòu, tiravo dóu cruvèu: la merlusso fregido, lou muge emé d’óulivo, la cardo, li cardoun, l’àpi à la pebrado, segui d’uno sequèlo de privadié requisto, coume fougasso à l’òli, passariho, nougat, poumo de paradis; e, au-dessus de tout, lou gros pan calendau, que noun s’entamenavo qu’après n’avé douna, religiousamen, un quart au proumié paure que passavo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 925,
+      "id": 133
+    },
+    {
+      "text": "Adóufe Dóumas à Maiano - Sa sorre Lauro - Moun proumié viage à Paris - Leituro de Mirèio en manuscri - La letro de Dóumas à la Gazeto de Franço - Ma presentacioun à Lamartino - Lou 40me entre-tièn de literaturo.- L’an venènt (1856), pèr Santo-Agueto, qu’acò ‘s la voto de Maiano, iéu reçaupère la vesito d’un pouèto de Paris que l’asard (o pulèu la bono estello di felibre) aduguè, à soun ouro, dins l’oustau de ma maire. Ero Adóufe Dóumas: uno bello figuro d’ome de cinquanto an, palinasso, ascetico, emé d’iue negre plen de flamo, péu long e blanquinèu, moustacho bruno e barbihoun, e pèr acoumpagna sa voues resclantissènto, gèste superbe en l’èr de-longo. Quand caminavo, aut de taio e tirassejant la cambo (car èro, ai-las!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 728,
+      "id": 134
+    },
+    {
+      "text": "E acò, tóuti li jour, dins la niue recoumençavo, talamen, vous dirai qu’aquéli gènt se dounèron pòu, e faguèron Sant-Michèu en disènt i vesin: « A l’oustau de Glaudihoun, que ié couche quau voudra: touto la niue ié trèvo! » E s’enanèron. Li vesin, proun esfraia, vouguèron tambèn vèire ço que se passavo aqui; e li plus courajous, emé de fourco e de fusiéu, venguèron à-de-rèng coucha à l’oustau de Glaudihoun. Mai pas pulèu avien amoussa lou calèu, lou fourfoui dóu malur recoumençavo; li pergamin se masentavon, e jamai res poudié vèire d’ounte acò Li vihaire, en se signant, disien proun li paraulo que se dis i trevant pèr lis Ah! pas mai! ié fasié autant coume de bren i cat, e lou brut s’entendié toujour la memo causo; e au four, au moulin, i lavadou à la vihado parlavon plus que di trevant.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 799,
+      "id": 135
+    },
+    {
+      "text": "E, ma fisto, proun renouso, la femo coupè ‘n crouchoun e l’anè pourta au paure. L’endeman, lou bon roumiéu tourno mai à la porto de soun oustau peirau e se met - Au noum de Diéu, mestresso, fasès un pau d’óumorno au paure pelerin! - Sias mai aqui! cridè la vièio. Lou sabès pas qu’aièr vous an douna? Aquéli - Ai! las! mouié, diguè lou bon vièi Archimbaud, aièr mangères pas, tu? E vuei manges pas mai! Quau saup se noste drole noun s’atrovo peréu dins la memo misèri! E ‘m’ acò la mouié, tourna-mai pertoucado, vai coupa ‘n autre crouchoun e lou Lou subre-endeman enfin, Esperit revèn mai à la porto de si gènt e dis: - Au noum de Diéu, poudrias pas, mestresso, douna la retirado au paure pelerin? - Nàni! cridè la vièio sartan. Anas-vous-en coucha mounte lojon li gus... - Ai! las! mouié, diguè lou bon vièi Archimbaud, douno-ié la retirado. Quau saup se noste enfant, noste paure Esperit, cour pas bourrido en aquesto ouro à la rigour dóu - O, as resoun, diguè la maire. E i’anè tout-d’un-tèms durbi la porto de l’estable; e lou paure Esperit, sus l’apaiage, darrié li bèsti, s’enanè jaire en un cantoun.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1107,
+      "id": 136
+    },
+    {
+      "text": "E, lèu, despleguè sus si geinoui un pano-man de telo rousso; sa maire, d’un cabas, sourtiguè de pan, de figo, un arange, de dàti, un pau de saupresado. E sèns ceremounié - Messiés, à voste service, nous faguè la gènto Alardo en plantant si ratouno dins E Matiéu que, dins soun carnié, avié adu dos boutiho de bon vin de la Nerto, n’en destapè uno, e zóu! après agué manja ‘no boucado chascun, tóuti à-de-rèng, Alardo, sa maire, iéu, Mathiéu emé lou carretié, beguerian, l’un après l’autre, dins lou meme Pièi, pèr nous desredi, coume erian davala ‘n moumen de la carreto: - Quau es aquelo chato, qu’a tant bon biais, aqui? demanderian à Lamourous. - De la vèire, nous faguè (à miejo voues) lou carretié, dirias pas que i’a peta ‘n ciéucle, pas verai? E pamens, messiés, despièi tres mes que soun cadet l’a abandounado, - L’avié raubado, lou marrias! E ‘m’ acò l’a plantado aqui, pèr n’ana vèire uno autro, laido coume pecat, mai... qu’a d’argènt à jabo. E Alardo, la flour de nosto Coundamino, sa maire la meno i Santo pèr la destalenta, se pòu, o la gari.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1056,
+      "id": 137
+    },
+    {
+      "text": "E aguère bèu dire, afourti, encaro que i’ avié rèn de plus verai... De-bado. Res L’abadié desvalabrado - Moussu Dounat - La capeleto d’or - La Mountagneto - Frai Felip - La proucessioun di fiolo - Sant Antime de Gravesoun - Quand mi gènt aguèron vist que la jouguino me desaviavo e que de-longo mancave l’escolo pèr ana guseja tout lou jour dins lou champ emé li païsanot, se diguèron: fau l’embarra. E ‘m’ acò ‘no matinado, sus lou carretoun dóu mas, li doumestique carguèron un pichot lié plegadis, uno caisso de sapin pèr metre mi papié, emé, pèr estrema mis abihage e mi besougno, uno maleto recuberto de pèu de porc emé soun péu; e, gounfle, partiguère, emé ma maire que m’assoulavo e lou gros chin Jusiòu que nous acoumpagnavo, pèr un endré qu’apellon Sant-Michèu de Ferigoulet.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 784,
+      "id": 138
+    },
+    {
+      "text": "Mai en intrant au Grand Vilage, osco! aqui s’aplicavon pèr faire brusi lou fouit! Te fasien un repetun, un chaplachòu, un cli-cla-cla, que semblavo que trounavo. « An! disien li Parisen en tapant di dos man sis auriho que siblavon, li Prouvençau arribon! camino, tron de l’èr! as pòu que terro te manque? » Fau dire que d’aquéu tèms, pèr faire peta la chasso, li roulié de Prouvènço, acò ‘ro li flambèu! Manjo-car, de Tarascoun, dins l’afaire d’uno lègo, en fasènt li quatre fouit, uno fes avié gausi quatre liéuro de cordo fino; Mèste Imbert, de Bèu-Caire, rèn qu’em’ un cop de fouit, moucavo uno candèlo sènso l’amoussa; lou Nieret, de Castèu-Reinard, destapavo uno fiolo, sènso la ficha au sòu; enfin, lou Gros Charloun, de la Pèiro- Plantado, d’un soulet cop de chasso, dison que desferravo un miòu di quatre pèd.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 817,
+      "id": 139
+    },
+    {
+      "text": "Se nous empressiounè, aquelo respelido dóu passat prouvençau emé si vièii joio naïvo e tresanado, poudrias un pau lou vèire au cant desen de Calendau, ounte lis avèn Vous trouvarés qu’à-z-Ais, quàuqui mes après que i’ère, un tantost que fasiéu ma passejado sus lou Cours, oh! couquin de bon goi! vau vèire s’enarca, à dre de la Font - Es pas de couiounado, me faguè ‘ntre me vèire! Mathiéu, emé soun plan, aquelo aigo caudejo, moun ome; e ‘s bèn lou cas de dire eici: aquelo tubo! - Eh! bèn, dis, me siéu di: D’abord que Mistralet es à-z-Ais, que fai soun Dre, tu - Acò, ié vène, es bèn pensa; e pos te crèire, Ansèume, que, ve, n’en siéu ravi... - O, me diguè ‘n risènt, ai passa coume la trempo, sus la raco di rasin.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 719,
+      "id": 140
+    },
+    {
+      "text": "Carreto Ramado, un càrri de verduro atala de quaranto o de cinquanto bèsti, encaparraçounado coume au tèms di tourné, garnido de soubarbo, de caberto broudado, de plumet, de mirau, emé de luno de letoun! E s’encanto lou fouit, valènt-à-dire qu’à l’encant meton publicamen la digneta de Priéu: “ A 30 franc lou fouit! à 100 franc! à Aquéu que mounto lou plus aut a lou reinage de la fèsto. La Carreto Ramado vai à la proucessioun, emé sa cavaucado de bouié trefouli que marchon fieramen, cadun contro sa bèsti, en fasènt peta lou fouit. Sus lou càrri, acoumpagna d’un tambour e d’un fifre, li Priéu soun asseta. Li paire, sus li miòu, escambarlon sis enfant, qu’afeciouna s’arrapon is estello di coulas. An, li coulas, à sa capoucho, tóuti uno tourtihado emé lou bandeiroun, en papié, de Sant-Aloi. E, pourta sus l’espalo dis ancian Priéu, lou Sant, lou grand Sant-Aloi, en glòri, coume un evesque d’or, s’avanço, la crosso à la man.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 932,
+      "id": 141
+    },
+    {
+      "text": "Mai avans de quita Sant-Michèu di Ferigoulo, fau dire un mot pamens de ço que l’antico abadié après nous autre devenguè. Après èstre retoumbado tourna-mai à l’abandoun uno dougeno d’an, un mouine blanc, lou paire Eimound, à soun tour la croumpè (1854), e ié restabliguè, souto la lèi de sant Nourbert, I’ordre de Prémontré, que n’eisistavo plus en Franço. Gràci à l’enavans, i predicacioun, i quisto d’aquel arderous zelaire, lou pichot mounastié prenguè de proupourcioun grandasso. Que noun-sai de bastisso, em’ un courounamen de muraio carnelado, se i’ajustèron à l’entour. Uno glèiso nouvello, magnificamen ournado, i’aubourè si tres nau emé si dous clouchié, un centenau de mouine o de fraire counvers pouplèron li celulo, e, tóuti li dimenche, li poupulacioun vesino à carretado ié mountavon pèr countempla la poumpo de sis óufice E bèn tant poupulàri èro adounc devengudo l’abadié di Paire Blanc que, quand la Republico faguè barra li couvènt (I880), un milié de païsan o d’abitant de la planuro se ié venguèron estrema, pèr proutesta ‘n persouno contro l’eisecucioun di decrèt radicau.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1092,
+      "id": 142
+    },
+    {
+      "text": "Quand se parlo dis enfant! Coume, tóuti li jour, nous rescountravian ensèn, asseta l’un contro l’autre, que, sènso pensa ‘n rèn, nous toucavian lou couide, e que nous coumunicavian, dins la michour de noste alen, à l’auriho, au chut-chut, nòsti pichòti riado, finiguerian-ti pas, moun Diéu, perdounas-me!, pèr nous rèndre amourous? Mai èro un amour, acò, talamen innoucènt e talamen empren d’aspiracioun mistico que, se lis Ange amoundaut esprovon entre éli d’afecioun reciproco, segur dèvon èstre ansin. Avian douge an, l’un coume l’autre: l’age de Beatris, quand Dante la veguè; e aquelo vesioun de la vierginello en flour, es elo, cresès-lou, qu’a fa lou paradis dóu grand pouèto flourentin. I’a ‘n mot, dins nosto lengo, qu’espremis mai que bèn aquéu delice d’amo qu’enébrio li parèu dins la primo jouvènco: nous agradavian. Nous fasian gau, quand nous vesian. Nous veguerian jamai, es verai, que dins la glèiso; mai, rèn que de nous vèire, noste cor èro plen. Ié risiéu, me risié; unissian nòsti voues dins li mémi cantico d’amour, d’acioun de gràci, vers li mémi mistèri enauravian, naïve! nosto fe voulountouso... Oh! aubo de l’amour, ounte jouiousamen s’espandis l’innoucènci, talo que la margarideto dins la fresquiero dóu riéu, o aubeto d’amour, aubo puro envoulado!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1276,
+      "id": 143
+    },
+    {
+      "text": "Quand i’avié ges de sèti li fielarello, uno davans l’autro, pourtant la fielouso au las, sa fielouso emboutido, couifado de canebe, viravon plan-planet autour dóu vihadou, E ‘m’ acò se disié de conte interroumpu souvènt pèr un esbroufe dóu bestiau. un Un que se fasié souvènt, d’aquéli conte de vihado, èro aquest que vau vous dire, pèr-ço-qu’un de mis ouncle, lou bon moussu Jirome, éu, i’avié jouga ‘n role e qu’es un Vers 1820 o 25, vai pas tant just, mouriguè à Maiano un nouma Glaudihoun; e coume n’avié ges d’enfant, soun oustau restè barra belèu cinq o sièis mes. Pamens un lougatàri à la fin ié venguè resta e li fenèstro se durbiguèron. Mai, noum de sort! veici que, quàuqui jour après, courreguè dins Maiano uno rumour: à l’oustau de Glaudihoun trevavo. Lou nouvèl estajan emé sa femo entendien varaia e fourfouia touto la niue, un brut particulié: semblavo que boulegavon de papié, de pergamin. Entre atuba de lume, s’entendié plus boulega; e tre que l’amoussavon, zóu! entendias crussi misteriousamen. Aguèron bèu, li lougatàri, furna, vira, tourna dins tóuti li cantoun, escoubeta l’armàri, regarda souto lou lié, souto lis escalié, sus li post de l’eiguié, veguèron rèn de rèn que pousquèsse esplica li fourfouiage de la niue.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1240,
+      "id": 144
+    },
+    {
+      "text": "Jan de Milan es lou flambèu dis astre. Jan de Milan, un jour, emé lis Ensigne e la Pouciniero, èron esta, se trovo, counvida pèr ùni noço (aquéli de la bello Magalouno que tout-aro n’en parlaren). La Pouciniero, matiniero, partiguè, se dis, proumiero, e prenguè lou camin aut; lis Ensigne, qu’es tres fiho escarrabihado, coupèron plus bas e finiguèron pèr l’avé; Jan de Milan, qu’èro resta ‘ndourmi, quand se levè, prenguè l’acourchi, courreguè après lis Ensigne e, pèr lis arresta, ié mandè soun bastoun de-rabaiado... Ço que fai que lou Faus-Margue es apela despièi lou Bastoun de Jan de Milan. E aquelo, eilalin, que vèn de naseja e que rebalo la mountagno? Es lou Panard. Eu peréu èro di noço; mai coume es goi, pecaire, fai pas forço de E aquelo que trevalo, eila sus lou pounènt, abelugado coume uno nòvio?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 812,
+      "id": 145
+    },
+    {
+      "text": "E’ m’ acò, sus la taulo, meteguère li nèulo, pèr representacioun d’Aquéu que se Contro li nèulo, meteguère un vèire de vin pur, pèr representa la Justiço. Davans l’Amour e la Justiço, meteguère un got d’aigo: representavo lou fautible. E darrié lou fautible, boutère un got de vin e d’aigo treboula: representavo Agante alor la bleto; e, à la bono fe, umblamen ié demande, à Diéu, l’Amour Bon! alor demandère se l’avien aquita… La bleto, entre mi det, virè, jouiouso, que - Misè, dise à la servènto, poudès ana dourmi tranquilo: lou fautible es aquita. - Perqué ié sian, misè me vèn, Fourtunat, demandas un pau sus li temouin. Reprene en man la bleto, e demande au vin pur o, s’amas miés, à la Justiço, se li Umblamen demandère s’èron persecuta. Me fuguè respoundu qu’èron persecuta, Eh! bèn, quau vous a pas di que, l’endeman, messiés, lou capelan d’Aurèu venguè nous afourti tout ço qu’avian vist la vèio! Avien, à Carpentras, aquita lou fautible e Mai, anen, devès dire que siéu un bèu barjaire... A Diéu-sias! diguè lou vièi en s’aubourant de sus la ribo, e anas plan, aqui au fres, de pas vous sang-glaça.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1110,
+      "id": 146
+    },
+    {
+      "text": "Mai nous-autre, aquel an, en acampant lis iòu, coume de bedigas qu’erian, Quand, lou sero, aguerian, dins nosto coutarié, manja la car-salado e seca proun de fiolo, sourtiguerian dóu cabaret, coume se fai dins li vilage, en mancho de camiso emé la servieto au còu; e au son dóu tambour, li fanau à la man, danserian la carmagnolo, en cantant la cansoun tant à la modo d’aquéu tèms: Pièi brulerian Carementrant, criderian: vivo Mariano! en bandejant en l’èr nòsti L’endeman en me levant, e fuguère, aquéu jour, pas di plus matinié, moun paire que m’esperavo, serious e soulenne coume i gràndi circoustànci, me diguè: -Ai! ai! ai! me soungère, aqueste cop ié sian, i bouiènt de la bugado! E sourtènt de l’oustau, éu davans, iéu darrié (que n’en disiéu pas uno), me menè vers un valat qu’èro à belèu cènt pas dóu mas, e m’aguènt fa, contro éu, asseta sus la - « Que m’an di? qu’aièr aviés fa bando em’ aquéli marrias que bramon: vivo Mariano! qu’aviés dansa la carmagnolo! qu’avias fa flouteja vòsti taiolo roujo?... Ah!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1017,
+      "id": 147
+    },
+    {
+      "text": "Dau.! aquest cop! encaro un cop.! enca ‘n bon cop! zóu, que tout pete! la.! Aguènt, lou cousin Tourreto, d’acò di sounjadou, Ii costo un pau en long, avié, touto sa vido pantaia d’avé ‘no plaço emé gaire de travai... - Voudriéu, dis, la plaço de coumtaire de merlusso, à Marsiho, dins quaucun d’aquéli grand magasin ounte, quand li desbarcon, un ome d’asseta, en coumtant li dougeno, pòu gagna, me siéu leissa dire, si 1200 franc pèr an. Aquéu paure vièi Majour! Mouriguè, coume tant d’autre, sènso avé pouscu vèire la realisacioun de soun pantai sus li merlusso. Oublidarai pas nimai, entre mi coulabouradou o, tant vau dire, mi fautour de pouësìo mireienco, lou bouscatié Sibour: un brave Mountfrinen abilha de velout qu’emé soun grand fauciéu venié, tóuti lis an à!a fin de l’autouno, chapla poulidamen nòsti fardo de sause. Quant d’óusservacioun justo, dóu tèms que chapoutavo e qu’apariavo si barroun, me fasié sus lou Rose, si courrènt, sus si revòu, e sus si lone, e sus si mueio, e sus sis auve e sus sis isclo, pièi sus la sóuvagino que trèvo si levado, li luio que s’ajasson dins lis aubre cura, li vibre que vous copon de trounc coume la cueisso, e sus li debassaire que, dins li Segounau, pènjon si nis i brout dis aubo, e sus li panieraire e vergantié de Valabrego!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1278,
+      "id": 148
+    },
+    {
+      "text": "Se, à vint o trento an, quand l’amour nous pessugo pèr uno bello chato poumpouso de jouinesso, quauque fachous anatoumisto venié nous parla coume eiçò: “ Vos saupre lou verai d’aquelo creaturo que te fai tant de gau? Se la car ié toumbavo, veiriés uno mort-peleto! ”Cresès pas que subran lou mandarian rascla de bouto? Eh! Diéu! se falié toujour cava lou pous de verita, autant vaudrié tourna, ma fisto, au Mejan-Age, que, partènt dóu countràri de la sciènci mouderno, èro arriba à la memo Mai basto. Pèr douna idèio dis imaginacioun, trèvo, babau e glàri, qu’autour de moun enfanço, iéu, aviéu vist fantaumeja, en quauco part ai mes en sceno uno cresènto d’aquéu tèms, qu’ai couneigudo, Dono Renaudo... E aquéu moussèu, eici, m’es avis que La vièio Renaudo se souleio, assetado sus un plot, davans soun oustalet. Es passido, acabassido e frounsido, pecaire, coume une figo pecouieto. De tèms en tèms, coucho li mousco que se pauson sus soun nas; pièi, bevènt lou soulèu, s’atrevaris e - Eh! bèn, tanto Renaudo, aqui au bon soulèu, fasès un pichot som?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1052,
+      "id": 149
+    },
+    {
+      "text": "Enfin lou vesin Savié, un païsan erbourisaire, que me disié li noum (en lengo prouvençalo) e li vertu di planto, de tóuti lis erbage de Sant-Jan e de Sant-Ro. Bèn tant que moun escachoun de boutanico literàri, iéu me l’aprenguère ansin... Urousamen, car m’es avis, sènso vougué li mespresa, que nòsti proufessour dis escolo auto e basso sarien esta, segur, entre-pres pèr me dire ço qu’èro uno caussido o bèn uno cardello. Coume uno boumbo, entre-mitan d’aquéu prouèmi de Mirèio, esclatè la nouvello dóu cop d’estat dóu 2 desèmbre 1851. Emai fuguèsse pas d’aquéli fanati en quau la Republico tèn liò de religioun e de justiço e de patrìo, emai li jacoubin pèr soun intouleranço, pèr sa manìo dóu nivèu, pèr lou secun, lou brutalige de soun materialisme, m’aguèsson maucoura e blessa mai d’un cop, lou crime d’un gouvèr, qu’estrassavo la lèi pèr éu jurado, m’endignè. M’endignè, car cepavo tóuti mis ilusioun sus li federacioun futuro, que la Republico en Franço poudié n’èstre lou grouün.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 988,
+      "id": 150
+    },
+    {
+      "text": "Patatin! patatòu! la bouto se crèbo, la co m’escapo... Veguère aperalin moun loup que tabouscavo e, regardas li causo! me trouvère au Pont Nòu, sus la routo que vai de Maiano à Sant-Roumié, à-n-un quart d’ouro de noste mas. Fau crèire que la bouto avié Es pas necite de vous dire qu’après de tàlis acipado, la famouso redorto noun me fasié plus gaire pòu. En courrènt, coume s’aviéu lou loup encaro après, m’envenguère à l’oustau. Darrié lou mas, long dóu camin, moun paire picavo de mouto. Se redreissè ‘n - Ah! boujarroun! courre lèu vers ta maire, que noun a rèn dourmi d’aniue. Iéu vers ma maire courreguère... Pan pèr pan, à mi gènt, racountère tout caud ço que venié de m’arriba. Mai quand fuguère au rode di voulur, de la bouto emé dóu - Eh! badau, me diguèron, veses pas qu’es la pòu que t’a fa sounja tout acò?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 819,
+      "id": 151
+    },
+    {
+      "text": "Bevèn un cop, nous refrescan... E, tóuti póussous, anan encò dóu Maire de Lou Maire, un grand rafard, mourescaud e grela coume uno sartan castagniero, cresènt d’avé afaire emé d’escapamounte, nous fai, brutalamen, coume quaucun que l’on - Voudrian, moussu lou Maire, iéu diguère, estènt que vosto aubergo se devino barrado, que dounessias au cafetié l’autourisacioun necito pèr nous servi à manja. - Que diable! sian d’aqui d’Avignoun... Se se pòu plus faire un pas ni manja ‘no - An! pas tant de resoun! vous anarés esplica, acoumpagna de mi dous gàrdi, Acoumençavo, eiçò, jan-fouire! de plus tant nous amusa, d’autant mai, tron de - Moussu lou Maire, Aubanèu diguè, se voulias nous coundurre vers moussu lou - Vès, moussu lou Curat, regardas se couneissès dis, aquéli particulié.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 781,
+      "id": 152
+    },
+    {
+      "text": "La gando pèr campèstre - Li bestiàri - La vièio de Pamparigousto - Vers li vuech an, e pas pulèu, emé moun saquet blu pèr ié pourta moun libre, moun caièr e ma biasso, me mandèron à l’escolo... Pas pulèu, e Diéu merci! car, en ço que pertoco moun desvouloupamen naturau e courau, I’ensignamen, la trempo de ma jouino amo de pouèto, n’ai mai aprés, segur, dins li cambareleto de moun enfanco De noste tèms, lou pantaiage de tóuti li petous qu’anavian à l’escolo, èro de... faire un plantié. Aquéu que n’avié fa quaucun, èro regarda pèr lis autre coume un fenat, Un plantié, es pas que noun lou sachés, es I’escapado que l’enfant fai liuen de l’oustau peirau, sènso averti si gènt e sènso saupre ounte vai. Li pichot Prouvençau, ansin, prenon d’aquelo erbo, s’an coumés quauco fauto, quauque mal-adoubat, quauco desóubeïssènco, que ié fague prevèire, en rintrant à l’oustau, quauco bono endoursado.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 896,
+      "id": 153
+    },
+    {
+      "text": "E, au jour di, entre vuech e nòu, à Sant-Grabié nous trouverian tóuti, au pèd de la gleiseto que gardo la mountagno. Vers Sarrasino chiquerian uno agrioto à l’aigo-ardènt. - N’avèn encaro forço, au cantounié demanderian, pèr nous gandi à-n-Arle? - Quand sarés, nous respoundeguè, dre de la Toumbo de Rouland, n’aurés encaro - Eilalin, ounte vesès uno floto de ciprès, sus la dougo dóu Vigueirat. - Ero, pèr ausi dire, un famous capitàni dóu tèms di Sarrasin... Li dènt, boutas, Salut, Rouland! Aurian pas di, entre grata camin, de rescountra vivènto, au mitan di gara e dis estoublo dóu Trebon, la legèndo e la glòri dóu coumpagnoun de Carle- Magne... Mai zóu! patin-patan, davalerian en Arle, ounte l’Ome de Brounze picavo li miejour, quand, tóuti blanc de póusso, intrerian à la porto de la Cavalarié. E, à l’hotel Pinus, coume avian, vous dirai, lou vèntre à l’espagnolo, anerian tout-d’un-tèms dina.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 903,
+      "id": 154
+    },
+    {
+      "text": "Ah! dise pas de noun: n’i’avié de marrit, tambèn d’aquéli ci-devans. E la Revoulucioun, à la bello coumençanço, nous enjouliavo proun... Soulamen, à cha pau, acò se degaiè; e N’i’a proun pèr vous faire vèire l’efèt proudu sus iéu, e dins nòsti vilage, lis evenimen de 1848. D’en proumié, aurias di que tout èro à plan-pèd. Pèr li representa dins l’Assemblado Naciounalo, li Prouvençau, mai-que-mai sage, avien manda la crèmo de ço que i’avié de bon: d’ome coume Beryer, Lamartino, Lamennais, Béranger, Lacordaire, Garnier-Pagés, Marie, em’ un porto-fais pouèto que ié disien Astouin. Mai li treblo-coumuno, li seitàri dóu diable, lèu empouisounèron tout. Li Journado de Jun, emé si chaple e si massacre, espaventèron la Nacioun. Li moudera se refrejèron, lis enrabia s’encaïnèron; e iéu, sus mi pantai de republico platounico, uno brumour s’escampihè.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 851,
+      "id": 155
+    },
+    {
+      "text": "Dounc, entre pressenti ço que ié pènjo à l’auriho, mi margoulin planton aqui l’escolo e paire e maire... Arribe ço qu’arribe, parton à la bello eisservo, e vivo la liberta! Es causo deliciouso, incoumparablo, en aquel age de se senti mèstre assoulu, la brido sus lou còu e li quatre pèd blanc! E zóu dins li garrigo! e zóu, à la palun! e zóu, pèr Soulamen, pièi vèn la fam. S’es un plantié d’estiéu, encaro, coucagno! I’a li taulo de favo, lis orto emé si poumo, si pero e si pessègue, lis aubre d’agrioto que vous prenon pèr l’iue, li figuiero que porjon si figo pènjo-còu, li meloun ventraru que cridon: manjas- me, e pièi li bèlli vigno, li claretiero roussinello, ha! me sèmblo que li vese. Mai s’es un plantié d’ivèr, adounc se fau endustria... Parbiéu! I’a de gourrinot que passon pèr li mas ounte soun pas couneigu e ié demandon la retirado. Pièi, se podon, li gusot! raubon lis iòu i galinié; e meme li nisau, hau! li bevon tóuti crus.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 943,
+      "id": 156
+    },
+    {
+      "text": "Lou bon mèste Archimbaud, l’endeman de matin, sono lou jouine: - Esperit, moun enfant! aprocho-te, ié fai. Ai proumés au bon Diéu de faire un roumavage à Roumo... Mai siéu vièi coume terro! pode plus ana ‘n guerro!... Te ié mandariéu proun à ma plaço pecaire! Es que siés un pau jouine, sabes pas lou camin; es - Vole pas que ié vagues! la maire adounc cridè. Aquéu vièi repepiaire, emé sa guerro, emé sa Roumo, nous fai veni la fernetogo: pas proun que fau l’ausi rena, piéuta! gouissa tout l’an! fèbre-countùnio, aro mandarié perdre aquéu bèl innoucènt! - Maire, diguè lou jouine, la voulounta d’un paire es un ordre de Diéu: quand Diéu E Esperit, sènso mai dire, anè tira de vin dins uno coucourdeto, meteguè quàuqui cebo em’ un panoun dedins sa biasso, carguè si soulié nòu, cerquè dins la bouscatierco un bon bastoun de roure, boutè sa roupo sus l’espalo, embrassè soun vièi paire que ié dounè forço counsèu, faguè sis adessias à tóuti si parènt, e partiguè.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 963,
+      "id": 157
+    },
+    {
+      "text": "Se voulès me segui, dóu tèms que li fedo manjon, vous ié menarai plan-plan. E Tenès, mounten d’aquelo draio que blanquejo d’auro en auro: es lou Camin de Sant-Jaque. Vai de Franço dre sus l’Espagno. Quand l’emperaire Carle Magne fasié la guerro i Sarrasin, lou grand Sant-Jaque de Galiço lou marquè davans éu pèr i’ensigna la Se pòu; mai iéu vous dise ço qu’ai toujour ausi dire... Vès, vesès aquéu bèu càrri, emé si quatre rodo qu’esbrihaudon tout l’Uba? Es lou Càrri dis Amo. Li tres estello qu’a davans soun si tres Bèsti; e aquelo pichouneto que vai contro la tresenco, acò ‘s lou Coume vous fara plasé... Vès, vès, tout à l’entour, lis estello que toumbon: es d’amo, acò, pecaire, que vènon d’intra dins lou paradis. Signen-nous, moussu Frederi.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 750,
+      "id": 158
+    },
+    {
+      "text": "Dins la conco de mabre, souto l’aigo clareto, efetivamen, au founs, uno granouio à raio rousso, tant bèn escrincelado que l’aurias dicho vivo, espinchavo d’agrouvado, emé si dous iue d’or e soun mourroun trafet, lou paure Pignoulet vengu de Grasso pèr la - Ah! sacro saloupeto! cridè tout-à-n-un-cop, feroun, lou menusié, ah! ‘s tu que m’as fa faire, emé lou souleias, dous cènt lègo de camin!... Vai, te rapelaras de Pignoulet Em’ acò lou fenat, vès, de soun paquetoun tiro sa masso e soun escaupre, e pan! d’un cop à la Granouio éu fai sauta ‘no cambo... Subran l’aigo-signado, coume tencho de sang, dison que venguè roujo; e dóu benechié la conco es rouginouso desempièi. Uno fes, à Mountéu, qu’es l’endré dóu grand Sant-Gènt e de Micoulau Saboly, i’avié ‘no chatouneto bloundo coume l’or. Ié disien Roso. Ero la fiho d’un cafetié. E coume èro braveto e que cantavo coume un ange, lou curat de Mountéu l’avié messo à la tèsto di couristo de sa glèiso. Veici que pèr Sant-Gènt, qu’es la voto de Mountéu, lou paire de Rouset avié louga ‘n cantaire. Lou cantaire, qu’èro jouine, toumbè amourous de la bloundino; la bloundino, ma fe, s’amourousiguè peréu; e ‘m’ acò li dous enfant, sènso tant ana cerca, se maridèron: la pichoto Rouset fuguè madamo Bordas.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1255,
+      "id": 159
+    },
+    {
+      "text": "E balin e balan, au trantran de si càrri, en saludant dóu fouit tout aquéu mounde couneigu, li famous carretié marchavon arrougant, uno man au courdèu e de l’autro lou fouit, emé la blodo bluio, li braio de velout, lou bounet de coulour, la limousino au vènt, li garamacho i cambo, quouro cridant:I! quouro cridant: Dia! quouro cridant: Ruou! E quand la routo èro lusènto e que lou viage anavo bèn e que li rodo bacelavon, cantant, au Voulès pas que cantèsson? Lou carré se pagavo bèn: d’Arle à Lioun, sèt franc pèr quintau... e, franc d’auvàri, un carretié ‘m’ un couble poudié gagna sèns peno soun Tambèn, se fignoulavo sus li routo de Franço! Car èron glourious nòsti roulié! oh! li bèu chivalas! Quénti miòu! li gaiàrdi bèsti! li limounié, li cavihié, li courdié, li davans, tout acò ‘ro garni, arnesca que fasié gau: li mourrau avien de franjo, li cabestre avien d’esquerlo, li bridèu avien de flo de tóuti li coulour. Li coulas enarquihavon si capoucho banarudo; lis estello di coulas, coume de gràndi peno, soustenien lou courdèu dins d’anello de vèire, d’anello de vèire blu; li ravas móutounavon sus l’esquino di bèsti; li cuberto broudado avien de coucho-mousco; li sufro, li ventriero, li couiero, lis arnesc, tout acò ‘ro trepoun, alisca de man de mèstre... Voulès pas que cantèsson?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 1295,
+      "id": 160
+    },
+    {
+      "text": "L’ivèr, o quand plóuvié, demouravian souto li clastro, nous amusant à la marrello, à sauto-chin o à cavaleto.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 109,
+      "id": 161
+    },
+    {
+      "text": "Ero à la garo d’Avignoun, ounte anave coume éu prene lou trin d’uno ouro e miejo.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 81,
+      "id": 162
+    },
+    {
+      "text": "Fasié ‘no caud! e lou paure Frai Felip, qu’avié, vers aquéu tèms, pas liuen de vuetanto an, caminavo au soulèu emé sa raubo negro, clina souto soun sa qu’èro quàsi - O frai Felip!",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 179,
+      "id": 163
+    },
+    {
+      "text": "O frai Felip! ié cridè ‘n jouvenas qu’èro tout gravata e centura de rouge, vous peso pas lou sa?",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 96,
+      "id": 164
+    },
+    {
+      "text": "E lou brave garçoun carguè lou sa dóu fraire, e lou pourtè jusquo à la calo ounte se baio li bihet.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 99,
+      "id": 165
+    },
+    {
+      "text": "L’archevesque d’Avignoun i’avié leva la counfèsso, pèr - ç o - qu’aussavo trop lou couide, e nous l’avien manda pèr se n’en desbarrassa.",
+      "source": "Memòri e raconte - Frederic Mistral",
+      "length": 136,
+      "id": 166
+    },
+    {
+      "text": "Et foc tres bon cavalier, valen et ardit, et, en son atge de quaranta ans, foc feyt lo premier comte de Foix.",
+      "source": "Lo premier comte de Foix",
+      "length": 109,
+      "id": 167
+    },
+    {
+      "text": "Et aqueste Mossen Bernard aguec un fil, appelat Roger, de Madona Beatrix, sa molher.",
+      "source": "Lo premier comte de Foix",
+      "length": 84,
+      "id": 168
+    },
+    {
+      "text": "Et aqueste bon comte Mossen Bernard moric en la Terra Santa l'an mil XCVI davan la ciutat de Damieta et foc comte trenta dos ans.",
+      "source": "Lo premier comte de Foix",
+      "length": 129,
+      "id": 169
+    },
+    {
+      "text": "Diverses autres orbs, paleficats et endemoniats croben la sanitat, cum plus à ple es contengut en la siua legenda.",
+      "source": "Lo segond comte de Foix",
+      "length": 114,
+      "id": 170
+    },
+    {
+      "text": "Et apres, à la nouvela basiliqua en la prop la gleisa de Foix, que era fondada en la honor del glorios Sant Nazary, honorablemen foc repausat et colloquat.",
+      "source": "Lo segond comte de Foix",
+      "length": 155,
+      "id": 171
+    },
+    {
+      "text": "Et Mossen Roger et dona Arsenda, sa molher, donen à Sant Volzia la villa de Ganac ab (certs) cazals de Amplaing.",
+      "source": "Lo segond comte de Foix",
+      "length": 112,
+      "id": 172
+    },
+    {
+      "text": "Mossen Roger, fil de Mossen Roger et de Madona Arsenda, foc lo ters comte de Foix et foc marit de Madona Estifana.",
+      "source": "Lo ters comte de Foix",
+      "length": 114,
+      "id": 173
+    },
+    {
+      "text": "Et foc feyt comte de Foix l'an mil CXI, regnan Pascal papa, et Loys, rey de Fransa, et foc seignor de las marcas de la bassa Proensa.",
+      "source": "Lo ters comte de Foix",
+      "length": 133,
+      "id": 174
+    },
+    {
+      "text": "Aquel an fec lo pariatge ab l'abbat de Sant Antoni de Pamias, et l'abbat lu donec lo castel de Pamias à lu et als sieus.",
+      "source": "Lo ters comte de Foix",
+      "length": 120,
+      "id": 175
+    },
+    {
+      "text": "Et los canonges deven tenir lo castel del soleilh levan entro al soleilh colguat et lo deven rendre al comte de Foix ou à sos comes, liberalamen, cascun an.",
+      "source": "Lo ters comte de Foix",
+      "length": 156,
+      "id": 176
+    },
+    {
+      "text": "Et aussy ben donec à sant Volzia de Foix alcuns cazals, que avia à Cos prop de Foix.",
+      "source": "Lo ters comte de Foix",
+      "length": 84,
+      "id": 177
+    },
+    {
+      "text": "Et foc valen cavalier en armas, ardit et pros, et tenia son pays en pax et concordia, que negun no li volia ostar res del sieu.",
+      "source": "Lo quart comte de Foix",
+      "length": 127,
+      "id": 178
+    },
+    {
+      "text": "Et d'aqui en fora s'en anec mettre lo seti a Limoges et foc ferit de un cayrel a l'eilh et moric.",
+      "source": "Lo quint comte de Foix",
+      "length": 97,
+      "id": 179
+    },
+    {
+      "text": "Et en l'an mil CCVIII, quinto Idus de Genier, conquestec Mossen Ramon Roger la terra de Donaza per donacio que li foc feyta per lo rey En Peyre d'Arago.",
+      "source": "Lo quint comte de Foix",
+      "length": 152,
+      "id": 180
+    },
+    {
+      "text": "Et en l'an mil CCIX comensec la iretgia a Paris per certans clercs, mestres en teologia, contra la fe, que sustenian que los angels et Diu eran tota una causa.",
+      "source": "Lo quint comte de Foix",
+      "length": 159,
+      "id": 181
+    },
+    {
+      "text": "La iretgia foc semenada per lo realme et autras parts, don lo rey fec cremar sieix mestres en teologia, que l'avian comensada.",
+      "source": "Lo quint comte de Foix",
+      "length": 126,
+      "id": 182
+    },
+    {
+      "text": "Et apres, en l'an mil CCX, lo rey et lo papa donen la conquesta contra los iretges al comte Simon de Montfort, cum auzirets plus a pla avan, que tant longamen durec la guerra.",
+      "source": "Lo quint comte de Foix",
+      "length": 175,
+      "id": 183
+    },
+    {
+      "text": "Lo darrier foc assietat al castel de Muret per lo rey En Peyre d'Arago, los comtes de Tolosa, de Foix, de Comenges et de Palhas, en l'an MCCXII.",
+      "source": "Lo sieze comte de Foix",
+      "length": 144,
+      "id": 184
+    },
+    {
+      "text": "Mossen Roger Bernat se deffendec dins lo castel de Foix que jamais lo comte de Montfort no y a pogut fer dampnatges.",
+      "source": "Lo sieze comte de Foix",
+      "length": 116,
+      "id": 185
+    },
+    {
+      "text": "Et apres lo rey s'en tornec a Paris ab lo comte de Tolosa per l'accord del matrimoni de la filha del comte de Tolosa ab Alfonso, fray del rey.",
+      "source": "Lo sieze comte de Foix",
+      "length": 142,
+      "id": 186
+    },
+    {
+      "text": "Et per aqui es vengut la successio al rey del comtat de Tolosa et dugat de Narbonna.",
+      "source": "Lo sieze comte de Foix",
+      "length": 84,
+      "id": 187
+    },
+    {
+      "text": "Lo comte de Tolosa trametec sas lettras al comte de Foix que lo absolvia del sagramen del homenatge et que se fessa home del rey et fessan pax am la Gleisa.",
+      "source": "Lo sieze comte de Foix",
+      "length": 156,
+      "id": 188
+    },
+    {
+      "text": "Et apres anec fer son homenatge, lo premier que foc feyt al rey de Fransa per lo comtat de Foix, a Molis, lo vingt noviesme de septembre l'an MCCXXIX.",
+      "source": "Lo sieze comte de Foix",
+      "length": 150,
+      "id": 189
+    },
+    {
+      "text": "Et, en l'an MCCXXXV, foc una granda famina per tout lo realme de Fransa, que gens manjavan las herbas per los camps cum las bestias.",
+      "source": "Lo sieze comte de Foix",
+      "length": 132,
+      "id": 190
+    },
+    {
+      "text": "En l'an MCCXLVIII, exilec de son pays Mossen Guilhem d'Arnava, cavalier, cum fals et malvat et desobeissen.",
+      "source": "Lo septen comte de Foix",
+      "length": 107,
+      "id": 191
+    },
+    {
+      "text": "Et succedec en lo comtat de Tolosa dona Johanna sa filha, que era molher de Mossen Alfonso, frayre del rey Sant Loys.",
+      "source": "Lo septen comte de Foix",
+      "length": 117,
+      "id": 192
+    },
+    {
+      "text": "Et, apres morta Madona Johanna, aissy cum lo comte Ramond avia ordenat, tornec (lodit comtat) et succedec a la casa real de Fransa.",
+      "source": "Lo septen comte de Foix",
+      "length": 131,
+      "id": 193
+    },
+    {
+      "text": "Et apres Phelip, fil del rey Sant Loys, intrec a Tolosa prendre la possessio l'an MCCLXXI.",
+      "source": "Lo septen comte de Foix",
+      "length": 90,
+      "id": 194
+    },
+    {
+      "text": "Lo quart Ramond et lo quatorze foc comte l'an MCXCIIII et moric l'an MCCXXII et jats a Tolosa, escomenjat, a l'ordre de Sant Johan.",
+      "source": "Lo septen comte de Foix",
+      "length": 131,
+      "id": 195
+    },
+    {
+      "text": "Et prengueren la ciutat de Damieta, et per la permissio de Diu, foren deviuves et s'en torneren arrer los Sarrasis ab gran multitut et infinits de Turcs.",
+      "source": "Lo septen comte de Foix",
+      "length": 153,
+      "id": 196
+    },
+    {
+      "text": "Et touts eran layros et murtriers, et quand intravan en las vilas et castels, levavan las espasas et pigassas, que no era res que no los dobtes.",
+      "source": "Lo septen comte de Foix",
+      "length": 144,
+      "id": 197
+    },
+    {
+      "text": "Et se entremetian de absolver de touts pecats, de far et deffar los matrimonis et trops altres mals.",
+      "source": "Lo septen comte de Foix",
+      "length": 100,
+      "id": 198
+    },
+    {
+      "text": "Per so lo rey ordenec que y anessan ab gran nombre arquiers, balestiers et gens d'armas, on foc lo comte de Foix ab d'autres seignors del realme per deffendre la ciutat d'Acre.",
+      "source": "Lo hoeite comte de Foix",
+      "length": 176,
+      "id": 199
+    },
+    {
+      "text": "Lo dit Mossen Arnaud al comte de Begorra la liurec seignoralamen, (que) la recevec en fiu de lu, cum (appar) per la lettra qu'es al quaisso de Bearn, en lo cartulary de Foix.",
+      "source": "Lo hoeite comte de Foix",
+      "length": 174,
+      "id": 200
+    },
+    {
+      "text": "Aqueste seignor comte aguec un fil Mossen Roger Bernard et moric vengut que foc de la Terra Santa l'an MCCLXII, et foc comte sieys ans.",
+      "source": "Lo hoeite comte de Foix",
+      "length": 135,
+      "id": 201
+    },
+    {
+      "text": "Et aussy ben Mossen Roger donec al dit conven la villa de Fredelas per los damnatges que sos ancestres, comtes de Foix et de Carcassonna, lor avian donats.",
+      "source": "Lo ters comte de Foix",
+      "length": 155,
+      "id": 202
+    },
+    {
+      "text": "Et aguec un fil de Madona Eyssemena, sa segonda molher, appelat Roger Bernard lo Gros.",
+      "source": "Lo ters comte de Foix",
+      "length": 86,
+      "id": 203
+    },
+    {
+      "text": "Et, en l'an mil CXCI, lo rey Henric d'Anglaterra avia convengut ab lo rey Phelip de Fransa de anar secorir la Terra Santa ab lu, et amidos y devian estre.",
+      "source": "Lo quint comte de Foix",
+      "length": 154,
+      "id": 204
+    },
+    {
+      "text": "Ab lo coseilh del papa et del rey, commissio foc dada sus lo pays de Lengadoc a sant Guilhem, avesque de Bourges, et a sant Doumenge, que comensec l'ordre dels Predicadors.",
+      "source": "Lo quint comte de Foix",
+      "length": 172,
+      "id": 205
+    },
+    {
+      "text": "Mossen Roger Bernat lo Gran foc fil de Mossen Ramond Roger et de dona Phelippa, foc marit de Madona Brunissen de Castelbo et foc feyt comte l'an MCCXXIII et vescomte de Castelbo.",
+      "source": "Lo sieze comte de Foix",
+      "length": 178,
+      "id": 206
+    },
+    {
+      "text": "Et apres aucun temps aquestas mil liuras foren per lo comte de Foix assignadas a sa sor, Madona Esclarmonda, regina de Malhorca, molher del rey En Jacmes.",
+      "source": "Lo sieze comte de Foix",
+      "length": 154,
+      "id": 207
+    },
+    {
+      "text": "Et apres, en l'an MCCXXX, donec Madona Esclarmonda, sa filha, al vescomte de Cardona, et donec Madona Cecila al comte d'Urgel ab XXV mil sols Molgares.",
+      "source": "Lo sieze comte de Foix",
+      "length": 151,
+      "id": 208
+    },
+    {
+      "text": "Et en l'an MCCXXXIX sant Loys, rey de Fransa, fec portar de Constantinobla a Paris la corona de Jesus Christ.",
+      "source": "Lo sieze comte de Foix",
+      "length": 109,
+      "id": 209
+    },
+    {
+      "text": "Aqueste Mossen Roger Bernard desera(va) anar a la Santa Terra de Jerusalem contra los Turcs et Sarrasis.",
+      "source": "Lo septen comte de Foix",
+      "length": 104,
+      "id": 210
+    },
+    {
+      "text": "Lo cinquiesme jorn d'avril, lo rey foc pres et redut al soldan de Babilonia ab sos dos frays Alfonso de Poytou, et Carles, comte, que nulh nou escapec sinou lo legat del papa.",
+      "source": "Lo septen comte de Foix",
+      "length": 175,
+      "id": 211
+    },
+    {
+      "text": "Apres se levec un poble que l'on appelava los Pastorels, so es en l'an MCCLI, ab lo capitani de Ongria, et fazian crezer a las gens que volian anar al secors de la Terra Santa.",
+      "source": "Lo septen comte de Foix",
+      "length": 176,
+      "id": 212
+    },
+    {
+      "text": "Et Mossen Simo Brisatesta, seneschal de Carcassonna, ac pres jus la ma del rey et n'a demorat pleyt a la cort de Parlamen a Paris.",
+      "source": "Lo sieze comte de Foix",
+      "length": 130,
+      "id": 213
+    },
+    {
+      "text": "Mossen Roger foc fil de Mossen Roger Bernard lo Gran et de Madona Brunissen de Castelbo et foc marit de Madona Brunissen de Cardonna.",
+      "source": "Lo septen comte de Foix",
+      "length": 133,
+      "id": 214
+    },
+    {
+      "text": "Et apres lo comte de Montfort, ab lo restan de sa gent, s'en tornec en Fransa; et li foc confermada la conquesta per lo papa et per lo rey, et apres no tardec gayre a morir.",
+      "source": "Lo sieze comte de Foix",
+      "length": 173,
+      "id": 215
+    },
+    {
+      "text": "Et, en l'an MCCL, lo rey Sant Loys passec la mar ab sa potestat sus los Turcs et Sarrasis; lo comte de Foix y passec ab sas gens.",
+      "source": "Lo septen comte de Foix",
+      "length": 129,
+      "id": 216
+    },
+    {
+      "text": "Et touts los pastors que se podian trobar anavan en lor companha; et quand foren en gran nombre, fasian gran res de mals.",
+      "source": "Lo septen comte de Foix",
+      "length": 121,
+      "id": 217
+    },
+    {
+      "text": "Et aguec un fil de Madona Arsenda, que se appelec Roger; et aqueste bon comte foc à la presa de la ciutat de Jerusalem, moric l'an mil CXI, et foc comte quinze ans.",
+      "source": "Lo segond comte de Foix",
+      "length": 164,
+      "id": 218
+    }
+  ]
+}

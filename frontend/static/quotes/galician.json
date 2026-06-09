@@ -1,0 +1,1523 @@
+{
+  "language": "galician",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Unha cousa muy condanada que fai debecer as carnes, abrir a boca, ronronar as tripas e infrar o estómago de aire.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 113,
+      "id": 1
+    },
+    {
+      "text": "Por non perder a costume qu'herdamos d'os nosos pâis que víviron mais acomodados.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 81,
+      "id": 2
+    },
+    {
+      "text": "Porqu'en todo tempo e lugar os nosos gobernantes n-os piden as pagas d'os trabucos y-os señoríos as rendas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 107,
+      "id": 3
+    },
+    {
+      "text": "Saber o que se deixa de comer, saber o que ten que traballar, esquecerse d'o que ten que pagar e non coidarse d'o que ten que recibir.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 134,
+      "id": 4
+    },
+    {
+      "text": "Porque si as persoas son distintas, vólvense unha sola cando se trata de mallar en nos, de zugarnos a sangue, ou d'espremernos a faltriqueira.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 142,
+      "id": 5
+    },
+    {
+      "text": "Pra servir ô Alcalde e morrer de fame n-esta vida e si cadra vivir ardendo n-a outra.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 85,
+      "id": 6
+    },
+    {
+      "text": "Unha sola persoa con moitas caras, e memoria a bastante pr'acordarse d'o que lle ten conta.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 91,
+      "id": 7
+    },
+    {
+      "text": "Saindo d'a cabeza d'o Alcalde sin detrimento d'a sua brutalidá, á maneira que sai un preso d'a Cárce-Modelo sin romper reixas nin portas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 137,
+      "id": 8
+    },
+    {
+      "text": "Eso non m'o preguntedes á min que non podrei contestalo por mor d'a curia que, com'o zorro e'as galiñas, ándanos ganando as voltas pra poñernos â sombra.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 153,
+      "id": 9
+    },
+    {
+      "text": "Facendes ben en calarvos, porqu'en boca pecha non entran moscas, y-ô bó calar chámanlle labrego.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 96,
+      "id": 10
+    },
+    {
+      "text": "Xa vimos como sabedes o que se ha de creer: veñámos ô segundo qu'é o que s'ha de pidir.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 87,
+      "id": 11
+    },
+    {
+      "text": "Porque ten sete peticiós, que son poucas pra nosoutros, pois temos moito que pidir.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 83,
+      "id": 12
+    },
+    {
+      "text": "Que lauden á Dios, o mesmo que nosoutros, aqueles que solo s'acordan d'él cando fan á carantoña, e pasan a vida facéndonos falcatruas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 134,
+      "id": 13
+    },
+    {
+      "text": "Pidimos pan pra levar â boca, xa que pra nosoutros ou anda pol-as nubes, ou está pechado con cerrollo n-as tullas d'os vinculeiros.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 131,
+      "id": 14
+    },
+    {
+      "text": "Pidimos pan pra manter os fillos que nol-o piden en coiro e co-as manciñas direitas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 84,
+      "id": 15
+    },
+    {
+      "text": "O que non-os han dar nunca: pois inda ben non lle debemos un peso á calquera xa temos o ministro â porta co-a demanda.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 118,
+      "id": 16
+    },
+    {
+      "text": "Que nos quite Dios d'entre as uñas d'esta xentiña que non fai nada que pra ben sea.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 83,
+      "id": 17
+    },
+    {
+      "text": "Sí padre, pro âs veces parece que se dormen, á xuzgar pol-o desamparo en que nos deixan.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 88,
+      "id": 18
+    },
+    {
+      "text": "Todal-as aldeas contan con picapreitos estrapexantes que poñen escola de testigos falsos, namentras as outras están pechadas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 125,
+      "id": 19
+    },
+    {
+      "text": "Darlle á nosos pâis a millor vida que podemos, namentras non chegamos á herdalos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 81,
+      "id": 20
+    },
+    {
+      "text": "Todol-os labregos porque non hay un que non poña os ollos n-as leiras d'o vecino.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 81,
+      "id": 21
+    },
+    {
+      "text": "O segundo mudar de camisa unha vez ô ano, ou denantes si teñen qu'enterralo á un.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 81,
+      "id": 22
+    },
+    {
+      "text": "A todol-os que teñen algo que perder, pois si nos repoñemos sainos pior a conta.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 80,
+      "id": 23
+    },
+    {
+      "text": "A sesta sofrir con pacencia, namentras non haxa outro remedio, as fraquezas e malas ideas d'os que mandan.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 106,
+      "id": 24
+    },
+    {
+      "text": "A segunda ensinarlle o camíño d'a taberna ôs que teñen fame, e deixarse ir si convidan.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 87,
+      "id": 25
+    },
+    {
+      "text": "Pra que non botemos de perda o noso nome e pra que, co-a lufiada que nos dan n-a cara ô confirmarnos, nos vayamos afacendo âs que mais adiante nos han de dar n-o lombo.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 168,
+      "id": 26
+    },
+    {
+      "text": "Pra purgar os pecados alleos, que os nosos ben purgádol-os temos co-a vida arrastradiña que levamos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 100,
+      "id": 27
+    },
+    {
+      "text": "Pra que manteñ'as nosas almas xa que os corpos andan famentos, como Dios e nosoutros sabemos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 93,
+      "id": 28
+    },
+    {
+      "text": "Ven á ser algo somellante con xunguirse á un carro, e turrar d'él hastra morrer.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 80,
+      "id": 29
+    },
+    {
+      "text": "Hay que mantelos, hay que vestilos, hay que mandalos â escola si cadra, hay que atendelos n-as suas enfermedás, hay en fin que facelos homes.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 141,
+      "id": 30
+    },
+    {
+      "text": "Unha cuchumíllada que nos dá moito que rascar e que roe, roe, vainos despelexando pouco á pouco.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 96,
+      "id": 31
+    },
+    {
+      "text": "Un aguillon que se nos crava n-a alma cando vemos os bés y-a facenda d'os veciños.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 82,
+      "id": 32
+    },
+    {
+      "text": "Todol-os malos homes que comen, viven, trunfan e campan â conta d'o noso traballo.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 82,
+      "id": 33
+    },
+    {
+      "text": "Un coitadino que n-outros tempos foi espantallo d'as xentes, e que agora veu tan á menos que nin xiquera caso lle fan os rapaces d'a escola.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 140,
+      "id": 34
+    },
+    {
+      "text": "Unha cousa que din que se come, e que sabe ben, e que manten moito, d'a que temos ouvido falar á miudo, pro que no n-os pasa pol-as gorxas inda que n-os pase pol-as mentes.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 172,
+      "id": 35
+    },
+    {
+      "text": "Se o presente opusculete ten dedicadoiro, indudabremente é voso, quiridos amigos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 81,
+      "id": 36
+    },
+    {
+      "text": "Levaba na cabeza un chapeu de aas ben anchas, e sobe os ombreiros trajía un zarame ou zamarra de segoviao, que así lle chamaban a un certo pano basto de Segovia.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 161,
+      "id": 37
+    },
+    {
+      "text": "E despois de chegar alí cos bois esmiñancados, despáchante con cara de pau e sin un triste carolo para ir estrivellando cos dentes.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 131,
+      "id": 38
+    },
+    {
+      "text": "Esta carta feira que pasou, fixo catro somanas, tiven que dar unha noite de vela no castelo da Gandra, que estaba facendo o señor do Mato.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 138,
+      "id": 39
+    },
+    {
+      "text": "En recompensa, cando me morreu meu sogro, fará agora unhos sete meses, ao pagar a loitosa, puxérome o mellor boi que tiña en douscentos maravidis.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 146,
+      "id": 40
+    },
+    {
+      "text": "Por máis que dixen e fixen non me valeu, e tiven que cichar branca por branca os douscentos maravidís.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 102,
+      "id": 41
+    },
+    {
+      "text": "E antes de acabar de dicir, xa brincara encima do outro ca espada desenvainada e botando lume polos ollos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 106,
+      "id": 42
+    },
+    {
+      "text": "O de Bagude quedou tan atortoado, que non soupo facer máis que risparse para dentro do castelo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 95,
+      "id": 43
+    },
+    {
+      "text": "Sobre o xionllo esquerdo ten a Virxen Madre, que está senta nunha rica cadeira, ao seu Meniño, ao cual está Ela mirando con dooce e inefabre espresión.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 151,
+      "id": 44
+    },
+    {
+      "text": "O Meniño viste túnica e a Nai túnica e manto e ademais unha touca rizada, e sobre ela unha coroa flordelisada.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 110,
+      "id": 45
+    },
+    {
+      "text": "No campo do tímpano ou sobrelume dous anxees turiferarios, un de cada lado, levantan os seus encensarios en sinal de adoración.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 127,
+      "id": 46
+    },
+    {
+      "text": "O tímpano está sostido por dúas mochetas nas caes vense esculpidos dous ánxees, cada un cunha tarxeta medio enrollada.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 118,
+      "id": 47
+    },
+    {
+      "text": "Ademais do indispensábele tornachuvias rodeia o tímpano unha archivolta que descansa sobre dúas culunas, unha de cada banda, asentadas nos codillos abertos nas xambas da porta.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 176,
+      "id": 48
+    },
+    {
+      "text": "A un lado da eirexa aínda se conservan as paredes do antigo hespital que mostran nun escudo as armas xentilicias dos Ulloas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 124,
+      "id": 49
+    },
+    {
+      "text": "A moza, ao chegar a carón do pórtico, púxose dun brinco no chao sin dar siquera tempo a que o escudeiro lle viñese a ter conta da cabalgadura.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 142,
+      "id": 50
+    },
+    {
+      "text": "Un dos acemeleiros do convento recolleu as bestas e levounas pra as caballerizas da hospedería.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 95,
+      "id": 51
+    },
+    {
+      "text": "Vista a disposición do espacioso pórtico, está dito que a eirexa había de ter tamén tres naves cubertas de bóvedas de nervaduras.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 129,
+      "id": 52
+    },
+    {
+      "text": "A nave do medio para alá do segundo ou terceir arco achábase cerrada por unha reixa de ferro, que separaba a que chamaban eirexa dos seglares da dos monxes.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 156,
+      "id": 53
+    },
+    {
+      "text": "Ao punto en que a nosa doncela entrou na eirexa resoaban as bóvedas cos ecos da Prima que estaban cantando os monxes no coro alto.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 130,
+      "id": 54
+    },
+    {
+      "text": "Todo o animaban, todo o movían, a todo lle facían perder a súa inercia aqueles sons graves e mesurados co seu ritmo solto pero tan espresivo e maxestuoso.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 154,
+      "id": 55
+    },
+    {
+      "text": "E o que chaman asociación de ideas tragía a continación o recordo dos dous ilustres condes irmaas, D.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 101,
+      "id": 56
+    },
+    {
+      "text": "Bermudo Pérez de Traba, que redificaron o mosteiro desde os cimentos, e poblárono cos monxes que pidiran ao seu amigo S.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 120,
+      "id": 57
+    },
+    {
+      "text": "Oieu a misa da Prima con gran recollemento, e acabadas as súas devocións, saeu da eirexa ao tempo que o escudeiro xa lle tragía a facanea e lla arrimaba aa escaleira do pórtico.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 177,
+      "id": 58
+    },
+    {
+      "text": "¿Quen era esta arrogante rapaza que tan cedo e con aquel porte se presentara en Sobrado para cumprir as súas devocións?",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 119,
+      "id": 59
+    },
+    {
+      "text": "Iba a facer dous anos que tivera aa morte á súa nai, e para que noso Señor lla sanase, oferecérase á visitar tódolos días a Santa María de Sobrado.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 147,
+      "id": 60
+    },
+    {
+      "text": "Daquela, por eso, había outro motivo máis que a obrigaba a non interrumpir o seu diario viaxe.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 94,
+      "id": 61
+    },
+    {
+      "text": "Así que o vixía da torre a avistou, dou o sinal para que todo estivese aviado para deixar caer a ponte levadiza asemade ela chegase.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 132,
+      "id": 62
+    },
+    {
+      "text": "O pai, que xa a asperaba na porta, colleuna nos brazos, doulle un bico na frente, e sin máis marchou el mismo ca besta pra a caballeriza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 137,
+      "id": 63
+    },
+    {
+      "text": "D'o sacho que me fai callos n-as maus, d'a terra que rego c'o sudor d'a miña testa, d'as mouras fames que paso, d'o aire que brua n-as miñas faltriqueiras, d'a monteira que levo n-a chola, d'a coroza de palla que me libra d'a chuvia, d'as cirigolas d'estopa que me cobren de medio corpo abaixo, e d'outras cativeces entr'as que vivo aguniando.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 343,
+      "id": 64
+    },
+    {
+      "text": "Xa vimos como sodes labrego, como estades acabadiños pol-o nome e pola fame de labrego, mais decíndeme agora ¿Cantas cousas está obrigado á saber y-entender o labrego cando chega á ter uso de razon?",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 198,
+      "id": 65
+    },
+    {
+      "text": "É a cousa mais condanada que se pode decir nin pensar: un señor infinitamente malo, burro, larpeiro, inxusto, prencipio de todal-as nosas disgracias e fin de todal-as nosas facendas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 182,
+      "id": 66
+    },
+    {
+      "text": "Ter cuasementes o seu anaquiño de mando, poder turrar d'a corda pr'os amigos, facer toda caste de falcatruas ôs contrarios, remexer n-as trecolas d'o Concello, e sacarlle sustancia á todol-os nagocios que lle pasan pol-a mau.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 225,
+      "id": 67
+    },
+    {
+      "text": "O que non-os han dar nunca: pois inda ben non lle debemos un peso á calquera xa temos o ministro â porta co-a demanda. Os nosos deudores ben perdoados están porque ninguen nos debe nin un chavo.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 194,
+      "id": 68
+    },
+    {
+      "text": "Que Dios nos teña d'a sua mau e que nos coute ben, porque tanto mallan en nós, e tales cousas nos fan, e tan amoladiños andamos, que si nos deixamos levar pol-o xénio e caimos n-unha mala tentacion, o dia que menos se pense non quedan nin os ratos n-Alcaldía.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 259,
+      "id": 69
+    },
+    {
+      "text": "Todol-os labregos, porque ainda que oyamos a misa non podemos gardar a festa, pol-a mor de tornar a auga d'os lameiros, d'arrecadar o gando, de dar de comer ôs porcos, de levar o grau ô muiño, e outras angueiras que non teñen agarda.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 233,
+      "id": 70
+    },
+    {
+      "text": "Pra hos facer cristianos anque logo nos traten como mouros, e pra que teñamos un nome c'o que se nos coneza n-os recibos d'a contribucion, n-as listas d'o sorteo de quintas, n-as citaciós á xuicio e n-outros documentiños por este xeito.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 236,
+      "id": 71
+    },
+    {
+      "text": "O Alberte era un garrido mozo duns trinta anos. Levaba na cabeza un chapeu de aas ben anchas, e sobe os ombreiros trajía un zarame ou zamarra de segoviao, que así lle chamaban a un certo pano basto de Segovia. Calzóns e altos zapatóns cubríanlle os remos de abaixo. O Domingos era da misma idá ou pouco mais e iba vestido pola misma traza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 339,
+      "id": 72
+    },
+    {
+      "text": "Vista a disposición do espacioso pórtico, está dito que a eirexa había de ter tamén tres naves cubertas de bóvedas de nervaduras. A nave do medio para alá do segundo ou terceir arco achábase cerrada por unha reixa de ferro, que separaba a que chamaban eirexa dos seglares da dos monxes.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 286,
+      "id": 73
+    },
+    {
+      "text": "Ao pee da eirexa non había estonces máis que un pardiñeiro, que fora casa, en que os señores de Ulloa recolllan e gardaban as rendas e tiñan un caseiro. Despois da desfeita da casa dos Ulloas, os caseiros limparon a madeira e a tella, tocaron o pindín para outra parte e deixaron as paredes ispidas de todo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 307,
+      "id": 74
+    },
+    {
+      "text": "Cando estiveron todos dentro, o outro dos pions, que acompañaban aos cabaleiros, destapou un farol que levaba, abreuno, e ca luz del, acendeu dúas velas que topou sobre a mesa do altar. Todos estaban de xiollos rezando cada un para si.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 235,
+      "id": 75
+    },
+    {
+      "text": "¡De taes escenas foron treato aqueles muros hoxe cubertos de verdín e enferruxados, non sabemos si polo abandono e desamparo en que están, ou polo aburremento e noxo que lles dá a insensatez e a desconsideración dos homes! ¡Dichoso o poobo que tan ao seu xeito pudía gozar de taes espeitáculos!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 294,
+      "id": 76
+    },
+    {
+      "text": "Dos doce maníficos sarcófagos ou carneiros que antes se vían pousados sobre o pavimento pola eirexa adiante soilo quedan tres ou catro. Algúns deles están sirvindo de cubos en muiños daquelas cercanías.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 202,
+      "id": 77
+    },
+    {
+      "text": "O estilo que reina en toda a eirexa é o que sol verse nas demais do mesmo tempo que tanto abundan no noso país e nas demais partes, friote, secano, e así como o de unha cousa que se fai sin ouxeto determinado. Por eso soilo nos detemos no que é cousa especial desta eirexa.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 273,
+      "id": 78
+    },
+    {
+      "text": "No medio do claustro levantábase unha fonte monumental. Un estenso pilón recollía a auga que brotaba dunha gran concha: a cal aa súa vez recebía a que lle viña doutra concha máis pequena que había máis arriba.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 209,
+      "id": 79
+    },
+    {
+      "text": "O claustro este, arquiteutonicamente considerado, non ofrece cousa de particular máis que as súas grandes dimensións. Foi comezado a fins do sigro XVI e acabouse a mediados do XVIII.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 182,
+      "id": 80
+    },
+    {
+      "text": "E esto dito, Gonzalo retirouse aa súa celda que estaba ao lado da de Fernán Vázquez, e sentouse a escribir unha mensiva ao señor do Vilar de Mella avísándolle que ao outro día o asperase de noite na casa, pois tiña que falar con el cousas de moito intrés.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 255,
+      "id": 81
+    },
+    {
+      "text": "Desde aquel punto xa naide pensou en facer a menor resistencia, e todos se rendiron ao querer dos asaltantes. Os cuales dos despoxos da fácele vitoria fixeron dous apartados: un dos prisioneiros, e outro das armas, farramenta e demais trebellos que alcontraron.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 261,
+      "id": 82
+    },
+    {
+      "text": "A pranta das áusides laterales é semicircular, a da do medio é un cadrado, e despois tamén un semicírculo. E é de notar que os arcos das áusides son todos de medio punto, e o techo bóveda de cascarón, nas áusides pequenas, e na central tamén bóveda con dous entrepanos, no primeiro bóveda de cañón, e no segundo bóveda de concha ou cascarón.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 341,
+      "id": 83
+    },
+    {
+      "text": "A portada do Norte ten como as outras o lintel ou tímpano liso, sostido por dúas mochetas. Componse tamén de dúas arhivoltas, imposta moi somellante aa da outra e dúas culunas de cada lado. A máis exterior da esquerda é de mármole. Os capiteles tamén deberon ser da eirexa vella e axeitáronos aa súa maneira pra colocalos no sitio.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 331,
+      "id": 84
+    },
+    {
+      "text": "Dúas culunas corren pola áuside central abaixo, desde a cornixa hastra o zócolo, e divídena en tres compartimentos. En cambio, a imposta dos capiteles das ventáas córrese tamén por todo arredor da áuside e divídea en sentido horizontal en dous compartimentos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 259,
+      "id": 85
+    },
+    {
+      "text": "Chegados a eirexa, presentouse na porta o P. Prior, que era o que había de asistir aa celebración do matrimonio, revestido cunha manífica capa de brocado, a cual tiña bordadas na ancha zanefa e mais no capillo hestorias ou pasaxes da vida de Nosa Señora.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 254,
+      "id": 86
+    },
+    {
+      "text": "Dicidido, pois a ir a recobrar a fortaleza de Curbián, mandou aviso a tódolos seus amigos e partidarios da terra de Sobrado e de Millide, para que no punto e hora que lles dicía, estivesen todos reunidos sin falta. Ao mesmo tempo pasou recado aos da ponte de Albidrón para que tamén salisen ao sitio que lles marcaba.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 317,
+      "id": 87
+    },
+    {
+      "text": "Esto de ningunha maneira lle conviña a Gonzalo Ozores a quen ben se lle alcanzaba que todo o bon suceso da súa ampresa dependía do pronto e rápido dos seus movimentos. E moito menos lle conviña daquela, que estaba bremando por ir a valerlles aos señores do Vilar.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 263,
+      "id": 88
+    },
+    {
+      "text": "Así o fixeron, ao cabo, os do castelo, anque non fora máis que por verse libres daqueles escoleres que os aburaban a saetadas, e que sin saber eles como, se lles enxaretaran dentro da torre. Así foi que xa lles tardaba o abriren de par en par as portas da fortaleza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 266,
+      "id": 89
+    },
+    {
+      "text": "Asomade deron vista ao anamigo, que aparicía moi ben aparapetado no dito Castro de Ambreixo, Gonçalo Ozores aparentou que dubidaba dar o ataque ca intención de escudrumar en que ánimo estaba a súa xente.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 203,
+      "id": 90
+    },
+    {
+      "text": "Pero ao mesmo tempo que dicían esto e outras cousas polo estilo, íbanse chegando ao Castro cada vez máis afoutos e dicididos. Os balesteiros que mandara Alvaro Páez, tundían pola súa parte o Castro a forza de tiros, que puñían en non pouca confusión aos contrarios.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 265,
+      "id": 91
+    },
+    {
+      "text": "Ao outro día ben cediño deixou Fernán Vázquez o seu leito e con moi boas palabras e moi corteses razós despideuse dos do castelo, e foise axiña á Curbián a debuxar nun pergamino a pranta e o modo da fortaleza das Seixas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 220,
+      "id": 92
+    },
+    {
+      "text": "Sinón co mesmo fogo e ca misma vehemença, con non menor sinceridade e amor se espresaron Vasco e Eldonza. A todos correspondeu Gonçalo Ozores cas maiores mostras de respeito e consideración.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 190,
+      "id": 93
+    },
+    {
+      "text": "En Curbián fixo celebrar con moitas festas e arregocixos o recobramento dos seus estados. Bailes, seraos, xustas, cañas, e outras moi vistosas e entretídas adivirticións por espacio de catro días socedéronse cuase sin interrución naquela casa, que pouco antes paricía sentenciada a sirvir soilo de apousento pra os mouchos e curuxas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 333,
+      "id": 94
+    },
+    {
+      "text": "Das galdrapas da besta xa dixemos que eran de torciopelo verde con galós, frecos e boiras de ouro. Todo o demais aparello, coma a cabezada, o bocado, as bridas, etc.. correspondía co luxo e rango da xeneta.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 206,
+      "id": 95
+    },
+    {
+      "text": "O altar é coma un cubo macizo de mampostería, sobre o cal está asentada a lousa enteiriza que serve de mesa. No frente deste cubo, e como sostendo a orela dianteira da mesa, hai unha fila de arcos que se apoian sobre culunas pareadas. Os fondos dos arcos estiveron noutro tempo pintados, como se ve por certas semellas que inda hoxe se conservan.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 346,
+      "id": 96
+    },
+    {
+      "text": "Ao outro día ben cedo dispideuse do casteleiro e púxose en marcha pra Curbián sin mandarlle ningún aviso nin recado a Gonçalo Ozores, pois quiría collelo de socato. O de Ulloa, por eso, sorprendido e todo recebeuno con todo o agasallo e atenciós propias dun gran señor.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 269,
+      "id": 97
+    },
+    {
+      "text": "Unhos nove ou dez anos despois dos acontecementos con que comenzámo-lo noso conto, nunha mañán bretemosa de Outono a cousa das dez, arrentes da cerca do convento de S. Cristobo de Dormeá iban trotando tres xenetes en tres cabalgaduras, que ben podían dicirse señoras cabalgaduras.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 280,
+      "id": 98
+    },
+    {
+      "text": "A fraira con moito disimulo e coma quen non ve de que sofocarse, mudou de conversación e foi dando dunhas cousas noutras hastra que lle perguntou si consiguira que lle volvesen os estados da Ulloa.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 197,
+      "id": 99
+    },
+    {
+      "text": "E nafeuto, Gonçalo Ozores puxérase aa obra xa facía tempo, e levábaa boa de arrematar, pois compríalle moito o estender por aquela parte a rede das súas fortalezas pra asegurar desde alí as cumunicacións cas terras que tiña da outra banda do Ulla, e mais para ter arrecadados aos de Millí.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 289,
+      "id": 100
+    },
+    {
+      "text": "E tratándose, como se trata, dunha obra en que tanto se esmerou Gonçalo Ozores, e que tanto se relaciona co noso conto, no me levarán a mal os meus leitores que eu queira dicirlles algo de tan famoso adificio.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 209,
+      "id": 101
+    },
+    {
+      "text": "Nun dos pisos da torre grande, e xa me esquecía, arrimada aa parede hai unha gran roída de pedra, posta non de prano sinón de canto, e sostida antre dous canzorros. Poida que estivese alí pra servir de lareira cando fose perciso, ou quizaibes de trapa para tapar con ela a entrada da escaleira sacreta.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 302,
+      "id": 102
+    },
+    {
+      "text": "Agora pra poñer o ramo aa obra, enxirirei nesta derradeira páxina unha carta do boo de Gonçalo Ozores, contida nun decumento que ten no seu poder un dos amigos a quen adiquei esta probe ringuiolada.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 198,
+      "id": 103
+    },
+    {
+      "text": "O día d'a loita, n-o ring, Samuel Kupper veu diante de sí a un ardente rapaz de óllar duro e grande estatura. Kupper non tremeu. Era máis forte y-ó pouco de loitar reconoceu confiado a sua superioridade.",
+      "source": "Conto sinxelo - Antón Losada Diéguez",
+      "length": 203,
+      "id": 104
+    },
+    {
+      "text": "E Chuco e Manoel tiñan tolería por Carmela, unha meiga rapaza d’ollos mouros, moi beiladora. Cada un d’os mariñeiros á sua maneira lle buscaba as voltas, y-ela por ningún s’acraraba. Con Manuel ría e parolaba a desfacerse, diante de Chuco baixaba os ollos, e toda s’alcendía.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 275,
+      "id": 105
+    },
+    {
+      "text": "Aquela misma mañán apareceu Chuco morto n-a area de Beluso despois de nadare cinco millas: o seu esforzo fixo soster a espranza n-os que quedaban n-o cativo amparo d’as madeiras do barco. Os probiños salváronse y-o mozo forte morreu.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 233,
+      "id": 106
+    },
+    {
+      "text": "Nós pensamos qu'esta gran revolta ten a orige na artificialidade esencial da vida moderna, no leixamento da natureza, fiando todo o progreso humán y-o perfeicionamento do home na potencialidade económica e industrial e na concentración nas grandes cidades.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 256,
+      "id": 107
+    },
+    {
+      "text": "Na custión social, nin obreiros nin capitalistas teñen razón. Ningunha trasformación do régime pode remediar nada. Os obreiros non remediarán nada con derribaren o régime capitalista, si é que siguen junguidos ô industrialismo.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 227,
+      "id": 108
+    },
+    {
+      "text": "Na Hespaña a desfeita social acrescéntase por unha desfeita política. Querse seguir descoñecendo a eisistenza de pobos que se ven sometidos a unha uniformidade políteca, jurídeca y-adeministrativa sen eixempro. Querse seguir gobernando ôs pobos hespañois polos mesmos partidos e do mesmo geito que nos anos vergoñentos do desastre.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 331,
+      "id": 109
+    },
+    {
+      "text": "E n'a España unha espranza ven, y-outra se vai y-a fedenta política enche o país noso de lama e de movimentos e combinaciós d'os partidos que dan noxo. As ilusiós desfeitas dos homes de boa fe cuasemente non topan onde pousarse pra alcender a y-alma e quentar as suas ansias.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 275,
+      "id": 110
+    },
+    {
+      "text": "¿Qué camiño escoller? Ninguén pousa tan en firme como os agrarios que volven a vista a terra, que se acollen ó agrarismo d'a Natureza. E ningún agrarismo tan forte n'o seu orixe como o agrarismo galego.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 202,
+      "id": 111
+    },
+    {
+      "text": "Y-os nosos lugares, aldeas e vilas cheos de vividores políticos e de criados d'os grandes amos políticos que viven n'a capital d'a porvincia ou en Madrid están pedindo unha limpeza, y-unha rega de ideaes e de aución política tamén enxebre, que non e soilo nosa.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 261,
+      "id": 112
+    },
+    {
+      "text": "Canto mais n'a realidade vexamos as custións canto mais preto de nos y-en nos mesmos estudiemos os problemas, mais preto estamos d'a realidade d'o mundo enteiro e mais importancia e forza terán as nosas soluciós.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 212,
+      "id": 113
+    },
+    {
+      "text": "Home acabadiño de traballos, caste de besta de carga n-a que tanguen á rabear os que gobernan, ser á quen fan pagar cédula como as persoas pra tratalo com'os cás, que leva faltriqueira n-o traxe por fantesia, boca n-a cara por bulra, que anda d'arrastro como as cobras, que fura n-a terra como as toupeiras, que traballa moito e come pouco, que á somellanza d'os burros d'arrieiro que levan o viño e beben a auga, precuran o trigo pra comer o millo, que anda langraneando por unha peseta sin poder nunca xuntala, e que ven á ser considerado pol-os seus somellantes como un ninguen que á todo chamar chámanlle Xan paisano.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 621,
+      "id": 114
+    },
+    {
+      "text": "Mintindo unha infruencia que non ten, agarapiñando votos n-as urnias, sacándolle a monteira e facéndolle retesías ôs que mandan, asoballand'ôs que ten baixo de sí, recollend'os xamós d'as nosas chouzas e partíndoos c'os manates d'a vila, sacando cartos ôs quintos cando se tercia pra seren os promeiros en riqueza e os últemos n-o reparto de consumos, armándolle a gayola ôs que non son d'a sua corda, repartind'os destinos d'o Concello entr'a xente d'a familia, lobos d'a camada y-os que se deixan ver por adiantado, estrapexando n-a política com'os esgarabellos n-a bola, e facendo en fin cantas falcatruas se lle veñen ás mentes pra conservar o mandiño.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 656,
+      "id": 115
+    },
+    {
+      "text": "¡E vosté non-o vé santiño! Pidimos pan pra levar â boca, xa que pra nosoutros ou anda pol-as nubes, ou está pechado con cerrollo n-as tullas d'os vinculeiros. Pidimos algo que comer xa que traballamos como negros. Pidimos pan pra manter os fillos que nol-o piden en coiro e co-as manciñas direitas. E non é moito pidir pan, xa que o compango é pr'os que poden.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 360,
+      "id": 116
+    },
+    {
+      "text": "O resto da portada corresponde a tan graciosa e atraente composición. O tímpano está sostido por dúas mochetas nas caes vense esculpidos dous ánxees, cada un cunha tarxeta medio enrollada. Ademais do indispensábele tornachuvias rodeia o tímpano unha archivolta que descansa sobre dúas culunas, unha de cada banda, asentadas nos codillos abertos nas xambas da porta.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 365,
+      "id": 117
+    },
+    {
+      "text": "Pero volvendo ao noso conto, e por mor de Sobrado perdónenme a digresión, así que a doncela percebeu os ocos dos sonoros cantos relixiosos, non poido acuitar a empresión que sintira, e un lixeiro estremecimento que lle fixo estordigar todo o corpo, descobreu a súa comoción. Oieu a misa da Prima con gran recollemento, e acabadas as súas devocións, saeu da eirexa ao tempo que o escudeiro xa lle tragía a facanea e lla arrimaba aa escaleira do pórtico. Posta ela no último paso, sacou o manto, encartouno, pousouno sobre o arzón e apoiándose cunha man sobre a besta, dou un pulo e quedou montada a cabalo, e sin máis botou a andar ca mesma fuga con que viñera.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 660,
+      "id": 118
+    },
+    {
+      "text": "Aquel día en que por pirmeira vez a alcontramos na costa de Carelle, chegou como sempre sin novedá aa súa casa que estaba entre as parroquias de Mella e de Sendelle no mesmo sitio en que se xuntan dous rigueiros e xuntos van parar ao Iso. Así que o vixía da torre a avistou, dou o sinal para que todo estivese aviado para deixar caer a ponte levadiza asemade ela chegase. O pai, que xa a asperaba na porta, colleuna nos brazos, doulle un bico na frente, e sin máis marchou el mismo ca besta pra a caballeriza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 509,
+      "id": 119
+    },
+    {
+      "text": "Cando Fernán Vazquez tivo noticia da prisión de Gonzalo Ozores na batalla de Montiel, presas tamén quedaron as potencias da súa alma, porque el non sabía separalas do sitio en que el supoñía que se achaba encarcelado o seu señor. Nin comía, nin dormía, nin acougaba, maxinando sempre algún modo, algunha vía de rescatar ao seu pupilo. Pero ¿que podía facer el que fose conducente e afical pra o ouxeto que se propuñía? El non tiña máis que un rucio e unha espada, ¡e boa era! e Gonzalo estaba alá lonxe, lonxe, coutivo en Francia, ¡sabe Dios onde e como!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 554,
+      "id": 120
+    },
+    {
+      "text": "Por moito tempo a súa agra e afincada mágoa non achou outra demudanza, ¡ben triste por certo! que cando veu que todos, ou cuase tódolos estados e terras da casa de Ulloa, despois que o infante D. Enrique saleu ca súa, e o conde D. Fernando foi derrotado no Porto de Bois descamalláronse e esbardalláronse, como un feixe apertado a quen lle tallan a corre, e cada un marchou por seu lado nas uñas dos contrarios e envexosos. ¡Que trago pra el o pensar que aquel picariño que el criara con tanto amor e tanto desvelo para ser un gran señor, tiña que verse reducido á andar por portas como un probe mandingante!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 608,
+      "id": 121
+    },
+    {
+      "text": "En resumidas contas: o que os dous concertaron foi que Gonzalo, tan pronto como poidese, viñese en moito secreto ao convento para desde alí ir aviando as cousas, talantear a xente e ir dispoñendo todo para dar o golpe que todos deseiaban. Quedaron tamén en que os dous, Fernán Vázquez e Gonzalo Ozores, habían de salir desde Santiago aos montes da Tieira, onde os habían d'asperar dous acemileiros de toda confianza e ben impostos no que habían de facer cas mulas e cos hábitos que habían de vistir, para desde alí siguir así disfrazados hastra Sobrado. Todo o fixeron ao pee da letra, e todo lles saleu aa medida do seu pensamento.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 632,
+      "id": 122
+    },
+    {
+      "text": "Gonzalo Ozores quiría visitar por si mesmo os seus estados, falar cos seus antigos vasallos e asegurarse ben da súa disposición de ánimo. Mais esto non o podía facer senón a furto con moitas e grandes precaucións en sitios estraviados e moi a deshora. Xa celebrara algunhas xuntas sacretas nos suterráneos do castelo das Grovas, en algunha das encañadas da serra do Bocelo e en outros sitios somellantes.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 404,
+      "id": 123
+    },
+    {
+      "text": "Alberte e os seus compañeiros tamén saíron do seu tobo e puxéronse en camiño tras dos cabaleiros. Ao chegar xunto da eirexa, un dos pions racolleu as bestas e levounas ao pardiñeiro que estaba a carón. Ao redor da eirexa, e antre os penedos, non se vían máis que sombras que estaban quedas e silandeiras como aéreas e ensensibras espantonias. Por eso, así que sintiron chegar os de a cabalo, comenzaron de rebulir e de querer chistar calandiño unhas cas outras.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 461,
+      "id": 124
+    },
+    {
+      "text": "A súa dona Eldonza Yans era unha señora dina compañeira del. A vertú que mais nela sobresalía, era a da caridá. Aínda ben non sabía que en tal ou cual lugar había algunha enfermedá ou algunha coita, alá iba ela a remediar como podía aquela necesidá, mandando maeciñas ou calquer outra cousa que fixera falla, ou si cadraba asistindo ela mesma en presona. Sinte esto, ningún probe chegaba aa súa porta, que tivese que marchar cas maas baldeiras.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 444,
+      "id": 125
+    },
+    {
+      "text": "Neste lado, Oeste do claustro grande, que, por suposto, corresponde ao lado Este do claustro das procisións, enriba había dormitorios e unha capela na cual, en certas ocasións se reunía a comunidá. No lado Sur cadraba a bodega e maila rasura, que era unha fremosa peza de pranta circular cuberta por unha esbelta cúpola. No medio, á altura dun metro do chao, levantábase un pirámide foco de oito lados sostido por colunas. Debaixo había unha pequena lareira en que se quentaba a auga percisa para o caso. Da rasura pasábase a unha espaciosa solana, da cal se gozaba unha deliciosa vista. Neste mesmo lado Sur estaba tamén a leñeira e o taller dos canteiros.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 657,
+      "id": 126
+    },
+    {
+      "text": "Acabado o xantar, no cal tamén tiveron a súa parte os prisioneiros, Gonçalo Ozores deixou soltos a tódolos canteiros, carpinteiros e demais homes de oficio, anque non sin pidirlles antes xuramento de que non habían de volver a poñer man na fortaleza de Losoiro, nin noutra somellante. Aos homes de armas púxoos a bon recado, e encomendou a súa garda a Ares Vázquez de Vaamonde.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 377,
+      "id": 127
+    },
+    {
+      "text": "E con taes valentes e entusiastas acramacións, siguidas dos seus correspondentes atruxos, disfíxose e desparteuse a xunta. E con esto tamén se veu canto fai a veces a presencia e a voz dunha presona de autoridá e de ánimos. Aqueles homes, hastra estonces encollidos e acorados e faltos de resolución para todo, vémolos agora tan afoutos, tan dispostos, tan arriscados para calquer empresa por arrouzada que fose.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 412,
+      "id": 128
+    },
+    {
+      "text": "O coro ou presbiterio non empeza como é de adoito debaixo do arco trunfal, sinón máis afora, desde unha gradicela que atravesa toda a eirexa aa distancia de dous ou tres metros da entrada das áusides. Nesta gradicela, chaman a atención dúas culunas que están sirvindo de postes para sostela aos dous lados da entrada que dá paso ao presbiterio. Ambas e dúas teñen capiteles con follas de acanto, e a da direita ten na escocia da base, ou sea, no escave que separa os dous toros, unhas molduras e no filete dentes de serra.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 522,
+      "id": 129
+    },
+    {
+      "text": "Tódolos capiteles do interior da eirexa ofrecen o corte airoso dos capiteles gallegos: tambor cilíndrico por abaixo e por enriba salientes volutas que proyeutan un cadrado. Na súa maior parte están formados de follas de acanto, plantas acuáticas, palmas e outros motivos polo estilo. Hai un fantástico composto de catro mostros encarados e enlizados como unha maraña.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 367,
+      "id": 130
+    },
+    {
+      "text": "Pero agora decátome polo que é. Non che volvo culpa. Rímonos da pedra filosofal que noutros tempos revolveulle o seso a tantos homes. Ti tamén andas tras dunha pedra filosofal, dunha síntesis, dunha receta en vertú da cal, o si e malo non, a verdá e o error, o ben e mailo mal, a luz e as teebras se confundan e identifiquen, ou alomenos se xunten e irmanen. E poida que cacheando ben no sistema homeopático, que é o que agora adoutaches para curar as túas eivas, a alcontres. ¿Quen sabe? En camiño xa parece que estás.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 519,
+      "id": 131
+    },
+    {
+      "text": "Despois de dez anos de negra e penosa ausencia, que non dou de si máis que traballos, disgustos e amargos sufrimentos, entraba Gonzalo Ozores por primeira vez naquel castelo, no cal, como xa dixemos, vía el simbolizada toda a groria e todo esprendor da súa familia. Ter el no seu poder despois do que pasara o castelo de Curbián, ¡o castelo que era a casa petrucia de toda a súa xente! ¡Estábao vendo, e non o quería creer! Tal foi a empresión e a alegría, que lle causou o verse naquelas habitacións en que noutros tempos pasara horas tan felices e de tanto contento.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 568,
+      "id": 132
+    },
+    {
+      "text": "Non se fixeron os xordos os amigos do señor de Sampaio aa súa chamada, e ca aquela de ir a combatir aos antigos partidarios do Rei D. Pedro, deron en ferver e moverse e correr co intento de esbardallar aquela tropa que xa antes tanto lles dera que facer. En poucos días xuntáronse, pois, ao redor do Castro das Seixas máis de tres mil homes, cos cales se encamiñou logo o señor de Sampaio cara a Curbián. Como a todas horas viñan novos reforzos, foi camiñando pouco a pouco hastra chegar ao Castro de Ambreixo onde fixo alto pra tomar noticias de Curbián (que distaría como unha legua) e da xente que alí había.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 611,
+      "id": 133
+    },
+    {
+      "text": "Vendo pois, que a xente estaba tan ben disposta, escolleu unha campaña de hastra cen homes dos máis atrevidos e valentes pra que atacasen con ímpitu aos do Castro pola espalda, mentres o demais da hoste polas outras bandas a grandes berros os insultaba e aldraxaba con mil motes e vituperios coma os de marraus, lapóns, mulos, e outros peores e máis desnorantes, provocándoos a que salisen aa batalla. Os do Castro, por suposto, non iban a ser menos, e contestaban chamándolles páparos, barrosos, pichaleiros e outros vocables máis picantes e desvergonzados.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 558,
+      "id": 134
+    },
+    {
+      "text": "Cando, pois, calculou o de Ulloa que toda a xente de Vasco Gómez había de estar ao redor das Torres de Sampaio co afán de facer levantar o cerco que tanto a todos lles entrara, dicideuse a dar o golpe que viña meditando, e mandoulle recado a Fernán Vázquez que para tal noite, e era a décema despois que se puxeron sobre Sampaio, a eso das dez lle saíse ao sitio que lle marcaba, onde a eirexa de Moredo, cos apetrechos que lle dixera e mais con tres ou catro cabalos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 468,
+      "id": 135
+    },
+    {
+      "text": "Mais antes desto xa Gonçalo Ozores impuxera ben a todos no que habían de facer. Como xa dixemos, o castelo que se erguía sobre un coto de moi áspara e agra subida, era de pranta cadrada con catro cubos cadrados nas esquinas, e estaba rodeiado dun foxo bastante ancho. No ángulo Noroeste o foxo estreitábase, porque alí empalmaba cunha fendedura aberta naturalmente no monte que se extendía ensanchándose hastra a faldra. Por suposto, aquí o foxo, ou máis ben a fendedura, estaba estremada por un lado, polo cubo ou torreón do Noroeste, e polo outro por un serrón de penedos que alí formaba cugulo e despois viña baixando polo monte abaixo somellando o lombo dun imenso cocodrilo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 679,
+      "id": 136
+    },
+    {
+      "text": "E con tal motivo, como era de adoito en taes casos, renuieuse alí un boo fato de ministriles, e xugrares e arromedadores e segreles e trovadores, que ora cantando, ora ripinicando os seus estrumentos, ora discurseando e parrafeando, viñan a dar locemento e novedá aos seraos e a oumentar o bolicio e a foliada e algareo que naqueles días reinou en Curbián.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 356,
+      "id": 137
+    },
+    {
+      "text": "E ao calor destas festas e ao fume dos ousequios e cortesías, o fogo que no peito dun e mais doutro estaba de atrás aceso, foi ateando hastra o punto que eles non suspiraban por outra cousa, que porque chegase o momento dichoso en que a bendición do Ceo trabase con baraza que para nunca máis tívese soltadoiro, os seus corazós, que xa o amor tiña tan unidos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 359,
+      "id": 138
+    },
+    {
+      "text": "¿Quen che vía a Gonçalo Ozores asemade empezou a sintir o chaparrón que se lle viña incima? Púxose rubio coma a graa, e logo páledo, marelo, verde, e quedou estatoado sin dar fala. Alvaro Páez, que non reparara na turbación do seu amigo, ou si reparou, non a botara a mala parte, sigueu pra diante ca súa perorata, poñendo cada vez máis en visibre aperto a Gonçalo Ozores que se retorcía na súa cadeira como si estivera sentado sobre un niño de cobras.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 452,
+      "id": 139
+    },
+    {
+      "text": "Soilo para sí non sabe sinón ter palabras duras e aldraxosas. Cuase sempre, cando ten vagar, non se acupa noutras cousa que en alabar e ponderar a misericordia que Noso Señor usou ao adimitila e darlle pousada esta santa casa a ela, que era o refugallo do mundo e de quen o mundo fixera rastollo. E esto díceo con tal fervor e con tal esprito e con tal compunción, que a nós todas déixanos varadas e confundidas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 412,
+      "id": 140
+    },
+    {
+      "text": "A cabalo, pois, deste polmontorio érguese o castelo coma un fero e soberbio xigante, ceñudo, de nervudos membros, e que na súa arrogancia pertende que a súa fegura se destaque antre as nubes. Costa traballo borrar da alma a empresión que se sinte ao contemprar desde abaixo, desde a ponte de Pambre, aquela masa, non informe, sinón convenentemente arranxada, que resalta sobre o azul do firmamento, imponente, ameazadora e como facendo un mudo, pero solene requiremento.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 470,
+      "id": 141
+    },
+    {
+      "text": "Pasando agora ao recinto estrior, diremos que a súa pranta é un cadrilongo, dentro do cal, pero terciada pra un lado, se levanta a torre. Tiña dous pisos: o piso baixo e mailo sobrado, que, por suposto, no lado de adentro fundábase nos muros da torre. Nun dos lados deste recinto estrior había unha espaciosa cámara cunha gran chaminea, as cambotas da cal apoiábanse en dúas repisas en forma de cabezas de mouro.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 412,
+      "id": 142
+    },
+    {
+      "text": "Conocín o máis forte boxeador do mundo, Samuel Kupper. Tiña vinte e dous anos, mais forte que fora Jeffries nos seus bos tempos e con máis xeito que Johnson. Ganara xa o campeonato mundial de pesos medeos e d'un día a outro iba a loitar c'o vello campeón de pesos grandes. Era fixa a súa victoria. O vello campeón xa recibira o consello de llo dar sin loita.",
+      "source": "Conto sinxelo - Antón Losada Diéguez",
+      "length": 358,
+      "id": 143
+    },
+    {
+      "text": "Xa todo se cerrara d’escuma, e rompendo avantaban as augas. Non se vía un barco, zoaba o vento y-a noite chegaba. Foi estonces cando Chuco, o máis forte nadador de todol-os xeiteiros, botouse ó mar confiado e surrindo a buscar en terra axuda pr’ós probiños que alí se quedaban engarrados no barco deitado n-as olas. Todol-o viron loitar, avantando en longas brazadas con toda seguranza e ninguén dubidou que conseguise o proposto.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 430,
+      "id": 144
+    },
+    {
+      "text": "O problema agrario en Galicia non ten que ver co de ningunha outra parte d'España e de fora d'España. A pequena propiedade e n'a nosa terra a mais, non hay labrego que non sexa propietario e con todo eisisten un malestar, eisisten graves problemas económicos e de xusticia social n'as nosas aldeas, problemas que son da vida enteira do mundo, que non se pode esquecer y-hai que resolver.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 387,
+      "id": 145
+    },
+    {
+      "text": "¿Quen era esta arrogante rapaza que tan cedo e con aquel porte se presentara en Sobrado para cumprir as súas devocións? Era a filla, e filla única, do señor do Vilar de Mella, Vasco Fernández. Iba a facer dous anos que tivera aa morte á súa nai, e para que noso Señor lla sanase, oferecérase á visitar tódolos días a Santa María de Sobrado. Desde entonces, que chovese, que nevase, que fixese o tempo que quixese, non viña día ao mundo, que ela non fose facer a Sobrado a súa visita acustumada e oír misa podendo ser e asistir ao oficio divino. Daquela, por eso, había outro motivo máis que a obrigaba a non interrumpir o seu diario viaxe.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 639,
+      "id": 146
+    },
+    {
+      "text": "A nai non estaba moi conforme con estes paseos da filla. Mentras Beringuela non volvía, ela non acougaba e sempre estaba tembrando e receando algunha mala nova ou algunha mala ventura. Valíase ela de ter avisados, pero en moito secreto, aos viciños dos sitios por onde a filla debía pasar, para que tan pronto como soupesen que lle sucedera algunha cousa, viñesen de carreira a dicilo ao castelo. Mais, nin con esta precaución quedaba Eldonza, que así se chamaba, satisfeita e tranquila.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 487,
+      "id": 147
+    },
+    {
+      "text": "Pero sigamos ca nosa discrición. Sobre o entablamento do pirmeir corpo desplegábanse en ala doce estatuas de máis que tamaño natural. ¿Que facía aquela escolta ou guardia de honor? Eran os doce Apóstolos que presenciaban como Nosa Señora era subida ao ceo. E nafeuto no centro do segundo corpo do retablo abríase un gran camarín, o fondo do cal era unha gran ventana de vidros de colores. Sobre este fondo trasparente destacábase a imaxe da Soberana Reina en aititú de subir ao Empíreo. ¡Que efeuto non debía facer aquela grandiosa Imaxe no centro do retablo, radiante de groria e de luz!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 588,
+      "id": 148
+    },
+    {
+      "text": "Pero veñamos agora ao ouxeto que desta vez nos trouxo a Sobrado, que era saber a que altura se achaban os traballos de Gonzalo Ozores. Cabalmente unhos quince ou vinte días despois do en que comenzamos o noso conto, a altas horas da noite alcontrábanse parolando sobre o particular Gonzalo e mais seu amo Fernán Vázquez, o cal había días que estaba bastante debilitrado sin poder saír da celda nin aínda do leito.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 413,
+      "id": 149
+    },
+    {
+      "text": "Ao acabarse a comida, Beringuela que xa estaba ardendo por volver pra a casa, levantouse e dispideuse de todos cas máis corteses palabras, pero especialmente da dona da casa e máis de Lionor, ca cal estivo un boo pedazo abrazada como si lle quedaran entalados os brazos. E anque moito lle porfiaron para que quedase para a regueifa que había de ser de noite na casa do novio -que para ela estaban citados moitos mozos e mozas que tiñan sona de saber moi ben carpentexar versos e copras-, non houbo súpricas nin rogos que valesen.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 529,
+      "id": 150
+    },
+    {
+      "text": "E nafeuto, ao alborear a aurora do terceir día, despois da queima do paazo do Vilar, nun monte que estaba preto da eirexa de Pambre e para alá do río, achábanse reunidos cerca de mil homes, que todos eran de Ulla pra arriba. Aa mesma hora, noutro monte da parroquia de San Xusto da Rapostería, estaban xuntos os homes que mandara Alvaro Paez co recado de que logo chegaría el con máis. Serían por todos trecentos homes de a pee e vinte de a cabalo. Con eles estaban tamén os de Camba e os de Deza, que habían de ser unhos douscentos ou algo máis. Postos de acordo unhos cos outros, botaron a andar todos a un tempo cara a Curbián.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 630,
+      "id": 151
+    },
+    {
+      "text": "Ao recibir Vasco Gómez a tal noticia púxose na luna, e dou en bruar e en bufar que nin un touro bravo. Xa toda a xente do Castro das Seixas podía ver como andaba no aire, pra dar cumprimento, e moi exauto comprimento, a tódalas súas órdees. A nube de mandados e avisos que aquel día saleu daquela casa non é pra dita. Recados a Betanzos, recados a Lugo, recados a Villalba, recados a toda a terra de Narla, Trasparga, e a tódolos outros sitios onde el tiña amigos e aliados, dicíndolles que lle acudisen canto máis axiña poidesen, que viñera Gonzalo Ozores de Ulloa pra levantar outra vez a aborrecida bandeira do Rei D. Pedro, e que xa tomara algunhas fortalezas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 664,
+      "id": 152
+    },
+    {
+      "text": "Do cabaleiro, que era un home duns cincuenta anos, sosmentes direi que a súa armadura era unha obra acabada na súa cras. Tiña pezas labradas con tanta perfeición e alegancia, que si non foran frabicadas en Nuremberg ou en Pavía, fixéranas a amitación das mellores de eses dous sitios. A espada tiña as gardas de prata e o pomo ou mazán con que remataba o puño, estaba formado por unha vistosa e relucente bola de pedra ágata. A boca, as abrazadeiras e mailo regatón da vaina tamén eran de prata acicelada.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 505,
+      "id": 153
+    },
+    {
+      "text": "Despois das saúdes, noraboas e parabéns de adoito, despois de habérense abrazado unha e máis veces, Alvaro Páez e Gonçalo Ozores entraron a parolar largo das súas coitas. E tiñan pra un pouco, mormentes o segundo, que dende a última vez que se viran, pasáraas gordas. E aínda o de Soutomaior, pola súa parte, con moi sentidas e non cortas razós doieuse das desgracias do seu amigo, tanto como se folgaba agora dos seus bons sucesos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 432,
+      "id": 154
+    },
+    {
+      "text": "Quizaibes pensou el que aquel atoramento do de Ulloa era efeuto do impensado da porposición que lle iba facendo, ca cal, pra o seu xuício, non podía menos Gonçalo Ozores de reverse e antusiasmarse. Polo cual maxinou que o millor era que o mesmo intresado fose remoendo a cousa e tomándolle o paladar hastra que se lle volvese a boca auga, e se convencese el así mesmo de que era certo e positivo o ben que se lle propoñía.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 422,
+      "id": 155
+    },
+    {
+      "text": "O día antes de acabarse o prazo convenido antre Alvaro Páez e Gonçalo Ozores, aa porta da casa en que moraban os señores do Vilar de Mella, na parroquia de Rodieiros a eso das tres da tarde apeábase un cabaleiro montado nun faco, o cal, si habemos de dicir a verdá, non podía chamarse un Pegaso o un Babieca, pero tampouco non era un barrufeiro. O xenete era Fernán Vázquez que, dando por suposto que os donos habían de estar na casa, deixoulle a besta a un criado que se achaba alí preto, e sin máis cirimonias meteuse polo zaguán adiante peguntando a voces si había licencia e onde estaba a xente da casa. Como era algo parente de Eldonza, por eso entraba con aquela franqueza e desenvoltura.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 694,
+      "id": 156
+    },
+    {
+      "text": "Nin miga de infinximento había en todo o que dixera Fernán Vázquez. Dispideuse, pois, cas mellores razós que pudo e lle acertaron a vir aa boca, e como si o tiraran por unha corda, foi a dar parte ao seu señor do resultado da súa embaixada. E nafeuto, cunha corda iba amarrado o boo do home, cunha corda feita de tres cabos, o respeito, o cariño e a prontitú con que sempre acustumara a obedecer ao seu señor.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 409,
+      "id": 157
+    },
+    {
+      "text": "Ao pai achouno máis duro. Moito tivo que moler e matinar antes de chegar a consiguir que poidese ouvir sin asañarse que Beringuela quiría facerse fraira. Mais ela, como era tan liida, sacáballe mil testos e mil enxempros para abrandalo e facelo vir aas boas. Antre outros citáballe o feito daquel antigo xuez do poboo de Israel, chamado Jephté, o cal por medo de non ofender a Noso Señor non dubidou sacrificar aa súa filla única Seila. Así, unha xeira despois doutra, foino ao fin traendo ao rego. E escusado é dicir, que tan pronto ela veu reducidos e convencidos aos pais, cada día que pasaba, tardáballe un sigro mentres non dou todo aviado pra ir para o convento.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 668,
+      "id": 158
+    },
+    {
+      "text": "O que máis chama a atención neste recinto son os catro torreós das esquinas, a pranta dos cales non é redonda como sol ser a da maior parte dos daquela época sinón cadrada. Compóñense de tres pisos separados uns dos outros por bóvedas de cantería, e rematan con almeas polo estilo das da torre grande. O espesor das súas paredes é de dous metros e nove centímetros, e o espacio que encerra cada un ten dous metros e ochenta e catro centímetros de longo, por dous e corenta e cinco de ancho. Escusado é dicir que o blasón dos quince escaques propio dos Ulloas campea por tódolos lados do castelo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 595,
+      "id": 159
+    },
+    {
+      "text": "Non se soupo bén nunca, porque estas cousas non se saben bén endexamais. O mar estivera calmo, e batía un pouco de Nordeste. Fixéranse dous bos lances n-a illa, y-o barco voltaba pra terra cando caía o sol, con toda a vela pra aproveitar as frías. Debeu ser com’un lóstrego a nortada, a escota non correu a tempo, a carga foise a unha banda, calquer cousa, o conto foi que d’un soilo batido o vento dou volta ó barco y-os homes fóronse ó mar co’a sorte de se poderen por a salvo n-a quilla.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 490,
+      "id": 160
+    },
+    {
+      "text": "Ao pee da serra de Corno de Boi, preto do lugar de Sacel, nace de homilde orixen o río Pambre, o cual rodeiando o Castro das Seixas, centro das fechurías de Vasco Gómez, corre de Nordés a Sudoeste regando pola dreita as parroquias de Moredo, Felpós, Carballal, Cuiña Viña ou Ambreixo, Mato, Remonde e San Breixo e pola ezquerda as de Morlan, Ulloa, Maceda, Laia, Quindimil, Meixide, Camiño, Curbián e Pambre, hastra que despois dunha carreira dunhas catro légoas pouco máis abaixo do ponte da Mácora vese atallado polo Ulla que lle varre as súas augas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 552,
+      "id": 161
+    },
+    {
+      "text": "Ao chegar á a casa encontrouse Mariña c'unha novedá. Presentáronlle un lotiño e dentro, acomodadas n-un niño de herba seca unha parexa de pombas brancas coma as folerpas da neve, cas pernas enliadas c'unhas cintas vermellas, coma unha rosa ben vermella. Dentro tamén había un billete co sobre escrito pra ela. Apersurouse á collelo e á abrilo, pra canto máis que a letra parecíalle conocida, pero n-esto xa estaba na sua cámara. Abreuno tembrando pol-o medo do que lle podía vir alí, e leyeu o que sigue: A a señora Marina, de seu curmán Ramil.",
+      "source": "O niño de pombas - Antonio López Ferreiro",
+      "length": 544,
+      "id": 162
+    },
+    {
+      "text": "Á maores d'o mundo, d'o demo e d'a carne como teñen todal-as xentes, temos un fato d'eles: nove ministros en Madril, o Delegado d'a Facenda n-a provincia, o Adeministrador d'a Subalterna n-o partido, o Alcalde, os concexales y-o Sacretario n-o Concello, o cacique d'a parroquia, o veciño de porta con porta, a miseria n-a casa, os pedriscos n-os eidos, a fillosera n-os viñedos, o recaudador metido n-a cabeza, os trabucos e a contribucion territorial n-a cana d'os osos, a de consumos entalada n-as gorxas, a crência de que non hemos millorar de sorte n-o esprito, as falcatruas d'a curia enterradas hastr'o redaño, etc., etc., etc.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 633,
+      "id": 163
+    },
+    {
+      "text": "Xa antes de deixar a Sobrado puxérase de acordo con Fernán Vázquez acerca do modo de poñer libres aos seus amigos. Encargáralle moito que percurara enteirarse ben de como era o Castro das Seixas por dentro e dos sitios onde estaban encalabozados Beringuela e seus pais, mentras el iba ao feito de Curbián. Déralle tamén unha carta pra que, podendo ser, lla entregase a Beringuela na súa propia man.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 398,
+      "id": 164
+    },
+    {
+      "text": "Mais ¿quens eran aquel cabaleiro e aquela dona que iban con tanto acompañamento? A xuzgar polas tres faixas de escaques de ouro e gules, separadas por unhos filetes negros, bordados nos escudos de armas dos caparazóns e galdrapas das bestas, debían de ser dos de Soutomaior. Así era nafeuto. Xa dixemos que o señor Alvaro Páez de Soutomaior prometéralle a Gonçalo Ozores, que logo lle mandaría máis xente para axudalo a recobralos seus estados e máis a escaramentar aos seus anamigos. E tan ben o fixo o de Soutomaior, que quixo vir el en presona ca súa filla doña María. Estes, pois, eran os señores que vimos entrar na eirexa de Santa María de Millí.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 652,
+      "id": 165
+    },
+    {
+      "text": "Nesto o alcaide, que estaba polo Arcibispo no castelo de Millí, que xa puxera esculcas de quen era aquela xente e de que era o que viña buscando, presentouse no acampamento de Alvaro Páez, convidándoo para pasar a noite na fortaleza cas presonas que fosen do seu agrado. Tamén saleu a comprimentalo o P. Menistro do convento de Sancti Spíritus, que poucos anos antes se fundara dentro da vila e que andando o tempo había de ser a residencia habitual do Xeneral dos Terceiros de San Francisco en Galicia. O propio fixeron algúns dos prencipales viciños de Millí.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 561,
+      "id": 166
+    },
+    {
+      "text": "De calquer maneira, porque non hay cousa mais fácele n-o país. Todal-as aldeas contan con picapreitos estrapexantes que poñen escola de testigos falsos, namentras as outras están pechadas. Por unha picallada e sin escrúpulos de concencia botan á presidio á calquer home de ben; por un par de pesetas non falta quen co-a man en cruz xure, que viu pol-os seus ollos, y-así Diol-o salve, voar os burros, vestidos de gardas civís os mosquitos, tirar d'un carro dous porcos e cantar misa unha ovella, ou facer un Alcalde boas obras.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 527,
+      "id": 167
+    },
+    {
+      "text": "Debemos ademais supoñer que na eirexa vella sobre o cruceiro se irguía a cúpula e que ao redor da capela maor había o seu deambulatorio ou coroa, ou chirola como o ten a de Oseira; pois eirexa tan importante como a de Sobrado, que comezou a levantarse en época de tanto gusto e fartura, como foi a segunda mitá do sigro XII e baixo o impulso e direición dun home de tanto rasgo como foi o abade D. Xil, non había de quedar desprovista de tan vistosos aucesorios.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 462,
+      "id": 168
+    },
+    {
+      "text": "Un mes ou pouco máis facía que aa portaría de Sobrado antre lusco e fusco chegaran dous frades brancos ou de San Bernaldo montados en dúas poderosas e ben arreadas mulas. Un deles era un home como duns sasenta anos, fraco, esgomiado e enfremizo ao que paricía; o outro era un mozatón coma un castillo, rubio e colorado coma unha rosa e coma duns vinte e oito anos de idá. Según decían os acemeleiros que os acompañaban, viñan do convento de San Xusto, de onde saíran por causa do máis vello que quiría ver si ca muda de aires acababa de poñerse boo e recobraba a salú.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 568,
+      "id": 169
+    },
+    {
+      "text": "Mais ao que lle dese por maliciarse e ao mesmo tempo fose algo entendido nas pláuticas e custumes da vida monacal, poida que lle parecese que aqueles dous frades, ou eran frades moi novatos, ou non lles vestía ben o hábito que tragían. Engadede a esto que o P. Abade tratábaos con máis atencións das que pudían pensarse acreedores uns simpres frades, retíñaos a miúdo na súa cámara, e estaba parolando con eles a veces con moita reserva. E desque eles chegaran a Sobrado amiudaban os propios e recados; e todos iban e viñan percurando moito disimulo e sacreto.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 560,
+      "id": 170
+    },
+    {
+      "text": "Respeuto do pai acordaron polo pronto non dicirlle nada hastra ver como se iban presentando as cousas; e esto, porque, dieble e altereado como estaba, era moi fácele ou que ca impresión de ver de socato e improviso ao fillo lle dese un pasamento do que quizais non volvese, ou que co gozo e a alegría non poidese conterse e sin querelo dese lugar a que se descubrise todo o cotarro.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 382,
+      "id": 171
+    },
+    {
+      "text": "Pero todo esto é nada si nos falta unha cousa; e esta cousa é o facer estes preparativos ca maior reserva e sixilo, e gardar todos sobre o feito o máis compreto e ousoluto sacreto. E para esto xuremos todos diante deste Señor que nos está vendo e ouvindo, e que algún día nolo ha de demandar, que nada habemos de dicir de canto aquí se falou, nin de canto estamos dispostos a facer e axecutar.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 393,
+      "id": 172
+    },
+    {
+      "text": "Ao tempo que Alberte foi a buscalo, achábase no Castro das Seixas, apurando aos canteiros para que lle acabasen logo a nova fortaleza, que alí estaba construíndo. A cal fortaleza tiña de forma un cadrado cun torreón tamén cadrado nas esquinas; soilo que o torreón da esquina que miraba ao Surleste, era máis grande que os outros, por canto alí estaba aberta a porta que daba entrada ao castelo. A fortaleza viña, pois, a encerrar un patio cadrado, sendo así que as casas de morada estaban pegadas ao lenzo Norte da muralla.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 523,
+      "id": 173
+    },
+    {
+      "text": "Pero volvamos a Sobrado. E xa que se trata, como si dixéramos, dun augusto calabre sentenciado a ser comido polos lobos, que no noso caso son o tempo, e a indifrencia e aínda a pouca voluntá dos homes, ca axuda dun prano e das noticias que me proporcionou meu boo amigo Sr. D. Manuel Losada, permítaseme fotografialo antes que esto suceda. E non se asañe o leutor porque eu fale de fotografiar, cando para todo podría ter maña menos para eso; pero por mor da miña boa intención aspero que se me perdonará tan arrouzado e temerario empeño.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 538,
+      "id": 174
+    },
+    {
+      "text": "Hastra aquí todos foron recordos, e nada máis que recordos; porque a realidá, a triste realidá, non é sinón unha imensa morea de escombros. ¡E como se presta aa meditación esta elocuente imaxe das futuras ruínas da nosa sociedá! Porque si esto se fixo no madeiro verde ¿que non se fará no seco? ¡Ben que chegamos aos tempos en que verdadeiramente esto matou a aquelo! ¿E quen matará a esto? Este problema poida que nos axude a resolvelo a dinamita.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 448,
+      "id": 175
+    },
+    {
+      "text": "Agora o pran de Gonzalo Ozores era, así que as teebras da noite pirmitisen apelumbrar os ouxetos, saír os tres fatos a un tempo, cada un do seu tobo, e ir subindo pouco a pouco hasta chegar ao cruto do monte. Así se fixo, nafeuto, sin tropezo algún; e ao escomezar o sol a estender as súas raiolas polo horizonte, alcontráronse uns cos outros, de modo que no punto e momento en que os canteiros e demais xornaleiros se puñan aa súa faena, xa estaba formado todo ao redor do castelo un cordón que cada vez de máis cerca o iba cerrando e envolvendo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 547,
+      "id": 176
+    },
+    {
+      "text": "D'o sacho que me fai callos n-as maus, d'a terra que rego c'o sudor d'a miña testa, d'as mouras fames que paso, d'o aire que brua n-as miñas faltriqueiras, d'a monteira que levo n-a chola, d'a coroza de palla que me libra d'a chuvia, d'as cirigolas d'estopa que me cobren de medio corpo abaixo, e d'outras cativeces entr'as que vivo aguniando. Home acabadiño de traballos, caste de besta de carga n-a que tanguen á rabear os que gobernan, ser á quen fan pagar cédula como as persoas pra tratalo com'os cás, que leva faltriqueira n-o traxe por fantesia, boca n-a cara por bulra, que anda d'arrastro como as cobras, que fura n-a terra como as toupeiras, que traballa moito e come pouco, que á somellanza d'os burros d'arrieiro que levan o viño e beben a auga, precuran o trigo pra comer o millo, que anda langraneando por unha peseta sin poder nunca xuntala, e que ven á ser considerado pol-os seus somellantes como un ninguen que á todo chamar chámanlle Xan paisano.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 965,
+      "id": 177
+    },
+    {
+      "text": "Vendo que non hay un chavo nin unha cunca de fariña n-a chouza, que o recaudador non dorme, que hay que manter a muller y-ôs fillos, que os que gobernan non fan mais que pidir trabucos, que os que mandan queren ter sempre o comedeiro acugulado, que o persupuesto de gastos é un pozo sin fondo, e que o persupuesto d'ingresos non pasa de ser unha cesta que os estadistas se degoran por encher d'auga, que sin cartos non se pode dar un paso n-este mundo, nin hay xusticia, nin dereito, nin xiquera é un xente, que desque lle chaman á un volo n-o bautismo hastra niquitate n-o enterro, pasando pol-a confirmacion en que nos dan unha lufiada n-a cara, hastr'o matrimonio en que nos xunguen á unha muller pra facer unha xunta de boy e vaca que ha turrar pol-o carro d'a familia, temos que soltar os cartiños d'unha maneira ou d'outra, pois si non é por fás é por nefas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 864,
+      "id": 178
+    },
+    {
+      "text": "O coro ou presbiterio non empeza como é de adoito debaixo do arco trunfal, sinón máis afora, desde unha gradicela que atravesa toda a eirexa aa distancia de dous ou tres metros da entrada das áusides. Nesta gradicela, chaman a atención dúas culunas que están sirvindo de postes para sostela aos dous lados da entrada que dá paso ao presbiterio. Ambas e dúas teñen capiteles con follas de acanto, e a da direita ten na escocia da base, ou sea, no escave que separa os dous toros, unhas molduras e no filete dentes de serra. Tódolos capiteles do interior da eirexa ofrecen o corte airoso dos capiteles gallegos: tambor cilíndrico por abaixo e por enriba salientes volutas que proyeutan un cadrado. Na súa maior parte están formados de follas de acanto, plantas acuáticas, palmas e outros motivos polo estilo. Hai un fantástico composto de catro mostros encarados e enlizados como unha maraña.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 890,
+      "id": 179
+    },
+    {
+      "text": "Asomade deron vista ao anamigo, que aparicía moi ben aparapetado no dito Castro de Ambreixo, Gonçalo Ozores aparentou que dubidaba dar o ataque ca intención de escudrumar en que ánimo estaba a súa xente. Vendo pois, que a xente estaba tan ben disposta, escolleu unha campaña de hastra cen homes dos máis atrevidos e valentes pra que atacasen con ímpitu aos do Castro pola espalda, mentres o demais da hoste polas outras bandas a grandes berros os insultaba e aldraxaba con mil motes e vituperios coma os de marraus, lapóns, mulos, e outros peores e máis desnorantes, provocándoos a que salisen aa batalla. Os do Castro, por suposto, non iban a ser menos, e contestaban chamándolles páparos, barrosos, pichaleiros e outros vocables máis picantes e desvergonzados.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 762,
+      "id": 180
+    },
+    {
+      "text": "O que é de adimirar é o ben costruídas que están tanto estas paredes, como as do recinto estrior de que logo falaremos. Os sillares parez que están cortados aa navalla da barba, ¡tan ben labrados, tan desempenados e tan ben asentados están! Así é que a edra e outras prantas parásitas trepan polos muros arriba, pero sin que achen moito modo de enfiar nas xuntas as súas raíces. Onde se ve tamén o crusarios que eran aqueles canteiros é nun lenzo de parede do recinto estrior, que inda conserva o marco dun postigo hoxe tapeado, e que cuase todo el está acimentado nun desconforme penedo. Os cortes dos sillares están tan ben aditados cos dentes arregañados do croio, que pena e parede parecen unha soila peza enteiriza, riscada en sitios para máis ben parecer.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 761,
+      "id": 181
+    },
+    {
+      "text": "Estáse producindo no mundo unha gran revolta, a loita dos obreiros cos capitalistas, a guerra social. O estado de guerra mundial espállase mais cada día. Nós pensamos qu'esta gran revolta ten a orige na artificialidade esencial da vida moderna, no leixamento da natureza, fiando todo o progreso humán y-o perfeicionamento do home na potencialidade económica e industrial e na concentración nas grandes cidades. O nacionalismo galego, diante dos probremas do mundo, sinitica unha chamada â vida mais natural, mais a carón da Terra. Na custión social, nin obreiros nin capitalistas teñen razón. Ningunha trasformación do régime pode remediar nada. Os obreiros non remediarán nada con derribaren o régime capitalista, si é que siguen junguidos ô industrialismo.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 758,
+      "id": 182
+    },
+    {
+      "text": "Pero volvendo ao noso conto, e por mor de Sobrado perdónenme a digresión, así que a doncela percebeu os ocos dos sonoros cantos relixiosos, non poido acuitar a empresión que sintira, e un lixeiro estremecimento que lle fixo estordigar todo o corpo, descobreu a súa comoción. Oieu a misa da Prima con gran recollemento, e acabadas as súas devocións, saeu da eirexa ao tempo que o escudeiro xa lle tragía a facanea e lla arrimaba aa escaleira do pórtico. Posta ela no último paso, sacou o manto, encartouno, pousouno sobre o arzón e apoiándose cunha man sobre a besta, dou un pulo e quedou montada a cabalo, e sin máis botou a andar ca mesma fuga con que viñera. ¿Quen era esta arrogante rapaza que tan cedo e con aquel porte se presentara en Sobrado para cumprir as súas devocións? Era a filla, e filla única, do señor do Vilar de Mella, Vasco Fernández. Iba a facer dous anos que tivera aa morte á súa nai, e para que noso Señor lla sanase, oferecérase á visitar tódolos días a Santa María de Sobrado. Desde entonces, que chovese, que nevase, que fixese o tempo que quixese, non viña día ao mundo, que ela non fose facer a Sobrado a súa visita acustumada e oír misa podendo ser e asistir ao oficio divino. Daquela, por eso, había outro motivo máis que a obrigaba a non interrumpir o seu diario viaxe.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 1300,
+      "id": 183
+    },
+    {
+      "text": "¡De taes escenas foron treato aqueles muros hoxe cubertos de verdín e enferruxados, non sabemos si polo abandono e desamparo en que están, ou polo aburremento e noxo que lles dá a insensatez e a desconsideración dos homes! ¡Dichoso o poobo que tan ao seu xeito pudía gozar de taes espeitáculos! Pero sigamos ca nosa discrición. Sobre o entablamento do pirmeir corpo desplegábanse en ala doce estatuas de máis que tamaño natural. ¿Que facía aquela escolta ou guardia de honor? Eran os doce Apóstolos que presenciaban como Nosa Señora era subida ao ceo. E nafeuto no centro do segundo corpo do retablo abríase un gran camarín, o fondo do cal era unha gran ventana de vidros de colores. Sobre este fondo trasparente destacábase a imaxe da Soberana Reina en aititú de subir ao Empíreo. ¡Que efeuto non debía facer aquela grandiosa Imaxe no centro do retablo, radiante de groria e de luz!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 883,
+      "id": 184
+    },
+    {
+      "text": "O que el proyeutaba con todos aqueles perparativos era un golpe sobre o castelo de Curbián. ¡Curbián! ¡Que sinfín de recordos a cada cal máis fondos e máis atraentes non enzarraba para el aquel paazo! ¡Alí vía el cifrada toda a groria, toda a nobreza da súa familia! ¡Alí achaba el concentrado e encarnado todo o que pra un Ulloa podía ser caro e de estima neste mundo! ¡Curbián! Este soilo nombre traíalle aa mamona os alegres tempos da súa mocidá en que el nunca se cansaba de oír da boca dos criados e escudeiros da súa casa as fazañas do seu pai Vasco López, as do seu avoo Lopo Sánchez, as do seu bisavoo Sancho Sánchez, a quen tanto estimaron os Reis D. Sancho IV e D. Fernando IV, as do seu tartaravoo Sancho López, as do seu carto avoo Lopo Rodríguez e as de outros moitos seus antepasados. Todos estes recordos, todos estes pensamentos eran outros tantos aguillóns que lle aguilloaban a alma ca ansia de arrincar canto máis antes das maos do usurpador Vasco Gómez aquel paazo, que era coma o santuario da súa familia.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 1026,
+      "id": 185
+    },
+    {
+      "text": "Dicidido, pois a ir a recobrar a fortaleza de Curbián, mandou aviso a tódolos seus amigos e partidarios da terra de Sobrado e de Millide, para que no punto e hora que lles dicía, estivesen todos reunidos sin falta. Ao mesmo tempo pasou recado aos da ponte de Albidrón para que tamén salisen ao sitio que lles marcaba. E nafeuto, ao alborear a aurora do terceir día, despois da queima do paazo do Vilar, nun monte que estaba preto da eirexa de Pambre e para alá do río, achábanse reunidos cerca de mil homes, que todos eran de Ulla pra arriba. Aa mesma hora, noutro monte da parroquia de San Xusto da Rapostería, estaban xuntos os homes que mandara Alvaro Paez co recado de que logo chegaría el con máis. Serían por todos trecentos homes de a pee e vinte de a cabalo. Con eles estaban tamén os de Camba e os de Deza, que habían de ser unhos douscentos ou algo máis. Postos de acordo unhos cos outros, botaron a andar todos a un tempo cara a Curbián.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 948,
+      "id": 186
+    },
+    {
+      "text": "Ao recibir Vasco Gómez a tal noticia púxose na luna, e dou en bruar e en bufar que nin un touro bravo. Xa toda a xente do Castro das Seixas podía ver como andaba no aire, pra dar cumprimento, e moi exauto comprimento, a tódalas súas órdees. A nube de mandados e avisos que aquel día saleu daquela casa non é pra dita. Recados a Betanzos, recados a Lugo, recados a Villalba, recados a toda a terra de Narla, Trasparga, e a tódolos outros sitios onde el tiña amigos e aliados, dicíndolles que lle acudisen canto máis axiña poidesen, que viñera Gonzalo Ozores de Ulloa pra levantar outra vez a aborrecida bandeira do Rei D. Pedro, e que xa tomara algunhas fortalezas. Non se fixeron os xordos os amigos do señor de Sampaio aa súa chamada, e ca aquela de ir a combatir aos antigos partidarios do Rei D. Pedro, deron en ferver e moverse e correr co intento de esbardallar aquela tropa que xa antes tanto lles dera que facer. En poucos días xuntáronse, pois, ao redor do Castro das Seixas máis de tres mil homes, cos cales se encamiñou logo o señor de Sampaio cara a Curbián. Como a todas horas viñan novos reforzos, foi camiñando pouco a pouco hastra chegar ao Castro de Ambreixo onde fixo alto pra tomar noticias de Curbián (que distaría como unha legua) e da xente que alí había.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 1276,
+      "id": 187
+    },
+    {
+      "text": "Das galdrapas da besta xa dixemos que eran de torciopelo verde con galós, frecos e boiras de ouro. Todo o demais aparello, coma a cabezada, o bocado, as bridas, etc.. correspondía co luxo e rango da xeneta. Do cabaleiro, que era un home duns cincuenta anos, sosmentes direi que a súa armadura era unha obra acabada na súa cras. Tiña pezas labradas con tanta perfeición e alegancia, que si non foran frabicadas en Nuremberg ou en Pavía, fixéranas a amitación das mellores de eses dous sitios. A espada tiña as gardas de prata e o pomo ou mazán con que remataba o puño, estaba formado por unha vistosa e relucente bola de pedra ágata. A boca, as abrazadeiras e mailo regatón da vaina tamén eran de prata acicelada.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 712,
+      "id": 188
+    },
+    {
+      "text": "Ao outro día ben cedo dispideuse do casteleiro e púxose en marcha pra Curbián sin mandarlle ningún aviso nin recado a Gonçalo Ozores, pois quiría collelo de socato. O de Ulloa, por eso, sorprendido e todo recebeuno con todo o agasallo e atenciós propias dun gran señor. Despois das saúdes, noraboas e parabéns de adoito, despois de habérense abrazado unha e máis veces, Alvaro Páez e Gonçalo Ozores entraron a parolar largo das súas coitas. E tiñan pra un pouco, mormentes o segundo, que dende a última vez que se viran, pasáraas gordas. E aínda o de Soutomaior, pola súa parte, con moi sentidas e non cortas razós doieuse das desgracias do seu amigo, tanto como se folgaba agora dos seus bons sucesos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 702,
+      "id": 189
+    },
+    {
+      "text": "Non se soupo bén nunca, porque estas cousas non se saben bén endexamais. O mar estivera calmo, e batía un pouco de Nordeste. Fixéranse dous bos lances n-a illa, y-o barco voltaba pra terra cando caía o sol, con toda a vela pra aproveitar as frías. Debeu ser com’un lóstrego a nortada, a escota non correu a tempo, a carga foise a unha banda, calquer cousa, o conto foi que d’un soilo batido o vento dou volta ó barco y-os homes fóronse ó mar co’a sorte de se poderen por a salvo n-a quilla. Xa todo se cerrara d’escuma, e rompendo avantaban as augas. Non se vía un barco, zoaba o vento y-a noite chegaba. Foi estonces cando Chuco, o máis forte nadador de todol-os xeiteiros, botouse ó mar confiado e surrindo a buscar en terra axuda pr’ós probiños que alí se quedaban engarrados no barco deitado n-as olas. Todol-o viron loitar, avantando en longas brazadas con toda seguranza e ninguén dubidou que conseguise o proposto.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 921,
+      "id": 190
+    },
+    {
+      "text": "Estamos n'un tempo en qu'e preciso recollerse un pouco pra escoller os mais axeitados camiños n'a vida social e política, tan cheas hoxe de loitas e revoltas. Ollando o mundo encóllese o curazón de medo e de esperanza. Todo sangra, y-ainda nada frolece. Anúncianse boas novas e redenciós a eito, mais por decontado a fame y-as loitas non fuxiron. E n'a España unha espranza ven, y-outra se vai y-a fedenta política enche o país noso de lama e de movimentos e combinaciós d'os partidos que dan noxo. As ilusiós desfeitas dos homes de boa fe cuasemente non topan onde pousarse pra alcender a y-alma e quentar as suas ansias. Mais non se pode acougar. Hoxe como nunca e un debere o loitar polo ideal, pra todos os que o sintan, e se comprendan irmans dos homes todos.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 764,
+      "id": 191
+    },
+    {
+      "text": "¿Qué camiño escoller? Ninguén pousa tan en firme como os agrarios que volven a vista a terra, que se acollen ó agrarismo d'a Natureza. E ningún agrarismo tan forte n'o seu orixe como o agrarismo galego. O problema agrario en Galicia non ten que ver co de ningunha outra parte d'España e de fora d'España. A pequena propiedade e n'a nosa terra a mais, non hay labrego que non sexa propietario e con todo eisisten un malestar, eisisten graves problemas económicos e de xusticia social n'as nosas aldeas, problemas que son da vida enteira do mundo, que non se pode esquecer y-hai que resolver. Lembradevos ben, con todo, agrarios galegos, que sodes fillos de Galicia, qu'a nosa vida d'o campo, os nosos cultivos, os edios, monte y-augas nosas son d'a terra nosa e teñen un carauter seu que non se pode confundire, nin se deben estudiar sinón como tales asuntos galegos caraiterísticos y-enxebres.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 893,
+      "id": 192
+    },
+    {
+      "text": "Y-os nosos lugares, aldeas e vilas cheos de vividores políticos e de criados d'os grandes amos políticos que viven n'a capital d'a porvincia ou en Madrid están pedindo unha limpeza, y-unha rega de ideaes e de aución política tamén enxebre, que non e soilo nosa. Canto mais n'a realidade vexamos as custións canto mais preto de nos y-en nos mesmos estudiemos os problemas, mais preto estamos d'a realidade d'o mundo enteiro e mais importancia e forza terán as nosas soluciós. Por eso tivo este Congreso agrario d'o vran, esta reunión agraria de Pontareas n'o primeiro ano despois da guerra un interés excepcional. Agrarios galegos, xuntádevos todos n'o agarimo d'a terra, n'o colo de Galicia, pra recoller n'ela todo o entusiasmo y-o espíritu que fai falla.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 756,
+      "id": 193
+    },
+    {
+      "text": "Nosoutros pedimos o reino de Dios porque o d'este mundo anda en maus de catro galafates. Pidimos que Dios veña á gobernar este cotarro qu'anda levado d'o demo. ¡E vosté non-o vé santiño! Pidimos pan pra levar â boca, xa que pra nosoutros ou anda pol-as nubes, ou está pechado con cerrollo n-as tullas d'os vinculeiros. Pidimos algo que comer xa que traballamos como negros. Pidimos pan pra manter os fillos que nol-o piden en coiro e co-as manciñas direitas. E non é moito pidir pan, xa que o compango é pr'os que poden. Perdónanos nosas deudas así como nosoutros perdoamos ôs nosos deudores. O que non-os han dar nunca: pois inda ben non lle debemos un peso á calquera xa temos o ministro â porta co-a demanda. Os nosos deudores ben perdoados están porque ninguen nos debe nin un chavo.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 787,
+      "id": 194
+    },
+    {
+      "text": "A todo esto xa había un pouco que estaban parados diante da corredoira que aparta do camiño raial para a eirexa de Libureiro, para aquela eirexa de Libureiro que aínda hoxe conserva no sobrelume da porta prencipal unha preciosa imaxe de bulto, da patrona, Santa María, a cal non hai moito que tiven a sorte de poder contemprar ao meu xeito en compañía dunhos boos e quiridos amigos. Sobre o xionllo esquerdo ten a Virxen Madre, que está senta nunha rica cadeira, ao seu Meniño, ao cual está Ela mirando con dooce e inefabre espresión. O Meniño viste túnica e a Nai túnica e manto e ademais unha touca rizada, e sobre ela unha coroa flordelisada. No campo do tímpano ou sobrelume dous anxees turiferarios, un de cada lado, levantan os seus encensarios en sinal de adoración.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 773,
+      "id": 195
+    },
+    {
+      "text": "Dividíase a soberbia obra, da cal hoxe non quedan máis que os macizos fundamentos de cantería, cas súas correspondentes escaleiras para servicio do altar, en tres corpos contando co gran frontispicio que a corvaba. As colunas do pirmeir corpo eran de tanto valume, que dentro delas había escaleiras pra subir ao segundo corpo. Nos pedestales sobre que pousaban era onde estaban os baixo-releves de que falamos antes. No fondo dos entrecolunios estaban esculpidas tamén en releve escenas da conquista do Novo Mundo. Pero o que máis sorprendía neste primeir corpo do retablo era o gran temprete xiratorio que estaba montado sobre o chao no fondo dun burato cadrado que inda hoxe se ve antre os dous macizos fundamentos que mencionamos ao principio. ¡Que subrime espeitáculo non ofrecería a maxestá con que xiraba aquel colosal temprete para recebir antre as súas colunas a Noso Señor Sacramentado! ¡Era o mundo posto de tarima aos pés do Altísimo para espoñelo aa xeeral adoración!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 979,
+      "id": 196
+    },
+    {
+      "text": "Ao pai achouno máis duro. Moito tivo que moler e matinar antes de chegar a consiguir que poidese ouvir sin asañarse que Beringuela quiría facerse fraira. Mais ela, como era tan liida, sacáballe mil testos e mil enxempros para abrandalo e facelo vir aas boas. Antre outros citáballe o feito daquel antigo xuez do poboo de Israel, chamado Jephté, o cal por medo de non ofender a Noso Señor non dubidou sacrificar aa súa filla única Seila. Así, unha xeira despois doutra, foino ao fin traendo ao rego. E escusado é dicir, que tan pronto ela veu reducidos e convencidos aos pais, cada día que pasaba, tardáballe un sigro mentres non dou todo aviado pra ir para o convento. E aquí ten o leutor cortés, como e por que topamos a Beringuela de fraira en Dormeá.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 753,
+      "id": 197
+    },
+    {
+      "text": "Agora poderemos comprender o contenido e sinificado da carta dirixida polo conduto de Beringuela ao Señor do Vilar de Mella, que era un dos máis dicididos partidarios de Gonzalo Ozores. Ao pee da serra de Corno de Boi, preto do lugar de Sacel, nace de homilde orixen o río Pambre, o cual rodeiando o Castro das Seixas, centro das fechurías de Vasco Gómez, corre de Nordés a Sudoeste regando pola dreita as parroquias de Moredo, Felpós, Carballal, Cuiña Viña ou Ambreixo, Mato, Remonde e San Breixo e pola ezquerda as de Morlan, Ulloa, Maceda, Laia, Quindimil, Meixide, Camiño, Curbián e Pambre, hastra que despois dunha carreira dunhas catro légoas pouco máis abaixo do ponte da Mácora vese atallado polo Ulla que lle varre as súas augas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 738,
+      "id": 198
+    },
+    {
+      "text": "Por non perder a costume qu'herdamos d'os nosos pâis que víviron mais acomodados. Enganándonos, coidando que son pan pra ver si d'este xeito enganamos o estómago. Porqu'en todo tempo e lugar os nosos gobernantes n-os piden as pagas d'os trabucos y-os señoríos as rendas. Á maores d'o mundo, d'o demo e d'a carne como teñen todal-as xentes, temos un fato d'eles: nove ministros en Madril, o Delegado d'a Facenda n-a provincia, o Adeministrador d'a Subalterna n-o partido, o Alcalde, os concexales y-o Sacretario n-o Concello, o cacique d'a parroquia, o veciño de porta con porta, a miseria n-a casa, os pedriscos n-os eidos, a fillosera n-os viñedos, o recaudador metido n-a cabeza, os trabucos e a contribucion territorial n-a cana d'os osos, a de consumos entalada n-as gorxas, a crência de que non hemos millorar de sorte n-o esprito, as falcatruas d'a curia enterradas hastr'o redaño, etc., etc., etc.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 904,
+      "id": 199
+    },
+    {
+      "text": "Pra hos facer cristianos anque logo nos traten como mouros, e pra que teñamos un nome c'o que se nos coneza n-os recibos d'a contribucion, n-as listas d'o sorteo de quintas, n-as citaciós á xuicio e n-outros documentiños por este xeito. Pra que non botemos de perda o noso nome e pra que, co-a lufiada que nos dan n-a cara ô confirmarnos, nos vayamos afacendo âs que mais adiante nos han de dar n-o lombo. Pra purgar os pecados alleos, que os nosos ben purgádol-os temos co-a vida arrastradiña que levamos. Pra que manteñ'as nosas almas xa que os corpos andan famentos, como Dios e nosoutros sabemos. Pr'os que non son labregos estar en aunas dendesd'as doce d'a derradeira noite; nosoutros como sempre temos o estómago valeiro podemos comulgar á calquer hora.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 760,
+      "id": 200
+    },
+    {
+      "text": "E esto dito, mete esporas ao cabalo, e a todo escape e levando detrás ao escudeiro torceu para Abelás, sigueu para Bagude, e mismo estando xa para entrar no castro o señor de Bagude: E antes de acabar de dicir, xa brincara encima do outro ca espada desenvainada e botando lume polos ollos. O de Bagude quedou tan atortoado, que non soupo facer máis que risparse para dentro do castelo. No entramentres don Fernando antepuxo ao preso, e volvéndose aos catro ou cinco peóns que alí estaban, soltoulles esta receta: Destas cousas estaba el facendo diario. Non llas calaba ao fillo do sol, e coidado con que el soupese que en algún sitio se fixera algunha maldá; alí se presentaba ao istante para emendala e correxela. Para esto non sei como facía, pero sempre tiña el azo e leser.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 777,
+      "id": 201
+    },
+    {
+      "text": "Respeuto do pai acordaron polo pronto non dicirlle nada hastra ver como se iban presentando as cousas; e esto, porque, dieble e altereado como estaba, era moi fácele ou que ca impresión de ver de socato e improviso ao fillo lle dese un pasamento do que quizais non volvese, ou que co gozo e a alegría non poidese conterse e sin querelo dese lugar a que se descubrise todo o cotarro. Gonzalo Ozores quiría visitar por si mesmo os seus estados, falar cos seus antigos vasallos e asegurarse ben da súa disposición de ánimo. Mais esto non o podía facer senón a furto con moitas e grandes precaucións en sitios estraviados e moi a deshora. Xa celebrara algunhas xuntas sacretas nos suterráneos do castelo das Grovas, en algunha das encañadas da serra do Bocelo e en outros sitios somellantes.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 787,
+      "id": 202
+    },
+    {
+      "text": "A portada do lado do Sur, que era a que cumunicaba co convento, é a máis artística. Componse de dúas archivoltas e un tornachuvias, do cual carecen as outras dúas portadas. O lintel está formado de tres lóbulos, e a primeira archivolta que o rodeia componse dun baquetón festonado de oito arquiños. A sigunda archivolta está formada por dous baquetóns máis estreitos separados por unha media caña. O tornachuvias componse dunha serie semicircular de cabezas humanas. A imposta está adornada de frores cruciformes, rombos e outros debuxos. Debaixo da imposta están as catro culunas, dúas de cada lado, que sosteñen as dúas archivoltas. Os capiteles son de follas de acanto; as bases teñen pomas ou bolas na escocia e grapas nas enxutas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 735,
+      "id": 203
+    },
+    {
+      "text": "Pola súa parte os da afora, ouservando aquela estragueira, cada vez con máis ánimo e con máis brío foron apertando o cerco, e xa dispoñían a escalar os muros; polo que os defensores do castelo véndose antre dous fogos dos cales non sabían cal era o pior, pidiron pairamento ca intinción de entregarse. Mais por eso Macías e os seus compañeiros siguironlles atizando de firme dando ao mesmo tempo moitos berros e allaridos como quen era moita xente, para obrigalos a rendirse a discreución o canto máis antes. Así o fixeron, ao cabo, os do castelo, anque non fora máis que por verse libres daqueles escoleres que os aburaban a saetadas, e que sin saber eles como, se lles enxaretaran dentro da torre. Así foi que xa lles tardaba o abriren de par en par as portas da fortaleza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 775,
+      "id": 204
+    },
+    {
+      "text": "Como vamos a ver, os acontecementos que logo viñeron fixérono apurar a execución dos seus prans. Non tardou tanto Vasco Gómez en ter noticia da pérdida de Curbián, como tardara en saber a desfeita da Mámoa de Losoiro. E foi porque o casteleiro que estaba por el en Curbián habendo sabido por unhos pecureiros que saían ben cediño co gando pra o monte o mismo día da refrega, que por alí víanse moitos homes e ben armados, que paricía que iban marchando contra o castelo, tratou de pescudar que caste de xente era aquela; asomantes se asegurou de que toda aquela montitú non viña a facer cousa boa, antes de quedar compretamente cercado, pudo despachar a toda presa un propio ao seu señor, participándolle que si quiría que Curbián siguise manténdose na súa obedencia, era perciso que canto máis antes viñese a socorrelo e ca máis xente que poidese.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 848,
+      "id": 205
+    },
+    {
+      "text": "Ao outro día ben cediño deixou Fernán Vázquez o seu leito e con moi boas palabras e moi corteses razós despideuse dos do castelo, e foise axiña á Curbián a debuxar nun pergamino a pranta e o modo da fortaleza das Seixas. Desde Curbián mandoulle aviso de obrado a Gonçalo Ozores, que xa estaba co cerco das torres de Sampaio; e insiguida por encargo do seu señor foi reunindo ciceles, furadores, ganchos, uñas de ferro con cordas e outros apetrechos dos máis únicos para gatear e apoliñar polas paredes. Cando, pois, calculou o de Ulloa que toda a xente de Vasco Gómez había de estar ao redor das Torres de Sampaio co afán de facer levantar o cerco que tanto a todos lles entrara, dicideuse a dar o golpe que viña meditando, e mandoulle recado a Fernán Vázquez que para tal noite, e era a décema despois que se puxeron sobre Sampaio, a eso das dez lle saíse ao sitio que lle marcaba, onde a eirexa de Moredo, cos apetrechos que lle dixera e mais con tres ou catro cabalos.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 971,
+      "id": 206
+    },
+    {
+      "text": "Aa verdá, a aperación que iban a emprender era non pouco arresgada e peligrosa. Polo certo, polo certo, non sabían cantos homes habería dentro do Castro, nin que cras de xente era, nin que maneira de vixilancia; porque, anque Fernán Vázquez, polo que poidera escudrumar, achara que habería alí coma vinte homes, e que o cintinela estaba no torreón de sobre a porta, desde aquela xa tiveran tempo para poñer máis ou menos xente e para aregrar as cousas doutro modo. Pero ¿quen lle iba con estes contos a Gonçalo Ozores, que tiña todo o seu corazón e todo o seu tesouro alí dentro, e que ardía e non fumeaba ca ansia de chegar alí canto máis antes? ¡Boo che estaba el pra deterse entonces en moitas refreusiós!",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 708,
+      "id": 207
+    },
+    {
+      "text": "Ao primeir cantar dos galos siría cando chegaron a dar vista aos muros do castelo. A noite non era escura, e estaba tan mainiña e tan ausente que paricía que o máis pequeno roído trasmitíase e chegaba enteiro a onde queira que alcanzase a vista. Así é que por un pedazo estiveron contendo o folgo pra non seren descubertos, e ao mesmo paso para ver si no castelo rexurdía algo; mais como o silencio e o sosego era tan profundo, dicidíronse a irse chegando pasiño a pasiño e como quen vai asentando ao xeito a pranta do pee no tarreo pra deixar alí todo o molde dela. Mais antes desto xa Gonçalo Ozores impuxera ben a todos no que habían de facer. Como xa dixemos, o castelo que se erguía sobre un coto de moi áspara e agra subida, era de pranta cadrada con catro cubos cadrados nas esquinas, e estaba rodeiado dun foxo bastante ancho. No ángulo Noroeste o foxo estreitábase, porque alí empalmaba cunha fendedura aberta naturalmente no monte que se extendía ensanchándose hastra a faldra. Por suposto, aquí o foxo, ou máis ben a fendedura, estaba estremada por un lado, polo cubo ou torreón do Noroeste, e polo outro por un serrón de penedos que alí formaba cugulo e despois viña baixando polo monte abaixo somellando o lombo dun imenso cocodrilo.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 1246,
+      "id": 208
+    },
+    {
+      "text": "A cabalo, pois, deste polmontorio érguese o castelo coma un fero e soberbio xigante, ceñudo, de nervudos membros, e que na súa arrogancia pertende que a súa fegura se destaque antre as nubes. Costa traballo borrar da alma a empresión que se sinte ao contemprar desde abaixo, desde a ponte de Pambre, aquela masa, non informe, sinón convenentemente arranxada, que resalta sobre o azul do firmamento, imponente, ameazadora e como facendo un mudo, pero solene requiremento. Esto que digo esprimentámolo ben esprimentado uns cantos amigos nunha acasión que se nos presentou, ou máis ben buscamos, de ademirar desde a susodita ponte aquel formidabre conxunto de rimas de pedras tan ben entre si trabadas e tan irtas e direitas como velas. Mais, por eso, non tomamos a mala parte o emprazamento; antes ben, subindo pola agra ladeira Nordés do polmontorio, ansiosos e ufanos como quen quer corresponder ao desafío dun cortés amigo, siguindo as voltas que vai dando o camiño ao consolante do tarreo, fúmonos chegando ao castelo para ver máis por miúdo a súa dispusición e as súas formas.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 1079,
+      "id": 209
+    },
+    {
+      "text": "Obreiros e capitalistas son homes que teñen a mesma doenza da vida moderna, sen mais ideal qu'a satisfaición económica. A trasformación hase faguer, non no régime, senón na concencia dos homes. Un eixempro: Epulón ten moito ouro, e Lázaro non ten mais qu'un coíño; supoñede qu'os homes desfán o valor do ouro d'Epulón, já Lázaro é mais rico co seu coíño. Hai que valorar mais a fondo os elementos imponderábeles da vida humán. Na Hespaña a desfeita social acrescéntase por unha desfeita política. Querse seguir descoñecendo a eisistenza de pobos que se ven sometidos a unha uniformidade políteca, jurídeca y-adeministrativa sen eixempro. Querse seguir gobernando ôs pobos hespañois polos mesmos partidos e do mesmo geito que nos anos vergoñentos do desastre.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 758,
+      "id": 210
+    },
+    {
+      "text": "Unhas dúas légoas distaba a casa forte en que soía residir Beringuela, que este era o nome da fidalga rapaza, do célebre mosteiro; pero esta distancia atravesábaa ela na súa hacanea en pouco máis de media hora. Aquel día en que por pirmeira vez a alcontramos na costa de Carelle, chegou como sempre sin novedá aa súa casa que estaba entre as parroquias de Mella e de Sendelle no mesmo sitio en que se xuntan dous rigueiros e xuntos van parar ao Iso. Así que o vixía da torre a avistou, dou o sinal para que todo estivese aviado para deixar caer a ponte levadiza asemade ela chegase. O pai, que xa a asperaba na porta, colleuna nos brazos, doulle un bico na frente, e sin máis marchou el mismo ca besta pra a caballeriza.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 720,
+      "id": 211
+    },
+    {
+      "text": "Polo P. Abade de Sobrado soupo a vinda de Gonzalo Ozores, e foi un dos pirmeiros que foi a velo, que se enterou doos seus prans e que se puxo en todo de acordo con el; pero por non dar lugar a que os anamigos escupulasen algo, entendíase con el por medio de Beringuela do modo que dixemos. A desgracia parez que inda o fixera mais afeizoado, si cabe, aa casa dos Ulloas. El era o encargado de arranxar a comarca que estaba entre o Iso e o Pambre, de recrutar e formar cadros da xente que había en cada parroquia disposta para saír ao Campo, e de facer reconto das armas e apetrechos con que cada un contaba. El fora o que preparara a xunta da eirexa de Pambre, dándolle aviso a tempo a Gonzalo Ozores.",
+      "source": "O Castelo de Pambre - Antonio López Ferreiro",
+      "length": 701,
+      "id": 212
+    },
+    {
+      "text": "Manoel era un rapás ergueito e finiño, churrusqueiro y-amigo das rapazas. Chuco era un mozo forte e valente que se desfacía de bó; ninguén bogaba coma il que pasaba horas sin arrial-o remo, e sin falar, nin se conocía nadador coma il n-a ría. E Chuco e Manoel tiñan tolería por Carmela, unha meiga rapaza d’ollos mouros, moi beiladora. Cada un d’os mariñeiros á sua maneira lle buscaba as voltas, y-ela por ningún s’acraraba. Con Manuel ría e parolaba a desfacerse, diante de Chuco baixaba os ollos, e toda s’alcendía. Pasou o caso cando Manoel e Chuco saíron ó mar n-o mesmo barco con oito homes máis. O barco era nóvo e foron á despedida vellos, nenos e mozas, y-antre eles Carmeliña que non separaba os óllos de Chuco, nin Chuco d’ela. Foron as miradas unha promesa d’amore, e Chuco bogou con máis forza que nunca, cheo de vida.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 831,
+      "id": 213
+    },
+    {
+      "text": "Todol-os labregos, porque ainda que oyamos a misa non podemos gardar a festa, pol-a mor de tornar a auga d'os lameiros, d'arrecadar o gando, de dar de comer ôs porcos, de levar o grau ô muiño, e outras angueiras que non teñen agarda. Darlle á nosos pâis a millor vida que podemos, namentras non chegamos á herdalos. As d'os superiores c'os inferiores y-as d'os pâis c'os fillos. Mandand'os fillos â escola pra que non estorben n-a casa cando non temos que lle dar que facer; sacándolle a monteira ôs señores cand'os atopamos n-os camiños e facéndolle a figa por detrás; entrando co-a orella gacha n-a casa d'os que mandan pra sair d'ela botando rayos e centellas. Nosoutros non señor, pois, por non matar, nin xiquera matamos a fame.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 733,
+      "id": 214
+    },
+    {
+      "text": "Pra que Dios nos teña d'a sua mau, que boa falta nos fai. Porque ouvimos falar d'eles ôs ricos; porque sabemos que os nosos cartiños vanse xuntando n-as faltriqueiras d'os zumezugas de todal-as castas, pra se convertir en moedas e billetes; porque dos deprocatamos de que â conta d'eles medran, trunfan e campan os que s'alcontran n-o poleiro. O Alcalde noso señor, o Sacretario noso amo, y-o Cacique noso dono. É a cousa mais condanada que se pode decir nin pensar: un señor infinitamente malo, burro, larpeiro, inxusto, prencipio de todal-as nosas disgracias e fin de todal-as nosas facendas. É o mesmo Alcalde, o mesmo Sacretario y-o mesmo Cacique, tres persoas distintas e unha sola calamidá verdadeira.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 707,
+      "id": 215
+    },
+    {
+      "text": "Porque si as persoas son distintas, vólvense unha sola cando se trata de mallar en nos, de zugarnos a sangue, ou d'espremernos a faltriqueira. E logo cántas naturezas, entendementos e voluntás hay n-eses dioses? Naturezas duas, unha de lobo e outra de porco; entendementos, ningun; voluntás, a d'o Gobernador, a d'o diputado, a d'o Xuez y-as suas malas voluntás. Mintindo unha infruencia que non ten, agarapiñando votos n-as urnias, sacándolle a monteira e facéndolle retesías ôs que mandan, asoballand'ôs que ten baixo de sí, recollend'os xamós d'as nosas chouzas e partíndoos c'os manates d'a vila, sacando cartos ôs quintos cando se tercia pra seren os promeiros en riqueza e os últemos n-o reparto de consumos, armándolle a gayola ôs que non son d'a sua corda, repartind'os destinos d'o Concello entr'a xente d'a familia, lobos d'a camada y-os que se deixan ver por adiantado, estrapexando n-a política com'os esgarabellos n-a bola, e facendo en fin cantas falcatruas se lle veñen ás mentes pra conservar o mandiño.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 1019,
+      "id": 216
+    },
+    {
+      "text": "Pra servir ô Alcalde e morrer de fame n-esta vida e si cadra vivir ardendo n-a outra. É unha feitura d'o señor Alcalde, tan bó como él, e que se fixo Sacretario pra nos reventar e darnos mal exempro. Naturezas, unha sola y-abonda; voluntás, a sua y-a de todol-os que ten por enriba, y-entendementos, s'algun ten, mais valera que non-o tivese. Unha sola persoa con moitas caras, e memoria a bastante pr'acordarse d'o que lle ten conta. Porque o Sacretario non foi concebido nin naceu com'os demáis homes. N-a mala idea d'o señor Alcalde meteu o cacique o pensamento de que pr'acabar c'o país era perciso un home de sangue moura, malas entranas e piores feitos; por un sopro d'o demo saliu un corpo com'o deseaban, uníronlle un alma atravesada, firmaron o nombramento, y-o que dinantes era solamentres home quedou feito Sacretario.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 829,
+      "id": 217
+    },
+    {
+      "text": "Xa vimos como sodes labrego, como estades acabadiños pol-o nome e pola fame de labrego, mais decíndeme agora ¿Cantas cousas está obrigado á saber y-entender o labrego cando chega á ter uso de razon? Saber o que se deixa de comer, saber o que ten que traballar, esquecerse d'o que ten que pagar e non coidarse d'o que ten que recibir. Facendo recordo d'as larotas que se pasan n-a sua chouza; estabrecendo comparanzas entr'os manates de bandullo á xeito de bombo, mofretes infrados, rexos e ben mantidos que se pasean, y-entr'os labradores que andan pol-as carrilleiras e congostras como almas en pena, esvaidos, fracos, esfamiados, pensando n-o pan que non lles ven âs maus e n-os cartiños que fuxen d'eles como d'a queima; botándolle olladas degorantes ôs aparadores d'os almacés onde se vende xamon, salchichós, polos asados, perdices, dulces, conservas, queixos e outros manxares apetecentes; pensando n-as veces que pol-o dia adiante se ll'abre á un a boca e se lle vay o estómago xa canso de non dixerir mais que patacas cando as hay pra comelas en cachelos, e sin sal moitas veces pra seren gallegas enxebres sin gracia, pois maldito si gracia teñen nin xiquera ll'a fan ô estómago.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 1188,
+      "id": 218
+    },
+    {
+      "text": "Saindo d'a cabeza d'o Alcalde sin detrimento d'a sua brutalidá, á maneira que sai un preso d'a Cárce-Modelo sin romper reixas nin portas. O inferno d'os que pagan trabucos e rendas, e non teñen pan que levar â boca; o purgatorio d'os que van ô servicio d'o rey, vendo quedar os fillos d'os ricos n-a sua casa; o limbo d'os nenos onde s'alcontran os que fan o aprendizaxe de labregos, descalzos de pé e perna, esfarrapados, acoradiños de fame, arrecadand'o gando n-a chousa, y-a leña n-o monte e sin ver xiquera unha letra d'a cartilla d'os Cristos; y-o limbo d'os xustos, onde viven os alpabardas que cren n-as padricaciós d'os políticos, n-as palabras d'os diputados, n-a proteucion d'o Goberno, en que han de sair campantes d'os seus atolladeiros sin untar o carro, y-en que lles han de facer xusticia tendo solasmentres razon: xente a mais filiz de todas porque cree qu'abonda traballar pra comer.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 900,
+      "id": 219
+    },
+    {
+      "text": "¿Qué cousa é estar sentado â direita d'o señor Alcalde? Ter cuasementes o seu anaquiño de mando, poder turrar d'a corda pr'os amigos, facer toda caste de falcatruas ôs contrarios, remexer n-as trecolas d'o Concello, e sacarlle sustancia á todol-os nagocios que lle pasan pol-a mau. Que hay alí unha dúcia de lampantís d'os que non se pode agardar nada bó: xente que cando se xunta non pensa mais que en espremernos o xugo, en sacarnos os cartos d'os consumos y-os fillos pr'a guerra; en facernos traballar por prestacion n-os camiños que van direitos âs suas casas; en quitarnos o voto e darnos a cédula persoal; esprítos malinos que lle fan mal de ollo âs pitas d'o noso corral y ôs porcos d'o noso cortello; que cando s'axuntan é o mesmo que si s'escornaran duas nubes de pedrisco sobr'os nosos eidos, e cando se soparan e pasan por diante de nos hay que facerlles a cruz com'ô demo e sacarlles a monteira com'ôs fidalgos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 924,
+      "id": 220
+    },
+    {
+      "text": "Xa vimos como sabedes o que se ha de creer: veñámos ô segundo qu'é o que s'ha de pidir. D'as oraciós qoe rezades cal é a que mais vos gusta? Porque ten sete peticiós, que son poucas pra nosoutros, pois temos moito que pidir. Que lauden á Dios, o mesmo que nosoutros, aqueles que solo s'acordan d'él cando fan á carantoña, e pasan a vida facéndonos falcatruas. Aqueles que se dormen n-as pallas mentras nosoutros adoecemos á traballar; os que fan política n-as aldeas pra encher o bandullo; os que maxinan que todal-as cousas d'o mundo se fixeron pra eles e arrapañan c'o seu e c'o d'os veciños; os que pra vivir agardan que lles cayan n-o papo pás cocidos d'o ceo; y-os que sin traballar nin teren rentas viven fidalgamente.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 724,
+      "id": 221
+    },
+    {
+      "text": "Que Dios nos teña d'a sua mau e que nos coute ben, porque tanto mallan en nós, e tales cousas nos fan, e tan amoladiños andamos, que si nos deixamos levar pol-o xénio e caimos n-unha mala tentacion, o dia que menos se pense non quedan nin os ratos n-Alcaldía. Que nos quite Dios d'entre as uñas d'esta xentiña que non fai nada que pra ben sea. C'o repartidor de consumos cando nos dí a cota que se nos impuxo; c'o veciño que nos ven pidir unha peseta emprestada pra sair d'un apuro; c'o Alcalde que nos aconsella que votemos o candidato d'o Goberno pormeténdonos montes e moreas; c'o médeco que nos pide mais de dous ferrados de centeo pol-avinza; c'o escribao cando nos notifica a tasa d'as costas d'o últemo preito, e c'o señor Abade que nos dí que debemos aunar n-a Coresma, esquecéndose de que aunamos á traspaso o ano enteiro.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 831,
+      "id": 222
+    },
+    {
+      "text": "FELIS CHAPARRO.\" Rubricou, e oindo canta-l-os galos a media noite á tempo que'él espolvorejaba barro d'a parede sobr'a carta pra que s'enjugara, esclamou: - ¡Nai que me pareu! ¡As doce ja! María Rosa -chamándo-a. -¡Ei! -contestou esta dend'a cociña. - ¿Vas n'a cama? - Non. E ti ¿acabache? - Acabei. Viacá, e escoitarás. Subeu María Rosa, espriguizouse diant'o home, e escoitando, non sin cotelear novamente toda a carta inserta, dijo o que Felis rematou de lerll'a: - Vaiche carpintejada. - Que podia ir millor, c'outros prefiles e riquilorios, ja o eu sei; pro vai natural, qu'e o que me gusta á min. - Cerra-a, pois, e vente a deitar, qu'eu non podo mais ja c'o sono, e voum'a cama. - Deitate, si, qu'hai qu'espertar cedo, e ver s'alguen d'a aldea vai a vila e leva esta carta o correo. E María Rosa baijou d'o sobrado, ispeus'e meteuse n'a camariña. Felis cerrou a carta, puxoll'o sobre o Marques de Tracastela, pegou ll'o franco, e fois'á deitar tamen, dejando enriba d'a hucha a carta hasta qu'esperta María Rosa, ó abri-l-o dia, colleu-na ali, e botada po-l-a aldea hachou mozo qu'indo con guindas pra Santiago levou-na, e meteu-no n'o buzon.",
+      "source": "Maxina ou a filla espúrea - Marcial Valladares Núñez",
+      "length": 1149,
+      "id": 223
+    },
+    {
+      "text": "Os que relaxados pol-as que lles fan xuran e rexuran tomal-a xusticia pol-a mau, queimando palleiros, decotando cepas, arrasando labradíos, botando herba d'os ratos n-os currales d'os vecinos, armándose de moca pra lle meter co-ela as razós n-a cachola ô contrario e facendo outras cativeces d'este xeito; os que por unha poya de pau e tres netos de viño sirven de testigos falsos n-os preitos e n-as causas criminales; os que botan sapos e cobras pol-a boca á calquera contratempo que teñan; os que xuran acabar c'os bês d'o vecino, levados pol-a xeureira; y-os que por botarse de valentes non din tres palabras arreo sin misturar entr'elas unha porcallada. De calquer maneira, porque non hay cousa mais fácele n-o país. Todal-as aldeas contan con picapreitos estrapexantes que poñen escola de testigos falsos, namentras as outras están pechadas. Por unha picallada e sin escrúpulos de concencia botan á presidio á calquer home de ben; por un par de pesetas non falta quen co-a man en cruz xure, que viu pol-os seus ollos, y-así Diol-o salve, voar os burros, vestidos de gardas civís os mosquitos, tirar d'un carro dous porcos e cantar misa unha ovella, ou facer un Alcalde boas obras.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 1186,
+      "id": 224
+    },
+    {
+      "text": "O primeiro oir como nos aldraxan os que mandan, como quen oye chover. O segundo mudar de camisa unha vez ô ano, ou denantes si teñen qu'enterralo á un. A todol-os que teñen algo que perder, pois si nos repoñemos sainos pior a conta. Obríganos á todos anque as veces se nos esqueza o cumprilo. Vendo como nos quitan a razon en todalas cousas, e tendo que nos conformar c'o que veña; deixándonos engrolar por todol-os baduantes, por non saber que opoñerlles; pagar o sasenta por cento á un usureiro e oirlle dicir que ainda nos axuda; indo á votar âs urnias sabendo qu'é coma si non foramos; e pr'acabar d'unha vez, deixándonos levar pol-o últemo que chega. Porque cando non hay que levar â boca é forzoso o auno; que anque dicen que hay n-o mundo pan d'abondo pra todos, a verdá é que poucas veces chega â nosa boca, y-eso de millo, resésego e ben tasado.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 854,
+      "id": 225
+    },
+    {
+      "text": "Secos como arestas (aristas) tiña os ollos a Condesa Trifaldi; e D. Quixote matou, que non apagou, as duas velas que lle puxeran no castillo do Duque, pra que se ispise e deitase a noite que a bromista Altisidora lle dou a serenata. Non se lle cocia o pan no corpo aa Duquesa hastra que leyeu a carta de Teresa Panza; e D. Quixote n-aqueles tan bóos consellos que lle dou a Sancho pra gobernar a insua, encargoulle moito que non arrotase (eructase); que non quixo valerse da palabra regoldar, porque este é un dos vocables mais feyos que ten a lengoa castellana. Esta lista ben-a podiamos alargar moito mais; pero acabarei con aquel, Eu ben sey-o que me compre (Yo bien sé lo que me cumple) con que D. Quixote lle tapou a boca a ama e a sobriña, pouco antes de caer enfermo da sua últema enfermedá. Algúns outros puntos podia tocar aqui; mais esto xa se vay facendo moi pesado, e asi, ca paz de Dios despídome de ti, leutor amabre.",
+      "source": "A tecedeira de Bonaval - Antonio López Ferreiro",
+      "length": 931,
+      "id": 226
+    },
+    {
+      "text": "Pra nada bó, señor. O matrimonio é unha cousa que facemos, como se fan outras tantas burradas. Ven á ser algo somellante con xunguirse á un carro, e turrar d'él hastra morrer. Cando un non ten pan que meter n-a boca acúrreselle levar pr'a casa unha muller que lle axude á pasar fame, que é como dicir: «tí que non podes lévame âs costas.» Despois veñen os fillos, que non faltan nunca n-os matrimonios labregos, y-estonces si qu'é ela. Hay que mantelos, hay que vestilos, hay que mandalos â escola si cadra, hay que atendelos n-as suas enfermedás, hay en fin que facelos homes. E cando xa empezan a servir pra algo y-axudarnos n-as angueiras d'a casa, lévannos pr'o servicio, e mentras eles van á facerse matar á guerra, e si volven é c'un brazo ou unha perna de menos, nosoutros quedamos vellos e acabadiños sin podernos valer, y-espostos á morrer esquecidos como cas.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 869,
+      "id": 227
+    },
+    {
+      "text": "Dous rapaciños rifaron, y-estábanse batendo cegos. Un d’iles san e rexo, y-o outro un malpocadiño que choraba. Dúas mulleres apartáronos e levaron ó meniño dos choros dándolle bicos. O outro, o san e forte, sollo, vermello de vergonza quedaba sin agarimo, cheo de tristura, e foise indo paseniño. Fíxenlle unha festa ó probe do rapás e dixen pra min «tamén os fortes dan compasión ás veces», lembrándome d'un sucedido. O sucedido foi esto. Había unha vés n-unha aldea veira mar, n-a ría de Marín, dous mozos mariñeiros. Chuco e Manoel. Eran tempos n-os qu’aínda non ian as motoras a buscar sardiña a Leixões, nin xiquera as artes da traíña eran donas das rías. Os barcos xeitosos ían mar afora máis alá d’a illa d’Ons e chegaban moitas veces a Finisterre.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 755,
+      "id": 228
+    },
+    {
+      "text": "Xa vimos o que habedes de creer e pidir; vexamos agora como sabedes o que habedes d'obrar; dicide: ¿Cal é o pirmeiro mandamento? Á adouralo e creer n-él e non desconfiar por moitos males que nos sucedan, pois xa sabemos que n-este mundo ten que haber de todo, bó e malo; de maneira que si hay raposos que nos leven as galiñas, tamen hay bois que nos axudan á labrar os eidos; si temos lobos que nos coman as ovellas, hay tamen cás que nos garden a facenda; si criamos porcos n-o cortello, non faltan aduanantes que conten por adiantado c'os seus perniles; si temos fillos que dos axuden, non faltan reises qu'os leven pro seu servicio; si dispomos de viño pra quentar o estómago, tamen hay filoxera qu'estraga as viñas. Por eso debemos folgarnos d'o bó, levar con pacencia o malo, e Dios sobre todo.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 799,
+      "id": 229
+    },
+    {
+      "text": "Os diputados que dín n-o Congreso qu'o país adianta e que o Goberno traballa por millorar a moura sorte d'os labregos; os partidos políticos que aseguran que contan co-as simpatías d'o país; os que casándose con muller rica, fea e vella sosteñen que se casaron namorados; os que á todal-as mozas lle dan palabra de casamento; a muller qu'ôs vinte anos dí, en certos casos, que n-a sua vida outra lle pasou; o Abogado que lle dí á unha litigante que non lle cabe direito e logo resulta o contrario; o Médeco que consultando a ama d'un crego lle dí que non ten cura; o sancristan que pide pr'as Anemas; e todos nosoutros que âs veces esquecemos a verdá. Todol-os labregos porque non hay un que non poña os ollos n-as leiras d'o vecino.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 733,
+      "id": 230
+    },
+    {
+      "text": "Aquela noite, un vello y-unha mociña petaron á porta de Samuel Kupper. Tiñan fame e iban cansos e magoados de camiñar… Os ollos do vello eran de infinida tristura; n-os da mociña loitaba a desesperación c'unha rayola d'espranza… Samuel Kupper xa era rico, os seus fortes cotelos enfeixaran moitos billetes… O vello y-a mociña comeron, e descansaron, e tiveron diñeiro. Pol-a mañán Samuel Kupper recibiu un aviso de desafío. Un novo boxeador ruso, Alexis Karbin, quería loitar e xa estaba en San Francisco. Telegráficamente fixéronse y-aceutáronse condiciós. O día d'a loita, n-o ring, Samuel Kupper veu diante de sí a un ardente rapaz de óllar duro e grande estatura. Kupper non tremeu. Era máis forte y-ó pouco de loitar reconoceu confiado a sua superioridade.",
+      "source": "Conto sinxelo - Antón Losada Diéguez",
+      "length": 761,
+      "id": 231
+    },
+    {
+      "text": "Vellos e mozos todos puxemos n-él as nosas maus. Pecan as mozas churrusqueiras que lle chiscan os ollos ôs mozos n-as romarias; os rapaces que andan de noite ô sarau rondándolle a porta âs nenas; as parexas que se perden entr'os centeos botando de perda o fruto; os que ventando unha muller escarramelan os ollos y-ensinan os dentes com'os burros; os que lle van á facer coxigas as muiñeiras y-as fan bulir mais qu'o rodicio, saindo dempois todos enfariñados; os que apagan o candil n-os fiadeiros pr'andar as apalpadelas; os que véndos' entre mulleres non poden ter as maus quedas, os que bailan o agarradiño n-os turreiros pra s'agarraren sin bailar n-as carballeiras; os que dando palabras de casamento non fan mais qu'as obras; os que ô volver d'as festas acompañados non chegan hastra media noite â casa; e pra dicilo d'unha vez todol-os que gastan calzós e monteira ou dengu'e muradana.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 892,
+      "id": 232
+    },
+    {
+      "text": "Os que non contentándose c'o que Dios lles dou precuran apanar o alleo; os que andan co-as maus n-o pote d'o persupuesto; os d'a curia que fan letras coma garabanzos porque cobran por pregos os seus dereitos; os xastres que nos piden unha vara de pano pra facer unha monteira; os que se gobernan desgobernando; os médecos que con unturas d'ouro inutilízannos os fillos pr'o servicio d'o rei; os tendeiros que pesan co-a romana d'o demo, a miden c'unha vara pol-o xeito d'a d'a xusticia; os empregados que non teñen tempo pra despachar os nosos asuntos porque todo él lles é pouco pra fumar cigarros e falar mal d'o Goberno; os que nos espremen o xugo finxindo que nos protexen; os que non-os fan ningun servicio non andando diñeiro por diante; os usureiros qu' encabalan os rédetos; y-outros moitos que fora largo contar, porque o mundo está cheo de gatos que andan sempre á caza d'os probes ratiños d'aldea.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 908,
+      "id": 233
+    },
+    {
+      "text": "Unha caste de boi posto de pé, unha maquina de sacar cartiños d'a terra. Unha cousa muy condanada que fai debecer as carnes, abrir a boca, ronronar as tripas e infrar o estómago de aire. Deitarse con apetencia y-erguerse con fame; sentir antoxos de comer pan e de beber viño, e non facer mais que comer o xenio e beber os ventos. Meto por equivoco as maus n-as faltriqueiras e solasmente alcontro aire...; collo o saco d'o grau pra ir ô muino e non collo mais que lenzo; vou â casa d'os que teñen á pidir un peso emprestado e si non me dan co-a porta n-os fuciños, despáchanme con palabras de moito peso, pro non c'o peso qu'eu cobizo; vay o recaudador pra que lle pague os trabucos e non hacho mais que desculpas que lle dar.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 726,
+      "id": 234
+    },
+    {
+      "text": "Conocín o máis forte boxeador do mundo, Samuel Kupper. Tiña vinte e dous anos, mais forte que fora Jeffries nos seus bos tempos e con máis xeito que Johnson. Ganara xa o campeonato mundial de pesos medeos e d'un día a outro iba a loitar c'o vello campeón de pesos grandes. Era fixa a súa victoria. O vello campeón xa recibira o consello de llo dar sin loita. Samuel Kupper descansaba n-unha granxa do Far West. Era seu amigo un crego que lía a Biblia ós labregos. Samuel Kupper oiu ler unha serán soave e feiticeira do vrau: «Oíchedes que se dixo ollo por ollo e dente por dente. Mais eu, vos digo que non fagades resistencia a que vos magoe; e si algún te ferira na meixela dereita, ponlle tamén a outra… Oíchedes que foi dito: Amarás ó teu próximo e teraslle xenreira ó teu nemigo. Mais eu dígovos: Querede ós vósos nemigos, facede bén ós que vos queren mal e rezade pol-os que vos corren e calumnian…» Mainiño, o vento movía as herbas y-as froles d'a pradeira.",
+      "source": "Conto sinxelo - Antón Losada Diéguez",
+      "length": 963,
+      "id": 235
+    },
+    {
+      "text": "Obreiros e capitalistas son homes que teñen a mesma doenza da vida moderna, sen mais ideal qu'a satisfaición económica. A trasformación hase faguer, non no régime, senón na concencia dos homes. Un eixempro: Epulón ten moito ouro, e Lázaro non ten mais qu'un coíño; supoñede qu'os homes desfán o valor do ouro d'Epulón, já Lázaro é mais rico co seu coíño. Hai que valorar mais a fondo os elementos imponderábeles da vida humán.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 426,
+      "id": 236
+    },
+    {
+      "text": "Facéndose de conta que ten os osos de goma pra que non lle doan por moito que mallen n-eles, non pasándoselle nin pol-as mentes que ha de recibir cousa que sea de porveito nin que valla diñeiro, porque os labregos, de recibiren, fora d'o ben que lles veña recibindo á Dios, non reciben mais que xiringazos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 306,
+      "id": 237
+    },
+    {
+      "text": "O sucedido foi esto. Había unha vés n-unha aldea veira mar, n-a ría de Marín, dous mozos mariñeiros. Chuco e Manoel. Eran tempos n-os qu’aínda non ian as motoras a buscar sardiña a Leixões, nin xiquera as artes da traíña eran donas das rías. Os barcos xeitosos ían mar afora máis alá d’a illa d’Ons e chegaban moitas veces a Finisterre.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 336,
+      "id": 238
+    },
+    {
+      "text": "Pasou o caso cando Manoel e Chuco saíron ó mar n-o mesmo barco con oito homes máis. O barco era nóvo e foron á despedida vellos, nenos e mozas, y-antre eles Carmeliña que non separaba os óllos de Chuco, nin Chuco d’ela. Foron as miradas unha promesa d’amore, e Chuco bogou con máis forza que nunca, cheo de vida.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 312,
+      "id": 239
+    },
+    {
+      "text": "Non pasou un ano e a Carmeliña sempre meiga e beiladora casábase con Manoel, de cote finiño e churrusqueiro. E certo que co’a lembranza de Chuco pódese decir qu’os fortes dan compasión ás veces e que non está de máis o pregar por eles.",
+      "source": "Conto - Antón Losada Diéguez",
+      "length": 235,
+      "id": 240
+    },
+    {
+      "text": "O nacionalismo galego, diante dos probremas da Hespaña sinifica unha renovación ausoluta non só dos sistemas de políteca, senón da mesma Costitución políteca do Estado: orgaización federativa, repersentación proporcional.",
+      "source": "A significación profunda do galeguismo - Antón Losada Diéguez",
+      "length": 221,
+      "id": 241
+    },
+    {
+      "text": "Ollando o mundo encóllese o curazón de medo e de esperanza. Todo sangra, y-ainda nada frolece. Anúncianse boas novas e redenciós a eito, mais por decontado a fame y-as loitas non fuxiron.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 187,
+      "id": 242
+    },
+    {
+      "text": "Lembradevos ben, con todo, agrarios galegos, que sodes fillos de Galicia, qu'a nosa vida d'o campo, os nosos cultivos, os edios, monte y-augas nosas son d'a terra nosa e teñen un carauter seu que non se pode confundire, nin se deben estudiar sinón como tales asuntos galegos caraiterísticos y-enxebres.",
+      "source": "Os camiños d'o agrarismo galego - Antón Losada Diéguez",
+      "length": 302,
+      "id": 243
+    },
+    {
+      "text": "Pol-a mañán Samuel Kupper recibiu un aviso de desafío. Un novo boxeador ruso, Alexis Karbin, quería loitar e xa estaba en San Francisco. Telegráficamente fixéronse y-aceutáronse condiciós.",
+      "source": "Conto sinxelo - Antón Losada Diéguez",
+      "length": 188,
+      "id": 244
+    },
+    {
+      "text": "Que hay alí unha dúcia de lampantís d'os que non se pode agardar nada bó: xente que cando se xunta non pensa mais que en espremernos o xugo, en sacarnos os cartos d'os consumos y-os fillos pr'a guerra; en facernos traballar por prestacion n-os camiños que van direitos âs suas casas; en quitarnos o voto e darnos a cédula persoal; esprítos malinos que lle fan mal de ollo âs pitas d'o noso corral y ôs porcos d'o noso cortello; que cando s'axuntan é o mesmo que si s'escornaran duas nubes de pedrisco sobr'os nosos eidos, e cando se soparan e pasan por diante de nos hay que facerlles a cruz com'ô demo e sacarlles a monteira com'ôs fidalgos.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 642,
+      "id": 245
+    },
+    {
+      "text": "Aqueles que se dormen n-as pallas mentras nosoutros adoecemos á traballar; os que fan política n-as aldeas pra encher o bandullo; os que maxinan que todal-as cousas d'o mundo se fixeron pra eles e arrapañan c'o seu e c'o d'os veciños; os que pra vivir agardan que lles cayan n-o papo pás cocidos d'o ceo; y-os que sin traballar nin teren rentas viven fidalgamente.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 364,
+      "id": 246
+    },
+    {
+      "text": "C'o repartidor de consumos cando nos dí a cota que se nos impuxo; c'o veciño que nos ven pidir unha peseta emprestada pra sair d'un apuro; c'o Alcalde que nos aconsella que votemos o candidato d'o Goberno pormeténdonos montes e moreas; c'o médeco que nos pide mais de dous ferrados de centeo pol-avinza; c'o escribao cando nos notifica a tasa d'as costas d'o últemo preito, e c'o señor Abade que nos dí que debemos aunar n-a Coresma, esquecéndose de que aunamos á traspaso o ano enteiro.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 487,
+      "id": 247
+    },
+    {
+      "text": "Os que relaxados pol-as que lles fan xuran e rexuran tomal-a xusticia pol-a mau, queimando palleiros, decotando cepas, arrasando labradíos, botando herba d'os ratos n-os currales d'os vecinos, armándose de moca pra lle meter co-ela as razós n-a cachola ô contrario e facendo outras cativeces d'este xeito; os que por unha poya de pau e tres netos de viño sirven de testigos falsos n-os preitos e n-as causas criminales; os que botan sapos e cobras pol-a boca á calquera contratempo que teñan; os que xuran acabar c'os bês d'o vecino, levados pol-a xeureira; y-os que por botarse de valentes non din tres palabras arreo sin misturar entr'elas unha porcallada.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 658,
+      "id": 248
+    },
+    {
+      "text": "Vendo como nos quitan a razon en todalas cousas, e tendo que nos conformar c'o que veña; deixándonos engrolar por todol-os baduantes, por non saber que opoñerlles; pagar o sasenta por cento á un usureiro e oirlle dicir que ainda nos axuda; indo á votar âs urnias sabendo qu'é coma si non foramos; e pr'acabar d'unha vez, deixándonos levar pol-o últemo que chega.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 362,
+      "id": 249
+    },
+    {
+      "text": "Porque cando non hay que levar â boca é forzoso o auno; que anque dicen que hay n-o mundo pan d'abondo pra todos, a verdá é que poucas veces chega â nosa boca, y-eso de millo, resésego e ben tasado.",
+      "source": "Catecismo d'a Doutrina Labrega - Valentin Lamas Carvajal",
+      "length": 198,
+      "id": 250
+    }
+  ]
+}
