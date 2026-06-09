@@ -811,7 +811,7 @@ describe("string utils", () => {
           },
         },
         {
-          description: "incorrect, last word, early space",
+          description: "incorrect, last word, early literal space",
           input: {
             inputWord: "he ",
             targetWord: "hello",
@@ -821,9 +821,9 @@ describe("string utils", () => {
           expected: {
             allCorrect: 2,
             correctWord: 0,
-            incorrect: 0,
+            incorrect: 1,
             extra: 0,
-            missed: 3,
+            missed: 2,
           },
         },
         {
@@ -838,17 +838,18 @@ describe("string utils", () => {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 1,
-            extra: 0,
+            extra: 1,
             missed: 0,
           },
         },
         {
-          description: "correct space, incorrect word",
+          description: "correct space, incorrect word (commit space)",
           input: {
             inputWord: "helol ",
             targetWord: "hello ",
             lastWord: true,
             shouldLastPartialWordCount: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 3,
@@ -859,18 +860,54 @@ describe("string utils", () => {
           },
         },
         {
-          description: "single incorrect char",
+          description: "correct space, incorrect word (literal space)",
+          input: {
+            inputWord: "helol ",
+            targetWord: "hello ",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "single incorrect char (commit space)",
           input: {
             inputWord: "hxllo ",
             targetWord: "hello ",
             lastWord: false,
             shouldLastPartialWordCount: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 2,
             extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "single incorrect char (literal space — stopOnError=word)",
+          input: {
+            inputWord: "hxllo ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
             missed: 0,
           },
         },
@@ -1020,18 +1057,36 @@ describe("string utils", () => {
           },
         },
         {
-          description: "partial correct, with space",
+          description: "partial correct, with space (commit)",
           input: {
             inputWord: "helxx ",
             targetWord: "hello ",
             lastWord: false,
             shouldLastPartialWordCount: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 3,
             correctWord: 0,
             incorrect: 3,
             extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "partial correct, with space (literal)",
+          input: {
+            inputWord: "helxx ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 1,
             missed: 0,
           },
         },
@@ -1085,7 +1140,7 @@ describe("string utils", () => {
         },
         {
           description:
-            "incorrect last word, trailing confirm space, timed (stopOnError=word)",
+            "incorrect last word, trailing literal space, timed (stopOnError=word)",
           input: {
             inputWord: "jhow ",
             targetWord: "how",
@@ -1096,6 +1151,112 @@ describe("string utils", () => {
             allCorrect: 0,
             correctWord: 0,
             incorrect: 3,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "trailing literal space past target — counts as extra (stopOnError=word)",
+          input: {
+            inputWord: "xow ",
+            targetWord: "how",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "multiple literal trailing spaces on wrong word — all count as extra",
+          input: {
+            inputWord: "xonl  ",
+            targetWord: "only ",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 4,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "early literal space at non-space slot with creditPartial — counts as incorrect",
+          input: {
+            inputWord: "x ",
+            targetWord: "get",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "trailing commit-space append past target — not counted (correct last word + commit)",
+          input: {
+            inputWord: "how ",
+            targetWord: "how",
+            lastWord: true,
+            shouldLastPartialWordCount: true,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect word with commit space — wrong word advanced (stopOnError=off)",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect word with literal trailing space — uncommitted (stopOnError=word)",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello ",
+            lastWord: false,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
             extra: 1,
             missed: 0,
           },
@@ -1107,15 +1268,18 @@ describe("string utils", () => {
           Strings.countChars(
             input.inputWord,
             input.targetWord,
-            input.lastWord,
-            input.shouldLastPartialWordCount,
+            input.lastWord && input.shouldLastPartialWordCount,
+            // non-last words always commit via space in real callers; last
+            // word is in-flight unless explicitly overridden
+            input.endsWithCommitSpace ?? !input.lastWord,
           ),
         ).toEqual(expected);
       });
     });
 
-    it("space counts as incorrect when word is wrong", () => {
-      const result = Strings.countChars("hell ", "hello ", false, false);
+    it("early space (typed before reaching target's space) counts as incorrect", () => {
+      // non-last word: space commits the (wrong) word, so endsWithCommitSpace=true
+      const result = Strings.countChars("hell ", "hello ", false, true);
       expect(result.incorrect).toBe(1);
     });
   });
