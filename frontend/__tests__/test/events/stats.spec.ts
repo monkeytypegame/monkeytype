@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
@@ -37,30 +37,28 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
   getLimit: () => customTextLimit,
 }));
 
-import { Config } from "../../../src/ts/config/store";
-import { Keycode } from "../../../src/ts/constants/keys";
 import {
-  __testing,
-  cleanupData,
-  getAllTestEvents,
   logTestEvent,
   resetTestEvents,
+  getAllTestEvents,
+  cleanupData,
+  __testing,
 } from "../../../src/ts/test/events/data";
 import {
-  forceReleaseAllKeys,
-  getAccuracy,
-  getAfkDuration,
-  getChars,
-  getErrorCountHistory,
-  getKeypressDurations,
-  getKeypressesPerSecond,
-  getKeypressOverlap,
-  getKeypressSpacing,
+  getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
   getRawPerSecond,
-  getStartToFirstKeypressMs,
   getTestDurationMs,
+  getAccuracy,
+  getKeypressSpacing,
+  getKeypressOverlap,
+  getErrorCountHistory,
+  getAfkDuration,
+  getKeypressDurations,
+  getKeypressesPerSecond,
+  getChars,
   getWpmHistory,
+  forceReleaseAllKeys,
   __testing as statsTesting,
 } from "../../../src/ts/test/events/stats";
 import type {
@@ -69,6 +67,8 @@ import type {
   KeyupEventData,
   TimerEventData,
 } from "../../../src/ts/test/events/types";
+import { Config } from "../../../src/ts/config/store";
+import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 
