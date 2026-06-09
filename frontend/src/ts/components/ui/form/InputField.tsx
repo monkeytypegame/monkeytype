@@ -4,6 +4,7 @@ import { Accessor, createSignal, JSXElement, Show } from "solid-js";
 import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
+import { getZodType, unwrapSchema } from "../../../utils/zod";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -67,7 +68,7 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={props.field().state.value as string}
+        value={(props.field().state.value as string) ?? ""}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
@@ -110,12 +111,13 @@ export function InputField(props: {
   );
 }
 
-function getNumberOptions(schema: ZodTypeAny | undefined): {
+function getNumberOptions(rawSchema: ZodTypeAny | undefined): {
   min?: number;
   max?: number;
   step?: string;
 } {
-  if (schema === undefined) return {};
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
   if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodNumber) return {};
   const numberSchema = schema as ZodNumber;
 
@@ -127,13 +129,14 @@ function getNumberOptions(schema: ZodTypeAny | undefined): {
 }
 
 function getDateOptions(
-  schema: ZodTypeAny | undefined,
+  rawSchema: ZodTypeAny | undefined,
   format: (val: Date | undefined) => string | undefined,
 ): {
   min?: string;
   max?: string;
 } {
-  if (schema === undefined) return {};
+  if (rawSchema === undefined) return {};
+  const schema = unwrapSchema(rawSchema);
   if (getZodType(schema) !== ZodFirstPartyTypeKind.ZodDate) return {};
 
   const applyFormat = (it: Date | null) =>
@@ -143,9 +146,4 @@ function getDateOptions(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
-}
-
-function getZodType(schema: ZodTypeAny): ZodFirstPartyTypeKind {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment typescript/no-unsafe-member-access
-  return schema._def["typeName"] as ZodFirstPartyTypeKind;
 }

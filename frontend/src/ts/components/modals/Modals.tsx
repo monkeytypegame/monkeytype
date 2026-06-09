@@ -1,5 +1,6 @@
 import { JSXElement } from "solid-js";
 
+import { ViewApeKeyModal } from "./account-settings/ViewApeKeyModal";
 import { ContactModal } from "./ContactModal";
 import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
@@ -36,6 +37,7 @@ export function Modals(): JSXElement {
       <CookiesModal />
       <AddPresetModal />
       <EditPresetModal />
+      <ViewApeKeyModal />
     </>
   );
 }

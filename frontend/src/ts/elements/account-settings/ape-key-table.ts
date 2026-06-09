@@ -10,165 +10,12 @@ import {
   ApeKeyNameSchema,
 } from "@monkeytype/schemas/ape-keys";
 import { format } from "date-fns/format";
-import { SimpleModal, TextArea } from "../simple-modal";
 import { isAuthenticated } from "../../states/core";
 import { qs, qsr } from "../../utils/dom";
-
-const editApeKey = new SimpleModal({
-  id: "editApeKey",
-  title: "Edit Ape key",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "name",
-      initVal: "",
-      validation: { schema: ApeKeyNameSchema },
-    },
-  ],
-  buttonText: "edit",
-  execFn: async (_thisPopup, input) => {
-    const response = await Ape.apeKeys.save({
-      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
-      body: {
-        name: input,
-      },
-    });
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to update key",
-        notificationOptions: { response },
-      };
-    }
-    return {
-      status: "success",
-      message: "Key updated",
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-});
-
-const deleteApeKeyModal = new SimpleModal({
-  id: "deleteApeKey",
-  title: "Delete Ape key",
-  text: "Are you sure?",
-  buttonText: "delete",
-  execFn: async (_thisPopup) => {
-    const response = await Ape.apeKeys.delete({
-      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
-    });
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to delete key",
-        notificationOptions: { response },
-      };
-    }
-
-    onApeKeyChange?.();
-
-    return {
-      status: "success",
-      message: "Key deleted",
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-});
-
-const viewApeKey = new SimpleModal({
-  id: "viewApeKey",
-  title: "Ape key",
-  inputs: [
-    {
-      type: "textarea",
-      disabled: true,
-      placeholder: "key",
-      initVal: "",
-    },
-  ],
-  textAllowHtml: true,
-  text: `
-    This is your new Ape Key. Please keep it safe. You will only see it once!<br><br>
-    <strong>Note:</strong> Ape Keys are disabled by default, you need to enable them before they can be used.`,
-  buttonText: "close",
-  hideCallsExec: true,
-  execFn: async (_thisPopup) => {
-    return {
-      status: "success",
-      showNotification: false,
-      hideOptions: {
-        clearModalChain: true,
-      },
-    };
-  },
-  beforeInitFn: (_thisPopup): void => {
-    (_thisPopup.inputs[0] as TextArea).initVal = _thisPopup
-      .parameters[0] as string;
-  },
-  beforeShowFn: (_thisPopup): void => {
-    _thisPopup.canClose = false;
-
-    const modalEl = _thisPopup.modal.getModal();
-
-    modalEl.qs("textarea")?.setStyle({
-      height: "110px",
-    });
-    modalEl.qs(".submitButton")?.hide();
-    setTimeout(() => {
-      _thisPopup.canClose = true;
-      modalEl.qs(".submitButton")?.show();
-    }, 5000);
-  },
-});
-
-const generateApeKey = new SimpleModal({
-  id: "generateApeKey",
-  title: "Generate new Ape key",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "Name",
-      initVal: "",
-      validation: { schema: ApeKeyNameSchema },
-    },
-  ],
-  buttonText: "generate",
-  execFn: async (thisPopup, name) => {
-    const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
-    if (response.status !== 200) {
-      return {
-        status: "error",
-        message: "Failed to generate key",
-        notificationOptions: { response },
-      };
-    }
-
-    const data = response.body.data;
-
-    const modalChain = thisPopup.modal.getPreviousModalInChain();
-
-    onApeKeyChange?.();
-
-    return {
-      status: "success",
-      message: "Key generated",
-      hideOptions: {
-        clearModalChain: true,
-        animationMode: "modalOnly",
-      },
-      afterHide: (): void => {
-        viewApeKey.show([data.apeKey], {
-          modalChain,
-          animationMode: "modalOnly",
-        });
-      },
-    };
-  },
-});
+import { showSimpleModal } from "../../states/simple-modal";
+import { z } from "zod";
+import { showModal } from "../../states/modals";
+import { setLastGeneratedApeKey } from "../../states/account-settings";
 
 let apeKeys: ApeKeys | null = {};
 
@@ -258,10 +105,61 @@ function refreshList(): void {
       void toggleActiveKey(keyid);
     });
     tr.qs("button.deleteButton")?.on("click", (e) => {
-      deleteApeKeyModal.show([keyid], {});
+      showSimpleModal({
+        title: "Delete Ape key",
+        text: "Are you sure?",
+        buttonText: "delete",
+        execFn: async (_thisPopup) => {
+          const response = await Ape.apeKeys.delete({
+            params: { apeKeyId: keyid },
+          });
+          if (response.status !== 200) {
+            return {
+              status: "error",
+              message: "Failed to delete key",
+              notificationOptions: { response },
+            };
+          }
+
+          onApeKeyChange?.();
+
+          return {
+            status: "success",
+            message: "Key deleted",
+          };
+        },
+      });
     });
     tr.qs("button.editButton")?.on("click", (e) => {
-      editApeKey.show([keyid], {});
+      showSimpleModal({
+        title: "Edit Ape key",
+        buttonText: "edit",
+        schema: z.object({ name: ApeKeyNameSchema }),
+        inputs: {
+          name: {
+            type: "text",
+            placeholder: "name",
+          },
+        },
+
+        execFn: async ({ name }) => {
+          const response = await Ape.apeKeys.save({
+            params: { apeKeyId: keyid },
+            body: { name },
+          });
+          if (response.status !== 200) {
+            return {
+              status: "error",
+              message: "Failed to update key",
+              notificationOptions: { response },
+            };
+          }
+          return {
+            status: "success",
+            message: "Key updated",
+          };
+        },
+      });
     });
   }
 }
@@ -307,5 +205,41 @@ export async function update(onApeKeyChangee?: () => void): Promise<void> {
 }
 
 qs(".pageAccountSettings")?.onChild("click", "#generateNewApeKey", () => {
-  generateApeKey.show([], {});
+  showSimpleModal({
+    title: "Generate new Ape key",
+    buttonText: "generate",
+    schema: z.object({ name: ApeKeyNameSchema }),
+    inputs: {
+      name: {
+        type: "text",
+        placeholder: "Name",
+      },
+    },
+
+    execFn: async ({ name }) => {
+      const response = await Ape.apeKeys.add({
+        body: { name, enabled: false },
+      });
+      if (response.status !== 200) {
+        return {
+          status: "error",
+          message: "Failed to generate key",
+          notificationOptions: { response },
+        };
+      }
+
+      const data = response.body.data;
+
+      onApeKeyChange?.();
+
+      return {
+        status: "success",
+        message: "Key generated",
+        afterHide: (): void => {
+          setLastGeneratedApeKey(data.apeKey);
+          showModal("ViewApeKey");
+        },
+      };
+    },
+  });
 });

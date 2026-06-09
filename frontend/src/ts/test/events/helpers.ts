@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
 import { Keycode } from "../../constants/keys";
-import { InputEvent } from "./types";
+import { InputEventNoMs } from "./types";
 
 export const keysToTrack = new Set<Keycode | "NoCode">([
   "NumpadMultiply",
@@ -93,7 +93,7 @@ export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
   return event.code as Keycode;
 }
 
-export function applyOp(input: string, event: InputEvent): string {
+export function applyOp(input: string, event: InputEventNoMs): string {
   if (event.data.inputType === "insertText") {
     if (event.data.inputStopped) return input;
     return input + event.data.data;
@@ -116,7 +116,7 @@ export function applyOp(input: string, event: InputEvent): string {
  * recorded inputValue field. Use for verification, tests, or fallback —
  * not as source of truth.
  */
-export function getInputFromEvents(events: InputEvent[]): string {
+export function getInputFromEvents(events: InputEventNoMs[]): string {
   let input = "";
   for (const event of events) {
     input = applyOp(input, event);
@@ -133,13 +133,13 @@ export function getInputFromEvents(events: InputEvent[]): string {
  * replays any subsequent events forward — O(1) when the last event has a
  * snapshot (the common case), O(n) worst case.
  */
-export function getInputFromDom(events: InputEvent[]): string {
+export function getInputFromDom(events: InputEventNoMs[]): string {
   for (let i = events.length - 1; i >= 0; i--) {
-    const event = events[i] as InputEvent;
+    const event = events[i] as InputEventNoMs;
     if (event.data.inputValue !== undefined) {
       let input = event.data.inputValue;
       for (let j = i + 1; j < events.length; j++) {
-        input = applyOp(input, events[j] as InputEvent);
+        input = applyOp(input, events[j] as InputEventNoMs);
       }
       return input;
     }
@@ -159,13 +159,13 @@ export type InputValueMismatch = {
  * DOM captured. Useful for catching op-logic bugs or capture-timing bugs.
  */
 export function findInputValueMismatches(
-  events: InputEvent[],
+  events: InputEventNoMs[],
 ): InputValueMismatch[] {
   const mismatches: InputValueMismatch[] = [];
   let derived = "";
 
   for (let i = 0; i < events.length; i++) {
-    const event = events[i] as InputEvent;
+    const event = events[i] as InputEventNoMs;
     derived = applyOp(derived, event);
 
     if (
