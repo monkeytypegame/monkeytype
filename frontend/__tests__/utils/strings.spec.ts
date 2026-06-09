@@ -1261,6 +1261,23 @@ describe("string utils", () => {
             missed: 0,
           },
         },
+        {
+          description: "early space on last word",
+          input: {
+            inputWord: "h ",
+            targetWord: "hello",
+            lastWord: true,
+            shouldLastPartialWordCount: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 1,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 4,
+          },
+        },
       ];
 
       it.each(testCases)("$description", ({ input, expected }) => {
