@@ -426,8 +426,8 @@ export type CharCounts = {
 export function countChars(
   inputWord: string,
   targetWord: string,
-  lastWord: boolean,
-  shouldLastPartialWordCount: boolean,
+  creditPartial: boolean,
+  endsWithCommitSpace: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -443,44 +443,36 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
-      // do not count correct space characters if the word is not correct
+      // matching space on a wrong word: incorrect if it was a commit attempt
+      // (word advanced via space), extra if it was a literal space (stopOnError
+      // blocked the commit so the space ended up as a typed character)
       if (targetChar === " ") {
         if (wordCorrect) {
           allCorrect += 1;
-        } else {
+        } else if (endsWithCommitSpace) {
           incorrect += 1;
+        } else {
+          extra += 1;
         }
       } else {
         allCorrect += 1;
       }
-      if (
-        wordCorrect ||
-        (lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)
-      ) {
+      if (wordCorrect || (creditPartial && wordPartiallyCorrect)) {
         correctWord += 1;
       }
     } else if (inputChar === undefined) {
       //missed char
-      if (!(lastWord && shouldLastPartialWordCount)) {
+      if (!creditPartial) {
         missed += 1;
       }
     } else if (
-      lastWord &&
+      endsWithCommitSpace &&
       inputChar === " " &&
       targetChar === undefined &&
       !targetWord.endsWith(" ")
     ) {
-      // trailing confirm space on incorrect last word — not counted
-    } else if (
-      lastWord &&
-      inputChar === " " &&
-      targetChar !== undefined &&
-      targetChar !== " "
-    ) {
-      // early submit space on last word — count slot as missed, not incorrect
-      if (!(lastWord && shouldLastPartialWordCount)) {
-        missed += 1;
-      }
+      // commit-space append past target (e.g. correctly typed last word) —
+      // not a literal typed char, don't count
     } else if (
       targetChar === undefined ||
       (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))

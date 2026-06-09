@@ -292,11 +292,17 @@ function countCharsForWords(
       targetWord = Hangul.disassemble(targetWord).join("");
     }
 
+    const lastEvent = events[events.length - 1];
+    const endsWithCommitSpace =
+      lastEvent !== undefined &&
+      lastEvent.data.inputType === "insertText" &&
+      lastEvent.data.isCommitSpace === true;
+
     const c = countChars(
       simulatedInput,
       targetWord,
-      lastWord,
-      shouldCountPartialLastWord,
+      lastWord && shouldCountPartialLastWord,
+      endsWithCommitSpace,
     );
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
