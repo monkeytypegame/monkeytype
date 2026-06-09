@@ -455,7 +455,7 @@ export function countChars(
       inputChar === " " &&
       i === inputWord.length - 1 &&
       !targetWord.endsWith(" ") &&
-      inputWord.length !== targetWord.length
+      targetChar !== "\n"
     ) {
       // commit-space on last word — not a literal typed char. If it landed
       // before reaching target's end, that slot is effectively missed.

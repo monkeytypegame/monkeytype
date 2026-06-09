@@ -778,6 +778,72 @@ describe("string utils", () => {
           },
         },
         {
+          description:
+            "last word, early commit space, input length == target length",
+          input: {
+            inputWord: "no ",
+            targetWord: "nom",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 1,
+          },
+        },
+        {
+          description: "last word correctly typed + commit space (past target)",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last word with extra char + commit space (past target)",
+          input: {
+            inputWord: "hellox ",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "last word, early commit space, equal length, creditPartial (trailing space breaks prefix match)",
+          input: {
+            inputWord: "no ",
+            targetWord: "nom",
+            creditPartial: true,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
           description: "incorrect, last word, quick end",
           input: {
             inputWord: "xello",
