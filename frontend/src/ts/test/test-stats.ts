@@ -277,16 +277,22 @@ function countChars(final = false): CharCount {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
 
+  if (final) {
+    console.log("filan");
+  }
+
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
     const targetWord = targetWords[i] as string;
+    const isLastInputWord = i === inputWords.length - 1;
 
     const { correctWord, allCorrect, incorrect, missed, extra } =
       countCharsUtils(
         inputWord,
         targetWord,
-        i === inputWords.length - 1,
-        (isTimedTest && final) || !final,
+        isLastInputWord && ((isTimedTest && final) || !final),
+        // historical words advanced via commit space; last is in-flight
+        !isLastInputWord,
       );
 
     correctWordChars += correctWord;

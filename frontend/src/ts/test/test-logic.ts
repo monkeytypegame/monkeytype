@@ -1014,6 +1014,10 @@ function compareCompletedEvents(
       continue;
     }
 
+    if (key === "keyConsistency") {
+      continue;
+    }
+
     if (key === "wpm" || key === "rawWpm") {
       val1 = Numbers.roundTo2(val1 as number);
       val2 = Numbers.roundTo2(val2 as number);
@@ -1103,7 +1107,7 @@ function compareCompletedEvents(
           );
         }
       }
-    } else if (key === "wpmConsistency" || key === "keyConsistency") {
+    } else if (key === "wpmConsistency") {
       const a = val1 as number;
       const b = val2 as number;
       const ref = Math.max(
@@ -1313,7 +1317,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 13,
+            version: 16,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
