@@ -468,11 +468,15 @@ export function countChars(
     } else if (
       endsWithCommitSpace &&
       inputChar === " " &&
-      targetChar === undefined &&
-      !targetWord.endsWith(" ")
+      i === inputWord.length - 1 &&
+      !targetWord.endsWith(" ") &&
+      targetChar !== "\n"
     ) {
-      // commit-space append past target (e.g. correctly typed last word) —
-      // not a literal typed char, don't count
+      // commit-space on last word — not a literal typed char. If it landed
+      // before reaching target's end, that slot is effectively missed.
+      if (targetChar !== undefined && !creditPartial) {
+        missed += 1;
+      }
     } else if (
       targetChar === undefined ||
       (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))

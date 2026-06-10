@@ -590,8 +590,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 3,
@@ -606,8 +606,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -622,8 +622,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -638,8 +638,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 6,
@@ -654,8 +654,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello ",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 6,
@@ -670,8 +670,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 5,
@@ -686,8 +686,8 @@ describe("string utils", () => {
           input: {
             inputWord: "helloxxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 5,
@@ -698,29 +698,12 @@ describe("string utils", () => {
           },
         },
         {
-          description:
-            "correct, partial, not last, should count (should count last partial)",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 3,
-          },
-        },
-        {
           description: "early space",
           input: {
             inputWord: "hel ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 3,
@@ -735,8 +718,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 0,
@@ -751,8 +734,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xxxxxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 0,
@@ -767,8 +750,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xexlxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 2,
@@ -783,8 +766,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xexl ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 2,
@@ -795,12 +778,78 @@ describe("string utils", () => {
           },
         },
         {
+          description:
+            "last word, early commit space, input length == target length",
+          input: {
+            inputWord: "no ",
+            targetWord: "nom",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 1,
+          },
+        },
+        {
+          description: "last word correctly typed + commit space (past target)",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last word with extra char + commit space (past target)",
+          input: {
+            inputWord: "hellox ",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "last word, early commit space, equal length, creditPartial (trailing space breaks prefix match)",
+          input: {
+            inputWord: "no ",
+            targetWord: "nom",
+            creditPartial: true,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
           description: "incorrect, last word, quick end",
           input: {
             inputWord: "xello",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -815,8 +864,8 @@ describe("string utils", () => {
           input: {
             inputWord: "he ",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 2,
@@ -831,8 +880,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xello ",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -847,8 +896,7 @@ describe("string utils", () => {
           input: {
             inputWord: "helol ",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: true,
           },
           expected: {
@@ -864,8 +912,7 @@ describe("string utils", () => {
           input: {
             inputWord: "helol ",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: false,
           },
           expected: {
@@ -881,8 +928,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hxllo ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: true,
           },
           expected: {
@@ -899,8 +945,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hxllo ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: false,
           },
           expected: {
@@ -916,8 +961,8 @@ describe("string utils", () => {
           input: {
             inputWord: "helloo ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 5,
@@ -932,8 +977,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 3,
@@ -949,8 +994,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -965,8 +1010,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xxx",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -981,24 +1026,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
-          description: "non-last word ignores shouldLastPartialWordCount",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            creditPartial: false,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1013,8 +1042,8 @@ describe("string utils", () => {
           input: {
             inputWord: "",
             targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 0,
@@ -1029,8 +1058,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello",
             targetWord: "",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 0,
@@ -1045,8 +1074,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello ",
             targetWord: "hello\n",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 5,
@@ -1061,8 +1090,7 @@ describe("string utils", () => {
           input: {
             inputWord: "helxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: true,
           },
           expected: {
@@ -1078,8 +1106,7 @@ describe("string utils", () => {
           input: {
             inputWord: "helxx ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: false,
           },
           expected: {
@@ -1095,8 +1122,8 @@ describe("string utils", () => {
           input: {
             inputWord: "hello\n",
             targetWord: "hello\n",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
+            endsWithCommitSpace: true,
           },
           expected: {
             allCorrect: 6,
@@ -1111,8 +1138,8 @@ describe("string utils", () => {
           input: {
             inputWord: "abcx",
             targetWord: "abc ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1127,8 +1154,8 @@ describe("string utils", () => {
           input: {
             inputWord: "abcx ",
             targetWord: "abc ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1144,8 +1171,8 @@ describe("string utils", () => {
           input: {
             inputWord: "jhow ",
             targetWord: "how",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1161,8 +1188,8 @@ describe("string utils", () => {
           input: {
             inputWord: "xow ",
             targetWord: "how",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 2,
@@ -1178,8 +1205,7 @@ describe("string utils", () => {
           input: {
             inputWord: "xonl  ",
             targetWord: "only ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
             endsWithCommitSpace: false,
           },
           expected: {
@@ -1196,8 +1222,8 @@ describe("string utils", () => {
           input: {
             inputWord: "x ",
             targetWord: "get",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
+            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1213,8 +1239,7 @@ describe("string utils", () => {
           input: {
             inputWord: "how ",
             targetWord: "how",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
             endsWithCommitSpace: true,
           },
           expected: {
@@ -1231,8 +1256,7 @@ describe("string utils", () => {
           input: {
             inputWord: "xello ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: true,
           },
           expected: {
@@ -1249,14 +1273,141 @@ describe("string utils", () => {
           input: {
             inputWord: "xello ",
             targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
             endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
             correctWord: 0,
             incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "early space on last word",
+          input: {
+            inputWord: "h ",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 1,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 4,
+          },
+        },
+        {
+          description: "early space on last word with creditPartial",
+          input: {
+            inputWord: "h ",
+            targetWord: "hello",
+            creditPartial: true,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 1,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "wrong word, trailing commit-space past target",
+          input: {
+            inputWord: "xow ",
+            targetWord: "how",
+            creditPartial: true,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "both empty",
+          input: {
+            inputWord: "",
+            targetWord: "",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "empty input with creditPartial",
+          input: {
+            inputWord: "",
+            targetWord: "hello",
+            creditPartial: true,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last word, no trailing space anywhere",
+          input: {
+            inputWord: "hello",
+            targetWord: "hello",
+            creditPartial: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 5,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "mid-word literal space followed by more input",
+          input: {
+            inputWord: "hel o",
+            targetWord: "hello ",
+            creditPartial: false,
+            endsWithCommitSpace: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 1,
+          },
+        },
+        {
+          description: "newline typed in place of target's trailing space",
+          input: {
+            inputWord: "hello\n",
+            targetWord: "hello ",
+            creditPartial: false,
+            endsWithCommitSpace: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 0,
+            incorrect: 0,
             extra: 1,
             missed: 0,
           },
@@ -1268,10 +1419,8 @@ describe("string utils", () => {
           Strings.countChars(
             input.inputWord,
             input.targetWord,
-            input.lastWord && input.shouldLastPartialWordCount,
-            // non-last words always commit via space in real callers; last
-            // word is in-flight unless explicitly overridden
-            input.endsWithCommitSpace ?? !input.lastWord,
+            input.creditPartial,
+            input.endsWithCommitSpace,
           ),
         ).toEqual(expected);
       });
