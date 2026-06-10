@@ -89,6 +89,7 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
+    isCommitSpace: true;
   }> = {},
 ): InputEventData {
   return {
@@ -818,7 +819,12 @@ describe("stats.ts", () => {
       logTestEvent(
         "input",
         1250,
-        input({ charIndex: 3, wordIndex: 0, data: " " }),
+        input({
+          charIndex: 3,
+          wordIndex: 0,
+          data: " ",
+          isCommitSpace: true,
+        }),
       );
       // type "w" on second word
       logTestEvent(
@@ -1286,7 +1292,7 @@ describe("stats.ts", () => {
       );
       // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
       expect(keyup).toBeDefined();
-      expect(keyup!.testMs).toBe(500);
+      expect(keyup?.testMs).toBe(500);
     });
 
     it("uses default 80ms when no completed key durations exist", () => {
@@ -1300,7 +1306,7 @@ describe("stats.ts", () => {
         (e) => e.type === "keyup" && e.data.code === "KeyA",
       );
       expect(keyup).toBeDefined();
-      expect(keyup!.testMs).toBe(280);
+      expect(keyup?.testMs).toBe(280);
     });
 
     it("does nothing when no keys are pressed", () => {

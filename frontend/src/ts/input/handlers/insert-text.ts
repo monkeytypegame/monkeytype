@@ -194,6 +194,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
   // completed event in derivation. Otherwise the just-typed trigger char
   // (space/newline) is missing — visible as missing \n element in zen mode.
+  const isCommitSpace = charIsSpace && !shouldInsertSpace;
   logTestEvent("input", now, {
     inputType: "insertText",
     data,
@@ -202,7 +203,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding === true,
     inputStopped: removeLastChar,
-    inputValue: inputValueAfterEvent,
+    // when shouldInsertSpace is true, the space char was already inserted via
+    // syncWithInputElement above — only append " " for the advance-space case,
+    // else recorded inputValue ends up with a doubled trailing space.
+    inputValue: inputValueAfterEvent + (isCommitSpace ? " " : ""),
+    isCommitSpace: isCommitSpace ? true : undefined,
   });
 
   // going to next word

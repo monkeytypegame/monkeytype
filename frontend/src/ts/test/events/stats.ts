@@ -424,11 +424,17 @@ function countCharsForWords(
       targetWord = Hangul.disassemble(targetWord).join("");
     }
 
+    const lastEvent = events[events.length - 1];
+    const endsWithCommitSpace =
+      lastEvent !== undefined &&
+      lastEvent.data.inputType === "insertText" &&
+      lastEvent.data.isCommitSpace === true;
+
     const c = countChars(
       simulatedInput,
       targetWord,
-      lastWord,
-      shouldCountPartialLastWord,
+      lastWord && shouldCountPartialLastWord,
+      endsWithCommitSpace,
     );
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
@@ -472,7 +478,7 @@ export function getChars(countPartialLastWord = false): CharCounts {
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
     getInputEventsPerWord(),
-    activeWordIndex,
+    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest || countPartialLastWord,
   );
 }
