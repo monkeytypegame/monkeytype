@@ -1,4 +1,4 @@
-  import Hangul from "hangul-js";
+import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
