@@ -277,10 +277,6 @@ function countChars(final = false): CharCount {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
 
-  if (final) {
-    console.log("filan");
-  }
-
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
     let targetWord = targetWords[i] as string;
