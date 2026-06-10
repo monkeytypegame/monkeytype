@@ -166,6 +166,11 @@ export function DevOptionsModal(): JSXElement {
       label: () => "Disable Slow Timer Fail",
       onClick: disableSlowTimerFail,
     },
+    {
+      icon: "fa-vials",
+      label: () => "Test Data Preview",
+      onClick: () => showModal("TestDataPreview"),
+    },
   ];
 
   const addDebugInboxItem = (rewardType: "xp" | "badge" | "none"): void => {
