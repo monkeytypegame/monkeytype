@@ -1,4 +1,4 @@
-import Hangul from "hangul-js";
+  import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
@@ -116,6 +116,7 @@ export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
   testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
@@ -124,7 +125,7 @@ export function calculateWpmAndRaw(
     testSecondsOverride ??
     calculateTestSeconds(TestState.isActive ? performance.now() : end);
 
-  const chars = countChars(final);
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
     (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
@@ -341,9 +342,8 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
