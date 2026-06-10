@@ -184,12 +184,22 @@ function buildLanes(
 
 function parseContext(raw: string): TestContext {
   const parsed = JSON.parse(raw) as unknown;
-  if (
-    typeof parsed !== "object" ||
-    parsed === null ||
-    !Array.isArray((parsed as TestContext).events) ||
-    !Array.isArray((parsed as TestContext).words)
-  ) {
+  if (typeof parsed !== "object") {
+    throw new Error("Expected an object");
+  }
+  if (parsed === null) {
+    throw new Error("Expected an object, got null");
+  }
+  if (!("events" in parsed) || !("words" in parsed)) {
+    throw new Error("Expected { events: TestEvent[], words: string[] }");
+  }
+  if (typeof parsed.words === "string") {
+    parsed.words = parsed.words.split(" ");
+  }
+  if (!Array.isArray((parsed as TestContext).events)) {
+    throw new Error("Expected { events: TestEvent[], words: string[] }");
+  }
+  if (!Array.isArray((parsed as TestContext).words)) {
     throw new Error("Expected { events: TestEvent[], words: string[] }");
   }
   return parsed as TestContext;
