@@ -283,8 +283,15 @@ function countChars(final = false): CharCount {
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
-    const targetWord = targetWords[i] as string;
+    let targetWord = targetWords[i] as string;
     const isLastInputWord = i === inputWords.length - 1;
+
+    // getTargetWords appends a delimiter to every word except the last in the
+    // generated list; for the last input word (active in timed/mid-test, or
+    // the actual last word) drop that delimiter so overshoot counts as extra
+    if (isLastInputWord && targetWord.endsWith(" ")) {
+      targetWord = targetWord.slice(0, -1);
+    }
 
     const { correctWord, allCorrect, incorrect, missed, extra } =
       countCharsUtils(
