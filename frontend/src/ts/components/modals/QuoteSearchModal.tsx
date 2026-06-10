@@ -92,13 +92,6 @@ function exactSearch(quotes: Quote[], captured: RegExp[]): [Quote[], string[]] {
   return [matches, Array.from(exactSearchQueryTerms)];
 }
 
-function getLengthDesc(quote: Quote): string {
-  if (quote.length < 101) return "short";
-  if (quote.length < 301) return "medium";
-  if (quote.length < 601) return "long";
-  return "thicc";
-}
-
 function Item(props: {
   quote: Quote;
   matchedTerms: string[];
@@ -146,7 +139,7 @@ function Item(props: {
         </div>
         <div class="text-xs text-sub">
           <div class="opacity-50">length</div>
-          {getLengthDesc(props.quote)}
+          {props.quote.groupDescription}
         </div>
         <div class="col-span-2 flex sm:col-span-1">
           <div class="grow text-xs text-sub">
