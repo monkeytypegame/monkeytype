@@ -738,6 +738,14 @@ function PreviewContent(props: {
     setEventToMark(next);
   };
 
+  const createMarkAndAssignToEvent = (eventIndex: number): void => {
+    if (!isSynced()) return;
+    const videoMs = testMsToVideoMs(currentMs());
+    const id = generateMarkId();
+    setMarks([...marks(), { id, videoMs }]);
+    assignMarkToEvent(eventIndex, id);
+  };
+
   const [videoPlayState, setVideoPlayState] = createSignal(false);
   const [videoCurrentMs, setVideoCurrentMs] = createSignal(0);
   const [videoFrameTimeMs, setVideoFrameTimeMs] = createSignal<number | null>(
@@ -972,9 +980,18 @@ function PreviewContent(props: {
             />
           </Show>
         </div>
-        <Show when={marks().length > 0}>
+        <Show
+          when={
+            marks().filter((m) => eventIndexForMark(m.id) === undefined)
+              .length > 0
+          }
+        >
           <div class="flex flex-wrap items-center gap-1">
-            <For each={marks()}>
+            <For
+              each={marks().filter(
+                (m) => eventIndexForMark(m.id) === undefined,
+              )}
+            >
               {(mark) => {
                 const assignedIdx = (): number | undefined =>
                   eventIndexForMark(mark.id);
@@ -1177,17 +1194,26 @@ function PreviewContent(props: {
                       <select
                         class="w-full rounded bg-bg p-1 font-mono text-xs text-text"
                         value={eventToMark()[originalIndex] ?? ""}
-                        onChange={(e) =>
-                          assignMarkToEvent(
-                            originalIndex,
-                            e.currentTarget.value === ""
-                              ? null
-                              : e.currentTarget.value,
-                          )
-                        }
+                        onChange={(e) => {
+                          const v = e.currentTarget.value;
+                          if (v === "") {
+                            assignMarkToEvent(originalIndex, null);
+                          } else if (v === "__new__") {
+                            createMarkAndAssignToEvent(originalIndex);
+                            e.currentTarget.value =
+                              eventToMark()[originalIndex] ?? "";
+                          } else {
+                            assignMarkToEvent(originalIndex, v);
+                          }
+                        }}
                       >
                         <option value="">(none)</option>
-                        <For each={marks()}>
+                        <For
+                          each={marks().filter((m) => {
+                            const idx = eventIndexForMark(m.id);
+                            return idx === undefined || idx === originalIndex;
+                          })}
+                        >
                           {(mark) => (
                             <option value={mark.id}>
                               {mark.sync ?? mark.id} ({mark.videoMs.toFixed(0)}
@@ -1195,6 +1221,11 @@ function PreviewContent(props: {
                             </option>
                           )}
                         </For>
+                        <Show when={isSynced()}>
+                          <option value="__new__">
+                            + new mark at playhead
+                          </option>
+                        </Show>
                       </select>
                     </td>
                     <td class="p-2 font-mono break-all">
