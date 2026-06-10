@@ -4,6 +4,7 @@ import {
   createSignal,
   For,
   JSXElement,
+  onCleanup,
   Show,
   untrack,
 } from "solid-js";
@@ -393,6 +394,91 @@ function PreviewContent(props: {
     scrollRowIntoView(eventsScrollEl, currentEventIndex());
   });
 
+  const [playing, setPlaying] = createSignal(false);
+  let rafId: number | undefined;
+  let lastFrame: number | undefined;
+
+  const stopPlay = (): void => {
+    if (rafId !== undefined) cancelAnimationFrame(rafId);
+    rafId = undefined;
+    lastFrame = undefined;
+    setPlaying(false);
+  };
+
+  const tick = (now: number): void => {
+    if (lastFrame === undefined) {
+      lastFrame = now;
+      rafId = requestAnimationFrame(tick);
+      return;
+    }
+    const dt = now - lastFrame;
+    lastFrame = now;
+    const next = currentMs() + dt;
+    if (next >= timelineMaxMs) {
+      setCurrentMs(timelineMaxMs);
+      stopPlay();
+      return;
+    }
+    setCurrentMs(Math.round(next));
+    rafId = requestAnimationFrame(tick);
+  };
+
+  const togglePlay = (): void => {
+    if (playing()) {
+      stopPlay();
+    } else {
+      if (currentMs() >= timelineMaxMs) setCurrentMs(timelineMinMs);
+      setPlaying(true);
+      lastFrame = undefined;
+      rafId = requestAnimationFrame(tick);
+    }
+  };
+
+  onCleanup(stopPlay);
+
+  const step = (delta: number): void => {
+    stopPlay();
+    const next = Math.max(
+      timelineMinMs,
+      Math.min(timelineMaxMs, currentMs() + delta),
+    );
+    setCurrentMs(next);
+  };
+
+  const goToStart = (): void => {
+    stopPlay();
+    setCurrentMs(timelineMinMs);
+  };
+
+  const goToEnd = (): void => {
+    stopPlay();
+    setCurrentMs(timelineMaxMs);
+  };
+
+  const goNextEvent = (): void => {
+    stopPlay();
+    const events = filteredEvents();
+    let bestMs: number | null = null;
+    for (const e of events) {
+      if (e.testMs > currentMs() && (bestMs === null || e.testMs < bestMs)) {
+        bestMs = e.testMs;
+      }
+    }
+    setCurrentMs(bestMs ?? timelineMaxMs);
+  };
+
+  const goPrevEvent = (): void => {
+    stopPlay();
+    const events = filteredEvents();
+    let bestMs: number | null = null;
+    for (const e of events) {
+      if (e.testMs < currentMs() && (bestMs === null || e.testMs > bestMs)) {
+        bestMs = e.testMs;
+      }
+    }
+    setCurrentMs(bestMs ?? timelineMinMs);
+  };
+
   return (
     <div class="flex flex-col gap-4">
       <div class="flex justify-start">
@@ -408,8 +494,64 @@ function PreviewContent(props: {
         <div class="flex items-center justify-between">
           <div class="text-sm text-sub">Time</div>
           <div class="font-mono text-xs text-sub">
-            {currentMs()} / {maxMs} ms
+            {currentMs().toFixed(2)} / {maxMs} ms
           </div>
+        </div>
+        <div class="flex items-center justify-center gap-1">
+          <Button
+            variant="text"
+            balloon={{ text: "Go to start" }}
+            fa={{ icon: "fa-fast-backward" }}
+            onClick={goToStart}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "-10ms" }}
+            fa={{ icon: "fa-backward" }}
+            onClick={() => step(-10)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "-1ms" }}
+            fa={{ icon: "fa-chevron-left" }}
+            onClick={() => step(-1)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Previous event" }}
+            fa={{ icon: "fa-step-backward" }}
+            onClick={goPrevEvent}
+          />
+          <Button
+            variant="button"
+            balloon={{ text: playing() ? "Pause" : "Play" }}
+            fa={{ icon: playing() ? "fa-pause" : "fa-play" }}
+            onClick={togglePlay}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Next event" }}
+            fa={{ icon: "fa-step-forward" }}
+            onClick={goNextEvent}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "+1ms" }}
+            fa={{ icon: "fa-chevron-right" }}
+            onClick={() => step(1)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "+10ms" }}
+            fa={{ icon: "fa-forward" }}
+            onClick={() => step(10)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Go to end" }}
+            fa={{ icon: "fa-fast-forward" }}
+            onClick={goToEnd}
+          />
         </div>
         <Timeline
           segments={timelineLanes().segments}
