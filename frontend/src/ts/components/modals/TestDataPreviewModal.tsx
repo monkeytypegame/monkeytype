@@ -544,30 +544,22 @@ function PreviewContent(props: {
     scrollRowIntoView(eventsScrollEl, currentEventIndex());
   });
 
-  const [playing, setPlaying] = createSignal(false);
+  const [timelinePlaying, setTimelinePlaying] = createSignal(false);
   let rafId: number | undefined;
   let lastFrame: number | undefined;
 
-  const stopPlay = (): void => {
+  const playing = createMemo(() =>
+    isSynced() ? videoPlayState() : timelinePlaying(),
+  );
+
+  const stopTimelinePlay = (): void => {
     if (rafId !== undefined) cancelAnimationFrame(rafId);
     rafId = undefined;
     lastFrame = undefined;
-    setPlaying(false);
+    setTimelinePlaying(false);
   };
 
   const tick = (now: number): void => {
-    const el = videoEl();
-    if (el !== undefined && isSynced() && Number.isFinite(el.currentTime)) {
-      const next = videoMsToTestMs(el.currentTime * 1000);
-      if (next >= timelineMaxMs()) {
-        setCurrentMs(timelineMaxMs());
-        stopPlay();
-        return;
-      }
-      setCurrentMs(next);
-      rafId = requestAnimationFrame(tick);
-      return;
-    }
     if (lastFrame === undefined) {
       lastFrame = now;
       rafId = requestAnimationFrame(tick);
@@ -578,7 +570,7 @@ function PreviewContent(props: {
     const next = currentMs() + dt;
     if (next >= timelineMaxMs()) {
       setCurrentMs(timelineMaxMs());
-      stopPlay();
+      stopTimelinePlay();
       return;
     }
     setCurrentMs(Math.round(next));
@@ -586,20 +578,37 @@ function PreviewContent(props: {
   };
 
   const togglePlay = (): void => {
-    if (playing()) {
-      stopPlay();
+    if (isSynced()) {
+      const el = videoEl();
+      if (el === undefined) return;
+      if (el.paused) {
+        if (currentMs() >= timelineMaxMs()) setCurrentMs(timelineMinMs());
+        void el.play().catch(() => undefined);
+      } else {
+        el.pause();
+      }
+      return;
+    }
+    if (timelinePlaying()) {
+      stopTimelinePlay();
     } else {
       if (currentMs() >= timelineMaxMs()) setCurrentMs(timelineMinMs());
-      setPlaying(true);
+      setTimelinePlaying(true);
       lastFrame = undefined;
       rafId = requestAnimationFrame(tick);
     }
   };
 
-  onCleanup(stopPlay);
+  onCleanup(stopTimelinePlay);
+
+  const stopAllPlay = (): void => {
+    stopTimelinePlay();
+    const el = videoEl();
+    if (el !== undefined && isSynced() && !el.paused) el.pause();
+  };
 
   const step = (delta: number): void => {
-    stopPlay();
+    stopAllPlay();
     const next = Math.max(
       timelineMinMs(),
       Math.min(timelineMaxMs(), currentMs() + delta),
@@ -608,17 +617,17 @@ function PreviewContent(props: {
   };
 
   const goToStart = (): void => {
-    stopPlay();
+    stopAllPlay();
     setCurrentMs(timelineMinMs());
   };
 
   const goToEnd = (): void => {
-    stopPlay();
+    stopAllPlay();
     setCurrentMs(timelineMaxMs());
   };
 
   const goNextEvent = (): void => {
-    stopPlay();
+    stopAllPlay();
     const events = filteredEvents();
     let bestMs: number | null = null;
     for (const e of events) {
@@ -630,7 +639,7 @@ function PreviewContent(props: {
   };
 
   const goPrevEvent = (): void => {
-    stopPlay();
+    stopAllPlay();
     const events = filteredEvents();
     let bestMs: number | null = null;
     for (const e of events) {
@@ -666,37 +675,12 @@ function PreviewContent(props: {
     const el = videoEl();
     if (el === undefined) return;
     if (!isSynced()) return;
+    if (videoPlayState()) return;
     const t = testMsToVideoMs(currentMs()) / 1000;
     if (!Number.isFinite(t) || t < 0) return;
     if (Number.isFinite(el.duration) && t > el.duration) return;
     if (Math.abs(el.currentTime - t) > 0.001) {
       el.currentTime = t;
-    }
-  });
-
-  createEffect(() => {
-    if (!isSynced()) return;
-    const vps = videoPlayState();
-    if (vps !== playing()) {
-      if (vps) {
-        if (currentMs() >= timelineMaxMs()) setCurrentMs(timelineMinMs());
-        setPlaying(true);
-        lastFrame = undefined;
-        rafId = requestAnimationFrame(tick);
-      } else {
-        stopPlay();
-      }
-    }
-  });
-
-  createEffect(() => {
-    const el = videoEl();
-    if (el === undefined) return;
-    if (!isSynced()) return;
-    if (playing()) {
-      void el.play().catch(() => undefined);
-    } else {
-      el.pause();
     }
   });
 
@@ -743,6 +727,21 @@ function PreviewContent(props: {
     const videoMs = testMsToVideoMs(currentMs());
     const id = generateMarkId();
     setMarks([...marks(), { id, videoMs }]);
+    assignMarkToEvent(eventIndex, id);
+  };
+
+  const createSyncMarkAndAssignToEvent = (
+    eventIndex: number,
+    sync: SyncKind,
+  ): void => {
+    if (marks().some((m) => m.sync === sync)) return;
+    const el = videoEl();
+    if (el === undefined) return;
+    const frameMs = videoFrameTimeMs();
+    const currentMsFromEl = el.currentTime * 1000;
+    const videoMs = frameMs ?? currentMsFromEl;
+    const id = generateMarkId();
+    setMarks([...marks(), { id, videoMs, sync }]);
     assignMarkToEvent(eventIndex, id);
   };
 
@@ -820,24 +819,206 @@ function PreviewContent(props: {
   };
 
   return (
-    <div class="flex flex-col gap-4">
-      <Show when={isSynced()}>
-        <div class="rounded bg-main p-2 text-center font-bold text-bg">
-          SYNCED — video locked to timeline
-        </div>
-      </Show>
-      <div class="flex justify-start">
+    <div class="flex flex-col gap-3">
+      {/* HEADER */}
+      <div class="flex items-center justify-between gap-2">
         <Button
-          variant="button"
+          variant="text"
           onClick={props.onBack}
           fa={{ icon: "fa-arrow-left" }}
           text="Back"
         />
+        <Show when={isSynced()}>
+          <div class="flex items-center gap-2 rounded bg-main px-3 py-1 text-xs font-bold tracking-wider text-bg uppercase">
+            <span>● Synced</span>
+            <span class="font-mono opacity-80">
+              {videoMapping().slope.toFixed(4)}×
+            </span>
+          </div>
+        </Show>
       </div>
 
-      <div class="flex flex-col gap-2">
+      {/* VIDEO VIEWER PANEL */}
+      <div class="bg-bg-secondary flex flex-col gap-2 rounded-lg p-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-xs tracking-wider text-sub uppercase">Viewer</div>
+          <div class="flex items-center gap-2">
+            <input
+              type="file"
+              accept="video/*"
+              onChange={onPickVideo}
+              class="text-xs text-text"
+            />
+            <Show when={videoUrl() !== null}>
+              <Button
+                variant="text"
+                text="Clear"
+                class="text-xs"
+                onClick={clearVideo}
+              />
+            </Show>
+          </div>
+        </div>
+        <Show
+          when={videoUrl() !== null}
+          fallback={
+            <div class="flex h-64 items-center justify-center rounded bg-bg text-xs text-sub">
+              No video loaded
+            </div>
+          }
+        >
+          <div class="flex justify-center">
+            <video
+              ref={(el) => setVideoEl(el)}
+              src={videoUrl() ?? undefined}
+              class="max-h-[60vh] w-full max-w-3xl rounded bg-bg object-contain"
+              muted
+              onLoadedMetadata={(e) =>
+                setVideoDurationMs(e.currentTarget.duration * 1000)
+              }
+              onPlay={() => setVideoPlayState(true)}
+              onPause={() => setVideoPlayState(false)}
+              onTimeUpdate={(e) => {
+                const ct = e.currentTarget.currentTime * 1000;
+                setVideoCurrentMs(ct);
+                if (isSynced()) setCurrentMs(videoMsToTestMs(ct));
+              }}
+            ></video>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max={videoDurationMs() ?? 0}
+            step="1"
+            value={videoCurrentMs()}
+            onInput={(e) => seekVideoMs(Number(e.currentTarget.value))}
+            class="w-full"
+          />
+          <div class="flex items-center justify-between gap-2">
+            <div
+              class="font-mono text-xs text-sub"
+              title="current video frame index / time @ detected fps"
+            >
+              {currentFrameIndex() !== null
+                ? `${currentFrameIndex()} (${(videoFrameTimeMs() ?? 0).toFixed(2)}ms @ ${videoFps().toFixed(2)}fps)`
+                : "—"}
+            </div>
+            <div class="flex items-center gap-1">
+              <Button
+                variant="text"
+                balloon={{ text: "Previous frame" }}
+                fa={{ icon: "fa-step-backward" }}
+                onClick={() => videoStepFrame(-1)}
+              />
+              <Button
+                variant="button"
+                balloon={{ text: videoPlayState() ? "Pause" : "Play" }}
+                fa={{ icon: videoPlayState() ? "fa-pause" : "fa-play" }}
+                onClick={toggleVideoPlay}
+              />
+              <Button
+                variant="text"
+                balloon={{ text: "Next frame" }}
+                fa={{ icon: "fa-step-forward" }}
+                onClick={() => videoStepFrame(1)}
+              />
+            </div>
+            <Button
+              variant="button"
+              text={isSynced() ? "Synced" : "Sync"}
+              active={isSynced()}
+              disabled={!isSyncable()}
+              balloon={{
+                text: isSyncable()
+                  ? isSynced()
+                    ? "Click to unsync"
+                    : "Lock video to timeline"
+                  : "Both sync marks must be placed and assigned to events",
+              }}
+              onClick={toggleSync}
+            />
+          </div>
+        </Show>
+        <Show when={videoUrl() !== null}>
+          <div class="flex flex-wrap items-center gap-2 border-t border-bg pt-2">
+            <div class="text-xs tracking-wider text-sub uppercase">Marks</div>
+            <Button
+              variant="text"
+              text="+ mark"
+              class="text-xs"
+              disabled={!isSynced()}
+              balloon={{
+                text: isSynced()
+                  ? "Add a generic mark at the current video frame"
+                  : "Add and assign both sync marks first",
+              }}
+              onClick={() => addMark()}
+            />
+            <Button
+              variant="text"
+              text="+ start sync"
+              class="text-xs"
+              disabled={syncStartMark() !== undefined}
+              balloon={{
+                text: "Add the start sync mark at the current video frame",
+              }}
+              onClick={() => addMark("start")}
+            />
+            <Button
+              variant="text"
+              text="+ end sync"
+              class="text-xs"
+              disabled={syncEndMark() !== undefined}
+              balloon={{
+                text: "Add the end sync mark at the current video frame",
+              }}
+              onClick={() => addMark("end")}
+            />
+            <Show
+              when={
+                marks().filter((m) => eventIndexForMark(m.id) === undefined)
+                  .length > 0
+              }
+            >
+              <For
+                each={marks().filter(
+                  (m) => eventIndexForMark(m.id) === undefined,
+                )}
+              >
+                {(mark) => (
+                  <div class="flex items-center gap-1 rounded bg-bg p-1 font-mono text-xs">
+                    <span class="text-text">{mark.sync ?? mark.id}</span>
+                    <input
+                      type="number"
+                      value={mark.videoMs}
+                      onInput={(e) =>
+                        updateMarkVideoMs(
+                          mark.id,
+                          Number(e.currentTarget.value),
+                        )
+                      }
+                      class="bg-bg-secondary w-20 rounded p-1 text-text"
+                    />
+                    <button
+                      type="button"
+                      class="cursor-pointer px-1 text-error"
+                      onClick={() => removeMark(mark.id)}
+                      title="Remove mark"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+              </For>
+            </Show>
+          </div>
+        </Show>
+      </div>
+
+      {/* TIMELINE PANEL */}
+      <div class="bg-bg-secondary flex flex-col gap-2 rounded-lg p-3">
         <div class="flex items-center justify-between">
-          <div class="text-sm text-sub">Time</div>
+          <div class="text-xs tracking-wider text-sub uppercase">Timeline</div>
           <div class="font-mono text-xs text-sub">
             {currentMs().toFixed(2)} / {maxMs} ms
           </div>
@@ -915,205 +1096,27 @@ function PreviewContent(props: {
           videoBar={videoBarRange()}
           marks={timelineMarks()}
         />
-        {/* <input
-          type="range"
-          min="0"
-          max={maxMs}
-          step="1"
-          value={currentMs()}
-          onInput={(e) => setCurrentMs(Number(e.currentTarget.value))}
-          class="w-full"
-        /> */}
       </div>
 
-      <div class="flex flex-col gap-2">
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="text-sm text-sub">Video</div>
-          <input
-            type="file"
-            accept="video/*"
-            onChange={onPickVideo}
-            class="text-xs text-text"
-          />
-          <Show when={videoUrl() !== null}>
-            <Button variant="text" text="Clear" onClick={clearVideo} />
-            <div
-              class="font-mono text-xs text-sub"
-              title={
-                isSynced()
-                  ? "video duration per test duration; 1× means in sync"
-                  : "synced when both sync marks are assigned to events"
-              }
-            >
-              {isSynced()
-                ? `scale: ${videoMapping().slope.toFixed(4)}×`
-                : "unsynced"}
-            </div>
-            <Button
-              variant="text"
-              text="Add mark"
-              disabled={!isSynced()}
-              balloon={{
-                text: isSynced()
-                  ? "Add a generic mark at the current video frame"
-                  : "Add and assign both sync marks first",
-              }}
-              onClick={() => addMark()}
-            />
-            <Button
-              variant="text"
-              text="Add start sync mark"
-              disabled={syncStartMark() !== undefined}
-              balloon={{
-                text: "Add the start sync mark at the current video frame",
-              }}
-              onClick={() => addMark("start")}
-            />
-            <Button
-              variant="text"
-              text="Add end sync mark"
-              disabled={syncEndMark() !== undefined}
-              balloon={{
-                text: "Add the end sync mark at the current video frame",
-              }}
-              onClick={() => addMark("end")}
-            />
-          </Show>
+      {/* INSPECTOR: simulated input */}
+      <div class="bg-bg-secondary flex flex-col gap-2 rounded-lg p-3">
+        <div class="text-xs tracking-wider text-sub uppercase">
+          Simulated input
         </div>
-        <Show
-          when={
-            marks().filter((m) => eventIndexForMark(m.id) === undefined)
-              .length > 0
-          }
-        >
-          <div class="flex flex-wrap items-center gap-1">
-            <For
-              each={marks().filter(
-                (m) => eventIndexForMark(m.id) === undefined,
-              )}
-            >
-              {(mark) => {
-                const assignedIdx = (): number | undefined =>
-                  eventIndexForMark(mark.id);
-                return (
-                  <div class="bg-bg-secondary flex items-center gap-1 rounded p-1 font-mono text-xs">
-                    <span class="text-text">{mark.sync ?? mark.id}</span>
-                    <input
-                      type="number"
-                      value={mark.videoMs}
-                      onInput={(e) =>
-                        updateMarkVideoMs(
-                          mark.id,
-                          Number(e.currentTarget.value),
-                        )
-                      }
-                      class="w-24 rounded bg-bg p-1 text-text"
-                    />
-                    <span class="text-sub">
-                      {assignedIdx() !== undefined
-                        ? `→ event #${assignedIdx()}`
-                        : "(unassigned)"}
-                    </span>
-                    <button
-                      type="button"
-                      class="cursor-pointer px-1 text-error"
-                      onClick={() => removeMark(mark.id)}
-                      title="Remove mark"
-                    >
-                      ×
-                    </button>
-                  </div>
-                );
-              }}
-            </For>
-          </div>
-        </Show>
-        <Show when={videoUrl() !== null}>
-          <video
-            ref={(el) => setVideoEl(el)}
-            src={videoUrl() ?? undefined}
-            class="bg-bg-secondary max-h-96 w-full rounded"
-            muted
-            onLoadedMetadata={(e) =>
-              setVideoDurationMs(e.currentTarget.duration * 1000)
-            }
-            onPlay={() => setVideoPlayState(true)}
-            onPause={() => setVideoPlayState(false)}
-            onTimeUpdate={(e) => {
-              const ct = e.currentTarget.currentTime * 1000;
-              setVideoCurrentMs(ct);
-              if (isSynced()) setCurrentMs(videoMsToTestMs(ct));
-            }}
-          ></video>
-          <input
-            type="range"
-            min="0"
-            max={videoDurationMs() ?? 0}
-            step="1"
-            value={videoCurrentMs()}
-            onInput={(e) => seekVideoMs(Number(e.currentTarget.value))}
-            class="w-full"
-          />
-          <div class="flex items-center justify-center gap-1">
-            <Button
-              variant="text"
-              balloon={{ text: "Previous frame" }}
-              fa={{ icon: "fa-step-backward" }}
-              onClick={() => videoStepFrame(-1)}
-            />
-            <Button
-              variant="button"
-              balloon={{ text: videoPlayState() ? "Pause" : "Play" }}
-              fa={{ icon: videoPlayState() ? "fa-pause" : "fa-play" }}
-              onClick={toggleVideoPlay}
-            />
-            <Button
-              variant="text"
-              balloon={{ text: "Next frame" }}
-              fa={{ icon: "fa-step-forward" }}
-              onClick={() => videoStepFrame(1)}
-            />
-            <Button
-              variant="button"
-              text={isSynced() ? "Synced" : "Sync"}
-              active={isSynced()}
-              disabled={!isSyncable()}
-              balloon={{
-                text: isSyncable()
-                  ? isSynced()
-                    ? "Click to unsync"
-                    : "Lock video to timeline"
-                  : "Both sync marks must be placed and assigned to events",
-              }}
-              onClick={toggleSync}
-            />
-            <div
-              class="ml-4 font-mono text-xs text-sub"
-              title="current video frame index / time @ detected fps"
-            >
-              {currentFrameIndex() !== null
-                ? `frame ${currentFrameIndex()} (${(videoFrameTimeMs() ?? 0).toFixed(2)}ms @ ${videoFps().toFixed(2)}fps)`
-                : "frame —"}
-            </div>
-          </div>
-        </Show>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <div class="text-sm text-sub">Simulated input</div>
-        <div class="bg-bg-secondary min-h-10 rounded p-2 font-mono text-sm break-all whitespace-pre-wrap">
+        <div class="min-h-10 rounded bg-bg p-2 font-mono text-sm break-all whitespace-pre-wrap">
           {simulatedInput()}
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <div class="text-sm text-sub">Words</div>
+      {/* INSPECTOR: words */}
+      <div class="bg-bg-secondary flex flex-col gap-2 rounded-lg p-3">
+        <div class="text-xs tracking-wider text-sub uppercase">Words</div>
         <div
           ref={(el) => (wordsScrollEl = el)}
-          class="bg-bg-secondary max-h-64 overflow-auto rounded"
+          class="max-h-64 overflow-auto rounded bg-bg"
         >
           <table class="w-full text-xs">
-            <thead class="bg-bg-secondary sticky top-0">
+            <thead class="sticky top-0 bg-bg">
               <tr class="text-sub">
                 <th class="w-10 p-2 text-right">#</th>
                 <th class="p-2 text-left">target</th>
@@ -1143,9 +1146,10 @@ function PreviewContent(props: {
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
+      {/* INSPECTOR: events */}
+      <div class="bg-bg-secondary flex flex-col gap-2 rounded-lg p-3">
         <div class="flex items-center justify-between gap-2">
-          <div class="text-sm text-sub">
+          <div class="text-xs tracking-wider text-sub uppercase">
             Events ({filteredEvents().length}/{props.ctx.events.length})
           </div>
           <div class="flex flex-wrap gap-2">
@@ -1164,10 +1168,10 @@ function PreviewContent(props: {
         </div>
         <div
           ref={(el) => (eventsScrollEl = el)}
-          class="bg-bg-secondary max-h-96 overflow-auto rounded"
+          class="max-h-96 overflow-auto rounded bg-bg"
         >
           <table class="w-full text-xs">
-            <thead class="bg-bg-secondary sticky top-0">
+            <thead class="sticky top-0 bg-bg">
               <tr class="text-sub">
                 <th class="w-24 p-2 text-right">time</th>
                 <th class="w-24 p-2 text-left">type</th>
@@ -1200,11 +1204,21 @@ function PreviewContent(props: {
                             assignMarkToEvent(originalIndex, null);
                           } else if (v === "__new__") {
                             createMarkAndAssignToEvent(originalIndex);
-                            e.currentTarget.value =
-                              eventToMark()[originalIndex] ?? "";
+                          } else if (v === "__new_start__") {
+                            createSyncMarkAndAssignToEvent(
+                              originalIndex,
+                              "start",
+                            );
+                          } else if (v === "__new_end__") {
+                            createSyncMarkAndAssignToEvent(
+                              originalIndex,
+                              "end",
+                            );
                           } else {
                             assignMarkToEvent(originalIndex, v);
                           }
+                          e.currentTarget.value =
+                            eventToMark()[originalIndex] ?? "";
                         }}
                       >
                         <option value="">(none)</option>
@@ -1221,6 +1235,24 @@ function PreviewContent(props: {
                             </option>
                           )}
                         </For>
+                        <Show
+                          when={
+                            videoUrl() !== null && syncStartMark() === undefined
+                          }
+                        >
+                          <option value="__new_start__">
+                            + start sync mark @ frame
+                          </option>
+                        </Show>
+                        <Show
+                          when={
+                            videoUrl() !== null && syncEndMark() === undefined
+                          }
+                        >
+                          <option value="__new_end__">
+                            + end sync mark @ frame
+                          </option>
+                        </Show>
                         <Show when={isSynced()}>
                           <option value="__new__">
                             + new mark at playhead
