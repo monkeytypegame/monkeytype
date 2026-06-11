@@ -428,7 +428,7 @@ function countCharsForWords(
     const endsWithCommitSpace =
       lastEvent !== undefined &&
       lastEvent.data.inputType === "insertText" &&
-      lastEvent.data.isCommitSpace === true;
+      lastEvent.data.commitsWord === true;
 
     const c = countChars(
       simulatedInput,

@@ -27,6 +27,7 @@ import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getCurrentInput, logTestEvent } from "./events/data";
 import { getCurrentAccuracy, getCurrentWpmAndRaw } from "./events/stats";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -322,7 +323,7 @@ async function _startOld(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    const drift = Math.abs(interval - delay);
+    const drift = roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
       if (!TestState.isActive) {
