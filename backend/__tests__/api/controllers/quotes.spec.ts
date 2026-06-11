@@ -141,7 +141,7 @@ describe("QuotesController", () => {
     });
     it("should return for quotes disabled without authentication", async () => {
       //GIVEN
-      enableQuotes(false);
+      await enableQuotes(false);
 
       //WHEN
       const { body } = await mockApp
