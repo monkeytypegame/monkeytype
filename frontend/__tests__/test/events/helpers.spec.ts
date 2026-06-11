@@ -21,7 +21,7 @@ let wordIndex = 0;
 function insert(
   chars: string,
   inputType: InsertInputType = "insertText",
-  overrides: Partial<{ inputStopped: boolean }> = {},
+  overrides: { inputStopped?: true } = {},
 ): InputEvent[] {
   return [...chars].map((char) => {
     nextMs += 10;
@@ -35,8 +35,6 @@ function insert(
         inputType,
         data: char,
         correct: true,
-        isCompositionEnding: false,
-        inputStopped: false,
         ...overrides,
       },
     };
@@ -278,8 +276,6 @@ describe("getInputFromDom", () => {
           charIndex: 2,
           wordIndex: 0,
           correct: true,
-          isCompositionEnding: false,
-          inputStopped: false,
           inputValue: "abc",
         },
       },
@@ -294,8 +290,6 @@ describe("getInputFromDom", () => {
           charIndex: 3,
           wordIndex: 0,
           correct: true,
-          isCompositionEnding: false,
-          inputStopped: false,
         },
       },
     ];
@@ -324,8 +318,6 @@ describe("findInputValueMismatches", () => {
           charIndex: 0,
           wordIndex: 0,
           correct: true,
-          isCompositionEnding: false,
-          inputStopped: false,
           inputValue: "a",
         },
       },
@@ -339,8 +331,6 @@ describe("findInputValueMismatches", () => {
           charIndex: 1,
           wordIndex: 0,
           correct: true,
-          isCompositionEnding: false,
-          inputStopped: false,
           inputValue: "ab",
         },
       },
@@ -360,8 +350,6 @@ describe("findInputValueMismatches", () => {
           charIndex: 0,
           wordIndex: 0,
           correct: true,
-          isCompositionEnding: false,
-          inputStopped: false,
           inputValue: "DIFFERENT",
         },
       },

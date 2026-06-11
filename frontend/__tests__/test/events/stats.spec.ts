@@ -89,6 +89,7 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
+    isCommitSpace: true;
   }> = {},
 ): InputEventData {
   return {
@@ -818,7 +819,12 @@ describe("stats.ts", () => {
       logTestEvent(
         "input",
         1250,
-        input({ charIndex: 3, wordIndex: 0, data: " " }),
+        input({
+          charIndex: 3,
+          wordIndex: 0,
+          data: " ",
+          isCommitSpace: true,
+        }),
       );
       // type "w" on second word
       logTestEvent(

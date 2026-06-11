@@ -13,6 +13,11 @@ if (import.meta.env.DEV) {
       default: m.DevOptionsModal,
     })),
   );
+  const LazyTestDataPreviewModal = lazy(async () =>
+    import("../modals/TestDataPreviewModal").then((m) => ({
+      default: m.TestDataPreviewModal,
+    })),
+  );
 
   const LazySolidDevtoolsOverlay = lazy(async () =>
     import("@solid-devtools/overlay").then((m) => ({
@@ -33,6 +38,7 @@ if (import.meta.env.DEV) {
     <Suspense>
       <LazyTanstackDevtools />
       <LazyDevOptionsModal />
+      <LazyTestDataPreviewModal />
       <LazySolidDevtoolsOverlay />
     </Suspense>
   );

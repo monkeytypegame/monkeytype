@@ -227,13 +227,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     correct,
     wordIndex,
     charIndex: testInput.length,
-    isCompositionEnding: isCompositionEnding === true,
-    inputStopped: removeLastChar,
+    isCompositionEnding: isCompositionEnding ? true : undefined,
+    inputStopped: removeLastChar ? true : undefined,
     // when shouldInsertSpace is true, the space char was already inserted via
     // syncWithInputElement above — only append " " for the advance-space case,
     // else recorded inputValue ends up with a doubled trailing space.
     inputValue:
       inputValueAfterEvent + (charIsSpace && !shouldInsertSpace ? " " : ""),
+    commitsWord: shouldGoToNextWord ? true : undefined,
   });
 
   // going to next word
