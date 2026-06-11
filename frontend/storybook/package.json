@@ -31,7 +31,7 @@
     "playwright": "^1.58.2",
     "solid-js": "^1.9.13",
     "storybook": "^10.2.14",
-    "storybook-solidjs-vite": "^10.1.1",
+    "storybook-solidjs-vite": "^10.0.9",
     "vite": "^7.3.2",
     "vitest": "^4.1.0"
   }
