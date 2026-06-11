@@ -10,11 +10,13 @@ import { z } from "zod";
 import Ape from "../../../ape";
 import {
   addConnection,
+  findConnectionToUser,
   rejectConnection,
 } from "../../../collections/connections";
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getActivePage, getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getSnapshot } from "../../../states/snapshot";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -62,11 +64,31 @@ export function FriendsList() {
                   initVal: "",
 
                   validation: {
-                    isValid: remoteValidation(
-                      async (name: string) =>
-                        Ape.users.getNameAvailability({ params: { name } }),
-                      { check: (data) => !data.available || "Unknown user" },
-                    ),
+                    isValid: async (name: string) => {
+                      if (name === getSnapshot()?.name) {
+                        return "That is not how you make friends.";
+                      }
+
+                      const existingConnection = findConnectionToUser(name);
+
+                      if (existingConnection?.status === "blocked") {
+                        return existingConnection.receiverName === name
+                          ? `${name} has blocked you from sending friend requests.`
+                          : `You have blocked ${name}. Unblock them to sent a friend request in the account settings.`;
+                      }
+                      if (existingConnection?.status === "pending") {
+                        return `You have already sent a friend request to ${name}`;
+                      }
+                      if (existingConnection?.status === "accepted") {
+                        return `You are already friends with ${name}`;
+                      }
+
+                      return remoteValidation(
+                        async (name: string) =>
+                          Ape.users.getNameAvailability({ params: { name } }),
+                        { check: (data) => !data.available || "Unknown user" },
+                      )(name);
+                    },
                     debounceDelay: 1000,
                   },
                 },

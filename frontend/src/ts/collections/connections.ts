@@ -19,11 +19,7 @@ import {
 } from "../ape/server-configuration";
 import { getSnapshot } from "../states/snapshot";
 import { Connection } from "@monkeytype/schemas/connections";
-import {
-  addNotificationWithLevel,
-  NotificationLevel,
-  showNoticeNotification,
-} from "../states/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";
 
 const queryKeys = {
@@ -181,27 +177,7 @@ const actions = {
         connectionsCollection.utils.writeInsert(response.body.data);
         showNoticeNotification(`Request sent to ${receiverName}`);
       } else {
-        const result = response.body.message;
-        let level: NotificationLevel = "error";
-        let message = "Unknown error";
-
-        if (result.includes("already exists")) {
-          level = "notice";
-          message = `You are already friends with ${receiverName}`;
-        } else if (result.includes("request already sent")) {
-          level = "notice";
-          message = `You have already sent a friend request to ${receiverName}`;
-        } else if (result.includes("blocked by initiator")) {
-          level = "notice";
-          message = `You have blocked ${receiverName}`;
-        } else if (result.includes("blocked by receiver")) {
-          level = "notice";
-          message = `${receiverName} has blocked you`;
-        }
-
-        addNotificationWithLevel(message, level);
-
-        throw new Error(`Failed to add connection: ${message}`);
+        throw new Error(`Failed to add connection: ${response.body.message}`);
       }
     },
   }),
@@ -255,6 +231,18 @@ export function hasConnection(
         (status === undefined || it.status === status) &&
         (it.receiverUid === uid || it.initiatorUid === uid),
     ) !== undefined
+  );
+}
+
+export function findConnectionToUser(
+  userName: string | undefined,
+  status?: Connection["status"],
+): Connection | undefined {
+  if (userName === undefined) return undefined;
+  return connectionsQuery().find(
+    (it) =>
+      (status === undefined || it.status === status) &&
+      (it.receiverName === userName || it.initiatorName === userName),
   );
 }
 
