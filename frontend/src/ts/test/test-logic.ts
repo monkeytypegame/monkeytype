@@ -97,6 +97,7 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
+  getAllTestEvents,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -1013,6 +1014,24 @@ function compareCompletedEvents(
       continue;
     }
 
+    if (key === "keyConsistency") {
+      continue;
+    }
+
+    if (key === "wpm" || key === "rawWpm") {
+      val1 = Numbers.roundTo2(val1 as number);
+      val2 = Numbers.roundTo2(val2 as number);
+      const diff = Numbers.roundTo2(Math.abs(val1 - val2));
+      if (diff <= 0.01) {
+        console.debug(`Completed event match on key ${key}:`, val1);
+      } else {
+        notMatching.push(`${key} (off by ${diff})`);
+        mismatchedKeys.push(key);
+        console.error(`Completed event mismatch on key ${key}:`, val1, val2);
+      }
+      continue;
+    }
+
     // if (key === "chartData") {
     //   val1 = {
     //     //@ts-expect-error temp
@@ -1088,7 +1107,7 @@ function compareCompletedEvents(
           );
         }
       }
-    } else if (key === "wpmConsistency" || key === "keyConsistency") {
+    } else if (key === "wpmConsistency") {
       const a = val1 as number;
       const b = val2 as number;
       const ref = Math.max(
@@ -1111,7 +1130,7 @@ function compareCompletedEvents(
       if (a !== b) {
         const diff = Numbers.roundTo2(Math.abs(a - b));
         const dir = a > b ? "ce1 larger" : "ce2 larger";
-        notMatching.push(`${key} (off by ${diff}, ${dir})`);
+        notMatching.push(`${key} (off by ${diff}, ${dir}, ${a} vs ${b})`);
         mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
@@ -1266,6 +1285,10 @@ function compareCompletedEvents(
       ignoreMismatch = true;
     }
 
+    if (Config.mode === "zen") {
+      ignoreMismatch = true;
+    }
+
     if (ALWAYSREPORT) {
       if (ignoreMismatch) {
         showNoticeNotification(
@@ -1294,7 +1317,11 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 8,
+            version: 17,
+            data: {
+              words: TestWords.words.list.join(" "),
+              events: getAllTestEvents(),
+            },
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },

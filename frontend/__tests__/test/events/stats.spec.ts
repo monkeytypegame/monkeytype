@@ -72,17 +72,11 @@ import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
 
 function input(
@@ -94,6 +88,7 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
+    isCommitSpace: true;
   }> = {},
 ): InputEventData {
   return {
@@ -561,6 +556,30 @@ describe("stats.ts", () => {
       expect(getKeypressSpacing()).toEqual([]);
     });
 
+    it("clamps a pre-start first keydown so the timing invariant holds", () => {
+      // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
+      // pressed seconds before the user starts typing). cleanupData keeps the
+      // last pre-start keydown by design, and getStartToFirstKeypressMs clamps
+      // its negative offset to 0 — so the first spacing must clamp the same
+      // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
+      // the testDuration vs key timings check.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("keydown", -16240, keyDown());
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("input", 0, input());
+      logTestEvent("keyup", 100, keyUp());
+      logTestEvent("keydown", 500, keyDown("KeyS"));
+      logTestEvent("keyup", 580, keyUp("KeyS"));
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+
+      const sumSpacing = getKeypressSpacing().reduce((a, b) => a + b, 0);
+      const total =
+        getStartToFirstKeypressMs() + sumSpacing + getLastKeypressToEndMs();
+
+      expect(Math.abs(getTestDurationMs() - total)).toBeLessThan(100);
+    });
+
     it("cleanupData drops post-end keydowns so the timing invariant holds", () => {
       // The compareCompletedEvents check in test-logic.ts relies on:
       //   startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
@@ -799,7 +818,12 @@ describe("stats.ts", () => {
       logTestEvent(
         "input",
         1250,
-        input({ charIndex: 3, wordIndex: 0, data: " " }),
+        input({
+          charIndex: 3,
+          wordIndex: 0,
+          data: " ",
+          isCommitSpace: true,
+        }),
       );
       // type "w" on second word
       logTestEvent(
@@ -987,9 +1011,9 @@ describe("stats.ts", () => {
       const keyup = events.find(
         (e) => e.type === "keyup" && e.data.code === "KeyD",
       );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500
+      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1500);
+      expect(keyup?.testMs).toBe(500);
     });
 
     it("uses default 80ms when no completed key durations exist", () => {
@@ -1003,7 +1027,7 @@ describe("stats.ts", () => {
         (e) => e.type === "keyup" && e.data.code === "KeyA",
       );
       expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1280);
+      expect(keyup?.testMs).toBe(280);
     });
 
     it("does nothing when no keys are pressed", () => {

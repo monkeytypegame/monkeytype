@@ -347,7 +347,7 @@ async function _startOld(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    const drift = Math.abs(interval - delay);
+    const drift = Numbers.roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
       if (!TestState.isActive) {

@@ -25,6 +25,15 @@ export type TestEvent =
   | InputEvent
   | CompositionTestEvent;
 
+export type TestEventNoMs =
+  | Omit<KeydownEvent, "ms">
+  | Omit<KeyupEvent, "ms">
+  | Omit<TimerEvent, "ms">
+  | InputEventNoMs
+  | Omit<CompositionTestEvent, "ms">;
+
+export type InputEventNoMs = Omit<InputEvent, "ms">;
+
 export type TestEventData =
   | KeydownEventData
   | KeyupEventData
@@ -36,20 +45,20 @@ export type KeydownEvent = EventProps<"keydown", KeydownEventData>;
 
 export type KeydownEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
-  ctrl: boolean;
-  shift: boolean;
-  alt: boolean;
-  meta: boolean;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
 };
 
 export type KeyupEvent = EventProps<"keyup", KeyupEventData>;
 
 export type KeyupEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
-  ctrl: boolean;
-  shift: boolean;
-  alt: boolean;
-  meta: boolean;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
   estimated?: true; // true if this event never happened, but was estimated (force keyup on test end)
 };
 
@@ -80,8 +89,11 @@ export type InputEventData =
       inputType: InsertInputType;
       data: string;
       correct: boolean;
-      isCompositionEnding: boolean;
-      inputStopped: boolean;
+      isCompositionEnding?: true;
+      inputStopped?: true;
+      // true when this was a space that advanced to the next word (commit
+      // attempt) rather than being inserted as a literal character
+      commitsWord?: true;
     })
   | (BaseInputEventData & {
       inputType: DeleteInputType;

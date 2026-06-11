@@ -116,6 +116,7 @@ export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
   testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
@@ -124,7 +125,7 @@ export function calculateWpmAndRaw(
     testSecondsOverride ??
     calculateTestSeconds(TestState.isActive ? performance.now() : end);
 
-  const chars = countChars(final);
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
     (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
@@ -279,14 +280,23 @@ function countChars(final = false): CharCount {
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
-    const targetWord = targetWords[i] as string;
+    let targetWord = targetWords[i] as string;
+    const isLastInputWord = i === inputWords.length - 1;
+
+    // getTargetWords appends a delimiter to every word except the last in the
+    // generated list; for the last input word (active in timed/mid-test, or
+    // the actual last word) drop that delimiter so overshoot counts as extra
+    if (isLastInputWord && targetWord.endsWith(" ")) {
+      targetWord = targetWord.slice(0, -1);
+    }
 
     const { correctWord, allCorrect, incorrect, missed, extra } =
       countCharsUtils(
         inputWord,
         targetWord,
-        i === inputWords.length - 1,
-        (isTimedTest && final) || !final,
+        isLastInputWord && ((isTimedTest && final) || !final),
+        // historical words advanced via commit space; last is in-flight
+        !isLastInputWord,
       );
 
     correctWordChars += correctWord;
@@ -335,9 +345,8 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
