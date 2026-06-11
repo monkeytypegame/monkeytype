@@ -411,8 +411,8 @@ export type CharCounts = {
 export function countChars(
   inputWord: string,
   targetWord: string,
-  lastWord: boolean,
-  shouldLastPartialWordCount: boolean,
+  creditPartial: boolean,
+  endsWithCommitSpace: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -428,29 +428,45 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
-      // do not count correct space characters if the word is not correct
+      // matching space on a wrong word: incorrect if it was a commit attempt
+      // (word advanced via space), extra if it was a literal space (stopOnError
+      // blocked the commit so the space ended up as a typed character)
       if (targetChar === " ") {
         if (wordCorrect) {
           allCorrect += 1;
-        } else {
+        } else if (endsWithCommitSpace) {
           incorrect += 1;
+        } else {
+          extra += 1;
         }
       } else {
         allCorrect += 1;
       }
-      if (
-        wordCorrect ||
-        (lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)
-      ) {
+      if (wordCorrect || (creditPartial && wordPartiallyCorrect)) {
         correctWord += 1;
       }
     } else if (inputChar === undefined) {
       //missed char
-      if (!(lastWord && shouldLastPartialWordCount)) {
+      if (!creditPartial) {
         missed += 1;
       }
-    } else if (targetChar === undefined) {
-      //extra char
+    } else if (
+      endsWithCommitSpace &&
+      inputChar === " " &&
+      i === inputWord.length - 1 &&
+      !targetWord.endsWith(" ") &&
+      targetChar !== "\n"
+    ) {
+      // commit-space on last word — not a literal typed char. If it landed
+      // before reaching target's end, that slot is effectively missed.
+      if (targetChar !== undefined && !creditPartial) {
+        missed += 1;
+      }
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
       extra += 1;
     } else {
       //incorrect char

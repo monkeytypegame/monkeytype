@@ -1,9 +1,10 @@
 import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
 
 import { InputField } from "../../../../src/ts/components/ui/form/InputField";
 
-function makeField(name: string, value = "") {
+function makeField(name: string, value = ""): AnyFieldApi {
   return {
     name,
     state: {
@@ -20,7 +21,7 @@ function makeField(name: string, value = "") {
     handleBlur: vi.fn(),
     handleChange: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
-  } as any;
+  } as unknown as AnyFieldApi;
 }
 
 describe("InputField", () => {
@@ -54,7 +55,7 @@ describe("InputField", () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} />);
 
-    await fireEvent.input(screen.getByRole("textbox"), {
+    fireEvent.input(screen.getByRole("textbox"), {
       target: { value: "test" },
     });
     expect(field.handleChange).toHaveBeenCalledWith("test");
@@ -64,7 +65,7 @@ describe("InputField", () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} />);
 
-    await fireEvent.blur(screen.getByRole("textbox"));
+    fireEvent.blur(screen.getByRole("textbox"));
     expect(field.handleBlur).toHaveBeenCalled();
   });
 
@@ -73,7 +74,7 @@ describe("InputField", () => {
     const onFocus = vi.fn();
     render(() => <InputField field={() => field} onFocus={onFocus} />);
 
-    await fireEvent.focus(screen.getByRole("textbox"));
+    fireEvent.focus(screen.getByRole("textbox"));
     expect(onFocus).toHaveBeenCalled();
   });
 
@@ -86,7 +87,7 @@ describe("InputField", () => {
 
   it("shows FieldIndicator", () => {
     const field = makeField("name");
-    field.options = { validators: { onChange: () => undefined } };
+    field.options = { validators: { onChange: () => undefined } } as any;
     field.state.meta.isValidating = true;
     const { container } = render(() => <InputField field={() => field} />);
 

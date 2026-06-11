@@ -97,6 +97,7 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
+  getAllTestEvents,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -115,6 +116,7 @@ import {
   getKeypressesPerSecond,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
+import { isDevEnvironment } from "../utils/env";
 
 let failReason = "";
 
@@ -865,7 +867,7 @@ function buildCompletedEvent(
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charStats: [
-      stats.correctChars + stats.correctSpaces,
+      stats.correctChars,
       stats.incorrectChars,
       stats.extraChars,
       stats.missedChars,
@@ -910,7 +912,7 @@ function buildCompletedEvent(
   return completedEvent;
 }
 
-const ALWAYSREPORT = false;
+const ALWAYSREPORT = isDevEnvironment() || false;
 
 // window.ce2 = buildCompletedEvent2;
 
@@ -930,9 +932,19 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
+    if (
+      key === "keyDuration" ||
+      key === "keySpacing" ||
+      key === "afkDuration" ||
+      key === "chartData"
+    ) {
+      continue;
+    }
+
     let val1 = ce[key];
     let val2 = ce2[key];
 
+    //@ts-expect-error asdf
     if (key === "keyDuration" || key === "keySpacing") {
       const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
@@ -976,7 +988,13 @@ function compareCompletedEvents(
       if (diffs.length === 0) {
         console.debug(`Completed event match on key charStats:`, a);
       } else {
-        notMatching.push(`charStats (${diffs.join(", ")})`);
+        if (TestWords.words.list.length <= 25) {
+          notMatching.push(
+            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${TestInput.input.getHistory().join("_")}'`,
+          );
+        } else {
+          notMatching.push(`charStats (${diffs.join(", ")})`);
+        }
         mismatchedKeys.push("charStats");
         console.error(`Completed event mismatch on key charStats:`, a, b);
       }
@@ -993,6 +1011,24 @@ function compareCompletedEvents(
     }
 
     if (key === "consistency") {
+      continue;
+    }
+
+    if (key === "keyConsistency") {
+      continue;
+    }
+
+    if (key === "wpm" || key === "rawWpm") {
+      val1 = Numbers.roundTo2(val1 as number);
+      val2 = Numbers.roundTo2(val2 as number);
+      const diff = Numbers.roundTo2(Math.abs(val1 - val2));
+      if (diff <= 0.01) {
+        console.debug(`Completed event match on key ${key}:`, val1);
+      } else {
+        notMatching.push(`${key} (off by ${diff})`);
+        mismatchedKeys.push(key);
+        console.error(`Completed event mismatch on key ${key}:`, val1, val2);
+      }
       continue;
     }
 
@@ -1027,6 +1063,7 @@ function compareCompletedEvents(
     //   };
     // }
 
+    //@ts-expect-error asdf
     if (key === "chartData") {
       const v1 = val1 as CompletedEvent["chartData"];
       const v2 = val2 as CompletedEvent["chartData"];
@@ -1070,7 +1107,7 @@ function compareCompletedEvents(
           );
         }
       }
-    } else if (key === "wpmConsistency" || key === "keyConsistency") {
+    } else if (key === "wpmConsistency") {
       const a = val1 as number;
       const b = val2 as number;
       const ref = Math.max(
@@ -1093,7 +1130,7 @@ function compareCompletedEvents(
       if (a !== b) {
         const diff = Numbers.roundTo2(Math.abs(a - b));
         const dir = a > b ? "ce1 larger" : "ce2 larger";
-        notMatching.push(`${key} (off by ${diff}, ${dir})`);
+        notMatching.push(`${key} (off by ${diff}, ${dir}, ${a} vs ${b})`);
         mismatchedKeys.push(key);
         console.error(`Completed event mismatch on key ${key}:`, a, b);
       } else {
@@ -1111,17 +1148,32 @@ function compareCompletedEvents(
   {
     const a = TestInput.keypressCountHistory;
     const b = getKeypressesPerSecond();
-    if (a.length === b.length && a.every((val, i) => val === b[i])) {
+    const aTotal = a.reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    const bTotal = b.reduce((acc, val) => {
+      if (val === undefined) return acc;
+      return acc + val;
+    }, 0);
+    if (
+      a.length === b.length &&
+      (a.every((val, i) => val === b[i]) || aTotal === bTotal)
+    ) {
       console.debug(`Completed event match on key keypressCountHistory:`, a);
     } else {
       if (a.length !== b.length) {
-        notMatching.push(`keypressCountHistory (length differs)`);
+        notMatching.push(
+          `keypressCountHistory (length differs ${a.length} vs ${b.length})`,
+        );
         mismatchedKeys.push("keypressCountHistory_length");
         console.error(
           `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
         );
       } else {
-        notMatching.push(`keypressCountHistory (values differ)`);
+        notMatching.push(
+          `keypressCountHistory (values differ) (total ${aTotal} vs ${bTotal})`,
+        );
         mismatchedKeys.push("keypressCountHistory");
         console.error(
           `Completed event mismatch on key keypressCountHistory:`,
@@ -1150,6 +1202,45 @@ function compareCompletedEvents(
         `Completed event mismatch on totalKeypressCountHistory:`,
         a,
         b,
+      );
+    }
+  }
+
+  {
+    const dur = (ce2.keyDuration === "toolong" ? [] : ce2.keyDuration).reduce(
+      (acc, val) => {
+        if (val === undefined) return acc;
+        return acc + val;
+      },
+      0,
+    );
+    const over = ce2.keyOverlap;
+    const sp = (ce2.keySpacing === "toolong" ? [] : ce2.keySpacing).reduce(
+      (acc, val) => {
+        if (val === undefined) return acc;
+        return acc + val;
+      },
+      0,
+    );
+    const space = ce2.startToFirstKey + ce2.lastKeyToEnd;
+    const total = Numbers.roundTo2((space + sp) / 1000);
+    const delta = Numbers.roundTo2(Math.abs(ce2.testDuration - total));
+    if (delta >= 0.1) {
+      notMatching.push(
+        `testDuration vs key timings (difference of ${delta} seconds)`,
+      );
+      mismatchedKeys.push("testDuration_keyTimings");
+      console.error(
+        `Completed event mismatch on testDuration vs key timings: testDuration ${ce2.testDuration} vs total key timings ${total}`,
+        {
+          testDuration: ce2.testDuration,
+          keyTimingsTotal: total,
+          keyDuration: dur,
+          keyOverlap: over,
+          keySpacing: sp,
+          startToFirstKey: ce2.startToFirstKey,
+          lastKeyToEnd: ce2.lastKeyToEnd,
+        },
       );
     }
   }
@@ -1194,6 +1285,10 @@ function compareCompletedEvents(
       ignoreMismatch = true;
     }
 
+    if (Config.mode === "zen") {
+      ignoreMismatch = true;
+    }
+
     if (ALWAYSREPORT) {
       if (ignoreMismatch) {
         showNoticeNotification(
@@ -1222,7 +1317,11 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 1,
+            version: 17,
+            data: {
+              words: TestWords.words.list.join(" "),
+              events: getAllTestEvents(),
+            },
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },

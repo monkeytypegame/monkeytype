@@ -1,22 +1,20 @@
 import Hangul from "hangul-js";
 import { Config } from "../config/store";
-import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
 import { getLastResult } from "../states/test";
+import { countChars as countCharsUtils, getLastChar } from "../utils/strings";
+import { isFunboxActiveWithProperty } from "./funbox/list";
 
 type CharCount = {
-  spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
   incorrectChars: number;
   extraChars: number;
   missedChars: number;
-  correctSpaces: number;
 };
 
 export type Stats = {
@@ -29,8 +27,6 @@ export type Stats = {
   extraChars: number;
   allChars: number;
   time: number;
-  spaces: number;
-  correctSpaces: number;
 };
 
 export let start: number, end: number;
@@ -120,6 +116,7 @@ export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
   testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
@@ -128,15 +125,12 @@ export function calculateWpmAndRaw(
     testSecondsOverride ??
     calculateTestSeconds(TestState.isActive ? performance.now() : end);
 
-  const chars = countChars(final);
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
-    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,
+    (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
   const raw = Numbers.roundTo2(
-    ((chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars) *
+    ((chars.allCorrectChars + chars.incorrectChars + chars.extraChars) *
       (60 / testSeconds)) /
       5,
   );
@@ -225,6 +219,15 @@ function getInputWords(): string[] {
     inputWords = inputWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
+  for (let i = 0; i < inputWords.length - 1; i++) {
+    if (
+      getLastChar(inputWords[i] as string) !== "\n" &&
+      !isFunboxActiveWithProperty("nospace")
+    ) {
+      inputWords[i] += " ";
+    }
+  }
+
   return inputWords;
 }
 
@@ -249,6 +252,15 @@ function getTargetWords(): string[] {
     targetWords = targetWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
+  for (let i = 0; i < targetWords.length - 1; i++) {
+    if (
+      getLastChar(targetWords[i] as string) !== "\n" &&
+      !isFunboxActiveWithProperty("nospace")
+    ) {
+      targetWords[i] += " ";
+    }
+  }
+
   return targetWords;
 }
 
@@ -258,93 +270,49 @@ function countChars(final = false): CharCount {
   let incorrectChars = 0;
   let extraChars = 0;
   let missedChars = 0;
-  let spaces = 0;
-  let correctspaces = 0;
 
   const inputWords = getInputWords();
   const targetWords = getTargetWords();
 
+  const isTimedTest =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
-    const targetWord = targetWords[i] as string;
+    let targetWord = targetWords[i] as string;
+    const isLastInputWord = i === inputWords.length - 1;
 
-    if (inputWord === targetWord) {
-      //the word is correct
-      correctWordChars += targetWord.length;
-      correctChars += targetWord.length;
-      if (
-        i < inputWords.length - 1 &&
-        Strings.getLastChar(inputWord) !== "\n"
-      ) {
-        correctspaces++;
-      }
-    } else if (inputWord.length >= targetWord.length) {
-      //too many chars
-      for (let c = 0; c < inputWord.length; c++) {
-        if (c < targetWord.length) {
-          //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
-            correctChars++;
-          } else {
-            incorrectChars++;
-          }
-        } else {
-          //on char that is extra
-          extraChars++;
-        }
-      }
-    } else {
-      //not enough chars
-      const toAdd = {
-        correct: 0,
-        incorrect: 0,
-        missed: 0,
-      };
-      for (let c = 0; c < targetWord.length; c++) {
-        if (c < inputWord.length) {
-          //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
-            toAdd.correct++;
-          } else {
-            toAdd.incorrect++;
-          }
-        } else {
-          //on char that is extra
-          toAdd.missed++;
-        }
-      }
-      correctChars += toAdd.correct;
-      incorrectChars += toAdd.incorrect;
-
-      const isTimedTest =
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-      const shouldCountPartialLastWord = !final || (final && isTimedTest);
-
-      if (i === inputWords.length - 1 && shouldCountPartialLastWord) {
-        //last word - check if it was all correct - add to correct word chars
-        if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
-      } else {
-        missedChars += toAdd.missed;
-      }
+    // getTargetWords appends a delimiter to every word except the last in the
+    // generated list; for the last input word (active in timed/mid-test, or
+    // the actual last word) drop that delimiter so overshoot counts as extra
+    if (isLastInputWord && targetWord.endsWith(" ")) {
+      targetWord = targetWord.slice(0, -1);
     }
-    if (i < inputWords.length - 1) {
-      spaces++;
-    }
+
+    const { correctWord, allCorrect, incorrect, missed, extra } =
+      countCharsUtils(
+        inputWord,
+        targetWord,
+        isLastInputWord && ((isTimedTest && final) || !final),
+        // historical words advanced via commit space; last is in-flight
+        !isLastInputWord,
+      );
+
+    correctWordChars += correctWord;
+    correctChars += allCorrect;
+    incorrectChars += incorrect;
+    extraChars += extra;
+    missedChars += missed;
   }
-  if (isFunboxActiveWithProperty("nospace")) {
-    spaces = 0;
-    correctspaces = 0;
-  }
+
   return {
-    spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
       Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
-    correctSpaces: correctspaces,
   };
 }
 
@@ -377,26 +345,19 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,
     acc: acc,
     correctChars: chars.correctWordChars,
-    incorrectChars: chars.incorrectChars + chars.spaces - chars.correctSpaces,
+    incorrectChars: chars.incorrectChars,
     missedChars: chars.missedChars,
     extraChars: chars.extraChars,
-    allChars:
-      chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars,
+    allChars: chars.allCorrectChars + chars.incorrectChars + chars.extraChars,
     time: Numbers.roundTo2(testSeconds),
-    spaces: chars.spaces,
-    correctSpaces: chars.correctSpaces,
   };
   console.debug("Result stats", ret);
   return ret;

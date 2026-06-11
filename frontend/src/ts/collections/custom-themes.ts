@@ -31,11 +31,10 @@ const customThemesCollection = createCollection(
     staleTime: Infinity,
     startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
-      if (!isAuthenticated()) return [] as CustomThemeItem[];
       const response = await Ape.users.getCustomThemes();
 
       if (response.status !== 200) {
