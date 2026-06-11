@@ -89,11 +89,11 @@ export type InputEventData =
       inputType: InsertInputType;
       data: string;
       correct: boolean;
-      isCompositionEnding: boolean;
-      inputStopped: boolean;
+      isCompositionEnding?: true;
+      inputStopped?: true;
       // true when this was a space that advanced to the next word (commit
       // attempt) rather than being inserted as a literal character
-      isCommitSpace?: true;
+      commitsWord?: true;
     })
   | (BaseInputEventData & {
       inputType: DeleteInputType;

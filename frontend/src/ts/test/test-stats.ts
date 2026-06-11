@@ -116,6 +116,7 @@ export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
   testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
@@ -124,7 +125,7 @@ export function calculateWpmAndRaw(
     testSecondsOverride ??
     calculateTestSeconds(TestState.isActive ? performance.now() : end);
 
-  const chars = countChars(final);
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
     (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
@@ -277,10 +278,6 @@ function countChars(final = false): CharCount {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
 
-  if (final) {
-    console.log("filan");
-  }
-
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
     let targetWord = targetWords[i] as string;
@@ -348,9 +345,8 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
