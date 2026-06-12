@@ -88,7 +88,7 @@
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/user-event": "14.6.1",
     "@types/canvas-confetti": "1.9.0",
-    "@types/chartjs-plugin-trendline": "1.0.1",
+    "@types/chartjs-plugin-trendline": "1.0.4",
     "@types/damerau-levenshtein": "1.0.2",
     "@types/howler": "2.2.7",
     "@types/node": "24.9.1",
