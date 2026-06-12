@@ -1,4 +1,4 @@
-import { getKeypressSpacing } from "./events/data";
+import { getLastKeypressSpacing } from "./events/data";
 import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
@@ -33,11 +33,11 @@ class Score {
 }
 
 export function updateScore(char: string, isCorrect: boolean): void {
-  const timings = getKeypressSpacing();
-  if (timings.length === 0 || typeof timings === "string") {
+  const spacing = getLastKeypressSpacing();
+  if (spacing === undefined) {
     return;
   }
-  let score = timings[timings.length - 1] as number;
+  let score = spacing;
   if (!isCorrect) {
     score += incorrectPenalty;
   }

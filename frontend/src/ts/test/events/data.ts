@@ -174,6 +174,15 @@ export function getInputForWord(wordIndex: number): string {
   return getInputFromDom(getInputEventsForWord(wordIndex)).trimEnd();
 }
 
+export function getLastKeypressSpacing(): number | undefined {
+  const n = keydownEvents.length;
+  if (n < 2) return undefined;
+  return (
+    (keydownEvents[n - 1] as KeydownEvent).ms -
+    (keydownEvents[n - 2] as KeydownEvent).ms
+  );
+}
+
 export function getKeypressSpacing(): number[] {
   const events = getAllTestEvents();
 
