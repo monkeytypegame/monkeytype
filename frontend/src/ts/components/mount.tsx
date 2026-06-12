@@ -12,6 +12,7 @@ import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { AccountSettingsPage } from "./pages/account-settings/AccountSettingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
@@ -25,7 +26,7 @@ import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
-  aboutpage: () => <AboutPage />,
+  aboutpage: () => <AccountSettingsPage />,
   settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
