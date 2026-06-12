@@ -1,10 +1,10 @@
-import * as Sound from "../../controllers/sound-controller";
-import * as Arrays from "../../utils/arrays";
-import { qs, qsr } from "../../utils/dom";
-import { Config } from "../../config/store";
-import * as TestWords from "../test-words";
-import { getInputEvents, getInputForWord } from "./data";
-import { getInputHistory } from "./stats";
+import * as Sound from "../controllers/sound-controller";
+import * as Arrays from "../utils/arrays";
+import { qs, qsr } from "../utils/dom";
+import { Config } from "../config/store";
+import * as TestWords from "./test-words";
+import { getInputEvents, getInputForWord } from "./events/data";
+import { getInputHistory, getWpmHistory } from "./events/stats";
 
 type ReplayAction =
   | "correctLetter"
@@ -22,6 +22,7 @@ type Replay = {
 
 let wordsList: string[] = [];
 let replayData: Replay[] = [];
+let wpmHistory: number[] = [];
 let wordPos = 0;
 let curPos = 0;
 let targetWordPos = 0;
@@ -268,12 +269,13 @@ function toggleReplayDisplay(): void {
 function refreshReplayFromEvents(): void {
   wordsList = getWordsList();
   replayData = deriveReplayActions();
+  wpmHistory = getWpmHistory();
   targetCurPos = 0;
   targetWordPos = 0;
 }
 
 function updateStatsString(time: number): void {
-  const wpm = 0;
+  const wpm = wpmHistory[time - 1] ?? 0;
   const statsString = `${wpm}wpm\t${time}s`;
   qs("#replayStats")?.setText(statsString);
 }
