@@ -112,6 +112,7 @@ export function FriendsList() {
             id="friendsList"
             columns={columns()}
             data={queryData()}
+            bodyCellClass="text-xs sm:text-sm xl:text-base"
             fallback={
               <div class="text-center text-sub">
                 You don&lsquo;t have any friends :(
@@ -236,6 +237,7 @@ function getColumns({
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => ({
+          class: "text-xs sm:text-xs md:text-xs xl:text-sm",
           "data-balloon-pos": "up",
           "data-balloon-break": "",
           "aria-label": formatPb(row.top15 as PersonalBest, { format })
@@ -258,6 +260,7 @@ function getColumns({
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => ({
+          class: "text-xs sm:text-xs md:text-xs xl:text-sm",
           "data-balloon-pos": "up",
           "data-balloon-break": "",
           "aria-label": formatPb(row.top60, { format })?.details,
