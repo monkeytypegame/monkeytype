@@ -464,8 +464,8 @@ importers:
         specifier: 1.9.0
         version: 1.9.0
       '@types/chartjs-plugin-trendline':
-        specifier: 1.0.1
-        version: 1.0.1
+        specifier: 1.0.4
+        version: 1.0.4
       '@types/damerau-levenshtein':
         specifier: 1.0.2
         version: 1.0.2
@@ -4768,8 +4768,8 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/chartjs-plugin-trendline@1.0.1':
-    resolution: {integrity: sha512-QN9gWbksSFpM450wnFSfeH76zoHzHEIjVqhVg8hZdhXNp8xkgB07hdIZxVQVjmFl0vDxmXMJtea8jb3QRAtEQg==}
+  '@types/chartjs-plugin-trendline@1.0.4':
+    resolution: {integrity: sha512-s94at2TCSMfqYoYejp4nzX+H/exAs90aQ8I55sERqQWlVaV4eoMajVhajL6b6uwd9Z9ycJngtAfqEQF2JB6fkw==}
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
@@ -15881,7 +15881,7 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
-  '@types/chartjs-plugin-trendline@1.0.1':
+  '@types/chartjs-plugin-trendline@1.0.4':
     dependencies:
       chart.js: 3.7.1
 
