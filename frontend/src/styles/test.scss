@@ -691,6 +691,7 @@
   // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
   // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
   text-wrap-mode: nowrap;
+  contain: strict;
 }
 
 #capsWarning {
