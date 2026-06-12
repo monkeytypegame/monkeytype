@@ -121,7 +121,9 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2: number[] = getRawHistory();
+  const chartData2 = getRawHistory().map((a) =>
+    Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+  );
 
   const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(
