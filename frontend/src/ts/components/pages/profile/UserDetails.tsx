@@ -287,7 +287,7 @@ function AvatarAndName(props: {
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
             class="w-max"
-            hideTextOnSmallScreens={false}
+            hideTextOnWidth={false}
           />
           <Show
             when={props.profile.inventory?.badges.some((it) => !it.selected)}

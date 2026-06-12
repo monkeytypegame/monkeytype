@@ -143,6 +143,7 @@ function getColumns({
           isFriend={false}
           class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
           linkToProfile
+          hideBadgeTextOnWidth="lg"
         />
       ),
     }),
