@@ -27,18 +27,23 @@ export function Section(
     <div>
       <H3 text={props.title} fa={{ ...{ fixedWidth: true }, ...props.fa }} />
 
-      <Show
-        when={props.disabled === undefined || !props.disabled}
-        fallback={props.disabledText}
-      >
-        <Show when={props.text !== undefined}>
-          <p class="mb-4">{props.text}</p>
+      <div class="lg:grid lg:grid-cols-2 lg:items-center">
+        <Show
+          when={props.disabled === undefined || !props.disabled}
+          fallback={props.disabledText}
+        >
+          <Show when={props.text !== undefined}>
+            <p class="mb-4">{props.text}</p>
+          </Show>
+          <Show when={props.children}>{props.children}</Show>
+          <Show when={props.button}>
+            <Button
+              {...props.button}
+              class={cn("w-full", props.button?.class)}
+            />
+          </Show>
         </Show>
-        <Show when={props.children}>{props.children}</Show>
-        <Show when={props.button}>
-          <Button {...props.button} class={cn("w-full", props.button?.class)} />
-        </Show>
-      </Show>
+      </div>
     </div>
   );
 }

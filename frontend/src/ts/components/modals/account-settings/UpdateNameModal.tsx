@@ -10,7 +10,6 @@ import {
 import * as DB from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { reloadAfter } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
@@ -72,7 +71,8 @@ export function showUpdateNameModal(): void {
       snapshot.name = newName;
       DB.setSnapshot(snapshot);
       if (snapshot.needsToChangeName) {
-        reloadAfter(2);
+        //TODO needed?
+        //reloadAfter(2);
       }
 
       return {

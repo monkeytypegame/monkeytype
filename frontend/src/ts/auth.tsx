@@ -14,6 +14,7 @@ import {
   User,
   User as UserType,
 } from "firebase/auth";
+import { createMemo } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
@@ -31,14 +32,17 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "./firebase";
+import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
+import { createEffectOn } from "./hooks/effects";
 import * as Sentry from "./sentry";
-import { isAuthenticated, setUserId } from "./states/core";
+import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
+import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
 import { typedKeys } from "./utils/misc";
@@ -47,6 +51,7 @@ import { OneOf } from "./utils/types";
 
 type AuthMethodInfo = {
   display: string;
+  fa: FaObject;
 } & OneOf<{
   provider: AuthProvider;
   providerId: string;
@@ -60,14 +65,17 @@ const authMethods = {
   password: {
     display: "Password",
     providerId: "password",
+    fa: { icon: "fa-lock" },
   },
   github: {
     display: "GitHub",
     provider: new GithubAuthProvider(),
+    fa: { variant: "brand", icon: "fa-github" },
   },
   google: {
     display: "Google",
     provider: new GoogleAuthProvider(),
+    fa: { variant: "brand", icon: "fa-google" },
   },
 } as const satisfies Record<string, AuthMethodInfo>;
 
@@ -97,6 +105,41 @@ type ReauthenticateOptions = {
   excludeMethod?: AuthMethod;
   password?: string;
 };
+
+const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
+  createSignalWithSetters<User | null>(null)({
+    updateAuthenticatedUser: (set) => {
+      const user = getAuthenticatedUser();
+      if (user === null) {
+        set(null);
+      } else {
+        set({ ...user });
+      }
+    },
+  });
+export { getAuthenticatedUser };
+
+createEffectOn(getUserId, () => {
+  updateAuthenticatedUser();
+});
+
+const authenticationMemos = Object.fromEntries(
+  typedKeys(authMethods).map((it) => {
+    const memo = createMemo(() => {
+      const providerId = getProviderId(it);
+
+      const user = getAuthenticatedUserReactive();
+      if (user === null) return undefined;
+      const result = {
+        isInUse: user.providerData.some((p) => p.providerId === providerId),
+        hasAdditionalAuthMethods: hasAdditionalAuthMethods(it),
+      };
+      console.log("### memo for ", providerId, "updated", result);
+      return result;
+    });
+    return [it, memo];
+  }),
+);
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
@@ -261,6 +304,7 @@ export async function addAuthProvider(authMethod: AuthMethod): Promise<void> {
     hideLoaderBar();
     showSuccessNotification(`${providerName} authentication added`);
     authEvent.dispatch({ type: "authConfigUpdated" });
+    updateAuthenticatedUser();
   } catch (error) {
     hideLoaderBar();
     showErrorNotification(`Failed to add ${providerName} authentication`, {
@@ -285,6 +329,7 @@ export async function removeAuthProvider(
   }
   try {
     await unlink(reauth.user, getProviderId(authMethod));
+    updateAuthenticatedUser();
   } catch (e) {
     const message = createErrorMessage(
       e,
@@ -392,6 +437,7 @@ export async function reauthenticate(
   }
 
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
+  console.log("### reauth with provider");
 
   try {
     if (authMethod === undefined) {
@@ -464,13 +510,17 @@ function getPreferredAuthenticationMethod(
   return undefined;
 }
 
-function isUsingAuthentication(authMethod: AuthMethod): boolean {
+export function isUsingAuthentication(authMethod: AuthMethod): boolean {
   const providerId = getProviderId(authMethod);
   return (
     getAuthenticatedUser()?.providerData.some(
       (p) => p.providerId === providerId,
     ) ?? false
   );
+}
+
+export function isUsingAuthenticationReactive(authMethod: AuthMethod): boolean {
+  return authenticationMemos[authMethod]?.()?.isInUse ?? false;
 }
 
 export function getPasswordSchema(): ZodString {
@@ -487,8 +537,16 @@ export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
   );
 }
 
+export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {
+  return authenticationMemos[authMethod]?.()?.hasAdditionalAuthMethods ?? false;
+}
+
 export function getAuthMethodDisplay(authMethod: AuthMethod): string {
   return authMethods[authMethod].display;
+}
+
+export function getAuthMethodIcon(authMethod: AuthMethod): FaObject {
+  return authMethods[authMethod].fa;
 }
 
 function getProviderId(authMethod: AuthMethod): string {

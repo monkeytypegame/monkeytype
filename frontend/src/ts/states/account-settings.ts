@@ -16,4 +16,4 @@ export const accountSettingsTabs = {
 export type AccountSettingsTab = keyof typeof accountSettingsTabs;
 
 export const [getCurrentTab, setCurrentTab] =
-  createSignal<AccountSettingsTab>("account");
+  createSignal<AccountSettingsTab>("authentication");

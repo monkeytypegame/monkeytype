@@ -11,11 +11,10 @@ import {
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { reloadAfter } from "../../../utils/misc";
 
 export function showRemoveAuthMethodModal(options: {
   authMethod: AuthMethod;
-  callback: () => void;
+  callback?: () => void;
 }): void {
   if (!isAuthenticated()) return;
 
@@ -58,9 +57,10 @@ export function showRemoveAuthMethodModal(options: {
         return result;
       }
 
-      options.callback();
+      options.callback?.();
 
-      reloadAfter(3);
+      //TODO needed?
+      // reloadAfter(3);
       return result;
     },
   });

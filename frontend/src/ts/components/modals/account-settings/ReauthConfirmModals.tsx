@@ -56,7 +56,8 @@ export function showOptOutOfLeaderboardsModal(): void {
         };
       }
 
-      reloadAfter(3);
+      //TODO needed?
+      //reloadAfter(3);
 
       return {
         status: "success",

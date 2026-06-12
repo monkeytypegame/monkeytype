@@ -7,8 +7,8 @@ import { getPasswordSchema, reauthenticate } from "../../../auth";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { createErrorMessage } from "../../../utils/error";
 
-export function showAddPasswordAuthModal(options: {
-  callback: () => void;
+export function showAddPasswordAuthModal(options?: {
+  callback?: () => void;
 }): void {
   showSimpleModal({
     title: "Add password authentication",
@@ -90,7 +90,7 @@ export function showAddPasswordAuthModal(options: {
         };
       }
 
-      options.callback();
+      options?.callback?.();
 
       return {
         status: "success",
