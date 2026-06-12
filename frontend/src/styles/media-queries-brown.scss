@@ -2,13 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(brown) {
-  .page404 {
-    .content {
-      grid-template-columns: 1fr;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #result .wrapper {
       grid-template-columns: 1fr;
