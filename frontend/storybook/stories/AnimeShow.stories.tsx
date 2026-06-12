@@ -1,49 +1,36 @@
-import preview from "#.storybook/preview";
 import { Component, createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { AnimeShow } from "../../src/ts/components/common/anime/AnimeShow";
 
 const meta = preview.meta({
   title: "Common/Anime/AnimeShow",
-  component: AnimeShow as Component<{
-    when: boolean;
-    slide?: true;
-    duration?: number;
-    class?: string;
-  }>,
+  component: AnimeShow as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    when: { control: "boolean" },
-    slide: { control: "boolean" },
-    duration: { control: "number" },
-  },
 });
 
 export const FadeToggle = meta.story({
-  args: {
-    when: true,
-    children: (
+  render: () => (
+    <AnimeShow when={true}>
       <div style={{ color: "var(--text-color)", padding: "16px" }}>
         This content fades in and out
       </div>
-    ),
-  },
+    </AnimeShow>
+  ),
 });
 
 export const SlideToggle = meta.story({
-  args: {
-    when: true,
-    slide: true,
-    duration: 250,
-    children: (
+  render: () => (
+    <AnimeShow when={true} slide duration={250}>
       <div style={{ color: "var(--text-color)", padding: "16px" }}>
         This content slides in and out
       </div>
-    ),
-  },
+    </AnimeShow>
+  ),
 });
 
 export const InteractiveDemo = meta.story({

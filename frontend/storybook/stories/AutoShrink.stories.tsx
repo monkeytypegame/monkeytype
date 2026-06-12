@@ -1,18 +1,16 @@
+import { Component } from "solid-js";
+
 import preview from "#.storybook/preview";
 
 import { AutoShrink } from "../../src/ts/components/common/AutoShrink";
 
 const meta = preview.meta({
   title: "Common/AutoShrink",
-  component: AutoShrink,
+  component: AutoShrink as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    upperLimitRem: { control: "number" },
-    class: { control: "text" },
-  },
   decorators: [
     (Story) => (
       <div style={{ display: "flex", "flex-direction": "column", gap: "24px" }}>
@@ -70,22 +68,17 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: {
-    upperLimitRem: 2,
-    children: "Short",
-  },
+  render: () => <AutoShrink upperLimitRem={2}>Short</AutoShrink>,
 });
 
 export const LongText = meta.story({
-  args: {
-    upperLimitRem: 2,
-    children: "This is a much longer piece of text that should shrink to fit",
-  },
+  render: () => (
+    <AutoShrink upperLimitRem={2}>
+      This is a much longer piece of text that should shrink to fit
+    </AutoShrink>
+  ),
 });
 
 export const LargeUpperLimit = meta.story({
-  args: {
-    upperLimitRem: 4,
-    children: "Big text",
-  },
+  render: () => <AutoShrink upperLimitRem={4}>Big text</AutoShrink>,
 });

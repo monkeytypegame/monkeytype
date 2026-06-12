@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { Component } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { FieldIndicator } from "../../src/ts/components/ui/form/FieldIndicator";
 
@@ -40,51 +41,56 @@ function createFieldMock(meta: MetaState) {
 
 const meta = preview.meta({
   title: "UI/Form/FieldIndicator",
-  component: FieldIndicator as Component<{
-    field?: AnyFieldApi;
-  }>,
+  component: FieldIndicator as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {},
 });
 
 export const Validating = meta.story({
-  args: {
-    field: createFieldMock({
-      isValidating: true,
-    }),
-  },
+  render: () => (
+    <FieldIndicator
+      field={createFieldMock({
+        isValidating: true,
+      })}
+    />
+  ),
 });
 
 export const Warning = meta.story({
-  args: {
-    field: createFieldMock({
-      isValid: true,
-      hasWarning: true,
-      warnings: ["are you sure?", "are you really sure?"],
-    }),
-  },
+  render: () => (
+    <FieldIndicator
+      field={createFieldMock({
+        isValid: true,
+        hasWarning: true,
+        warnings: ["are you sure?", "are you really sure?"],
+      })}
+    />
+  ),
 });
 
 export const Valid = meta.story({
-  args: {
-    field: createFieldMock({
-      isValid: true,
-    }),
-  },
+  render: () => (
+    <FieldIndicator
+      field={createFieldMock({
+        isValid: true,
+      })}
+    />
+  ),
 });
 
 export const Error = meta.story({
-  args: {
-    field: createFieldMock({
-      isValid: false,
-      errors: [
-        "Failed validation",
-        "Extra error",
-        "very very very very very very very very very long error",
-      ],
-    }),
-  },
+  render: () => (
+    <FieldIndicator
+      field={createFieldMock({
+        isValid: false,
+        errors: [
+          "Failed validation",
+          "Extra error",
+          "very very very very very very very very very long error",
+        ],
+      })}
+    />
+  ),
 });

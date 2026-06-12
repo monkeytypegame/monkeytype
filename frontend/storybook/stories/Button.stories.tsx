@@ -1,3 +1,4 @@
+import { Component } from "solid-js";
 import { fn } from "storybook/test";
 
 import preview from "#.storybook/preview";
@@ -6,50 +7,15 @@ import { Button } from "../../src/ts/components/common/Button";
 
 const meta = preview.meta({
   title: "Common/Button",
-  component: Button,
+  component: Button as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    active: {
-      control: "boolean",
-    },
-    disabled: {
-      control: "boolean",
-    },
-    text: {
-      control: "text",
-    },
-    fa: {
-      control: "object",
-    },
-    balloon: {
-      control: "object",
-    },
-    class: {
-      control: "text",
-    },
-    "router-link": {
-      control: "boolean",
-    },
-    href: {
-      control: "text",
-    },
-    sameTarget: {
-      control: "boolean",
-    },
-  },
-  args: {
-    onClick: fn(),
-  },
 });
 
 export const Default = meta.story({
-  args: {
-    text: "Button",
-    type: "button",
-  },
+  render: () => <Button text="Button" type="button" onClick={fn()} />,
 });
 
 export const AllVariants = meta.story({
