@@ -11,6 +11,7 @@ import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
+import { NotFoundPage } from "./pages/404Page";
 import { AboutPage } from "./pages/AboutPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
@@ -42,6 +43,7 @@ const components: Record<string, () => JSXElement> = {
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
   testmodesnotice: () => <TestModesNotice />,
+  notfoundpage: () => <NotFoundPage />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

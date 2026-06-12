@@ -4,13 +4,6 @@
   .content-grid {
     --content-max-width: 640px;
   }
-  .page404 {
-    .content {
-      grid-template-columns: 300px;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
