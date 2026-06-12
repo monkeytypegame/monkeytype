@@ -4,27 +4,24 @@ import {
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
 import {
-  getCurrentDayTimestamp,
   isToday as dateIsToday,
   isYesterday as dateIsYesterday,
+  getCurrentDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
+import { addConnection, hasConnection } from "../../../collections/connections";
 import { Snapshot } from "../../../constants/default-snapshot";
-import { addFriend, isFriend } from "../../../db";
 import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../../../states/notifications";
-import { getLastResult, getSnapshot } from "../../../states/snapshot";
+import { showNoticeNotification } from "../../../states/notifications";
+import { getLastResult } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -114,26 +111,13 @@ function ActionButtons(props: {
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
 
-  const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
-    isAuthenticated() && !isUsersProfile() && !hasFriendRequest();
-
-  createEffect(() => {
-    setHasFriendRequest(
-      !isUsersProfile() &&
-        getSnapshot()?.connections[props.profile.uid ?? ""] !== undefined,
-    );
-  });
+    isAuthenticated() && !isUsersProfile() && !hasConnection(props.profile.uid);
 
   const handleAddFriend = () => {
-    const friendName = props.profile.name;
-    void addFriend(friendName).then((result) => {
-      if (result === true) {
-        showNoticeNotification(`Request sent to ${friendName}`);
-        setHasFriendRequest(true);
-      } else {
-        showErrorNotification(result);
-      }
+    void addConnection({
+      receiverName: props.profile.name,
+      receiverUid: props.profile.uid,
     });
   };
 
@@ -291,7 +275,7 @@ function AvatarAndName(props: {
           <div class="flex flex-row gap-1 pl-1 text-sub">
             <UserFlags
               {...props.profile}
-              isFriend={isFriend(props.profile.uid)}
+              isFriend={hasConnection(props.profile.uid, "accepted")}
             />
           </div>
         </AutoShrink>
@@ -303,7 +287,7 @@ function AvatarAndName(props: {
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
             class="w-max"
-            hideTextOnSmallScreens={false}
+            hideTextOnWidth={false}
           />
           <Show
             when={props.profile.inventory?.badges.some((it) => !it.selected)}

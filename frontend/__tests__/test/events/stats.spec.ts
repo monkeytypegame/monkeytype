@@ -13,6 +13,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
 
 vi.mock("../../../src/ts/config/store", () => ({
   Config: { mode: "words", funbox: [] as string[] },
+  getConfig: {},
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {

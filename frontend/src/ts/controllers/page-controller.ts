@@ -7,7 +7,6 @@ import {
 } from "../states/core";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
-import * as Friends from "../pages/friends";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
@@ -30,6 +29,11 @@ import { configurationPromise as serverConfigurationPromise } from "../ape/serve
 import { getSnapshot } from "../db";
 import * as TodayTracker from "../test/today-tracker";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
+import {
+  invalidateConnections,
+  isConnectionsReady,
+  waitForConnectionsReady,
+} from "../collections/connections";
 
 type ChangeOptions = {
   force?: boolean;
@@ -103,8 +107,30 @@ const pages = {
     },
   }),
   profileSearch: solidPage("profileSearch"),
-  friends: Friends.page,
   404: solidPage("404"),
+  friends: solidPage("friends", {
+    beforeShow: async () => {
+      await invalidateConnections();
+    },
+    loadingOptions: {
+      loadingMode: () => (isConnectionsReady() ? "none" : "sync"),
+      loadingPromise: async () => {
+        await Promise.all([
+          serverConfigurationPromise,
+          waitForConnectionsReady(),
+        ]);
+      },
+      style: "bar",
+      keyframes: [
+        { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
+        {
+          percentage: 50,
+          durationMs: 1500,
+          text: "Downloading friend requests...",
+        },
+      ],
+    },
+  }),
   accountSettings: PageAccountSettings.page,
   leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
