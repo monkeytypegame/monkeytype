@@ -1,5 +1,7 @@
-import preview from "#.storybook/preview";
 import { UserProfile as UserProfileType } from "@monkeytype/schemas/users";
+import { Component } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { UserProfile } from "../../src/ts/components/pages/profile/UserProfile";
 
@@ -154,7 +156,7 @@ const baseProfile: UserProfileType = {
 
 const meta = preview.meta({
   title: "Pages/UserProfile",
-  component: UserProfile,
+  component: UserProfile as Component,
   parameters: {
     layout: "padded",
   },
@@ -162,79 +164,84 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: {
-    profile: baseProfile,
-  },
+  render: () => <UserProfile profile={baseProfile} />,
 });
 
 export const AccountPage = meta.story({
-  args: {
-    profile: baseProfile,
-    isAccountPage: true,
-  },
+  render: () => <UserProfile profile={baseProfile} isAccountPage />,
 });
 
 export const WithLeaderboard = meta.story({
-  args: {
-    profile: {
-      ...baseProfile,
-      allTimeLbs: {
-        time: {
-          "15": {
-            english: {
-              rank: 42,
-              count: 50000,
+  render: () => (
+    <UserProfile
+      profile={{
+        ...baseProfile,
+        allTimeLbs: {
+          time: {
+            "15": {
+              english: {
+                rank: 42,
+                count: 50000,
+              },
             },
-          },
-          "60": {
-            english: {
-              rank: 156,
-              count: 50000,
+            "60": {
+              english: {
+                rank: 156,
+                count: 50000,
+              },
             },
           },
         },
-      },
-    },
-  },
+      }}
+    />
+  ),
 });
 
 export const Banned = meta.story({
-  args: {
-    profile: {
-      ...baseProfile,
-      banned: true,
-      details: undefined,
-      inventory: undefined,
-    },
-  },
+  render: () => (
+    <UserProfile
+      profile={{
+        ...baseProfile,
+        banned: true,
+        details: undefined,
+        inventory: undefined,
+      }}
+    />
+  ),
 });
 
 export const LbOptOut = meta.story({
-  args: {
-    profile: {
-      ...baseProfile,
-      lbOptOut: true,
-    },
-  },
+  render: () => (
+    <UserProfile
+      profile={{
+        ...baseProfile,
+        lbOptOut: true,
+      }}
+    />
+  ),
 });
 
 export const NoPbs = meta.story({
-  args: {
-    profile: {
-      ...baseProfile,
-      personalBests: {
-        time: {},
-        words: {},
-      },
-    },
-  },
+  render: () => (
+    <UserProfile
+      profile={{
+        ...baseProfile,
+        personalBests: {
+          time: {},
+          words: {},
+        },
+      }}
+    />
+  ),
 });
 
 export const Premium = meta.story({
-  args: {
-    profile: {
-      ...baseProfile,
-      isPremium: true,
-    },
-  },
+  render: () => (
+    <UserProfile
+      profile={{
+        ...baseProfile,
+        isPremium: true,
+      }}
+    />
+  ),
 });
