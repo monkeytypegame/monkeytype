@@ -1,20 +1,16 @@
+import { Component, createSignal, onCleanup } from "solid-js";
+
 import preview from "#.storybook/preview";
-import { createSignal, onCleanup } from "solid-js";
 
 import { User } from "../../src/ts/components/common/User";
 
 const meta = preview.meta({
   title: "Common/User",
-  component: User,
+  component: User as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    showAvatar: { control: "boolean" },
-    iconsOnly: { control: "boolean" },
-    isFriend: { control: "boolean" },
-  },
 });
 
 // oxlint-disable-next-line no-unused-vars
@@ -31,15 +27,6 @@ function SpinnerCycleUser(props: {
 }
 
 export const Default = meta.story({
-  // args: {
-  //   user: {
-  //     uid: "user123",
-  //     name: "monkeytyper",
-  //     discordId: undefined,
-  //     discordAvatar: undefined,
-  //   },
-  // },
-
   render: () => {
     const data = {
       uid: "user123",
@@ -84,78 +71,90 @@ export const Default = meta.story({
 });
 
 export const WithBadge = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-      badgeId: 1,
-    },
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+        badgeId: 1,
+      }}
+    />
+  ),
 });
 
 export const Premium = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-      badgeId: 6,
-      isPremium: true,
-    },
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+        badgeId: 6,
+        isPremium: true,
+      }}
+    />
+  ),
 });
 
 export const Friend = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-    },
-    isFriend: true,
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+      }}
+      isFriend
+    />
+  ),
 });
 
 export const Banned = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-      banned: true,
-    },
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+        banned: true,
+      }}
+    />
+  ),
 });
 
 export const NoAvatar = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-      badgeId: 13,
-      isPremium: true,
-    },
-    showAvatar: false,
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+        badgeId: 13,
+        isPremium: true,
+      }}
+      showAvatar={false}
+    />
+  ),
 });
 
 export const FullyLoaded = meta.story({
-  args: {
-    user: {
-      uid: "user123",
-      name: "monkeytyper",
-      discordId: undefined,
-      discordAvatar: undefined,
-      badgeId: 1,
-      isPremium: true,
-    },
-    isFriend: true,
-  },
+  render: () => (
+    <User
+      user={{
+        uid: "user123",
+        name: "monkeytyper",
+        discordId: undefined,
+        discordAvatar: undefined,
+        badgeId: 1,
+        isPremium: true,
+      }}
+      isFriend
+    />
+  ),
 });

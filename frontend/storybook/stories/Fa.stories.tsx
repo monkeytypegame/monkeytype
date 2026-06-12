@@ -1,64 +1,36 @@
+import { Component } from "solid-js";
+
 import preview from "#.storybook/preview";
 
 import { Fa } from "../../src/ts/components/common/Fa";
 
 const meta = preview.meta({
   title: "Common/Fa",
-  component: Fa,
+  component: Fa as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    icon: { control: "text" },
-    variant: {
-      control: "select",
-      options: ["solid", "regular", "brand"],
-    },
-    fixedWidth: { control: "boolean" },
-    spin: { control: "boolean" },
-    size: { control: "number" },
-    class: { control: "text" },
-  },
 });
 
 export const Default = meta.story({
-  args: {
-    icon: "fa-cog",
-    variant: "solid",
-  },
+  render: () => <Fa icon="fa-cog" variant="solid" />,
 });
 
 export const Spinning = meta.story({
-  args: {
-    icon: "fa-circle-notch",
-    variant: "solid",
-    spin: true,
-  },
+  render: () => <Fa icon="fa-circle-notch" variant="solid" spin />,
 });
 
 export const FixedWidth = meta.story({
-  args: {
-    icon: "fa-home",
-    variant: "solid",
-    fixedWidth: true,
-  },
+  render: () => <Fa icon="fa-home" variant="solid" fixedWidth />,
 });
 
 export const CustomSize = meta.story({
-  args: {
-    icon: "fa-star",
-    variant: "solid",
-    size: 3,
-  },
+  render: () => <Fa icon="fa-star" variant="solid" size={3} />,
 });
 
 export const Brand = meta.story({
-  args: {
-    icon: "fa-discord",
-    variant: "brand",
-    size: 2,
-  },
+  render: () => <Fa icon="fa-discord" variant="brand" size={2} />,
 });
 
 export const AllVariants = meta.story({

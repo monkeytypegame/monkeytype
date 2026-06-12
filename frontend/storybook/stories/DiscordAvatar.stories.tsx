@@ -1,24 +1,16 @@
+import { Component } from "solid-js";
+
 import preview from "#.storybook/preview";
 
 import { DiscordAvatar } from "../../src/ts/components/common/DiscordAvatar";
 
 const meta = preview.meta({
   title: "Common/DiscordAvatar",
-  component: DiscordAvatar,
+  component: DiscordAvatar as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    discordId: { control: "text" },
-    discordAvatar: { control: "text" },
-    size: { control: "number" },
-    class: { control: "text" },
-    fallbackIcon: {
-      control: "select",
-      options: ["user-circle", "user"],
-    },
-  },
   decorators: [
     (Story) => (
       <div class="text-2xl">
@@ -29,25 +21,28 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: {
-    discordId: "102819690287489024",
-    discordAvatar: "a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5",
-  },
+  render: () => (
+    <DiscordAvatar
+      discordId="102819690287489024"
+      discordAvatar="a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5"
+    />
+  ),
 });
 
 export const NoAvatar = meta.story({
-  args: {
-    discordId: "123456789",
-    discordAvatar: undefined,
-  },
+  render: () => (
+    <DiscordAvatar discordId="123456789" discordAvatar={undefined} />
+  ),
 });
 
 export const UserFallback = meta.story({
-  args: {
-    discordId: undefined,
-    discordAvatar: undefined,
-    fallbackIcon: "user",
-  },
+  render: () => (
+    <DiscordAvatar
+      discordId={undefined}
+      discordAvatar={undefined}
+      fallbackIcon="user"
+    />
+  ),
 });
 
 export const AllVariants = meta.story({

@@ -1,20 +1,19 @@
-import { Accessor, createMemo, JSXElement, Show } from "solid-js";
+import { Accessor, JSXElement, Show } from "solid-js";
 
 import {
   ResultsQueryState,
   ResultStats,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
-import { getConfig } from "../../../config/store";
+import { getFormatting } from "../../../states/core";
 import { secondsToString } from "../../../utils/date-and-time";
-import { Formatting } from "../../../utils/format";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 
 export function TestStats(props: {
   queryState: Accessor<ResultsQueryState | undefined>;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
   const formatWpm = (val: number): string => format().typingSpeed(val);
   const formatPercentage = (val: number): string => format().percentage(val);
 

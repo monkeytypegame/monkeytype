@@ -1,64 +1,40 @@
+import { Component } from "solid-js";
+
 import preview from "#.storybook/preview";
 
 import { UserFlags } from "../../src/ts/components/common/UserFlags";
 
 const meta = preview.meta({
   title: "Common/UserFlags",
-  component: UserFlags,
+  component: UserFlags as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    isPremium: { control: "boolean" },
-    banned: { control: "boolean" },
-    lbOptOut: { control: "boolean" },
-    isFriend: { control: "boolean" },
-    iconsOnly: { control: "boolean" },
-  },
 });
 
 export const PrimeApe = meta.story({
-  args: {
-    isPremium: true,
-  },
+  render: () => <UserFlags isPremium />,
 });
 
 export const Banned = meta.story({
-  args: {
-    banned: true,
-  },
+  render: () => <UserFlags banned />,
 });
 
 export const LbOptOut = meta.story({
-  args: {
-    lbOptOut: true,
-  },
+  render: () => <UserFlags lbOptOut />,
 });
 
 export const Friend = meta.story({
-  args: {
-    isFriend: true,
-  },
+  render: () => <UserFlags isFriend />,
 });
 
 export const AllFlags = meta.story({
-  args: {
-    isPremium: true,
-    banned: true,
-    lbOptOut: true,
-    isFriend: true,
-  },
+  render: () => <UserFlags isPremium banned lbOptOut isFriend />,
 });
 
 export const AllFlagsIconsOnly = meta.story({
-  args: {
-    isPremium: true,
-    banned: true,
-    lbOptOut: true,
-    isFriend: true,
-    iconsOnly: true,
-  },
+  render: () => <UserFlags isPremium banned lbOptOut isFriend iconsOnly />,
 });
 
 export const AllVariants = meta.story({
