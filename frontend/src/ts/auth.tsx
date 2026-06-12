@@ -6,10 +6,12 @@ import {
   EmailAuthProvider,
   GithubAuthProvider,
   GoogleAuthProvider,
+  linkWithCredential,
   linkWithPopup,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   unlink,
+  updateEmail,
   updateProfile,
   User,
   User as UserType,
@@ -80,6 +82,7 @@ const authMethods = {
 } as const satisfies Record<string, AuthMethodInfo>;
 
 export type AuthMethod = keyof typeof authMethods;
+export type ProviderAuthMethod = Exclude<AuthMethod, "password">;
 
 export type AuthResult =
   | {
@@ -284,33 +287,87 @@ export async function signInWithProvider(
   return { success: true };
 }
 
-export async function addAuthProvider(authMethod: AuthMethod): Promise<void> {
+export async function addAuthProvider(
+  options:
+    | { authMethod: ProviderAuthMethod }
+    | {
+        authMethod: "password";
+        email: string;
+        password: string;
+      },
+): Promise<void> {
   if (!isAuthAvailable()) {
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
+  const authMethod = options.authMethod;
+
+  showLoaderBar();
+  const user = getAuthenticatedUser();
+  const providerName = getAuthMethodDisplay(authMethod);
+
+  if (!user) return;
+  try {
+    if (authMethod === "password") {
+      await addPasswordProvider(user, options);
+    } else {
+      await addPopupProvider(user, options);
+    }
+
+    showSuccessNotification(`${providerName} authentication added`);
+    updateAuthenticatedUser();
+  } catch (error) {
+    showErrorNotification(`Failed to add ${providerName} authentication`, {
+      error,
+    });
+  } finally {
+    hideLoaderBar();
+  }
+}
+
+async function addPasswordProvider(
+  user: User,
+  options: {
+    email: string;
+    password: string;
+  },
+) {
+  const reauth = await reauthenticate({ password: options.password });
+  if (reauth.status !== "success") {
+    throw new Error(reauth.message);
+  }
+  const credential = EmailAuthProvider.credential(
+    options.email,
+    options.password,
+  );
+  await linkWithCredential(reauth.user, credential);
+  await updateEmail(user, options.email);
+  const response = await Ape.users.updateEmail({
+    body: {
+      newEmail: options.email,
+      previousEmail: reauth.user.email as string,
+    },
+  });
+  if (response.status !== 200) {
+    throw new Error(
+      "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
+    );
+  }
+}
+
+async function addPopupProvider(
+  user: User,
+  options: { authMethod: ProviderAuthMethod },
+) {
+  const authMethod = options.authMethod;
   const provider = getAuthProvider(authMethod);
   if (provider === undefined) {
     showErrorNotification(`Authentication ${authMethod} is missing a provider`);
     return;
   }
-  const providerName = getAuthMethodDisplay(authMethod);
 
-  showLoaderBar();
-  const user = getAuthenticatedUser();
-  if (!user) return;
-  try {
-    await linkWithPopup(user, provider);
-    hideLoaderBar();
-    showSuccessNotification(`${providerName} authentication added`);
-    authEvent.dispatch({ type: "authConfigUpdated" });
-    updateAuthenticatedUser();
-  } catch (error) {
-    hideLoaderBar();
-    showErrorNotification(`Failed to add ${providerName} authentication`, {
-      error,
-    });
-  }
+  await linkWithPopup(user, provider);
+  authEvent.dispatch({ type: "authConfigUpdated" });
 }
 
 export async function removeAuthProvider(

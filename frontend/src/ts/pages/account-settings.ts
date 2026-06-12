@@ -257,11 +257,11 @@ qs(".pageAccountSettings")?.onChild(
 );
 
 qs(".pageAccountSettings")?.onChild("click", "#addGoogleAuth", () => {
-  void addAuthProvider("google");
+  void addAuthProvider({ authMethod: "google" });
 });
 
 qs(".pageAccountSettings")?.onChild("click", "#addGithubAuth", () => {
-  void addAuthProvider("github");
+  void addAuthProvider({ authMethod: "github" });
 });
 
 authEvent.subscribe((event) => {
