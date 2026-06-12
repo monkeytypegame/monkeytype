@@ -25,7 +25,7 @@ export function Section(
 ) {
   return (
     <div>
-      <H3 text={props.title} fa={props.fa} />
+      <H3 text={props.title} fa={{ ...{ fixedWidth: true }, ...props.fa }} />
 
       <Show
         when={props.disabled === undefined || !props.disabled}

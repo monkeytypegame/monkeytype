@@ -8,11 +8,12 @@ import {
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
 import { AccountTab } from "./AccountTab";
+import { BlockedUsersTab } from "./BlockedUsersTab";
 
 const tabContent: Record<AccountSettingsTab, JSX.Element> = {
   account: <AccountTab />,
   authentication: <div>t.b.d</div>,
-  blockedUsers: <div>t.b.d</div>,
+  blockedUsers: <BlockedUsersTab />,
   apeKeys: <div>t.b.d</div>,
   dangerZone: <div>t.b.d</div>,
 };
@@ -34,7 +35,7 @@ export function AccountSettingsPage() {
 
 function Sidebar() {
   return (
-    <div class="flex flex-col md:items-start gap-4 p-4 bg-sub-alt rounded-double">
+    <div class="flex flex-col gap-4 rounded-double bg-sub-alt p-4 md:items-start">
       <For each={Object.entries(accountSettingsTabs)}>
         {([key, tab]) => (
           <Button
