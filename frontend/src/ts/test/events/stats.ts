@@ -485,8 +485,6 @@ export function getChars(countPartialLastWord = false): CharCounts {
 }
 
 export function getInputHistory(): string[] {
-  console.log("getting input history");
-  console.trace("getting input");
   const eventsPerWordIndex = getInputEventsPerWord();
   const history: string[] = [];
 
@@ -494,8 +492,6 @@ export function getInputHistory(): string[] {
     const simulatedInput = getInputFromDom(events);
     history.push(simulatedInput.trimEnd());
   }
-
-  console.log("got input history", history);
 
   return history;
 }
