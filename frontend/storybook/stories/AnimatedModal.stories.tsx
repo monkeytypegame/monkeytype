@@ -1,3 +1,5 @@
+import { Component } from "solid-js";
+
 import preview from "#.storybook/preview";
 
 import { AnimatedModal } from "../../src/ts/components/common/AnimatedModal";
@@ -23,71 +25,52 @@ function ModalTrigger(props: { modalId: ModalId; label: string }) {
 
 const meta = preview.meta({
   title: "Common/AnimatedModal",
-  component: AnimatedModal,
+  component: AnimatedModal as Component,
   parameters: {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
-  argTypes: {
-    mode: { control: "select", options: ["modal", "dialog"] },
-    animationMode: {
-      control: "select",
-      options: ["none", "both", "modalOnly"],
-    },
-    title: { control: "text" },
-    modalClass: { control: "text" },
-    wrapperClass: { control: "text" },
-  },
-  decorators: [
-    (Story, context) => {
-      // oxlint-disable-next-line typescript/no-unsafe-member-access -- storybook decorator context is untyped
-      const modalId = context.args.id as ModalId;
-      // oxlint-disable-next-line typescript/no-unsafe-member-access -- storybook decorator context is untyped
-      const title = (context.args.title as string) ?? "Modal";
-      return (
-        <div>
-          <ModalTrigger modalId={modalId} label={`Open ${title}`} />
-          <Story />
-        </div>
-      );
-    },
-  ],
 });
 
 export const Default = meta.story({
-  args: {
-    id: "Contact",
-    title: "Example Modal",
-    children: (
-      <div>
-        <p>This is modal content.</p>
-      </div>
-    ),
-  },
+  render: () => (
+    <>
+      <ModalTrigger modalId="Contact" label="Open Example Modal" />
+      <AnimatedModal id="Contact" title="Example Modal">
+        <div>
+          <p>This is modal content.</p>
+        </div>
+      </AnimatedModal>
+    </>
+  ),
 });
 
 export const NoAnimation = meta.story({
-  args: {
-    id: "Support",
-    title: "No Animation Modal",
-    animationMode: "none",
-    children: (
-      <div>
-        <p>This modal has no animation.</p>
-      </div>
-    ),
-  },
+  render: () => (
+    <>
+      <ModalTrigger modalId="Support" label="Open No Animation Modal" />
+      <AnimatedModal
+        id="Support"
+        title="No Animation Modal"
+        animationMode="none"
+      >
+        <div>
+          <p>This modal has no animation.</p>
+        </div>
+      </AnimatedModal>
+    </>
+  ),
 });
 
 export const DialogMode = meta.story({
-  args: {
-    id: "DevOptions",
-    mode: "dialog",
-    title: "Dialog Mode",
-    children: (
-      <div>
-        <p>This uses dialog mode instead of modal.</p>
-      </div>
-    ),
-  },
+  render: () => (
+    <>
+      <ModalTrigger modalId="DevOptions" label="Open Dialog Mode" />
+      <AnimatedModal id="DevOptions" mode="dialog" title="Dialog Mode">
+        <div>
+          <p>This uses dialog mode instead of modal.</p>
+        </div>
+      </AnimatedModal>
+    </>
+  ),
 });

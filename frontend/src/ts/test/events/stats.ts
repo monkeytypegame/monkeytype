@@ -13,12 +13,12 @@ import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { InputEvent, TestEvent } from "./types";
+import { InputEventNoMs, TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
 
-function getTimerBoundaries(events: TestEvent[]): number[] {
+function getTimerBoundaries(events: TestEventNoMs[]): number[] {
   const boundaries: number[] = [];
   let endMs: number | undefined;
 
@@ -47,12 +47,18 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   }
 
   if (endMs !== undefined) {
-    const last = boundaries[boundaries.length - 1];
-    // Must match the legacy condition: Math.round(roundTo2(testSeconds) % 1) >= 0.5.
-    // A naive ">= 500ms" check disagrees when the gap is in [495ms, 500ms) — roundTo2
-    // rounds that fraction up to 0.50s and the legacy system pushes an extra bucket,
-    // but a raw millisecond comparison would skip the boundary.
-    if (roundTo2((endMs - (last ?? 0)) / 1000) >= 0.5) {
+    // Timed tests never push an extra bucket (legacy skips setLastSecondNotRound
+    // for time mode). For other modes, mirror the legacy condition exactly:
+    // Math.round(roundTo2(testSeconds) % 1) >= 0.5. The rounding must happen at
+    // the SECONDS level — taking the fractional ms first and rounding can give
+    // a different answer when the rounded seconds carry into the next integer
+    // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
+    // rounds to 0.5 → wrongly adds a bucket).
+    const isTimedTest =
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+    const testSeconds = roundTo2(endMs / 1000);
+    if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
       boundaries.push(endMs);
     }
   }
@@ -140,7 +146,7 @@ export function getLastKeypressToEndMs(): number {
   return getRawLastKeypressToEndMs();
 }
 
-function countPerInterval(predicate: (event: TestEvent) => boolean): {
+function countPerInterval(predicate: (event: TestEventNoMs) => boolean): {
   counts: number[];
   boundaries: number[];
 } {
@@ -261,7 +267,7 @@ function getTargetWord(
 }
 
 function countCharsForWords(
-  eventsPerWord: Map<number, InputEvent[]>,
+  eventsPerWord: Map<number, InputEventNoMs[]>,
   lastWordIndex: number,
   shouldCountPartialLastWord: boolean,
 ): CharCounts {
@@ -280,20 +286,23 @@ function countCharsForWords(
     if (koreanStatus) {
       simulatedInput = Hangul.disassemble(simulatedInput).join("");
     }
-    if (lastWord) {
-      simulatedInput = simulatedInput.trimEnd();
-    }
 
     let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
     if (koreanStatus) {
       targetWord = Hangul.disassemble(targetWord).join("");
     }
 
+    const lastEvent = events[events.length - 1];
+    const endsWithCommitSpace =
+      lastEvent !== undefined &&
+      lastEvent.data.inputType === "insertText" &&
+      lastEvent.data.commitsWord === true;
+
     const c = countChars(
       simulatedInput,
       targetWord,
-      lastWord,
-      shouldCountPartialLastWord,
+      lastWord && shouldCountPartialLastWord,
+      endsWithCommitSpace,
     );
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
@@ -308,10 +317,10 @@ function countCharsForWords(
 }
 
 function inferActiveWordIndex(
-  eventsPerWord: Map<number, InputEvent[]>,
+  eventsPerWord: Map<number, InputEventNoMs[]>,
 ): number {
   let maxWordIndex = -1;
-  let lastWordEvents: InputEvent[] | undefined;
+  let lastWordEvents: InputEventNoMs[] | undefined;
   for (const [k, wordEvents] of eventsPerWord) {
     if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
       maxWordIndex = k;
@@ -334,10 +343,11 @@ function inferActiveWordIndex(
 export function getChars(): CharCounts {
   const isTimedTest =
     Config.mode === "time" ||
+    (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
     getInputEventsPerWord(),
-    activeWordIndex,
+    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest,
   );
 }
@@ -385,10 +395,12 @@ export function getKeypressSpacing(): number[] {
   for (const event of events) {
     if (event.type === "keydown") {
       if (lastKeydownTime !== undefined) {
-        const spacing = event.ms - lastKeydownTime;
+        const spacing = event.testMs - lastKeydownTime;
         spacings.push(spacing);
       }
-      lastKeydownTime = event.ms;
+      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
+      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      lastKeydownTime = Math.max(0, event.testMs);
     }
   }
 
@@ -410,15 +422,15 @@ export function getKeypressOverlap(): number {
   for (const event of events) {
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
+        timestamp: event.testMs,
       });
       if (lastStartTime === undefined && keydownTimes.size > 1) {
-        lastStartTime = event.ms;
+        lastStartTime = event.testMs;
       }
     } else if (event.type === "keyup") {
       keydownTimes.delete(event.data.code);
       if (lastStartTime !== undefined && keydownTimes.size === 1) {
-        const endTime = event.ms;
+        const endTime = event.testMs;
         overlap += endTime - lastStartTime;
         lastStartTime = undefined;
       }
@@ -477,14 +489,14 @@ export function getKeypressDurations(): number[] {
   for (const event of events) {
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
+        timestamp: event.testMs,
         index: durations.length,
       });
       durations.push(0); // placeholder
     } else if (event.type === "keyup") {
       const keydownTime = keydownTimes.get(event.data.code);
       if (keydownTime !== undefined) {
-        const duration = event.ms - keydownTime.timestamp;
+        const duration = event.testMs - keydownTime.timestamp;
         durations[keydownTime.index] = duration;
         keydownTimes.delete(event.data.code);
       }
@@ -509,10 +521,6 @@ export function forceReleaseAllKeys(): void {
   for (const [key, { timestamp }] of getPressedKeys().entries()) {
     logTestEvent("keyup", timestamp + avg, {
       code: key, //entries is not picking up the type
-      ctrl: false,
-      shift: false,
-      alt: false,
-      meta: false,
       estimated: true,
     });
   }

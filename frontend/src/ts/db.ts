@@ -1,6 +1,5 @@
 import Ape from "./ape";
 import { showErrorNotification } from "./states/notifications";
-import { getAuthenticatedUser } from "./firebase";
 import { isAuthenticated } from "./states/core";
 import * as Dates from "date-fns";
 import {
@@ -24,11 +23,7 @@ import {
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
 import { authEvent } from "./events/auth";
-import {
-  configurationPromise,
-  get as getServerConfiguration,
-} from "./ape/server-configuration";
-import { Connection } from "@monkeytype/schemas/connections";
+import { configurationPromise } from "./ape/server-configuration";
 import { insertLocalResult } from "./collections/results";
 import {
   setLastResult,
@@ -38,9 +33,9 @@ import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { __nonReactive } from "./collections/tags";
-import { updateTagsInFilterStorage } from "./states/result-filters";
 import { fetchUserFromApi } from "./ape/user";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
+import { updateTagsInFilterStorage } from "./states/result-filters";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -89,24 +84,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const connectionsRequest = getServerConfiguration()?.connections.enabled
-      ? Ape.connections.get()
-      : { status: 200, body: { message: "", data: [] } };
-
-    const [userData, connectionsResponse] = await Promise.all([
-      fetchUserFromApi(),
-
-      connectionsRequest,
-    ]);
-
-    if (connectionsResponse.status !== 200) {
-      throw new SnapshotInitError(
-        `${connectionsResponse.body.message} (connections)`,
-        connectionsResponse.status,
-      );
-    }
-
-    const connectionsData = connectionsResponse.body.data;
+    const [userData] = await Promise.all([fetchUserFromApi()]);
 
     if (userData === null || userData === undefined) {
       throw new SnapshotInitError(
@@ -170,7 +148,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
-    snap.connections = convertConnections(connectionsData);
     dbSnapshot = snap;
 
     return dbSnapshot;
@@ -473,74 +450,4 @@ export async function getTestActivityCalendar(
   }
 
   return dbSnapshot.testActivityByYear[yearString];
-}
-
-export function mergeConnections(connections: Connection[]): void {
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
-  const update = convertConnections(connections);
-
-  for (const [key, value] of Object.entries(update)) {
-    snapshot.connections[key] = value;
-  }
-
-  setSnapshot(snapshot);
-}
-
-function convertConnections(
-  connectionsData: Connection[],
-): Snapshot["connections"] {
-  return Object.fromEntries(
-    connectionsData.map((connection) => {
-      const isMyRequest =
-        getAuthenticatedUser()?.uid === connection.initiatorUid;
-
-      return [
-        isMyRequest ? connection.receiverUid : connection.initiatorUid,
-        connection.status === "pending" && !isMyRequest
-          ? "incoming"
-          : connection.status,
-      ];
-    }),
-  );
-}
-
-export function getReceiverUid(
-  connection: Pick<Connection, "initiatorUid" | "receiverUid">,
-): string {
-  const me = getAuthenticatedUser();
-  if (me === null) {
-    throw new Error("expected to be authenticated in getReceiverUid");
-  }
-
-  if (me.uid === connection.initiatorUid) return connection.receiverUid;
-  return connection.initiatorUid;
-}
-
-export async function addFriend(receiverName: string): Promise<true | string> {
-  const result = await Ape.connections.create({ body: { receiverName } });
-
-  if (result.status !== 200) {
-    return `Friend request failed: ${result.body.message}`;
-  } else {
-    const snapshot = getSnapshot();
-    if (snapshot !== undefined) {
-      const receiverUid = getReceiverUid(result.body.data);
-      // oxlint-disable-next-line no-unsafe-member-access
-      snapshot.connections[receiverUid] = result.body.data.status;
-    }
-    return true;
-  }
-}
-
-export function isFriend(uid: string | undefined): boolean {
-  if (uid === undefined || uid === getAuthenticatedUser()?.uid) return false;
-
-  const snapshot = getSnapshot();
-  if (!snapshot) return false;
-
-  return Object.entries(snapshot.connections).some(
-    ([receiverUid, status]) => receiverUid === uid && status === "accepted",
-  );
 }
