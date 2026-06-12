@@ -362,13 +362,13 @@
       </p>
     </div>
   </body>
-  <script defer>
-    function copyUserName() {
-      if (true) {
-        navigator.clipboard.writeText("@miodec");
+  <script>
+    async function copyUserName() {
+      try {
+        await navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
-      } else {
-        alert("Unable to copy username");
+      } catch (error) {
+        alert(`Unable to copy username: ${error.message}`);
       }
     }
 
