@@ -22,6 +22,7 @@ export function BlockedUsersTab() {
     <Section
       title="blocked users"
       fa={{ icon: "fa-user-shield" }}
+      fullWidth
       text=<>Blocked users cannot send you friend requests.</>
     >
       <AsyncContent collections={{ query }}>

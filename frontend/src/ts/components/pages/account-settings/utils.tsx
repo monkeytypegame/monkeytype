@@ -11,6 +11,7 @@ export function Section(
     fa: FaProps;
     text?: JSX.Element;
     button?: ButtonProps;
+    fullWidth?: boolean;
   } & ParentProps &
     (
       | {
@@ -27,7 +28,12 @@ export function Section(
     <div>
       <H3 text={props.title} fa={{ ...{ fixedWidth: true }, ...props.fa }} />
 
-      <div class="lg:grid lg:grid-cols-2 lg:items-center">
+      <div
+        classList={{
+          "lg:grid lg:grid-cols-2 lg:items-center gap-2":
+            props.fullWidth !== true,
+        }}
+      >
         <Show
           when={props.disabled === undefined || !props.disabled}
           fallback={props.disabledText}
