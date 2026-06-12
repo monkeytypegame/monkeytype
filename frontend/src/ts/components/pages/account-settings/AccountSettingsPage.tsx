@@ -7,9 +7,10 @@ import {
   setCurrentTab,
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
+import { AccountTab } from "./AccountTab";
 
 const tabContent: Record<AccountSettingsTab, JSX.Element> = {
-  account: <Account />,
+  account: <AccountTab />,
   authentication: <div>t.b.d</div>,
   blockedUsers: <div>t.b.d</div>,
   apeKeys: <div>t.b.d</div>,
@@ -20,7 +21,7 @@ export function AccountSettingsPage() {
   return (
     <div>
       <div class="content-grid flex flex-col gap-8 md:flex-row">
-        <div class="w-full shrink-0 md:w-60 2xl:w-75 bg-sub-alt">
+        <div class="w-full shrink-0 md:w-60 2xl:w-75">
           <Sidebar />
         </div>
         <div class="flex w-full flex-1 flex-col gap-8">
@@ -33,7 +34,7 @@ export function AccountSettingsPage() {
 
 function Sidebar() {
   return (
-    <div class="flex flex-col md:items-start gap-4 p-4">
+    <div class="flex flex-col md:items-start gap-4 p-4 bg-sub-alt rounded-double">
       <For each={Object.entries(accountSettingsTabs)}>
         {([key, tab]) => (
           <Button
@@ -48,8 +49,4 @@ function Sidebar() {
       </For>
     </div>
   );
-}
-
-function Account() {
-  return <div>account</div>;
 }
