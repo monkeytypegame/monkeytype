@@ -152,6 +152,21 @@ function invalidateCache(): void {
 }
 
 export function getCurrentInput(): string {
+  const last = inputEvents[inputEvents.length - 1];
+
+  if (last !== undefined) {
+    const lastWordIndex = last.data.wordIndex;
+    //just advanced to a new word - no input event for it yet
+    if (lastWordIndex + 1 === activeWordIndex) return "";
+    //last event is for the active word - return its snapshot
+    if (
+      lastWordIndex === activeWordIndex &&
+      last.data.inputValue !== undefined
+    ) {
+      return last.data.inputValue;
+    }
+  }
+
   return getInputFromDom(getInputEventsForWord(activeWordIndex));
 }
 
