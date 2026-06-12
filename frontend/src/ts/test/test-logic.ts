@@ -116,6 +116,7 @@ import {
   getInputHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
+import { isDevEnvironment } from "../utils/env";
 
 let failReason = "";
 
@@ -907,8 +908,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   cleanupData();
 
-  logEventsDataToTheConsoleTable();
-  console.log(getInputHistory());
+  if (isDevEnvironment()) {
+    logEventsDataToTheConsoleTable();
+  }
 
   const ce = buildCompletedEvent();
   PaceCaret.setLastTestWpm(ce.wpm);
@@ -1040,8 +1042,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  logEventsDataToTheConsoleTable();
-
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
       const testSeconds = completedEvent.testDuration;
@@ -1172,8 +1172,6 @@ async function saveResult(
   //@ts-expect-error just in case this is repeated and already has a hash
   delete result.hash;
   result.hash = objectHash(result);
-
-  console.trace();
 
   setAccountButtonSpinner(true);
 
