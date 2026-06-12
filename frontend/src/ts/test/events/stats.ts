@@ -475,6 +475,7 @@ function inferActiveWordIndex(
 export function getChars(countPartialLastWord = false): CharCounts {
   const isTimedTest =
     Config.mode === "time" ||
+    (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
     getInputEventsPerWord(),

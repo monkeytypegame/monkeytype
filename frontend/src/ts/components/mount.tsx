@@ -12,8 +12,10 @@ import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { AboutPage } from "./pages/AboutPage";
+import { BlockedUsers } from "./pages/account-settings/BlockedUsers";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
+import { FriendsPage } from "./pages/connections/FriendsPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
@@ -42,6 +44,8 @@ const components: Record<string, () => JSXElement> = {
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
   testmodesnotice: () => <TestModesNotice />,
+  friendspage: () => <FriendsPage />,
+  blockedusers: () => <BlockedUsers />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

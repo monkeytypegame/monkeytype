@@ -2,18 +2,17 @@ import { createMemo } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getLocalPB } from "../../../db";
-import { isAuthenticated } from "../../../states/core";
+import { getFormatting, isAuthenticated } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
 import { getCurrentQuote } from "../../../states/test";
 import { getActiveFunboxes } from "../../../test/funbox/list";
-import { Formatting } from "../../../utils/format";
 import { getMode2 } from "../../../utils/misc";
 import { Notice } from "./Notice";
 
 export function PbNotice() {
   const displayText = createMemo(() => {
     if (!isAuthenticated()) return "";
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
 
     //react on config.funbox
     const _funbox = getConfig.funbox;
