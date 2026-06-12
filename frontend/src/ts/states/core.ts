@@ -1,7 +1,9 @@
-import { createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 import { CommandlineSubgroupKey } from "../commandline/types";
 import { PageName } from "../pages/page";
 import { showModal } from "./modals";
+import { Formatting } from "../utils/format";
+import { getConfig } from "../config/store";
 
 export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
@@ -49,3 +51,10 @@ export function showCommandLineForConfig(
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);
+
+export const getFormatting = createMemo(() => {
+  return new Formatting({
+    alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
+    typingSpeedUnit: getConfig.typingSpeedUnit,
+  });
+});
