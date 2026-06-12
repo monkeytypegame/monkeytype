@@ -730,7 +730,10 @@ export function forceReleaseAllKeys(): void {
 export function getMissedWords(): Record<string, number> {
   const events = getAllTestEvents();
 
-  const missedWords: Record<string, number> = {};
+  const missedWords: Record<string, number> = Object.create(null) as Record<
+    string,
+    number
+  >;
 
   for (const event of events) {
     if (
