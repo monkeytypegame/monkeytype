@@ -2024,6 +2024,31 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
+// little roadblock for basic cheating
+window.addEventListener("focus", () => {
+  if (
+    !TestState.isActive &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    restart({
+      noAnim: true,
+    });
+  }
+});
+
+// little roadblock for basic cheating
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (
+    !TestState.isActive &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    restart({
+      noAnim: true,
+    });
+  }
+});
+
 restartTestEvent.subscribe((event) => restart(event));
 
 // ===============================
