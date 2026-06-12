@@ -1957,7 +1957,7 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   if (Config.mode === "zen") {
     words = getInputHistory().join(" ");
   } else {
-    words = (Object.keys(getMissedWords()) ?? {}).join(" ");
+    words = Object.keys(getMissedWords()).join(" ");
   }
   await copyToClipboard(words);
 });
