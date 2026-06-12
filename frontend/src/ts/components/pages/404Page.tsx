@@ -6,7 +6,7 @@ export function NotFoundPage() {
   return (
     <Page id="404">
       <div class="flex h-full items-center justify-center">
-        <div class="flex flex-col gap-8 md:flex-row">
+        <div class="flex flex-col gap-16 md:flex-row">
           <div class="place-self-center">
             <img src="/images/monkeymeme.jpg" class="rounded-xl" />
           </div>
