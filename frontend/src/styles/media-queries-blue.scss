@@ -35,7 +35,6 @@
       }
     }
   }
-
   .pageAccountSettings {
     .main {
       grid-template-columns: 1fr;
@@ -49,13 +48,6 @@
           padding: 1em 0.5em;
         }
       }
-    }
-  }
-
-  .pageFriends {
-    .content .friends table,
-    .content .pendingRequests table {
-      font-size: 0.75rem;
     }
   }
 }
