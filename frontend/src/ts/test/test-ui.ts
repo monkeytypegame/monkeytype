@@ -703,7 +703,7 @@ export function addWord(
   //   // we need to update word letters for that word
   //   const inputHistory = [
   //     ...TestInput.input.getHistory(),
-  //     TestInput.input.current,
+  //     getCurrentInput(),
   //   ];
   //   const input = inputHistory[wordIndex];
   //   if (input !== undefined && input !== "") {
