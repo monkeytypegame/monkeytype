@@ -552,6 +552,10 @@ export function getCurrentInput(): string {
   return input.current;
 }
 
+export function getInputForWord(wordIndex: number): string | undefined {
+  return input.get(wordIndex);
+}
+
 export function resetCurrentInput(): void {
   input.current = "";
 }
