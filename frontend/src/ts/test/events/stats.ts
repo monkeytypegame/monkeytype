@@ -362,7 +362,7 @@ function computeBurst(events: InputEventNoMs[], now?: number): number {
       if (event.data.charIndex === 0) {
         firstKeypressTime = event.testMs;
       }
-      if (event.data.data === " ") {
+      if (firstKeypressTime !== undefined) {
         lastKeypressTime = event.testMs;
       }
     }
