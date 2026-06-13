@@ -1,7 +1,7 @@
 import { ApeKeyNameSchema } from "@monkeytype/schemas/ape-keys";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns";
-import { createMemo } from "solid-js";
+import { createMemo, Show } from "solid-js";
 import { z } from "zod";
 
 import {
@@ -12,11 +12,13 @@ import {
   updateApeKeyEnabled,
   useApeKeyLiveQuery,
 } from "../../../collections/ape-keys";
+import { isApeKeysDenied } from "../../../states/account-settings";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { replaceSpacesWithUnderscores } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
+import { Fa } from "../../common/Fa";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { Section } from "./utils";
 
@@ -41,21 +43,28 @@ export function ApeKeysTab() {
           text: "generate new key",
           onClick: addNewKey,
         }}
+        disabled={isApeKeysDenied() === true}
+        disabledText=<>
+          <Fa icon="fa-times" /> You have lost access to Ape Keys. Please
+          contact support if you believe this is a mistake.
+        </>
       />
-      <AsyncContent collections={{ apeKeyQuery }}>
-        {({ apeKeyQueryData }) => (
-          <DataTable
-            id="apeKeys"
-            columns={columns()}
-            data={apeKeyQueryData()}
-            fallback={
-              <div class="text-center text-sub">
-                You don&lsquo;t have any ape keys yet.
-              </div>
-            }
-          />
-        )}
-      </AsyncContent>
+      <Show when={isApeKeysDenied() !== true}>
+        <AsyncContent collections={{ apeKeyQuery }}>
+          {({ apeKeyQueryData }) => (
+            <DataTable
+              id="apeKeys"
+              columns={columns()}
+              data={apeKeyQueryData()}
+              fallback={
+                <div class="text-center text-sub">
+                  You don&lsquo;t have any ape keys yet.
+                </div>
+              }
+            />
+          )}
+        </AsyncContent>
+      </Show>
     </>
   );
 }
