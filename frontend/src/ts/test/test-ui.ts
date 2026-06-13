@@ -1838,14 +1838,14 @@ export function beforeTestWordChange(
 
 export async function afterTestWordChange(
   direction: "forward" | "back",
-  lastBurst?: number,
+  lastBurst?: number | null,
 ): Promise<void> {
   updateActiveElement({
     direction,
   });
   Caret.updatePosition();
 
-  if (Numbers.isSafeNumber(lastBurst)) {
+  if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }
   if (direction === "forward") {

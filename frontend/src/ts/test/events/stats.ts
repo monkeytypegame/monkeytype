@@ -1,7 +1,7 @@
 import {
   getAllTestEvents,
+  getEventsForWord,
   getInputEvents,
-  getInputEventsForWord,
   getInputEventsPerWord,
   getPressedKeys,
   getTimerStartEventMs,
@@ -345,9 +345,11 @@ export function getCurrentAccuracy(): number {
   return total === 0 ? 100 : (correct / total) * 100;
 }
 
-//todo: composition start must be the start time for burst calculation
-function computeBurst(events: InputEventNoMs[], now?: number): number {
-  const input = getInputFromDom(events);
+function computeBurst(events: TestEventNoMs[], now?: number): number {
+  const inputEvents = events.filter(
+    (e): e is InputEventNoMs => e.type === "input",
+  );
+  const input = getInputFromDom(inputEvents);
 
   let inputLength = input.length;
   if (!input.endsWith(" ") && !input.endsWith("\n")) {
@@ -358,8 +360,16 @@ function computeBurst(events: InputEventNoMs[], now?: number): number {
   let lastKeypressTime: number | undefined;
 
   for (const event of events) {
+    if (
+      event.type === "composition" &&
+      event.data.event === "start" &&
+      firstKeypressTime === undefined
+    ) {
+      firstKeypressTime = event.testMs;
+    }
+
     if (event.type === "input" && event.data.inputType === "insertText") {
-      if (event.data.charIndex === 0) {
+      if (event.data.charIndex === 0 && firstKeypressTime === undefined) {
         firstKeypressTime = event.testMs;
       }
       if (firstKeypressTime !== undefined) {
@@ -385,7 +395,7 @@ function computeBurst(events: InputEventNoMs[], now?: number): number {
 }
 
 export function getWordBurst(wordIndex: number, now?: number): number {
-  const events = getInputEventsForWord(wordIndex);
+  const events = getEventsForWord(wordIndex);
   return computeBurst(events, now);
 }
 

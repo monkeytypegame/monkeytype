@@ -364,6 +364,21 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
 }
 
+export function getEventsForWord(wordIndex: number): TestEventNoMs[] {
+  const events = getAllTestEvents();
+  const result: TestEventNoMs[] = [];
+  for (const event of events) {
+    if (!("wordIndex" in event.data)) continue;
+    if (
+      (event.type === "input" || event.type === "composition") &&
+      event.data.wordIndex === wordIndex
+    ) {
+      result.push(event);
+    }
+  }
+  return result;
+}
+
 export function getInputEvents(): InputEventNoMs[] {
   return getAllTestEvents().filter(
     (event): event is InputEventNoMs => event.type === "input",

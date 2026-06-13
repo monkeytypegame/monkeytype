@@ -26,7 +26,7 @@ type GoToNextWordParams = {
 
 type GoToNextWordReturn = {
   increasedWordIndex: boolean;
-  lastBurst: number;
+  lastBurst: number | null;
 };
 
 export async function goToNextWord({
@@ -35,9 +35,9 @@ export async function goToNextWord({
   zenNewline,
   now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
-  const ret = {
+  const ret: GoToNextWordReturn = {
     increasedWordIndex: false,
-    lastBurst: 0,
+    lastBurst: null,
   };
 
   TestUI.beforeTestWordChange(
@@ -50,9 +50,10 @@ export async function goToNextWord({
     fb.functions.handleSpace();
   }
 
-  //burst calculation and fail
-  const burst = getWordBurst(TestState.activeWordIndex, now);
-  ret.lastBurst = burst;
+  if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
+    const burst = getWordBurst(TestState.activeWordIndex, now);
+    ret.lastBurst = burst;
+  }
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
@@ -78,7 +79,7 @@ export async function goToNextWord({
   }
 
   setInputElementValue("");
-  void TestUI.afterTestWordChange("forward", burst);
+  void TestUI.afterTestWordChange("forward", ret.lastBurst);
 
   return ret;
 }
