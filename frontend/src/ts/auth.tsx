@@ -137,7 +137,6 @@ const authenticationMemos = Object.fromEntries(
         isInUse: user.providerData.some((p) => p.providerId === providerId),
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(it),
       };
-      console.log("### memo for ", providerId, "updated", result);
       return result;
     });
     return [it, memo];

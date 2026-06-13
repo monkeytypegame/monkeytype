@@ -1,17 +1,17 @@
 import { ApeKeyNameSchema } from "@monkeytype/schemas/ape-keys";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns";
+import { createMemo } from "solid-js";
 import { z } from "zod";
 
-import Ape from "../../../ape";
 import {
   ApeKeyEntry,
+  insertApeKey,
   removeApeKey,
   renameApeKey,
   updateApeKeyEnabled,
   useApeKeyLiveQuery,
 } from "../../../collections/ape-keys";
-import { setLastGeneratedApeKey } from "../../../states/account-settings";
 import { showModal } from "../../../states/modals";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { replaceSpacesWithUnderscores } from "../../../utils/strings";
@@ -21,7 +21,8 @@ import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { Section } from "./utils";
 
 export function ApeKeysTab() {
-  const query = useApeKeyLiveQuery();
+  const columns = createMemo(() => getColumns());
+  const apeKeyQuery = useApeKeyLiveQuery();
   return (
     <>
       <Section
@@ -41,22 +42,18 @@ export function ApeKeysTab() {
           onClick: addNewKey,
         }}
       />
-      <AsyncContent collections={{ query }}>
-        {({ queryData }) => (
-          <>
-            <h1>test {queryData().length}</h1>
-
-            <DataTable
-              id="apeKeys"
-              columns={getColumns()}
-              data={queryData()}
-              fallback={
-                <div class="text-center text-sub">
-                  You don&lsquo;t have any ape keys yet.
-                </div>
-              }
-            />
-          </>
+      <AsyncContent collections={{ apeKeyQuery }}>
+        {({ apeKeyQueryData }) => (
+          <DataTable
+            id="apeKeys"
+            columns={columns()}
+            data={[...apeKeyQueryData()]}
+            fallback={
+              <div class="text-center text-sub">
+                You don&lsquo;t have any ape keys yet.
+              </div>
+            }
+          />
         )}
       </AsyncContent>
     </>
@@ -86,7 +83,9 @@ function getColumns(): DataTableColumnDef<ApeKeyEntry>[] {
         />
       ),
     }),
-    defineColumn("name", { header: "name" }),
+    defineColumn("name", {
+      header: "name",
+    }),
     defineColumn("createdOn", {
       header: "created on",
       cell: (info) => dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
@@ -149,24 +148,11 @@ function addNewKey(): void {
     },
 
     execFn: async ({ name }) => {
-      const response = await Ape.apeKeys.add({
-        body: { name, enabled: false },
-      });
-      if (response.status !== 200) {
-        return {
-          status: "error",
-          message: "Failed to generate key",
-          notificationOptions: { response },
-        };
-      }
-
-      const data = response.body.data;
-
+      await insertApeKey({ name });
       return {
         status: "success",
         message: "Key generated",
         afterHide: (): void => {
-          setLastGeneratedApeKey(data.apeKey);
           showModal("ViewApeKey");
         },
       };

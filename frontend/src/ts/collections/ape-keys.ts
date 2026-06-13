@@ -8,12 +8,18 @@ import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
-import { setApeKeysDenied } from "../states/account-settings";
-import { applyIdWorkaround } from "./utils/misc";
+import {
+  setApeKeysDenied,
+  setLastGeneratedApeKey,
+} from "../states/account-settings";
+import { applyIdWorkaround, tempId } from "./utils/misc";
 import { typedEntries } from "../utils/misc";
 import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { showSuccessNotification } from "../states/notifications";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
+import {
+  replaceSpacesWithUnderscores,
+  replaceUnderscoresWithSpaces,
+} from "../utils/strings";
 
 export type ApeKeyEntry = ApeKey & { _id: string };
 const queryKeys = {
@@ -23,9 +29,11 @@ const queryKeys = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useApeKeyLiveQuery() {
   return useLiveQuery((q) =>
-    q
-      .from({ keys: apeKeysCollection })
-      .orderBy(({ keys }) => keys.createdOn, "asc"),
+    isAuthenticated()
+      ? q
+          .from({ keys: apeKeysCollection })
+          .orderBy(({ keys }) => keys.createdOn, "asc")
+      : undefined,
   );
 }
 
@@ -67,12 +75,44 @@ const apeKeysCollection = createCollection(
 );
 
 type ActionType = {
+  insertKey: { name: string };
   setEnabled: { apeKeyId: string; enabled: boolean };
   rename: { apeKeyId: string; name: string };
   remove: { apeKeyId: string };
 };
 
 const actions = {
+  insertKey: createOptimisticAction<ActionType["insertKey"]>({
+    onMutate: ({ name }) => {
+      apeKeysCollection.insert({
+        _id: tempId(),
+        name: replaceSpacesWithUnderscores(name),
+        enabled: false,
+        lastUsedOn: -1,
+        createdOn: Date.now(),
+        modifiedOn: Date.now(),
+      });
+    },
+    mutationFn: async ({ name }) => {
+      const response = await Ape.apeKeys.add({
+        body: { name, enabled: false },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to add key: ${response.body.message}`);
+      }
+
+      const newKey = {
+        ...response.body.data.apeKeyDetails,
+        _id: response.body.data.apeKeyId,
+        name: replaceUnderscoresWithSpaces(name),
+      };
+
+      apeKeysCollection.utils.writeInsert(newKey);
+
+      setLastGeneratedApeKey(response.body.data.apeKey);
+    },
+  }),
   setEnabled: createOptimisticAction<ActionType["setEnabled"]>({
     onMutate: ({ apeKeyId, enabled }) => {
       apeKeysCollection.update(apeKeyId, (key) => {
@@ -97,7 +137,7 @@ const actions = {
   rename: createOptimisticAction<ActionType["rename"]>({
     onMutate: ({ apeKeyId, name }) => {
       apeKeysCollection.update(apeKeyId, (key) => {
-        key.name = name;
+        key.name = replaceUnderscoresWithSpaces(name);
       });
     },
     mutationFn: async ({ apeKeyId, name }) => {
@@ -110,7 +150,10 @@ const actions = {
         throw new Error(`Failed to update key: ${response.body.message}`);
       }
 
-      apeKeysCollection.utils.writeUpdate({ _id: apeKeyId, name });
+      apeKeysCollection.utils.writeUpdate({
+        _id: apeKeyId,
+        name: replaceUnderscoresWithSpaces(name),
+      });
     },
   }),
   remove: createOptimisticAction<ActionType["remove"]>({
@@ -127,6 +170,13 @@ const actions = {
     },
   }),
 };
+
+export async function insertApeKey(
+  params: ActionType["insertKey"],
+): Promise<void> {
+  const transaction = actions.insertKey(params);
+  await transaction.isPersisted.promise;
+}
 
 export async function updateApeKeyEnabled(
   params: ActionType["setEnabled"],
