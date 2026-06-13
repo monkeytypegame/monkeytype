@@ -48,7 +48,7 @@ export function ApeKeysTab() {
             <DataTable
               id="apeKeys"
               columns={columns()}
-              data={apeKeyQueryData()}
+              data={[...apeKeyQueryData()]}
               fallback={
                 <div class="text-center text-sub">
                   You don&lsquo;t have any ape keys yet.

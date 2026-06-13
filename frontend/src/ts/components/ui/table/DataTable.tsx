@@ -70,7 +70,7 @@ export type DataTableProps<TData, TValue> = {
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export function DataTable<TData, TValue = any>(
+export function DataTable<TData extends Object, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -124,7 +124,9 @@ export function DataTable<TData, TValue = any>(
     getRowId: (row, index) =>
       props.rowSelection !== undefined
         ? props.rowSelection.getRowId(row)
-        : index.toString(),
+        : "_id" in row
+          ? (row["_id"] as string)
+          : index.toString(),
     onRowSelectionChange: setRowSelection,
 
     state: {
