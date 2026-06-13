@@ -108,8 +108,10 @@ export type CompositionTestEvent = EventProps<
 export type CompositionTestEventData =
   | {
       event: "start";
+      wordIndex: number;
     }
   | {
       event: "update" | "end";
       data: string;
+      wordIndex: number;
     };
