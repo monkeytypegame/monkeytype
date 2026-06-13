@@ -291,8 +291,6 @@ function countChars(final = false): CharCount {
         inputWord,
         targetWord,
         isLastInputWord && ((isTimedTest && final) || !final),
-        // historical words advanced via commit space; last is in-flight
-        !isLastInputWord,
       );
 
     correctWordChars += correctWord;
