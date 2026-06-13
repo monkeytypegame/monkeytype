@@ -1,7 +1,6 @@
 import {
   getAllTestEvents,
   getInputEvents,
-  getInputEventsForWord,
   getInputEventsPerWord,
   getPressedKeys,
   logTestEvent,
@@ -350,11 +349,6 @@ export function getChars(): CharCounts {
     isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest,
   );
-}
-
-export function getInputForWord(wordIndex: number): string {
-  const events = getInputEventsForWord(wordIndex);
-  return getInputFromDom(events).trimEnd();
 }
 
 export function getAccuracy(): {
