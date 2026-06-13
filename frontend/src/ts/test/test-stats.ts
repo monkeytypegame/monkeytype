@@ -206,7 +206,7 @@ export function removeAfkData(): void {
   TestInput.rawHistory.splice(testSeconds);
 }
 
-function getInputWords(): string[] {
+function getInputWords(isTimedTest: boolean): string[] {
   const containsKorean = TestState.koreanStatus;
 
   let inputWords = [...TestInput.input.getHistory()];
@@ -219,7 +219,7 @@ function getInputWords(): string[] {
     inputWords = inputWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
-  for (let i = 0; i < inputWords.length - 1; i++) {
+  for (let i = 0; i < inputWords.length - (isTimedTest ? 0 : 1); i++) {
     if (
       getLastChar(inputWords[i] as string) !== "\n" &&
       !isFunboxActiveWithProperty("nospace")
@@ -231,7 +231,7 @@ function getInputWords(): string[] {
   return inputWords;
 }
 
-function getTargetWords(): string[] {
+function getTargetWords(isTimedTest: boolean): string[] {
   const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
@@ -252,7 +252,7 @@ function getTargetWords(): string[] {
     targetWords = targetWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
-  for (let i = 0; i < targetWords.length - 1; i++) {
+  for (let i = 0; i < targetWords.length - (isTimedTest ? 0 : 1); i++) {
     if (
       getLastChar(targetWords[i] as string) !== "\n" &&
       !isFunboxActiveWithProperty("nospace")
@@ -271,24 +271,18 @@ function countChars(final = false): CharCount {
   let extraChars = 0;
   let missedChars = 0;
 
-  const inputWords = getInputWords();
-  const targetWords = getTargetWords();
-
   const isTimedTest =
     Config.mode === "time" ||
+    (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+
+  const inputWords = getInputWords(isTimedTest);
+  const targetWords = getTargetWords(isTimedTest);
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
     let targetWord = targetWords[i] as string;
     const isLastInputWord = i === inputWords.length - 1;
-
-    // getTargetWords appends a delimiter to every word except the last in the
-    // generated list; for the last input word (active in timed/mid-test, or
-    // the actual last word) drop that delimiter so overshoot counts as extra
-    if (isLastInputWord && targetWord.endsWith(" ")) {
-      targetWord = targetWord.slice(0, -1);
-    }
 
     const { correctWord, allCorrect, incorrect, missed, extra } =
       countCharsUtils(
