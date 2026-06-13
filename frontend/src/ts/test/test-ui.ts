@@ -2014,6 +2014,16 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
+window.addEventListener("blur", () => {
+  OutOfFocus.show("window");
+});
+
+// little roadblock for basic cheating
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "hidden") return;
+  OutOfFocus.show("window");
+});
+
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");

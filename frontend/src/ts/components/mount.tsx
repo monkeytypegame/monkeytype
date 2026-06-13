@@ -11,6 +11,7 @@ import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
+import { NotFoundPage } from "./pages/404Page";
 import { AboutPage } from "./pages/AboutPage";
 import { BlockedUsers } from "./pages/account-settings/BlockedUsers";
 import { AccountPage } from "./pages/account/AccountPage";
@@ -46,6 +47,7 @@ const components: Record<string, () => JSXElement> = {
   testmodesnotice: () => <TestModesNotice />,
   friendspage: () => <FriendsPage />,
   blockedusers: () => <BlockedUsers />,
+  notfoundpage: () => <NotFoundPage />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
