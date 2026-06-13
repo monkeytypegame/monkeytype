@@ -351,6 +351,18 @@ export function getChars(): CharCounts {
   );
 }
 
+export function getInputHistory(): string[] {
+  const eventsPerWordIndex = getInputEventsPerWord();
+  const history: string[] = [];
+
+  for (const events of eventsPerWordIndex.values()) {
+    const simulatedInput = getInputFromDom(events);
+    history.push(simulatedInput);
+  }
+
+  return history;
+}
+
 export function getAccuracy(): {
   correct: number;
   incorrect: number;

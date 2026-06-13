@@ -119,6 +119,7 @@ import {
   getAfkDuration,
   forceReleaseAllKeys,
   getKeypressesPerSecond,
+  getInputHistory as getEventsInputHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
@@ -1250,6 +1251,18 @@ function compareCompletedEvents(
     }
   }
 
+  {
+    const a = getInputHistory().join(" ");
+    const b = getEventsInputHistory().join("");
+    if (a === b) {
+      console.debug(`Completed event match on input history:`, a);
+    } else {
+      notMatching.push(`input history (values differ)`);
+      mismatchedKeys.push("inputHistory");
+      console.error(`Completed event mismatch on input history:`, a, b);
+    }
+  }
+
   if (notMatching.length === 0) {
     if (ALWAYSREPORT) {
       showSuccessNotification("Completed events match", { important: true });
@@ -1322,7 +1335,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 18,
+            version: 20,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
