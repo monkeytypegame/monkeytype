@@ -1335,7 +1335,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 20,
+            version: 21,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
