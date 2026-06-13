@@ -202,9 +202,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding ? true : undefined,
     inputStopped: removeLastChar ? true : undefined,
-    // when shouldInsertSpace is true, the space char was already inserted via
-    // syncWithInputElement above — only append " " for the advance-space case,
-    // else recorded inputValue ends up with a doubled trailing space.
+    // inputValue is captured from the input element after this event (before goToNextWord clears it).
     inputValue: inputValueAfterEvent,
     commitsWord: shouldGoToNextWord ? true : undefined,
   });
