@@ -211,7 +211,7 @@ function getColumns({
       meta: {
         breakpoint: "sm",
         cellMeta: ({ row }) => {
-          const value = row.streak.maxLength as number | undefined;
+          const value = row.streak?.maxLength;
           return value === undefined
             ? {}
             : {

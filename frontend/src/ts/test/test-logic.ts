@@ -1317,7 +1317,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 17,
+            version: 18,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
@@ -2022,6 +2022,33 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   restart({
     withSameWordset: true,
   });
+});
+
+// little roadblock for basic cheating
+window.addEventListener("focus", () => {
+  if (
+    !TestState.isActive &&
+    !TestState.resultVisible &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    restart({
+      noAnim: true,
+    });
+  }
+});
+
+// little roadblock for basic cheating
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (
+    !TestState.isActive &&
+    !TestState.resultVisible &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    restart({
+      noAnim: true,
+    });
+  }
 });
 
 restartTestEvent.subscribe((event) => restart(event));

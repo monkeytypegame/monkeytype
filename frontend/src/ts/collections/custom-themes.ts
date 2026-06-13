@@ -29,6 +29,7 @@ export function useCustomThemesLiveQuery() {
 const customThemesCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     startSync: true,
     queryKey: queryKeys.root(),
     queryClient,
@@ -42,11 +43,6 @@ const customThemesCollection = createCollection(
           `Error fetching custom themes: ${response.body.message}`,
         );
       }
-
-      if (_keepAlive === null) {
-        _keepAlive = useCustomThemesLiveQuery();
-      }
-
       return response.body.data.map(applyIdWorkaround);
     },
   }),
@@ -177,10 +173,3 @@ export const __nonReactive = {
   getCustomThemes,
   getCustomTheme,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-// oxlint-disable-next-line typescript/no-explicit-any
-let _keepAlive: any = null;
