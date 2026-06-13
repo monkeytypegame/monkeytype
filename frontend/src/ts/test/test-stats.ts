@@ -1,6 +1,7 @@
 import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
+import { getCurrentInput } from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -178,8 +179,8 @@ export function calculateBurst(endTime: number = performance.now()): number {
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
   wordLength = !containsKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
+    ? getCurrentInput().length
+    : Hangul.disassemble(getCurrentInput()).length;
   if (wordLength === 0) {
     wordLength = !containsKorean
       ? (TestInput.input.getHistoryLast()?.length ?? 0)
@@ -212,7 +213,7 @@ function getInputWords(): string[] {
   let inputWords = [...TestInput.input.getHistory()];
 
   if (TestState.isActive) {
-    inputWords.push(TestInput.input.current);
+    inputWords.push(getCurrentInput());
   }
 
   if (containsKorean) {
@@ -243,7 +244,7 @@ function getTargetWords(): string[] {
   if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen"
-        ? TestInput.input.current
+        ? getCurrentInput()
         : TestWords.words.getCurrentText(),
     );
   }

@@ -547,3 +547,11 @@ export function restart(): void {
 
   resetKeypressTimings();
 }
+
+export function getCurrentInput(): string {
+  return input.current;
+}
+
+export function resetCurrentInput(): void {
+  input.current = "";
+}

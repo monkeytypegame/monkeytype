@@ -15,6 +15,7 @@ import {
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
+import { getCurrentInput } from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -52,16 +53,16 @@ export type FunboxFunctions = {
 };
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
+  const inputCurrentChar = (getCurrentInput() ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrentText()
-    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+    .slice(getCurrentInput().length - 1, getCurrentInput().length);
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
     event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current !== "" ||
+    (getCurrentInput() !== "" ||
       TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
         TestWords.words.getText(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
@@ -452,9 +453,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrentText()
-              .charAt(TestInput.input.current.length),
+            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
           );
         }, 1);
       }

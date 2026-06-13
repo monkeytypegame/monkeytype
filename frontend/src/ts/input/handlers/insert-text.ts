@@ -1,6 +1,7 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
+import { getCurrentInput } from "../../test/test-input";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -86,8 +87,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
-      options.data
+    TestWords.words.getCurrentText()[getCurrentInput().length] !== options.data
   ) {
     // replace the data with the override
     setInputElementValue(
@@ -101,7 +101,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // input and target word
-  const testInput = TestInput.input.current;
+  const testInput = getCurrentInput();
   const currentWord = TestWords.words.getCurrentText();
 
   // if the character is visually equal, replace it with the target character
@@ -215,7 +215,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // capture DOM before goToNextWord clears it for the new word
-  const inputValueAfterEvent = TestInput.input.current;
+  const inputValueAfterEvent = getCurrentInput();
 
   // Log the event BEFORE goToNextWord so readers inside the navigation
   // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
@@ -264,7 +264,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   //this COULD be the next word because we are awaiting goToNextWord
   const nextWord = TestWords.words.getCurrentText();
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
-  const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
+  const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
 
   //code mode - auto insert tabs
   if (

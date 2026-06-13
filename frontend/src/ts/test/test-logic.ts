@@ -50,6 +50,7 @@ import {
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
+import { getCurrentInput, resetCurrentInput } from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -447,7 +448,7 @@ async function init(): Promise<boolean> {
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
   TestInput.input.resetHistory();
-  TestInput.input.current = "";
+  resetCurrentInput();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -1473,7 +1474,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // in case the tests ends with a keypress (not a word submission)
   // we need to push the current input to history
-  if (TestInput.input.current.length !== 0) {
+  if (getCurrentInput().length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.getHistory());
