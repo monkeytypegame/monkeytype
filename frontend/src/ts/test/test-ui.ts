@@ -702,7 +702,7 @@ export function addWord(
   //   // in case word addition took a long time and some input happened in the mean time
   //   // we need to update word letters for that word
   //   const inputHistory = [
-  //     ...TestInput.input.getHistory(),
+  //     ...getInputHistory(),
   //     getCurrentInput(),
   //   ];
   //   const input = inputHistory[wordIndex];
