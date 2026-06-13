@@ -655,7 +655,7 @@ export function getRawHistory(): number[] {
           ? trimmed
           : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
 
-      const count = countChars(trimmed, targetWord, lastWord);
+      const count = countChars(trimmed, targetWord, true);
 
       totalCorrect += count.allCorrect + count.extra + count.incorrect;
     }
