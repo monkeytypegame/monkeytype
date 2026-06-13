@@ -205,6 +205,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     // inputValue is captured from the input element after this event (before goToNextWord clears it).
     inputValue: inputValueAfterEvent,
     commitsWord: shouldGoToNextWord ? true : undefined,
+    lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
 
   // going to next word

@@ -82,7 +82,7 @@ export type InputEvent = EventProps<"input", InputEventData>;
 type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
-  inputValue?: string;
+  inputValue: string;
 };
 
 export type InputEventData =
@@ -95,6 +95,7 @@ export type InputEventData =
       // true when this was a space that advanced to the next word (commit
       // attempt) rather than being inserted as a literal character
       commitsWord?: true;
+      lastWord?: true;
     })
   | (BaseInputEventData & {
       inputType: DeleteInputType;
