@@ -314,6 +314,7 @@ async function _startOld(): Promise<void> {
   logTestEvent("timer", performance.now(), {
     event: "start",
     timer: Time.get(),
+    date: new Date().getTime(),
   });
   (function loop(): void {
     const delay = expected - performance.now();
