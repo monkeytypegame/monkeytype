@@ -114,6 +114,7 @@ import {
   getCurrentTestDurationMs,
   getDateBasedTestDurationMs,
   getInputHistory,
+  getKeypressesPerSecond,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
@@ -949,9 +950,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-
-  //TODO: AFK DETECTION
-  let afkDetected = false;
+  let afkDetected = getKeypressesPerSecond()
+    .slice(-5)
+    .some((kps) => kps === 0);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
