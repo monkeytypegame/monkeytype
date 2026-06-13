@@ -490,7 +490,7 @@ export function getInputHistory(): string[] {
 
   for (const events of eventsPerWordIndex.values()) {
     const simulatedInput = getInputFromDom(events);
-    history.push(simulatedInput.trimEnd());
+    history.push(simulatedInput);
   }
 
   return history;
