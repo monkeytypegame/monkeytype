@@ -139,10 +139,11 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
+      const inputHistory = getInputHistory();
       const words =
         Config.mode === "zen"
-          ? getInputHistory().join("")
-          : TestWords.words.list.slice(0, getInputHistory().length).join(" ");
+          ? inputHistory.join("")
+          : TestWords.words.list.slice(0, inputHistory.length).join(" ");
 
       navigator.clipboard.writeText(words).then(
         () => {
