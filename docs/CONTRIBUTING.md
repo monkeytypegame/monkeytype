@@ -81,7 +81,7 @@ If you want to contribute languages but don't know how, check [LANGUAGES.md](/do
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
 - For quotes not in English, please include translations of quotes in the description of your pull request. This assists in the verification process to ensure the integrity of the quotes.
-- Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
+- Remember to name your pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes (@username)`.
 
 If you want to contribute quotes but don't know how, check [QUOTES.md](/docs/QUOTES.md)
 
