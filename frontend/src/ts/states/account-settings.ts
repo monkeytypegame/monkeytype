@@ -1,5 +1,7 @@
 import { createSignal } from "solid-js";
+import { createEffectOn } from "../hooks/effects";
 import { FaIcon } from "../types/font-awesome";
+import { isAuthenticated } from "./core";
 
 export const [getLastGeneratedApeKey, setLastGeneratedApeKey] = createSignal<
   string | undefined
@@ -17,3 +19,13 @@ export type AccountSettingsTab = keyof typeof accountSettingsTabs;
 
 export const [getCurrentTab, setCurrentTab] =
   createSignal<AccountSettingsTab>("apeKeys");
+
+export const [isApeKeysDenied, setApeKeysDenied] = createSignal<
+  boolean | undefined
+>(undefined);
+
+createEffectOn(isAuthenticated, (hasUser) => {
+  if (!hasUser) {
+    setApeKeysDenied(undefined);
+  }
+});

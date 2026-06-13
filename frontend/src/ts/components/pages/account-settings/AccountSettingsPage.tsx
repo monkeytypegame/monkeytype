@@ -25,7 +25,7 @@ export function AccountSettingsPage() {
   return (
     <div>
       <div class="content-grid flex flex-col gap-8 md:flex-row">
-        <div class="w-full shrink-0 md:w-60 2xl:w-75">
+        <div class="w-full shrink-0 md:w-60">
           <Sidebar />
         </div>
         <div class="flex w-full flex-1 flex-col gap-8">

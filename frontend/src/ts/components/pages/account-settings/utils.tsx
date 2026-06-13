@@ -30,7 +30,7 @@ export function Section(
 
       <div
         classList={{
-          "lg:grid lg:grid-cols-2 lg:items-center gap-2":
+          "lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr] lg:items-center gap-2":
             props.fullWidth !== true,
         }}
       >
