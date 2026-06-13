@@ -50,7 +50,11 @@ import {
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
-import { getCurrentInput, resetCurrentInput } from "./test-input";
+import {
+  getCurrentInput,
+  resetCurrentInput,
+  getInputHistory,
+} from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -991,7 +995,7 @@ function compareCompletedEvents(
       } else {
         if (TestWords.words.list.length <= 25) {
           notMatching.push(
-            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${TestInput.input.getHistory().join("_")}'`,
+            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${getInputHistory().join("_")}'`,
           );
         } else {
           notMatching.push(`charStats (${diffs.join(", ")})`);
@@ -1477,13 +1481,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (getCurrentInput().length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   // in zen mode, ensure the replay words list reflects the typed input history
   // even if the current input was empty at finish (e.g., after submitting a word).
   if (Config.mode === "zen") {
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
@@ -1504,7 +1508,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // logEventsDataToTheConsoleTable();
 
   //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
+  if (TestInput.burstHistory.length !== getInputHistory()?.length) {
     const burst = TestStats.calculateBurst(now);
     TestInput.pushBurstToHistory(burst);
   }
@@ -1721,11 +1725,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      TestInput.input.getHistory().length < TestWords.words.length
+      getInputHistory().length < TestWords.words.length
     ) {
       // They bailed out
 
-      const history = TestInput.input.getHistory();
+      const history = getInputHistory();
       let historyLength = history?.length;
       const wordIndex = historyLength - 1;
 

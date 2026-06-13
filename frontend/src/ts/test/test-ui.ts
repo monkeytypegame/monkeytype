@@ -7,7 +7,7 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import { getCurrentInput } from "./test-input";
+import { getCurrentInput, getInputHistory } from "./test-input";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -697,7 +697,7 @@ export function addWord(
   //   // in case word addition took a long time and some input happened in the mean time
   //   // we need to update word letters for that word
   //   const inputHistory = [
-  //     ...TestInput.input.getHistory(),
+  //     ...getInputHistory(),
   //     getCurrentInput(),
   //   ];
   //   const input = inputHistory[wordIndex];
@@ -1309,7 +1309,7 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistoryLength = TestInput.input.getHistory().length;
+  const inputHistoryLength = getInputHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
@@ -1933,11 +1933,11 @@ export function onTestFinish(): void {
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length)
+      .slice(0, getInputHistory().length)
       .join(" ");
   }
   await copyToClipboard(words);
@@ -1946,7 +1946,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = Object.keys(TestInput.missedWords ?? {}).join(" ");
   }

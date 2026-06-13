@@ -563,3 +563,7 @@ export function resetCurrentInput(): void {
 export function getMissedWords(): MissedWordsType {
   return missedWords;
 }
+
+export function getInputHistory(): string[] {
+  return input.getHistory();
+}

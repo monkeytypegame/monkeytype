@@ -1,7 +1,7 @@
 import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
-import { getCurrentInput } from "./test-input";
+import { getCurrentInput, getInputHistory } from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -54,11 +54,8 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
-    inputHistory: TestInput.input.getHistory(),
+    wordsHistory: TestWords.words.list.slice(0, getInputHistory().length),
+    inputHistory: getInputHistory(),
   };
 
   try {
@@ -210,7 +207,7 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
-  let inputWords = [...TestInput.input.getHistory()];
+  let inputWords = [...getInputHistory()];
 
   if (TestState.isActive) {
     inputWords.push(getCurrentInput());
@@ -236,9 +233,7 @@ function getTargetWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
-    ...(Config.mode === "zen"
-      ? TestInput.input.getHistory()
-      : TestWords.words.list),
+    ...(Config.mode === "zen" ? getInputHistory() : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
