@@ -8,7 +8,6 @@ vi.mock("../../../src/ts/config/store", () => ({
 import {
   findInputValueMismatches,
   getInputFromDom,
-  getInputFromEvents,
   getTestEventCode,
 } from "../../../src/ts/test/events/helpers";
 import type { InputEvent } from "../../../src/ts/test/events/types";
@@ -17,6 +16,7 @@ import type { InsertInputType } from "../../../src/ts/input/helpers/input-type";
 let nextMs = 0;
 let charIndex = 0;
 let wordIndex = 0;
+let currentInput = "";
 
 function insert(
   chars: string,
@@ -25,6 +25,9 @@ function insert(
 ): InputEvent[] {
   return [...chars].map((char) => {
     nextMs += 10;
+    if (!overrides.inputStopped) {
+      currentInput += char;
+    }
     const event: InputEvent = {
       type: "input",
       ms: nextMs,
@@ -35,6 +38,7 @@ function insert(
         inputType,
         data: char,
         correct: true,
+        inputValue: currentInput,
         ...overrides,
       },
     };
@@ -52,6 +56,7 @@ function insert(
 function deleteBackward(count = 1): InputEvent[] {
   return Array.from({ length: count }, () => {
     nextMs += 10;
+    currentInput = currentInput.slice(0, -1);
     const event: InputEvent = {
       type: "input",
       ms: nextMs,
@@ -60,6 +65,7 @@ function deleteBackward(count = 1): InputEvent[] {
         charIndex,
         wordIndex,
         inputType: "deleteContentBackward",
+        inputValue: currentInput,
       },
     };
     if (charIndex > 0) charIndex--;
@@ -70,6 +76,7 @@ function deleteBackward(count = 1): InputEvent[] {
 function deleteWordBackward(): InputEvent {
   nextMs += 10;
   charIndex = 0;
+  currentInput = currentInput.replace(/(?:\S+\s*|\s+)$/, "");
   const event = {
     type: "input",
     ms: nextMs,
@@ -78,6 +85,7 @@ function deleteWordBackward(): InputEvent {
       charIndex,
       wordIndex,
       inputType: "deleteWordBackward",
+      inputValue: currentInput,
     },
   } as const;
   if (wordIndex > 0) wordIndex--;
@@ -89,69 +97,61 @@ function reset(): void {
   nextMs = 0;
   charIndex = 0;
   wordIndex = 0;
+  currentInput = "";
 }
 
-describe("getInputFromEvents", () => {
+describe("getInputFromDom", () => {
   beforeEach(() => {
     reset();
   });
 
-  it("builds string from insertText events", () => {
-    expect(getInputFromEvents([...insert("hello")])).toBe("hello");
+  it("returns the last event's inputValue", () => {
+    expect(getInputFromDom([...insert("hello")])).toBe("hello");
   });
 
-  it("builds string from insertText events with trailing space", () => {
-    expect(getInputFromEvents([...insert("hello ")])).toBe("hello ");
+  it("returns inputValue with trailing space", () => {
+    expect(getInputFromDom([...insert("hello ")])).toBe("hello ");
   });
 
-  it("handles deleteContentBackward", () => {
-    expect(getInputFromEvents([...insert("abc"), ...deleteBackward()])).toBe(
-      "ab",
-    );
+  it("returns inputValue after deleteContentBackward", () => {
+    expect(getInputFromDom([...insert("abc"), ...deleteBackward()])).toBe("ab");
   });
 
-  it("handles deleteContentBackward after space", () => {
-    expect(getInputFromEvents([...insert("abc "), ...deleteBackward()])).toBe(
+  it("returns inputValue after deleteContentBackward across space", () => {
+    expect(getInputFromDom([...insert("abc "), ...deleteBackward()])).toBe(
       "abc",
     );
   });
 
-  it("handles multiple deletes", () => {
-    expect(getInputFromEvents([...insert("ab"), ...deleteBackward(2)])).toBe(
+  it("returns inputValue after multiple deletes", () => {
+    expect(getInputFromDom([...insert("ab"), ...deleteBackward(2)])).toBe("");
+  });
+
+  it("returns inputValue after deleteWordBackward", () => {
+    expect(getInputFromDom([...insert("hello"), deleteWordBackward()])).toBe(
       "",
     );
   });
 
-  it("handles multiple deletes after space", () => {
-    expect(getInputFromEvents([...insert("ab "), ...deleteBackward(2)])).toBe(
-      "a",
-    );
-  });
-
-  it("handles deleteWordBackward", () => {
-    expect(getInputFromEvents([...insert("hello"), deleteWordBackward()])).toBe(
+  it("returns inputValue after deleteWordBackward across trailing space", () => {
+    expect(getInputFromDom([...insert("hello "), deleteWordBackward()])).toBe(
       "",
     );
-  });
-
-  it("handles deleteWordBackward after space", () => {
-    expect(
-      getInputFromEvents([...insert("hello "), deleteWordBackward()]),
-    ).toBe("");
   });
 
   it("returns empty string for no events", () => {
-    expect(getInputFromEvents([])).toBe("");
+    expect(getInputFromDom([])).toBe("");
   });
 
-  it("handles deleteContentBackward on empty string", () => {
-    const events = [...deleteBackward()];
-    expect(getInputFromEvents(events)).toBe("");
+  it("returns empty after deleteContentBackward on empty string", () => {
+    expect(getInputFromDom([...deleteBackward()])).toBe("");
   });
 
-  it("skips inputStopped events", () => {
+  it("inputStopped events keep prior inputValue", () => {
+    // inputStopped events should not advance currentInput in the helper, so
+    // the next character continues from "he"
     expect(
-      getInputFromEvents([
+      getInputFromDom([
         ...insert("he"),
         ...insert("x", "insertText", { inputStopped: true }),
         ...insert("llo"),
@@ -159,27 +159,21 @@ describe("getInputFromEvents", () => {
     ).toBe("hello");
   });
 
-  it("handles deleteContentBackward within the same word correctly", () => {
-    expect(getInputFromEvents([...insert("a a"), deleteWordBackward()])).toBe(
+  it("returns inputValue after deleteWordBackward mid-word", () => {
+    expect(getInputFromDom([...insert("a a"), deleteWordBackward()])).toBe(
       "a ",
     );
   });
 
-  it("handles deleteWordBackward with multiple internal spaces", () => {
+  it("returns inputValue after deleteWordBackward with multiple words", () => {
     expect(
-      getInputFromEvents([...insert("foo bar baz"), deleteWordBackward()]),
+      getInputFromDom([...insert("foo bar baz"), deleteWordBackward()]),
     ).toBe("foo bar ");
   });
 
-  it("handles deleteWordBackward with trailing space after multiple words", () => {
+  it("returns inputValue after consecutive deleteWordBackward events", () => {
     expect(
-      getInputFromEvents([...insert("foo bar "), deleteWordBackward()]),
-    ).toBe("foo ");
-  });
-
-  it("handles consecutive deleteWordBackward events", () => {
-    expect(
-      getInputFromEvents([
+      getInputFromDom([
         ...insert("foo bar baz"),
         deleteWordBackward(),
         deleteWordBackward(),
@@ -187,113 +181,47 @@ describe("getInputFromEvents", () => {
     ).toBe("foo ");
   });
 
-  it("handles deleteWordBackward on empty string", () => {
-    expect(getInputFromEvents([deleteWordBackward()])).toBe("");
-  });
-
-  it("handles deleteWordBackward on only whitespace", () => {
-    expect(getInputFromEvents([...insert("   "), deleteWordBackward()])).toBe(
-      "",
-    );
-  });
-
-  it("ignores recorded inputValue (pure op-based simulation)", () => {
+  it("trims trailing space when last event is incorrect last-word commit", () => {
     const events: InputEvent[] = [
-      ...insert("hello"),
+      ...insert("hi"),
       {
         type: "input",
         ms: 100,
         testMs: 100,
         data: {
-          inputType: "deleteWordBackward",
-          charIndex: 5,
+          inputType: "insertText",
+          data: " ",
+          charIndex: 2,
           wordIndex: 0,
-          inputValue: "RECORDED_BUT_IGNORED",
-        },
-      },
-    ];
-    // pure simulation: deleteWordBackward on "hello" → ""
-    expect(getInputFromEvents(events)).toBe("");
-  });
-});
-
-describe("getInputFromDom", () => {
-  beforeEach(() => {
-    reset();
-  });
-
-  it("falls through to op-based logic when inputValue is absent", () => {
-    expect(getInputFromDom([...insert("hello")])).toBe("hello");
-  });
-
-  it("uses recorded inputValue when present, overriding op-based logic", () => {
-    const events: InputEvent[] = [
-      ...insert("hello"),
-      {
-        type: "input",
-        ms: 100,
-        testMs: 100,
-        data: {
-          inputType: "deleteWordBackward",
-          charIndex: 5,
-          wordIndex: 0,
-          inputValue: "he",
-        },
-      },
-    ];
-    // op-based would yield "", but inputValue is truth
-    expect(getInputFromDom(events)).toBe("he");
-  });
-
-  it("uses latest event's inputValue across multiple recorded events", () => {
-    const events: InputEvent[] = [
-      ...insert("hello"),
-      {
-        type: "input",
-        ms: 100,
-        testMs: 100,
-        data: {
-          inputType: "deleteContentBackward",
-          charIndex: 5,
-          wordIndex: 0,
-          inputValue: "hi",
+          correct: false,
+          inputValue: "hi ",
+          commitsWord: true,
+          lastWord: true,
         },
       },
     ];
     expect(getInputFromDom(events)).toBe("hi");
   });
 
-  it("mixes captured and op-based across events", () => {
+  it("does not trim trailing space when commit is on non-last word", () => {
     const events: InputEvent[] = [
-      ...insert("ab"), // no inputValue, op = "ab"
+      ...insert("hi"),
       {
         type: "input",
         ms: 100,
         testMs: 100,
         data: {
           inputType: "insertText",
-          data: "c",
+          data: " ",
           charIndex: 2,
           wordIndex: 0,
-          correct: true,
-          inputValue: "abc",
-        },
-      },
-      // next event has no inputValue, falls through to op (append "d")
-      {
-        type: "input",
-        ms: 110,
-        testMs: 110,
-        data: {
-          inputType: "insertText",
-          data: "d",
-          charIndex: 3,
-          wordIndex: 0,
-          correct: true,
+          correct: false,
+          inputValue: "hi ",
+          commitsWord: true,
         },
       },
     ];
-    expect(getInputFromDom(events)).toBe("abcd");
+    expect(getInputFromDom(events)).toBe("hi ");
   });
 });
 

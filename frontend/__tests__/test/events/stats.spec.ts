@@ -80,6 +80,8 @@ function keyUp(code: Keycode = "KeyA"): KeyupEventData {
   return { code };
 }
 
+const inputPerWord = new Map<number, string>();
+
 function input(
   overrides: Partial<{
     charIndex: number;
@@ -89,9 +91,23 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
-    isCommitSpace: true;
+    commitsWord: true;
+    inputValue: string;
   }> = {},
 ): InputEventData {
+  const wordIndex = overrides.wordIndex ?? 0;
+  const data = overrides.data ?? "a";
+  const inputStopped = overrides.inputStopped ?? false;
+
+  let inputValue: string;
+  if (overrides.inputValue !== undefined) {
+    inputValue = overrides.inputValue;
+  } else {
+    const prev = inputPerWord.get(wordIndex) ?? "";
+    inputValue = inputStopped ? prev : prev + data;
+    inputPerWord.set(wordIndex, inputValue);
+  }
+
   return {
     charIndex: 0,
     wordIndex: 0,
@@ -100,6 +116,7 @@ function input(
     correct: true,
     isCompositionEnding: false,
     inputStopped: false,
+    inputValue,
     ...overrides,
   } as InputEventData;
 }
@@ -142,6 +159,7 @@ describe("stats.ts", () => {
     (Config as { funbox: string[] }).funbox = [];
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
     TestWords.list.length = 0;
+    inputPerWord.clear();
   });
 
   describe("getTimerBoundaries", () => {
@@ -823,7 +841,7 @@ describe("stats.ts", () => {
           charIndex: 3,
           wordIndex: 0,
           data: " ",
-          isCommitSpace: true,
+          commitsWord: true,
         }),
       );
       // type "w" on second word
