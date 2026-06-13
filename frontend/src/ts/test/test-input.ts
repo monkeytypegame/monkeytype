@@ -559,3 +559,7 @@ export function getInputForWord(wordIndex: number): string | undefined {
 export function resetCurrentInput(): void {
   input.current = "";
 }
+
+export function getMissedWords(): MissedWordsType {
+  return missedWords;
+}
