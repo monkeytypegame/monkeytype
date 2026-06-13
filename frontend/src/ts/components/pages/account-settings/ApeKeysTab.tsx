@@ -1,7 +1,7 @@
 import { ApeKeyNameSchema } from "@monkeytype/schemas/ape-keys";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns";
-import { createMemo } from "solid-js";
+import { createMemo, For } from "solid-js";
 import { z } from "zod";
 
 import {
@@ -44,16 +44,19 @@ export function ApeKeysTab() {
       />
       <AsyncContent collections={{ apeKeyQuery }}>
         {({ apeKeyQueryData }) => (
-          <DataTable
-            id="apeKeys"
-            columns={columns()}
-            data={[...apeKeyQueryData()]}
-            fallback={
-              <div class="text-center text-sub">
-                You don&lsquo;t have any ape keys yet.
-              </div>
-            }
-          />
+          <>
+            <DataTable
+              id="apeKeys"
+              columns={columns()}
+              data={apeKeyQueryData()}
+              fallback={
+                <div class="text-center text-sub">
+                  You don&lsquo;t have any ape keys yet.
+                </div>
+              }
+            />
+            <For each={apeKeyQueryData()}>{(it) => <p>test {it.name}</p>}</For>
+          </>
         )}
       </AsyncContent>
     </>
