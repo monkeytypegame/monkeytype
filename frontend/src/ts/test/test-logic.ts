@@ -2028,6 +2028,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
 window.addEventListener("focus", () => {
   if (
     !TestState.isActive &&
+    !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     restart({
@@ -2041,6 +2042,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
   if (
     !TestState.isActive &&
+    !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     restart({
