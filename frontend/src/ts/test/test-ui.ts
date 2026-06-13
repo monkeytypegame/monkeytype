@@ -1314,7 +1314,7 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistory = getInputHistory();
+  const inputHistory = getInputHistory().map((i) => i.trimEnd());
   const burstHistory = getBurstHistory();
   const correctedHistory = getCorrectedWords();
   const inputHistoryLength = inputHistory.length;
@@ -1942,7 +1942,7 @@ export function onTestFinish(): void {
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join(" ");
+    words = getInputHistory().join("");
   } else {
     words = TestWords.words
       .getText()
@@ -1955,7 +1955,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join(" ");
+    words = getInputHistory().join("");
   } else {
     words = Object.keys(getMissedWords()).join(" ");
   }
