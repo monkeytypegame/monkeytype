@@ -14,8 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
-import { getCurrentInput } from "../test-input";
+import { getCurrentInput, getInputForWord } from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -53,17 +52,18 @@ export type FunboxFunctions = {
 };
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const inputCurrentChar = (getCurrentInput() ?? "").slice(-1);
+  const currentInput = getCurrentInput();
+  const inputCurrentChar = (currentInput ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrentText()
-    .slice(getCurrentInput().length - 1, getCurrentInput().length);
+    .slice(currentInput.length - 1, currentInput.length);
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
     event.key === "Backspace" &&
     !isCorrect &&
-    (getCurrentInput() !== "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
+    (currentInput !== "" ||
+      getInputForWord(TestState.activeWordIndex - 1) !==
         TestWords.words.getText(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {

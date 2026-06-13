@@ -7,7 +7,11 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import { getCurrentInput, getInputHistory } from "./test-input";
+import {
+  getCurrentInput,
+  getInputHistory,
+  getInputForWord,
+} from "./test-input";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -1311,7 +1315,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
   const inputHistoryLength = getInputHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
-    const input = TestInput.input.getHistory(i);
+    const input = getInputForWord(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
