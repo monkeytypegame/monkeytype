@@ -138,7 +138,6 @@ const authenticationMemos = Object.fromEntries(
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
 
-      console.log("### updated auth memo", authMethod, result);
       return result;
     });
     return [authMethod, memo];
