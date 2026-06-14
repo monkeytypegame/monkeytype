@@ -11,7 +11,7 @@ import { Button } from "../../common/Button";
 import { FaProps } from "../../common/Fa";
 import { H3 } from "../../common/Headers";
 
-type Props = {
+export type SettingProps = {
   title: string;
   fa: FaProps;
   description: string | JSXElement;
@@ -43,7 +43,7 @@ type Props = {
       }
   );
 
-export function Setting(props: Props): JSXElement {
+export function Setting(props: SettingProps): JSXElement {
   const breakpoints = () => props.breakpoints ?? "normal";
   return (
     <div
@@ -66,18 +66,18 @@ export function Setting(props: Props): JSXElement {
         fallback={props.disabledText}
       >
         <div
-          classList={{
-            "grid grid-cols-1 gap-2 md:grid-cols-[1fr_1fr] md:gap-x-8 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[2fr_1fr]":
-              breakpoints() === "normal",
+          class={cn(
+            "grid grid-cols-1 gap-2",
+            breakpoints() === "normal" &&
+              "md:grid-cols-[1fr_1fr] md:gap-x-8 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[2fr_1fr]",
 
-            "lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr] md:gap-x-8":
-              breakpoints() === "narrow",
+            breakpoints() === "narrow" &&
+              "lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr] md:gap-x-8",
 
-            "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1":
-              props.inputs === undefined && breakpoints() === "normal",
-
-            "flex flex-col gap-2": breakpoints() === "none",
-          }}
+            props.inputs === undefined &&
+              breakpoints() === "normal" &&
+              "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
+          )}
         >
           <Show when={props.description !== ""}>
             <div class="">{props.description}</div>

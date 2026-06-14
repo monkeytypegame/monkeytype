@@ -36,7 +36,7 @@ function DiscordNotConnected() {
     <Section
       title="discord integration"
       fa={{ variant: "brand", icon: "fa-discord" }}
-      text=<>
+      description=<>
         When you connect your monkeytype account to your Discord account, you
         will be automatically assigned a new role every time you achieve a new
         personal best in a 60 second test. If you link your accounts before
@@ -67,6 +67,7 @@ function DiscordConnected() {
     <Section
       title="discord integration"
       fa={{ variant: "brand", icon: "fa-discord" }}
+      description=<>t.b.d</>
     />
   );
 }
@@ -76,7 +77,7 @@ function UpdateAccountName() {
     <Section
       title="update account name"
       fa={{ icon: "fa-user" }}
-      text=<>
+      description=<>
         Change the name of your account.{" "}
         <span class="text-error">You can only do this once every 30 days.</span>
       </>
@@ -93,7 +94,7 @@ function UpdateStreakOffset() {
     <Section
       title="set streak hour offset"
       fa={{ icon: "fa-clock" }}
-      text=<>
+      description=<>
         Streaks reset at midnight UTC by default. If this is not convenient for
         you (for example if it means that streaks reset in the middle of the
         day), you can change the hour offset here.{" "}
@@ -119,7 +120,7 @@ function OptOutLeaderboard() {
     <Section
       title="opt out of leaderboards"
       fa={{ icon: "fa-crown" }}
-      text=<>
+      description=<>
         Use this if you frequently trigger the anticheat (for example if using
         stenography) to opt out of leaderboards.{" "}
         <span class="text-error">You can&apos;t undo this action!</span>
@@ -142,7 +143,7 @@ function ResetPersonalBests() {
     <Section
       title="reset personal bests"
       fa={{ icon: "fa-crown" }}
-      text=<>
+      description=<>
         Resets all your personal bests (but doesn&apos;t delete any tests from
         your history). <span class="text-error">You can&apos;t undo this!</span>
       </>

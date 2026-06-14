@@ -18,7 +18,7 @@ function ResetAccount() {
     <Section
       title="reset account"
       fa={{ icon: "fa-redo-alt" }}
-      text=<>
+      description=<>
         Completely resets your account to a blank state.
         <br />
         <span class="text-error">You can&apos;t undo this action!</span>
@@ -38,7 +38,7 @@ function DeleteAccount() {
     <Section
       title="delete account"
       fa={{ icon: "fa-trash" }}
-      text=<>
+      description=<>
         Deletes your account and all data connected to it.
         <br />
         <span class="text-error">You can&apos;t undo this action!</span>

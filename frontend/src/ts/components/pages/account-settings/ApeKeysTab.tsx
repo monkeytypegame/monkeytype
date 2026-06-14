@@ -30,7 +30,7 @@ export function ApeKeysTab() {
       <Section
         title="ape keys"
         fa={{ icon: "fa-key" }}
-        text=<>
+        description=<>
           Generate Ape Keys to access certain API endpoints (
           <Button
             text="documentation"
