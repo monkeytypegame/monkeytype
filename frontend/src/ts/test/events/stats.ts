@@ -5,7 +5,7 @@ import {
   logTestEvent,
 } from "./data";
 import * as TestWords from "../../test/test-words";
-import { CharCounts, countChars, getLastChar } from "../../utils/strings";
+import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
@@ -245,7 +245,11 @@ function getTargetWord(
   } else {
     const word = TestWords.words.getText(wordIndex);
 
-    if (getLastChar(word) === "\n") {
+    if (word === undefined) {
+      return "";
+    }
+
+    if (word.endsWith("\n")) {
       // for multiline, dont add space
       return word;
     }
