@@ -1,38 +1,77 @@
+import { PasswordSchema } from "@monkeytype/schemas/users";
 import { tryCatch } from "@monkeytype/util/trycatch";
+import { FirebaseError } from "firebase/app";
 import {
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  updateProfile,
-  linkWithPopup,
-  User as UserType,
   AuthProvider,
+  EmailAuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  linkWithPopup,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  unlink,
+  updateProfile,
+  User,
+  User as UserType,
 } from "firebase/auth";
+import { z, ZodString } from "zod";
 
 import Ape from "./ape";
-import { showRegisterCaptchaModal } from "./components/modals/RegisterCaptchaModal";
-import { updateFromServer as updateConfigFromServer } from "./config";
+import { waitForPresetsReady } from "./collections/presets";
+import { waitForTagsReady } from "./collections/tags";
+import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import * as DB from "./db";
+import { authEvent } from "./events/auth";
 import {
-  isAuthAvailable,
-  getAuthenticatedUser,
-  isAuthenticated,
   signOut as authSignOut,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  getAuthenticatedUser,
+  isAuthAvailable,
   resetIgnoreAuthCallback,
+  signInWithEmailAndPassword,
+  signInWithPopup,
 } from "./firebase";
-import { showPopup } from "./modals/simple-modals-base";
-import * as AuthEvent from "./observables/auth-event";
 import * as Sentry from "./sentry";
-import { showLoaderBar, hideLoaderBar } from "./signals/loader-bar";
-import { addBanner } from "./stores/banners";
+import { isAuthenticated, setUserId } from "./states/core";
+import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
-} from "./stores/notifications";
+} from "./states/notifications";
+import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
+import { typedKeys } from "./utils/misc";
+import { SnapshotInitError } from "./utils/snapshot-init-error";
+import { OneOf } from "./utils/types";
+
+type AuthMethodInfo = {
+  display: string;
+} & OneOf<{
+  provider: AuthProvider;
+  providerId: string;
+}>;
+
+/**
+ * auth methods, keep order from most to least preferred.
+ * This is used for reauthenticate
+ */
+const authMethods = {
+  password: {
+    display: "Password",
+    providerId: "password",
+  },
+  github: {
+    display: "GitHub",
+    provider: new GithubAuthProvider(),
+  },
+  google: {
+    display: "Google",
+    provider: new GoogleAuthProvider(),
+  },
+} as const satisfies Record<string, AuthMethodInfo>;
+
+export type AuthMethod = keyof typeof authMethods;
 
 export type AuthResult =
   | {
@@ -43,8 +82,21 @@ export type AuthResult =
       message: string;
     };
 
-export const gmailProvider = new GoogleAuthProvider();
-export const githubProvider = new GithubAuthProvider();
+type ReauthSuccess = {
+  status: "success";
+  message: string;
+  user: User;
+};
+
+type ReauthFailed = {
+  status: "error" | "notice";
+  message: string;
+};
+
+type ReauthenticateOptions = {
+  excludeMethod?: AuthMethod;
+  password?: string;
+};
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
@@ -67,6 +119,9 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     const snapshot = await DB.initSnapshot();
+    //TODO: preload collections for now, remove when __nonReactive is removed from collections
+    await waitForPresetsReady();
+    await waitForTagsReady();
 
     if (snapshot === false) {
       throw new Error(
@@ -75,34 +130,12 @@ async function getDataAndInit(): Promise<boolean> {
     }
 
     void Sentry.setUser(snapshot.uid, snapshot.name);
-    if (snapshot.needsToChangeName) {
-      addBanner({
-        level: "error",
-        icon: "fas fa-exclamation-triangle",
-        customContent: (
-          <>
-            You need to update your account name.{" "}
-            <button
-              type="button"
-              class="px-2 py-1"
-              onClick={() => {
-                showPopup("updateName");
-              }}
-            >
-              Click here
-            </button>{" "}
-            to change it and learn more about why.
-          </>
-        ),
-        important: true,
-      });
-    }
 
     await updateConfigFromServer();
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof DB.SnapshotInitError) {
+    if (error instanceof SnapshotInitError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -118,7 +151,7 @@ async function getDataAndInit(): Promise<boolean> {
         );
       }
 
-      showErrorNotification("Failed to get user data: " + error.message);
+      showErrorNotification(`Failed to get user data: ${error.message}`);
     } else {
       showErrorNotification("Failed to get user data", { error });
     }
@@ -131,7 +164,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  AuthEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
@@ -145,8 +178,10 @@ export async function onAuthStateChanged(
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     if (user) {
+      setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
+      setUserId(null);
       DB.setSnapshot(undefined);
     }
   }
@@ -155,7 +190,7 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
-  AuthEvent.dispatch({
+  authEvent.dispatch({
     type: "authStateChanged",
     data: { isUserSignedIn: user !== null, loadPromise: userPromise },
   });
@@ -180,15 +215,25 @@ export async function signIn(
   return { success: true };
 }
 
-async function signInWithProvider(
-  provider: AuthProvider,
-  rememberMe: boolean,
+export async function signInWithProvider(
+  authMethod: AuthMethod,
+  options: { rememberMe: boolean },
 ): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
 
-  const { error } = await tryCatch(signInWithPopup(provider, rememberMe));
+  const provider = getAuthProvider(authMethod);
+  if (provider === undefined) {
+    return {
+      success: false,
+      message: `Authentication ${authMethod} is missing a provider`,
+    };
+  }
+
+  const { error } = await tryCatch(
+    signInWithPopup(provider, options.rememberMe),
+  );
 
   if (error !== null) {
     return { success: false, message: error.message };
@@ -196,34 +241,18 @@ async function signInWithProvider(
   return { success: true };
 }
 
-export async function signInWithGoogle(
-  rememberMe: boolean,
-): Promise<AuthResult> {
-  return signInWithProvider(gmailProvider, rememberMe);
-}
-
-export async function signInWithGitHub(
-  rememberMe: boolean,
-): Promise<AuthResult> {
-  return signInWithProvider(githubProvider, rememberMe);
-}
-
-export async function addGoogleAuth(): Promise<void> {
-  return addAuthProvider("Google", gmailProvider);
-}
-
-export async function addGithubAuth(): Promise<void> {
-  return addAuthProvider("GitHub", githubProvider);
-}
-
-async function addAuthProvider(
-  providerName: string,
-  provider: AuthProvider,
-): Promise<void> {
+export async function addAuthProvider(authMethod: AuthMethod): Promise<void> {
   if (!isAuthAvailable()) {
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
+  const provider = getAuthProvider(authMethod);
+  if (provider === undefined) {
+    showErrorNotification(`Authentication ${authMethod} is missing a provider`);
+    return;
+  }
+  const providerName = getAuthMethodDisplay(authMethod);
+
   showLoaderBar();
   const user = getAuthenticatedUser();
   if (!user) return;
@@ -231,13 +260,48 @@ async function addAuthProvider(
     await linkWithPopup(user, provider);
     hideLoaderBar();
     showSuccessNotification(`${providerName} authentication added`);
-    AuthEvent.dispatch({ type: "authConfigUpdated" });
+    authEvent.dispatch({ type: "authConfigUpdated" });
   } catch (error) {
     hideLoaderBar();
     showErrorNotification(`Failed to add ${providerName} authentication`, {
       error,
     });
   }
+}
+
+export async function removeAuthProvider(
+  authMethod: AuthMethod,
+  options?: { password?: string },
+): Promise<ReauthSuccess | ReauthFailed> {
+  const reauth = await reauthenticate({
+    password: options?.password,
+    excludeMethod: authMethod,
+  });
+  if (reauth.status !== "success") {
+    return {
+      status: reauth.status,
+      message: reauth.message,
+    };
+  }
+  try {
+    await unlink(reauth.user, getProviderId(authMethod));
+  } catch (e) {
+    const message = createErrorMessage(
+      e,
+      authMethod === "password"
+        ? "Failed to remove password authentication"
+        : `Failed to unlink ${getAuthMethodDisplay(authMethod)} account`,
+    );
+    return {
+      status: "error",
+      message,
+    };
+  }
+  return {
+    status: "success",
+    message: `${getAuthMethodDisplay(authMethod)} authentication removed`,
+    user: reauth.user,
+  };
 }
 
 export function signOut(): void {
@@ -253,13 +317,10 @@ export async function signUp(
   name: string,
   email: string,
   password: string,
+  captchaToken: string,
 ): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
-  }
-  const captchaToken = await showRegisterCaptchaModal();
-  if (captchaToken === undefined || captchaToken === "") {
-    return { success: false, message: "Please complete the captcha" };
   }
 
   try {
@@ -303,4 +364,138 @@ export async function signUp(
     signOut();
     return { success: false, message };
   }
+}
+
+export function getAuthProvider(
+  authMethod: AuthMethod,
+): AuthProvider | undefined {
+  const info = authMethods[authMethod] as AuthMethodInfo;
+  return info.provider;
+}
+
+export async function reauthenticate(
+  options: ReauthenticateOptions,
+): Promise<ReauthSuccess | ReauthFailed> {
+  if (!isAuthAvailable()) {
+    return {
+      status: "error",
+      message: "Authentication is not initialized",
+    };
+  }
+
+  const user = getAuthenticatedUser();
+  if (user === null) {
+    return {
+      status: "error",
+      message: "User is not signed in",
+    };
+  }
+
+  const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
+
+  try {
+    if (authMethod === undefined) {
+      return {
+        status: "error",
+        message:
+          "Failed to reauthenticate: there is no valid authentication present on the account.",
+      };
+    }
+
+    if (authMethod === "password") {
+      if (options.password === undefined) {
+        return {
+          status: "error",
+          message: "Failed to reauthenticate using password: password missing.",
+        };
+      }
+      const credential = EmailAuthProvider.credential(
+        user.email as string,
+        options.password,
+      );
+      await reauthenticateWithCredential(user, credential);
+    } else {
+      const provider = getAuthProvider(authMethod);
+      if (provider === undefined) {
+        return {
+          status: "error",
+          message: `Authentication ${authMethod} is missing a provider`,
+        };
+      }
+      await reauthenticateWithPopup(user, provider);
+    }
+
+    return {
+      status: "success",
+      message: "Reauthenticated",
+      user,
+    };
+  } catch (e) {
+    const typedError = e as FirebaseError;
+    if (typedError.code === "auth/wrong-password") {
+      return {
+        status: "notice",
+        message: "Incorrect password",
+      };
+    } else if (typedError.code === "auth/invalid-credential") {
+      return {
+        status: "notice",
+        message:
+          "Password is incorrect or your account does not have password authentication enabled.",
+      };
+    } else {
+      return {
+        status: "error",
+        message: `Failed to reauthenticate: ${
+          typedError?.message ?? JSON.stringify(e)
+        }`,
+      };
+    }
+  }
+}
+
+function getPreferredAuthenticationMethod(
+  exclude?: AuthMethod,
+): AuthMethod | undefined {
+  const filteredMethods = typedKeys(authMethods).filter((it) => it !== exclude);
+  for (const method of filteredMethods) {
+    if (isUsingAuthentication(method)) return method;
+  }
+  return undefined;
+}
+
+function isUsingAuthentication(authMethod: AuthMethod): boolean {
+  const providerId = getProviderId(authMethod);
+  return (
+    getAuthenticatedUser()?.providerData.some(
+      (p) => p.providerId === providerId,
+    ) ?? false
+  );
+}
+
+export function getPasswordSchema(): ZodString {
+  return isDevEnvironment() ? z.string().min(6) : PasswordSchema;
+}
+
+export function isUsingPasswordAuthentication(): boolean {
+  return isUsingAuthentication("password");
+}
+
+export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
+  return typedKeys(authMethods).some(
+    (it) => it !== authMethod && isUsingAuthentication(it),
+  );
+}
+
+export function getAuthMethodDisplay(authMethod: AuthMethod): string {
+  return authMethods[authMethod].display;
+}
+
+function getProviderId(authMethod: AuthMethod): string {
+  const info = authMethods[authMethod];
+
+  if ("provider" in info) {
+    return info.provider.providerId;
+  }
+  return info.providerId;
 }

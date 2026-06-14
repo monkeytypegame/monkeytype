@@ -21,6 +21,7 @@ import {
   GetResultsResponse,
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
+  ReportCompletedEventMismatchRequest,
 } from "@monkeytype/contracts/results";
 import { MonkeyRequest } from "../types";
 
@@ -141,6 +142,48 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
+}
+
+export async function reportCompletedEventMismatch(
+  req: MonkeyRequest<undefined, ReportCompletedEventMismatchRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    notMatching,
+    mismatchedKeys,
+    groupKey,
+    language,
+    mode,
+    mode2,
+    difficulty,
+    duration,
+    funboxes,
+    version,
+    data,
+  } = req.body;
+  // Logger.warning(
+  //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
+  // );
+  // Logger.warning(`Old CE: ${JSON.stringify(ce)}`);
+  // Logger.warning(`New CE: ${JSON.stringify(ce2)}`);
+  void addLog(
+    "completed_event_mismatch",
+    {
+      notMatching,
+      mismatchedKeys,
+      groupKey,
+      language,
+      mode,
+      mode2,
+      difficulty,
+      duration,
+      funboxes,
+      version,
+      data,
+    },
+    uid,
+  );
+  return new MonkeyResponse("Mismatch reported", null);
 }
 
 export async function addResult(
@@ -553,6 +596,18 @@ export async function addResult(
   //     streak,
   //   );
 
+  // if (isNaN(xpGained.xp)) {
+  //   throw new MonkeyError(
+  //     500,
+  //     "Calculated XP is NaN",
+  //     JSON.stringify({
+  //       xpGained,
+  //       result: completedEvent,
+  //     }),
+  //     uid,
+  //   );
+  // }
+
   //   if (xpGained.xp < 0) {
   //     throw new MonkeyError(
   //       500,
@@ -604,16 +659,16 @@ export async function addResult(
   //   await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
   //   if (isPb) {
-  //     void addLog(
-  //       "user_new_pb",
-  //       `${completedEvent.mode + " " + completedEvent.mode2} ${
-  //         completedEvent.wpm
-  //       } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
-  //         completedEvent.consistency
-  //       }% (${addedResult.insertedId})`,
-  //       uid,
-  //     );
-  //   }
+  //   void addLog(
+  //     "user_new_pb",
+  //     `${completedEvent.mode  } ${  completedEvent.mode2}`2}`} ${
+  //       completedEvent.wpm
+  //     } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
+  //       completedEvent.consistency
+  //     }% (${addedResult.insertedId})`,
+  //     uid,
+  //   );
+  // }
 
   //   const data: PostResultResponse = {
   //     isPb,
@@ -782,13 +837,13 @@ export async function addResult(
   //   const totalXp =
   //     Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
 
-  //   if (gainMultiplier > 1) {
-  //     // breakdown.push([
-  //     //   "configMultiplier",
-  //     //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
-  //     // ]);
-  //     breakdown.configMultiplier = gainMultiplier;
-  //   }
+  // if (gainMultiplier !== 1) {
+  //   // breakdown.push([
+  //   //   "configMultiplier",
+  //   //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
+  //   // ]);
+  //   breakdown.configMultiplier = gainMultiplier;
+  // }
 
   //   const isAwardingDailyBonus = dailyBonus > 0;
 

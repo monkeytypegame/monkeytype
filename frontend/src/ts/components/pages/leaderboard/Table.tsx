@@ -5,19 +5,17 @@ import {
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { Accessor, createMemo, JSXElement } from "solid-js";
+import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
-import { isFriend } from "../../../db";
+import { hasConnection } from "../../../collections/connections";
 import { createEffectOn } from "../../../hooks/effects";
-import { bp, BreakpointKey } from "../../../signals/breakpoints";
-import { getConfig } from "../../../signals/config";
-import { getUserId } from "../../../signals/core";
+import { bp, BreakpointKey } from "../../../states/breakpoints";
+import { getFormatting, getUserId } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { qs } from "../../../utils/dom";
 import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
-import { Conditional } from "../../common/Conditional";
 import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
@@ -68,14 +66,14 @@ export function Table(
           },
   }));
 
-  const speedColumns = createMemo(() =>
-    getSpeedColumns({
+  const speedColumns = createMemo(() => {
+    return getSpeedColumns({
       friendsOnly: props.friendsOnly,
-      format: new Formatting(getConfig),
+      format: getFormatting(),
       userOverride: props.userOverride,
       addHeader: props.userOverride !== undefined && bp().xl,
-    }),
-  );
+    });
+  });
   const xpColumns = createMemo(() =>
     getXpColumns({
       friendsOnly: props.friendsOnly,
@@ -99,19 +97,9 @@ export function Table(
   );
 
   return (
-    <Conditional
-      if={props.type === "speed"}
-      then={
-        <DataTable
-          {...commonProps()}
-          columns={speedColumns()}
-          data={props.entries as LeaderboardEntry[]}
-          noDataRow={{
-            content: <NoEntriesFound />,
-          }}
-        />
-      }
-      else={
+    <Show
+      when={props.type === "speed"}
+      fallback={
         <DataTable
           {...commonProps()}
           columns={xpColumns()}
@@ -121,7 +109,16 @@ export function Table(
           }}
         />
       }
-    />
+    >
+      <DataTable
+        {...commonProps()}
+        columns={speedColumns()}
+        data={props.entries as LeaderboardEntry[]}
+        noDataRow={{
+          content: <NoEntriesFound />,
+        }}
+      />
+    </Show>
   );
 }
 
@@ -175,7 +172,7 @@ const userColumn = ({
           avatarColor="sub"
           flagsColor="sub"
           user={info.row.original}
-          isFriend={isFriend(info.row.original.uid)}
+          isFriend={hasConnection(info.row.original.uid, "accepted")}
           class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
           linkToProfile={true}
         />

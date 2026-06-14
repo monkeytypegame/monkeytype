@@ -1,6 +1,6 @@
 import { For, JSXElement, Show } from "solid-js";
 
-import { AlertPsa, getPsas } from "../../../stores/psas";
+import { AlertPsa, getPsas } from "../../../states/psas";
 import { cn } from "../../../utils/cn";
 import { H3 } from "../../common/Headers";
 import { AlertsSection } from "./AlertsSection";

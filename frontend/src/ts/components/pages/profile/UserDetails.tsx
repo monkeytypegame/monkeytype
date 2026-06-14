@@ -4,28 +4,24 @@ import {
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
 import {
-  getCurrentDayTimestamp,
   isToday as dateIsToday,
   isYesterday as dateIsYesterday,
+  getCurrentDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import { createEffect, createSignal, For, JSXElement, Show } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 
+import { addConnection, hasConnection } from "../../../collections/connections";
 import { Snapshot } from "../../../constants/default-snapshot";
-import { isFriend } from "../../../db";
-import * as EditProfileModal from "../../../modals/edit-profile";
 import * as UserReportModal from "../../../modals/user-report";
-import { addFriend } from "../../../pages/friends";
-import { bp } from "../../../signals/breakpoints";
-import { getUserId, isLoggedIn } from "../../../signals/core";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-} from "../../../stores/notifications";
-import { getLastResult, getSnapshot } from "../../../stores/snapshot";
+import { bp } from "../../../states/breakpoints";
+import { getUserId, isAuthenticated } from "../../../states/core";
+import { showModal } from "../../../states/modals";
+import { showNoticeNotification } from "../../../states/notifications";
+import { getLastResult } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -34,10 +30,10 @@ import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
-import { Conditional } from "../../common/Conditional";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { EditProfile } from "../../modals/EditProfileModal";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
@@ -100,6 +96,9 @@ export function UserDetails(props: {
           isAccountPage={props.isAccountPage}
         />
       </div>
+      <Show when={props.isAccountPage === true}>
+        <EditProfile />
+      </Show>
     </div>
   );
 }
@@ -112,71 +111,20 @@ function ActionButtons(props: {
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
 
-  const [hasFriendRequest, setHasFriendRequest] = createSignal(false);
   const showFriendsButton = () =>
-    isLoggedIn() && !isUsersProfile() && !hasFriendRequest();
-
-  createEffect(() => {
-    setHasFriendRequest(
-      !isUsersProfile() &&
-        getSnapshot()?.connections[props.profile.uid ?? ""] !== undefined,
-    );
-  });
+    isAuthenticated() && !isUsersProfile() && !hasConnection(props.profile.uid);
 
   const handleAddFriend = () => {
-    const friendName = props.profile.name;
-    void addFriend(friendName).then((result) => {
-      if (result === true) {
-        showNoticeNotification(`Request sent to ${friendName}`);
-        setHasFriendRequest(true);
-      } else {
-        showErrorNotification(result);
-      }
+    void addConnection({
+      receiverName: props.profile.name,
+      receiverUid: props.profile.uid,
     });
   };
 
   return (
-    <Conditional
-      if={props.isAccountPage === true}
-      then={
-        <>
-          <Button
-            balloon={{ text: "Edit profile", position: "left" }}
-            class="h-full rounded-none rounded-tr text-sub hover:text-bg"
-            fa={{ icon: "fa-pen", fixedWidth: true }}
-            onClick={() => {
-              if (props.profile.banned === true) {
-                showNoticeNotification(
-                  "Banned users cannot edit their profile",
-                );
-                return;
-              }
-              EditProfileModal.show();
-            }}
-          />
-          <Button
-            balloon={{ text: "Copy public link", position: "left" }}
-            class="h-full rounded-none rounded-br text-sub hover:text-bg"
-            fa={{ icon: "fa-link", fixedWidth: true }}
-            onClick={() => {
-              const url = `${location.origin}/profile/${props.profile.name}`;
-
-              navigator.clipboard.writeText(url).then(
-                function () {
-                  showNoticeNotification("URL Copied to clipboard");
-                },
-                function () {
-                  alert(
-                    "Failed to copy using the Clipboard API. Here's the link: " +
-                      url,
-                  );
-                },
-              );
-            }}
-          />
-        </>
-      }
-      else={
+    <Show
+      when={props.isAccountPage === true}
+      fallback={
         <>
           <Show when={!isUsersProfile()}>
             <Button
@@ -207,7 +155,41 @@ function ActionButtons(props: {
           </Show>
         </>
       }
-    />
+    >
+      <Button
+        balloon={{ text: "Edit profile", position: "left" }}
+        class="h-full rounded-none rounded-tr text-sub hover:text-bg"
+        fa={{ icon: "fa-pen", fixedWidth: true }}
+        onClick={() => {
+          if (props.profile.banned === true) {
+            showNoticeNotification("Banned users cannot edit their profile");
+            return;
+          }
+          showModal("EditProfile");
+        }}
+      />
+      <Button
+        balloon={{ text: "Copy public link", position: "left" }}
+        class="h-full rounded-none rounded-br text-sub hover:text-bg"
+        fa={{ icon: "fa-link", fixedWidth: true }}
+        onClick={() => {
+          const url = `${location.origin}/profile/${props.profile.name}`;
+
+          navigator.clipboard.writeText(url).then(
+            function () {
+              showNoticeNotification("URL Copied to clipboard");
+            },
+            function () {
+              alert(
+                `Failed to copy using the Clipboard API. Here's the link: ${
+                  url
+                }`,
+              );
+            },
+          );
+        }}
+      />
+    </Show>
   );
 }
 
@@ -293,7 +275,7 @@ function AvatarAndName(props: {
           <div class="flex flex-row gap-1 pl-1 text-sub">
             <UserFlags
               {...props.profile}
-              isFriend={isFriend(props.profile.uid)}
+              isFriend={hasConnection(props.profile.uid, "accepted")}
             />
           </div>
         </AutoShrink>
@@ -305,9 +287,11 @@ function AvatarAndName(props: {
               length: balloonPosition() === "up" ? "medium" : undefined,
             }}
             class="w-max"
-            hideTextOnSmallScreens={false}
+            hideTextOnWidth={false}
           />
-          <Show when={(props.profile.inventory?.badges?.length ?? 0) > 1}>
+          <Show
+            when={props.profile.inventory?.badges.some((it) => !it.selected)}
+          >
             <div class="flex flex-row gap-1">
               <For
                 each={props.profile.inventory?.badges
@@ -359,17 +343,16 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     <div class="col-span-2 flex w-full items-center gap-2">
       <Balloon
         class="shrink-0 text-text"
-        text={formatXp(props.xp ?? 0) + " total xp"}
+        text={`${formatXp(props.xp ?? 0)} total xp`}
       >
         {xpDetails().level}
       </Balloon>
       <Bar percent={bar()} fill="main" bg="bg" showPercentageOnHover />
       <Balloon
         class="shrink-0 text-xs"
-        text={
-          formatXp(xpDetails().levelMaxXp - xpDetails().levelCurrentXp) +
-          " xp until next level"
-        }
+        text={`${formatXp(
+          xpDetails().levelMaxXp - xpDetails().levelCurrentXp,
+        )} xp until next level`}
       >
         {formatXp(xpDetails().levelCurrentXp)}/
         {formatXp(xpDetails().levelMaxXp)}{" "}

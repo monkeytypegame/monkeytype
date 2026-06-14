@@ -116,8 +116,7 @@
             }
           }
         }
-        &[data-tab="apeKeys"],
-        &[data-tab="blockedUsers"] {
+        &[data-tab="apeKeys"] {
           table {
             width: 100%;
             border-spacing: 0;
@@ -141,7 +140,6 @@
               td {
                 padding: 0.5rem;
                 background: var(--bg-color);
-                position: -webkit-sticky;
                 position: sticky;
                 top: 0;
                 z-index: 99;
@@ -159,7 +157,6 @@
             tfoot {
               td {
                 padding: 1rem 0.5rem;
-                position: -webkit-sticky;
                 position: sticky;
                 bottom: -5px;
                 background: var(--bg-color);
@@ -186,15 +183,6 @@
         &[data-tab="apeKeys"] {
           tr td:first-child {
             text-align: center;
-          }
-        }
-        &[data-tab="blockedUsers"] {
-          tr td:first-child a {
-            text-decoration: none;
-            color: var(--text-color);
-          }
-          tr td:last-child {
-            text-align: right;
           }
         }
       }

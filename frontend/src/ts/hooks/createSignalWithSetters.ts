@@ -55,7 +55,7 @@ export function createSignalWithSetters<T>(defaultValue: T) {
   return function <S extends SettersMap<T>>(
     setters: S,
   ): [() => T, MappedSetters<T, S>] {
-    const [get, _set] = createSignal<T>(defaultValue);
+    const [get, _set] = createSignal(defaultValue);
     const mapped = Object.fromEntries(
       Object.entries(setters).map(([key, setter]) => [
         key,

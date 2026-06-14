@@ -1,5 +1,5 @@
-import Config from "../../config";
-import * as TestInput from "../../test/test-input";
+import { Config } from "../../config/store";
+import { getCurrentInput } from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
@@ -8,7 +8,8 @@ import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { shouldInsertSpaceCharacter } from "../helpers/validation";
-import * as SlowTimer from "../../states/slow-timer";
+import * as SlowTimer from "../../legacy-states/slow-timer";
+import { wordsHaveNewline } from "../../states/test";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -24,7 +25,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (TestUI.resultCalculating) {
+  if (TestState.resultCalculating) {
     return true;
   }
 
@@ -33,7 +34,7 @@ export function onBeforeInsertText(data: string): boolean {
   const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
     data,
     inputValue,
-    targetWord: TestWords.words.getCurrent(),
+    targetWord: TestWords.words.getCurrentText(),
   });
 
   //prevent space from being inserted if input is empty
@@ -53,14 +54,14 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !TestWords.hasNewline && Config.mode !== "zen") {
+  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
     return true;
   }
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-  const overLimit = TestInput.input.current.length >= inputLimit;
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
+  const overLimit = getCurrentInput().length >= inputLimit;
   if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
     console.error("Hitting word limit");
     return true;
@@ -70,7 +71,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    TestInput.input.current.length >= TestWords.words.getCurrent().length;
+    getCurrentInput().length >= TestWords.words.getCurrentText().length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active
@@ -84,13 +85,13 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    // if there is pending word data, wwe need to account for that
+    // if there is pending word data, we need to account for that
     const pendingWordData = TestUI.pendingWordData.get(
       TestState.activeWordIndex,
     );
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? TestInput.input.current) + data,
+        (pendingWordData ?? getCurrentInput()) + data,
       );
     if (topAfterAppend > TestUI.activeWordTop) {
       //word jumped to next line

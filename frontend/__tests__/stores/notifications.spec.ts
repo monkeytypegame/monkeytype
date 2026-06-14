@@ -10,7 +10,7 @@ import {
   getNotificationHistory,
   __testing,
   AddNotificationOptions,
-} from "../../src/ts/stores/notifications";
+} from "../../src/ts/states/notifications";
 
 const { clearNotificationHistory } = __testing;
 
@@ -31,8 +31,8 @@ describe("notifications store", () => {
 
       const notifications = getNotifications();
       expect(notifications).toHaveLength(1);
-      expect(notifications[0]!.message).toBe("test message");
-      expect(notifications[0]!.level).toBe("notice");
+      expect(notifications[0]?.message).toBe("test message");
+      expect(notifications[0]?.level).toBe("notice");
     });
 
     it("prepends new notifications", () => {
@@ -41,27 +41,27 @@ describe("notifications store", () => {
 
       const notifications = getNotifications();
       expect(notifications).toHaveLength(2);
-      expect(notifications[0]!.message).toBe("second");
-      expect(notifications[1]!.message).toBe("first");
+      expect(notifications[0]?.message).toBe("second");
+      expect(notifications[1]?.message).toBe("first");
     });
 
     it("defaults error duration to 0 (sticky)", () => {
       addNotificationWithLevel("error msg", "error");
 
-      expect(getNotifications()[0]!.durationMs).toBe(0);
+      expect(getNotifications()[0]?.durationMs).toBe(0);
     });
 
     it("defaults non-error duration to 3000", () => {
       addNotificationWithLevel("notice msg", "notice");
-      expect(getNotifications()[0]!.durationMs).toBe(3000);
+      expect(getNotifications()[0]?.durationMs).toBe(3000);
 
       addNotificationWithLevel("success msg", "success");
-      expect(getNotifications()[0]!.durationMs).toBe(3000);
+      expect(getNotifications()[0]?.durationMs).toBe(3000);
     });
 
     it("respects custom durationMs", () => {
       addNotificationWithLevel("msg", "notice", { durationMs: 5000 });
-      expect(getNotifications()[0]!.durationMs).toBe(5000);
+      expect(getNotifications()[0]?.durationMs).toBe(5000);
     });
 
     it("appends response body message", () => {
@@ -71,7 +71,7 @@ describe("notifications store", () => {
       } as AddNotificationOptions["response"];
 
       addNotificationWithLevel("Request failed", "error", { response });
-      expect(getNotifications()[0]!.message).toBe(
+      expect(getNotifications()[0]?.message).toBe(
         "Request failed: Bad request",
       );
     });
@@ -80,19 +80,19 @@ describe("notifications store", () => {
       addNotificationWithLevel("Something broke", "error", {
         error: new Error("underlying cause"),
       });
-      expect(getNotifications()[0]!.message).toContain("underlying cause");
+      expect(getNotifications()[0]?.message).toContain("underlying cause");
     });
 
     it("sets useInnerHtml when specified", () => {
       addNotificationWithLevel("html <b>bold</b>", "notice", {
         useInnerHtml: true,
       });
-      expect(getNotifications()[0]!.useInnerHtml).toBe(true);
+      expect(getNotifications()[0]?.useInnerHtml).toBe(true);
     });
 
     it("defaults useInnerHtml to false", () => {
       addNotificationWithLevel("plain", "notice");
-      expect(getNotifications()[0]!.useInnerHtml).toBe(false);
+      expect(getNotifications()[0]?.useInnerHtml).toBe(false);
     });
 
     it("sets customTitle and customIcon", () => {
@@ -100,9 +100,9 @@ describe("notifications store", () => {
         customTitle: "Custom",
         customIcon: "gift",
       });
-      const n = getNotifications()[0]!;
-      expect(n.customTitle).toBe("Custom");
-      expect(n.customIcon).toBe("gift");
+      const n = getNotifications()[0];
+      expect(n?.customTitle).toBe("Custom");
+      expect(n?.customIcon).toBe("gift");
     });
   });
 
@@ -120,7 +120,7 @@ describe("notifications store", () => {
 
     it("does not auto-remove sticky notifications (durationMs 0)", () => {
       addNotificationWithLevel("sticky", "error");
-      expect(getNotifications()[0]!.durationMs).toBe(0);
+      expect(getNotifications()[0]?.durationMs).toBe(0);
 
       vi.advanceTimersByTime(60000);
       expect(getNotifications()).toHaveLength(1);
@@ -140,21 +140,24 @@ describe("notifications store", () => {
 
   describe("removeNotification", () => {
     it("removes a specific notification by id", () => {
-      addNotificationWithLevel("first", "notice", { durationMs: 0 });
-      addNotificationWithLevel("second", "notice", { durationMs: 0 });
+      const id = addNotificationWithLevel("first", "notice", { durationMs: 0 });
+      addNotificationWithLevel("second", "notice", {
+        durationMs: 0,
+      });
 
-      const id = getNotifications()[1]!.id;
       removeNotification(id);
 
       expect(getNotifications()).toHaveLength(1);
-      expect(getNotifications()[0]!.message).toBe("second");
+      expect(getNotifications()[0]?.message).toBe("second");
     });
 
     it("calls onDismiss with 'click' by default", () => {
       const onDismiss = vi.fn();
-      addNotificationWithLevel("msg", "notice", { durationMs: 0, onDismiss });
+      const id = addNotificationWithLevel("msg", "notice", {
+        durationMs: 0,
+        onDismiss,
+      });
 
-      const id = getNotifications()[0]!.id;
       removeNotification(id);
 
       expect(onDismiss).toHaveBeenCalledWith("click");
@@ -162,12 +165,11 @@ describe("notifications store", () => {
 
     it("cancels auto-remove timer on manual removal", () => {
       const onDismiss = vi.fn();
-      addNotificationWithLevel("msg", "notice", {
+      const id = addNotificationWithLevel("msg", "notice", {
         durationMs: 5000,
         onDismiss,
       });
 
-      const id = getNotifications()[0]!.id;
       removeNotification(id);
 
       vi.advanceTimersByTime(10000);
@@ -253,17 +255,17 @@ describe("notifications store", () => {
   describe("convenience functions", () => {
     it("showNoticeNotification adds notice level", () => {
       showNoticeNotification("notice msg");
-      expect(getNotifications()[0]!.level).toBe("notice");
+      expect(getNotifications()[0]?.level).toBe("notice");
     });
 
     it("showSuccessNotification adds success level", () => {
       showSuccessNotification("success msg");
-      expect(getNotifications()[0]!.level).toBe("success");
+      expect(getNotifications()[0]?.level).toBe("success");
     });
 
     it("showErrorNotification adds error level", () => {
       showErrorNotification("error msg");
-      expect(getNotifications()[0]!.level).toBe("error");
+      expect(getNotifications()[0]?.level).toBe("error");
     });
   });
 
@@ -273,9 +275,9 @@ describe("notifications store", () => {
 
       const history = getNotificationHistory();
       expect(history).toHaveLength(1);
-      expect(history[0]!.message).toBe("msg");
-      expect(history[0]!.level).toBe("success");
-      expect(history[0]!.title).toBe("Success");
+      expect(history[0]?.message).toBe("msg");
+      expect(history[0]?.level).toBe("success");
+      expect(history[0]?.title).toBe("Success");
     });
 
     it("uses correct default titles", () => {
@@ -284,21 +286,21 @@ describe("notifications store", () => {
       addNotificationWithLevel("c", "notice");
 
       const history = getNotificationHistory();
-      expect(history[0]!.title).toBe("Success");
-      expect(history[1]!.title).toBe("Error");
-      expect(history[2]!.title).toBe("Notice");
+      expect(history[0]?.title).toBe("Success");
+      expect(history[1]?.title).toBe("Error");
+      expect(history[2]?.title).toBe("Notice");
     });
 
     it("uses customTitle in history when provided", () => {
       addNotificationWithLevel("msg", "notice", { customTitle: "Reward" });
-      expect(getNotificationHistory()[0]!.title).toBe("Reward");
+      expect(getNotificationHistory()[0]?.title).toBe("Reward");
     });
 
     it("stores details in history", () => {
       addNotificationWithLevel("msg", "notice", {
         details: { foo: "bar" },
       });
-      expect(getNotificationHistory()[0]!.details).toEqual({ foo: "bar" });
+      expect(getNotificationHistory()[0]?.details).toEqual({ foo: "bar" });
     });
 
     it("caps history at 25 entries", () => {
@@ -308,8 +310,8 @@ describe("notifications store", () => {
 
       const history = getNotificationHistory();
       expect(history).toHaveLength(25);
-      expect(history[0]!.message).toBe("msg 5");
-      expect(history[24]!.message).toBe("msg 29");
+      expect(history[0]?.message).toBe("msg 5");
+      expect(history[24]?.message).toBe("msg 29");
     });
 
     it("is not affected by clearAllNotifications", () => {

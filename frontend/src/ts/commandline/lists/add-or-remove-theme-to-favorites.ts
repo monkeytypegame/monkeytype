@@ -1,5 +1,6 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
-import Config, { setConfig } from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { randomTheme } from "../../controllers/theme-controller";
 import { Command } from "../types";
 

@@ -1,6 +1,6 @@
 import { ChartData, CustomTextSettings } from "@monkeytype/schemas/results";
-import { configMetadata } from "../config-metadata";
 import { Config } from "@monkeytype/schemas/configs";
+import { configMetadata } from "../config/metadata";
 
 export type SystemStats = {
   pingStart: number;

@@ -2,21 +2,16 @@ import { JSXElement, splitProps } from "solid-js";
 
 import { Button, ButtonProps } from "../../common/Button";
 
-type FormStateSlice = {
+export type FormStateSlice = {
   canSubmit: boolean;
   isSubmitting: boolean;
   isValid: boolean;
-  isDirty: boolean;
+  isDefaultValue: boolean;
 };
 
-type SubscribableForm = {
+export type SubscribableForm = {
   Subscribe: (props: {
-    selector: (state: {
-      canSubmit: boolean;
-      isSubmitting: boolean;
-      isValid: boolean;
-      isDirty: boolean;
-    }) => FormStateSlice;
+    selector: (state: FormStateSlice) => FormStateSlice;
     children: (state: () => FormStateSlice) => JSXElement;
   }) => JSXElement;
 };
@@ -24,16 +19,17 @@ type SubscribableForm = {
 export function SubmitButton(
   props: {
     form: SubscribableForm;
+    skipUnchangedCheck?: boolean;
   } & Omit<ButtonProps, "type">,
 ): JSXElement {
-  const [local, others] = splitProps(props, ["disabled"]);
+  const [local, others] = splitProps(props, ["disabled", "skipUnchangedCheck"]);
   return (
     <props.form.Subscribe
       selector={(state) => ({
         canSubmit: state.canSubmit,
         isSubmitting: state.isSubmitting,
         isValid: state.isValid,
-        isDirty: state.isDirty,
+        isDefaultValue: state.isDefaultValue,
       })}
       children={(state) => (
         <Button
@@ -41,7 +37,7 @@ export function SubmitButton(
           {...others}
           disabled={
             (local.disabled ?? false) ||
-            !state().isDirty ||
+            (!local.skipUnchangedCheck && state().isDefaultValue) ||
             !state().canSubmit ||
             state().isSubmitting ||
             !state().isValid

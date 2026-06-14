@@ -1,9 +1,8 @@
-import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
-
+import { Config } from "../config/store";
 type ReplayAction =
   | "correctLetter"
   | "incorrectLetter"
@@ -91,7 +90,7 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (config.playSoundOnError !== "off") {
+    if (Config.playSoundOnError !== "off") {
       void Sound.playError();
     } else {
       void Sound.playClick();

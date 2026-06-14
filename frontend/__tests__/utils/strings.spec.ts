@@ -345,20 +345,14 @@ describe("string utils", () => {
     });
 
     describe("caching", () => {
-      let mapGetSpy: ReturnType<typeof vi.spyOn>;
-      let mapSetSpy: ReturnType<typeof vi.spyOn>;
-      let mapClearSpy: ReturnType<typeof vi.spyOn>;
-
-      beforeEach(() => {
-        mapGetSpy = vi.spyOn(Map.prototype, "get");
-        mapSetSpy = vi.spyOn(Map.prototype, "set");
-        mapClearSpy = vi.spyOn(Map.prototype, "clear");
-      });
+      const mapGetSpy = vi.spyOn(Map.prototype, "get");
+      const mapSetSpy = vi.spyOn(Map.prototype, "set");
+      const mapClearSpy = vi.spyOn(Map.prototype, "clear");
 
       afterEach(() => {
-        mapGetSpy.mockRestore();
-        mapSetSpy.mockRestore();
-        mapClearSpy.mockRestore();
+        mapGetSpy.mockReset();
+        mapSetSpy.mockReset();
+        mapClearSpy.mockReset();
       });
 
       it("should use cache for repeated calls", () => {
@@ -584,6 +578,375 @@ describe("string utils", () => {
         expect(
           Strings.areCharactersVisuallyEqual(char1, char2, "russian"),
         ).toBe(expected);
+      });
+    });
+  });
+
+  describe("countChars", () => {
+    describe("it should count characters correctly", () => {
+      const testCases = [
+        {
+          description: "correct, partial, last, shouldnt count",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 3,
+          },
+        },
+        {
+          description: "correct, partial, last, should count",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 3,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last no space",
+          input: {
+            inputWord: "hello",
+            targetWord: "hello ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 5,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "incorrect, last word, quick end",
+          input: {
+            inputWord: "xello",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "incorrect, last word, early literal space",
+          input: {
+            inputWord: "he ",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "incorrect, last word, noquick end",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct space, incorrect word (literal space)",
+          input: {
+            inputWord: "helol ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "single incorrect char (literal space — stopOnError=word)",
+          input: {
+            inputWord: "hxllo ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "last partial match counts correctWord, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 3,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last incorrect partial word doesn't count missed",
+          input: {
+            inputWord: "xxx",
+            targetWord: "hello",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "last partial no count, no trailing space on target",
+          input: {
+            inputWord: "hel",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 2,
+          },
+        },
+        {
+          description: "partial correct, with space (literal)",
+          input: {
+            inputWord: "helxx ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra",
+          input: {
+            inputWord: "abcx",
+            targetWord: "abc ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra (with space)",
+          input: {
+            inputWord: "abcx ",
+            targetWord: "abc ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect last word, trailing literal space, timed (stopOnError=word)",
+          input: {
+            inputWord: "jhow ",
+            targetWord: "how",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "trailing literal space past target — counts as extra (stopOnError=word)",
+          input: {
+            inputWord: "xow ",
+            targetWord: "how",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "multiple literal trailing spaces on wrong word — all count as extra",
+          input: {
+            inputWord: "xonl  ",
+            targetWord: "only ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 4,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "early literal space at non-space slot with creditPartial — counts as incorrect",
+          input: {
+            inputWord: "x ",
+            targetWord: "get",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect word with literal trailing space — uncommitted (stopOnError=word)",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "empty input with creditPartial",
+          input: {
+            inputWord: "",
+            targetWord: "hello",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct last word, no trailing space anywhere",
+          input: {
+            inputWord: "hello",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 5,
+            correctWord: 5,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "mid-word literal space followed by more input",
+          input: {
+            inputWord: "hel o",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 1,
+          },
+        },
+      ];
+
+      it.each(testCases)("$description", ({ input, expected }) => {
+        expect(
+          Strings.countChars(
+            input.inputWord,
+            input.targetWord,
+            input.creditPartial,
+          ),
+        ).toEqual(expected);
       });
     });
   });

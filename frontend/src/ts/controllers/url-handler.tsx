@@ -21,15 +21,16 @@ import { decompressFromURI } from "lz-ts";
 import { z } from "zod";
 
 import Ape from "../ape";
-import Config, { setConfig } from "../config";
+import { setConfig } from "../config/setters";
+import { Config } from "../config/store";
 import * as DB from "../db";
-import * as AuthEvent from "../observables/auth-event";
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { authEvent } from "../events/auth";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
 import * as TestState from "../test/test-state";
@@ -95,7 +96,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   );
   if (error) {
     console.log("Custom theme URL decoding failed", error);
-    showNoticeNotification("Failed to load theme from URL: " + error.message);
+    showNoticeNotification(`Failed to load theme from URL: ${error.message}`);
     return;
   }
 
@@ -178,7 +179,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (error) {
     console.error("Failed to parse test settings:", error);
     showNoticeNotification(
-      "Failed to load test settings from URL: " + error.message,
+      `Failed to load test settings from URL: ${error.message}`,
     );
     return;
   }
@@ -309,17 +310,17 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 }
 
-export function loadChallengeFromUrl(getOverride?: string): void {
+export async function loadChallengeFromUrl(
+  getOverride?: string,
+): Promise<void> {
   const getValue = (
     Misc.findGetParameter("challenge", getOverride) ?? ""
   ).toLowerCase();
   if (getValue === "") return;
 
-  showNoticeNotification("Loading challenge");
   ChallengeController.setup(getValue)
     .then((result) => {
       if (result) {
-        showSuccessNotification("Challenge loaded");
         restartTest({
           nosave: true,
         });
@@ -338,13 +339,16 @@ export function loadTribeAutoJoinFromUrl(override?: string): void {
   setAutoJoin(getValue);
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe(async (event) => {
   if (event.type === "authStateChanged") {
     const search = window.location.search;
     const hash = window.location.hash;
+
+    await event.data.loadPromise;
+
     loadCustomThemeFromUrl(search);
     loadTestSettingsFromUrl(search);
-    loadChallengeFromUrl(search);
+    void loadChallengeFromUrl(search);
     void linkDiscord(hash);
   }
 });

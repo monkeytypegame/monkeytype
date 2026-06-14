@@ -10,7 +10,7 @@ import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
 } from "@monkeytype/contracts";
-import { addBanner } from "../../stores/banners";
+import { addBanner } from "../../states/banners";
 
 let bannerShownThisSession = false;
 

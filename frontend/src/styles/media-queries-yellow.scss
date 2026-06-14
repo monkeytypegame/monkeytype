@@ -4,44 +4,18 @@
   .content-grid {
     --content-max-width: 1024px;
   }
-  .pageSettings {
-    .section {
-      grid-template-columns: 1.5fr 1fr;
-      &.themes .tabContainer .tabContent.customTheme {
-        .customThemeInputs .customThemeInput {
-          grid-template-columns: 15em 1fr;
-        }
-      }
-    }
-  }
+
   .pageAccountSettings .main {
     gap: 2rem;
     .right .tab .section {
       grid-template-columns: 1fr 1fr;
     }
   }
-  .pageAccount {
-    .group.chart .below {
-      grid-template-columns: auto 250px;
-      .buttons {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
+
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
       font-size: 9rem;
-    }
-  }
-  #customTextModal {
-    .modal {
-      .buttonsTop {
-        grid-template-columns: 1fr 1fr;
-      }
-      // textarea {
-      //   min-height: 426px;
-      // }
     }
   }
   .testActivity {

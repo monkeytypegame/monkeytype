@@ -4,7 +4,7 @@ import {
 } from "@monkeytype/contracts/leaderboards";
 import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
-import { pageSize, Selection, setPage } from "../stores/leaderboard-selection";
+import { pageSize, Selection, setPage } from "../states/leaderboard-selection";
 
 const queryKeys = {
   root: (options: Selection & { userSpecific?: true }) => [
@@ -76,8 +76,9 @@ export const getLeaderboardQueryOptions = (
       const response = await request;
       if (response.status !== 200) {
         throw new Error(
-          `Failed to get ${options.type} leaderboard data: ` +
-            response.body.message,
+          `Failed to get ${options.type} leaderboard data: ${
+            response.body.message
+          }`,
         );
       }
 
@@ -131,8 +132,9 @@ export const getRankQueryOptions = (options: Selection) =>
       const response = await request;
       if (response.status !== 200) {
         throw new Error(
-          `Failed to get ${options.type} leaderboard rank: ` +
-            response.body.message,
+          `Failed to get ${options.type} leaderboard rank: ${
+            response.body.message
+          }`,
         );
       }
       return response.body.data;

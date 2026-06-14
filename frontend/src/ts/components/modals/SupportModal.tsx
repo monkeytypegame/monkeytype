@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
-import { setCommandlineSubgroup } from "../../signals/core";
-import { showModal } from "../../stores/modals";
+import { setCommandlineSubgroup } from "../../states/core";
+import { showModal } from "../../states/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";

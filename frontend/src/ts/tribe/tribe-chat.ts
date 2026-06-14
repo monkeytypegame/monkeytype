@@ -8,8 +8,8 @@ import {
 import { getEmojiList } from "../utils/json-data";
 import * as TribeTypes from "./types";
 import { qs, qsa, qsr } from "../utils/dom";
-import { getActivePage } from "../signals/core";
-import { showNoticeNotification } from "../stores/notifications";
+import { getActivePage } from "../states/core";
+import { showNoticeNotification } from "../states/notifications";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;

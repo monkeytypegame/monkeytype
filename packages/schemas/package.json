@@ -22,14 +22,18 @@
     "lint": "oxlint . --type-aware --type-check",
     "lint-fast": "oxlint ."
   },
+  "dependencies": {
+    "@monkeytype/util": "workspace:*"
+  },
   "devDependencies": {
     "@monkeytype/tsup-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
+    "@types/node": "24.9.1",
     "madge": "8.0.0",
-    "oxlint": "1.50.0",
-    "oxlint-tsgolint": "0.14.2",
+    "oxlint": "1.68.0",
+    "oxlint-tsgolint": "0.23.0",
     "tsup": "8.4.0",
-    "typescript": "6.0.0-beta",
+    "typescript": "6.0.2",
     "vitest": "4.1.0"
   },
   "peerDependencies": {

@@ -1,3 +1,4 @@
+import { setIsInARoom } from "../states/tribe";
 import * as TribeTypes from "./types";
 
 let socketId: string | undefined = undefined;
@@ -27,6 +28,7 @@ export function getState(): TribeTypes.ClientState {
 
 export function setRoom(newRoom: TribeTypes.Room | undefined): void {
   room = newRoom;
+  setIsInARoom(newRoom !== undefined);
 }
 
 export function getRoom(): TribeTypes.Room | undefined {

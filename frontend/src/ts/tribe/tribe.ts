@@ -1,4 +1,3 @@
-import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TribePages from "./tribe-pages";
 import * as TribePagePreloader from "./pages/tribe-page-preloader";
@@ -8,7 +7,6 @@ import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
 import * as TribeCountdown from "./tribe-countdown";
-import * as TimerEvent from "../observables/timer-event";
 import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
@@ -21,26 +19,31 @@ import TribeSocket from "./tribe-socket";
 import * as TribeState from "./tribe-state";
 import { escapeRegExp, escapeHTML } from "../utils/misc";
 import { getTribeMode } from "../utils/tribe";
-import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
 import * as TribeTypes from "./types";
-import * as NavigationEvent from "../observables/navigation-event";
 import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
 import * as Result from "../test/result";
 import { qs } from "../utils/dom";
+import * as Time from "../legacy-states/time";
+
+import { ColorName } from "../constants/themes";
+import { isDevEnvironment } from "../utils/env";
+import { navigationEvent } from "../events/navigation";
 import {
   showErrorNotification,
   showNoticeNotification,
   showSuccessNotification,
-} from "../stores/notifications";
-import { getActivePage } from "../signals/core";
-import { ColorName } from "../constants/themes";
-import { isDevEnvironment } from "../utils/env";
-import { SimpleModal } from "../elements/simple-modal";
+} from "../states/notifications";
+import { setConfig } from "../config/setters";
+import { getActivePage } from "../states/core";
+import { timerEvent } from "../events/timer";
+import { Config } from "../config/store";
+import { showSimpleModal } from "../states/simple-modal";
+import { z } from "zod";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -71,7 +74,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
   if (state === TribeTypes.ROOM_STATE.LOBBY) {
     TribePageLobby.enableNameVisibilityButtons();
     TribeBars.hide("tribe");
-    NavigationEvent.dispatch("/tribe");
+    navigationEvent.dispatch({ url: "/tribe", options: {} });
   } else if (state === TribeTypes.ROOM_STATE.RACE_INIT) {
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
@@ -211,7 +214,18 @@ export function initRace(): void {
     TribeSocket.out.room.init();
   } else {
     // TribeStartRacePopup.show();
-    startRaceModal.show([], {});
+    showSimpleModal({
+      title: "Are you sure?",
+      buttonText: "Start",
+      text: "Not everyone is ready. Do you want to start the test without them?",
+      execFn: async () => {
+        TribeSocket.out.room.init();
+        return {
+          status: "success",
+          showNotification: false,
+        };
+      },
+    });
   }
 }
 
@@ -236,7 +250,7 @@ async function connect(): Promise<void> {
     return;
   }
 
-  UpdateConfig.setConfig("timerStyle", "mini", {
+  setConfig("timerStyle", "mini", {
     nosave: true,
   });
   TribePageMenu.enableButtons();
@@ -423,7 +437,7 @@ TribeSocket.in.room.left(() => {
   updateClientState(TribeTypes.CLIENT_STATE.CONNECTED);
   TribePageMenu.enableButtons();
   if (!qs(".pageTribe")?.hasClass("active")) {
-    NavigationEvent.dispatch("/tribe");
+    navigationEvent.dispatch({ url: "/tribe", options: {} });
   }
   TribeCarets.destroyAll();
   TribeSound.play("leave");
@@ -553,8 +567,9 @@ TribeSocket.in.room.initRace((data) => {
   } else {
     //TODO update lobby bars
     if (getActivePage() !== "tribe") {
-      NavigationEvent.dispatch("/tribe", {
-        tribeOverride: true,
+      navigationEvent.dispatch({
+        url: "/tribe",
+        options: { tribeOverride: true },
       });
     }
     TribeBars.init("tribe");
@@ -563,9 +578,9 @@ TribeSocket.in.room.initRace((data) => {
   }
   if (room) room.seed = data.seed;
   Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
-  NavigationEvent.dispatch("/", {
-    tribeOverride: true,
-    force: true,
+  navigationEvent.dispatch({
+    url: "/",
+    options: { tribeOverride: true, force: true },
   });
   TribeDelta.reset();
   TribeDelta.showBar();
@@ -615,7 +630,7 @@ TribeSocket.in.room.raceStarted(() => {
   TribeCountdown.hide2();
   setTimeout(() => {
     if (!TestState.isActive) {
-      TimerEvent.dispatch("start");
+      timerEvent.dispatch({ key: "start" });
     }
   }, 500);
 });
@@ -637,7 +652,7 @@ TribeSocket.in.room.progressUpdate((data) => {
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
     } else {
-      const currentWordLen = TestWords.words.getCurrent().length;
+      const currentWordLen = TestWords.words.getCurrentText().length;
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
 
       const globalWordProgress = Math.round(
@@ -764,7 +779,7 @@ TribeSocket.in.room.finishTimerCountdown((data) => {
 
 TribeSocket.in.room.raceForceFinish((data) => {
   if (TestState.isActive) {
-    TimerEvent.dispatch("fail", data.reason);
+    timerEvent.dispatch({ key: "fail", value: data.reason });
   }
 });
 
@@ -852,58 +867,44 @@ qs(".pageTribe .menu .customRooms #enterRoomCode")?.on("click", (e) => {
   if ((e.currentTarget as HTMLElement | null)?.classList.contains("disabled")) {
     return; //todo is this check needed
   }
-  enterRoomCodeModal.show([], {});
+  showSimpleModal({
+    title: "Enter room code",
+    buttonText: "join",
+    schema: z.object({
+      code: z.string().regex(/^[0-9a-fA-F]{6}$/, {
+        message:
+          "Room code must be 6 characters long and contain only hexadecimal characters (0-9, a-f)",
+      }),
+    }),
+    inputs: {
+      code: {
+        type: "text",
+        placeholder: "room code",
+        initVal: "",
+        validation: {
+          isValid: async (val: string) => {
+            if (/^[0-9a-fA-F]{6}$/.test(val)) {
+              return true;
+            } else {
+              return "Room code must be 6 characters long and contain only hexadecimal characters (0-9, a-f)";
+            }
+          },
+          debounceDelay: 0,
+        },
+      },
+    },
+    execFn: async ({ code }) => {
+      joinRoom(code);
+      return {
+        status: "success",
+        showNotification: false,
+      };
+    },
+  });
 });
 
 window.addEventListener("beforeunload", () => {
   if (TribeState.getState() !== TribeTypes.CLIENT_STATE.DISCONNECTED) {
     TribeSocket.disconnect();
   }
-});
-
-//here for now to avoid a circular dependency
-const enterRoomCodeModal = new SimpleModal({
-  id: "tribeRoomCodeModal",
-  title: "Enter room code",
-  buttonText: "join",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "room code",
-      initVal: "",
-      validation: {
-        isValid: async (val: string) => {
-          if (/^[0-9a-fA-F]{6}$/.test(val)) {
-            return true;
-          } else {
-            return "Room code must be 6 characters long and contain only hexadecimal characters (0-9, a-f)";
-          }
-        },
-        debounceDelay: 0,
-      },
-    },
-  ],
-  execFn: async (_thisPopup, code) => {
-    joinRoom(code);
-    return {
-      status: "success",
-      message: "",
-      showNotification: false,
-    };
-  },
-});
-
-const startRaceModal = new SimpleModal({
-  id: "tribeStartRaceModal",
-  title: "Are you sure?",
-  buttonText: "Start",
-  text: "Not everyone is ready. Do you want to start the test without them?",
-  execFn: async (_thisPopup) => {
-    TribeSocket.out.room.init();
-    return {
-      status: "success",
-      message: "",
-      showNotification: false,
-    };
-  },
 });

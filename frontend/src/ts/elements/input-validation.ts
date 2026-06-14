@@ -6,8 +6,9 @@ import {
   ConfigSchema,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
-import Config, { setConfig } from "../config";
-import { showSuccessNotification } from "../stores/notifications";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { showSuccessNotification } from "../states/notifications";
 import { ElementWithUtils } from "../utils/dom";
 import { Validation, ValidationResult } from "../types/validation";
 
@@ -89,14 +90,13 @@ export function createInputEventHandler<T>(
         callback({
           success: false,
           status: "failed",
-          errorMessage:
-            schemaResult.error.errors
-              .map((err) =>
-                err.message.at(-1) === "."
-                  ? err.message.slice(0, -1)
-                  : err.message,
-              )
-              .join(", ") + ".",
+          errorMessage: `${schemaResult.error.errors
+            .map((err) =>
+              err.message.at(-1) === "."
+                ? err.message.slice(0, -1)
+                : err.message,
+            )
+            .join(", ")}.`,
         });
         return;
       }
@@ -189,6 +189,7 @@ export class ValidatedHtmlInputElement<
 
   override setValue(val: string | null): this {
     if (val === null) {
+      super.setValue("");
       this.indicator.hide();
       this.currentStatus = { status: "checking", success: false };
     } else {

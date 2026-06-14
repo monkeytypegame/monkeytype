@@ -2,18 +2,20 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
 import { getLanguageDisplayString } from "../utils/strings";
-import * as ModesNotice from "../elements/modes-notice";
-import { isAuthenticated } from "../firebase";
+
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import Config from "../config";
+import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage } from "../signals/core";
+import { getActivePage, isAuthenticated } from "../states/core";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
 import { typedKeys } from "../utils/misc";
 import { Validation } from "../types/validation";
 import { getTribeMode } from "../utils/tribe";
+
+//TODO: remove display property and instead use optionsMetadata from configMetadata
+// eventually this file should be fully merged into config metadata, probably under the 'commandline' property
 
 type ConfigKeysWithoutCommands =
   | "minWpmCustomSpeed"
@@ -304,9 +306,6 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   oppositeShiftMode: {
     subgroup: {
       options: "fromSchema",
-      afterExec: () => {
-        void ModesNotice.update();
-      },
     },
   },
   stopOnError: {
@@ -398,6 +397,16 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           "14": "fist fight",
           "15": "rubber keys",
           "16": "fart",
+          "17": "akko lavenders",
+          "18": "cherrymx black abs",
+          "19": "cherrymx black pbt",
+          "20": "cherrymx blue abs",
+          "21": "cherrymx blue pbt",
+          "22": "cherrymx brown pbt",
+          "23": "kalih box white",
+          "24": "razer green",
+          "25": "tealios v2",
+          "26": "trust gxt",
         };
         return map[value];
       },

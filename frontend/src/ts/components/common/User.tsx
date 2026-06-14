@@ -7,10 +7,11 @@ import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
+import { BreakpointKey } from "../../states/breakpoints";
 import { cn } from "../../utils/cn";
-import { Anime, AnimeConditional } from "./anime";
+import { Anime } from "./anime";
+import { AnimePresence } from "./anime/AnimePresence";
 import { Button } from "./Button";
-import { Conditional } from "./Conditional";
 import { DiscordAvatar } from "./DiscordAvatar";
 import { Fa } from "./Fa";
 import { NotificationBubble } from "./NotificationBubble";
@@ -33,6 +34,7 @@ type Props = {
   showSpinner?: boolean;
   showNotificationBubble?: boolean;
   fontClass?: "text-em-xs" | "text-em-sm" | "text-em-md" | "text-em-lg";
+  hideBadgeTextOnWidth?: BreakpointKey;
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
@@ -85,23 +87,37 @@ export function User(props: Props): JSXElement {
             class="z-2 m-0.5"
           />
           <div class="grid place-items-center">
-            <AnimeConditional
-              exitBeforeEnter
-              if={props.showSpinner ?? false}
-              then={<Fa icon={"fa-circle-notch"} spin={true} />}
-              else={
-                <DiscordAvatar
-                  size={64}
-                  discordId={props.user.discordId}
-                  discordAvatar={props.user.discordAvatar}
-                  fallbackIcon={props.avatarFallback ?? "user"}
-                  class={cn(
-                    props.avatarColor === "text" && "text-text",
-                    props.avatarColor === "sub" && "text-sub",
-                  )}
-                />
-              }
-            />
+            <AnimePresence exitBeforeEnter>
+              <Show
+                when={props.showSpinner ?? false}
+                fallback={
+                  <Anime
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, duration: 125 }}
+                    exit={{ opacity: 0, duration: 125 }}
+                  >
+                    <DiscordAvatar
+                      size={64}
+                      discordId={props.user.discordId}
+                      discordAvatar={props.user.discordAvatar}
+                      fallbackIcon={props.avatarFallback ?? "user"}
+                      class={cn(
+                        props.avatarColor === "text" && "text-text",
+                        props.avatarColor === "sub" && "text-sub",
+                      )}
+                    />
+                  </Anime>
+                }
+              >
+                <Anime
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, duration: 125 }}
+                  exit={{ opacity: 0, duration: 125 }}
+                >
+                  <Fa icon={"fa-circle-notch"} spin={true} />
+                </Anime>
+              </Show>
+            </AnimePresence>
           </div>
         </div>
       </Show>
@@ -110,19 +126,15 @@ export function User(props: Props): JSXElement {
           "hidden sm:block": props.hideNameOnSmallScreens,
         })}
       >
-        <Conditional
-          if={props.linkToProfile ?? false}
-          then={
-            <Button
-              variant="text"
-              href={`/profile/${props.user.name}`}
-              text={props.user.name}
-              router-link
-              class="px-0"
-            />
-          }
-          else={props.user.name}
-        />
+        <Show when={props.linkToProfile ?? false} fallback={props.user.name}>
+          <Button
+            variant="text"
+            href={`/profile/${props.user.name}`}
+            text={props.user.name}
+            router-link
+            class="px-0"
+          />
+        </Show>
       </div>
 
       <Show
@@ -148,7 +160,10 @@ export function User(props: Props): JSXElement {
         </div>
       </Show>
       <Show when={props.user.badgeId !== undefined}>
-        <UserBadge id={props.user.badgeId} />
+        <UserBadge
+          id={props.user.badgeId}
+          hideTextOnWidth={props.hideBadgeTextOnWidth}
+        />
       </Show>
       <Show when={props.level !== undefined}>
         <Anime

@@ -1,9 +1,9 @@
 import * as TribeState from "./tribe-state";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
-import * as ConfigEvent from "../observables/config-event";
 import { mapRange } from "@monkeytype/util/numbers";
 import { qs } from "../utils/dom";
+import { configEvent } from "../events/config";
 // import { isConfigInfinite } from "./tribe-config";
 
 const textEl = qs(".pageTest #liveStatsMini .tribeDelta");
@@ -74,13 +74,13 @@ export function update(): void {
       //same sign
       if (state > 0) {
         void aheadBarEl?.promiseAnimate({
-          width: scaledPositive + "%",
+          width: `${scaledPositive}%`,
           duration: animationDuaration,
           ease: "linear",
         });
       } else {
         void behindBarEl?.promiseAnimate({
-          width: Math.abs(scaledNegative) + "%",
+          width: `${Math.abs(scaledNegative)}%`,
           duration: animationDuaration,
           ease: "linear",
         });
@@ -97,7 +97,7 @@ export function update(): void {
           })
           .then(() => {
             void aheadBarEl?.promiseAnimate({
-              width: scaledPositive + "%",
+              width: `${scaledPositive}%`,
               duration: animationDuaration / 2,
               ease: "linear",
             });
@@ -112,7 +112,7 @@ export function update(): void {
           })
           .then(() => {
             void behindBarEl?.promiseAnimate({
-              width: Math.abs(scaledNegative) + "%",
+              width: `${Math.abs(scaledNegative)}%`,
               duration: animationDuaration / 2,
               ease: "linear",
             });
@@ -167,7 +167,7 @@ export function hideBar(): void {
   barEl?.hide();
 }
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key !== "tribeDelta") return;
 
   if (newValue === "text") {

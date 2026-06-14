@@ -1,6 +1,6 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
-import * as ConfigEvent from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs } from "../utils/dom";
@@ -14,8 +14,8 @@ export function update(acc: number): void {
     if (Config.blindMode) {
       number = 100;
     }
-    miniEl?.setHtml(number + "%");
-    textEl?.setHtml(number + "%");
+    miniEl?.setHtml(`${number}%`);
+    textEl?.setHtml(`${number}%`);
   });
 }
 
@@ -82,6 +82,6 @@ export function instantHide(): void {
   state = false;
 }
 
-ConfigEvent.subscribe(({ key, newValue }) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "liveAccStyle") newValue === "off" ? hide() : show();
 });

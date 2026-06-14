@@ -1,21 +1,19 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
 import * as Monkey from "../../test/monkey";
 import { emulateInsertText } from "./insert-text";
 import * as TestState from "../../test/test-state";
-import * as TestWords from "../../test/test-words";
 import * as JSONData from "../../utils/json-data";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
 import { canQuickRestart } from "../../utils/quick-restart";
 import * as CustomText from "../../test/custom-text";
-import * as CustomTextState from "../../states/custom-text-name";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
@@ -27,16 +25,14 @@ import {
 } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
 import * as TribeState from "../../tribe/tribe-state";
+import { wordsHaveTab } from "../../states/test";
+
+import { getCustomTextIndicator } from "../../states/core";
+import { logTestEvent } from "../../test/events/data";
+import { getTestEventCode } from "../../test/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
-  if (Config.quickRestart === "tab") {
-    e.preventDefault();
-    if ((TestWords.hasTab && e.shiftKey) || !TestWords.hasTab) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
-    }
-  }
-  if (TestWords.hasTab) {
+  if (wordsHaveTab() && !e.shiftKey) {
     await emulateInsertText({ data: "\t", now });
     e.preventDefault();
     return;
@@ -57,7 +53,7 @@ export async function handleEnter(
         Config.words,
         Config.time,
         CustomText.getData(),
-        CustomTextState.isCustomTextLong() ?? false,
+        getCustomTextIndicator()?.isLong ?? false,
       )
     ) {
       const delay = Date.now() - getLastBailoutAttempt();
@@ -79,14 +75,6 @@ export async function handleEnter(
         void TestLogic.finish();
         return;
       }
-    }
-  }
-
-  if (Config.quickRestart === "enter") {
-    e.preventDefault();
-    if ((TestWords.hasNewline && e.shiftKey) || !TestWords.hasNewline) {
-      TestLogic.restart({ isQuickRestart: !e.shiftKey });
-      return;
     }
   }
 }
@@ -141,13 +129,28 @@ async function handleFunboxes(
 }
 
 export async function onKeydown(event: KeyboardEvent): Promise<void> {
+  if (event.repeat) {
+    // just ignore all repeats
+    return;
+  }
+
   if (TribeState.isInARoom() && !TribeState.isRaceActive()) {
     event.preventDefault();
     return;
   }
 
   const now = performance.now();
-  TestInput.recordKeydownTime(now, event);
+  if (!TestState.resultCalculating) {
+    TestInput.recordKeydownTime(now, event);
+  }
+
+  logTestEvent("keydown", now, {
+    code: getTestEventCode(event),
+    ctrl: event.ctrlKey ? true : undefined,
+    shift: event.shiftKey ? true : undefined,
+    alt: event.altKey ? true : undefined,
+    meta: event.metaKey ? true : undefined,
+  });
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");
@@ -196,12 +199,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   if (event.key === "Enter") {
     await handleEnter(event, now);
-    return;
-  }
-
-  if (event.key === "Escape" && Config.quickRestart === "esc") {
-    event.preventDefault();
-    TestLogic.restart({ isQuickRestart: !event.shiftKey });
     return;
   }
 }

@@ -23,6 +23,21 @@ export function camelCaseToWords(str: string): string {
 }
 
 /**
+ * Converts a string with words separated by spaces to camelCase.
+ * @param str The input string with words separated by spaces.
+ * @returns The camelCase version of the input string.
+ */
+export function wordsToCamelCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/ +/)
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join("");
+}
+
+/**
  * Returns the last character of a string.
  * @param word The input string.
  * @returns The last character of the input string, or an empty string if the input is empty.
@@ -66,6 +81,14 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
  */
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Normalizes free-form names to canonical storage format.
+ * Trims edge whitespace and collapses all inner whitespace runs to underscores.
+ */
+export function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, "_");
 }
 
 /**
@@ -134,7 +157,7 @@ export function getLanguageDisplayString(
   } else {
     out = language;
   }
-  return out.replace(/_/g, " ");
+  return replaceUnderscoresWithSpaces(out);
 }
 
 /**
@@ -320,10 +343,17 @@ export function areCharactersVisuallyEqual(
 }
 
 export function toHex(buffer: ArrayBuffer): string {
-  if (Uint8Array.prototype.toHex !== undefined) {
-    return new Uint8Array(buffer).toHex();
+  const u8 = new Uint8Array(buffer);
+
+  // Use native toHex if available (modern browsers / future runtimes)
+  if (
+    "toHex" in u8 &&
+    typeof (u8 as { toHex?: unknown }).toHex === "function"
+  ) {
+    return (u8 as unknown as { toHex(): string }).toHex();
   }
-  const hashArray = Array.from(new Uint8Array(buffer));
+
+  const hashArray = Array.from(u8);
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -360,6 +390,75 @@ export function isSpace(char: string): boolean {
   ]);
 
   return spaces.has(codePoint);
+}
+
+export function replaceUnderscoresWithSpaces(text: string): string {
+  return text.replace(/_/g, " ");
+}
+
+export function replaceSpacesWithUnderscores(text: string): string {
+  return text.replace(/ /g, "_");
+}
+
+export type CharCounts = {
+  allCorrect: number;
+  correctWord: number;
+  incorrect: number;
+  extra: number;
+  missed: number;
+};
+
+export function countChars(
+  inputWord: string,
+  targetWord: string,
+  creditPartial: boolean,
+): CharCounts {
+  let allCorrect = 0;
+  let correctWord = 0;
+  let incorrect = 0;
+  let extra = 0;
+  let missed = 0;
+
+  const wordCorrect = inputWord === targetWord;
+  const wordPartiallyCorrect = targetWord.startsWith(inputWord);
+
+  for (let i = 0; i < Math.max(inputWord.length, targetWord.length); i++) {
+    const inputChar = inputWord[i];
+    const targetChar = targetWord[i];
+
+    if (inputChar === targetChar) {
+      if (targetChar === " " && !wordCorrect) {
+        extra += 1;
+      } else {
+        allCorrect += 1;
+      }
+      if (wordCorrect || (creditPartial && wordPartiallyCorrect)) {
+        correctWord += 1;
+      }
+    } else if (inputChar === undefined) {
+      //missed char
+      if (!creditPartial) {
+        missed += 1;
+      }
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
+      extra += 1;
+    } else {
+      //incorrect char
+      incorrect += 1;
+    }
+  }
+
+  return {
+    allCorrect,
+    correctWord,
+    incorrect,
+    extra,
+    missed,
+  };
 }
 
 // Export testing utilities for unit tests

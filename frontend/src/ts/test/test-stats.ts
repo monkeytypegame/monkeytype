@@ -1,22 +1,21 @@
 import Hangul from "hangul-js";
-import Config from "../config";
-import * as Strings from "../utils/strings";
+import { Config } from "../config/store";
 import * as TestInput from "./test-input";
+import { getCurrentInput, getInputHistory } from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
-import { isFunboxActiveWithProperty } from "./funbox/list";
 import * as CustomText from "./custom-text";
+import { getLastResult } from "../states/test";
+import { countChars as countCharsUtils, getLastChar } from "../utils/strings";
+import { isFunboxActiveWithProperty } from "./funbox/list";
 
 type CharCount = {
-  spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
   incorrectChars: number;
   extraChars: number;
   missedChars: number;
-  correctSpaces: number;
 };
 
 export type Stats = {
@@ -29,25 +28,16 @@ export type Stats = {
   extraChars: number;
   allChars: number;
   time: number;
-  spaces: number;
-  correctSpaces: number;
 };
 
-export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
-
-export function setLastResult(result: CompletedEvent): void {
-  lastResult = result;
-}
-
 export function getStats(): unknown {
   const ret = {
-    lastResult,
+    lastResult: getLastResult(),
     start,
     end,
     start3,
@@ -64,11 +54,8 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
-    inputHistory: TestInput.input.getHistory(),
+    wordsHistory: TestWords.words.list.slice(0, getInputHistory().length),
+    inputHistory: getInputHistory(),
   };
 
   try {
@@ -106,35 +93,11 @@ export function getStats(): unknown {
 export function restart(): void {
   start = 0;
   end = 0;
-  invalid = false;
+  start2 = 0;
+  end2 = 0;
+  start3 = 0;
+  end3 = 0;
   lastSecondNotRound = false;
-}
-
-export let restartCount = 0;
-export let incompleteSeconds = 0;
-
-export let incompleteTests: IncompleteTest[] = [];
-
-export function incrementRestartCount(): void {
-  restartCount++;
-}
-
-export function incrementIncompleteSeconds(val: number): void {
-  incompleteSeconds += val;
-}
-
-export function pushIncompleteTest(acc: number, seconds: number): void {
-  incompleteTests.push({ acc, seconds });
-}
-
-export function resetIncomplete(): void {
-  restartCount = 0;
-  incompleteSeconds = 0;
-  incompleteTests = [];
-}
-
-export function setInvalid(): void {
-  invalid = true;
 }
 
 export function calculateTestSeconds(now?: number): number {
@@ -144,33 +107,28 @@ export function calculateTestSeconds(now?: number): number {
     duration = (now - start) / 1000;
   }
 
-  if (Config.mode === "zen" && duration < 0) {
-    duration = 0;
-    console.log("Zen mode with negative duration detected, setting to 0");
-  }
-
   return duration;
 }
 
 export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
+  testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
 } {
-  const testSeconds = calculateTestSeconds(
-    TestState.isActive ? performance.now() : end,
-  );
-  const chars = countChars(final);
+  const testSeconds =
+    testSecondsOverride ??
+    calculateTestSeconds(TestState.isActive ? performance.now() : end);
+
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
-    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5,
+    (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
   const raw = Numbers.roundTo2(
-    ((chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars) *
+    ((chars.allCorrectChars + chars.incorrectChars + chars.extraChars) *
       (60 / testSeconds)) /
       5,
   );
@@ -195,12 +153,7 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    if (Config.mode === "time") {
-      extraAfk =
-        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
-    } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
-    }
+    extraAfk = Math.round(testSeconds) - TestInput.keypressCountHistory.length;
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -218,12 +171,13 @@ export function setLastSecondNotRound(): void {
 }
 
 export function calculateBurst(endTime: number = performance.now()): number {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
   const timeToWrite = (endTime - TestInput.currentBurstStart) / 1000;
+  if (timeToWrite <= 0) return 0;
   let wordLength: number;
   wordLength = !containsKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
+    ? getCurrentInput().length
+    : Hangul.disassemble(getCurrentInput()).length;
   if (wordLength === 0) {
     wordLength = !containsKorean
       ? (TestInput.input.getHistoryLast()?.length ?? 0)
@@ -251,40 +205,56 @@ export function removeAfkData(): void {
 }
 
 function getInputWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
-  let inputWords = [...TestInput.input.getHistory()];
+  let inputWords = [...getInputHistory()];
 
   if (TestState.isActive) {
-    inputWords.push(TestInput.input.current);
+    inputWords.push(getCurrentInput());
   }
 
   if (containsKorean) {
     inputWords = inputWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
+  for (let i = 0; i < inputWords.length - 1; i++) {
+    if (
+      getLastChar(inputWords[i] as string) !== "\n" &&
+      !isFunboxActiveWithProperty("nospace")
+    ) {
+      inputWords[i] += " ";
+    }
+  }
+
   return inputWords;
 }
 
 function getTargetWords(): string[] {
-  const containsKorean = TestInput.input.getKoreanStatus();
+  const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
-    ...(Config.mode === "zen"
-      ? TestInput.input.getHistory()
-      : TestWords.words.list),
+    ...(Config.mode === "zen" ? getInputHistory() : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen"
-        ? TestInput.input.current
-        : TestWords.words.getCurrent(),
+        ? getCurrentInput()
+        : TestWords.words.getCurrentText(),
     );
   }
 
   if (containsKorean) {
     targetWords = targetWords.map((w) => Hangul.disassemble(w).join(""));
+  }
+
+  for (let i = 0; i < targetWords.length - 1; i++) {
+    if (
+      getLastChar(targetWords[i] as string) !== "\n" &&
+      !isFunboxActiveWithProperty("nospace")
+    ) {
+      targetWords[i] += " ";
+    }
   }
 
   return targetWords;
@@ -296,93 +266,47 @@ function countChars(final = false): CharCount {
   let incorrectChars = 0;
   let extraChars = 0;
   let missedChars = 0;
-  let spaces = 0;
-  let correctspaces = 0;
 
   const inputWords = getInputWords();
   const targetWords = getTargetWords();
 
+  const isTimedTest =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
-    const targetWord = targetWords[i] as string;
+    let targetWord = targetWords[i] as string;
+    const isLastInputWord = i === inputWords.length - 1;
 
-    if (inputWord === targetWord) {
-      //the word is correct
-      correctWordChars += targetWord.length;
-      correctChars += targetWord.length;
-      if (
-        i < inputWords.length - 1 &&
-        Strings.getLastChar(inputWord) !== "\n"
-      ) {
-        correctspaces++;
-      }
-    } else if (inputWord.length >= targetWord.length) {
-      //too many chars
-      for (let c = 0; c < inputWord.length; c++) {
-        if (c < targetWord.length) {
-          //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
-            correctChars++;
-          } else {
-            incorrectChars++;
-          }
-        } else {
-          //on char that is extra
-          extraChars++;
-        }
-      }
-    } else {
-      //not enough chars
-      const toAdd = {
-        correct: 0,
-        incorrect: 0,
-        missed: 0,
-      };
-      for (let c = 0; c < targetWord.length; c++) {
-        if (c < inputWord.length) {
-          //on char that still has a word list pair
-          if (inputWord[c] === targetWord[c]) {
-            toAdd.correct++;
-          } else {
-            toAdd.incorrect++;
-          }
-        } else {
-          //on char that is extra
-          toAdd.missed++;
-        }
-      }
-      correctChars += toAdd.correct;
-      incorrectChars += toAdd.incorrect;
-
-      const isTimedTest =
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-      const shouldCountPartialLastWord = !final || (final && isTimedTest);
-
-      if (i === inputWords.length - 1 && shouldCountPartialLastWord) {
-        //last word - check if it was all correct - add to correct word chars
-        if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
-      } else {
-        missedChars += toAdd.missed;
-      }
+    // getTargetWords appends a delimiter to every word except the last in the
+    // generated list; for the last input word (active in timed/mid-test, or
+    // the actual last word) drop that delimiter so overshoot counts as extra
+    if (isLastInputWord && targetWord.endsWith(" ")) {
+      targetWord = targetWord.slice(0, -1);
     }
-    if (i < inputWords.length - 1) {
-      spaces++;
-    }
+
+    const { correctWord, allCorrect, incorrect, missed, extra } =
+      countCharsUtils(
+        inputWord,
+        targetWord,
+        isLastInputWord && ((isTimedTest && final) || !final),
+      );
+
+    correctWordChars += correctWord;
+    correctChars += allCorrect;
+    incorrectChars += incorrect;
+    extraChars += extra;
+    missedChars += missed;
   }
-  if (isFunboxActiveWithProperty("nospace")) {
-    spaces = 0;
-    correctspaces = 0;
-  }
+
   return {
-    spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
       Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
-    correctSpaces: correctspaces,
   };
 }
 
@@ -415,9 +339,8 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) || !isFinite(wpm) ? 0 : wpm,
@@ -427,14 +350,8 @@ export function calculateFinalStats(): Stats {
     incorrectChars: chars.incorrectChars,
     missedChars: chars.missedChars,
     extraChars: chars.extraChars,
-    allChars:
-      chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars,
+    allChars: chars.allCorrectChars + chars.incorrectChars + chars.extraChars,
     time: Numbers.roundTo2(testSeconds),
-    spaces: chars.spaces,
-    correctSpaces: chars.correctSpaces,
   };
   console.debug("Result stats", ret);
   return ret;

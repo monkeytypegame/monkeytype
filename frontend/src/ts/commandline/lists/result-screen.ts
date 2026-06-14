@@ -4,11 +4,11 @@ import * as PractiseWordsModal from "../../modals/practise-words";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
-import * as TestInput from "../../test/test-input";
+} from "../../states/notifications";
+import { getInputHistory } from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
@@ -141,8 +141,8 @@ const commands: Command[] = [
     exec: (): void => {
       const words = (
         Config.mode === "zen"
-          ? TestInput.input.getHistory()
-          : TestWords.words.list.slice(0, TestInput.input.getHistory().length)
+          ? getInputHistory()
+          : TestWords.words.list.slice(0, getInputHistory().length)
       ).join(" ");
 
       navigator.clipboard.writeText(words).then(

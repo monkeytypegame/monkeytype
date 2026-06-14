@@ -1,8 +1,9 @@
 import { replaceHomoglyphs } from "./homoglyphs";
+import { sanitizeString } from "@monkeytype/util/strings";
 import { ZodEffects, ZodString } from "zod";
 
 // Sorry for the bad words
-const profanities = [
+const disallowedWords = [
   "miodec",
   "bitly",
   "niqqa",
@@ -391,19 +392,7 @@ const profanities = [
   "zabourah",
 ];
 
-function sanitizeString(str: string | undefined): string | undefined {
-  if (str === undefined || str === "") {
-    return str;
-  }
-
-  return str
-    .replace(/[\u0300-\u036F]/g, "")
-    .trim()
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/\s{3,}/g, "  ");
-}
-
-export function containsProfanity(
+function containsDisallowedWords(
   text: string,
   mode: "word" | "substring",
 ): boolean {
@@ -414,27 +403,29 @@ export function containsProfanity(
       return replaceHomoglyphs(sanitizeString(str) ?? "");
     });
 
-  const hasProfanity = profanities.some((profanity) => {
+  const hasDisallowedWords = disallowedWords.some((disallowedWord) => {
     return normalizedText.some((word) => {
       return mode === "word"
-        ? word.startsWith(profanity)
-        : word.includes(profanity);
+        ? word.startsWith(disallowedWord)
+        : word.includes(disallowedWord);
     });
   });
 
-  return hasProfanity;
+  return hasDisallowedWords;
 }
 
-export function doesNotContainProfanity(
+export function doesNotContainDisallowedWords(
   mode: "word" | "substring",
   schema: ZodString,
 ): ZodEffects<ZodString> {
   return schema.refine(
     (val) => {
-      return !containsProfanity(val, mode);
+      return !containsDisallowedWords(val, mode);
     },
     (val) => ({
-      message: `Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (${val})`,
+      message: `Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (${val}).`,
     }),
   );
 }
+
+export const __testing = { containsDisallowedWords };

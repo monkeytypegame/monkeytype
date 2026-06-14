@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import { format } from "date-fns/format";
 import { getLanguageDisplayString } from "../utils/strings";
-import Config from "../config";
+import { Config } from "../config/store";
 import Format from "../singletons/format";
 import AnimatedModal from "../utils/animated-modal";
 import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
@@ -52,11 +52,10 @@ function update(mode: Mode): void {
     let dateText = `-<br><span class="sub">-</span>`;
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
-      dateText =
-        format(date, "dd MMM yyyy") +
-        "<br><div class='sub'>" +
-        format(date, "HH:mm") +
-        "</div>";
+      dateText = `${format(date, "dd MMM yyyy")}<br><div class='sub'>${format(
+        date,
+        "HH:mm",
+      )}</div>`;
     }
     currentTbody?.insertAdjacentHTML(
       "beforeend",

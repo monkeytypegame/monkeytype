@@ -9,9 +9,10 @@ import {
 import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import * as TestInput from "../../test/test-input";
+import { getCurrentInput } from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
-import * as CompositionState from "../../states/composition";
+import * as CompositionState from "../../legacy-states/composition";
+import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
 
@@ -67,7 +68,7 @@ inputEl.addEventListener("beforeinput", async (event) => {
       event.preventDefault();
     }
   } else {
-    throw new Error("Unhandled beforeinput type: " + inputType);
+    throw new Error(`Unhandled beforeinput type: ${inputType}`);
   }
 });
 
@@ -94,6 +95,9 @@ inputEl.addEventListener("input", async (event) => {
     return;
   }
 
+  // just in case before input doesn't catch this
+  if (TestState.resultCalculating || TestState.testRestarting) return;
+
   const now = performance.now();
 
   const inputType = event.inputType;
@@ -116,16 +120,16 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
-    onDelete(inputType);
+    onDelete(inputType, now);
   } else if (
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"
   ) {
     const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
     const inputPlusComposition =
-      TestInput.input.current + (CompositionState.getData() ?? "");
+      getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
-      TestWords.words.getCurrent() === inputPlusComposition;
+      TestWords.words.getCurrentText() === inputPlusComposition;
 
     // composition quick end
     // if the user typed the entire word correctly but is still in composition
@@ -147,6 +151,6 @@ inputEl.addEventListener("input", async (event) => {
       TestUI.afterTestCompositionUpdate();
     }
   } else {
-    throw new Error("Unhandled input type: " + inputType);
+    throw new Error(`Unhandled input type: ${inputType}`);
   }
 });

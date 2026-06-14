@@ -1,5 +1,6 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
+export { sanitizeString } from "@monkeytype/util/strings";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -115,16 +116,13 @@ export function flattenObjectDeep(
   return result;
 }
 
-export function sanitizeString(str: string | undefined): string | undefined {
-  if (str === undefined || str === "") {
-    return str;
-  }
+const suffixes = ["th", "st", "nd", "rd"];
 
-  return str
-    .replace(/[\u0300-\u036F]/g, "")
-    .trim()
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/\s{3,}/g, "  ");
+export function getOrdinalNumberString(number: number): string {
+  const lastTwo = number % 100;
+  const suffix =
+    suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
+  return `${number}${suffix}`;
 }
 
 type TimeUnit =
@@ -191,7 +189,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
 
 export function escapeHTML(str: string): string {
   return str.replace(/[^\w. ]/gi, function (c) {
-    return "&#" + c.charCodeAt(0) + ";";
+    return `&#${c.charCodeAt(0)};`;
   });
 }
 

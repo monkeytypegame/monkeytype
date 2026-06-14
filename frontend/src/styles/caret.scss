@@ -94,7 +94,6 @@
 
   &.block {
     width: 0.5em;
-    border-radius: 0;
     z-index: -1;
     border-radius: 0.05em;
   }
@@ -105,6 +104,7 @@
     background: transparent;
     border: 0.05em solid var(--caret-color);
     border-radius: 0.05em;
+    outline-style: none !important; // override tailwind class of the same name
   }
 
   &.underline {

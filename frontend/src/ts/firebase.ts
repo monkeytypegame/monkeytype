@@ -31,9 +31,9 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { dispatch as dispatchSignUpEvent } from "./observables/google-sign-up-event";
-import { addBanner } from "./stores/banners";
-import { setUserId } from "./signals/core";
+import { googleSignUpEvent } from "./events/google-sign-up";
+import { addBanner } from "./states/banners";
+import { setUserId, setUserVerified } from "./states/core";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -69,8 +69,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
+        setUserState(user);
         await callback(true, user);
-        setUserId(user?.uid ?? null);
       }
     });
   } catch (e) {
@@ -78,7 +78,7 @@ export async function init(callback: ReadyCallback): Promise<void> {
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
     await callback(false, null);
-    setUserId(null);
+    setUserState(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
@@ -89,10 +89,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
   } finally {
     resolveAuthPromise();
   }
-}
-
-export function isAuthenticated(): boolean {
-  return Auth?.currentUser !== undefined && Auth?.currentUser !== null;
 }
 
 /**
@@ -138,6 +134,21 @@ export async function signInWithEmailAndPassword(
   return result;
 }
 
+export function setUserState(
+  options: {
+    uid: string;
+    emailVerified: boolean;
+  } | null,
+): void {
+  if (options === null) {
+    setUserId(null);
+    setUserVerified(false);
+  } else {
+    setUserId(options.uid);
+    setUserVerified(options.emailVerified);
+  }
+}
+
 export async function signInWithPopup(
   provider: AuthProvider,
   rememberMe: boolean,
@@ -156,8 +167,9 @@ export async function signInWithPopup(
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);
   if (additionalUserInfo?.isNewUser) {
-    dispatchSignUpEvent(signedInUser, true);
+    googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
+    setUserState(signedInUser.user);
     ignoreAuthCallback = false;
     await readyCallback?.(true, signedInUser.user);
   }
@@ -230,7 +242,7 @@ function translateFirebaseError(
       message =
         "Account already exists, but its using a different authentication method. Try signing in with a different method";
     } else {
-      message = "Firebase error: " + error.code;
+      message = `Firebase error: ${error.code}`;
     }
   }
 

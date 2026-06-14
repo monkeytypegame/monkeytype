@@ -107,9 +107,9 @@ export function objectToQueryString<T extends string | number | boolean>(
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
-        encodeURIComponent(p) +
-          "=" +
-          encodeURIComponent(obj[p] as unknown as T),
+        `${encodeURIComponent(p)}=${encodeURIComponent(
+          obj[p] as unknown as T,
+        )}`,
       );
     }
   }
@@ -134,17 +134,8 @@ export function escapeHTML<T extends string | null | undefined>(str: T): T {
     return str;
   }
   return str.replace(/[^\w. ]/gi, function (c) {
-    return "&#" + c.charCodeAt(0) + ";";
+    return `&#${c.charCodeAt(0)};`;
   }) as T;
-}
-
-export function isUsernameValid(name: string): boolean {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.toLowerCase().includes("miodec")) return false;
-  if (name.toLowerCase().includes("bitly")) return false;
-  if (name.length > 14) return false;
-  if (/^\..*/.test(name.toLowerCase())) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
@@ -319,16 +310,20 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
     .join("\n");
 
   const blob = new Blob([csvString], { type: "text/csv" });
+  download({ filename: "results.csv", data: blob });
+}
 
-  const href = window.URL.createObjectURL(blob);
-
+export function download(options: { filename: string; data: Blob }): void {
+  const url = URL.createObjectURL(options.data);
   const link = document.createElement("a");
-  link.setAttribute("href", href);
-  link.setAttribute("download", "results.csv");
-  document.body.appendChild(link); // Required for FF
+  link.href = url;
+  link.download = options.filename;
 
+  document.body.appendChild(link);
   link.click();
-  link.remove();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
 }
 
 export function isElementVisible(query: string): boolean {
@@ -477,6 +472,12 @@ export function typedKeys<T extends object>(
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
 }
 
+export function typedEntries<T extends object>(
+  obj: T,
+): { [K in keyof T]: [K, T[K]] }[keyof T][] {
+  return Object.entries(obj) as { [K in keyof T]: [K, T[K]] }[keyof T][];
+}
+
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
@@ -487,8 +488,7 @@ export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
   if (title === undefined || title === "") {
-    document.title =
-      local + "Monkeytype | A minimalistic, customizable typing test";
+    document.title = `${local}Monkeytype | A minimalistic, customizable typing test`;
   } else {
     document.title = local + title;
   }
@@ -678,6 +678,11 @@ export function isMacLike(): boolean {
   return isPlatform(/Mac|iPod|iPhone|iPad/);
 }
 
+export function isFirefox(): boolean {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return userAgent.includes("firefox");
+}
+
 export function scrollToCenterOrTop(el: HTMLElement | null): void {
   if (!el) return;
 
@@ -693,7 +698,7 @@ export function formatTopPercentage(lbRank?: RankAndCount): string {
   if (lbRank === undefined) return "";
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
-  return "Top " + roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+  return `Top ${roundTo2((lbRank.rank / lbRank.count) * 100)}%`;
 }
 
 export function formatTypingStatsRatio(stats: {

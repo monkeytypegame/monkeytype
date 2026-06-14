@@ -1,15 +1,15 @@
 import Ape from "../ape";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { CharacterCounter } from "../elements/character-counter";
 import { ReportUserReason } from "@monkeytype/schemas/users";
 import { qsr } from "../utils/dom";

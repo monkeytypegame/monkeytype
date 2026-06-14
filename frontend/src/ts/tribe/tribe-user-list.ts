@@ -73,9 +73,9 @@ export function update(page?: string): void {
       </div>
       ${
         TribeState.getSelf()?.isLeader && user.id !== tribeSocket.getId()
-          ? `<div class='userSettings' userid='` +
-            user.id +
-            `' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+          ? `<div class='userSettings' userid='${
+              user.id
+            }' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
           : ``
       }
     </div>

@@ -1,30 +1,57 @@
-import Config from "./config";
+import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import * as TestState from "./test/test-state";
-import * as ConfigEvent from "./observables/config-event";
+import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import { getActivePage, getGlobalOffsetTop } from "./signals/core";
+import {
+  getActivePage,
+  getCustomTextIndicator,
+  getGlobalOffsetTop,
+} from "./states/core";
 import { isDevEnvironment } from "./utils/env";
-import { isCustomTextLong } from "./states/custom-text-name";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
-import { applyFontFamily } from "./controllers/theme-controller";
 import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
+import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
   document.documentElement.style.setProperty(
     "--font",
-    '"' +
-      font.replaceAll(/_/g, " ") +
-      '", "Roboto Mono", "Vazirharf", "monospace"',
+    `"${font.replaceAll(/_/g, " ")}", "Roboto Mono", "Vazirharf", "monospace"`,
   );
   void TestUI.updateHintsPositionDebounced();
   isPreviewingFont = true;
+}
+
+export async function applyFontFamily(): Promise<void> {
+  let font = Config.fontFamily.replace(/_/g, " ");
+
+  const localFont = await fileStorage.getFile("LocalFontFamilyFile");
+  if (localFont === undefined) {
+    //use config font
+    qs(".customFont")?.empty();
+  } else {
+    font = "LOCALCUSTOM";
+
+    qs(".customFont")?.setHtml(`
+      @font-face{ 
+        font-family: LOCALCUSTOM;
+        src: url(${localFont});
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }`);
+  }
+
+  document.documentElement.style.setProperty(
+    "--font",
+    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
+  );
 }
 
 export function clearFontPreview(): void {
@@ -47,7 +74,7 @@ export function setMediaQueryDebugLevel(level: number): void {
 
 if (isDevEnvironment()) {
   qs("head title")?.setText(
-    (qs("head title")?.native.textContent ?? "") + " (localhost)",
+    `${qs("head title")?.native.textContent ?? ""} (localhost)`,
   );
   qs("body")?.appendHtml(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`,
@@ -62,7 +89,7 @@ window.addEventListener("beforeunload", (event) => {
       Config.words,
       Config.time,
       CustomText.getData(),
-      isCustomTextLong() ?? false,
+      getCustomTextIndicator()?.isLong ?? false,
     )
   ) {
     //ignore
@@ -103,11 +130,11 @@ window.addEventListener("resize", () => {
 
 createEffect(() => {
   qsr("#app").setStyle({
-    paddingTop: getGlobalOffsetTop() + convertRemToPixels(2) + "px",
+    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
   });
 });
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (key === "fontFamily") {
     await applyFontFamily();
   }

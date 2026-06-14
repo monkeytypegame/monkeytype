@@ -44,7 +44,7 @@
     "testing.automaticallyOpenTestResults": "neverOpen",
     "vitest.maximumConfigs": 10,
     "oxc.typeAware": true,
-    "typescript.format.enable": false,
+    "js/ts.format.enabled": false,
     "oxc.fmt.configPath": ".oxfmtrc-editor.json",
     "oxc.fixKind": "safe_fix_or_suggestion",
     "[json]": {
@@ -68,6 +68,11 @@
     "[javascriptreact]": {
       "editor.defaultFormatter": "oxc.oxc-vscode",
     },
+    "css.validate": false,
+    "scss.validate": false,
+    "stylelint.lintFiles.glob": "**/*.{css,scss}",
+    "stylelint.snippet": ["css", "postcss", "scss"],
+    "stylelint.validate": ["css", "postcss", "scss"],
   },
 
   "launch": {
@@ -101,6 +106,7 @@
       "oxc.oxc-vscode",
       "bradlc.vscode-tailwindcss",
       "csstools.postcss",
+      "stylelint.vscode-stylelint",
     ],
   },
 }

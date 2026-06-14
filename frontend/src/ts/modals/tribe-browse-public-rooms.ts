@@ -4,7 +4,7 @@ import * as TribeConfig from "../tribe/tribe-config";
 import TribeSocket from "../tribe/tribe-socket";
 import * as TribeType from "../tribe/types";
 import * as Tribe from "../tribe/tribe";
-import { hideLoaderBar, showLoaderBar } from "../signals/loader-bar";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 
 function updateList(list: TribeType.PublicRoomData[]): void {
   const el = modal.getModal();

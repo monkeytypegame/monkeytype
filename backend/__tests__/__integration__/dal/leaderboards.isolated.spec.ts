@@ -12,6 +12,7 @@ import { LbPersonalBests } from "../../../src/utils/pb";
 import { pb } from "../../__testData__/users";
 import { createConnection } from "../../__testData__/connections";
 import { omit } from "../../../src/utils/misc";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 
 describe("LeaderboardsDal", () => {
   afterEach(async () => {
@@ -122,7 +123,7 @@ describe("LeaderboardsDal", () => {
     it("should remove consistency from results if null", async () => {
       //GIVEN
       const stats = pb(100, 90, 2);
-      //@ts-ignore
+      //@ts-expect-error ok for testing
       stats.consistency = undefined;
 
       await createUser(lbBests(stats));
@@ -468,11 +469,10 @@ describe("LeaderboardsDal", () => {
 function expectedLbEntry(
   time: string,
   { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry,
-) {
-  // @ts-expect-error
-  const lbBest: PersonalBest =
-    // @ts-expect-error
-    user.lbPersonalBests?.time[Number.parseInt(time)].english;
+): LeaderboardEntry {
+  const lbBest: PersonalBest = user.lbPersonalBests?.time[
+    Number.parseInt(time)
+  ]?.["english"] as PersonalBest;
 
   return {
     rank,
@@ -496,7 +496,7 @@ async function createUser(
   userProperties?: Partial<UserDal.DBUser>,
 ): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
-  await UserDal.addUser("User " + uid, uid + "@example.com", uid);
+  await UserDal.addUser(`User ${uid}`, `${uid}@example.com`, uid);
 
   await DB.getDb()
     ?.collection<UserDal.DBUser>("users")
@@ -505,8 +505,8 @@ async function createUser(
       {
         $set: {
           timeTyping: 7200,
-          discordId: "discord " + uid,
-          discordAvatar: "avatar " + uid,
+          discordId: `discord ${uid}`,
+          discordAvatar: `avatar ${uid}`,
           ...userProperties,
           lbPersonalBests,
         },
@@ -523,7 +523,7 @@ function lbBests(pb15?: PersonalBest, pb60?: PersonalBest): LbPersonalBests {
   return result;
 }
 
-function premium(expirationDeltaSeconds: number) {
+function premium(expirationDeltaSeconds: number): Partial<UserDal.DBUser> {
   return {
     premium: {
       startTimestamp: 0,

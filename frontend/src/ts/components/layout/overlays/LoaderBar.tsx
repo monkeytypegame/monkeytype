@@ -2,7 +2,7 @@ import { JSX } from "solid-js";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { useVisibilityAnimation } from "../../../hooks/useVisibilityAnimation";
-import { getLoaderBarSignal } from "../../../signals/loader-bar";
+import { getLoaderBarSignal } from "../../../states/loader-bar";
 import { applyReducedMotion } from "../../../utils/misc";
 
 export function LoaderBar(): JSX.Element {

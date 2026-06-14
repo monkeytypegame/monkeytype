@@ -6,7 +6,7 @@ import Logger from "../../utils/logger";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 function addSwaggerMiddlewares(app: Application): void {
-  const openApiSpec = __dirname + "/../../../dist/static/api/openapi.json";
+  const openApiSpec = `${__dirname}/../../../dist/static/api/openapi.json`;
 
   const { data: spec, error } = tryCatchSync(
     () =>

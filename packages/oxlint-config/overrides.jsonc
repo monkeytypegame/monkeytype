@@ -31,8 +31,8 @@
         "typescript/no-unsafe-type-assertion": "off",
         "typescript/no-unsafe-unary-minus": "off",
         "typescript/non-nullable-type-assertion-style": "off",
-        "typescript/only-throw-off": "off",
-        "typescript/prefer-promise-reject-offs": "off",
+        "typescript/only-throw-error": "off",
+        "typescript/prefer-promise-reject-errors": "off",
         "typescript/prefer-reduce-type-parameter": "off",
         "typescript/prefer-return-this-type": "off",
         "typescript/promise-function-async": "off",
@@ -61,28 +61,9 @@
       ],
       "rules": {
         "no-explicit-any": "off", //155
-        "ban-ts-comment": "off", //9
-
         "typescript/no-unsafe-assignment": "off", //386
         "typescript/no-unsafe-member-access": "off", //133
         "typescript/no-unsafe-argument": "off", //96
-        "typescript/await-thenable": "off", //41
-        "typescript/no-confusing-void-expression": "off", //30
-        "typescript/promise-function-async": "off", //19
-        "typescript/no-floating-promises": "off", //16
-        "typescript/no-unsafe-call": "off", //5
-        "consistent-type-definitions": "off", //5
-        "explicit-function-return-type": "off", //4
-        "eqeqeq": "off", //2
-        "typescript/no-unsafe-return": "off", //2
-        "no-empty-object-type": "off", //2
-        "typescript/strict-boolean-expressions": "off", //1
-        "typescript/no-unnecessary-type-assertion": "off", //1
-        "typescript/strict-void-return": "off",
-
-        "prefer-nullish-coalescing": "off",
-        "no-shadow": "off",
-        "no-non-null-assertion": "off",
       },
     },
     {

@@ -1,12 +1,12 @@
-import Config from "../config";
 import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
-import * as ConfigEvent from "../observables/config-event";
 import * as TribeTypes from "./types";
 import { createElementWithUtils, qsr } from "../utils/dom";
 import * as TestState from "../test/test-state";
 import { EasingParam } from "animejs";
 import { Caret } from "../elements/caret";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
 
 const wordsWrapper = qsr(".pageTest #wordsWrapper");
 
@@ -121,7 +121,7 @@ export function handleLineJump(options: {
   }
 }
 
-ConfigEvent.subscribe(({ key, newValue, previousValue }) => {
+configEvent.subscribe(({ key, newValue, previousValue }) => {
   if (key !== "tribeCarets") return;
   if (previousValue === newValue) return;
 

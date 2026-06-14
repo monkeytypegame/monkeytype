@@ -1,14 +1,15 @@
-import Config, * as UpdateConfig from "../config";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 import { debounce } from "throttle-debounce";
-import { configMetadata } from "../config-metadata";
 import * as CustomText from "../test/custom-text";
 import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
+import { Config } from "../config/store";
+import { applyConfig } from "../config/lifecycle";
+import { configMetadata } from "../config/metadata";
 
 export function getConfigString(config: TribeTypes.RoomConfig): string {
   const ret: string[] = [];
@@ -56,7 +57,7 @@ export function getConfigString(config: TribeTypes.RoomConfig): string {
   if (config.funbox.length > 0) ret.push(config.funbox.join(","));
   if (config.lazyMode) ret.push("lazy mode");
   if (config.stopOnError !== "off") {
-    ret.push("stop on " + (config.stopOnError === "word" ? "word" : "letter"));
+    ret.push(`stop on ${config.stopOnError === "word" ? "word" : "letter"}`);
   }
   if (config.minWpm !== "off") ret.push(`min ${config.minWpmCustomSpeed}wpm`);
   if (config.minAcc !== "off") ret.push(`min ${config.minAccCustom}% acc`);
@@ -99,8 +100,7 @@ export async function apply(config: TribeTypes.RoomConfig): Promise<void> {
     }
   }
 
-  await UpdateConfig.applyConfig(configToApply, {
-    nosave: true,
+  await applyConfig(configToApply, {
     tribeOverride: true,
   });
 }
@@ -135,7 +135,8 @@ export function getTribeConfig(): TribeTypes.RoomConfig {
     const typedKey = key as keyof TribeTypes.RoomConfig;
     if ("tribeBlocked" in meta && meta.tribeBlocked) {
       // @ts-expect-error customText skipped above
-      test[typedKey] = Config[typedKey] as keyof typeof test;
+      // oxlint-disable-next-line typescript/no-unsafe-assignment
+      test[typedKey] = Config[typedKey];
     }
   });
 

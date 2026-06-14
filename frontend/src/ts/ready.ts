@@ -1,10 +1,8 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
-//@ts-expect-error no types for this package
-import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
-import { configLoadPromise } from "./config";
+import { configLoadPromise } from "./config/lifecycle";
 import { authPromise } from "./firebase";
 import { animate } from "animejs";
 import { onDOMReady, qs, qsa } from "./utils/dom";
@@ -48,10 +46,6 @@ onDOMReady(async () => {
   });
 
   MonkeyPower.init();
-
-  // untyped, need to ignore
-  // oxlint-disable-next-line no-unsafe-call
-  new Konami("https://keymash.io/");
 
   if (isDevEnvironment()) {
     void navigator.serviceWorker

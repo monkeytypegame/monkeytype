@@ -1,8 +1,8 @@
 import { JSXElement, Show } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
-import { getIsScreenshotting } from "../../../signals/core";
-import { showModal } from "../../../stores/modals";
+import { getIsScreenshotting } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 import { Button } from "../../common/Button";

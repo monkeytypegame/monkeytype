@@ -1,6 +1,6 @@
 import "@tanstack/solid-table";
 import type { JSX } from "solid-js";
-import { BreakpointKey } from "../signals/breakpoints";
+import { BreakpointKey } from "../states/breakpoints";
 
 declare module "@tanstack/solid-table" {
   //This needs to be an interface

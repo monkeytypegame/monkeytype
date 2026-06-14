@@ -11,7 +11,6 @@ import {
   Language,
   LanguageObject,
   LanguageObjectSchema,
-  LanguageSchema,
 } from "@monkeytype/schemas/languages";
 import { Layout, ThemeName } from "@monkeytype/schemas/configs";
 import { LayoutsList } from "../src/ts/constants/layouts";
@@ -22,6 +21,11 @@ import { z } from "zod";
 import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
+import { clickSoundConfig } from "../src/ts/constants/sounds";
+import * as ghCore from "@actions/core";
+
+const stepSummary =
+  process.env["GITHUB_STEP_SUMMARY"] !== undefined ? ghCore.summary : undefined;
 
 class Problems<K extends string, T extends string> {
   private type: string;
@@ -51,22 +55,32 @@ class Problems<K extends string, T extends string> {
     return Object.keys(this.problems).length !== 0;
   }
   public toString(): string {
+    stepSummary?.addHeading(`${this.type} Checks`, 2);
     if (!this.hasError()) {
+      stepSummary?.addRaw("✅ all checks passed").addEOL();
       return `${this.type} are all \u001b[32mvalid\u001b[0m`;
     }
 
-    return (
-      `${this.type} are \u001b[31minvalid\u001b[0m\n` +
-      Object.entries(this.problems)
-        .map(([key, problems]) => {
-          let label: string = this.labels[key as T] ?? `${key}`;
+    Object.entries(this.problems).forEach(([key, problems]) => {
+      let label: string = this.labels[key as T] ?? `${key}`;
+      stepSummary
+        ?.addRaw(`❌ ${label}`)
+        .addEOL()
+        .addList(problems as string[])
+        .addEOL();
+    });
 
-          return `${label}:\n ${(problems as string[])
-            .map((error) => "\t- " + error)
-            .join("\n")}`;
-        })
-        .join("\n")
-    );
+    return `${this.type} are \u001b[31minvalid\u001b[0m\n${Object.entries(
+      this.problems,
+    )
+      .map(([key, problems]) => {
+        let label: string = this.labels[key as T] ?? `${key}`;
+
+        return `${label}:\n ${(problems as string[])
+          .map((error) => `\t- ${error}`)
+          .join("\n")}`;
+      })
+      .join("\n")}`;
   }
 }
 
@@ -137,7 +151,7 @@ async function validateLayouts(): Promise<void> {
   //no files not defined in LayoutsList
   const additionalLayoutFiles = fs
     .readdirSync("./static/layouts")
-    .filter((it) => !LayoutsList.some((layout) => layout + ".json" === it));
+    .filter((it) => !LayoutsList.some((layout) => `${layout}.json` === it));
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -154,7 +168,7 @@ async function validateQuotes(): Promise<void> {
 
   const shortQuotes = JSON.parse(
     fs.readFileSync("./scripts/short-quotes.json", "utf8"),
-  ) as Partial<Record<QuoteData["language"], number[]>>;
+  ) as Record<QuoteData["language"], number[]>;
 
   const quotesFiles = fs.readdirSync("./static/quotes/");
   for (let quotefilename of quotesFiles) {
@@ -185,12 +199,7 @@ async function validateQuotes(): Promise<void> {
     }
 
     //check schema
-    const schema = QuoteDataSchema.extend({
-      language: LanguageSchema
-        //icelandic only exists as icelandic_1k, language in quote file is stripped of its size
-        .or(z.literal("icelandic")),
-    });
-    problems.addValidation(quotefilename, schema.safeParse(quoteData));
+    problems.addValidation(quotefilename, QuoteDataSchema.safeParse(quoteData));
 
     //check for duplicate ids
     const duplicates = findDuplicates(quoteData.quotes.map((it) => it.id));
@@ -282,7 +291,7 @@ async function validateLanguages(): Promise<void> {
     );
 
     if (languageFileData.name !== language) {
-      problems.add(language, "Name is not " + language);
+      problems.add(language, `Name is not ${language}`);
     }
     const duplicates = findDuplicates(languageFileData.words);
     const duplicatePercentage =
@@ -299,7 +308,7 @@ async function validateLanguages(): Promise<void> {
 
   //no files not defined in LanguageList
   fs.readdirSync("./static/languages")
-    .filter((it) => !LanguageList.some((language) => language + ".json" === it))
+    .filter((it) => !LanguageList.some((language) => `${language}.json` === it))
     .forEach((it) => problems.add("_additional", it));
 
   //check groups
@@ -396,7 +405,7 @@ async function validateThemes(): Promise<void> {
 
   //missing or additional theme files (mismatch in hasCss)
   ThemesList.filter(
-    (it) => themeFiles.includes(it.name + ".css") !== (it.hasCss ?? false),
+    (it) => themeFiles.includes(`${it.name}.css`) !== (it.hasCss ?? false),
   ).forEach((it) =>
     problems.add(
       it.name,
@@ -406,7 +415,7 @@ async function validateThemes(): Promise<void> {
 
   //additional theme files
   themeFiles
-    .filter((it) => !ThemesList.some((theme) => theme.name + ".css" === it))
+    .filter((it) => !ThemesList.some((theme) => `${theme.name}.css` === it))
     .forEach((it) => problems.add("_additional", it));
 
   //validate theme colors are valid hex colors, not covered by typescipt
@@ -427,6 +436,54 @@ async function validateThemes(): Promise<void> {
   }
 }
 
+async function validateSounds(): Promise<void> {
+  const problems = new Problems<string, "_additional">("Sounds", {
+    _additional:
+      "Sound files present but missing in frontend/src/ts/constants/sounds",
+  });
+
+  const soundFiles = new Set(
+    fs
+      .readdirSync("./static/sounds")
+      .filter((it) => it.startsWith("click"))
+      .flatMap((folder) =>
+        fs
+          .readdirSync(`./static/sounds/${folder}`)
+          .map((it) => `${folder}/${it}`),
+      ),
+  );
+
+  //missing sound files
+
+  Object.entries(clickSoundConfig).forEach(([key, value]) => {
+    value
+      .map((file) => file.substring("../sounds/".length))
+      .filter((it) => !soundFiles.has(it))
+      .forEach((file) =>
+        problems.add(
+          `click${key}`,
+          `missing file frontend/static/sounds/${file}`,
+        ),
+      );
+  });
+
+  //additional files
+  const expectedSoundFiles = new Set(
+    Object.values(clickSoundConfig).flatMap((it) =>
+      it.map((file) => file.substring("../sounds/".length)),
+    ),
+  );
+  [...soundFiles]
+    .filter((name) => !expectedSoundFiles.has(name))
+    .forEach((file) => problems.add("_additional", file));
+
+  console.log(problems.toString());
+
+  if (problems.hasError()) {
+    throw new Error("sounds with errors");
+  }
+}
+
 type Validator = () => Promise<void>;
 
 async function main(): Promise<void> {
@@ -442,11 +499,13 @@ async function main(): Promise<void> {
     challenges: [validateChallenges],
     fonts: [validateFonts],
     themes: [validateThemes],
+    sounds: [validateSounds],
     others: [
       validateChallenges,
       validateLayouts,
       validateFonts,
       validateThemes,
+      validateSounds,
     ],
   };
 
@@ -468,8 +527,15 @@ async function main(): Promise<void> {
   }
 
   if (tasks.size > 0) {
-    await Promise.all([...tasks].map(async (validator) => validator()));
-    return;
+    const results = await Promise.allSettled(
+      [...tasks].map(async (validator) => validator()),
+    );
+
+    await stepSummary?.write();
+
+    if (results.find((it) => it.status === "rejected") !== undefined) {
+      throw new Error("One or more checks failed.");
+    }
   }
 }
 void main();

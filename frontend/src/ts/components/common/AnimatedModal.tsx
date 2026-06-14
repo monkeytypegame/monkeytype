@@ -1,18 +1,13 @@
-import {
-  JSXElement,
-  createEffect,
-  onCleanup,
-  ParentProps,
-  Show,
-} from "solid-js";
+import { JSXElement, ParentProps, Show, onCleanup } from "solid-js";
 
+import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
   hideModal as storeHideModal,
   ModalId,
   isModalOpen,
   isModalChained,
-} from "../../stores/modals";
+} from "../../states/modals";
 import { cn } from "../../utils/cn";
 import { applyReducedMotion } from "../../utils/misc";
 
@@ -37,13 +32,16 @@ type AnimatedModalProps = ParentProps<{
     hide?: AnimationConfig;
   };
   focusFirstInput?: true | "focusAndSelect";
-  beforeShow?: () => void | Promise<void>;
+  beforeShow?: (isChained: boolean) => void | Promise<void>;
   afterShow?: () => void | Promise<void>;
   beforeHide?: () => void | Promise<void>;
   afterHide?: () => void | Promise<void>;
   onEscape?: (e: KeyboardEvent) => void;
   onBackdropClick?: (e: MouseEvent) => void;
   onScroll?: (e: Event) => void;
+
+  closeOnWrapperClick?: boolean;
+  closeOnEscape?: boolean;
 
   title?: string;
   modalClass?: string;
@@ -61,27 +59,36 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   const visibility = (): boolean => isModalOpen(props.id);
 
   // Handle open/close with animations
-  createEffect(() => {
-    const isChained = isModalChained(props.id);
+  createEffectOn(
+    visibility,
+    (visible) => {
+      const isChained = isModalChained(props.id);
 
-    if (visibility()) {
-      void showModal(isChained);
-    } else {
-      void hideModal(isChained);
-    }
-  });
+      if (visible) {
+        void showModal(isChained);
+      } else if (dialogEl()?.native.open) {
+        void hideModal(isChained);
+      }
+    },
+    {},
+  );
 
   const showModal = async (isChained: boolean): Promise<void> => {
     if (dialogEl() === undefined || modalEl() === undefined) return;
+    if (dialogEl()?.native.open) return;
 
-    await props.beforeShow?.();
+    await props.beforeShow?.(isChained);
+
+    // After await, the element may have been removed from the DOM
+    if (!dialogEl()?.native.isConnected) return;
 
     // Open the dialog
     dialogEl()?.show();
+    dialogEl()?.setStyle({});
     if (props.mode === "dialog") {
       dialogEl()?.native.show();
     } else {
-      dialogEl()?.native.showModal();
+      dialogEl()?.native?.showModal();
     }
 
     const modalAnimDuration = applyReducedMotion(
@@ -265,7 +272,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     if (modalEl() === undefined || dialogEl() === undefined) return;
     if (props.focusFirstInput === undefined) return;
 
-    const input = modalEl()?.qs<HTMLInputElement>("input:not(.hidden)");
+    const input = modalEl()?.qsa<HTMLInputElement>("input:not(.hidden)")[0];
     if (input) {
       if (props.focusFirstInput === true) {
         input.focus();
@@ -278,6 +285,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === "Escape" && visibility()) {
+      if (props.closeOnEscape === false) return;
       e.preventDefault();
       e.stopPropagation();
       if (props.onEscape) {
@@ -289,6 +297,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   };
 
   const handleBackdropClick = (e: MouseEvent): void => {
+    if (props.closeOnWrapperClick === false) return;
     if (e.target === dialogEl()?.native) {
       if (props.onBackdropClick) {
         props.onBackdropClick(e);
@@ -310,25 +319,27 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       ref={dialogRef}
       class={cn(
         "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        "flex h-full w-full items-center justify-center",
         props.wrapperClass,
       )}
+      style={{
+        display: "none",
+      }}
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div class="pointer-events-none flex h-full w-full items-center justify-center">
-        <div
-          class={cn(
-            "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
-            props.modalClass,
-          )}
-          ref={modalRef}
-          onScroll={(e) => props.onScroll?.(e)}
-        >
-          <Show when={props.title !== undefined && props.title !== ""}>
-            <div class="text-2xl text-sub">{props.title}</div>
-          </Show>
-          {props.children}
-        </div>
+      <div
+        class={cn(
+          "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+          props.modalClass,
+        )}
+        ref={modalRef}
+        onScroll={(e) => props.onScroll?.(e)}
+      >
+        <Show when={props.title !== undefined && props.title !== ""}>
+          <div class="text-2xl text-sub">{props.title}</div>
+        </Show>
+        {props.children}
       </div>
     </dialog>
   );

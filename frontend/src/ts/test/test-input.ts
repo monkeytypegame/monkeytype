@@ -1,7 +1,7 @@
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestState from "./test-state";
-import Config from "../config";
+import { Config } from "../config/store";
 import { getInputElementValue } from "../input/input-element";
 
 const keysToTrack = new Set([
@@ -99,11 +99,9 @@ type ErrorHistoryObject = {
 class Input {
   current: string;
   private history: string[];
-  koreanStatus: boolean;
   constructor() {
     this.current = "";
     this.history = [];
-    this.koreanStatus = false;
   }
 
   reset(): void {
@@ -113,14 +111,6 @@ class Input {
 
   resetHistory(): void {
     this.history = [];
-  }
-
-  setKoreanStatus(val: boolean): void {
-    this.koreanStatus = val;
-  }
-
-  getKoreanStatus(): boolean {
-    return this.koreanStatus;
   }
 
   pushHistory(): void {
@@ -305,13 +295,15 @@ export function forceKeyup(now: number): void {
   const keypressDurations = keypressTimings.duration.array.filter(
     (_, index) => !indexesToRemove.has(index),
   );
+  let avg: number;
   if (keypressDurations.length === 0) {
     // this means the test ended while all keys were still held - probably safe to ignore
     // since this will result in a "too short" test anyway
-    return;
+    // or we should use a magic number
+    avg = 80;
+  } else {
+    avg = roundTo2(mean(keypressDurations));
   }
-
-  const avg = roundTo2(mean(keypressDurations));
 
   const orderedKeys = Object.entries(keyDownData).sort(
     (a, b) => a[1].timestamp - b[1].timestamp,
@@ -371,7 +363,7 @@ export function recordKeyupTime(now: number, event: KeyboardEvent): void {
 
   if (key === "NoCode") {
     noCodeIndex--;
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
   }
 
   const keyDownDataForKey = keyDownData[key];
@@ -414,7 +406,7 @@ export function recordKeydownTime(now: number, event: KeyboardEvent): void {
   }
 
   if (key === "NoCode") {
-    key = "NoCode" + noCodeIndex;
+    key = `NoCode${noCodeIndex}`;
     noCodeIndex++;
   }
 
@@ -452,10 +444,10 @@ function updateOverlap(now: number): void {
   }
 }
 
-export function resetKeypressTimings(): void {
-  //because keydown triggers before input, we need to grab the first keypress data here and carry it over
+export function carryoverFirstKeypress(): void {
+  // Because keydown triggers before input, we need to grab the first keypress data here and carry it over
 
-  //take the key with the largest index
+  // Take the key with the largest index
   const lastKey = Object.keys(keyDownData).reduce((a, b) => {
     const aIndex = keyDownData[a]?.index;
     const bIndex = keyDownData[b]?.index;
@@ -464,10 +456,30 @@ export function resetKeypressTimings(): void {
     return aIndex > bIndex ? a : b;
   }, "");
 
-  //get the data
+  // Get the data
   const lastKeyData = keyDownData[lastKey];
 
-  //reset
+  // Carry over
+  if (lastKeyData !== undefined) {
+    keypressTimings = {
+      spacing: {
+        first: lastKeyData.timestamp,
+        last: lastKeyData.timestamp,
+        array: [],
+      },
+      duration: {
+        array: [0],
+      },
+    };
+    keyDownData[lastKey] = {
+      timestamp: lastKeyData.timestamp,
+      // Make sure to set it to the first index
+      index: 0,
+    };
+  }
+}
+
+function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
       first: -1,
@@ -484,25 +496,6 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-
-  //carry over
-  if (lastKeyData !== undefined) {
-    keypressTimings = {
-      spacing: {
-        first: lastKeyData.timestamp,
-        last: lastKeyData.timestamp,
-        array: [],
-      },
-      duration: {
-        array: [0],
-      },
-    };
-    keyDownData[lastKey] = {
-      timestamp: lastKeyData.timestamp,
-      // make sure to set it to the first index
-      index: 0,
-    };
-  }
 
   console.debug("Keypress timings reset");
 }
@@ -551,4 +544,26 @@ export function restart(): void {
     correct: 0,
     incorrect: 0,
   };
+
+  resetKeypressTimings();
+}
+
+export function getCurrentInput(): string {
+  return input.current;
+}
+
+export function getInputForWord(wordIndex: number): string | undefined {
+  return input.get(wordIndex);
+}
+
+export function resetCurrentInput(): void {
+  input.current = "";
+}
+
+export function getMissedWords(): MissedWordsType {
+  return missedWords;
+}
+
+export function getInputHistory(): string[] {
+  return input.getHistory();
 }

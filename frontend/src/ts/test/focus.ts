@@ -3,9 +3,9 @@ import * as LiveSpeed from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
-import * as PageTransition from "../states/page-transition";
+import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getFocus, setFocus } from "../signals/core";
+import { getFocus, setFocus } from "../states/test";
 import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;
@@ -39,6 +39,7 @@ function initializeCache(): void {
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
+  if (value === getFocus()) return;
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
     cache.cursor = qsa("body, button, a");

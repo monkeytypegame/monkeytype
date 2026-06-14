@@ -17,6 +17,7 @@ export const ChallengeSchema = z
       "script",
       "accuracy",
       "funbox",
+      "other",
     ]),
     message: z.string().optional(),
     parameters: z.array(

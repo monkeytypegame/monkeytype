@@ -1,24 +1,27 @@
 import { JSXElement, Show } from "solid-js";
 
-import Config, { setConfig } from "../../../config";
-import { isAuthenticated } from "../../../firebase";
+import { useCustomThemesLiveQuery } from "../../../collections/custom-themes";
+import { setConfig } from "../../../config/setters";
+import { Config } from "../../../config/store";
 import {
   getThemeIndicator,
+  isAuthenticated,
   setCommandlineSubgroup,
-} from "../../../signals/core";
-import { showModal } from "../../../stores/modals";
-import { showNoticeNotification } from "../../../stores/notifications";
-import { getSnapshot } from "../../../stores/snapshot";
+} from "../../../states/core";
+import { showModal } from "../../../states/modals";
+import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
+  const themes = useCustomThemesLiveQuery();
+
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
       if (Config.customTheme) {
         setConfig("customTheme", false);
         return;
       }
-      if (isAuthenticated() && (getSnapshot()?.customThemes?.length ?? 0) < 1) {
+      if (isAuthenticated() && themes().length < 1) {
         showNoticeNotification("No custom themes!");
         setConfig("customTheme", false);
         return;

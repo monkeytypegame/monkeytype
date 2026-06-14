@@ -193,7 +193,7 @@ describe("user controller test", () => {
         ],
       });
     });
-    it("should fail if username contains profanity", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //GIVEN
       const newUser = {
         uid: uid,
@@ -212,7 +212,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -277,7 +277,7 @@ describe("user controller test", () => {
       });
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
-    it("returns 422 if username contains profanity", async () => {
+    it("returns 422 if username contains disallowed word", async () => {
       await mockApp
         .get("/users/checkName/newMiodec")
         //no authentication required
@@ -679,7 +679,7 @@ describe("user controller test", () => {
         discordId: "discordId",
         banned: true,
       } as Partial<UserDal.DBUser> as UserDal.DBUser;
-      await getUserMock.mockResolvedValue(user);
+      getUserMock.mockResolvedValue(user);
 
       //WHEN
       await mockApp
@@ -1139,7 +1139,7 @@ describe("user controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should fail if username contains profanity", async () => {
+    it("should fail if username contains disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/name")
@@ -1151,7 +1151,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"name" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
         ],
       });
     });
@@ -1544,8 +1544,8 @@ describe("user controller test", () => {
   describe("get oauth link", () => {
     const getOauthLinkMock = vi.spyOn(DiscordUtils, "getOauthLink");
     const url = "http://example.com:1234?test";
-    beforeEach(() => {
-      enableDiscordIntegration(true);
+    beforeEach(async () => {
+      await enableDiscordIntegration(true);
       getOauthLinkMock.mockClear().mockResolvedValue(url);
     });
 
@@ -1565,7 +1565,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
-      enableDiscordIntegration(false);
+      await enableDiscordIntegration(false);
 
       //WHEN
       const { body } = await mockApp
@@ -2066,7 +2066,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
@@ -2086,8 +2086,8 @@ describe("user controller test", () => {
       "removeResultFilterPreset",
     );
 
-    beforeEach(() => {
-      enableResultFilterPresets(true);
+    beforeEach(async () => {
+      await enableResultFilterPresets(true);
       removeResultFilterPresetMock.mockClear().mockResolvedValue();
     });
 
@@ -2107,7 +2107,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
 
       //WHEN
       const { body } = await mockApp
@@ -3310,7 +3310,7 @@ describe("user controller test", () => {
         expect.objectContaining({}),
       );
     });
-    it("should fail with profanity", async () => {
+    it("should fail with disallowed word", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/profile")
@@ -3330,11 +3330,11 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"bio" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"keyboard" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.twitter" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.github" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
-          '"socialProfiles.website" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (https://i-luv-miodec.com)',
+          '"bio" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"keyboard" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.twitter" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.github" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (miodec).',
+          '"socialProfiles.website" Disallowed word detected. Please remove it. If you believe this is a mistake, please contact us (https://i-luv-miodec.com).',
         ],
       });
     });
@@ -3347,11 +3347,11 @@ describe("user controller test", () => {
           bio: new Array(251).fill("x").join(""),
           keyboard: new Array(76).fill("x").join(""),
           socialProfiles: {
-            twitter: new Array(21).fill("x").join(""),
+            twitter: new Array(16).fill("x").join(""),
             github: new Array(40).fill("x").join(""),
-            website:
-              "https://" +
-              new Array(201 - "https://".length).fill("x").join(""),
+            website: `https://${new Array(201 - "https://".length)
+              .fill("x")
+              .join("")}`,
           },
         })
         .expect(422);
@@ -3362,7 +3362,7 @@ describe("user controller test", () => {
         validationErrors: [
           '"bio" String must contain at most 250 character(s)',
           '"keyboard" String must contain at most 75 character(s)',
-          '"socialProfiles.twitter" String must contain at most 20 character(s)',
+          '"socialProfiles.twitter" String must contain at most 15 character(s)',
           '"socialProfiles.github" String must contain at most 39 character(s)',
           '"socialProfiles.website" String must contain at most 200 character(s)',
         ],
@@ -3900,14 +3900,14 @@ describe("user controller test", () => {
   describe("get friends", () => {
     const getFriendsMock = vi.spyOn(UserDal, "getFriends");
 
-    beforeEach(() => {
-      enableConnectionsEndpoints(true);
+    beforeEach(async () => {
+      await enableConnectionsEndpoints(true);
       getFriendsMock.mockClear();
     });
 
     it("gets with premium enabled", async () => {
       //GIVEN
-      enablePremiumFeatures(true);
+      await enablePremiumFeatures(true);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,
@@ -3926,7 +3926,7 @@ describe("user controller test", () => {
 
     it("gets with premium disabled", async () => {
       //GIVEN
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,

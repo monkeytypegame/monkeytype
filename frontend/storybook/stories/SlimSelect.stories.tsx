@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { Component, createSignal } from "solid-js";
 import { fn } from "storybook/test";
+
+import preview from "#.storybook/preview";
 
 import SlimSelect from "../../src/ts/components/ui/SlimSelect";
 
@@ -53,7 +54,7 @@ export const WithValues = meta.story({
 
 export const Multiple = meta.story({
   render: () => {
-    const [selected, setSelected] = createSignal<string[]>(["red", "blue"]);
+    const [selected, setSelected] = createSignal(["red", "blue"]);
     return (
       <div style={{ width: "300px" }}>
         <SlimSelect
@@ -75,7 +76,7 @@ export const Multiple = meta.story({
 
 export const MultipleWithAll = meta.story({
   render: () => {
-    const [selected, setSelected] = createSignal<string[]>([
+    const [selected, setSelected] = createSignal([
       "english",
       "spanish",
       "french",

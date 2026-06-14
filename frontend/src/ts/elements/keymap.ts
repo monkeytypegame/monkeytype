@@ -1,13 +1,13 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import * as KeymapEvent from "../observables/keymap-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
+import { keymapEvent } from "../events/keymap";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
-import { showErrorNotification } from "../stores/notifications";
-import { getActivePage } from "../signals/core";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
 import * as TestWords from "../test/test-words";
-import { capsState } from "../test/caps-warning";
+import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
@@ -17,7 +17,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { animate } from "animejs";
 import { ElementsWithUtils, qsr } from "../utils/dom";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getTheme } from "../signals/theme";
+import { getTheme } from "../states/theme";
 
 import { createEffectOn } from "../hooks/effects";
 
@@ -101,7 +101,7 @@ function highlightKey(currentKey: string): void {
       $target.addClass("activeKey");
     } catch (e) {
       if (e instanceof Error) {
-        console.log("could not update highlighted keymap key: " + e.message);
+        console.log(`could not update highlighted keymap key: ${e.message}`);
       }
     }
   });
@@ -484,7 +484,7 @@ export async function refresh(): Promise<void> {
   } catch (e) {
     if (e instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message,
+        `something went wrong when changing layout, resettings: ${e.message}`,
       );
       // UpdateConfig.setConfig("keymapLayout", "qwerty",true);
     }
@@ -504,6 +504,7 @@ function getLegendStates(): KeymapLegendStates | undefined {
   // so we have to check for that.
   const shiftState = ShiftTracker.leftState || ShiftTracker.rightState;
   const altState = AltTracker.leftState || AltTracker.rightState;
+  const capsState = isCapsLockOn();
 
   const osDependentLettersState = isMacLike
     ? shiftState || capsState
@@ -601,7 +602,7 @@ async function updateLegends(): Promise<void> {
 }
 let ignoreConfigEvent = false;
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   const handleMode = (): void => {
     keymap.qsa(".activeKey").removeClass("activeKey");
     keymap.qsa(".keymapKey").setAttribute("style", "");
@@ -672,7 +673,7 @@ ConfigEvent.subscribe(({ key }) => {
   }
 });
 
-KeymapEvent.subscribe((mode, key, correct) => {
+keymapEvent.subscribe(({ mode, key, correct }) => {
   if (mode === "highlight") {
     highlightKey(key);
   }
@@ -703,4 +704,8 @@ document.addEventListener("keyup", (e) => {
   ) {
     void updateLegends();
   }
+});
+
+onCapsLockChange(() => {
+  if (Config.keymapLegendStyle === "dynamic") void updateLegends();
 });

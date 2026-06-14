@@ -4,10 +4,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
-// import * as Settings from "../pages/settings";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { getSnapshot, setSnapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 import { Snapshot } from "../constants/default-snapshot";

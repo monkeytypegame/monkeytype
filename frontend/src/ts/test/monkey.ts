@@ -1,6 +1,6 @@
 import { mapRange } from "@monkeytype/util/numbers";
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
+import { Config } from "../config/store";
+import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";
@@ -9,7 +9,7 @@ import { Keycode } from "../constants/keys";
 const monkeyEl = qs("#monkey");
 const monkeyFastEl = qs("#monkey .fast");
 
-ConfigEvent.subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "monkey" && TestState.isActive) {
     if (Config.monkey) {
       monkeyEl?.show();
@@ -57,7 +57,7 @@ export function updateFastOpacity(num: number): void {
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  monkeyEl?.setStyle({ animationDuration: animDuration + "s" });
+  monkeyEl?.setStyle({ animationDuration: `${animDuration}s` });
 }
 
 export function type(event: KeyboardEvent): void {

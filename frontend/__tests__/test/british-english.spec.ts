@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { replace } from "../../src/ts/test/british-english";
-import Config from "../../src/ts/config";
+import { Config } from "../../src/ts/config/store";
 
 describe("british-english", () => {
   describe("replace", () => {

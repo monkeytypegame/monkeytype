@@ -1,14 +1,11 @@
-import * as TestStats from "../test/test-stats";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
-import * as TestConfig from "../test/test-config";
 import Page from "./page";
 import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
-import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
-import * as TribeState from "../tribe/tribe-state";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
+import { resetIncompleteTests } from "../states/test";
 
 export const page = new Page({
   id: "test",
@@ -22,22 +19,15 @@ export const page = new Page({
       noAnim: true,
     });
     void Funbox.clear();
-    void ModesNotice.update();
     updateFooterAndVerticalAds(true);
   },
   beforeShow: async (options): Promise<void> => {
     updateFooterAndVerticalAds(false);
-    if (TribeState.isInARoom()) {
-      TestConfig.hide();
-    } else {
-      TestConfig.show();
-    }
-    TestStats.resetIncomplete();
+    resetIncompleteTests();
     TestLogic.restart({
       noAnim: true,
       tribeOverride: options.tribeOverride ?? false,
     });
-    void TestConfig.instantUpdate();
     void Keymap.refresh();
   },
 });

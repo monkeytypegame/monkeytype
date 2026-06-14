@@ -1,7 +1,7 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
-import { capsState } from "./caps-warning";
-import { showErrorNotification } from "../stores/notifications";
+import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
+import { showErrorNotification } from "../states/notifications";
 import * as KeyConverter from "../utils/key-converter";
 
 import { getActiveFunboxNames } from "./funbox/list";
@@ -21,7 +21,7 @@ export async function getCharFromEvent(
     const isNotPunctuation = !isPunctuationPattern.test(
       keyVariants.slice(altGrIndex, altGrIndex + 2).join(""),
     );
-    if (capsState && isNotPunctuation) {
+    if (isCapsLockOn() && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
     }
 

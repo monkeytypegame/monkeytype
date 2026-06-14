@@ -1,10 +1,8 @@
 import { JSXElement } from "solid-js";
 
-import {
-  dispatchRestartTest,
-  getActivePage,
-  getFocus,
-} from "../../../signals/core";
+import { restartTestEvent } from "../../../events/test";
+import { getActivePage } from "../../../states/core";
+import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
@@ -21,13 +19,13 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") dispatchRestartTest();
+        if (getActivePage() === "test") restartTestEvent.dispatch();
       }}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="-680 -1030 300 180"
-        class={cn("fill-[currentColor] text-main transition-colors", {
+        class={cn("h-full fill-[currentColor] text-main transition-colors", {
           "text-sub": getFocus(),
         })}
       >

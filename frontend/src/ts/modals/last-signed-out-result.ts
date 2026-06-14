@@ -4,10 +4,10 @@ import * as TestLogic from "../test/test-logic";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getAuthenticatedUser } from "../firebase";
-import * as AuthEvent from "../observables/auth-event";
+import { authEvent } from "../events/auth";
 
 function reset(): void {
   modal.getModal().qs(".result")?.setHtml(`
@@ -60,24 +60,24 @@ function fillData(): void {
   // };
 
   fillGroup("wpm", r.wpm);
-  fillGroup("acc", r.acc + "%");
+  fillGroup("acc", `${r.acc}%`);
   fillGroup("raw", r.rawWpm);
-  fillGroup("con", r.consistency + "%");
+  fillGroup("con", `${r.consistency}%`);
   fillGroup("chardata", r.charStats.join("/"));
 
-  let tt = r.mode + " " + r.mode2;
+  let tt = `${r.mode} ${r.mode2}`;
 
-  tt += "<br>" + r.language;
+  tt += `<br>${r.language}`;
 
   if (r.numbers) tt += "<br>numbers";
   if (r.punctuation) tt += "<br>punctuation";
   if (r.blindMode) tt += "<br>blind";
   if (r.lazyMode) tt += "<br>lazy";
   if (r.funbox.length > 0) {
-    tt += "<br>" + r.funbox.map((it) => it.replace(/_/g, " ")).join(",");
+    tt += `<br>${r.funbox.map((it) => it.replace(/_/g, " ")).join(",")}`;
   }
-  if (r.difficulty !== "normal") tt += "<br>" + r.difficulty;
-  if (r.tags.length > 0) tt += "<br>" + r.tags.length + " tags";
+  if (r.difficulty !== "normal") tt += `<br>${r.difficulty}`;
+  if (r.tags.length > 0) tt += `<br>${r.tags.length} tags`;
 
   fillGroup("testType", tt, true);
 }
@@ -117,7 +117,7 @@ function hide(): void {
   void modal.hide();
 }
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "snapshotUpdated" && event.data.isInitial) {
     if (TestLogic.notSignedInLastResult !== null) {
       show();

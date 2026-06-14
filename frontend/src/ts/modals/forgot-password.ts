@@ -5,9 +5,9 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
-} from "../stores/notifications";
+} from "../states/notifications";
 
-import { showLoaderBar, hideLoaderBar } from "../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { ElementWithUtils } from "../utils/dom";
 
@@ -67,7 +67,7 @@ async function submit(): Promise<void> {
       hideLoaderBar();
       if (result.status !== 200) {
         showErrorNotification(
-          "Failed to send password reset email: " + result.body.message,
+          `Failed to send password reset email: ${result.body.message}`,
         );
         return;
       }

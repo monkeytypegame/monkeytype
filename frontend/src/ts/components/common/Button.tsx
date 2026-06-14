@@ -2,7 +2,6 @@ import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
-import { Conditional } from "./Conditional";
 import { Fa, FaProps } from "./Fa";
 
 type BaseProps = {
@@ -13,10 +12,10 @@ type BaseProps = {
   children?: JSXElement;
   balloon?: BalloonProps;
   "router-link"?: true;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent) => void;
   type?: HTMLButtonElement["type"];
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
+  onMouseEnter?: (e: MouseEvent) => void;
+  onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
 };
@@ -26,6 +25,7 @@ export type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
+  danger?: boolean;
 };
 
 type AnchorProps = BaseProps & {
@@ -70,6 +70,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       variant() === "text" &&
         isActive() &&
         "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
+      !isAnchor() &&
+        (props as ButtonProps).danger &&
+        "[--themable-button-bg:var(--error-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
       {
         "pointer-events-none opacity-[0.33]": props.disabled,
       },
@@ -80,42 +83,16 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   };
 
   return (
-    <Conditional
-      if={isAnchor()}
-      then={
-        <a
-          class={getClasses()}
-          href={props.href}
-          target={
-            props["router-link"] || props.href?.startsWith("#")
-              ? undefined
-              : "_blank"
-          }
-          rel={
-            props["router-link"] || props.href?.startsWith("#")
-              ? undefined
-              : "noreferrer noopener"
-          }
-          {...balloonHtmlProps()}
-          {...(props["router-link"] ? { "router-link": "" } : {})}
-          onClick={() => props.onClick?.()}
-          onMouseEnter={() => props.onMouseEnter?.()}
-          onMouseLeave={() => props.onMouseLeave?.()}
-          data-ui-variant={variant()}
-          data-ui-element="button"
-          {...props.dataset}
-        >
-          {content}
-        </a>
-      }
-      else={
+    <Show
+      when={isAnchor()}
+      fallback={
         <button
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}
-          onClick={() => props.onClick?.()}
-          onMouseEnter={() => props.onMouseEnter?.()}
-          onMouseLeave={() => props.onMouseLeave?.()}
+          onClick={(e) => props.onClick?.(e)}
+          onMouseEnter={(e) => props.onMouseEnter?.(e)}
+          onMouseLeave={(e) => props.onMouseLeave?.(e)}
           {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
@@ -126,6 +103,31 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           {content}
         </button>
       }
-    />
+    >
+      <a
+        class={getClasses()}
+        href={props.href}
+        target={
+          props["router-link"] || props.href?.startsWith("#")
+            ? undefined
+            : "_blank"
+        }
+        rel={
+          props["router-link"] || props.href?.startsWith("#")
+            ? undefined
+            : "noreferrer noopener"
+        }
+        {...balloonHtmlProps()}
+        {...(props["router-link"] ? { "router-link": "" } : {})}
+        onClick={(e) => props.onClick?.(e)}
+        onMouseEnter={(e) => props.onMouseEnter?.(e)}
+        onMouseLeave={(e) => props.onMouseLeave?.(e)}
+        data-ui-variant={variant()}
+        data-ui-element="button"
+        {...props.dataset}
+      >
+        {content}
+      </a>
+    </Show>
   );
 }

@@ -16,29 +16,32 @@ import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
 } from "./lists/load-challenge";
 
-import Config, { applyConfigFromJson, setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../modals/custom-text";
+import { showModal } from "../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
   clearAllNotifications,
-} from "../stores/notifications";
+} from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchModal from "../modals/quote-search";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
-import { isAuthAvailable, isAuthenticated, signOut } from "../firebase";
+import { isAuthAvailable, signOut } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
+import { applyConfigFromJson } from "../config/lifecycle";
+import { getAllTestEvents } from "../test/events/data";
+import * as TestWords from "../test/test-words";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -82,7 +85,7 @@ export const commands: CommandsSubgroup = {
       display: "Change custom text",
       icon: "fa-align-left",
       exec: (): void => {
-        CustomTextPopup.show();
+        showModal("CustomText");
       },
     },
     {
@@ -91,7 +94,7 @@ export const commands: CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         setConfig("mode", "quote");
-        void QuoteSearchModal.show();
+        showModal("QuoteSearch");
       },
       shouldFocusTestUI: false,
     },
@@ -101,8 +104,8 @@ export const commands: CommandsSubgroup = {
       id: "shareTestSettings",
       display: "Share test settings",
       icon: "fa-share",
-      exec: async (): Promise<void> => {
-        ShareTestSettingsPopup.show();
+      exec: (): void => {
+        showModal("ShareTestSettings");
       },
     },
 
@@ -312,6 +315,28 @@ export const commands: CommandsSubgroup = {
       },
     },
     {
+      id: "copyResultData",
+      display: "Copy result data",
+      alias: "stats events",
+      icon: "fa-cog",
+      visible: false,
+      exec: async (): Promise<void> => {
+        navigator.clipboard
+          .writeText(
+            JSON.stringify({
+              events: getAllTestEvents(),
+              words: TestWords.words.list,
+            }),
+          )
+          .then(() => {
+            showSuccessNotification("Copied to clipboard");
+          })
+          .catch((e: unknown) => {
+            showErrorNotification("Failed to copy to clipboard", { error: e });
+          });
+      },
+    },
+    {
       id: "fpsCounter",
       display: "FPS counter...",
       icon: "fa-cog",
@@ -383,7 +408,7 @@ export const commands: CommandsSubgroup = {
   ],
 };
 
-const lists = {
+const lists: Record<CommandlineListKey, CommandsSubgroup | undefined> = {
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
@@ -409,11 +434,11 @@ export function doesListExist(listName: string): boolean {
     return true;
   }
 
-  return lists[listName as ListsObjectKeys] !== undefined;
+  return lists[listName as CommandlineListKey] !== undefined;
 }
 
 export async function getList(
-  listName: ListsObjectKeys | ConfigKey,
+  listName: CommandlineListKey | ConfigKey,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
@@ -422,7 +447,7 @@ export async function getList(
     return subGroup;
   }
 
-  const list = lists[listName as ListsObjectKeys];
+  const list = lists[listName as CommandlineListKey];
   if (!list) {
     showErrorNotification(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
@@ -437,8 +462,6 @@ stack = [commands];
 export function getStackLength(): number {
   return stack.length;
 }
-
-export type ListsObjectKeys = keyof typeof lists;
 
 export function setStackToDefault(): void {
   setStack([commands]);
@@ -501,13 +524,13 @@ function buildSingleListCommands(
         /\s?\.\.\.$/g,
         "",
       );
-      const singleListDisplay =
-        parentCommandDisplay +
-        '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
-        command.display;
+      const singleListDisplay = `${
+        parentCommandDisplay
+      }<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
+        command.display
+      }`;
 
-      const singleListDisplayNoIcon =
-        parentCommandDisplay + " " + command.display;
+      const singleListDisplayNoIcon = `${parentCommandDisplay} ${command.display}`;
 
       let newAlias: string | undefined = undefined;
 

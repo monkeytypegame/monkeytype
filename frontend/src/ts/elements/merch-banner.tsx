@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { addBanner } from "../stores/banners";
+import { addBanner } from "../states/banners";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const closed = new LocalStorageWithSchema({

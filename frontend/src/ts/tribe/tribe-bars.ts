@@ -1,12 +1,12 @@
 import * as TribeState from "./tribe-state";
-import Config from "../config";
-import * as SlowTimer from "../states/slow-timer";
+import { Config } from "../config/store";
 import tribeSocket from "./tribe-socket";
 import { isConfigInfinite } from "./tribe-config";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { ElementWithUtils, qs } from "../utils/dom";
 import { ColorName } from "../constants/themes";
-import { getTheme } from "../signals/theme";
+import * as SlowTimer from "../legacy-states/slow-timer";
+import { getTheme } from "../states/theme";
 
 export function init(page: string): void {
   let el: ElementWithUtils | null;
@@ -157,8 +157,8 @@ export function update(page: string, userId: string): void {
   el.qs(`.player[id=${userId}] .bar`)?.animate({
     width:
       Config.mode === "time" || isConfigInfinite(room.config)
-        ? user.progress?.wpmProgress + "%"
-        : user.progress?.progress + "%",
+        ? `${user.progress?.wpmProgress}%`
+        : `${user.progress?.progress}%`,
     duration: SlowTimer.get() ? 0 : (TribeState.getRoom()?.updateRate ?? 500),
     ease: "linear",
   });

@@ -1,8 +1,11 @@
 import { navigate } from "../../controllers/route-controller";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
+import { Command, withValidation } from "../types";
+import { remoteValidation } from "../../utils/remote-validation";
+import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
+import Ape from "../../ape";
 import { getTribeMode } from "../../utils/tribe";
-import { Command } from "../types";
 
 const commands: Command[] = [
   {
@@ -64,6 +67,27 @@ const commands: Command[] = [
       isAuthenticated() ? void navigate("/account") : void navigate("/login");
     },
   },
+  withValidation({
+    id: "searchProfile",
+    display: "Search for a profile",
+    alias: "profile user search find lookup",
+    icon: "fa-search",
+    input: true,
+    validation: {
+      schema: UserNameWithoutFilterSchema,
+      debounceDelay: 1000,
+      isValid: remoteValidation(
+        async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),
+        {
+          on4xx: () => "Unknown user",
+        },
+      ),
+    },
+    exec: ({ input }): void => {
+      if (input === undefined) return;
+      void navigate(`/profile/${input}`);
+    },
+  }),
   {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",

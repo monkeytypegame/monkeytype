@@ -1,4 +1,4 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";
@@ -12,7 +12,7 @@ import {
 import * as TestStats from "../../test/test-stats";
 import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
-import { showLoaderBar, hideLoaderBar } from "../../signals/loader-bar";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
@@ -22,6 +22,7 @@ type GoToNextWordParams = {
   // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
   isCompositionEnding: boolean;
   zenNewline?: boolean;
+  now: number;
 };
 
 type GoToNextWordReturn = {
@@ -33,6 +34,7 @@ export async function goToNextWord({
   correctInsert,
   isCompositionEnding,
   zenNewline,
+  now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret = {
     increasedWordIndex: false,
@@ -56,13 +58,13 @@ export async function goToNextWord({
   }
 
   //burst calculation and fail
-  const burst: number = TestStats.calculateBurst();
+  const burst: number = TestStats.calculateBurst(now);
   TestInput.pushBurstToHistory(burst);
   ret.lastBurst = burst;
 
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
 
   TestInput.input.pushHistory();
   TestInput.corrected.pushHistory();
@@ -111,7 +113,7 @@ export function goToPreviousWord(
   TestState.decreaseActiveWordIndex();
   TestInput.corrected.popHistory();
 
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex));
+  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 

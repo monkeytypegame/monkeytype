@@ -102,6 +102,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
+   - The backend Docker scripts read port bindings from this file. If `27017`, `6379`, or `5005` are already in use on your machine, update `DOCKER_DB_PORT`, `DOCKER_REDIS_PORT`, and `DOCKER_SERVER_PORT` before starting Docker.
+
 2. Setup the database server
 
 | Manual                                                                                                                                                                                                                                                         | Docker (recommended)                                                                                                                                                        |
@@ -139,7 +141,7 @@ npm run dev
 | ---------------- | ------------------------------- |
 | `npm run dev-fe` | `cd frontend && npm run docker` |
 
-These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
+By default, these commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
 > [!NOTE]
 > Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.

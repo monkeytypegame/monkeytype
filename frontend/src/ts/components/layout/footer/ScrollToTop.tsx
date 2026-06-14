@@ -1,6 +1,6 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
-import { getActivePage } from "../../../signals/core";
+import { getActivePage } from "../../../states/core";
 import { Fa } from "../../common/Fa";
 
 export function ScrollToTop(): JSXElement {

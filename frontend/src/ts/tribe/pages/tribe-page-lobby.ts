@@ -3,13 +3,14 @@ import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
 import tribeSocket from "../tribe-socket";
 import { RoomConfig } from "../types";
-import { configMetadata } from "../../config-metadata";
+import { configMetadata } from "../../config/metadata";
 import { qsa, qsr } from "../../utils/dom";
-import { SimpleModal } from "../../elements/simple-modal";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
+import { showSimpleModal } from "../../states/simple-modal";
+import { z } from "zod";
 
 const configButtonEls = qsa(
   ".pageTribe .tribePage.lobby .currentConfig button",
@@ -115,7 +116,7 @@ const configOrder: Record<
     commandsKey: "time",
     icon: "fas fa-clock",
     label: "Time",
-    text: (config) => String(config.time) + "s",
+    text: (config) => `${String(config.time)}s`,
     showIf: (config) => config.mode === "time",
   },
   quoteLength: {
@@ -236,12 +237,12 @@ const configOrder: Record<
     text: (config) => config.customPolyglot.join(","),
     showIf: (config) => config.funbox.includes("polyglot"),
   },
-  // strictSpace: {
-  //   commandsKey: "strictSpace",
-  //   icon: "fas fa-arrows-alt-h",
-  //   label: "Strict Space",
-  //   text: (config) => (config.strictSpace ? "on" : "off"),
-  // },
+  strictSpace: {
+    commandsKey: "strictSpace",
+    icon: "fas fa-arrows-alt-h",
+    label: "Strict Space",
+    text: (config) => (config.strictSpace ? "on" : "off"),
+  },
   // confidenceMode: {
   //   commandsKey: "confidenceMode",
   //   icon: "fas fa-check-circle",
@@ -277,7 +278,7 @@ export async function init(): Promise<void> {
   const room = TribeState.getRoom();
   if (!room) return;
   reset();
-  const link = location.origin + "/tribe/" + room.id;
+  const link = `${location.origin}/tribe/${room.id}`;
   roomCodeEls.setText(room.id);
   roomLinkEls.setText(link);
 
@@ -294,7 +295,7 @@ roomCodeEls
   .on("mouseenter", function (e) {
     if (e.currentTarget !== null) {
       (e.currentTarget as HTMLElement).style.color =
-        "#" + (e.currentTarget as HTMLElement).innerText;
+        `#${(e.currentTarget as HTMLElement).innerText}`;
     }
   })
   .on("mouseleave", function (e) {
@@ -308,7 +309,7 @@ roomLinkEls.on("click", async () => {
     await navigator.clipboard.writeText(roomLinkEls[0]?.native.innerText ?? "");
     showSuccessNotification("Code copied");
   } catch (e) {
-    showErrorNotification("Could not copy to clipboard: " + String(e));
+    showErrorNotification(`Could not copy to clipboard: ${String(e)}`);
   }
 });
 
@@ -317,31 +318,31 @@ visibilityButtonEl.on("click", () => {
 });
 
 roomNameButtonEl.on("click", () => {
-  roomNameModal.show([], {});
-});
-
-const roomNameModal = new SimpleModal({
-  id: "tribeRoomNameModal",
-  title: "Change Room Name",
-  buttonText: "Save",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "New room name",
+  showSimpleModal({
+    title: "Change Room Name",
+    buttonText: "Save",
+    schema: z.object({
+      newName: z.string().min(1, "Room name cannot be empty"),
+    }),
+    inputs: {
+      newName: {
+        type: "text",
+        placeholder: "New room name",
+      },
     },
-  ],
-  execFn: async (_modal, newName) => {
-    if (newName === null || newName.trim() === "") {
+    execFn: async ({ newName }) => {
+      if (newName === null || newName.trim() === "") {
+        return {
+          status: "error",
+          message: "Room name cannot be empty",
+        };
+      }
+      tribeSocket.out.room.updateName(newName.trim());
       return {
-        status: "error",
-        message: "Room name cannot be empty",
+        status: "success",
+        // message: "Room name changed",
+        showNotification: false,
       };
-    }
-    tribeSocket.out.room.updateName(newName.trim());
-    return {
-      status: "success",
-      message: "Room name changed",
-      showNotification: false,
-    };
-  },
+    },
+  });
 });

@@ -4,10 +4,6 @@
   .content-grid {
     --content-max-width: 768px;
   }
-  #testConfig {
-    font-size: 0.7rem;
-    --horizontalPadding: 0.6em;
-  }
   .pageAccountSettings .main {
     gap: 2rem;
     .right .tab .section {
@@ -33,89 +29,7 @@
       font-size: 7rem;
     }
   }
-  .pageSettings {
-    .section {
-      grid-template-columns: 1fr 1fr;
 
-      &[data-config-name="customBackgroundFilter"] {
-        .groups {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      &.themes .tabContainer .tabContent.customTheme {
-        .customThemeInputs .customThemeInput {
-          grid-template-columns: 10em 1fr;
-        }
-      }
-    }
-    .settingsGroup.quickNav {
-      justify-content: unset;
-      .links {
-        max-width: unset;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-      }
-    }
-  }
-  .pageAccount {
-    .group.resultBatches {
-      gap: 1rem;
-      grid-template-areas: "bar" "button" "text";
-      grid-template-columns: 1fr;
-    }
-    .group.topFilters {
-      .buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        button[filter="all"] {
-          grid-column: span 2;
-        }
-        &.filterGroup {
-          margin-top: 2rem;
-        }
-      }
-    }
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      .buttons {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-      }
-    }
-    .triplegroup.stats {
-      .val {
-        font-size: 2rem;
-      }
-    }
-    .group.history {
-      font-size: 0.75rem;
-    }
-    .group.history table thead td:nth-child(6),
-    .group.history table tbody td:nth-child(6) {
-      display: none;
-    }
-    // .group.history table thead td:nth-child(8),
-    // .group.history table thead td:nth-child(9),
-    // .group.history table tbody td:nth-child(8),
-    // .group.history table tbody td:nth-child(9) {
-    //   display: none;
-    // }
-  }
-
-  #customTextModal {
-    .modal {
-      grid-template-areas:
-        "topButtons topButtons"
-        "topButtons2 topButtons2"
-        "textArea textArea"
-        "checkboxes checkboxes"
-        "ok ok";
-      grid-template-columns: 1fr 1fr;
-      .inputs {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  }
   .testActivity {
     --gap-size: 0.1em;
     --font-size: 0.8em;
@@ -134,15 +48,5 @@
     //   height: 0.9em;
     //   border-radius: 0.2em;
     // }
-  }
-
-  .pageFriends {
-    .content .friends table {
-      td:nth-child(4),
-      td:nth-child(7),
-      td:nth-child(8) {
-        display: none;
-      }
-    }
   }
 }

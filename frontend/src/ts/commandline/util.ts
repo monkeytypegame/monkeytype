@@ -1,5 +1,6 @@
-import Config, { setConfig } from "../config";
-import { ConfigMetadata, configMetadata } from "../config-metadata";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
+import { ConfigMetadata, configMetadata } from "../config/metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
   CommandlineConfigMetadata,
@@ -10,22 +11,8 @@ import {
 } from "./commandline-metadata";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema, ZodFirstPartySchemaTypes } from "zod";
-
-function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
-  if (schema instanceof z.ZodLiteral) {
-    return [schema.value] as z.infer<T>[];
-  } else if (schema instanceof z.ZodEnum) {
-    return schema.options as z.infer<T>[];
-  } else if (schema instanceof z.ZodBoolean) {
-    return [true, false] as z.infer<T>[];
-  } else if (schema instanceof z.ZodUnion) {
-    return (schema.options as ZodSchema[])
-      .flatMap(getOptions)
-      .filter((it) => it !== undefined) as z.infer<T>[];
-  }
-  return undefined;
-}
+import { ZodSchema, ZodFirstPartySchemaTypes } from "zod";
+import { getOptions } from "../utils/zod";
 
 export function buildCommandForConfigKey<
   K extends keyof CommandlineConfigMetadataObject,
@@ -139,7 +126,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   return {
     id: `change${capitalizeFirstLetter(key)}`,
     display: display,
-    icon: configMeta?.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
     subgroup: {
       title: display,
       configKey: key,
@@ -235,7 +222,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     display: displayString,
     alias: inputProps?.alias ?? undefined,
     input: true,
-    icon: configMeta.icon ?? "fa-cog",
+    icon: configMeta?.fa?.icon ?? "fa-cog",
 
     //@ts-expect-error this is fine
     exec: ({ input }): void => {

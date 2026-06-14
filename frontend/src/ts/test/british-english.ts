@@ -1,4 +1,4 @@
-import Config from "../config";
+import { Config } from "../config/store";
 import britishEnglishReplacements from "../constants/british-english";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 

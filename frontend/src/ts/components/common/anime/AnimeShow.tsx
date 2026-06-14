@@ -1,7 +1,7 @@
 import { AnimationParams } from "animejs";
 import { JSXElement, ParentProps, Show } from "solid-js";
 
-import { Anime } from "./Anime";
+import { Anime, AnimeProps } from "./Anime";
 import { AnimePresence } from "./AnimePresence";
 
 /**
@@ -33,6 +33,7 @@ export function AnimeShow(
     slide?: true;
     duration?: number;
     class?: string;
+    animeProps?: Partial<AnimeProps>;
   }>,
 ): JSXElement {
   const duration = () => props.duration ?? 125;
@@ -47,6 +48,7 @@ export function AnimeShow(
               initial={{ opacity: 0 } as Partial<AnimationParams>}
               animate={{ opacity: 1, duration: duration() } as AnimationParams}
               exit={{ opacity: 0, duration: duration() } as AnimationParams}
+              {...props.animeProps}
               class={props.class}
             >
               {props.children}
@@ -57,17 +59,40 @@ export function AnimeShow(
     >
       <AnimePresence exitBeforeEnter>
         <Show when={props.when}>
-          <Anime
-            initial={{ height: 0 } as Partial<AnimationParams>}
-            animate={
-              { height: "auto", duration: duration() } as AnimationParams
-            }
-            exit={{ height: 0, duration: duration() } as AnimationParams}
-            style={{ overflow: "hidden" }}
-            class={props.class}
-          >
-            {props.children}
-          </Anime>
+          {(() => {
+            let ref: HTMLElement | undefined;
+            return (
+              <Anime
+                ref={(el) => (ref = el)}
+                initial={{ height: 0 } as Partial<AnimationParams>}
+                animate={
+                  {
+                    height: "auto",
+                    duration: duration(),
+                    onBegin: () => {
+                      if (ref) ref.style.overflow = "hidden";
+                    },
+                    onComplete: () => {
+                      if (ref) ref.style.overflow = "";
+                    },
+                  } as AnimationParams
+                }
+                exit={
+                  {
+                    height: 0,
+                    duration: duration(),
+                    onBegin: () => {
+                      if (ref) ref.style.overflow = "hidden";
+                    },
+                  } as AnimationParams
+                }
+                {...props.animeProps}
+                class={props.class}
+              >
+                {props.children}
+              </Anime>
+            );
+          })()}
         </Show>
       </AnimePresence>
     </Show>

@@ -239,6 +239,8 @@ export const LayoutNameSchema = z.enum(
     "GralmakS",
     "vitrimak",
     "miligram",
+    "nokwts",
+    "vylet_v4",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),

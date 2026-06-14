@@ -19,7 +19,7 @@ const bpSignal = createSignal({
   md: true,
 });
 
-vi.mock("../../../../src/ts/signals/breakpoints", () => ({
+vi.mock("../../../../src/ts/states/breakpoints", () => ({
   bp: () => bpSignal[0](),
 }));
 
@@ -33,6 +33,7 @@ const columns = [
     id: "name",
     accessorKey: "name",
     header: "Name",
+    // oxlint-disable-next-line typescript/no-unsafe-return typescript/no-unsafe-call
     cell: (info: any) => info.getValue(),
     meta: { maxBreakpoint: "sm" },
   },
@@ -40,6 +41,7 @@ const columns = [
     id: "age",
     accessorKey: "age",
     header: "Age",
+    // oxlint-disable-next-line typescript/no-unsafe-return typescript/no-unsafe-call
     cell: (info: any) => info.getValue(),
     meta: { breakpoint: "sm" },
   },
@@ -95,7 +97,7 @@ describe("DataTable", () => {
     expect(ageHeaderCell?.querySelector("i")).toHaveClass("fa-fw");
 
     // Descending
-    await fireEvent.click(ageHeaderButton);
+    fireEvent.click(ageHeaderButton);
     expect(ageHeaderCell).toHaveAttribute("aria-sort", "descending");
     expect(ageHeaderCell?.querySelector("i")).toHaveClass(
       "fa-sort-down",
@@ -114,7 +116,7 @@ describe("DataTable", () => {
     expect(rows[2]).toHaveTextContent("Bob"); // age 20
 
     // Ascending
-    await fireEvent.click(ageHeaderButton);
+    fireEvent.click(ageHeaderButton);
     expect(ageHeaderCell).toHaveAttribute("aria-sort", "ascending");
     expect(ageHeaderCell?.querySelector("i")).toHaveClass(
       "fa-sort-up",
@@ -133,7 +135,7 @@ describe("DataTable", () => {
     expect(rows[2]).toHaveTextContent("Alice");
 
     //back to initial
-    await fireEvent.click(ageHeaderButton);
+    fireEvent.click(ageHeaderButton);
     expect(ageHeaderCell).toHaveAttribute("aria-sort", "none");
     expect(localStorage()).toEqual([]);
   });

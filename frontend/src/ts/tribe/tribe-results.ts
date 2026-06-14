@@ -1,6 +1,6 @@
 import * as TribeState from "./tribe-state";
-import Config from "../config";
-import * as SlowTimer from "../states/slow-timer";
+import { Config } from "../config/store";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import tribeSocket from "./tribe-socket";
 import { FinalPositions } from "./tribe-socket/routes/room";
 import { getOrdinalNumberString } from "@monkeytype/util/numbers";
@@ -109,10 +109,10 @@ export function updateBar(
     if (!user) return;
     let percent =
       Config.mode === "time"
-        ? user.progress?.wpmProgress + "%"
-        : user.progress?.progress + "%";
+        ? `${user.progress?.wpmProgress}%`
+        : `${user.progress?.progress}%`;
     if (percentOverride !== undefined && percentOverride !== 0) {
-      percent = percentOverride + "%";
+      percent = `${percentOverride}%`;
     }
     el?.animate({
       width: percent,
@@ -316,7 +316,7 @@ export function updateTimerText(text: string): void {
 export function updateTimer(value: string): void {
   if (!timerVisible) showTimer();
   qs(".pageTest #result #tribeResults .timer")?.setText(
-    timerText + ": " + value + "s",
+    `${timerText}: ${value}s`,
   );
 }
 

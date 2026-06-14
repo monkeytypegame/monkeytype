@@ -1,31 +1,35 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, { setConfig } from "../config";
+import { Config } from "../config/store";
+import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
+import { getCurrentInput } from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../stores/notifications";
+  removeNotification,
+} from "../states/notifications";
 import * as Caret from "./caret";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "../legacy-states/slow-timer";
 import * as TestState from "./test-state";
-import * as Time from "../states/time";
-import * as TimerEvent from "../observables/timer-event";
-import * as KeymapEvent from "../observables/keymap-event";
+import * as Time from "../legacy-states/time";
+import { timerEvent } from "../events/timer";
+import { highlight } from "../events/keymap";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import { logTestEvent } from "./events/data";
 
 let lastLoop = 0;
 const newTimer = createTimer({
@@ -36,10 +40,19 @@ const newTimer = createTimer({
     lastLoop = performance.now();
   },
   onLoop: () => {
-    const drift = Math.abs(1000 - (performance.now() - lastLoop));
-    lastLoop = performance.now();
+    const now = performance.now();
+
+    const drift = Numbers.roundTo2(Math.abs(1000 - (now - lastLoop)));
     checkIfTimerIsSlow(drift);
+    lastLoop = now;
     timerStep();
+
+    logTestEvent("timer", now, {
+      event: "step",
+      timer: Time.get(),
+      slowTimer: SlowTimer.get() ? true : undefined,
+      drift,
+    });
   },
 });
 
@@ -51,6 +64,7 @@ type TimerStats = {
 };
 
 let slowTimerCount = 0;
+let slowTimerNotifIds: number[] = [];
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
@@ -65,10 +79,16 @@ export function enableTimerDebug(): void {
   timerDebug = true;
 }
 
-export function clear(): void {
+export function clear(logEnd = false, now = performance.now()): void {
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
+  if (logEnd) {
+    logTestEvent("timer", now, {
+      event: "end",
+      timer: Time.get(),
+    });
+  }
 }
 
 function premid(): void {
@@ -140,8 +160,8 @@ function layoutfluid(): void {
 
       if (Config.keymapMode === "next") {
         setTimeout(() => {
-          void KeymapEvent.highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          highlight(
+            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
           );
         }, 1);
       }
@@ -166,14 +186,14 @@ function checkIfFailed(
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min speed");
+    timerEvent.dispatch({ key: "fail", value: "min speed" });
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min accuracy");
+    timerEvent.dispatch({ key: "fail", value: "min accuracy" });
     return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -197,7 +217,7 @@ function checkIfTimeIsUp(): void {
     TestInput.corrected.pushHistory();
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("finish");
+    timerEvent.dispatch({ key: "finish" });
     return;
   }
 
@@ -262,7 +282,7 @@ function timerStep(): void {
     TestInput.input.current === ""
   ) {
     if (TestInput.afkHistory.every((afk) => afk)) {
-      TimerEvent.dispatch("finish");
+      timerEvent.dispatch({ key: "finish" });
     }
   }
 
@@ -292,29 +312,43 @@ function checkIfTimerIsSlow(drift: number): void {
         'This could be caused by "efficiency mode" on Microsoft Edge.',
       );
 
-      showErrorNotification(
-        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+      slowTimerNotifIds.push(
+        showErrorNotification(
+          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+        ),
       );
 
-      TimerEvent.dispatch("fail", "slow timer");
+      timerEvent.dispatch({ key: "fail", value: "slow timer" });
     }
   }
 }
 
-export async function start(): Promise<void> {
+export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
-  void _startNew();
+  for (const id of slowTimerNotifIds) {
+    removeNotification(id, "clear");
+  }
+  slowTimerNotifIds = [];
+  void _startNew(now);
   // void _startOld();
 }
 
-async function _startNew(): Promise<void> {
+async function _startNew(now: number): Promise<void> {
   newTimer.play();
+  logTestEvent("timer", now, {
+    event: "start",
+    timer: Time.get(),
+  });
 }
 
 async function _startOld(): Promise<void> {
   timerStats = [];
   expected = TestStats.start + interval;
+  logTestEvent("timer", performance.now(), {
+    event: "start",
+    timer: Time.get(),
+  });
   (function loop(): void {
     const delay = expected - performance.now();
     timerStats.push({
@@ -323,7 +357,7 @@ async function _startOld(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    const drift = Math.abs(interval - delay);
+    const drift = Numbers.roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
       if (!TestState.isActive) {
@@ -332,6 +366,13 @@ async function _startOld(): Promise<void> {
         slowTimerCount = 0;
         return;
       }
+
+      logTestEvent("timer", performance.now(), {
+        event: "step",
+        timer: Time.get(),
+        drift: drift,
+        slowTimer: SlowTimer.get() ? true : undefined,
+      });
 
       timerStep();
 

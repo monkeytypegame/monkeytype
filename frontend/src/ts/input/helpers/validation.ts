@@ -1,11 +1,11 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
  * @param options - Options object
  * @param options.data - Input data
- * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
@@ -47,7 +47,7 @@ export function isCharCorrect(options: {
  * as a "control character" (moving to the next word)
  * @param options - Options object
  * @param options.data - Input data
- * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @returns Boolean if data is space, null if not
  */
@@ -63,7 +63,7 @@ export function shouldInsertSpaceCharacter(options: {
   if (Config.mode === "zen") {
     return false;
   }
-  const correctSoFar = (targetWord + " ").startsWith(inputValue + " ");
+  const correctSoFar = `${targetWord} `.startsWith(`${inputValue} `);
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correctSoFar;
   const stopOnErrorWordAndIncorrect =

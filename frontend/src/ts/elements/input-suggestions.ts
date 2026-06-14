@@ -182,21 +182,21 @@ export class InputSuggestions {
     if (!this.suggestionsElement) return;
     if (this.position === "top") {
       this.suggestionsElement.setStyle({
-        left: this.inputElement.getOffsetLeft() + "px",
-        width: this.inputElement.getOffsetWidth() + "px",
-        top:
+        left: `${this.inputElement.getOffsetLeft()}px`,
+        width: `${this.inputElement.getOffsetWidth()}px`,
+        top: `${
           (this.inputElement.getOffsetTop() ?? 0) -
-          (this.suggestionsElement.getOffsetHeight() ?? 0) +
-          "px",
+          (this.suggestionsElement.getOffsetHeight() ?? 0)
+        }px`,
       });
     } else {
       this.suggestionsElement.setStyle({
-        left: this.inputElement.getOffsetLeft() + "px",
-        width: this.inputElement.getOffsetWidth() + "px",
-        top:
+        left: `${this.inputElement.getOffsetLeft()}px`,
+        width: `${this.inputElement.getOffsetWidth()}px`,
+        top: `${
           (this.inputElement.getOffsetTop() ?? 0) +
-          (this.inputElement.getOffsetHeight() ?? 0) +
-          "px",
+          (this.inputElement.getOffsetHeight() ?? 0)
+        }px`,
       });
     }
   }
@@ -245,7 +245,7 @@ export class InputSuggestions {
     //join the array back into a string
     const newVal = split.join(" ");
 
-    this.inputElement.setValue(newVal + " ");
+    this.inputElement.setValue(`${newVal} `);
     this.destroy();
   }
 

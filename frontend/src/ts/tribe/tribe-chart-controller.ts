@@ -4,11 +4,11 @@ import { createErrorMessage } from "../utils/error";
 import tribeSocket from "./tribe-socket";
 import { blendTwoHexColors } from "../utils/colors";
 import { smoothWithValueWindow } from "../utils/arrays";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as TestStats from "../test/test-stats";
-import { getTheme } from "../signals/theme";
 import { qsa } from "../utils/dom";
-import { showErrorNotification } from "../stores/notifications";
+import { getTheme } from "../states/theme";
+import { showErrorNotification } from "../states/notifications";
 
 const charts: Record<string, Chart> = {};
 
@@ -350,7 +350,7 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
 
   burst.backgroundColor = blendTwoHexColors(
     subaltcolor,
-    subaltcolor + "00",
+    `${subaltcolor}00`,
     0.5,
   );
   burst.borderColor = subcolor;

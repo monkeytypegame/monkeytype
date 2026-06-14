@@ -1,7 +1,7 @@
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "../tribe/tribe-socket";
 import AnimatedModal from "../utils/animated-modal";
-import { showErrorNotification } from "../stores/notifications";
+import { showErrorNotification } from "../states/notifications";
 
 export function show(userId: string): void {
   if (!userId) {

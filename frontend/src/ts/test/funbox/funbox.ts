@@ -1,18 +1,19 @@
 import {
   showNoticeNotification,
   showErrorNotification,
-} from "../../stores/notifications";
+} from "../../states/notifications";
 import * as JSONData from "../../utils/json-data";
 import * as Strings from "../../utils/strings";
-import Config, {
-  setConfig,
+import { Config } from "../../config/store";
+import {
   toggleFunbox as configToggleFunbox,
-} from "../../config";
+  setConfig,
+} from "../../config/setters";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
-import { checkCompatibility } from "@monkeytype/funbox";
+import { checkCompatibility, checkForcedConfig } from "@monkeytype/funbox";
 import {
   getAllFunboxes,
   getActiveFunboxes,
@@ -21,11 +22,10 @@ import {
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
 } from "./list";
-import { checkForcedConfig } from "./funbox-validation";
 import * as tribeConfigCheck from "../../tribe/tribe-config-check";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
-import * as ConfigEvent from "../../observables/config-event";
+import { configEvent } from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -122,8 +122,8 @@ export async function activate(
     return false;
   }
 
-  if (language.ligatures) {
-    if (isFunboxActiveWithProperty("noLigatures")) {
+  if (language.joiningScript) {
+    if (isFunboxActiveWithProperty("noJoiningScript")) {
       showNoticeNotification(
         "Current language does not support this funbox mode",
       );
@@ -191,7 +191,6 @@ export async function activate(
   for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
     fb.functions.applyConfig();
   }
-  // ModesNotice.update();
   return true;
 }
 
@@ -205,7 +204,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
   const body = qs("body");
 
   const activeFbClasses = getActiveFunboxNames().map(
-    (name) => "fb-" + name.replaceAll("_", "-"),
+    (name) => `fb-${name.replaceAll("_", "-")}`,
   );
 
   const currentClasses =
@@ -232,13 +231,13 @@ async function applyFunboxCSS(): Promise<boolean> {
     const css = document.createElement("link");
     css.classList.add("funBoxTheme");
     css.rel = "stylesheet";
-    css.href = "funbox/" + funbox.name + ".css";
+    css.href = `funbox/${funbox.name}.css`;
     document.head.appendChild(css);
   }
   return true;
 }
 
-ConfigEvent.subscribe(async ({ key }) => {
+configEvent.subscribe(async ({ key }) => {
   if (key === "funbox") {
     const active = getActiveFunboxNames();
     getAllFunboxes()

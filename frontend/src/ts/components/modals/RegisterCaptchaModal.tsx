@@ -6,8 +6,8 @@ import {
   reset as resetCaptcha,
 } from "../../controllers/captcha-controller";
 import { useRef } from "../../hooks/useRef";
-import { hideModal, showModal } from "../../stores/modals";
-import { showErrorNotification } from "../../stores/notifications";
+import { hideModal, showModal } from "../../states/modals";
+import { showErrorNotification } from "../../states/notifications";
 import { promiseWithResolvers } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 

@@ -4,7 +4,6 @@ import {
   UserConfig,
   BuildEnvironmentOptions,
   PluginOption,
-  Plugin,
   CSSOptions,
 } from "vite";
 import path from "node:path";
@@ -30,21 +29,17 @@ import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
-  return (
-    "\n" +
-    Object.keys(Fonts)
-      .sort()
-      .map((name: string) => {
-        const config = Fonts[name as KnownFontName];
-        if (config.systemFont === true) return "";
-        return `"${name.replaceAll("_", " ")}": (
+  return `\n${Object.keys(Fonts)
+    .sort()
+    .map((name: string) => {
+      const config = Fonts[name as KnownFontName];
+      if (config.systemFont === true) return "";
+      return `"${name.replaceAll("_", " ")}": (
         "src": "${config.fileName}",
         "weight": ${config.weight ?? 400},
         ),`;
-      })
-      .join("\n") +
-    "\n"
-  );
+    })
+    .join("\n")}\n`;
 }
 
 function pad(
@@ -181,7 +176,7 @@ function getPlugins({
       },
     }),
     useSentry
-      ? (sentryVitePlugin({
+      ? sentryVitePlugin({
           authToken: env["SENTRY_AUTH_TOKEN"],
           org: "monkeytype",
           project: "frontend",
@@ -189,7 +184,7 @@ function getPlugins({
             name: clientVersion,
           },
           applicationKey: "monkeytype-frontend",
-        }) as Plugin)
+        })
       : null,
     injectPreload(),
     minifyJson(),
@@ -246,61 +241,37 @@ function getBuildOptions({
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
-        // codeSplitting: {
-        //   groups: [
-        //     {
-        //       name: "vendor-sentry",
-        //       test: /node_modules\/@sentry\//,
-        //     },
-        //     {
-        //       name: "vendor-firebase",
-        //       test: /node_modules\/@firebase\//,
-        //     },
-        //     {
-        //       name: "vendor-tanstack",
-        //       test: /node_modules\/@tanstack\//,
-        //     },
-        //     {
-        //       name: "monkeytype-packages",
-        //       test: /monkeytype\/packages\//,
-        //     },
-        //     {
-        //       name: "vendor-chart",
-        //       test: /node_modules\/chart/,
-        //     },
-        //     {
-        //       name: "monkeytype-constants",
-        //       test: /src\/ts\/constants\//,
-        //     },
-        //     {
-        //       name: "vendor",
-        //       test: /node_modules\//,
-        //     },
-        //   ],
-        // },
-        manualChunks: (id) => {
-          if (id.includes("@sentry")) {
-            return "vendor-sentry";
-          }
-          if (id.includes("node_modules\/@firebase\/")) {
-            return "vendor-firebase";
-          }
-          if (id.includes("node_modules\/@tanstack\/")) {
-            return "vendor-tanstack";
-          }
-          if (id.includes("monkeytype\/packages\/")) {
-            return "monkeytype-packages";
-          }
-          if (id.includes("node_modules\/chart")) {
-            return "vendor-chart";
-          }
-          if (id.includes("src\/ts\/constants\/")) {
-            return "monkeytype-constants";
-          }
-          if (id.includes("node_modules\/")) {
-            return "vendor";
-          }
-          return;
+        codeSplitting: {
+          groups: [
+            {
+              name: "vendor-sentry",
+              test: /node_modules\/@sentry\//,
+            },
+            {
+              name: "vendor-firebase",
+              test: /node_modules\/@firebase\//,
+            },
+            {
+              name: "vendor-tanstack",
+              test: /node_modules\/@tanstack\//,
+            },
+            {
+              name: "monkeytype-packages",
+              test: /monkeytype\/packages\//,
+            },
+            {
+              name: "vendor-chart",
+              test: /node_modules\/chart/,
+            },
+            {
+              name: "monkeytype-utils",
+              test: /src\/ts\/utils\//,
+            },
+            {
+              name: "vendor",
+              test: /node_modules\//,
+            },
+          ],
         },
       },
     },

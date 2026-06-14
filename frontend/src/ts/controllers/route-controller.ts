@@ -1,15 +1,15 @@
 import * as PageController from "./page-controller";
 import * as TribeState from "../tribe/tribe-state";
-import * as TestUI from "../test/test-ui";
-import * as PageTransition from "../states/page-transition";
-import { isAuthAvailable, isAuthenticated } from "../firebase";
+import * as PageTransition from "../legacy-states/page-transition";
+import { isAuthAvailable } from "../firebase";
+import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
 import * as TestState from "../test/test-state";
-import { showNoticeNotification } from "../stores/notifications";
+import { showNoticeNotification } from "../states/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe-auto-join";
-import * as NavigationEvent from "../observables/navigation-event";
-import * as AuthEvent from "../observables/auth-event";
+import { navigationEvent, type NavigateOptions } from "../events/navigation";
+import { authEvent } from "../events/auth";
 import { getAwaitedTribeMode, getTribeMode } from "../utils/tribe";
 import { ROOM_STATE } from "../tribe/types";
 
@@ -17,9 +17,7 @@ import { ROOM_STATE } from "../tribe/types";
 // https://www.youtube.com/watch?v=OstALBk-jTc
 
 function pathToRegex(path: string): RegExp {
-  return new RegExp(
-    "^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$",
-  );
+  return new RegExp(`^${path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)")}$`);
 }
 
 function getParams(match: {
@@ -39,7 +37,7 @@ type Route = {
   path: string;
   load: (
     params: Record<string, string>,
-    navigateOptions: NavigationEvent.NavigateOptions,
+    navigateOptions: NavigateOptions,
   ) => Promise<void>;
 };
 
@@ -232,7 +230,7 @@ export async function navigate(
   url = window.location.pathname +
     window.location.search +
     window.location.hash,
-  options = {} as NavigationEvent.NavigateOptions,
+  options = {} as NavigateOptions,
 ): Promise<void> {
   if (
     getTribeMode() !== "disabled" &&
@@ -246,14 +244,14 @@ export async function navigate(
   if (
     !options.force &&
     (TestState.testRestarting ||
-      TestUI.resultCalculating ||
+      TestState.resultCalculating ||
       PageTransition.get())
   ) {
     console.debug(
       `navigate: ${url} ignored, page is busy (testRestarting: ${
         TestState.testRestarting
       }, resultCalculating: ${
-        TestUI.resultCalculating
+        TestState.resultCalculating
       }, pageTransition: ${PageTransition.get()})`,
     );
     return;
@@ -289,9 +287,7 @@ export async function navigate(
   await router(options);
 }
 
-async function router(
-  options = {} as NavigationEvent.NavigateOptions,
-): Promise<void> {
+async function router(options = {} as NavigateOptions): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -331,11 +327,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-NavigationEvent.subscribe((url, options) => {
+navigationEvent.subscribe(({ url, options }) => {
   void navigate(url, options);
 });
 
-AuthEvent.subscribe((event) => {
+authEvent.subscribe((event) => {
   if (event.type === "authStateChanged") {
     let keyframes = [
       {

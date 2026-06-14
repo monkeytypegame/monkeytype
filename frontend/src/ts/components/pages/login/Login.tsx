@@ -3,20 +3,20 @@ import { JSXElement } from "solid-js";
 
 import {
   AuthResult,
+  getAuthMethodDisplay,
   signIn,
-  signInWithGitHub,
-  signInWithGoogle,
+  signInWithProvider,
 } from "../../../auth";
 import * as ForgotPasswordModal from "../../../modals/forgot-password";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
-} from "../../../stores/login";
+} from "../../../states/login";
 import {
   showErrorNotification,
   showNoticeNotification,
-} from "../../../stores/notifications";
+} from "../../../states/notifications";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
@@ -75,8 +75,11 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGoogle(form.getFieldValue("rememberMe")),
-              "Google",
+              async () =>
+                signInWithProvider("google", {
+                  rememberMe: form.getFieldValue("rememberMe"),
+                }),
+              getAuthMethodDisplay("google"),
             )
           }
           disabled={!getLoginPageInputsEnabled()}
@@ -85,8 +88,11 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGitHub(form.getFieldValue("rememberMe")),
-              "GitHub",
+              async () =>
+                signInWithProvider("github", {
+                  rememberMe: form.getFieldValue("rememberMe"),
+                }),
+              getAuthMethodDisplay("github"),
             )
           }
           disabled={!getLoginPageInputsEnabled()}
@@ -106,6 +112,7 @@ export function Login(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="email"
               autocomplete="current-email"
               disabled={!getLoginPageInputsEnabled()}
             />
@@ -116,6 +123,7 @@ export function Login(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
+              placeholder="password"
               type="password"
               autocomplete="current-password"
               disabled={!getLoginPageInputsEnabled()}

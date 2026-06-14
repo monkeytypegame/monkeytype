@@ -162,3 +162,11 @@ export function parseIntOptional<T extends string | null | undefined>(
     value !== null && value !== undefined ? parseInt(value, radix) : undefined
   ) as T extends string ? number : undefined;
 }
+
+export function calculateWpm(
+  charCount: number,
+  durationSeconds: number,
+): number {
+  if (durationSeconds <= 0) return 0;
+  return charCount / 5 / (durationSeconds / 60);
+}

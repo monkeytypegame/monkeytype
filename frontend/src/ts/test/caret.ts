@@ -1,10 +1,10 @@
-import Config from "../config";
-import * as TestInput from "./test-input";
+import { Config } from "../config/store";
 import * as TestState from "../test/test-state";
-import { subscribe } from "../observables/config-event";
+import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
-import * as CompositionState from "../states/composition";
+import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
+import { getCurrentInput } from "./test-input";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -33,8 +33,7 @@ export function resetPosition(): void {
 export function updatePosition(noAnim = false): void {
   caret.goTo({
     wordIndex: TestState.activeWordIndex,
-    letterIndex:
-      TestInput.input.current.length + CompositionState.getData().length,
+    letterIndex: getCurrentInput().length + CompositionState.getData().length,
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     isDirectionReversed: TestState.isDirectionReversed,
     animate: Config.smoothCaret !== "off" && !noAnim,
@@ -43,7 +42,7 @@ export function updatePosition(noAnim = false): void {
 
 export const caret = new Caret(qsr("#caret"), Config.caretStyle);
 
-subscribe(({ key }) => {
+configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {
     caret.setStyle(Config.caretStyle);
     updatePosition(true);
