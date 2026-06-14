@@ -30,9 +30,10 @@ export type TestEventNoMs =
   | Omit<KeyupEvent, "ms">
   | Omit<TimerEvent, "ms">
   | InputEventNoMs
-  | Omit<CompositionTestEvent, "ms">;
+  | CompositionTestEventNoMs;
 
 export type InputEventNoMs = Omit<InputEvent, "ms">;
+export type CompositionTestEventNoMs = Omit<CompositionTestEvent, "ms">;
 
 export type TestEventData =
   | KeydownEventData
@@ -113,8 +114,10 @@ export type CompositionTestEvent = EventProps<
 export type CompositionTestEventData =
   | {
       event: "start";
+      wordIndex: number;
     }
   | {
       event: "update" | "end";
       data: string;
+      wordIndex: number;
     };
