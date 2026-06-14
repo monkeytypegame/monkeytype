@@ -56,8 +56,6 @@ export function showRemoveAuthMethodModal(options: {
         return result;
       }
 
-      //TODO needed?
-      // reloadAfter(3);
       return result;
     },
   });
