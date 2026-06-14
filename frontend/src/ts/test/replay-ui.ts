@@ -3,7 +3,7 @@ import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
 import { Config } from "../config/store";
 import * as TestWords from "./test-words";
-import { getInputEvents, getInputForWord } from "./events/data";
+import { getAllTestEvents, getInputForWord } from "./events/data";
 import { getInputHistory, getWpmHistory } from "./events/stats";
 
 type ReplayAction =
@@ -41,11 +41,12 @@ function getWordsList(): string[] {
 }
 
 function deriveReplayActions(): Replay[] {
-  const events = getInputEvents();
+  const events = getAllTestEvents();
   const actions: Replay[] = [];
   let prevWordIndex: number | undefined;
 
   for (const event of events) {
+    if (event.type !== "input") continue;
     const wi = event.data.wordIndex;
 
     if (prevWordIndex !== undefined && wi !== prevWordIndex) {
