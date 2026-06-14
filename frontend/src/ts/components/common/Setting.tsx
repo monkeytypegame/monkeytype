@@ -5,11 +5,11 @@ import { serialize } from "zod-urlsearchparams";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../../states/notifications";
-import { cn } from "../../../utils/cn";
-import { Button } from "../../common/Button";
-import { FaProps } from "../../common/Fa";
-import { H3 } from "../../common/Headers";
+} from "../../states/notifications";
+import { cn } from "../../utils/cn";
+import { Button } from "./Button";
+import { FaProps } from "./Fa";
+import { H3 } from "./Headers";
 
 export type SettingProps = {
   title: string;
@@ -72,7 +72,7 @@ export function Setting(props: SettingProps): JSXElement {
               "md:grid-cols-[1fr_1fr] md:gap-x-8 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[2fr_1fr]",
 
             breakpoints() === "narrow" &&
-              "lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr] md:gap-x-8",
+              "md:gap-x-8 lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr]",
 
             props.inputs === undefined &&
               breakpoints() === "normal" &&

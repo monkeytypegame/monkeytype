@@ -1,6 +1,6 @@
 import { cn } from "../../../utils/cn";
 import { Button, ButtonProps } from "../../common/Button";
-import { Setting, SettingProps } from "../settings/Setting";
+import { Setting, SettingProps } from "../../common/Setting";
 
 export function Section(
   props: Omit<

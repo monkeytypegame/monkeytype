@@ -10,8 +10,8 @@ import {
   LanguageGroups,
 } from "../../../../constants/languages";
 import { getLanguageDisplayString } from "../../../../utils/strings";
+import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
 
 export function Language(): JSXElement {
   return (
