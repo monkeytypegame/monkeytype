@@ -1,4 +1,4 @@
-import { For, JSX } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
 import {
   AccountSettingsTab,
@@ -14,12 +14,12 @@ import { AuthenticationTab } from "./AuthenticationTab";
 import { BlockedUsersTab } from "./BlockedUsersTab";
 import { DangerZoneTab } from "./DangerZoneTab";
 
-const tabContent: Record<AccountSettingsTab, JSX.Element> = {
-  account: <AccountTab />,
-  authentication: <AuthenticationTab />,
-  blockedUsers: <BlockedUsersTab />,
-  apeKeys: <ApeKeysTab />,
-  dangerZone: <DangerZoneTab />,
+const tabContent: Record<AccountSettingsTab, () => JSXElement> = {
+  account: () => <AccountTab />,
+  authentication: () => <AuthenticationTab />,
+  blockedUsers: () => <BlockedUsersTab />,
+  apeKeys: () => <ApeKeysTab />,
+  dangerZone: () => <DangerZoneTab />,
 };
 
 export function AccountSettingsPage() {
@@ -30,7 +30,7 @@ export function AccountSettingsPage() {
           <Sidebar />
         </div>
         <div class="flex w-full flex-1 flex-col gap-8">
-          {tabContent[getCurrentTab()]}
+          {tabContent[getCurrentTab()]()}
         </div>
       </div>
     </Page>

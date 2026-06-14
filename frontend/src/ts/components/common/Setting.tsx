@@ -52,11 +52,13 @@ export function Setting(props: SettingProps): JSXElement {
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
       )}
-      {...("key" in props ? { "data-setting-key": props.key } : {})}
+      {...("key" in props && props.key !== undefined
+        ? { "data-setting-key": props.key }
+        : {})}
     >
       <div class="flex gap-2">
         <H3 text={props.title} fa={props.fa} class="pb-0" />
-        <Show when={props.showDeepLink}>
+        <Show when={props.showDeepLink !== false}>
           <DeepLinkButton key={(props as { key: string }).key} />
         </Show>
       </div>

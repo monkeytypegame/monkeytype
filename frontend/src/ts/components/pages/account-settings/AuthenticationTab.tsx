@@ -55,7 +55,7 @@ function PasswordAuthentication() {
             text="update password"
             onClick={() => showUpdatePasswordModal()}
           />{" "}
-          <Show when={() => hasAdditionalAuthMethodsReactive("password")}>
+          <Show when={hasAdditionalAuthMethodsReactive("password")}>
             <Button
               class="w-full"
               text="remove password authentication"

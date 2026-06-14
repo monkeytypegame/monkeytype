@@ -110,13 +110,13 @@ type ReauthenticateOptions = {
 };
 
 const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
-  createSignalWithSetters<User | null>(null)({
+  createSignalWithSetters<Pick<User, "providerData"> | null>(null)({
     updateAuthenticatedUser: (set) => {
       const user = getAuthenticatedUser();
       if (user === null) {
         set(null);
       } else {
-        set({ ...user });
+        set({ providerData: user.providerData });
       }
     },
   });
@@ -127,19 +127,21 @@ createEffectOn(getUserId, () => {
 });
 
 const authenticationMemos = Object.fromEntries(
-  typedKeys(authMethods).map((it) => {
+  typedKeys(authMethods).map((authMethod) => {
     const memo = createMemo(() => {
-      const providerId = getProviderId(it);
+      const providerId = getProviderId(authMethod);
 
       const user = getAuthenticatedUserReactive();
       if (user === null) return undefined;
       const result = {
         isInUse: user.providerData.some((p) => p.providerId === providerId),
-        hasAdditionalAuthMethods: hasAdditionalAuthMethods(it),
+        hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
+
+      console.log("### updated auth memo", authMethod, result);
       return result;
     });
-    return [it, memo];
+    return [authMethod, memo];
   }),
 );
 
@@ -301,11 +303,11 @@ export async function addAuthProvider(
   }
   const authMethod = options.authMethod;
 
-  showLoaderBar();
   const user = getAuthenticatedUser();
   const providerName = getAuthMethodDisplay(authMethod);
 
   if (!user) return;
+  showLoaderBar();
   try {
     if (authMethod === "password") {
       await addPasswordProvider(user, options);
@@ -361,8 +363,7 @@ async function addPopupProvider(
   const authMethod = options.authMethod;
   const provider = getAuthProvider(authMethod);
   if (provider === undefined) {
-    showErrorNotification(`Authentication ${authMethod} is missing a provider`);
-    return;
+    throw new Error(`Authentication ${authMethod} is missing a provider`);
   }
 
   await linkWithPopup(user, provider);
@@ -493,7 +494,6 @@ export async function reauthenticate(
   }
 
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
-  console.log("### reauth with provider");
 
   try {
     if (authMethod === undefined) {

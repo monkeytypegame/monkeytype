@@ -55,7 +55,7 @@ const apeKeysCollection = createCollection(
           setApeKeysDenied(true);
         }
 
-        throw new Error(`Error fetching ape keys:${response.body.message}`);
+        throw new Error(`Error fetching ape keys: ${response.body.message}`);
       }
 
       const dataArray = typedEntries(response.body.data)

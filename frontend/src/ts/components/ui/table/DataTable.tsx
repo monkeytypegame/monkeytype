@@ -127,8 +127,8 @@ export function DataTable<TData extends Object, TValue = any>(
       getRowId: (row, index) =>
         props.rowSelection !== undefined
           ? props.rowSelection.getRowId(row)
-          : "_id" in row
-            ? (row["_id"] as string)
+          : typeof (row as Record<string, unknown>)["_id"] === "string"
+            ? ((row as Record<string, unknown>)["_id"] as string)
             : index.toString(),
       onRowSelectionChange: setRowSelection,
 
