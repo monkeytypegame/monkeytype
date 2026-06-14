@@ -5,23 +5,20 @@ import * as StreakHourOffsetModal from "../../../modals/streak-hour-offset";
 import { showLoaderBar } from "../../../states/loader-bar";
 import { showErrorNotification } from "../../../states/notifications";
 import { getSnapshot } from "../../../states/snapshot";
+import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import {
   showOptOutOfLeaderboardsModal,
   showResetPersonalBestsModal,
 } from "../../modals/account-settings/ReauthConfirmModals";
+import { showUnlinkDiscordModal } from "../../modals/account-settings/UnlinkDiscordModal";
 import { showUpdateNameModal } from "../../modals/account-settings/UpdateNameModal";
 import { Section } from "./utils";
 
 export function AccountTab() {
   return (
     <>
-      <Show
-        when={getSnapshot()?.discordId !== undefined}
-        fallback={<DiscordNotConnected />}
-      >
-        <DiscordConnected />
-      </Show>
+      <Discord />
 
       <UpdateAccountName />
       <UpdateStreakOffset />
@@ -31,7 +28,8 @@ export function AccountTab() {
   );
 }
 
-function DiscordNotConnected() {
+function Discord() {
+  const isLinked = () => getSnapshot()?.discordId !== undefined;
   return (
     <Section
       title="discord integration"
@@ -42,33 +40,59 @@ function DiscordNotConnected() {
         personal best in a 60 second test. If you link your accounts before
         joining the Discord server, the bot <i>will not</i> give you a role.
       </>
-      button={{
-        text: "link",
-        onClick: () => {
-          showLoaderBar();
-          void Ape.users.getDiscordOAuth().then((response) => {
-            if (response.status === 200) {
-              window.open(response.body.data.url, "_self");
-            } else {
-              showErrorNotification(
-                `Failed to get OAuth from discord: ${response.body.message}`,
-              );
+      button={
+        isLinked()
+          ? undefined
+          : {
+              text: "link",
+              onClick: () => {
+                showLoaderBar();
+                void Ape.users.getDiscordOAuth().then((response) => {
+                  if (response.status === 200) {
+                    window.open(response.body.data.url, "_self");
+                  } else {
+                    showErrorNotification(
+                      `Failed to get OAuth from discord: ${response.body.message}`,
+                    );
+                  }
+                });
+              },
             }
-          });
-        },
-      }}
-    />
-  );
-}
-
-function DiscordConnected() {
-  //TODO
-  return (
-    <Section
-      title="discord integration"
-      fa={{ variant: "brand", icon: "fa-discord" }}
-      description=<>t.b.d</>
-    />
+      }
+    >
+      <Show when={isLinked()}>
+        <div class="m-4 flex h-full flex-col items-center justify-center gap-2">
+          <div class="text-main">
+            <Fa icon="fa-check" /> Your accounts are linked!
+          </div>
+          <div class="text-sm">
+            <Button
+              variant="text"
+              text="Update avatar"
+              fa={{ icon: "fa-sync-alt" }}
+              onClick={() => {
+                showLoaderBar();
+                void Ape.users.getDiscordOAuth().then((response) => {
+                  if (response.status === 200) {
+                    window.open(response.body.data.url, "_self");
+                  } else {
+                    showErrorNotification(
+                      `Failed to get OAuth from discord: ${response.body.message}`,
+                    );
+                  }
+                });
+              }}
+            />
+            <Button
+              variant="text"
+              text="Unlink"
+              fa={{ icon: "fa-unlink" }}
+              onClick={() => showUnlinkDiscordModal()}
+            />
+          </div>
+        </div>
+      </Show>
+    </Section>
   );
 }
 

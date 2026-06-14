@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
 import { FaSolidIcon } from "../types/font-awesome";
-import { isAuthenticated } from "./core";
+import { getActivePage, isAuthenticated } from "./core";
 import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 
 export const [getLastGeneratedApeKey, setLastGeneratedApeKey] = createSignal<
@@ -60,6 +60,8 @@ export function readAccountSettingsGetParameters(
 }
 
 createEffectOn(getCurrentTab, (tab) => {
+  //make sure we only replace the url if we are on the accountSettings page. If this is missing the url-handler will not work correctly
+  if (getActivePage() !== "accountSettings") return;
   const data: AccountSettingsUrlParams = { tab };
 
   const urlParams = serializeUrlSearchParams({
