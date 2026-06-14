@@ -43,11 +43,8 @@ export function wordsToCamelCase(str: string): string {
  * @returns The last character of the input string, or an empty string if the input is empty.
  */
 export function getLastChar(word: string): string {
-  try {
-    return word.charAt(word.length - 1);
-  } catch {
-    return "";
-  }
+  if (word === undefined) return "";
+  return word.charAt(word.length - 1);
 }
 
 /**
