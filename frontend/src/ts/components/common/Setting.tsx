@@ -35,11 +35,11 @@ export type SettingProps = {
   (
     | {
         disabled: boolean;
-        disabledText: JSXElement;
+        disabledDescription: JSXElement;
       }
     | {
         disabled?: never;
-        disabledText?: never;
+        disabledDescription?: never;
       }
   );
 
@@ -63,7 +63,7 @@ export function Setting(props: SettingProps): JSXElement {
 
       <Show
         when={props.disabled === undefined || !props.disabled}
-        fallback={props.disabledText}
+        fallback={props.disabledDescription}
       >
         <div
           class={cn(

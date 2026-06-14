@@ -105,7 +105,7 @@ function UpdateStreakOffset() {
         onClick: () => StreakHourOffsetModal.show(),
       }}
       disabled={getSnapshot()?.streakHourOffset !== undefined}
-      disabledText=<>
+      disabledDescription=<>
         <Fa icon="fa-exclamation-triangle" /> You have already set your streak
         hour offset to{" "}
         {`${(getSnapshot()?.streakHourOffset ?? 0) > 0 ? "+" : ""} ${getSnapshot()?.streakHourOffset}`}
@@ -130,7 +130,7 @@ function OptOutLeaderboard() {
         onClick: () => showOptOutOfLeaderboardsModal(),
       }}
       disabled={getSnapshot()?.lbOptOut === true}
-      disabledText=<>
+      disabledDescription=<>
         <Fa icon="fa-exclamation-triangle" />
         You have opted out of leaderboards.
       </>

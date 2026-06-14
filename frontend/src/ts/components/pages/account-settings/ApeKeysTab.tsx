@@ -44,7 +44,7 @@ export function ApeKeysTab() {
           onClick: addNewKey,
         }}
         disabled={isApeKeysDenied() === true}
-        disabledText=<>
+        disabledDescription=<>
           <Fa icon="fa-times" /> You have lost access to Ape Keys. Please
           contact support if you believe this is a mistake.
         </>
