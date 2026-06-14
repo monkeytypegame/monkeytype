@@ -40,7 +40,7 @@ const newTimer = createTimer({
   onLoop: () => {
     const now = performance.now();
 
-    const drift = Math.abs(1000 - (now - lastLoop));
+    const drift = roundTo2(Math.abs(1000 - (now - lastLoop)));
     checkIfTimerIsSlow(drift);
     lastLoop = now;
     timerStep();

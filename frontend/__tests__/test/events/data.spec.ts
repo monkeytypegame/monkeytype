@@ -94,6 +94,20 @@ describe("data.ts", () => {
       expect(inputs).toHaveLength(1);
     });
 
+    it("strips undefined values from eventData", () => {
+      logTestEvent("input", 1100, {
+        charIndex: 0,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+        inputValue: "",
+        clearedNextWord: undefined,
+      } as unknown as InputEventData);
+
+      const stored = getAllTestEvents()[0]?.data as Record<string, unknown>;
+      expect("clearedNextWord" in stored).toBe(false);
+      expect(stored["inputValue"]).toBe("");
+    });
+
     it("caches getAllTestEvents and invalidates on new event", () => {
       logTestEvent("timer", 1100, timerData("start", 0));
       const first = getAllTestEvents();

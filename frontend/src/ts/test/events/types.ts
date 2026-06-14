@@ -99,6 +99,11 @@ export type InputEventData =
     })
   | (BaseInputEventData & {
       inputType: DeleteInputType;
+      // true on the destination event of a regression that crossed back
+      // over a word with leftover content (e.g. Firefox Ctrl+Backspace
+      // eating sentinel + non-word residue). The cleared word is
+      // wordIndex + 1.
+      clearedNextWord?: true;
     });
 
 export type CompositionTestEvent = EventProps<
