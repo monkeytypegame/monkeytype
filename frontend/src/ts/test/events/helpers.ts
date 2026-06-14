@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
 import { Keycode } from "../../constants/keys";
-import { InputEventNoMs } from "./types";
+import { InputEventNoMs, TestEventNoMs } from "./types";
 
 export const keysToTrack = new Set<Keycode | "NoCode">([
   "NumpadMultiply",
@@ -93,9 +93,18 @@ export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
   return event.code as Keycode;
 }
 
-export function applyOp(input: string, event: InputEventNoMs): string {
+export function applyInputEvent(input: string, event: InputEventNoMs): string {
   if (event.data.inputType === "insertText") {
     if (event.data.inputStopped) return input;
+    if (
+      event.data.data === " " &&
+      event.data.lastWord &&
+      event.data.commitsWord &&
+      !event.data.correct
+    ) {
+      // if this is an incorrect word commit on the last word, we dont want to count it at all
+      return input;
+    }
     return input + event.data.data;
   }
   if (event.data.inputType === "insertCompositionText") {
@@ -111,40 +120,32 @@ export function applyOp(input: string, event: InputEventNoMs): string {
   return input;
 }
 
-/**
- * Derives input by applying each event's operation in order. Ignores the
- * recorded inputValue field. Use for verification, tests, or fallback —
- * not as source of truth.
- */
-export function getInputFromEvents(events: InputEventNoMs[]): string {
-  let input = "";
-  for (const event of events) {
-    input = applyOp(input, event);
-  }
-  return input;
-}
+export function getInputFromDom(events: TestEventNoMs[]): string {
+  const lastInputEvent = events.findLast((e) => e.type === "input");
 
-/**
- * Reads input from the DOM snapshots captured on each event (inputValue),
- * falling back to op-based derivation for events without a snapshot.
- * Use this whenever you need the actual current/past input state.
- *
- * Walks backward to find the latest event with a captured inputValue, then
- * replays any subsequent events forward — O(1) when the last event has a
- * snapshot (the common case), O(n) worst case.
- */
-export function getInputFromDom(events: InputEventNoMs[]): string {
-  for (let i = events.length - 1; i >= 0; i--) {
-    const event = events[i] as InputEventNoMs;
-    if (event.data.inputValue !== undefined) {
-      let input = event.data.inputValue;
-      for (let j = i + 1; j < events.length; j++) {
-        input = applyOp(input, events[j] as InputEventNoMs);
-      }
-      return input;
+  if (lastInputEvent === undefined) {
+    let input = "";
+    for (const event of events) {
+      if (event.type !== "input") continue;
+      input = applyInputEvent(input, event);
     }
+    return input;
   }
-  return getInputFromEvents(events);
+
+  const inputValue = lastInputEvent.data.inputValue;
+
+  if (
+    lastInputEvent.data.inputType === "insertText" &&
+    lastInputEvent.data.data === " " &&
+    lastInputEvent.data.lastWord &&
+    lastInputEvent.data.commitsWord &&
+    !lastInputEvent.data.correct
+  ) {
+    // if this is an incorrect word commit on the last word, we dont want to count it at all
+    return inputValue.trimEnd();
+  }
+
+  return inputValue;
 }
 
 export type InputValueMismatch = {
@@ -166,7 +167,7 @@ export function findInputValueMismatches(
 
   for (let i = 0; i < events.length; i++) {
     const event = events[i] as InputEventNoMs;
-    derived = applyOp(derived, event);
+    derived = applyInputEvent(derived, event);
 
     if (
       event.data.inputValue !== undefined &&

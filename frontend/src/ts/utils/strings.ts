@@ -412,7 +412,6 @@ export function countChars(
   inputWord: string,
   targetWord: string,
   creditPartial: boolean,
-  endsWithCommitSpace: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -428,17 +427,8 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
-      // matching space on a wrong word: incorrect if it was a commit attempt
-      // (word advanced via space), extra if it was a literal space (stopOnError
-      // blocked the commit so the space ended up as a typed character)
-      if (targetChar === " ") {
-        if (wordCorrect) {
-          allCorrect += 1;
-        } else if (endsWithCommitSpace) {
-          incorrect += 1;
-        } else {
-          extra += 1;
-        }
+      if (targetChar === " " && !wordCorrect) {
+        extra += 1;
       } else {
         allCorrect += 1;
       }
@@ -448,18 +438,6 @@ export function countChars(
     } else if (inputChar === undefined) {
       //missed char
       if (!creditPartial) {
-        missed += 1;
-      }
-    } else if (
-      endsWithCommitSpace &&
-      inputChar === " " &&
-      i === inputWord.length - 1 &&
-      !targetWord.endsWith(" ") &&
-      targetChar !== "\n"
-    ) {
-      // commit-space on last word — not a literal typed char. If it landed
-      // before reaching target's end, that slot is effectively missed.
-      if (targetChar !== undefined && !creditPartial) {
         missed += 1;
       }
     } else if (

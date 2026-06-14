@@ -50,6 +50,11 @@ import {
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestInput from "./test-input";
+import {
+  getCurrentInput,
+  resetCurrentInput,
+  getInputHistory,
+} from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -114,6 +119,7 @@ import {
   getAfkDuration,
   forceReleaseAllKeys,
   getKeypressesPerSecond,
+  getInputHistory as getEventsInputHistory,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
@@ -447,7 +453,7 @@ async function init(): Promise<boolean> {
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
   TestInput.input.resetHistory();
-  TestInput.input.current = "";
+  resetCurrentInput();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -990,7 +996,7 @@ function compareCompletedEvents(
       } else {
         if (TestWords.words.list.length <= 25) {
           notMatching.push(
-            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${TestInput.input.getHistory().join("_")}'`,
+            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${getInputHistory().join("_")}'`,
           );
         } else {
           notMatching.push(`charStats (${diffs.join(", ")})`);
@@ -1245,6 +1251,24 @@ function compareCompletedEvents(
     }
   }
 
+  {
+    const a = getInputHistory().join(" ");
+    if (!a.includes("\n")) {
+      const b = getEventsInputHistory().join("");
+      if (a === b) {
+        console.debug(`Completed event match on input history:`, a);
+      } else {
+        notMatching.push(`input history (values differ)`);
+        mismatchedKeys.push("inputHistory");
+        console.error(
+          `Completed event mismatch on input history:`,
+          getInputHistory(),
+          getEventsInputHistory(),
+        );
+      }
+    }
+  }
+
   if (notMatching.length === 0) {
     if (ALWAYSREPORT) {
       showSuccessNotification("Completed events match", { important: true });
@@ -1317,7 +1341,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 18,
+            version: 23,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
@@ -1473,16 +1497,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // in case the tests ends with a keypress (not a word submission)
   // we need to push the current input to history
-  if (TestInput.input.current.length !== 0) {
+  if (getCurrentInput().length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   // in zen mode, ensure the replay words list reflects the typed input history
   // even if the current input was empty at finish (e.g., after submitting a word).
   if (Config.mode === "zen") {
-    Replay.replayGetWordsList(TestInput.input.getHistory());
+    Replay.replayGetWordsList(getInputHistory());
   }
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
@@ -1503,7 +1527,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // logEventsDataToTheConsoleTable();
 
   //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
+  if (TestInput.burstHistory.length !== getInputHistory()?.length) {
     const burst = TestStats.calculateBurst(now);
     TestInput.pushBurstToHistory(burst);
   }
@@ -1720,11 +1744,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      TestInput.input.getHistory().length < TestWords.words.length
+      getInputHistory().length < TestWords.words.length
     ) {
       // They bailed out
 
-      const history = TestInput.input.getHistory();
+      const history = getInputHistory();
       let historyLength = history?.length;
       const wordIndex = historyLength - 1;
 

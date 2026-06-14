@@ -57,6 +57,7 @@ import {
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
+  getInputHistory,
   getWpmHistory,
   forceReleaseAllKeys,
   __testing as statsTesting,
@@ -80,6 +81,8 @@ function keyUp(code: Keycode = "KeyA"): KeyupEventData {
   return { code };
 }
 
+const inputPerWord = new Map<number, string>();
+
 function input(
   overrides: Partial<{
     charIndex: number;
@@ -89,9 +92,23 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
-    isCommitSpace: true;
+    commitsWord: true;
+    inputValue: string;
   }> = {},
 ): InputEventData {
+  const wordIndex = overrides.wordIndex ?? 0;
+  const data = overrides.data ?? "a";
+  const inputStopped = overrides.inputStopped ?? false;
+
+  let inputValue: string;
+  if (overrides.inputValue !== undefined) {
+    inputValue = overrides.inputValue;
+  } else {
+    const prev = inputPerWord.get(wordIndex) ?? "";
+    inputValue = inputStopped ? prev : prev + data;
+    inputPerWord.set(wordIndex, inputValue);
+  }
+
   return {
     charIndex: 0,
     wordIndex: 0,
@@ -100,6 +117,7 @@ function input(
     correct: true,
     isCompositionEnding: false,
     inputStopped: false,
+    inputValue,
     ...overrides,
   } as InputEventData;
 }
@@ -142,6 +160,7 @@ describe("stats.ts", () => {
     (Config as { funbox: string[] }).funbox = [];
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
     TestWords.list.length = 0;
+    inputPerWord.clear();
   });
 
   describe("getTimerBoundaries", () => {
@@ -493,6 +512,110 @@ describe("stats.ts", () => {
     });
   });
 
+  describe("getInputHistory", () => {
+    it("treats abandoned word as empty when Firefox Ctrl+Backspace ate the sentinel", () => {
+      // Firefox groups whitespace + non-word punctuation as one delete run.
+      // Sequence: type "=ri" at word 1, Ctrl+Backspace twice. The first delete
+      // leaves "=" (browser deletes "ri" only). The second deletes the
+      // sentinel + "=" together, which monkeytype interprets as crossing the
+      // word boundary → goToPreviousWord. Word 1 is abandoned with leftover
+      // "=" residue in its event stream; its final state should still be "".
+      TestWords.list.push("hello", "leave");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "h", charIndex: 0 }),
+      );
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "e", charIndex: 1 }),
+      );
+      logTestEvent(
+        "input",
+        1120,
+        input({ wordIndex: 0, data: "l", charIndex: 2 }),
+      );
+      logTestEvent(
+        "input",
+        1130,
+        input({ wordIndex: 0, data: "l", charIndex: 3 }),
+      );
+      logTestEvent(
+        "input",
+        1140,
+        input({ wordIndex: 0, data: "o", charIndex: 4 }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({
+          wordIndex: 0,
+          data: " ",
+          charIndex: 5,
+          commitsWord: true,
+        }),
+      );
+
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 1,
+          data: "=",
+          correct: false,
+          charIndex: 0,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1210,
+        input({
+          wordIndex: 1,
+          data: "r",
+          correct: false,
+          charIndex: 1,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1220,
+        input({
+          wordIndex: 1,
+          data: "i",
+          correct: false,
+          charIndex: 2,
+        }),
+      );
+
+      // first Ctrl+Backspace: "=ri" → "="
+      logTestEvent("input", 1300, {
+        wordIndex: 1,
+        charIndex: 3,
+        inputType: "deleteWordBackward",
+        inputValue: "=",
+      } as InputEventData);
+
+      // second Ctrl+Backspace: Firefox ate sentinel + "=" → goToPreviousWord;
+      // clearedNextWord marks word 1 (= wordIndex + 1) as abandoned
+      logTestEvent("input", 1400, {
+        wordIndex: 0,
+        charIndex: 0,
+        inputType: "deleteWordBackward",
+        inputValue: "",
+        clearedNextWord: true,
+      } as InputEventData);
+
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const history = getInputHistory();
+      expect(history[0]).toBe("");
+      expect(history[1]).toBe("");
+    });
+  });
+
   describe("getAccuracy", () => {
     it("calculates correct/incorrect/percentage", () => {
       logTestEvent("input", 1100, input());
@@ -823,7 +946,7 @@ describe("stats.ts", () => {
           charIndex: 3,
           wordIndex: 0,
           data: " ",
-          isCommitSpace: true,
+          commitsWord: true,
         }),
       );
       // type "w" on second word
