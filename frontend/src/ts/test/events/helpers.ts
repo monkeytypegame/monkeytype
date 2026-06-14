@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
 import { Keycode } from "../../constants/keys";
-import { InputEventNoMs } from "./types";
+import { InputEventNoMs, TestEventNoMs } from "./types";
 
 export const keysToTrack = new Set<Keycode | "NoCode">([
   "NumpadMultiply",
@@ -120,34 +120,26 @@ export function applyInputEvent(input: string, event: InputEventNoMs): string {
   return input;
 }
 
-/**
- * Reads input from the DOM snapshots captured on each event (inputValue),
- * falling back to op-based derivation for events without a snapshot.
- * Use this whenever you need the actual current/past input state.
- *
- * Walks backward to find the latest event with a captured inputValue, then
- * replays any subsequent events forward — O(1) when the last event has a
- * snapshot (the common case), O(n) worst case.
- */
-export function getInputFromDom(events: InputEventNoMs[]): string {
-  const lastEvent = events[events.length - 1];
+export function getInputFromDom(events: TestEventNoMs[]): string {
+  const lastInputEvent = events.findLast((e) => e.type === "input");
 
-  if (lastEvent === undefined) {
+  if (lastInputEvent === undefined) {
     let input = "";
     for (const event of events) {
+      if (event.type !== "input") continue;
       input = applyInputEvent(input, event);
     }
     return input;
   }
 
-  const inputValue = lastEvent.data.inputValue;
+  const inputValue = lastInputEvent.data.inputValue;
 
   if (
-    lastEvent.data.inputType === "insertText" &&
-    lastEvent.data.data === " " &&
-    lastEvent.data.lastWord &&
-    lastEvent.data.commitsWord &&
-    !lastEvent.data.correct
+    lastInputEvent.data.inputType === "insertText" &&
+    lastInputEvent.data.data === " " &&
+    lastInputEvent.data.lastWord &&
+    lastInputEvent.data.commitsWord &&
+    !lastInputEvent.data.correct
   ) {
     // if this is an incorrect word commit on the last word, we dont want to count it at all
     return inputValue.trimEnd();

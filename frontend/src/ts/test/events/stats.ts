@@ -1,8 +1,7 @@
 import {
   getAllTestEvents,
   getEventsForWord,
-  getInputEvents,
-  getInputEventsPerWord,
+  getEventsPerWord,
   getPressedKeys,
   getTimerStartEventMs,
   logTestEvent,
@@ -14,7 +13,7 @@ import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { InputEventNoMs, TestEventNoMs } from "./types";
+import { TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
@@ -346,9 +345,7 @@ export function getCurrentAccuracy(): number {
 }
 
 function computeBurst(events: TestEventNoMs[], now?: number): number {
-  const inputEvents = events.filter(
-    (e): e is InputEventNoMs => e.type === "input",
-  );
+  const inputEvents = events.filter((e) => e.type === "input");
   const input = getInputFromDom(inputEvents);
 
   let inputLength = input.length;
@@ -400,7 +397,7 @@ export function getWordBurst(wordIndex: number, now?: number): number {
 }
 
 export function getBurstHistory(): number[] {
-  const eventsPerWord = getInputEventsPerWord();
+  const eventsPerWord = getEventsPerWord();
   const burstHistory: number[] = [];
   for (let i = 0; i < TestWords.words.length; i++) {
     burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
@@ -409,7 +406,7 @@ export function getBurstHistory(): number[] {
 }
 
 function countCharsForWords(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
+  eventsPerWord: Map<number, TestEventNoMs[]>,
   lastWordIndex: number,
   shouldCountPartialLastWord: boolean,
 ): CharCounts {
@@ -452,10 +449,10 @@ function countCharsForWords(
 }
 
 function inferActiveWordIndex(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
+  eventsPerWord: Map<number, TestEventNoMs[]>,
 ): number {
   let maxWordIndex = -1;
-  let lastWordEvents: InputEventNoMs[] | undefined;
+  let lastWordEvents: TestEventNoMs[] | undefined;
   for (const [k, wordEvents] of eventsPerWord) {
     if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
       maxWordIndex = k;
@@ -467,6 +464,7 @@ function inferActiveWordIndex(
   // committed trailing space → cursor advanced to the next word
   if (
     lastEvt !== undefined &&
+    "inputType" in lastEvt.data &&
     lastEvt.data.inputType === "insertText" &&
     lastEvt.data.data === " "
   ) {
@@ -481,14 +479,14 @@ export function getChars(countPartialLastWord = false): CharCounts {
     (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
-    getInputEventsPerWord(),
+    getEventsPerWord(),
     isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest || countPartialLastWord,
   );
 }
 
 export function getInputHistory(): string[] {
-  const eventsPerWordIndex = getInputEventsPerWord();
+  const eventsPerWordIndex = getEventsPerWord();
   const history: string[] = [];
 
   for (const [wordIndex, events] of eventsPerWordIndex) {
@@ -523,12 +521,14 @@ export function getAccuracy(): {
   incorrect: number;
   percentage: number;
 } {
-  const events = getInputEvents();
+  const events = getAllTestEvents();
 
   let correct = 0;
   let incorrect = 0;
 
   for (const event of events) {
+    if (event.type !== "input") continue;
+
     if (!("correct" in event.data)) {
       continue;
     }
@@ -617,7 +617,7 @@ export function getWpmHistory(): number[] {
   const wpmHistory: number[] = [];
 
   for (const boundary of getTimerBoundaries(events)) {
-    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+    const eventsPerWord = getEventsPerWord(undefined, boundary);
     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
     const { correctWord } = countCharsForWords(
       eventsPerWord,
@@ -636,12 +636,12 @@ export function getRawHistory(): number[] {
   const wpmHistory: number[] = [];
 
   for (const boundary of timerBoundaries) {
-    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+    const eventsPerWord = getEventsPerWord(undefined, boundary);
 
     // Compute simulated inputs first so we can determine the effective last word
     const wordInputs = new Map<
       number,
-      { input: string; events: InputEventNoMs[] }
+      { input: string; events: TestEventNoMs[] }
     >();
     let maxWordIndex = 0;
     for (const [k, wordEvents] of eventsPerWord) {
@@ -661,6 +661,7 @@ export function getRawHistory(): number[] {
       let adjustedMax = maxWordIndex;
       if (
         lastEvt !== undefined &&
+        lastEvt.type === "input" &&
         lastEvt.data.inputType === "insertText" &&
         lastEvt.data.data === " "
       ) {
@@ -772,7 +773,7 @@ export function getMissedWords(): Record<string, number> {
 }
 
 export function getCorrectedWords(): string[] {
-  const ev = getInputEventsPerWord();
+  const ev = getEventsPerWord();
   const correctedWords: string[] = [];
 
   for (const [, events] of ev.entries()) {
@@ -781,6 +782,7 @@ export function getCorrectedWords(): string[] {
     let cursorPos = 0;
 
     for (const event of events) {
+      if (event.type !== "input") continue;
       if (
         event.data.inputType === "insertText" ||
         event.data.inputType === "insertCompositionText"
