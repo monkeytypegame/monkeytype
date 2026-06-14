@@ -47,6 +47,11 @@ export function logTestEvent(
 
   now = roundTo2(now);
 
+  //strip undefined values from eventData
+  eventData = Object.fromEntries(
+    Object.entries(eventData).filter(([_, v]) => v !== undefined),
+  ) as TestEventData;
+
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
     const code = data.code as Keycode | "NoCode";
