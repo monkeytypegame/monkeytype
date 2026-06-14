@@ -32,6 +32,7 @@ inputEl.addEventListener("compositionstart", (event) => {
 
   logTestEvent("composition", now, {
     event: "start",
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -50,6 +51,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
   logTestEvent("composition", now, {
     event: "update",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -75,5 +77,6 @@ inputEl.addEventListener("compositionend", async (event) => {
   logTestEvent("composition", now, {
     event: "end",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });

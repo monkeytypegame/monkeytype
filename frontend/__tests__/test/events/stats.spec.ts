@@ -57,6 +57,7 @@ import {
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
+  getInputHistory,
   getWpmHistory,
   forceReleaseAllKeys,
   __testing as statsTesting,
@@ -508,6 +509,110 @@ describe("stats.ts", () => {
       logTestEvent("timer", 3000, timer("end", 2));
 
       expect(getAfkDuration()).toBe(0);
+    });
+  });
+
+  describe("getInputHistory", () => {
+    it("treats abandoned word as empty when Firefox Ctrl+Backspace ate the sentinel", () => {
+      // Firefox groups whitespace + non-word punctuation as one delete run.
+      // Sequence: type "=ri" at word 1, Ctrl+Backspace twice. The first delete
+      // leaves "=" (browser deletes "ri" only). The second deletes the
+      // sentinel + "=" together, which monkeytype interprets as crossing the
+      // word boundary → goToPreviousWord. Word 1 is abandoned with leftover
+      // "=" residue in its event stream; its final state should still be "".
+      TestWords.list.push("hello", "leave");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "h", charIndex: 0 }),
+      );
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "e", charIndex: 1 }),
+      );
+      logTestEvent(
+        "input",
+        1120,
+        input({ wordIndex: 0, data: "l", charIndex: 2 }),
+      );
+      logTestEvent(
+        "input",
+        1130,
+        input({ wordIndex: 0, data: "l", charIndex: 3 }),
+      );
+      logTestEvent(
+        "input",
+        1140,
+        input({ wordIndex: 0, data: "o", charIndex: 4 }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({
+          wordIndex: 0,
+          data: " ",
+          charIndex: 5,
+          commitsWord: true,
+        }),
+      );
+
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 1,
+          data: "=",
+          correct: false,
+          charIndex: 0,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1210,
+        input({
+          wordIndex: 1,
+          data: "r",
+          correct: false,
+          charIndex: 1,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1220,
+        input({
+          wordIndex: 1,
+          data: "i",
+          correct: false,
+          charIndex: 2,
+        }),
+      );
+
+      // first Ctrl+Backspace: "=ri" → "="
+      logTestEvent("input", 1300, {
+        wordIndex: 1,
+        charIndex: 3,
+        inputType: "deleteWordBackward",
+        inputValue: "=",
+      } as InputEventData);
+
+      // second Ctrl+Backspace: Firefox ate sentinel + "=" → goToPreviousWord;
+      // clearedNextWord marks word 1 (= wordIndex + 1) as abandoned
+      logTestEvent("input", 1400, {
+        wordIndex: 0,
+        charIndex: 0,
+        inputType: "deleteWordBackward",
+        inputValue: "",
+        clearedNextWord: true,
+      } as InputEventData);
+
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const history = getInputHistory();
+      expect(history[0]).toBe("");
+      expect(history[1]).toBe("");
     });
   });
 
