@@ -1253,13 +1253,19 @@ function compareCompletedEvents(
 
   {
     const a = getInputHistory().join(" ");
-    const b = getEventsInputHistory().join("");
-    if (a === b) {
-      console.debug(`Completed event match on input history:`, a);
-    } else {
-      notMatching.push(`input history (values differ)`);
-      mismatchedKeys.push("inputHistory");
-      console.error(`Completed event mismatch on input history:`, a, b);
+    if (!a.includes("\n")) {
+      const b = getEventsInputHistory().join("");
+      if (a === b) {
+        console.debug(`Completed event match on input history:`, a);
+      } else {
+        notMatching.push(`input history (values differ)`);
+        mismatchedKeys.push("inputHistory");
+        console.error(
+          `Completed event mismatch on input history:`,
+          getInputHistory(),
+          getEventsInputHistory(),
+        );
+      }
     }
   }
 
@@ -1335,7 +1341,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 20,
+            version: 22,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),

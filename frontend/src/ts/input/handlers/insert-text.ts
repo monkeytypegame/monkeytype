@@ -235,6 +235,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     inputValue:
       inputValueAfterEvent + (charIsSpace && !shouldInsertSpace ? " " : ""),
     commitsWord: shouldGoToNextWord ? true : undefined,
+    lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
 
   // going to next word
