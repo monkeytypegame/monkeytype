@@ -18,7 +18,7 @@ export const accountSettingsTabs = {
 export type AccountSettingsTab = keyof typeof accountSettingsTabs;
 
 export const [getCurrentTab, setCurrentTab] =
-  createSignal<AccountSettingsTab>("apeKeys");
+  createSignal<AccountSettingsTab>("account");
 
 export const [isApeKeysDenied, setApeKeysDenied] = createSignal<
   boolean | undefined

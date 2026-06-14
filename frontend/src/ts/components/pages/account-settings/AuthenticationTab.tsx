@@ -76,25 +76,21 @@ function ProviderAuthentication(props: { authMethod: ProviderAuthMethod }) {
       text=<>
         Add or remove {getAuthMethodDisplay(props.authMethod)} authentication.
       </>
-    >
-      <Show
-        when={isUsingAuthenticationReactive(props.authMethod)}
-        fallback=<Button
-          class="w-full"
-          text={`add ${getAuthMethodDisplay(props.authMethod)} authentication`}
-          onClick={() => void addAuthProvider({ authMethod: props.authMethod })}
-        />
-      >
-        <Button
-          class="w-full"
-          text={`remove ${getAuthMethodDisplay(props.authMethod)} authentication`}
-          disabled={!hasAdditionalAuthMethodsReactive(props.authMethod)}
-          onClick={() =>
-            showRemoveAuthMethodModal({ authMethod: props.authMethod })
-          }
-        />
-      </Show>
-    </Section>
+      button={
+        isUsingAuthenticationReactive(props.authMethod)
+          ? {
+              text: `remove ${getAuthMethodDisplay(props.authMethod)} authentication`,
+              disabled: !hasAdditionalAuthMethodsReactive(props.authMethod),
+              onClick: () =>
+                showRemoveAuthMethodModal({ authMethod: props.authMethod }),
+            }
+          : {
+              text: `add ${getAuthMethodDisplay(props.authMethod)} authentication`,
+              onClick: () =>
+                void addAuthProvider({ authMethod: props.authMethod }),
+            }
+      }
+    />
   );
 }
 
