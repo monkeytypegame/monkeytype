@@ -7,8 +7,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 import {
   logTestEvent,
   getAllTestEvents,
-  getInputEvents,
-  getInputEventsPerWord,
+  getEventsPerWord,
   cleanupData,
   resetTestEvents,
   __testing,
@@ -245,28 +244,29 @@ describe("data.ts", () => {
     });
   });
 
-  describe("getInputEvents", () => {
-    it("returns only input events", () => {
-      logTestEvent("keydown", 1010, keyDown());
-      logTestEvent("input", 1020, inputData());
-      logTestEvent("timer", 1030, timerData("start", 0));
-      logTestEvent("input", 1040, inputData({ charIndex: 1 }));
-
-      const inputs = getInputEvents();
-      expect(inputs).toHaveLength(2);
-      expect(inputs.every((e) => e.type === "input")).toBe(true);
-    });
-  });
-
-  describe("getInputEventsPerWord", () => {
+  describe("getEventsPerWord", () => {
     it("groups input events by wordIndex", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1020, inputData({ wordIndex: 0, charIndex: 1 }));
       logTestEvent("input", 1030, inputData({ wordIndex: 1, charIndex: 0 }));
 
-      const perWord = getInputEventsPerWord();
+      const perWord = getEventsPerWord();
       expect(perWord.get(0)).toHaveLength(2);
       expect(perWord.get(1)).toHaveLength(1);
+    });
+
+    it("includes composition events alongside input events", () => {
+      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
+      logTestEvent("composition", 1020, { event: "start", wordIndex: 0 });
+      logTestEvent("keydown", 1025, keyDown());
+      logTestEvent("composition", 1030, {
+        event: "update",
+        data: "a",
+        wordIndex: 0,
+      });
+
+      const perWord = getEventsPerWord();
+      expect(perWord.get(0)).toHaveLength(3);
     });
 
     it("does not shift delete at charIndex 0 if wordIndex is 0", () => {
@@ -276,7 +276,7 @@ describe("data.ts", () => {
         inputType: "deleteContentBackward",
       } as InputEventData);
 
-      const perWord = getInputEventsPerWord();
+      const perWord = getEventsPerWord();
       expect(perWord.get(0)).toHaveLength(1);
     });
 
@@ -284,7 +284,7 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getInputEventsPerWord(undefined, 50);
+      const perWord = getEventsPerWord(undefined, 50);
       expect(perWord.get(0)).toHaveLength(1);
     });
 
@@ -292,9 +292,10 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getInputEventsPerWord(50);
+      const perWord = getEventsPerWord(50);
       expect(perWord.get(0)).toHaveLength(1);
-      expect(perWord.get(0)?.[0]?.data.charIndex).toBe(1);
+      const first = perWord.get(0)?.[0];
+      expect(first?.type === "input" && first.data.charIndex).toBe(1);
     });
   });
 

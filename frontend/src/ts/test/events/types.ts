@@ -30,10 +30,9 @@ export type TestEventNoMs =
   | Omit<KeyupEvent, "ms">
   | Omit<TimerEvent, "ms">
   | InputEventNoMs
-  | CompositionTestEventNoMs;
+  | Omit<CompositionTestEvent, "ms">;
 
 export type InputEventNoMs = Omit<InputEvent, "ms">;
-export type CompositionTestEventNoMs = Omit<CompositionTestEvent, "ms">;
 
 export type TestEventData =
   | KeydownEventData
