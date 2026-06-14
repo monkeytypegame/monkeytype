@@ -12,6 +12,7 @@ import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { NotFoundPage } from "./pages/404Page";
+import { AboutPage } from "./pages/AboutPage";
 import { AccountSettingsPage } from "./pages/account-settings/AccountSettingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
@@ -27,8 +28,7 @@ import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
-  //TODO revert
-  aboutpage: () => <AccountSettingsPage />,
+  aboutpage: () => <AboutPage />,
   settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
@@ -47,6 +47,7 @@ const components: Record<string, () => JSXElement> = {
   testmodesnotice: () => <TestModesNotice />,
   friendspage: () => <FriendsPage />,
   notfoundpage: () => <NotFoundPage />,
+  accountsettingspage: () => <AccountSettingsPage />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

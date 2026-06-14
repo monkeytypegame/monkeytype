@@ -7,6 +7,7 @@ import {
   setCurrentTab,
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
+import { Page } from "../../common/Page";
 import { AccountTab } from "./AccountTab";
 import { ApeKeysTab } from "./ApeKeysTab";
 import { AuthenticationTab } from "./AuthenticationTab";
@@ -23,7 +24,7 @@ const tabContent: Record<AccountSettingsTab, JSX.Element> = {
 
 export function AccountSettingsPage() {
   return (
-    <div>
+    <Page id="accountSettings">
       <div class="content-grid flex flex-col gap-8 md:flex-row">
         <div class="w-full shrink-0 md:w-60">
           <Sidebar />
@@ -32,7 +33,7 @@ export function AccountSettingsPage() {
           {tabContent[getCurrentTab()]}
         </div>
       </div>
-    </div>
+    </Page>
   );
 }
 

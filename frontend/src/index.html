@@ -33,8 +33,7 @@
         </div>
         <load src="html/pages/loading.html" />
 
-        <!-- TODO revert-->
-        <div class="page pageAbout hidden" id="pageAbout">
+        <div class="page pageAbout hidden full-width" id="pageAbout">
           <mount data-component="aboutpage"></mount>
         </div>
 
@@ -62,7 +61,9 @@
           <mount data-component="notfoundpage"></mount>
         </div>
 
-        <load src="html/pages/account-settings.html" />
+        <div class="page pageAccountSettings hidden" id="pageAccountSettings">
+          <mount data-component="accountsettingspage"></mount>
+        </div>
 
         <div class="page pageFriends hidden" id="pageFriends">
           <mount data-component="friendspage"></mount>

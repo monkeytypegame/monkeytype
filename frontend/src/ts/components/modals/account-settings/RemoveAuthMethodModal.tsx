@@ -14,7 +14,6 @@ import { showSimpleModal } from "../../../states/simple-modal";
 
 export function showRemoveAuthMethodModal(options: {
   authMethod: AuthMethod;
-  callback?: () => void;
 }): void {
   if (!isAuthenticated()) return;
 
@@ -56,8 +55,6 @@ export function showRemoveAuthMethodModal(options: {
       if (result.status !== "success") {
         return result;
       }
-
-      options.callback?.();
 
       //TODO needed?
       // reloadAfter(3);

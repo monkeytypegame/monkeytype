@@ -4,9 +4,7 @@ import { z } from "zod";
 import { addAuthProvider, getPasswordSchema } from "../../../auth";
 import { showSimpleModal } from "../../../states/simple-modal";
 
-export function showAddPasswordAuthModal(options?: {
-  callback?: () => void;
-}): void {
+export function showAddPasswordAuthModal(): void {
   showSimpleModal({
     title: "Add password authentication",
     buttonText: "reauthenticate to add",
@@ -51,8 +49,6 @@ export function showAddPasswordAuthModal(options?: {
       }
 
       await addAuthProvider({ authMethod: "password", email, password });
-
-      options?.callback?.();
 
       return {
         status: "success",
