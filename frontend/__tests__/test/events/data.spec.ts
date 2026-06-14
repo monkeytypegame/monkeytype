@@ -100,11 +100,11 @@ describe("data.ts", () => {
         wordIndex: 0,
         inputType: "deleteWordBackward",
         inputValue: "",
-        clearedWordIndex: undefined,
+        clearedNextWord: undefined,
       } as unknown as InputEventData);
 
       const stored = getAllTestEvents()[0]?.data as Record<string, unknown>;
-      expect("clearedWordIndex" in stored).toBe(false);
+      expect("clearedNextWord" in stored).toBe(false);
       expect(stored["inputValue"]).toBe("");
     });
 

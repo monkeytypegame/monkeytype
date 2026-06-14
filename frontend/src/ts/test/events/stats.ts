@@ -348,9 +348,28 @@ export function getInputHistory(): string[] {
   const eventsPerWordIndex = getInputEventsPerWord();
   const history: string[] = [];
 
-  for (const events of eventsPerWordIndex.values()) {
-    const simulatedInput = getInputFromDom(events);
-    history.push(simulatedInput);
+  for (const [wordIndex, events] of eventsPerWordIndex) {
+    const lastEvent = events[events.length - 1];
+    if (lastEvent === undefined) {
+      history.push("");
+      continue;
+    }
+
+    // THANKS FIREFOX FOR THIS MESS
+    // A word is abandoned if the regression destination event — which
+    // lives in the previous word's bucket — carries clearedNextWord.
+    // Happens when Ctrl+Backspace eats the sentinel + non-word residue as
+    // one run; the residue stays as this word's last inputValue but its
+    // real final state is "".
+    const previousWord = eventsPerWordIndex.get(wordIndex - 1) ?? [];
+    const abandoned = previousWord.some(
+      (e) =>
+        e.testMs > lastEvent.testMs &&
+        "clearedNextWord" in e.data &&
+        e.data.clearedNextWord === true,
+    );
+
+    history.push(abandoned ? "" : getInputFromDom(events));
   }
 
   return history;
