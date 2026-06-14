@@ -15,6 +15,7 @@ export function Section(
     <Setting
       {...(props as SettingProps)}
       showDeepLink={false}
+      key={undefined}
       breakpoints={props.fullWidth ? "none" : "narrow"}
       inputs={
         props.button !== undefined ? (
