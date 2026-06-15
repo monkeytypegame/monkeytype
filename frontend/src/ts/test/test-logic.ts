@@ -100,7 +100,7 @@ import {
 import {
   getKeypressDurations,
   getChars,
-  getRawPerSecond,
+  getBurstHistory,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
   getTestDurationMs,
@@ -792,7 +792,7 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
 
   let duration = getTestDurationMs() / 1000;
 
-  const rawPerSecond = getRawPerSecond();
+  const rawPerSecond = getBurstHistory();
   const afkDuration = getAfkDuration();
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);

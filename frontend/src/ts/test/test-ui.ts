@@ -67,11 +67,11 @@ import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import { getCurrentQuote, wordsHaveNewline } from "../states/test";
 import {
-  getBurstHistory,
   getCorrectedWords,
   getCurrentAccuracy,
   getInputHistory,
   getMissedWords,
+  getWordBurstHistory,
 } from "./events/stats";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -1315,7 +1315,7 @@ async function loadWordsHistory(): Promise<boolean> {
   wordsContainer?.empty();
 
   const inputHistory = getInputHistory().map((i) => i.trimEnd());
-  const burstHistory = getBurstHistory();
+  const burstHistory = getWordBurstHistory();
   const correctedHistory = getCorrectedWords();
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
@@ -1464,7 +1464,7 @@ export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     qsa("#resultWordsHistory .heatmapLegend")?.show();
 
-    const burstHistory = getBurstHistory();
+    const burstHistory = getWordBurstHistory();
     let burstlist = [...burstHistory];
 
     burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));

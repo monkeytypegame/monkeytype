@@ -8,9 +8,9 @@ import { configEvent } from "../events/config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import {
-  getBurstHistory,
   getInputHistory,
   getMissedWords,
+  getWordBurstHistory,
 } from "./events/stats";
 import { setCustomTextIndicator } from "../states/core";
 
@@ -96,7 +96,7 @@ export function init(
       .getText()
       .slice(0, getInputHistory().length - 1);
 
-    const burstHistory = getBurstHistory();
+    const burstHistory = getWordBurstHistory();
 
     sortableSlowWords = typedWords.map((e, i) => [e, burstHistory[i] ?? 0]);
     sortableSlowWords.sort((a, b) => {

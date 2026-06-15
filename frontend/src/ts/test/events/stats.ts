@@ -182,7 +182,7 @@ export function getKeypressesPerSecond(): number[] {
   return counts;
 }
 
-export function getRawPerSecond(): number[] {
+export function getBurstHistory(): number[] {
   const { counts, boundaries } = countPerInterval(
     (e) => e.type === "input" && e.data.inputType === "insertText",
   );
@@ -400,7 +400,7 @@ export function getWordBurst(wordIndex: number, now?: number): number {
   return computeBurst(events, now);
 }
 
-export function getBurstHistory(): number[] {
+export function getWordBurstHistory(): number[] {
   const eventsPerWord = getEventsPerWord();
   const burstHistory: number[] = [];
   for (let i = 0; i < TestWords.words.length; i++) {
@@ -692,11 +692,12 @@ export function getRawHistory(): number[] {
   const cachedIfLast = new Map<number, number>();
   const cachedIfNotLast = new Map<number, number>();
   const dirty = new Set<number>();
-  const wpmHistory: number[] = [];
+  const rawHistory: number[] = [];
 
   let eventIdx = 0;
 
   for (const boundary of boundaries) {
+    // incrementally extend eventsPerWord with events up to this boundary
     while (eventIdx < events.length) {
       const event = events[eventIdx];
       if (event === undefined || event.testMs > boundary) break;
@@ -714,53 +715,131 @@ export function getRawHistory(): number[] {
       eventIdx++;
     }
 
+    // recompute correctWord (for both last/not-last roles) only for words
+    // whose event lists changed since the previous boundary
     for (const wordIndex of dirty) {
       const wordEvents = eventsPerWord.get(wordIndex);
       if (wordEvents === undefined) continue;
 
-      const input = getInputFromDom(wordEvents);
-      if (input.length === 0) {
-        cachedIfNotLast.set(wordIndex, 0);
-        cachedIfLast.set(wordIndex, 0);
-        continue;
-      }
-
-      const wordText =
-        Config.mode === "zen" ? "" : (TestWords.words.getText(wordIndex) ?? "");
-
-      const notLast = countChars(input, `${wordText} `, true);
-      cachedIfNotLast.set(
+      const notLastCount = countCharsForWordIndex(
         wordIndex,
-        notLast.allCorrect + notLast.extra + notLast.incorrect,
+        wordEvents,
+        false,
+        true,
+      );
+      const lastCount = countCharsForWordIndex(
+        wordIndex,
+        wordEvents,
+        true,
+        true,
       );
 
-      const trimmed = input.trimEnd();
-      const last = countChars(
-        trimmed,
-        Config.mode === "zen" ? trimmed : wordText,
-        true,
+      cachedIfNotLast.set(
+        wordIndex,
+        notLastCount.allCorrect + notLastCount.extra + notLastCount.incorrect,
       );
       cachedIfLast.set(
         wordIndex,
-        last.allCorrect + last.extra + last.incorrect,
+        lastCount.allCorrect + lastCount.extra + lastCount.incorrect,
       );
     }
     dirty.clear();
 
     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-    let totalCorrect = 0;
+    let chars = 0;
     for (const wordIndex of eventsPerWord.keys()) {
-      const cache =
-        wordIndex === lastWordIndex ? cachedIfLast : cachedIfNotLast;
-      totalCorrect += cache.get(wordIndex) ?? 0;
+      if (wordIndex === lastWordIndex) {
+        chars += cachedIfLast.get(wordIndex) ?? 0;
+        break;
+      }
+      chars += cachedIfNotLast.get(wordIndex) ?? 0;
     }
 
-    wpmHistory.push(Math.round(calculateWpm(totalCorrect, boundary / 1000)));
+    rawHistory.push(Math.round(calculateWpm(chars, boundary / 1000)));
   }
 
-  return wpmHistory;
+  return rawHistory;
 }
+
+// export function getRawHistory(): number[] {
+//   const events = getAllTestEvents();
+//   const boundaries = getTimerBoundaries(events);
+//   if (boundaries.length === 0) return [];
+
+//   const eventsPerWord = new Map<number, TestEventNoMs[]>();
+//   const cachedIfLast = new Map<number, number>();
+//   const cachedIfNotLast = new Map<number, number>();
+//   const dirty = new Set<number>();
+//   const wpmHistory: number[] = [];
+
+//   let eventIdx = 0;
+
+//   for (const boundary of boundaries) {
+//     while (eventIdx < events.length) {
+//       const event = events[eventIdx];
+//       if (event === undefined || event.testMs > boundary) break;
+
+//       if ("wordIndex" in event.data) {
+//         const wordIndex = event.data.wordIndex;
+//         let list = eventsPerWord.get(wordIndex);
+//         if (list === undefined) {
+//           list = [];
+//           eventsPerWord.set(wordIndex, list);
+//         }
+//         list.push(event);
+//         dirty.add(wordIndex);
+//       }
+//       eventIdx++;
+//     }
+
+//     for (const wordIndex of dirty) {
+//       const wordEvents = eventsPerWord.get(wordIndex);
+//       if (wordEvents === undefined) continue;
+
+//       const input = getInputFromDom(wordEvents);
+//       if (input.length === 0) {
+//         cachedIfNotLast.set(wordIndex, 0);
+//         cachedIfLast.set(wordIndex, 0);
+//         continue;
+//       }
+
+//       const wordText =
+//         Config.mode === "zen" ? "" : (TestWords.words.getText(wordIndex) ?? "");
+
+//       const notLast = countChars(input, `${wordText} `, true);
+//       cachedIfNotLast.set(
+//         wordIndex,
+//         notLast.allCorrect + notLast.extra + notLast.incorrect,
+//       );
+
+//       const trimmed = input.trimEnd();
+//       const last = countChars(
+//         trimmed,
+//         Config.mode === "zen" ? trimmed : wordText,
+//         true,
+//       );
+//       cachedIfLast.set(
+//         wordIndex,
+//         last.allCorrect + last.extra + last.incorrect,
+//       );
+//     }
+//     dirty.clear();
+
+//     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+//     let totalCorrect = 0;
+//     for (const wordIndex of eventsPerWord.keys()) {
+//       const cache =
+//         wordIndex === lastWordIndex ? cachedIfLast : cachedIfNotLast;
+//       totalCorrect += cache.get(wordIndex) ?? 0;
+//     }
+
+//     wpmHistory.push(Math.round(calculateWpm(totalCorrect, boundary / 1000)));
+//   }
+
+//   return wpmHistory;
+// }
 
 export function getAfkDuration(): number {
   const { counts } = countPerInterval(
