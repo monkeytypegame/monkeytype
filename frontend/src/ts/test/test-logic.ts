@@ -103,6 +103,7 @@ import {
   cleanupData,
   logEventsDataToTheConsoleTable,
   getAllTestEvents,
+  forceReleaseAllKeys,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -118,7 +119,6 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
-  forceReleaseAllKeys,
   getKeypressesPerSecond,
   getInputHistory as getEventsInputHistory,
 } from "./events/stats";

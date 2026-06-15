@@ -1,16 +1,11 @@
-import {
-  getAllTestEvents,
-  getEventsPerWord,
-  getPressedKeys,
-  logTestEvent,
-} from "./data";
+import { getAllTestEvents, getEventsPerWord } from "./data";
 import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
-import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { roundTo2 } from "@monkeytype/util/numbers";
 import { TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
@@ -729,26 +724,6 @@ export function getKeypressDurations(): number[] {
   }
 
   return durations;
-}
-
-export function forceReleaseAllKeys(): void {
-  const filteredDurations = getKeypressDurations().filter((d) => d > 0);
-
-  let avg: number;
-  if (filteredDurations.length === 0) {
-    // this means the test ended while all keys were still held - probably safe to ignore
-    // since this will result in a "too short" test anyway, but ill just set it to a magic number
-    avg = 80;
-  } else {
-    avg = roundTo2(mean(filteredDurations));
-  }
-
-  for (const [key, { timestamp }] of getPressedKeys().entries()) {
-    logTestEvent("keyup", timestamp + avg, {
-      code: key, //entries is not picking up the type
-      estimated: true,
-    });
-  }
 }
 
 export const __testing = {
