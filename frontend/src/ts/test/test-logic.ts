@@ -107,7 +107,8 @@ import {
 import {
   getKeypressDurations,
   getChars,
-  getRawPerSecond,
+  getBurstHistory,
+  getRawHistory,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
   getTestDurationMs,
@@ -1252,8 +1253,35 @@ function compareCompletedEvents(
   }
 
   {
+    const a = TestInput.rawHistory;
+    const b = getRawHistory();
+    if (a.length === b.length && a.every((val, i) => val === b[i])) {
+      console.debug(`Completed event match on rawHistory:`, a);
+    } else {
+      notMatching.push(`rawHistory (values differ)`);
+      mismatchedKeys.push("rawHistory");
+      console.error(`Completed event mismatch on rawHistory:`, a, b);
+    }
+  }
+
+  {
+    if (ce.chartData !== "toolong") {
+      const a = ce.chartData.wpm;
+      const b = getWpmHistory();
+      if (a.length === b.length && a.every((val, i) => val === b[i])) {
+        console.debug(`Completed event match on chartData.wpm:`, a);
+      } else {
+        notMatching.push(`chartData.wpm (values differ)`);
+        mismatchedKeys.push("chartData.wpm");
+        console.error(`Completed event mismatch on chartData.wpm:`, a, b);
+      }
+    }
+  }
+
+  {
     const a = getInputHistory().join(" ");
-    if (!a.includes("\n")) {
+    const noSpace = isFunboxActiveWithProperty("nospace");
+    if (!a.includes("\n") && !noSpace) {
       const b = getEventsInputHistory().join("");
       if (a === b) {
         console.debug(`Completed event match on input history:`, a);
@@ -1385,7 +1413,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
 
   let duration = getTestDurationMs() / 1000;
 
-  const rawPerSecond = getRawPerSecond();
+  const rawPerSecond = getBurstHistory();
   const afkDuration = getAfkDuration();
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);

@@ -47,7 +47,7 @@ import {
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
-  getRawPerSecond,
+  getBurstHistory,
   getTestDurationMs,
   getAccuracy,
   getKeypressSpacing,
@@ -431,11 +431,11 @@ describe("stats.ts", () => {
     });
   });
 
-  describe("getRawPerSecond", () => {
+  describe("getBurstHistory", () => {
     it("converts keypresses to WPM using real interval duration", () => {
       setupBasicTest();
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory();
       // 3 keypresses in 1s = (3/5)*60 = 36 WPM
       expect(raw[0]).toBe(36);
       // 2 keypresses in 1s = (2/5)*60 = 24 WPM
@@ -455,7 +455,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2000, timer("end", 1));
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory();
       expect(raw).toEqual([12]); // 1 keypress in 1s
     });
   });
