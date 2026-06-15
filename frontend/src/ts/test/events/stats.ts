@@ -923,7 +923,7 @@ export function getMissedWords(): Record<string, number> {
   return missedWords;
 }
 
-export function getCorrectedWords(): string[] {
+export function getCorrectedWordsHistory(): string[] {
   const ev = getEventsPerWord();
   const correctedWords: string[] = [];
 

@@ -67,7 +67,7 @@ import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import { getCurrentQuote, wordsHaveNewline } from "../states/test";
 import {
-  getCorrectedWords,
+  getCorrectedWordsHistory,
   getCurrentAccuracy,
   getInputHistory,
   getMissedWords,
@@ -1316,7 +1316,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
   const inputHistory = getInputHistory().map((i) => i.trimEnd());
   const burstHistory = getWordBurstHistory();
-  const correctedHistory = getCorrectedWords();
+  const correctedHistory = getCorrectedWordsHistory();
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
