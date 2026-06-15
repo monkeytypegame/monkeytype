@@ -1,19 +1,17 @@
 import {
   getAllTestEvents,
-  getInputEvents,
-  getInputEventsForWord,
-  getInputEventsPerWord,
+  getEventsPerWord,
   getPressedKeys,
   logTestEvent,
 } from "./data";
 import * as TestWords from "../../test/test-words";
-import { CharCounts, countChars, getLastChar } from "../../utils/strings";
+import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { InputEventNoMs, TestEventNoMs } from "./types";
+import { TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
@@ -182,7 +180,7 @@ export function getKeypressesPerSecond(): number[] {
   return counts;
 }
 
-export function getRawPerSecond(): number[] {
+export function getBurstHistory(): number[] {
   const { counts, boundaries } = countPerInterval(
     (e) => e.type === "input" && e.data.inputType === "insertText",
   );
@@ -247,7 +245,11 @@ function getTargetWord(
   } else {
     const word = TestWords.words.getText(wordIndex);
 
-    if (getLastChar(word) === "\n") {
+    if (word === undefined) {
+      return "";
+    }
+
+    if (word.endsWith("\n")) {
       // for multiline, dont add space
       return word;
     }
@@ -266,11 +268,59 @@ function getTargetWord(
   }
 }
 
-function countCharsForWords(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
-  lastWordIndex: number,
-  shouldCountPartialLastWord: boolean,
+function countCharsForWordIndex(
+  wordIndex: number,
+  events: TestEventNoMs[],
+  lastWord: boolean,
+  countPartial: boolean,
 ): CharCounts {
+  let simulatedInput = getInputFromDom(events);
+  if (koreanStatus) {
+    simulatedInput = Hangul.disassemble(simulatedInput).join("");
+  }
+
+  let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
+  if (koreanStatus) {
+    targetWord = Hangul.disassemble(targetWord).join("");
+  }
+
+  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+}
+
+function inferActiveWordIndex(
+  eventsPerWord: Map<number, TestEventNoMs[]>,
+): number {
+  let maxWordIndex = -1;
+  let lastWordEvents: TestEventNoMs[] | undefined;
+  for (const [k, wordEvents] of eventsPerWord) {
+    if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
+      maxWordIndex = k;
+      lastWordEvents = wordEvents;
+    }
+  }
+  if (lastWordEvents === undefined) return 0;
+  const lastEvt = lastWordEvents[lastWordEvents.length - 1];
+  // committed trailing space → cursor advanced to the next word
+  if (
+    lastEvt !== undefined &&
+    "inputType" in lastEvt.data &&
+    lastEvt.data.inputType === "insertText" &&
+    lastEvt.data.data === " "
+  ) {
+    return maxWordIndex + 1;
+  }
+  return maxWordIndex;
+}
+
+export function getChars(): CharCounts {
+  const isTimedTest =
+    Config.mode === "time" ||
+    (Config.mode === "words" && Config.words === 0) ||
+    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+  const lastWordIndex = isTimedTest
+    ? activeWordIndex
+    : TestWords.words.list.length - 1;
+
   const acc: CharCounts = {
     allCorrect: 0,
     correctWord: 0,
@@ -279,31 +329,9 @@ function countCharsForWords(
     missed: 0,
   };
 
-  for (const [wordIndex, events] of eventsPerWord) {
+  for (const [wordIndex, events] of getEventsPerWord()) {
     const lastWord = wordIndex === lastWordIndex;
-
-    let simulatedInput = getInputFromDom(events);
-    if (koreanStatus) {
-      simulatedInput = Hangul.disassemble(simulatedInput).join("");
-    }
-
-    let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
-    if (koreanStatus) {
-      targetWord = Hangul.disassemble(targetWord).join("");
-    }
-
-    const lastEvent = events[events.length - 1];
-    const endsWithCommitSpace =
-      lastEvent !== undefined &&
-      lastEvent.data.inputType === "insertText" &&
-      lastEvent.data.commitsWord === true;
-
-    const c = countChars(
-      simulatedInput,
-      targetWord,
-      lastWord && shouldCountPartialLastWord,
-      endsWithCommitSpace,
-    );
+    const c = countCharsForWordIndex(wordIndex, events, lastWord, isTimedTest);
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
     acc.incorrect += c.incorrect;
@@ -316,44 +344,35 @@ function countCharsForWords(
   return acc;
 }
 
-function inferActiveWordIndex(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
-): number {
-  let maxWordIndex = -1;
-  let lastWordEvents: InputEventNoMs[] | undefined;
-  for (const [k, wordEvents] of eventsPerWord) {
-    if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
-      maxWordIndex = k;
-      lastWordEvents = wordEvents;
+export function getInputHistory(): string[] {
+  const eventsPerWordIndex = getEventsPerWord();
+  const history: string[] = [];
+
+  for (const [wordIndex, events] of eventsPerWordIndex) {
+    const lastEvent = events[events.length - 1];
+    if (lastEvent === undefined) {
+      history.push("");
+      continue;
     }
-  }
-  if (lastWordEvents === undefined) return 0;
-  const lastEvt = lastWordEvents[lastWordEvents.length - 1];
-  // committed trailing space → cursor advanced to the next word
-  if (
-    lastEvt !== undefined &&
-    lastEvt.data.inputType === "insertText" &&
-    lastEvt.data.data === " "
-  ) {
-    return maxWordIndex + 1;
-  }
-  return maxWordIndex;
-}
 
-export function getChars(): CharCounts {
-  const isTimedTest =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  return countCharsForWords(
-    getInputEventsPerWord(),
-    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
-    isTimedTest,
-  );
-}
+    // THANKS FIREFOX FOR THIS MESS
+    // A word is abandoned if the regression destination event — which
+    // lives in the previous word's bucket — carries clearedNextWord.
+    // Happens when Ctrl+Backspace eats the sentinel + non-word residue as
+    // one run; the residue stays as this word's last inputValue but its
+    // real final state is "".
+    const previousWord = eventsPerWordIndex.get(wordIndex - 1) ?? [];
+    const abandoned = previousWord.some(
+      (e) =>
+        e.testMs > lastEvent.testMs &&
+        "clearedNextWord" in e.data &&
+        e.data.clearedNextWord === true,
+    );
 
-export function getInputForWord(wordIndex: number): string {
-  const events = getInputEventsForWord(wordIndex);
-  return getInputFromDom(events).trimEnd();
+    history.push(abandoned ? "" : getInputFromDom(events));
+  }
+
+  return history;
 }
 
 export function getAccuracy(): {
@@ -361,12 +380,14 @@ export function getAccuracy(): {
   incorrect: number;
   percentage: number;
 } {
-  const events = getInputEvents();
+  const events = getAllTestEvents();
 
   let correct = 0;
   let incorrect = 0;
 
   for (const event of events) {
+    if (event.type !== "input") continue;
+
     if (!("correct" in event.data)) {
       continue;
     }
@@ -450,21 +471,226 @@ export function getErrorCountHistory(): number[] {
 
 export function getWpmHistory(): number[] {
   const events = getAllTestEvents();
+  const boundaries = getTimerBoundaries(events);
+  if (boundaries.length === 0) return [];
+
+  const eventsPerWord = new Map<number, TestEventNoMs[]>();
+  const cachedIfLast = new Map<number, number>();
+  const cachedIfNotLast = new Map<number, number>();
+  const dirty = new Set<number>();
   const wpmHistory: number[] = [];
 
-  for (const boundary of getTimerBoundaries(events)) {
-    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+  let eventIdx = 0;
+
+  for (const boundary of boundaries) {
+    // incrementally extend eventsPerWord with events up to this boundary
+    while (eventIdx < events.length) {
+      const event = events[eventIdx];
+      if (event === undefined || event.testMs > boundary) break;
+
+      if ("wordIndex" in event.data) {
+        const wordIndex = event.data.wordIndex;
+        let list = eventsPerWord.get(wordIndex);
+        if (list === undefined) {
+          list = [];
+          eventsPerWord.set(wordIndex, list);
+        }
+        list.push(event);
+        dirty.add(wordIndex);
+      }
+      eventIdx++;
+    }
+
+    // recompute correctWord (for both last/not-last roles) only for words
+    // whose event lists changed since the previous boundary
+    for (const wordIndex of dirty) {
+      const wordEvents = eventsPerWord.get(wordIndex);
+      if (wordEvents === undefined) continue;
+      cachedIfNotLast.set(
+        wordIndex,
+        countCharsForWordIndex(wordIndex, wordEvents, false, true).correctWord,
+      );
+      cachedIfLast.set(
+        wordIndex,
+        countCharsForWordIndex(wordIndex, wordEvents, true, true).correctWord,
+      );
+    }
+    dirty.clear();
+
     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
-    const { correctWord } = countCharsForWords(
-      eventsPerWord,
-      lastWordIndex,
-      true,
-    );
+
+    let correctWord = 0;
+    for (const wordIndex of eventsPerWord.keys()) {
+      if (wordIndex === lastWordIndex) {
+        correctWord += cachedIfLast.get(wordIndex) ?? 0;
+        break;
+      }
+      correctWord += cachedIfNotLast.get(wordIndex) ?? 0;
+    }
+
     wpmHistory.push(Math.round(calculateWpm(correctWord, boundary / 1000)));
   }
 
   return wpmHistory;
 }
+
+export function getRawHistory(): number[] {
+  const events = getAllTestEvents();
+  const boundaries = getTimerBoundaries(events);
+  if (boundaries.length === 0) return [];
+
+  const eventsPerWord = new Map<number, TestEventNoMs[]>();
+  const cachedIfLast = new Map<number, number>();
+  const cachedIfNotLast = new Map<number, number>();
+  const dirty = new Set<number>();
+  const rawHistory: number[] = [];
+
+  let eventIdx = 0;
+
+  for (const boundary of boundaries) {
+    // incrementally extend eventsPerWord with events up to this boundary
+    while (eventIdx < events.length) {
+      const event = events[eventIdx];
+      if (event === undefined || event.testMs > boundary) break;
+
+      if ("wordIndex" in event.data) {
+        const wordIndex = event.data.wordIndex;
+        let list = eventsPerWord.get(wordIndex);
+        if (list === undefined) {
+          list = [];
+          eventsPerWord.set(wordIndex, list);
+        }
+        list.push(event);
+        dirty.add(wordIndex);
+      }
+      eventIdx++;
+    }
+
+    // recompute correctWord (for both last/not-last roles) only for words
+    // whose event lists changed since the previous boundary
+    for (const wordIndex of dirty) {
+      const wordEvents = eventsPerWord.get(wordIndex);
+      if (wordEvents === undefined) continue;
+
+      const notLastCount = countCharsForWordIndex(
+        wordIndex,
+        wordEvents,
+        false,
+        true,
+      );
+      const lastCount = countCharsForWordIndex(
+        wordIndex,
+        wordEvents,
+        true,
+        true,
+      );
+
+      cachedIfNotLast.set(
+        wordIndex,
+        notLastCount.allCorrect + notLastCount.extra + notLastCount.incorrect,
+      );
+      cachedIfLast.set(
+        wordIndex,
+        lastCount.allCorrect + lastCount.extra + lastCount.incorrect,
+      );
+    }
+    dirty.clear();
+
+    const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+    let chars = 0;
+    for (const wordIndex of eventsPerWord.keys()) {
+      if (wordIndex === lastWordIndex) {
+        chars += cachedIfLast.get(wordIndex) ?? 0;
+        break;
+      }
+      chars += cachedIfNotLast.get(wordIndex) ?? 0;
+    }
+
+    rawHistory.push(Math.round(calculateWpm(chars, boundary / 1000)));
+  }
+
+  return rawHistory;
+}
+
+// export function getRawHistory(): number[] {
+//   const events = getAllTestEvents();
+//   const boundaries = getTimerBoundaries(events);
+//   if (boundaries.length === 0) return [];
+
+//   const eventsPerWord = new Map<number, TestEventNoMs[]>();
+//   const cachedIfLast = new Map<number, number>();
+//   const cachedIfNotLast = new Map<number, number>();
+//   const dirty = new Set<number>();
+//   const wpmHistory: number[] = [];
+
+//   let eventIdx = 0;
+
+//   for (const boundary of boundaries) {
+//     while (eventIdx < events.length) {
+//       const event = events[eventIdx];
+//       if (event === undefined || event.testMs > boundary) break;
+
+//       if ("wordIndex" in event.data) {
+//         const wordIndex = event.data.wordIndex;
+//         let list = eventsPerWord.get(wordIndex);
+//         if (list === undefined) {
+//           list = [];
+//           eventsPerWord.set(wordIndex, list);
+//         }
+//         list.push(event);
+//         dirty.add(wordIndex);
+//       }
+//       eventIdx++;
+//     }
+
+//     for (const wordIndex of dirty) {
+//       const wordEvents = eventsPerWord.get(wordIndex);
+//       if (wordEvents === undefined) continue;
+
+//       const input = getInputFromDom(wordEvents);
+//       if (input.length === 0) {
+//         cachedIfNotLast.set(wordIndex, 0);
+//         cachedIfLast.set(wordIndex, 0);
+//         continue;
+//       }
+
+//       const wordText =
+//         Config.mode === "zen" ? "" : (TestWords.words.getText(wordIndex) ?? "");
+
+//       const notLast = countChars(input, `${wordText} `, true);
+//       cachedIfNotLast.set(
+//         wordIndex,
+//         notLast.allCorrect + notLast.extra + notLast.incorrect,
+//       );
+
+//       const trimmed = input.trimEnd();
+//       const last = countChars(
+//         trimmed,
+//         Config.mode === "zen" ? trimmed : wordText,
+//         true,
+//       );
+//       cachedIfLast.set(
+//         wordIndex,
+//         last.allCorrect + last.extra + last.incorrect,
+//       );
+//     }
+//     dirty.clear();
+
+//     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+//     let totalCorrect = 0;
+//     for (const wordIndex of eventsPerWord.keys()) {
+//       const cache =
+//         wordIndex === lastWordIndex ? cachedIfLast : cachedIfNotLast;
+//       totalCorrect += cache.get(wordIndex) ?? 0;
+//     }
+
+//     wpmHistory.push(Math.round(calculateWpm(totalCorrect, boundary / 1000)));
+//   }
+
+//   return wpmHistory;
+// }
 
 export function getAfkDuration(): number {
   const { counts } = countPerInterval(

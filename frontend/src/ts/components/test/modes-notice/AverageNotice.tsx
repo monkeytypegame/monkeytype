@@ -2,8 +2,7 @@ import { createMemo, JSXElement } from "solid-js";
 
 import { useUserAverage10LiveQuery } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
-import { isAuthenticated } from "../../../states/core";
-import { Formatting } from "../../../utils/format";
+import { getFormatting, isAuthenticated } from "../../../states/core";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
@@ -14,7 +13,7 @@ export function AverageNotice(): JSXElement {
   const displayText = createMemo(() => {
     if (last10() === undefined) return "no average";
 
-    const format = new Formatting(getConfig);
+    const format = getFormatting();
     let speed = undefined;
     let acc = undefined;
 

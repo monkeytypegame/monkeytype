@@ -1,6 +1,7 @@
 import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
+import { getCurrentInput, getInputHistory } from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -53,11 +54,8 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
-    inputHistory: TestInput.input.getHistory(),
+    wordsHistory: TestWords.words.list.slice(0, getInputHistory().length),
+    inputHistory: getInputHistory(),
   };
 
   try {
@@ -178,8 +176,8 @@ export function calculateBurst(endTime: number = performance.now()): number {
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
   wordLength = !containsKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
+    ? getCurrentInput().length
+    : Hangul.disassemble(getCurrentInput()).length;
   if (wordLength === 0) {
     wordLength = !containsKorean
       ? (TestInput.input.getHistoryLast()?.length ?? 0)
@@ -209,10 +207,10 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
-  let inputWords = [...TestInput.input.getHistory()];
+  let inputWords = [...getInputHistory()];
 
   if (TestState.isActive) {
-    inputWords.push(TestInput.input.current);
+    inputWords.push(getCurrentInput());
   }
 
   if (containsKorean) {
@@ -235,15 +233,13 @@ function getTargetWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
-    ...(Config.mode === "zen"
-      ? TestInput.input.getHistory()
-      : TestWords.words.list),
+    ...(Config.mode === "zen" ? getInputHistory() : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen"
-        ? TestInput.input.current
+        ? getCurrentInput()
         : TestWords.words.getCurrentText(),
     );
   }
@@ -295,8 +291,6 @@ function countChars(final = false): CharCount {
         inputWord,
         targetWord,
         isLastInputWord && ((isTimedTest && final) || !final),
-        // historical words advanced via commit space; last is in-flight
-        !isLastInputWord,
       );
 
     correctWordChars += correctWord;

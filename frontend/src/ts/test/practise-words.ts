@@ -5,6 +5,7 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
+import { getMissedWords, getInputHistory } from "./test-input";
 import { configEvent } from "../events/config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
@@ -37,11 +38,13 @@ export function init(
     limit = 10;
   }
 
+  const missedWords = getMissedWords();
+
   // missed word, previous word, count
   let sortableMissedWords: [string, number][] = [];
   if (missed === "words") {
-    Object.keys(TestInput.missedWords).forEach((missedWord) => {
-      const missedWordCount = TestInput.missedWords[missedWord];
+    Object.keys(missedWords).forEach((missedWord) => {
+      const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         sortableMissedWords.push([missedWord, missedWordCount]);
       }
@@ -56,7 +59,7 @@ export function init(
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
       const missedWord = TestWords.words.getText(i);
-      const missedWordCount = TestInput.missedWords[missedWord];
+      const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         if (i === 0) {
           sortableMissedBiwords.push([missedWord, "", missedWordCount]);
@@ -88,7 +91,7 @@ export function init(
   if (slow) {
     const typedWords = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length - 1);
+      .slice(0, getInputHistory().length - 1);
 
     sortableSlowWords = typedWords.map((e, i) => [
       e,

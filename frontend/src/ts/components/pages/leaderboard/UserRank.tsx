@@ -3,10 +3,9 @@ import {
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
 import { formatDuration, intervalToDuration } from "date-fns";
-import { createMemo, JSXElement, Match, Show, Switch } from "solid-js";
+import { JSXElement, Match, Show, Switch } from "solid-js";
 
-import { getConfig } from "../../../config/store";
-import { Formatting } from "../../../utils/format";
+import { getFormatting } from "../../../states/core";
 import { Fa } from "../../common/Fa";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Table, TableEntry } from "./Table";
@@ -23,7 +22,7 @@ export function UserRank(props: {
   minTimeTyping: number;
   userTimeTyping: number;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   const userOverride = () => {
     if (props.data === undefined || props.data === null) {
