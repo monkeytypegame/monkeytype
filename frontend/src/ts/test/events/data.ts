@@ -414,6 +414,18 @@ export function forceReleaseAllKeys(): void {
   }
 }
 
+export function getLastKeypressSpacing(): number | undefined {
+  const events = getAllTestEvents();
+  let last: number | undefined;
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i]?.type !== "keydown") continue;
+    const ms = (events[i] as TestEventNoMs).testMs;
+    if (last === undefined) last = ms;
+    else return Math.max(0, roundTo2(last - ms));
+  }
+  return undefined;
+}
+
 export const __testing = {
   resetPressedKeys(): void {
     pressedKeys = new Map();
