@@ -428,39 +428,6 @@ function countCharsForWordIndex(
   return countChars(simulatedInput, targetWord, lastWord && countPartial);
 }
 
-function countCharsForWords(
-  eventsPerWord: Map<number, TestEventNoMs[]>,
-  lastWordIndex: number,
-  shouldCountPartialLastWord: boolean,
-): CharCounts {
-  const acc: CharCounts = {
-    allCorrect: 0,
-    correctWord: 0,
-    incorrect: 0,
-    extra: 0,
-    missed: 0,
-  };
-
-  for (const [wordIndex, events] of eventsPerWord) {
-    const lastWord = wordIndex === lastWordIndex;
-    const c = countCharsForWordIndex(
-      wordIndex,
-      events,
-      lastWord,
-      shouldCountPartialLastWord,
-    );
-    acc.allCorrect += c.allCorrect;
-    acc.correctWord += c.correctWord;
-    acc.incorrect += c.incorrect;
-    acc.extra += c.extra;
-    acc.missed += c.missed;
-
-    if (lastWord) break;
-  }
-
-  return acc;
-}
-
 function inferActiveWordIndex(
   eventsPerWord: Map<number, TestEventNoMs[]>,
 ): number {
@@ -491,11 +458,37 @@ export function getChars(countPartialLastWord = false): CharCounts {
     Config.mode === "time" ||
     (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  return countCharsForWords(
-    getEventsPerWord(),
-    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
-    isTimedTest || countPartialLastWord,
-  );
+  const lastWordIndex = isTimedTest
+    ? activeWordIndex
+    : TestWords.words.list.length - 1;
+  const shouldCountPartialLastWord = isTimedTest || countPartialLastWord;
+
+  const acc: CharCounts = {
+    allCorrect: 0,
+    correctWord: 0,
+    incorrect: 0,
+    extra: 0,
+    missed: 0,
+  };
+
+  for (const [wordIndex, events] of getEventsPerWord()) {
+    const lastWord = wordIndex === lastWordIndex;
+    const c = countCharsForWordIndex(
+      wordIndex,
+      events,
+      lastWord,
+      shouldCountPartialLastWord,
+    );
+    acc.allCorrect += c.allCorrect;
+    acc.correctWord += c.correctWord;
+    acc.incorrect += c.incorrect;
+    acc.extra += c.extra;
+    acc.missed += c.missed;
+
+    if (lastWord) break;
+  }
+
+  return acc;
 }
 
 export function getInputHistory(): string[] {
