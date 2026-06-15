@@ -180,7 +180,7 @@ export function getKeypressesPerSecond(): number[] {
   return counts;
 }
 
-export function getRawPerSecond(): number[] {
+export function getBurstHistory(): number[] {
   const { counts, boundaries } = countPerInterval(
     (e) => e.type === "input" && e.data.inputType === "insertText",
   );
