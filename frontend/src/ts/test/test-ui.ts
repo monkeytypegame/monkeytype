@@ -7,6 +7,11 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
+import {
+  getCurrentInput,
+  getInputHistory,
+  getInputForWord,
+} from "./test-input";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -696,8 +701,8 @@ export function addWord(
   //   // in case word addition took a long time and some input happened in the mean time
   //   // we need to update word letters for that word
   //   const inputHistory = [
-  //     ...TestInput.input.getHistory(),
-  //     TestInput.input.current,
+  //     ...getInputHistory(),
+  //     getCurrentInput(),
   //   ];
   //   const input = inputHistory[wordIndex];
   //   if (input !== undefined && input !== "") {
@@ -1064,7 +1069,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* calculate current word width to add to #words margin */
   let currentWordWidth = 0;
-  const inputLength = TestInput.input.current.length;
+  const inputLength = getCurrentInput().length;
   if (Config.tapeMode === "letter" && inputLength > 0) {
     const letters = activeWordEl.qsa("letter");
     let lastPositiveLetterWidth = 0;
@@ -1285,7 +1290,7 @@ function buildWordLettersHTML(
           }</letter>`;
         }
       } else {
-        if (inputCharacters[c] === TestInput.input.current) {
+        if (inputCharacters[c] === getCurrentInput()) {
           out += `<letter class='correct ${extraCorrected}'>${
             wordCharacters[c]
           }</letter>`;
@@ -1308,9 +1313,9 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistoryLength = TestInput.input.getHistory().length;
+  const inputHistoryLength = getInputHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
-    const input = TestInput.input.getHistory(i);
+    const input = getInputForWord(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
@@ -1739,7 +1744,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(TestInput.input.current.length),
+      TestWords.words.getCurrentText().charAt(getCurrentInput().length),
     );
   }
 
@@ -1760,7 +1765,7 @@ export function afterTestTextInput(
 
   if (!increasedWordIndex) {
     void updateWordLetters({
-      input: inputOverride ?? TestInput.input.current,
+      input: inputOverride ?? getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1771,7 +1776,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1781,7 +1786,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1811,7 +1816,7 @@ export function beforeTestWordChange(
     Config.strictSpace
   ) {
     void updateWordLetters({
-      input: TestInput.input.current,
+      input: getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1932,11 +1937,11 @@ export function onTestFinish(): void {
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length)
+      .slice(0, getInputHistory().length)
       .join(" ");
   }
   await copyToClipboard(words);
@@ -1945,7 +1950,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = Object.keys(TestInput.missedWords ?? {}).join(" ");
   }
@@ -2004,6 +2009,16 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
+window.addEventListener("blur", () => {
+  OutOfFocus.show("window");
+});
+
+// little roadblock for basic cheating
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "hidden") return;
+  OutOfFocus.show("window");
+});
+
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
@@ -2038,7 +2053,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: TestInput.input.current,
+        input: getCurrentInput(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

@@ -7,7 +7,6 @@ import {
   KeydownEventData,
   KeyupEvent,
   KeyupEventData,
-  InputEventNoMs,
   TestEventData,
   TestEventNoMs,
   TestEventType,
@@ -46,6 +45,11 @@ export function logTestEvent(
   invalidateCache();
 
   now = roundTo2(now);
+
+  //strip undefined values from eventData
+  eventData = Object.fromEntries(
+    Object.entries(eventData).filter(([_, v]) => v !== undefined),
+  ) as TestEventData;
 
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
@@ -312,12 +316,6 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
 }
 
-export function getInputEvents(): InputEventNoMs[] {
-  return getAllTestEvents().filter(
-    (event): event is InputEventNoMs => event.type === "input",
-  );
-}
-
 export function getPressedKeys(): Map<
   Keycode | "NoCode" | `NoCode${number}`,
   { timestamp: number }
@@ -325,26 +323,14 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getInputEventsForWord(wordIndex: number): InputEventNoMs[] {
-  const events = getAllTestEvents();
-  const result: InputEventNoMs[] = [];
-  for (const event of events) {
-    if (event.type !== "input") continue;
-    if (event.data.wordIndex === wordIndex) {
-      result.push(event);
-    }
-  }
-  return result;
-}
-
-export function getInputEventsPerWord(
+export function getEventsPerWord(
   startMs?: number,
   testMsLimit?: number,
-): Map<number, InputEventNoMs[]> {
-  let eventsPerWordIndex: Map<number, InputEventNoMs[]> = new Map();
+): Map<number, TestEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
   const events = getAllTestEvents();
   for (const event of events) {
-    if (event.type !== "input") {
+    if (!("wordIndex" in event.data)) {
       continue;
     }
 

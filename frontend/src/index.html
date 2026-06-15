@@ -56,9 +56,17 @@
         </div>
 
         <load src="html/pages/test.html" />
-        <load src="html/pages/404.html" />
+
+        <div class="page page404 hidden" id="page404">
+          <mount data-component="notfoundpage"></mount>
+        </div>
+
         <load src="html/pages/account-settings.html" />
-        <load src="html/pages/friends.html" />
+
+        <div class="page pageFriends hidden" id="pageFriends">
+          <mount data-component="friendspage"></mount>
+        </div>
+
         <div class="page pageLeaderboards hidden" id="pageLeaderboards">
           <mount data-component="leaderboardpage"></mount>
         </div>

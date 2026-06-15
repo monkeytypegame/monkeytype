@@ -141,6 +141,7 @@ describe("QuotesController", () => {
     });
     it("should return for quotes disabled without authentication", async () => {
       //GIVEN
+      await enableQuotes(false);
 
       //WHEN
       const { body } = await mockApp
@@ -148,8 +149,8 @@ describe("QuotesController", () => {
         .expect(200);
 
       expect(body).toEqual({
-        message: "Quote submission enabled",
-        data: { isEnabled: true },
+        message: "Quote submission disabled",
+        data: { isEnabled: false },
       });
     });
   });

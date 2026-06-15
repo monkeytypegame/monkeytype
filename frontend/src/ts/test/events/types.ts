@@ -81,7 +81,7 @@ export type InputEvent = EventProps<"input", InputEventData>;
 type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
-  inputValue?: string;
+  inputValue: string;
 };
 
 export type InputEventData =
@@ -89,11 +89,20 @@ export type InputEventData =
       inputType: InsertInputType;
       data: string;
       correct: boolean;
-      isCompositionEnding: boolean;
-      inputStopped: boolean;
+      isCompositionEnding?: true;
+      inputStopped?: true;
+      // true when this was a space that advanced to the next word (commit
+      // attempt) rather than being inserted as a literal character
+      commitsWord?: true;
+      lastWord?: true;
     })
   | (BaseInputEventData & {
       inputType: DeleteInputType;
+      // true on the destination event of a regression that crossed back
+      // over a word with leftover content (e.g. Firefox Ctrl+Backspace
+      // eating sentinel + non-word residue). The cleared word is
+      // wordIndex + 1.
+      clearedNextWord?: true;
     });
 
 export type CompositionTestEvent = EventProps<
@@ -104,8 +113,10 @@ export type CompositionTestEvent = EventProps<
 export type CompositionTestEventData =
   | {
       event: "start";
+      wordIndex: number;
     }
   | {
       event: "update" | "end";
       data: string;
+      wordIndex: number;
     };

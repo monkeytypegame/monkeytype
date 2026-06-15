@@ -218,6 +218,7 @@ function normalizeResult(
 const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
@@ -243,13 +244,6 @@ const resultsCollection = createCollection(
         );
         setLastResult(lastResult);
       }
-
-      if (_keepAlive === null) {
-        _keepAlive = useLiveQuery((q) =>
-          q.from({ results: resultsCollection }),
-        );
-      }
-
       return results;
     },
     queryClient,
@@ -718,10 +712,3 @@ function getResults(): SnapshotResult<Mode>[] {
 export const __nonReactive = {
   getResults,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-// oxlint-disable-next-line typescript/no-explicit-any
-let _keepAlive: any = null;

@@ -1,22 +1,16 @@
-import preview from "#.storybook/preview";
 import { Component } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { NotificationBubble } from "../../src/ts/components/common/NotificationBubble";
 
 const meta = preview.meta({
   title: "Common/NotificationBubble",
-  component: NotificationBubble,
+  component: NotificationBubble as Component,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    variant: {
-      control: "select",
-      options: ["fromCorner", "atCorner", "center"],
-    },
-    show: { control: "boolean" },
-  },
   decorators: [
     (Story: Component) => (
       <div
@@ -35,24 +29,15 @@ const meta = preview.meta({
 });
 
 export const FromCorner = meta.story({
-  args: {
-    variant: "fromCorner",
-    show: true,
-  },
+  render: () => <NotificationBubble variant="fromCorner" show />,
 });
 
 export const AtCorner = meta.story({
-  args: {
-    variant: "atCorner",
-    show: true,
-  },
+  render: () => <NotificationBubble variant="atCorner" show />,
 });
 
 export const Center = meta.story({
-  args: {
-    variant: "center",
-    show: true,
-  },
+  render: () => <NotificationBubble variant="center" show />,
 });
 
 export const AllVariants = meta.story({

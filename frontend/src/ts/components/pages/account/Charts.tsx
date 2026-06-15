@@ -8,9 +8,8 @@ import {
 } from "../../../collections/results";
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
-import { isAuthenticated } from "../../../states/core";
+import { getFormatting, isAuthenticated } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { Formatting } from "../../../utils/format";
 import {
   capitalizeFirstLetter,
   replaceUnderscoresWithSpaces,
@@ -31,7 +30,7 @@ export function Charts(props: {
   const typingSpeedUnit = createMemo(() =>
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
   const tags = useTagsLiveQuery();
 
   const resultsQuery = useLiveQuery((q) => {

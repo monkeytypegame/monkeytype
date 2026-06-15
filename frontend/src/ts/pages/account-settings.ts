@@ -8,7 +8,6 @@ import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import { showLoaderBar } from "../states/loader-bar";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
-import * as BlockedUserTable from "../elements/account-settings/blocked-user-table";
 import { showErrorNotification } from "../states/notifications";
 import { z } from "zod";
 import { authEvent } from "../events/auth";
@@ -134,7 +133,6 @@ function updateTabs(): void {
       pageElement.qsa(".tab")?.removeClass("active");
       pageElement.qs(`.tab[data-tab="${state.tab}"]`)?.addClass("active");
       if (state.tab === "apeKeys") void ApeKeyTable.update(updateUI);
-      if (state.tab === "blockedUsers") void BlockedUserTable.update();
     },
   );
   pageElement.qsa("button")?.removeClass("active");

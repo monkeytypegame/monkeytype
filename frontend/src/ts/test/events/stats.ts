@@ -1,19 +1,17 @@
 import {
   getAllTestEvents,
-  getInputEvents,
-  getInputEventsForWord,
-  getInputEventsPerWord,
+  getEventsPerWord,
   getPressedKeys,
   logTestEvent,
 } from "./data";
 import * as TestWords from "../../test/test-words";
-import { CharCounts, countChars, getLastChar } from "../../utils/strings";
+import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
 import { getInputFromDom } from "./helpers";
 import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { InputEventNoMs, TestEventNoMs } from "./types";
+import { TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
@@ -247,7 +245,11 @@ function getTargetWord(
   } else {
     const word = TestWords.words.getText(wordIndex);
 
-    if (getLastChar(word) === "\n") {
+    if (word === undefined) {
+      return "";
+    }
+
+    if (word.endsWith("\n")) {
       // for multiline, dont add space
       return word;
     }
@@ -267,7 +269,7 @@ function getTargetWord(
 }
 
 function countCharsForWords(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
+  eventsPerWord: Map<number, TestEventNoMs[]>,
   lastWordIndex: number,
   shouldCountPartialLastWord: boolean,
 ): CharCounts {
@@ -295,8 +297,7 @@ function countCharsForWords(
     const c = countChars(
       simulatedInput,
       targetWord,
-      lastWord,
-      shouldCountPartialLastWord,
+      lastWord && shouldCountPartialLastWord,
     );
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
@@ -311,10 +312,10 @@ function countCharsForWords(
 }
 
 function inferActiveWordIndex(
-  eventsPerWord: Map<number, InputEventNoMs[]>,
+  eventsPerWord: Map<number, TestEventNoMs[]>,
 ): number {
   let maxWordIndex = -1;
-  let lastWordEvents: InputEventNoMs[] | undefined;
+  let lastWordEvents: TestEventNoMs[] | undefined;
   for (const [k, wordEvents] of eventsPerWord) {
     if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
       maxWordIndex = k;
@@ -326,6 +327,7 @@ function inferActiveWordIndex(
   // committed trailing space → cursor advanced to the next word
   if (
     lastEvt !== undefined &&
+    "inputType" in lastEvt.data &&
     lastEvt.data.inputType === "insertText" &&
     lastEvt.data.data === " "
   ) {
@@ -337,17 +339,44 @@ function inferActiveWordIndex(
 export function getChars(): CharCounts {
   const isTimedTest =
     Config.mode === "time" ||
+    (Config.mode === "words" && Config.words === 0) ||
     (Config.mode === "custom" && CustomText.getLimit().mode === "time");
   return countCharsForWords(
-    getInputEventsPerWord(),
-    activeWordIndex,
+    getEventsPerWord(),
+    isTimedTest ? activeWordIndex : TestWords.words.list.length - 1,
     isTimedTest,
   );
 }
 
-export function getInputForWord(wordIndex: number): string {
-  const events = getInputEventsForWord(wordIndex);
-  return getInputFromDom(events).trimEnd();
+export function getInputHistory(): string[] {
+  const eventsPerWordIndex = getEventsPerWord();
+  const history: string[] = [];
+
+  for (const [wordIndex, events] of eventsPerWordIndex) {
+    const lastEvent = events[events.length - 1];
+    if (lastEvent === undefined) {
+      history.push("");
+      continue;
+    }
+
+    // THANKS FIREFOX FOR THIS MESS
+    // A word is abandoned if the regression destination event — which
+    // lives in the previous word's bucket — carries clearedNextWord.
+    // Happens when Ctrl+Backspace eats the sentinel + non-word residue as
+    // one run; the residue stays as this word's last inputValue but its
+    // real final state is "".
+    const previousWord = eventsPerWordIndex.get(wordIndex - 1) ?? [];
+    const abandoned = previousWord.some(
+      (e) =>
+        e.testMs > lastEvent.testMs &&
+        "clearedNextWord" in e.data &&
+        e.data.clearedNextWord === true,
+    );
+
+    history.push(abandoned ? "" : getInputFromDom(events));
+  }
+
+  return history;
 }
 
 export function getAccuracy(): {
@@ -355,12 +384,14 @@ export function getAccuracy(): {
   incorrect: number;
   percentage: number;
 } {
-  const events = getInputEvents();
+  const events = getAllTestEvents();
 
   let correct = 0;
   let incorrect = 0;
 
   for (const event of events) {
+    if (event.type !== "input") continue;
+
     if (!("correct" in event.data)) {
       continue;
     }
@@ -447,7 +478,7 @@ export function getWpmHistory(): number[] {
   const wpmHistory: number[] = [];
 
   for (const boundary of getTimerBoundaries(events)) {
-    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+    const eventsPerWord = getEventsPerWord(undefined, boundary);
     const lastWordIndex = inferActiveWordIndex(eventsPerWord);
     const { correctWord } = countCharsForWords(
       eventsPerWord,

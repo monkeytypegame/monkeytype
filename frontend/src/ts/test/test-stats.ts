@@ -1,6 +1,7 @@
 import Hangul from "hangul-js";
 import { Config } from "../config/store";
 import * as TestInput from "./test-input";
+import { getCurrentInput, getInputHistory } from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -53,11 +54,8 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(
-      0,
-      TestInput.input.getHistory().length,
-    ),
-    inputHistory: TestInput.input.getHistory(),
+    wordsHistory: TestWords.words.list.slice(0, getInputHistory().length),
+    inputHistory: getInputHistory(),
   };
 
   try {
@@ -116,6 +114,7 @@ export function calculateWpmAndRaw(
   withDecimalPoints?: true,
   final = false,
   testSecondsOverride?: number,
+  charsOverride?: CharCount,
 ): {
   wpm: number;
   raw: number;
@@ -124,7 +123,7 @@ export function calculateWpmAndRaw(
     testSecondsOverride ??
     calculateTestSeconds(TestState.isActive ? performance.now() : end);
 
-  const chars = countChars(final);
+  const chars = charsOverride ?? countChars(final);
   const wpm = Numbers.roundTo2(
     (chars.correctWordChars * (60 / testSeconds)) / 5,
   );
@@ -177,8 +176,8 @@ export function calculateBurst(endTime: number = performance.now()): number {
   if (timeToWrite <= 0) return 0;
   let wordLength: number;
   wordLength = !containsKorean
-    ? TestInput.input.current.length
-    : Hangul.disassemble(TestInput.input.current).length;
+    ? getCurrentInput().length
+    : Hangul.disassemble(getCurrentInput()).length;
   if (wordLength === 0) {
     wordLength = !containsKorean
       ? (TestInput.input.getHistoryLast()?.length ?? 0)
@@ -208,10 +207,10 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
-  let inputWords = [...TestInput.input.getHistory()];
+  let inputWords = [...getInputHistory()];
 
   if (TestState.isActive) {
-    inputWords.push(TestInput.input.current);
+    inputWords.push(getCurrentInput());
   }
 
   if (containsKorean) {
@@ -234,15 +233,13 @@ function getTargetWords(): string[] {
   const containsKorean = TestState.koreanStatus;
 
   let targetWords = [
-    ...(Config.mode === "zen"
-      ? TestInput.input.getHistory()
-      : TestWords.words.list),
+    ...(Config.mode === "zen" ? getInputHistory() : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen"
-        ? TestInput.input.current
+        ? getCurrentInput()
         : TestWords.words.getCurrentText(),
     );
   }
@@ -279,14 +276,21 @@ function countChars(final = false): CharCount {
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i] as string;
-    const targetWord = targetWords[i] as string;
+    let targetWord = targetWords[i] as string;
+    const isLastInputWord = i === inputWords.length - 1;
+
+    // getTargetWords appends a delimiter to every word except the last in the
+    // generated list; for the last input word (active in timed/mid-test, or
+    // the actual last word) drop that delimiter so overshoot counts as extra
+    if (isLastInputWord && targetWord.endsWith(" ")) {
+      targetWord = targetWord.slice(0, -1);
+    }
 
     const { correctWord, allCorrect, incorrect, missed, extra } =
       countCharsUtils(
         inputWord,
         targetWord,
-        i === inputWords.length - 1,
-        (isTimedTest && final) || !final,
+        isLastInputWord && ((isTimedTest && final) || !final),
       );
 
     correctWordChars += correctWord;
@@ -335,9 +339,8 @@ export function calculateFinalStats(): Stats {
     );
   }
 
-  //todo: this counts chars twice - once here and once in calculateWpmAndRaw
   const chars = countChars(true);
-  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds);
+  const { wpm, raw } = calculateWpmAndRaw(true, true, testSeconds, chars);
   const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
