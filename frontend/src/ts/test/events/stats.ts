@@ -842,12 +842,9 @@ export function getMissedWords(): Record<string, number> {
       event.data.inputType === "insertText" &&
       !event.data.correct
     ) {
-      const word = TestWords.words.getText(event.data.wordIndex);
-      if (missedWords[word] === undefined) {
-        missedWords[word] = 1;
-      } else {
-        missedWords[word]++;
-      }
+      const word = TestWords.words.list[event.data.wordIndex];
+      if (word === undefined) continue;
+      missedWords[word] = (missedWords[word] ?? 0) + 1;
     }
   }
 
