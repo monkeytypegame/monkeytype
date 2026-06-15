@@ -95,7 +95,7 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
-  getKeypressSpacing,
+  forceReleaseAllKeys,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -109,12 +109,12 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
-  forceReleaseAllKeys,
   getCurrentAccuracy,
   getCurrentTestDurationMs,
   getDateBasedTestDurationMs,
   getInputHistory,
   getKeypressesPerSecond,
+  getKeypressSpacing,
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";

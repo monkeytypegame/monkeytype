@@ -43,7 +43,6 @@ import {
   getAllTestEvents,
   cleanupData,
   __testing,
-  getKeypressSpacing,
 } from "../../../src/ts/test/events/data";
 import {
   getStartToFirstKeypressMs,
@@ -59,9 +58,9 @@ import {
   getChars,
   getInputHistory,
   getWpmHistory,
-  forceReleaseAllKeys,
-  getCorrectedWords,
   __testing as statsTesting,
+  getCorrectedWordsHistory,
+  getKeypressSpacing,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -1123,7 +1122,7 @@ describe("stats.ts", () => {
         input({ charIndex: 3, wordIndex: 0, data: "t" }),
       );
 
-      expect(getCorrectedWords()).toEqual(["test"]);
+      expect(getCorrectedWordsHistory()).toEqual(["test"]);
     });
 
     it("returns last deleted char per position (xact -> fact)", () => {
@@ -1192,7 +1191,7 @@ describe("stats.ts", () => {
         input({ charIndex: 3, wordIndex: 0, data: "t" }),
       );
 
-      expect(getCorrectedWords()).toEqual(["xact"]);
+      expect(getCorrectedWordsHistory()).toEqual(["xact"]);
     });
 
     it("returns last deleted char per position across multiple corrections (xest -> west -> test)", () => {
@@ -1273,7 +1272,7 @@ describe("stats.ts", () => {
         input({ charIndex: 3, wordIndex: 0, data: "t" }),
       );
 
-      expect(getCorrectedWords()).toEqual(["west"]);
+      expect(getCorrectedWordsHistory()).toEqual(["west"]);
     });
 
     it("handles partial correction (tset -> delete last 2 -> st)", () => {
@@ -1323,7 +1322,7 @@ describe("stats.ts", () => {
       );
 
       // pos 0: "t" never deleted, pos 1: "s" never deleted, pos 2: "e" deleted, pos 3: "t" deleted
-      expect(getCorrectedWords()).toEqual(["tset"]);
+      expect(getCorrectedWordsHistory()).toEqual(["tset"]);
     });
 
     it("handles multiple words", () => {
@@ -1371,79 +1370,9 @@ describe("stats.ts", () => {
         input({ charIndex: 1, wordIndex: 1, data: "w" }),
       );
 
-      const result = getCorrectedWords();
+      const result = getCorrectedWordsHistory();
       expect(result[0]).toEqual("ab");
       expect(result[1]).toEqual("xy");
-    });
-  });
-
-  describe("forceReleaseAllKeys", () => {
-    it("creates synthetic keyup events for pressed keys", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS is still held
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyups = events.filter(
-        (e) => e.type === "keyup" && e.data.code === "KeyS",
-      );
-      expect(keyups.length).toBe(1);
-      expect((keyups[0] as { data: { estimated?: true } }).data.estimated).toBe(
-        true,
-      );
-    });
-
-    it("uses average duration for estimated keyup timing", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      // KeyA held for 80ms
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS held for 120ms
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-      logTestEvent("keyup", 1320, keyUp("KeyS"));
-      // KeyD still held at 1400
-      logTestEvent("keydown", 1400, keyDown("KeyD"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyD",
-      );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
-      expect(keyup).toBeDefined();
-      expect(keyup?.testMs).toBe(500);
-    });
-
-    it("uses default 80ms when no completed key durations exist", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1200, keyDown("KeyA"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyA",
-      );
-      expect(keyup).toBeDefined();
-      expect(keyup?.testMs).toBe(280);
-    });
-
-    it("does nothing when no keys are pressed", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-
-      // const beforeCount = getAllTestEvents().length;
-      forceReleaseAllKeys();
-      // cache invalidated, re-get
-      resetTestEvents();
-      // no new events should have been added — but we can't easily check after reset
-      // so instead verify no error is thrown
     });
   });
 });
