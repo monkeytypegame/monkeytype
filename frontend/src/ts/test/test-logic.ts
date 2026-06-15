@@ -1280,7 +1280,8 @@ function compareCompletedEvents(
 
   {
     const a = getInputHistory().join(" ");
-    if (!a.includes("\n")) {
+    const noSpace = isFunboxActiveWithProperty("nospace");
+    if (!a.includes("\n") && !noSpace) {
       const b = getEventsInputHistory().join("");
       if (a === b) {
         console.debug(`Completed event match on input history:`, a);
