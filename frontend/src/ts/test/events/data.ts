@@ -15,7 +15,7 @@ import {
 } from "./types";
 import { getInputFromDom, keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
-import { roundTo2 } from "@monkeytype/util/numbers";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
 import { activeWordIndex, resultCalculating } from "../test-state";
 
 let keydownEvents: KeydownEvent[] = [];
@@ -176,35 +176,6 @@ export function getCurrentInput(): string {
 
 export function getInputForWord(wordIndex: number): string {
   return getInputFromDom(getEventsForWord(wordIndex)).trimEnd();
-}
-
-export function getLastKeypressSpacing(): number | undefined {
-  const n = keydownEvents.length;
-  if (n < 2) return undefined;
-  return (
-    (keydownEvents[n - 1] as KeydownEvent).ms -
-    (keydownEvents[n - 2] as KeydownEvent).ms
-  );
-}
-
-export function getKeypressSpacing(): number[] {
-  const events = getAllTestEvents();
-
-  const spacings: number[] = [];
-  let lastKeydownTime: number | undefined;
-  for (const event of events) {
-    if (event.type === "keydown") {
-      if (lastKeydownTime !== undefined) {
-        const spacing = event.testMs - lastKeydownTime;
-        spacings.push(spacing);
-      }
-      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
-      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
-      lastKeydownTime = Math.max(0, event.testMs);
-    }
-  }
-
-  return spacings;
 }
 
 export function cleanupData(): void {
@@ -417,6 +388,30 @@ export function getEventsPerWord(
 
 export function getTimerStartEventMs(): number | undefined {
   return timerEvents.find((e) => e.data.event === "start")?.ms;
+}
+
+export function forceReleaseAllKeys(): void {
+  const keydownMsByCode = new Map<string, number>();
+  for (const e of keydownEvents) keydownMsByCode.set(e.data.code, e.ms);
+
+  const durations: number[] = [];
+  for (const e of keyupEvents) {
+    const downMs = keydownMsByCode.get(e.data.code);
+    if (downMs === undefined) continue;
+    const d = e.ms - downMs;
+    if (d > 0) durations.push(d);
+    keydownMsByCode.delete(e.data.code);
+  }
+
+  // empty → test ended with all keys still held; will be "too short" anyway, magic number is fine
+  const avg = durations.length === 0 ? 80 : roundTo2(mean(durations));
+
+  for (const [key, { timestamp }] of pressedKeys.entries()) {
+    logTestEvent("keyup", timestamp + avg, {
+      code: key, //entries is not picking up the type
+      estimated: true,
+    });
+  }
 }
 
 export const __testing = {
