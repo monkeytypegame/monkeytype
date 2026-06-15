@@ -108,6 +108,7 @@ import {
   getKeypressDurations,
   getChars,
   getBurstHistory,
+  getRawHistory,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
   getTestDurationMs,
@@ -1248,6 +1249,32 @@ function compareCompletedEvents(
           lastKeyToEnd: ce2.lastKeyToEnd,
         },
       );
+    }
+  }
+
+  {
+    const a = TestInput.rawHistory;
+    const b = getRawHistory();
+    if (a.length === b.length && a.every((val, i) => val === b[i])) {
+      console.debug(`Completed event match on rawHistory:`, a);
+    } else {
+      notMatching.push(`rawHistory (values differ)`);
+      mismatchedKeys.push("rawHistory");
+      console.error(`Completed event mismatch on rawHistory:`, a, b);
+    }
+  }
+
+  {
+    if (ce.chartData !== "toolong") {
+      const a = ce.chartData.wpm;
+      const b = getWpmHistory();
+      if (a.length === b.length && a.every((val, i) => val === b[i])) {
+        console.debug(`Completed event match on chartData.wpm:`, a);
+      } else {
+        notMatching.push(`chartData.wpm (values differ)`);
+        mismatchedKeys.push("chartData.wpm");
+        console.error(`Completed event mismatch on chartData.wpm:`, a, b);
+      }
     }
   }
 
