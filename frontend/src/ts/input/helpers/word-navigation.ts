@@ -96,7 +96,6 @@ export function goToPreviousWord(
   TestUI.beforeTestWordChange("back", null, forceUpdateActiveWordLetters);
 
   TestState.decreaseActiveWordIndex();
-  const word = getInputForWord(TestState.activeWordIndex);
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
@@ -105,6 +104,7 @@ export function goToPreviousWord(
   if (inputType === "deleteWordBackward") {
     setInputElementValue("");
   } else if (inputType === "deleteContentBackward") {
+    const word = getInputForWord(TestState.activeWordIndex);
     if (nospaceEnabled) {
       setInputElementValue(word.slice(0, -1));
     } else if (word.endsWith("\n")) {
