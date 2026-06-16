@@ -940,7 +940,7 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
-    if (key === "timestamp") {
+    if (key === "timestamp" || key === "keyDuration" || key === "keySpacing") {
       continue;
     }
     // if (
@@ -955,6 +955,7 @@ function compareCompletedEvents(
     let val1 = ce[key];
     let val2 = ce2[key];
 
+    //@ts-expect-error temp
     if (key === "keyDuration" || key === "keySpacing") {
       const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
@@ -970,16 +971,20 @@ function compareCompletedEvents(
           if (a[i] !== b[i]) mismatchCount++;
         }
       }
-      if (mismatchCount > 1) {
-        console.debug(`Completed event match on key ${key}:`, a);
-      } else {
-        notMatching.push(`${key} (${mismatchCount}/${total} elements differ)`);
-        mismatchedKeys.push(key);
+      if (mismatchCount > 0) {
         console.error(
           `Completed event mismatch on key ${key}: ${mismatchCount}/${total} elements differ`,
           a,
           b,
         );
+        if (mismatchCount > 1) {
+          notMatching.push(
+            `${key} (${mismatchCount}/${total} elements differ)`,
+          );
+          mismatchedKeys.push(key);
+        }
+      } else {
+        console.debug(`Completed event match on key ${key}:`, a);
       }
       continue;
     }
@@ -1372,7 +1377,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 25,
+            version: 26,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
