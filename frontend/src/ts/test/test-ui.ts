@@ -1757,8 +1757,12 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc: number = Numbers.roundTo2(getLiveAccuracy(buildEventLog()));
-  if (!isNaN(acc)) LiveAcc.update(acc);
+  if (Config.liveAccStyle !== "off") {
+    const acc = Numbers.roundTo2(getLiveAccuracy(buildEventLog()));
+    if (!isNaN(acc)) {
+      LiveAcc.update(acc);
+    }
+  }
 
   if (Config.mode !== "time") {
     TimerProgress.update();
