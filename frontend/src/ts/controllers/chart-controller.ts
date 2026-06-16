@@ -65,7 +65,7 @@ import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
-import { buildEventLog } from "../test/events/data";
+import { lastEventLog } from "../test/test-state";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -272,12 +272,13 @@ export const result = new ChartWithUpdateColors<
         callbacks: {
           afterLabel: function (ti): string {
             if (prevTi === ti) return "";
+            if (lastEventLog === null) return "";
+
             prevTi = ti;
             try {
               const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              //TODO: THIS WILL BE SLOW AF
               const wordsToHighlight = getWordIndexesForSecond(
-                buildEventLog(),
+                lastEventLog,
                 keypressIndex,
               );
 
