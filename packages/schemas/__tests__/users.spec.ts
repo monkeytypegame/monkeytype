@@ -5,8 +5,17 @@ describe("users schemas", () => {
   describe("ResultFilterPresetNameSchema", () => {
     it.each([
       { description: "valid preset name", input: "my_preset" },
-    ] as const)("$description", ({ input }) => {
-      expect(ResultFilterPresetNameSchema).toValidate(input);
+      {
+        description: "invalid preset name too long",
+        input: "a".repeat(17),
+        expectedError: "String must contain at most 16 character(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(ResultFilterPresetNameSchema).toReject(input, expectedError);
+      } else {
+        expect(ResultFilterPresetNameSchema).toValidate(input);
+      }
     });
   });
 });
