@@ -1,13 +1,8 @@
-import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
-import * as CustomText from "../../test/custom-text";
 import { getEventsPerWord, getInputFromDom } from "./helpers";
-import { bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
-import { Config } from "../../config/store";
-import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
 
 function getTimerBoundaries(eventLog: EventLog): number[] {
@@ -25,7 +20,10 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   }
 
   // in zen/bailout, cap to adjusted end to remove trailing afk seconds
-  if (endMs !== undefined && (Config.mode === "zen" || bailedOut)) {
+  if (
+    endMs !== undefined &&
+    (eventLog.context.mode === "zen" || eventLog.context.bailedOut)
+  ) {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
@@ -47,9 +45,14 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
     // a different answer when the rounded seconds carry into the next integer
     // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
     // rounds to 0.5 → wrongly adds a bucket).
+
+    const { context } = eventLog;
     const isTimedTest =
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimit().mode === "time");
+      context.mode === "time" ||
+      (context.mode === "words" && context.mode2 === "0") ||
+      (context.mode === "custom" && context.customTextLimitMode === "time") ||
+      (context.mode === "custom" && context.customTextLimitValue === 0);
+
     const testSeconds = roundTo2(endMs / 1000);
     if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
       boundaries.push(endMs);
@@ -60,7 +63,7 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
 }
 
 export function getStartToFirstKeypressMs(eventLog: EventLog): number {
-  if (Config.mode === "zen") return 0;
+  if (eventLog.context.mode === "zen") return 0;
 
   const { events } = eventLog;
 
@@ -135,7 +138,7 @@ function getRawLastKeypressToEndMs(eventLog: EventLog): number {
 }
 
 export function getLastKeypressToEndMs(eventLog: EventLog): number {
-  if (Config.mode === "zen") return 0;
+  if (eventLog.context.mode === "zen") return 0;
   return getRawLastKeypressToEndMs(eventLog);
 }
 
@@ -221,14 +224,14 @@ export function getTestDurationMs(eventLog: EventLog): number {
     return 0;
   }
 
-  if (Config.mode === "zen" || bailedOut) {
+  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       end -= lkte;
     }
   }
 
-  if (Config.mode !== "custom") {
+  if (eventLog.context.mode !== "custom") {
     end = roundTo2(end / 1000) * 1000;
   }
 
@@ -236,14 +239,15 @@ export function getTestDurationMs(eventLog: EventLog): number {
 }
 
 function getTargetWord(
+  eventLog: EventLog,
   wordIndex: number,
   simulatedInput: string,
   lastWord: boolean,
 ): string {
-  if (Config.mode === "zen") {
+  if (eventLog.context.mode === "zen") {
     return simulatedInput;
   } else {
-    const word = TestWords.words.getText(wordIndex);
+    const word = eventLog.context.targetWords[wordIndex];
 
     if (word === undefined) {
       return "";
@@ -260,7 +264,7 @@ function getTargetWord(
       wordEnd = " ";
     }
 
-    if (isFunboxActiveWithProperty("nospace")) {
+    if (eventLog.context.isFunboxWithNospacePropertyActive) {
       wordEnd = "";
     }
 
@@ -269,18 +273,19 @@ function getTargetWord(
 }
 
 function countCharsForWordIndex(
+  eventLog: EventLog,
   wordIndex: number,
-  events: TestEventNoMs[],
+  wordEvents: TestEventNoMs[],
   lastWord: boolean,
   countPartial: boolean,
 ): CharCounts {
-  let simulatedInput = getInputFromDom(events);
-  if (koreanStatus) {
+  let simulatedInput = getInputFromDom(wordEvents);
+  if (eventLog.context.koreanStatus) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
-  let targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
-  if (koreanStatus) {
+  let targetWord = getTargetWord(eventLog, wordIndex, simulatedInput, lastWord);
+  if (eventLog.context.koreanStatus) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 
@@ -313,8 +318,14 @@ function inferActiveWordIndex(
 }
 
 export function getChars(eventLog: EventLog): CharCounts {
-  const { events } = eventLog;
-  const { isTimedTest, bailedOut } = eventLog.context;
+  const { events, context } = eventLog;
+  const { bailedOut } = context;
+
+  const isTimedTest =
+    context.mode === "time" ||
+    (context.mode === "words" && context.mode2 === "0") ||
+    (context.mode === "custom" && context.customTextLimitMode === "time") ||
+    (context.mode === "custom" && context.customTextLimitValue === 0);
 
   const eventsPerWord = getEventsPerWord(events);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
@@ -332,6 +343,7 @@ export function getChars(eventLog: EventLog): CharCounts {
   for (const [wordIndex, wordEvents] of eventsPerWord) {
     const lastWord = wordIndex === lastWordIndex;
     const c = countCharsForWordIndex(
+      eventLog,
       wordIndex,
       wordEvents,
       lastWord,
@@ -514,11 +526,13 @@ export function getWpmHistory(eventLog: EventLog): number[] {
       if (wordEvents === undefined) continue;
       cachedIfNotLast.set(
         wordIndex,
-        countCharsForWordIndex(wordIndex, wordEvents, false, true).correctWord,
+        countCharsForWordIndex(eventLog, wordIndex, wordEvents, false, true)
+          .correctWord,
       );
       cachedIfLast.set(
         wordIndex,
-        countCharsForWordIndex(wordIndex, wordEvents, true, true).correctWord,
+        countCharsForWordIndex(eventLog, wordIndex, wordEvents, true, true)
+          .correctWord,
       );
     }
     dirty.clear();
@@ -579,12 +593,14 @@ export function getRawHistory(eventLog: EventLog): number[] {
       if (wordEvents === undefined) continue;
 
       const notLastCount = countCharsForWordIndex(
+        eventLog,
         wordIndex,
         wordEvents,
         false,
         true,
       );
       const lastCount = countCharsForWordIndex(
+        eventLog,
         wordIndex,
         wordEvents,
         true,

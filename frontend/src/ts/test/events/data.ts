@@ -18,10 +18,13 @@ import {
 import { keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { bailedOut, resultCalculating } from "../test-state";
+import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
+import { getMode2 } from "../../utils/misc";
+import { isFunboxActiveWithProperty } from "../funbox/list";
+import { getCurrentQuote } from "../../states/test";
 
 export function buildEventLog(): EventLog {
   return {
@@ -29,10 +32,12 @@ export function buildEventLog(): EventLog {
     events: getAllTestEvents(),
     context: {
       targetWords: [...TestWords.words.list],
-      isTimedTest:
-        Config.mode === "time" ||
-        (Config.mode === "words" && Config.words === 0) ||
-        (Config.mode === "custom" && CustomText.getLimit().mode === "time"),
+      mode: Config.mode,
+      mode2: getMode2(Config, getCurrentQuote()),
+      customTextLimitMode: CustomText.getLimit().mode,
+      customTextLimitValue: CustomText.getLimit().value,
+      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+      koreanStatus: koreanStatus,
       bailedOut: bailedOut,
     },
   };

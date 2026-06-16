@@ -102,7 +102,6 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
-  getAllTestEvents,
   forceReleaseAllKeys,
   buildEventLog,
 } from "./events/data";
@@ -1387,11 +1386,8 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 27,
-            data: {
-              words: TestWords.words.list.join(" "),
-              events: getAllTestEvents(),
-            },
+            version: 28,
+            eventLog,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },

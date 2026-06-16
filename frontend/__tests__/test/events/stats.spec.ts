@@ -12,7 +12,7 @@ vi.mock("../../../src/ts/test/test-state", () => ({
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: [] as string[] },
+  Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
   getConfig: {},
 }));
 
@@ -35,6 +35,10 @@ vi.mock("../../../src/ts/test/test-words", () => {
 const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
 vi.mock("../../../src/ts/test/custom-text", () => ({
   getLimit: () => customTextLimit,
+}));
+
+vi.mock("../../../src/ts/states/test", () => ({
+  getCurrentQuote: () => null,
 }));
 
 import {
@@ -159,6 +163,8 @@ describe("stats.ts", () => {
     __testing.resetPressedKeys();
     (Config as { mode: string }).mode = "words";
     (Config as { funbox: string[] }).funbox = [];
+    (Config as { words: number }).words = 25;
+    (Config as { time: number }).time = 0;
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
     TestWords.list.length = 0;
     inputPerWord.clear();
@@ -834,34 +840,46 @@ describe("stats.ts", () => {
   describe("getTargetWord", () => {
     it("returns simulatedInput in zen mode", () => {
       (Config as { mode: string }).mode = "zen";
-      expect(statsTesting.getTargetWord(0, "anything", false)).toBe("anything");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "anything", false),
+      ).toBe("anything");
     });
 
     it("returns word without trailing space when it ends with newline", () => {
       TestWords.list.push("hello\n");
-      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello\n");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello\n");
     });
 
     it("appends trailing space for non-last word", () => {
       TestWords.list.push("hello");
-      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello ");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello ");
     });
 
     it("does not append trailing space for last word", () => {
       TestWords.list.push("hello");
-      expect(statsTesting.getTargetWord(0, "hello", true)).toBe("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
+      ).toBe("hello");
     });
 
     it("does not append trailing space when nospace funbox is active", () => {
       TestWords.list.push("hello");
       (Config as { funbox: string[] }).funbox = ["nospace"];
-      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello");
     });
 
     it("does not append trailing space when underscore_spaces funbox is active", () => {
       TestWords.list.push("hello");
       (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
-      expect(statsTesting.getTargetWord(0, "hello", false)).toBe("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello");
     });
   });
 
