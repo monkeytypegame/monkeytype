@@ -12,6 +12,7 @@ import {
 import { setGlobalOffsetTop } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
+import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
 import { showUpdateNameModal } from "../../modals/account-settings/UpdateNameModal";
 
@@ -111,6 +112,14 @@ export function Banners(): JSXElement {
 
   onMount(() => {
     window.addEventListener("resize", debouncedMarginUpdate);
+    if (isProfilerMode()) {
+      addBanner({
+        level: "error",
+        icon: "fas fa-stopwatch",
+        text: "Profiler mode enabled",
+        important: true,
+      });
+    }
   });
 
   onCleanup(() => {
