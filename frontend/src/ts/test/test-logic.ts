@@ -939,6 +939,9 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
+    if (key === "timestamp") {
+      continue;
+    }
     // if (
     //   key === "keyDuration" ||
     //   key === "keySpacing" ||
