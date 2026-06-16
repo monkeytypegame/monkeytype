@@ -939,19 +939,18 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
-    if (
-      key === "keyDuration" ||
-      key === "keySpacing" ||
-      key === "afkDuration" ||
-      key === "chartData"
-    ) {
-      continue;
-    }
+    // if (
+    //   key === "keyDuration" ||
+    //   key === "keySpacing" ||
+    //   key === "afkDuration" ||
+    //   key === "chartData"
+    // ) {
+    //   continue;
+    // }
 
     let val1 = ce[key];
     let val2 = ce2[key];
 
-    //@ts-expect-error asdf
     if (key === "keyDuration" || key === "keySpacing") {
       const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
@@ -1013,17 +1012,17 @@ function compareCompletedEvents(
       val2 = Numbers.roundTo2(val2 as number);
     }
 
-    if (key === "timestamp") {
-      continue;
-    }
+    // if (key === "timestamp") {
+    //   continue;
+    // }
 
-    if (key === "consistency") {
-      continue;
-    }
+    // if (key === "consistency") {
+    //   continue;
+    // }
 
-    if (key === "keyConsistency") {
-      continue;
-    }
+    // if (key === "keyConsistency") {
+    //   continue;
+    // }
 
     if (key === "wpm" || key === "rawWpm") {
       val1 = Numbers.roundTo2(val1 as number);
@@ -1070,7 +1069,6 @@ function compareCompletedEvents(
     //   };
     // }
 
-    //@ts-expect-error asdf
     if (key === "chartData") {
       const v1 = val1 as CompletedEvent["chartData"];
       const v2 = val2 as CompletedEvent["chartData"];
@@ -1303,41 +1301,42 @@ function compareCompletedEvents(
     }
   } else {
     let ignoreMismatch = false;
-    if (
-      mismatchedKeys.includes("testDuration") &&
-      Math.abs(ce2.testDuration - ce.testDuration) <= 0.2
-    ) {
-      ignoreMismatch = true;
-      console.warn("Ignoring completed event mismatch on testDuration", {
-        ceTestDuration: ce.testDuration,
-        ce2TestDuration: ce2.testDuration,
-      });
-    }
-    if (mismatchedKeys.includes("keyOverlap")) {
-      ignoreMismatch = true;
-      console.warn("Ignoring completed event mismatch on keyOverlap", {
-        ceKeyOverlap: ce.keyOverlap,
-        ce2KeyOverlap: ce2.keyOverlap,
-      });
-    }
-    if (
-      mismatchedKeys.includes("afkDuration") &&
-      Math.abs(ce2.afkDuration - ce.afkDuration) <= 1
-    ) {
-      ignoreMismatch = true;
-      console.warn("Ignoring completed event mismatch on afkDuration", {
-        ceAfkDuration: ce.afkDuration,
-        ce2AfkDuration: ce2.afkDuration,
-      });
-    }
-    if (
-      mismatchedKeys.includes("chartData.wpm") &&
-      mismatchedKeys.length === 1
-    ) {
-      ignoreMismatch = true;
-    }
+    // if (
+    //   mismatchedKeys.includes("testDuration") &&
+    //   Math.abs(ce2.testDuration - ce.testDuration) <= 0.2
+    // ) {
+    //   ignoreMismatch = true;
+    //   console.warn("Ignoring completed event mismatch on testDuration", {
+    //     ceTestDuration: ce.testDuration,
+    //     ce2TestDuration: ce2.testDuration,
+    //   });
+    // }
+    // if (mismatchedKeys.includes("keyOverlap")) {
+    //   ignoreMismatch = true;
+    //   console.warn("Ignoring completed event mismatch on keyOverlap", {
+    //     ceKeyOverlap: ce.keyOverlap,
+    //     ce2KeyOverlap: ce2.keyOverlap,
+    //   });
+    // }
+    // if (
+    //   mismatchedKeys.includes("afkDuration") &&
+    //   Math.abs(ce2.afkDuration - ce.afkDuration) <= 1
+    // ) {
+    //   ignoreMismatch = true;
+    //   console.warn("Ignoring completed event mismatch on afkDuration", {
+    //     ceAfkDuration: ce.afkDuration,
+    //     ce2AfkDuration: ce2.afkDuration,
+    //   });
+    // }
 
-    if (Config.mode === "zen") {
+    // if (
+    //   mismatchedKeys.includes("chartData.wpm") &&
+    //   mismatchedKeys.length === 1
+    // ) {
+    //   ignoreMismatch = true;
+    // }
+
+    if (Config.mode !== "time" || (Config.time !== 15 && Config.time !== 60)) {
       ignoreMismatch = true;
     }
 
@@ -1369,7 +1368,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 23,
+            version: 24,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
