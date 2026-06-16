@@ -1,5 +1,5 @@
 {
-  "name": "Monkey Language",
+  "name": "monkey",
   "rightToLeft": false,
   "joiningScript": false,
   "orderedByFrequency": false,
@@ -56,7 +56,7 @@
     "wahoo-wahoo",
     "krak-krak",
     "hok-hok",
-    "chutter-chutter",
+    "chutter-test",
     "wraaa-wraaa",
     "krak-chutter",
     "hok-chutter",
@@ -188,7 +188,6 @@
     "baq-hok",
     "baq-ook",
     "rraup-hok",
-    "chutter-krak",
     "wraaa-pant",
     "krak-wahoo",
     "hok-wahoo",
