@@ -323,34 +323,6 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getEventsPerWord(
-  startMs?: number,
-  testMsLimit?: number,
-): Map<number, TestEventNoMs[]> {
-  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
-  const events = getAllTestEvents();
-  for (const event of events) {
-    if (!("wordIndex" in event.data)) {
-      continue;
-    }
-
-    if (startMs !== undefined && event.testMs < startMs) {
-      continue;
-    }
-
-    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
-      break;
-    }
-
-    const wordIndex = event.data.wordIndex;
-
-    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
-    existing.push(event);
-    eventsPerWordIndex.set(wordIndex, existing);
-  }
-  return eventsPerWordIndex;
-}
-
 export function forceReleaseAllKeys(): void {
   const keydownMsByCode = new Map<string, number>();
   for (const e of keydownEvents) keydownMsByCode.set(e.data.code, e.ms);
