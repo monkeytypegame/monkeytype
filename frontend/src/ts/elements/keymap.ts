@@ -204,7 +204,7 @@ function buildRow(options: {
 
   if (isMatrix) {
     if (rowId !== "row5" && layoutData.matrixShowRightColumn) {
-      keysHtml += `<div class="keymapKey"></div>`;
+      keysHtml += `<div class="keymapKey data-key=" "></div>`;
     } else {
       keysHtml += `<div></div>`;
     }
@@ -272,14 +272,16 @@ function buildRow(options: {
         r5Grid += "-";
       }
       if (isRowEmpty(keyVisualValue)) {
-        keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}">
+        keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}" data-key=" ">
               <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
         r5Grid += "3";
         // potential second space in next loop iterations will be empty:
         layoutDisplay = "";
       } else {
-        keysHtml += `<div class="keymapKey ${side}">
+        keysHtml += `<div class="keymapKey ${side}" data-key="${key
+          .map((it) => it.replace('"', "&quot;"))
+          .join(keyDataDelimiter)}">
               <div class="letter">${keyDisplay}</div>
             </div>`;
         r5Grid += "1";
