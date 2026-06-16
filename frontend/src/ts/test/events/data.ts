@@ -1,6 +1,8 @@
 import {
   CompositionTestEvent,
   CompositionTestEventData,
+  EVENT_LOG_VERSION,
+  EventLog,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -16,7 +18,25 @@ import {
 import { keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { resultCalculating } from "../test-state";
+import { bailedOut, resultCalculating } from "../test-state";
+import * as TestWords from "../test-words";
+import { Config } from "../../config/store";
+import * as CustomText from "../../test/custom-text";
+
+export function buildEventLog(): EventLog {
+  return {
+    version: EVENT_LOG_VERSION,
+    events: getAllTestEvents(),
+    context: {
+      targetWords: [...TestWords.words.list],
+      isTimedTest:
+        Config.mode === "time" ||
+        (Config.mode === "words" && Config.words === 0) ||
+        (Config.mode === "custom" && CustomText.getLimit().mode === "time"),
+      bailedOut: bailedOut,
+    },
+  };
+}
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -321,34 +341,6 @@ export function getPressedKeys(): Map<
   { timestamp: number }
 > {
   return pressedKeys;
-}
-
-export function getEventsPerWord(
-  startMs?: number,
-  testMsLimit?: number,
-): Map<number, TestEventNoMs[]> {
-  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
-  const events = getAllTestEvents();
-  for (const event of events) {
-    if (!("wordIndex" in event.data)) {
-      continue;
-    }
-
-    if (startMs !== undefined && event.testMs < startMs) {
-      continue;
-    }
-
-    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
-      break;
-    }
-
-    const wordIndex = event.data.wordIndex;
-
-    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
-    existing.push(event);
-    eventsPerWordIndex.set(wordIndex, existing);
-  }
-  return eventsPerWordIndex;
 }
 
 export function forceReleaseAllKeys(): void {

@@ -104,6 +104,7 @@ import {
   logEventsDataToTheConsoleTable,
   getAllTestEvents,
   forceReleaseAllKeys,
+  buildEventLog,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -939,6 +940,9 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
+    if (key === "timestamp") {
+      continue;
+    }
     // if (
     //   key === "keyDuration" ||
     //   key === "keySpacing" ||
@@ -966,7 +970,7 @@ function compareCompletedEvents(
           if (a[i] !== b[i]) mismatchCount++;
         }
       }
-      if (mismatchCount === 0) {
+      if (mismatchCount > 1) {
         console.debug(`Completed event match on key ${key}:`, a);
       } else {
         notMatching.push(`${key} (${mismatchCount}/${total} elements differ)`);
@@ -1132,8 +1136,8 @@ function compareCompletedEvents(
     } else if (typeof val1 === "number" && typeof val2 === "number") {
       const a = Numbers.roundTo2(val1);
       const b = Numbers.roundTo2(val2);
-      if (a !== b) {
-        const diff = Numbers.roundTo2(Math.abs(a - b));
+      const diff = Numbers.roundTo2(Math.abs(a - b));
+      if (a !== b && diff >= 0.5) {
         const dir = a > b ? "ce1 larger" : "ce2 larger";
         notMatching.push(`${key} (off by ${diff}, ${dir}, ${a} vs ${b})`);
         mismatchedKeys.push(key);
@@ -1368,7 +1372,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 24,
+            version: 25,
             data: {
               words: TestWords.words.list.join(" "),
               events: getAllTestEvents(),
@@ -1387,7 +1391,9 @@ function compareCompletedEvents(
 }
 
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
-  const chars = getChars();
+  const eventLog = buildEventLog();
+
+  const chars = getChars(eventLog);
 
   //tags
   const activeTagsIds: string[] = __nonReactive

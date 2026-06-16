@@ -7,7 +7,6 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 import {
   logTestEvent,
   getAllTestEvents,
-  getEventsPerWord,
   cleanupData,
   resetTestEvents,
   __testing,
@@ -22,6 +21,7 @@ import type {
   TimerEventData,
 } from "../../../src/ts/test/events/types";
 import { Keycode } from "../../../src/ts/constants/keys";
+import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
   return { code };
@@ -251,7 +251,7 @@ describe("data.ts", () => {
       logTestEvent("input", 1020, inputData({ wordIndex: 0, charIndex: 1 }));
       logTestEvent("input", 1030, inputData({ wordIndex: 1, charIndex: 0 }));
 
-      const perWord = getEventsPerWord();
+      const perWord = getEventsPerWord(getAllTestEvents());
       expect(perWord.get(0)).toHaveLength(2);
       expect(perWord.get(1)).toHaveLength(1);
     });
@@ -266,7 +266,7 @@ describe("data.ts", () => {
         wordIndex: 0,
       });
 
-      const perWord = getEventsPerWord();
+      const perWord = getEventsPerWord(getAllTestEvents());
       expect(perWord.get(0)).toHaveLength(3);
     });
 
@@ -277,7 +277,7 @@ describe("data.ts", () => {
         inputType: "deleteContentBackward",
       } as InputEventData);
 
-      const perWord = getEventsPerWord();
+      const perWord = getEventsPerWord(getAllTestEvents());
       expect(perWord.get(0)).toHaveLength(1);
     });
 
@@ -285,7 +285,7 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getEventsPerWord(undefined, 50);
+      const perWord = getEventsPerWord(getAllTestEvents(), undefined, 50);
       expect(perWord.get(0)).toHaveLength(1);
     });
 
@@ -293,7 +293,7 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getEventsPerWord(50);
+      const perWord = getEventsPerWord(getAllTestEvents(), 50);
       expect(perWord.get(0)).toHaveLength(1);
       const first = perWord.get(0)?.[0];
       expect(first?.type === "input" && first.data.charIndex).toBe(1);

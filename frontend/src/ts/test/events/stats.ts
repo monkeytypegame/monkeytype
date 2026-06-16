@@ -1,12 +1,12 @@
-import { getAllTestEvents, getEventsPerWord } from "./data";
+import { getAllTestEvents } from "./data";
 import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
 import * as CustomText from "../../test/custom-text";
-import { getInputFromDom } from "./helpers";
-import { activeWordIndex, bailedOut, koreanStatus } from "../test-state";
+import { getEventsPerWord, getInputFromDom } from "./helpers";
+import { bailedOut, koreanStatus } from "../test-state";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { TestEventNoMs } from "./types";
+import { EventLog, TestEventNoMs } from "./types";
 import { Config } from "../../config/store";
 import { isFunboxActiveWithProperty } from "../funbox/list";
 import Hangul from "hangul-js";
@@ -307,14 +307,14 @@ function inferActiveWordIndex(
   return maxWordIndex;
 }
 
-export function getChars(): CharCounts {
-  const isTimedTest =
-    Config.mode === "time" ||
-    (Config.mode === "words" && Config.words === 0) ||
-    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  const lastWordIndex = isTimedTest
-    ? activeWordIndex
-    : TestWords.words.list.length - 1;
+export function getChars(eventLog: EventLog): CharCounts {
+  const { events } = eventLog;
+  const { isTimedTest, bailedOut } = eventLog.context;
+
+  const eventsPerWord = getEventsPerWord(events);
+  const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+  const countPartial = isTimedTest || bailedOut;
 
   const acc: CharCounts = {
     allCorrect: 0,
@@ -324,9 +324,14 @@ export function getChars(): CharCounts {
     missed: 0,
   };
 
-  for (const [wordIndex, events] of getEventsPerWord()) {
+  for (const [wordIndex, wordEvents] of eventsPerWord) {
     const lastWord = wordIndex === lastWordIndex;
-    const c = countCharsForWordIndex(wordIndex, events, lastWord, isTimedTest);
+    const c = countCharsForWordIndex(
+      wordIndex,
+      wordEvents,
+      lastWord,
+      countPartial,
+    );
     acc.allCorrect += c.allCorrect;
     acc.correctWord += c.correctWord;
     acc.incorrect += c.incorrect;
@@ -340,7 +345,7 @@ export function getChars(): CharCounts {
 }
 
 export function getInputHistory(): string[] {
-  const eventsPerWordIndex = getEventsPerWord();
+  const eventsPerWordIndex = getEventsPerWord(getAllTestEvents());
   const history: string[] = [];
 
   for (const [wordIndex, events] of eventsPerWordIndex) {
@@ -729,4 +734,5 @@ export function getKeypressDurations(): number[] {
 export const __testing = {
   getTimerBoundaries,
   getTargetWord,
+  inferActiveWordIndex,
 };
