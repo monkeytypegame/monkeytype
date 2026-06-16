@@ -833,7 +833,12 @@ export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
         event.data.inputType === "insertText" ||
         event.data.inputType === "insertCompositionText"
       ) {
-        if (event.data.inputStopped || event.data.data === " ") continue;
+        if (
+          event.data.inputStopped ||
+          (event.data.data === " " && event.data.commitsWord)
+        ) {
+          continue;
+        }
         currentChars[cursorPos] = event.data.data;
         cursorPos++;
       } else if (event.data.inputType === "deleteContentBackward") {
