@@ -94,7 +94,7 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong") {
+  if (result.chartData === "toolong" || TestState.lastEventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
     ChartController.result.getDataset("burst").data = [];
@@ -122,8 +122,7 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  //todo: build event log is probably not a good idea here
-  const chartData2 = getRawHistory(buildEventLog()).map((a) =>
+  const chartData2 = getRawHistory(TestState.lastEventLog).map((a) =>
     Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
   );
 
