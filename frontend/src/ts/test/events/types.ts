@@ -120,3 +120,16 @@ export type CompositionTestEventData =
       data: string;
       wordIndex: number;
     };
+
+export type EventLogContext = {
+  targetWords: string[];
+  isTimedTest: boolean;
+  bailedOut: boolean;
+};
+
+export const EVENT_LOG_VERSION = 1;
+export type EventLog = {
+  version: typeof EVENT_LOG_VERSION;
+  events: TestEventNoMs[];
+  context: EventLogContext;
+};

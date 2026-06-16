@@ -104,6 +104,7 @@ import {
   logEventsDataToTheConsoleTable,
   getAllTestEvents,
   forceReleaseAllKeys,
+  buildEventLog,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -1390,7 +1391,9 @@ function compareCompletedEvents(
 }
 
 function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
-  const chars = getChars();
+  const eventLog = buildEventLog();
+
+  const chars = getChars(eventLog);
 
   //tags
   const activeTagsIds: string[] = __nonReactive

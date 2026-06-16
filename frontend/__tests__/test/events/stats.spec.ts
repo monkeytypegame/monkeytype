@@ -42,8 +42,10 @@ import {
   resetTestEvents,
   getAllTestEvents,
   cleanupData,
+  buildEventLog,
   __testing,
 } from "../../../src/ts/test/events/data";
+import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
@@ -863,7 +865,7 @@ describe("stats.ts", () => {
         );
       }
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(5);
       expect(chars.correctWord).toBe(5);
       expect(chars.incorrect).toBe(0);
@@ -887,7 +889,7 @@ describe("stats.ts", () => {
         input({ charIndex: 1, wordIndex: 0, data: "x", correct: false }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(1);
       expect(chars.incorrect).toBe(1);
     });
@@ -913,7 +915,7 @@ describe("stats.ts", () => {
         input({ charIndex: 2, wordIndex: 0, data: "c" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.extra).toBe(1);
     });
 
@@ -955,7 +957,7 @@ describe("stats.ts", () => {
         input({ charIndex: 0, wordIndex: 1, data: "w" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       // word 0: "hel " vs "hello " → 3 correct, 1 incorrect, 2 missed
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
@@ -1094,6 +1096,150 @@ describe("stats.ts", () => {
       // word 1: "world" (last word) matches → 5 correctWord
       // 11 chars in 1s = (11/5)*60 = 132
       expect(wpm).toEqual([132]);
+    });
+  });
+
+  describe("inferActiveWordIndex", () => {
+    it("returns 0 when no word has input", () => {
+      const eventsPerWord = new Map();
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("returns 0 when entries exist but none have input", () => {
+      // word events present but all input data is empty / inputValue=""
+      logTestEvent(
+        "input",
+        1000,
+        input({ wordIndex: 0, data: "", inputValue: "" }),
+      );
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("returns max wordIndex when last word has no committed space", () => {
+      // word 0: "hi"
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      // space commit on word 0
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
+      // word 1: "yo" (no trailing space)
+      logTestEvent("input", 1200, input({ wordIndex: 1, data: "y" }));
+      logTestEvent(
+        "input",
+        1250,
+        input({ wordIndex: 1, charIndex: 1, data: "o" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+
+    it("advances past last word when trailing space was committed", () => {
+      // word 0: "hi "
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+
+    it("does not advance when last event is a non-space insert", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("does not advance when last event is a backspace", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("picks max wordIndex across non-contiguous buckets (post-regression order)", () => {
+      // simulates a backspace that crosses back into word 0 AFTER word 1 events.
+      // Map insertion order is still 0, 1 (word 0 was set first), so the loop
+      // must compute true max by key, not by iteration position.
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          data: " ",
+          commitsWord: true,
+          inputValue: "h ",
+        }),
+      );
+      logTestEvent("input", 1100, input({ wordIndex: 1, data: "y" }));
+      // backspace lands a destination event back into word 0
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      // word 1 has input "y" (no trailing space) → max is 1, no advance
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
     });
   });
 });
