@@ -65,6 +65,7 @@ import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
+import { buildEventLog } from "../test/events/data";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -274,7 +275,11 @@ export const result = new ChartWithUpdateColors<
             prevTi = ti;
             try {
               const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              const wordsToHighlight = getWordIndexesForSecond(keypressIndex);
+              //TODO: THIS WILL BE SLOW AF
+              const wordsToHighlight = getWordIndexesForSecond(
+                buildEventLog(),
+                keypressIndex,
+              );
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];

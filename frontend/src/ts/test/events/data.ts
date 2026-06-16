@@ -1,6 +1,8 @@
 import {
   CompositionTestEvent,
   CompositionTestEventData,
+  EVENT_LOG_VERSION,
+  EventLog,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -13,10 +15,38 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
-import { getInputFromDom, keysToTrack } from "./helpers";
+import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { activeWordIndex, resultCalculating } from "../test-state";
+import {
+  bailedOut,
+  koreanStatus,
+  activeWordIndex,
+  resultCalculating,
+} from "../test-state";
+import * as TestWords from "../test-words";
+import { Config } from "../../config/store";
+import * as CustomText from "../../test/custom-text";
+import { getMode2 } from "../../utils/misc";
+import { getCurrentQuote } from "../../states/test";
+import { isFunboxActiveWithProperty } from "../funbox/active";
+
+export function buildEventLog(): EventLog {
+  return {
+    version: EVENT_LOG_VERSION,
+    events: getAllTestEvents(),
+    context: {
+      targetWords: [...TestWords.words.list],
+      mode: Config.mode,
+      mode2: getMode2(Config, getCurrentQuote()),
+      customTextLimitMode: CustomText.getLimit().mode,
+      customTextLimitValue: CustomText.getLimit().value,
+      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+      koreanStatus: koreanStatus,
+      bailedOut: bailedOut,
+    },
+  };
+}
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -171,11 +201,13 @@ export function getCurrentInput(): string {
     }
   }
 
-  return getInputFromDom(getEventsForWord(activeWordIndex));
+  return getInputFromDom(getEventsForWord(getAllTestEvents(), activeWordIndex));
 }
 
 export function getInputForWord(wordIndex: number): string {
-  return getInputFromDom(getEventsForWord(wordIndex)).trimEnd();
+  return getInputFromDom(
+    getEventsForWord(getAllTestEvents(), wordIndex),
+  ).trimEnd();
 }
 
 export function cleanupData(): void {
@@ -344,50 +376,6 @@ export function getPressedKeys(): Map<
   { timestamp: number }
 > {
   return pressedKeys;
-}
-
-export function getEventsForWord(wordIndex: number): TestEventNoMs[] {
-  const events = getAllTestEvents();
-  const result: TestEventNoMs[] = [];
-  for (const event of events) {
-    if (!("wordIndex" in event.data)) continue;
-    if (event.data.wordIndex === wordIndex) {
-      result.push(event);
-    }
-  }
-  return result;
-}
-
-export function getEventsPerWord(
-  startMs?: number,
-  testMsLimit?: number,
-): Map<number, TestEventNoMs[]> {
-  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
-  const events = getAllTestEvents();
-  for (const event of events) {
-    if (!("wordIndex" in event.data)) {
-      continue;
-    }
-
-    if (startMs !== undefined && event.testMs < startMs) {
-      continue;
-    }
-
-    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
-      break;
-    }
-
-    const wordIndex = event.data.wordIndex;
-
-    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
-    existing.push(event);
-    eventsPerWordIndex.set(wordIndex, existing);
-  }
-  return eventsPerWordIndex;
-}
-
-export function getTimerStartEventMs(): number | undefined {
-  return timerEvents.find((e) => e.data.event === "start")?.ms;
 }
 
 export function forceReleaseAllKeys(): void {

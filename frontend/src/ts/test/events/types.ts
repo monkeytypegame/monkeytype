@@ -1,8 +1,11 @@
+import { Config } from "@monkeytype/schemas/configs";
 import { Keycode } from "../../constants/keys";
 import {
   DeleteInputType,
   InsertInputType,
 } from "../../input/helpers/input-type";
+import { CustomTextLimitMode } from "@monkeytype/schemas/util";
+import { getMode2 } from "../../utils/misc";
 
 export type TestEventType =
   | "keydown"
@@ -121,3 +124,22 @@ export type CompositionTestEventData =
       data: string;
       wordIndex: number;
     };
+
+export type EventLogContext = {
+  targetWords: string[];
+  // isTimedTest: boolean;
+  mode: Config["mode"];
+  mode2: ReturnType<typeof getMode2>;
+  customTextLimitMode: CustomTextLimitMode;
+  customTextLimitValue: number;
+  bailedOut: boolean;
+  isFunboxWithNospacePropertyActive: boolean;
+  koreanStatus: boolean;
+};
+
+export const EVENT_LOG_VERSION = 1;
+export type EventLog = {
+  version: typeof EVENT_LOG_VERSION;
+  events: TestEventNoMs[];
+  context: EventLogContext;
+};

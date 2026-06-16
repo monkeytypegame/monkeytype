@@ -96,6 +96,7 @@ import {
   cleanupData,
   logEventsDataToTheConsoleTable,
   forceReleaseAllKeys,
+  buildEventLog,
 } from "./events/data";
 import {
   getKeypressDurations,
@@ -118,6 +119,7 @@ import {
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
+import { EventLog } from "./events/types";
 
 let failReason = "";
 
@@ -278,9 +280,9 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
+    if (Config.resultSaving && TestState.lastEventLog !== null) {
       const testSeconds = getCurrentTestDurationMs(performance.now()) / 1000;
-      const afkseconds = getAfkDuration();
+      const afkseconds = getAfkDuration(TestState.lastEventLog);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = Numbers.roundTo2(getCurrentAccuracy());
@@ -766,8 +768,10 @@ export async function retrySavingResult(): Promise<void> {
   await saveResult(completedEvent, true);
 }
 
-function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
-  const chars = getChars();
+function buildCompletedEvent(
+  eventLog: EventLog,
+): Omit<CompletedEvent, "hash" | "uid"> {
+  const chars = getChars(eventLog);
 
   //tags
   const activeTagsIds: string[] = __nonReactive
@@ -790,10 +794,10 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
     };
   }
 
-  let duration = getTestDurationMs() / 1000;
+  let duration = getTestDurationMs(eventLog) / 1000;
 
-  const rawPerSecond = getBurstHistory();
-  const afkDuration = getAfkDuration();
+  const rawPerSecond = getBurstHistory(eventLog);
+  const afkDuration = getAfkDuration(eventLog);
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
   let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
@@ -801,7 +805,7 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
     consistency = 0;
   }
 
-  const keypressSpacing = getKeypressSpacing();
+  const keypressSpacing = getKeypressSpacing(eventLog);
 
   let keyConsistencyArray = [...keypressSpacing];
   if (keypressSpacing.length > 0) {
@@ -817,7 +821,7 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
     keyConsistency = 0;
   }
 
-  const wpmHistory = getWpmHistory();
+  const wpmHistory = getWpmHistory(eventLog);
   const wpmCons = Numbers.roundTo2(
     Numbers.kogasa(Numbers.stdDev(wpmHistory) / Numbers.mean(wpmHistory)),
   );
@@ -826,7 +830,7 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
   const chartData = {
     wpm: wpmHistory,
     burst: rawPerSecond,
-    err: getErrorCountHistory(),
+    err: getErrorCountHistory(eventLog),
   };
 
   const currentQuote = getCurrentQuote();
@@ -837,11 +841,11 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
     ),
     charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
     charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy().percentage),
+    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage),
     language: language,
     testDuration: duration,
-    lastKeyToEnd: getLastKeypressToEndMs(),
-    startToFirstKey: getStartToFirstKeypressMs(),
+    lastKeyToEnd: getLastKeypressToEndMs(eventLog),
+    startToFirstKey: getStartToFirstKeypressMs(eventLog),
     afkDuration: afkDuration,
     quoteLength: currentQuote?.group ?? -1,
     customText: customText,
@@ -868,8 +872,8 @@ function buildCompletedEvent(): Omit<CompletedEvent, "hash" | "uid"> {
     chartData: chartData,
 
     keySpacing: keypressSpacing,
-    keyDuration: getKeypressDurations(),
-    keyOverlap: getKeypressOverlap(),
+    keyDuration: getKeypressDurations(eventLog),
+    keyOverlap: getKeypressOverlap(eventLog),
   } as Omit<CompletedEvent, "hash" | "uid">;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
@@ -913,7 +917,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     logEventsDataToTheConsoleTable();
   }
 
-  const ce = buildCompletedEvent();
+  const eventLog = buildEventLog();
+  const ce = buildCompletedEvent(eventLog);
   PaceCaret.setLastTestWpm(ce.wpm);
 
   console.debug("Completed event object", ce);
@@ -945,12 +950,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
+  TestState.setLastEventLog(eventLog);
   setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready
 
   //afk check
-  let afkDetected = getKeypressesPerSecond()
+  let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .some((kps) => kps === 0);
   if (TestState.bailedOut) afkDetected = false;
@@ -1060,11 +1066,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      getInputHistory().length < TestWords.words.length
+      getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
 
-      const history = getInputHistory();
+      const history = getInputHistory(eventLog);
       let historyLength = history?.length;
       const wordIndex = historyLength - 1;
 

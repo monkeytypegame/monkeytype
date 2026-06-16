@@ -22,7 +22,6 @@ import * as getErrorMessage from "../utils/error";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
-import * as TestWords from "../test/test-words";
 import {
   showErrorNotification,
   clearAllNotifications,
@@ -40,7 +39,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { getAllTestEvents } from "../test/events/data";
+import { buildEventLog } from "../test/events/data";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -291,18 +290,13 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "copyResultStats",
-      display: "Copy result data",
+      display: "Copy event log (result data)",
       alias: "stats events",
       icon: "fa-cog",
       visible: false,
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(
-            JSON.stringify({
-              events: getAllTestEvents(),
-              words: TestWords.words.list,
-            }),
-          )
+          .writeText(JSON.stringify(buildEventLog()))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

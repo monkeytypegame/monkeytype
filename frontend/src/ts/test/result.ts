@@ -59,6 +59,7 @@ import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { getCurrentQuote, isTestInvalid } from "../states/test";
 import { getAccuracy, getRawHistory } from "./events/stats";
+import { buildEventLog } from "./events/data";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -121,7 +122,8 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = getRawHistory().map((a) =>
+  //todo: build event log is probably not a good idea here
+  const chartData2 = getRawHistory(buildEventLog()).map((a) =>
     Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
   );
 
@@ -343,7 +345,7 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  const acc = getAccuracy();
+  const acc = getAccuracy(buildEventLog());
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit !== "wpm") {
       qs("#result .stats .wpm .bottom")?.setAttribute(

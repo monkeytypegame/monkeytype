@@ -14,7 +14,7 @@ import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
 import { getWordBurst } from "../../test/events/stats";
-import { getInputForWord } from "../../test/events/data";
+import { buildEventLog, getInputForWord } from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -51,7 +51,7 @@ export async function goToNextWord({
   }
 
   if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
-    const burst = getWordBurst(TestState.activeWordIndex, now);
+    const burst = getWordBurst(buildEventLog(), TestState.activeWordIndex, now);
     ret.lastBurst = burst;
   }
 

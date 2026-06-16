@@ -3,7 +3,11 @@ import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
 import { Config } from "../config/store";
 import * as TestWords from "./test-words";
-import { getAllTestEvents, getInputForWord } from "./events/data";
+import {
+  buildEventLog,
+  getAllTestEvents,
+  getInputForWord,
+} from "./events/data";
 import { getInputHistory, getWpmHistory } from "./events/stats";
 
 type ReplayAction =
@@ -36,7 +40,7 @@ const toggleButton = (): Element | undefined =>
 const replayEl = qsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
-  if (Config.mode === "zen") return getInputHistory();
+  if (Config.mode === "zen") return getInputHistory(buildEventLog());
   return TestWords.words.list.slice();
 }
 
@@ -270,7 +274,7 @@ function toggleReplayDisplay(): void {
 function refreshReplayFromEvents(): void {
   wordsList = getWordsList();
   replayData = deriveReplayActions();
-  wpmHistory = getWpmHistory();
+  wpmHistory = getWpmHistory(buildEventLog());
   targetCurPos = 0;
   targetWordPos = 0;
 }
