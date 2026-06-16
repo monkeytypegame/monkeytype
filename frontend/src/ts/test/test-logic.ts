@@ -279,11 +279,11 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving && TestState.lastEventLog !== null) {
+    if (Config.resultSaving) {
       const liveEventLog = buildEventLog();
       const testSeconds =
         getLiveTestDurationMs(liveEventLog, performance.now()) / 1000;
-      const afkseconds = getAfkDuration(TestState.lastEventLog);
+      const afkseconds = getAfkDuration(liveEventLog);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       const acc = Numbers.roundTo2(getLiveAccuracy(liveEventLog));
