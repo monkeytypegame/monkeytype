@@ -168,8 +168,8 @@ export function DevOptionsModal(): JSXElement {
     },
     {
       icon: "fa-vials",
-      label: () => "Test Data Preview",
-      onClick: () => showModal("TestDataPreview"),
+      label: () => "Event Log Viewer",
+      onClick: () => showModal("EventLogViewer"),
     },
   ];
 
