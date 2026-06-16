@@ -9,6 +9,7 @@ import {
   KeydownEventData,
   KeyupEvent,
   KeyupEventData,
+  TestEvent,
   TestEventData,
   TestEventNoMs,
   TestEventType,
@@ -272,20 +273,31 @@ export function getAllTestEvents(): TestEventNoMs[] {
   const startEventMs =
     timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
 
-  // cachedAllEvents = testData300;
-  // return cachedAllEvents;
-  cachedAllEvents = [
-    ...keydownEvents,
-    ...keyupEvents,
-    ...timerEvents,
-    ...inputEvents,
-    ...compositionEvents,
-  ]
+  const total =
+    keydownEvents.length +
+    keyupEvents.length +
+    timerEvents.length +
+    inputEvents.length +
+    compositionEvents.length;
+
+  const merged = new Array<TestEvent>(total);
+  let p = 0;
+  for (const e of keydownEvents) merged[p++] = e;
+  for (const e of keyupEvents) merged[p++] = e;
+  for (const e of timerEvents) merged[p++] = e;
+  for (const e of inputEvents) merged[p++] = e;
+  for (const e of compositionEvents) merged[p++] = e;
+
+  cachedAllEvents = merged
     .sort((a, b) => a.ms - b.ms || sortTieRank(a.type) - sortTieRank(b.type))
-    .map(({ ms, ...rest }) => ({
-      ...rest,
-      testMs: roundTo2(ms - startEventMs),
-    }));
+    .map(
+      (event) =>
+        ({
+          type: event.type,
+          testMs: roundTo2(event.ms - startEventMs),
+          data: event.data,
+        }) as TestEventNoMs,
+    );
 
   return cachedAllEvents;
 }
