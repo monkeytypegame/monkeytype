@@ -7,6 +7,7 @@ import { restartTestEvent } from "../../events/test";
 import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
+import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 
@@ -68,8 +69,7 @@ export function CustomWordAmountModal(): JSXElement {
         <div class="text-xs">
           You can start an infinite test by inputting 0. Then, to stop the test,
           use the Bail Out feature:
-          <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
-          <kbd>p</kbd> &gt; Bail Out)
+          <br />(<CommandlineHotkey /> &gt; Bail Out)
         </div>
         <SubmitButton
           form={form}
