@@ -33,19 +33,25 @@ import { getCurrentQuote } from "../../states/test";
 import { isFunboxActiveWithProperty } from "../funbox/active";
 
 export function buildEventLog(): EventLog {
+  const context = {
+    targetWords: [...TestWords.words.list],
+    mode: Config.mode,
+    mode2: getMode2(Config, getCurrentQuote()),
+    koreanStatus: koreanStatus,
+    bailedOut: bailedOut,
+    ...(Config.mode === "custom" && {
+      customTextLimitMode: CustomText.getLimit().mode,
+      customTextLimitValue: CustomText.getLimit().value,
+    }),
+    ...(Config.funbox.length !== 0 && {
+      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+    }),
+  };
+
   return {
     version: EVENT_LOG_VERSION,
     events: getAllTestEvents(),
-    context: {
-      targetWords: [...TestWords.words.list],
-      mode: Config.mode,
-      mode2: getMode2(Config, getCurrentQuote()),
-      customTextLimitMode: CustomText.getLimit().mode,
-      customTextLimitValue: CustomText.getLimit().value,
-      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
-      koreanStatus: koreanStatus,
-      bailedOut: bailedOut,
-    },
+    context,
   };
 }
 
