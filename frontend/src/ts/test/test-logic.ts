@@ -959,7 +959,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //afk check
   let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
-    .some((kps) => kps === 0);
+    .every((kps) => kps === 0);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
