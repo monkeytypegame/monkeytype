@@ -59,7 +59,6 @@ import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { getCurrentQuote, isTestInvalid } from "../states/test";
 import { getAccuracy, getRawHistory } from "./events/stats";
-import { buildEventLog } from "./events/data";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -344,60 +343,65 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  const acc = getAccuracy(buildEventLog());
-  if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit !== "wpm") {
-      qs("#result .stats .wpm .bottom")?.setAttribute(
+  if (TestState.lastEventLog !== null) {
+    const acc = getAccuracy(TestState.lastEventLog);
+    if (Config.alwaysShowDecimalPlaces) {
+      if (Config.typingSpeedUnit !== "wpm") {
+        qs("#result .stats .wpm .bottom")?.setAttribute(
+          "aria-label",
+          `${result.wpm.toFixed(2)} wpm`,
+        );
+        qs("#result .stats .raw .bottom")?.setAttribute(
+          "aria-label",
+          `${result.rawWpm.toFixed(2)} wpm`,
+        );
+      } else {
+        qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
+        qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
+      }
+
+      let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
+      if (result.testDuration > 61) {
+        time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+      }
+      qs("#result .stats .time .bottom .text")?.setText(time);
+      // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+
+      qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        `${result.wpm.toFixed(2)} wpm`,
-      );
-      qs("#result .stats .raw .bottom")?.setAttribute(
-        "aria-label",
-        `${result.rawWpm.toFixed(2)} wpm`,
+        `${acc.correct} correct\n${acc.incorrect} incorrect`,
       );
     } else {
-      qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
-      qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
-    }
+      //not showing decimal places
+      const decimalsAndSuffix = {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      };
+      let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+      let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-    // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+      if (Config.typingSpeedUnit !== "wpm") {
+        wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
+        rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
+      }
 
-    qs("#result .stats .acc .bottom")?.setAttribute(
-      "aria-label",
-      `${acc.correct} correct\n${acc.incorrect} incorrect`,
-    );
-  } else {
-    //not showing decimal places
-    const decimalsAndSuffix = {
-      showDecimalPlaces: true,
-      suffix: ` ${Config.typingSpeedUnit}`,
-    };
-    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
-
-    if (Config.typingSpeedUnit !== "wpm") {
-      wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
-      rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
-    }
-
-    qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
-
-    qs("#result .stats .acc .bottom")
-      ?.setAttribute(
+      qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
+      qs("#result .stats .raw .bottom")?.setAttribute(
         "aria-label",
-        `${
-          result.acc === 100
-            ? "100%"
-            : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
-      )
-      ?.setAttribute("data-balloon-break", "");
+        rawWpmHover,
+      );
+
+      qs("#result .stats .acc .bottom")
+        ?.setAttribute(
+          "aria-label",
+          `${
+            result.acc === 100
+              ? "100%"
+              : Format.percentage(result.acc, { showDecimalPlaces: true })
+          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+        )
+        ?.setAttribute("data-balloon-break", "");
+    }
   }
 }
 
