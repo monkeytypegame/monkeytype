@@ -12,7 +12,6 @@ import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
-import { buildEventLog } from "../../test/events/data";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -140,7 +139,12 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      const inputHistory = getInputHistory(buildEventLog());
+      if (TestState.lastEventLog === null) {
+        showErrorNotification("No event log found!");
+        return;
+      }
+
+      const inputHistory = getInputHistory(TestState.lastEventLog);
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
