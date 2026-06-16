@@ -129,10 +129,10 @@ export type EventLogContext = {
   // isTimedTest: boolean;
   mode: Config["mode"];
   mode2: ReturnType<typeof getMode2>;
-  customTextLimitMode: CustomTextLimitMode;
-  customTextLimitValue: number;
+  customTextLimitMode?: CustomTextLimitMode;
+  customTextLimitValue?: number;
+  isFunboxWithNospacePropertyActive?: boolean;
   bailedOut: boolean;
-  isFunboxWithNospacePropertyActive: boolean;
   koreanStatus: boolean;
 };
 
