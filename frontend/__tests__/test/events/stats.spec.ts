@@ -1552,5 +1552,42 @@ describe("stats.ts", () => {
       expect(result[0]).toEqual("ab");
       expect(result[1]).toEqual("xy");
     });
+
+    it("ignores the space that commits a word", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // committing space — must not appear in the corrected word
+      logTestEvent(
+        "input",
+        1300,
+        input({
+          charIndex: 4,
+          wordIndex: 0,
+          data: " ",
+          commitsWord: true,
+        }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
+    });
   });
 });
