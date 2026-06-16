@@ -586,7 +586,7 @@ async function updateLegends(): Promise<void> {
 
     const keycode = KeyConverter.layoutKeyToKeycode(lowerCaseCharacter, layout);
     if (keycode === undefined) {
-      return;
+      continue;
     }
     const oppositeShift = ShiftTracker.isUsingOppositeShift(keycode);
 
