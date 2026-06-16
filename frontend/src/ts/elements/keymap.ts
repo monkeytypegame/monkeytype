@@ -279,9 +279,7 @@ function buildRow(options: {
         // potential second space in next loop iterations will be empty:
         layoutDisplay = "";
       } else {
-        keysHtml += `<div class="keymapKey ${side}" data-key="${key
-          .map((it) => it.replace('"', "&quot;"))
-          .join(keyDataDelimiter)}">
+        keysHtml += `<div class="keymapKey ${side}" data-key="${keyVisualValue.join(keyDataDelimiter)}">
               <div class="letter">${keyDisplay}</div>
             </div>`;
         r5Grid += "1";
