@@ -1,6 +1,8 @@
 import {
   CompositionTestEvent,
   CompositionTestEventData,
+  EVENT_LOG_VERSION,
+  EventLog,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -15,8 +17,26 @@ import {
 } from "./types";
 import { keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
-import { roundTo2 } from "@monkeytype/util/numbers";
-import { resultCalculating } from "../test-state";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { bailedOut, resultCalculating } from "../test-state";
+import * as TestWords from "../test-words";
+import { Config } from "../../config/store";
+import * as CustomText from "../../test/custom-text";
+
+export function buildEventLog(): EventLog {
+  return {
+    version: EVENT_LOG_VERSION,
+    events: getAllTestEvents(),
+    context: {
+      targetWords: [...TestWords.words.list],
+      isTimedTest:
+        Config.mode === "time" ||
+        (Config.mode === "words" && Config.words === 0) ||
+        (Config.mode === "custom" && CustomText.getLimit().mode === "time"),
+      bailedOut: bailedOut,
+    },
+  };
+}
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -323,32 +343,28 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getEventsPerWord(
-  startMs?: number,
-  testMsLimit?: number,
-): Map<number, TestEventNoMs[]> {
-  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
-  const events = getAllTestEvents();
-  for (const event of events) {
-    if (!("wordIndex" in event.data)) {
-      continue;
-    }
+export function forceReleaseAllKeys(): void {
+  const keydownMsByCode = new Map<string, number>();
+  for (const e of keydownEvents) keydownMsByCode.set(e.data.code, e.ms);
 
-    if (startMs !== undefined && event.testMs < startMs) {
-      continue;
-    }
-
-    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
-      break;
-    }
-
-    const wordIndex = event.data.wordIndex;
-
-    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
-    existing.push(event);
-    eventsPerWordIndex.set(wordIndex, existing);
+  const durations: number[] = [];
+  for (const e of keyupEvents) {
+    const downMs = keydownMsByCode.get(e.data.code);
+    if (downMs === undefined) continue;
+    const d = e.ms - downMs;
+    if (d > 0) durations.push(d);
+    keydownMsByCode.delete(e.data.code);
   }
-  return eventsPerWordIndex;
+
+  // empty → test ended with all keys still held; will be "too short" anyway, magic number is fine
+  const avg = durations.length === 0 ? 80 : roundTo2(mean(durations));
+
+  for (const [key, { timestamp }] of pressedKeys.entries()) {
+    logTestEvent("keyup", timestamp + avg, {
+      code: key, //entries is not picking up the type
+      estimated: true,
+    });
+  }
 }
 
 export const __testing = {

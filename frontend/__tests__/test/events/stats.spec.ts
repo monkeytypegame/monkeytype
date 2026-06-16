@@ -42,12 +42,14 @@ import {
   resetTestEvents,
   getAllTestEvents,
   cleanupData,
+  buildEventLog,
   __testing,
 } from "../../../src/ts/test/events/data";
+import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
-  getRawPerSecond,
+  getBurstHistory,
   getTestDurationMs,
   getAccuracy,
   getKeypressSpacing,
@@ -59,7 +61,6 @@ import {
   getChars,
   getInputHistory,
   getWpmHistory,
-  forceReleaseAllKeys,
   __testing as statsTesting,
 } from "../../../src/ts/test/events/stats";
 import type {
@@ -431,11 +432,11 @@ describe("stats.ts", () => {
     });
   });
 
-  describe("getRawPerSecond", () => {
+  describe("getBurstHistory", () => {
     it("converts keypresses to WPM using real interval duration", () => {
       setupBasicTest();
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory();
       // 3 keypresses in 1s = (3/5)*60 = 36 WPM
       expect(raw[0]).toBe(36);
       // 2 keypresses in 1s = (2/5)*60 = 24 WPM
@@ -455,7 +456,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2000, timer("end", 1));
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory();
       expect(raw).toEqual([12]); // 1 keypress in 1s
     });
   });
@@ -864,7 +865,7 @@ describe("stats.ts", () => {
         );
       }
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(5);
       expect(chars.correctWord).toBe(5);
       expect(chars.incorrect).toBe(0);
@@ -888,7 +889,7 @@ describe("stats.ts", () => {
         input({ charIndex: 1, wordIndex: 0, data: "x", correct: false }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(1);
       expect(chars.incorrect).toBe(1);
     });
@@ -914,7 +915,7 @@ describe("stats.ts", () => {
         input({ charIndex: 2, wordIndex: 0, data: "c" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.extra).toBe(1);
     });
 
@@ -956,7 +957,7 @@ describe("stats.ts", () => {
         input({ charIndex: 0, wordIndex: 1, data: "w" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       // word 0: "hel " vs "hello " → 3 correct, 1 incorrect, 2 missed
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
@@ -1098,73 +1099,147 @@ describe("stats.ts", () => {
     });
   });
 
-  describe("forceReleaseAllKeys", () => {
-    it("creates synthetic keyup events for pressed keys", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS is still held
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyups = events.filter(
-        (e) => e.type === "keyup" && e.data.code === "KeyS",
-      );
-      expect(keyups.length).toBe(1);
-      expect((keyups[0] as { data: { estimated?: true } }).data.estimated).toBe(
-        true,
-      );
+  describe("inferActiveWordIndex", () => {
+    it("returns 0 when no word has input", () => {
+      const eventsPerWord = new Map();
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
     });
 
-    it("uses average duration for estimated keyup timing", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      // KeyA held for 80ms
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS held for 120ms
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-      logTestEvent("keyup", 1320, keyUp("KeyS"));
-      // KeyD still held at 1400
-      logTestEvent("keydown", 1400, keyDown("KeyD"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyD",
+    it("returns 0 when entries exist but none have input", () => {
+      // word events present but all input data is empty / inputValue=""
+      logTestEvent(
+        "input",
+        1000,
+        input({ wordIndex: 0, data: "", inputValue: "" }),
       );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500, testMs = 1500 - 1000 = 500
-      expect(keyup).toBeDefined();
-      expect(keyup?.testMs).toBe(500);
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
     });
 
-    it("uses default 80ms when no completed key durations exist", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1200, keyDown("KeyA"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyA",
+    it("returns max wordIndex when last word has no committed space", () => {
+      // word 0: "hi"
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
       );
-      expect(keyup).toBeDefined();
-      expect(keyup?.testMs).toBe(280);
+      // space commit on word 0
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
+      // word 1: "yo" (no trailing space)
+      logTestEvent("input", 1200, input({ wordIndex: 1, data: "y" }));
+      logTestEvent(
+        "input",
+        1250,
+        input({ wordIndex: 1, charIndex: 1, data: "o" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
     });
 
-    it("does nothing when no keys are pressed", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
+    it("advances past last word when trailing space was committed", () => {
+      // word 0: "hi "
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
 
-      // const beforeCount = getAllTestEvents().length;
-      forceReleaseAllKeys();
-      // cache invalidated, re-get
-      resetTestEvents();
-      // no new events should have been added — but we can't easily check after reset
-      // so instead verify no error is thrown
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+
+    it("does not advance when last event is a non-space insert", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("does not advance when last event is a backspace", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("picks max wordIndex across non-contiguous buckets (post-regression order)", () => {
+      // simulates a backspace that crosses back into word 0 AFTER word 1 events.
+      // Map insertion order is still 0, 1 (word 0 was set first), so the loop
+      // must compute true max by key, not by iteration position.
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          data: " ",
+          commitsWord: true,
+          inputValue: "h ",
+        }),
+      );
+      logTestEvent("input", 1100, input({ wordIndex: 1, data: "y" }));
+      // backspace lands a destination event back into word 0
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      // word 1 has input "y" (no trailing space) → max is 1, no advance
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
     });
   });
 });
