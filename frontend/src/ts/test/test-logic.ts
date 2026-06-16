@@ -110,13 +110,12 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
-  getCurrentAccuracy,
-  getCurrentTestDurationMs,
   getDateBasedTestDurationMs,
   getInputHistory,
   getKeypressesPerSecond,
   getKeypressSpacing,
 } from "./events/stats";
+import { getLiveAccuracy, getLiveTestDurationMs } from "./events/live-stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
@@ -281,11 +280,13 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving && TestState.lastEventLog !== null) {
-      const testSeconds = getCurrentTestDurationMs(performance.now()) / 1000;
+      const liveEventLog = buildEventLog();
+      const testSeconds =
+        getLiveTestDurationMs(liveEventLog, performance.now()) / 1000;
       const afkseconds = getAfkDuration(TestState.lastEventLog);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      const acc = Numbers.roundTo2(getCurrentAccuracy());
+      const acc = Numbers.roundTo2(getLiveAccuracy(liveEventLog));
       pushIncompleteTest({ acc, seconds: tt });
     }
   }
@@ -965,7 +966,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let tooShort = false;
   //fail checks
-  const dateDur = getDateBasedTestDurationMs() / 1000;
+  const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
     !TestState.bailedOut &&

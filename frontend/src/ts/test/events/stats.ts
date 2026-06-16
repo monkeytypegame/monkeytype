@@ -1,12 +1,6 @@
-import { getAllTestEvents } from "./data";
 import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
-import {
-  getEventsForWord,
-  getEventsPerWord,
-  getInputFromDom,
-  getTimerStartEventMs,
-} from "./helpers";
+import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
@@ -204,17 +198,6 @@ export function getBurstHistory(eventLog: EventLog): number[] {
   });
 }
 
-export function getCurrentTestDurationMs(now: number): number {
-  const events = getAllTestEvents();
-  const start = getTimerStartEventMs(events);
-
-  if (start === undefined) {
-    return 0;
-  }
-
-  return now - start;
-}
-
 export function getTestDurationMs(eventLog: EventLog): number {
   const { events } = eventLog;
 
@@ -256,13 +239,11 @@ export function getTestDurationMs(eventLog: EventLog): number {
   return end;
 }
 
-export function getDateBasedTestDurationMs(): number {
-  const events = getAllTestEvents();
-
+export function getDateBasedTestDurationMs(eventLog: EventLog): number {
   let start: number | undefined;
   let end: number | undefined;
 
-  for (const event of events) {
+  for (const event of eventLog.events) {
     if (
       start === undefined &&
       event.type === "timer" &&
@@ -318,47 +299,6 @@ function getTargetWord(
 
     return word + wordEnd;
   }
-}
-
-export function getCurrentWpmAndRaw(
-  eventLog: EventLog,
-  now?: number,
-): {
-  wpm: number;
-  raw: number;
-} {
-  const chars = getChars(eventLog, true);
-  const currentTestDurationMs = getCurrentTestDurationMs(
-    now ?? performance.now(),
-  );
-  const wpm = Math.round(
-    calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
-  );
-  const raw = Math.round(
-    calculateWpm(
-      chars.allCorrect + chars.extra + chars.incorrect,
-      currentTestDurationMs / 1000,
-    ),
-  );
-  return { wpm, raw };
-}
-
-export function getCurrentAccuracy(): number {
-  const events = getAllTestEvents();
-
-  let correct = 0;
-  let total = 0;
-
-  for (const event of events) {
-    if (event.type === "input" && "correct" in event.data) {
-      total++;
-      if (event.data.correct) {
-        correct++;
-      }
-    }
-  }
-
-  return total === 0 ? 100 : (correct / total) * 100;
 }
 
 function computeBurst(events: TestEventNoMs[], now?: number): number {
@@ -857,15 +797,13 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
   return durations;
 }
 
-export function getMissedWords(): Record<string, number> {
-  const events = getAllTestEvents();
-
+export function getMissedWords(eventLog: EventLog): Record<string, number> {
   const missedWords: Record<string, number> = Object.create(null) as Record<
     string,
     number
   >;
 
-  for (const event of events) {
+  for (const event of eventLog.events) {
     if (
       event.type === "input" &&
       event.data.inputType === "insertText" &&

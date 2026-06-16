@@ -6,7 +6,8 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import { getCurrentInput } from "./events/data";
+import { buildEventLog, getCurrentInput } from "./events/data";
+import { getLiveAccuracy } from "./events/live-stats";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -68,7 +69,6 @@ import { skipBreakdownEvent } from "../states/header";
 import { getCurrentQuote, wordsHaveNewline } from "../states/test";
 import {
   getCorrectedWordsHistory,
-  getCurrentAccuracy,
   getInputHistory,
   getMissedWords,
   getWordBurstHistory,
@@ -1314,9 +1314,15 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistory = getInputHistory().map((i) => i.trimEnd());
-  const burstHistory = getWordBurstHistory();
-  const correctedHistory = getCorrectedWordsHistory();
+  if (TestState.lastEventLog === null) {
+    return false;
+  }
+
+  const inputHistory = getInputHistory(TestState.lastEventLog).map((i) =>
+    i.trimEnd(),
+  );
+  const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
@@ -1461,10 +1467,12 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 }
 
 export async function applyBurstHeatmap(): Promise<void> {
+  if (TestState.lastEventLog === null) return;
+
   if (Config.burstHeatmap) {
     qsa("#resultWordsHistory .heatmapLegend")?.show();
 
-    const burstHistory = getWordBurstHistory();
+    const burstHistory = getWordBurstHistory(TestState.lastEventLog);
     let burstlist = [...burstHistory];
 
     burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
@@ -1740,7 +1748,7 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc: number = Numbers.roundTo2(getCurrentAccuracy());
+  const acc: number = Numbers.roundTo2(getLiveAccuracy(buildEventLog()));
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.mode !== "time") {
@@ -1940,24 +1948,26 @@ export function onTestFinish(): void {
 }
 
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
+  if (TestState.lastEventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join("");
+    words = getInputHistory(TestState.lastEventLog).join("");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, getInputHistory().length)
+      .slice(0, getInputHistory(TestState.lastEventLog).length)
       .join(" ");
   }
   await copyToClipboard(words);
 });
 
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
+  if (TestState.lastEventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join("");
+    words = getInputHistory(TestState.lastEventLog).join("");
   } else {
-    words = Object.keys(getMissedWords()).join(" ");
+    words = Object.keys(getMissedWords(TestState.lastEventLog)).join(" ");
   }
   await copyToClipboard(words);
 });

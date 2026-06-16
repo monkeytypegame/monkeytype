@@ -25,8 +25,8 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { getCurrentInput, logTestEvent } from "./events/data";
-import { getCurrentAccuracy, getCurrentWpmAndRaw } from "./events/stats";
+import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
+import { getLiveAccuracy, getLiveWpmAndRaw } from "./events/live-stats";
 import { roundTo2 } from "@monkeytype/util/numbers";
 
 let lastLoop = 0;
@@ -233,8 +233,9 @@ function timerStep(): void {
 
   //calc
   Time.increment();
-  const wpmAndRaw = getCurrentWpmAndRaw();
-  const acc = getCurrentAccuracy();
+  const eventLog = buildEventLog();
+  const wpmAndRaw = getLiveWpmAndRaw(eventLog, performance.now());
+  const acc = getLiveAccuracy(eventLog);
 
   //ui updates
   requestDebouncedAnimationFrame("test-timer.timerStep", () => {
