@@ -38,6 +38,32 @@ import {
   FunboxNameSchema,
   PlayTimeWarningSchema,
   ConfigGroupNameSchema,
+  QuoteLengthConfigSchema,
+  KeymapSizeSchema,
+  SoundVolumeSchema,
+  AccountChartSchema,
+  TapeMarginSchema,
+  CustomBackgroundFilterSchema,
+  CustomLayoutFluidSchema,
+  CustomPolyglotSchema,
+  ShowPbSchema,
+  ColorHexValueSchema,
+  CustomThemeColorsSchema,
+  FunboxSchema,
+  PaceCaretCustomSpeedSchema,
+  MinWpmCustomSpeedSchema,
+  MinimumAccuracyCustomSchema,
+  MinimumBurstCustomSpeedSchema,
+  TimeConfigSchema,
+  WordCountSchema,
+  KeymapLayoutSchema,
+  LayoutSchema,
+  FontSizeSchema,
+  MaxLineWidthSchema,
+  ConfigSchema,
+  ConfigKeySchema,
+  PartialConfigSchema,
+  FavThemesSchema,
 } from "../src/configs";
 
 describe("configs schemas", () => {
@@ -891,6 +917,644 @@ describe("configs schemas", () => {
       } else {
         expect(CustomBackgroundSchema).toValidate(input);
       }
+    });
+  });
+
+  describe("QuoteLengthConfigSchema", () => {
+    it.each([
+      {
+        description: "valid array with one value",
+        input: [-3],
+      },
+      {
+        description: "valid array with multiple values",
+        input: [0, 1, 2],
+      },
+      {
+        description: "invalid value",
+        input: [4],
+        expectedError: "Invalid input",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(QuoteLengthConfigSchema).toReject(input, expectedError);
+      } else {
+        expect(QuoteLengthConfigSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("KeymapSizeSchema", () => {
+    it.each([
+      { description: "valid value 1.0", input: 1.0 },
+      { description: "valid min value 0.5", input: 0.5 },
+      { description: "valid max value 3.5", input: 3.5 },
+      {
+        description: "invalid min below range",
+        input: 0.4,
+        expectedError: "Number must be greater than or equal to 0.5",
+      },
+      {
+        description: "invalid max above range",
+        input: 3.6,
+        expectedError: "Number must be less than or equal to 3.5",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(KeymapSizeSchema).toReject(input, expectedError);
+      } else {
+        expect(KeymapSizeSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("SoundVolumeSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid 0.5", input: 0.5 },
+      { description: "valid 1", input: 1 },
+      {
+        description: "invalid below range",
+        input: -0.1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+      {
+        description: "invalid above range",
+        input: 1.1,
+        expectedError: "Number must be less than or equal to 1",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(SoundVolumeSchema).toReject(input, expectedError);
+      } else {
+        expect(SoundVolumeSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("AccountChartSchema", () => {
+    it.each([
+      { description: "valid all on", input: ["on", "on", "on", "on"] },
+      { description: "valid mixed values", input: ["off", "on", "off", "on"] },
+      {
+        description: "invalid value",
+        input: ["on", "yes", "no", "off"],
+        expectedError: "Invalid enum value",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(AccountChartSchema).toReject(input, expectedError);
+      } else {
+        expect(AccountChartSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("TapeMarginSchema", () => {
+    it.each([
+      { description: "valid min 10", input: 10 },
+      { description: "valid middle 50", input: 50 },
+      { description: "valid max 90", input: 90 },
+      {
+        description: "invalid below range",
+        input: 5,
+        expectedError: "Number must be greater than or equal to 10",
+      },
+      {
+        description: "invalid above range",
+        input: 95,
+        expectedError: "Number must be less than or equal to 90",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(TapeMarginSchema).toReject(input, expectedError);
+      } else {
+        expect(TapeMarginSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("CustomBackgroundFilterSchema", () => {
+    it.each([
+      { description: "valid tuple [0, 0, 0, 0]", input: [0, 0, 0, 0] },
+      {
+        description: "valid tuple [100, 50, 25, 75]",
+        input: [100, 50, 25, 75],
+      },
+      {
+        description: "invalid - too few items",
+        input: [0, 0, 0],
+        expectedError: "Array must contain at least 4 element(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(CustomBackgroundFilterSchema).toReject(input, expectedError);
+      } else {
+        expect(CustomBackgroundFilterSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("CustomLayoutFluidSchema", () => {
+    it.each([
+      { description: "valid array with 2 items", input: ["dvorak", "colemak"] },
+      {
+        description: "valid array with 15 items",
+        input: [
+          "dvorak",
+          "colemak",
+          "qwerty",
+          "azerty",
+          "qwertz",
+          "dvorak",
+          "colemak",
+          "qwerty",
+          "azerty",
+          "qwertz",
+          "dvorak",
+          "colemak",
+          "qwerty",
+          "azerty",
+          "qwertz",
+        ],
+      },
+      {
+        description: "invalid array with 1 item",
+        input: ["qwerty"],
+        expectedError: "Array must contain at least 2 element(s)",
+      },
+      {
+        description: "invalid array with 16 items",
+        input: [
+          "qwerty",
+          "azerty",
+          "qwertz",
+          "dvorak",
+          "colemak",
+          "qwerty",
+          "azerty",
+          "qwertz",
+          "dvorak",
+          "colemak",
+          "qwerty",
+          "azerty",
+          "qwertz",
+          "dvorak",
+          "colemak",
+          "qwerty",
+        ],
+        expectedError: "Array must contain at most 15 element(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(CustomLayoutFluidSchema).toReject(input, expectedError);
+      } else {
+        expect(CustomLayoutFluidSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("CustomPolyglotSchema", () => {
+    it.each([
+      {
+        description: "valid array with 2 languages",
+        input: ["english", "spanish"],
+      },
+      {
+        description: "invalid array with 1 language",
+        input: ["english"],
+        expectedError: "Array must contain at least 2 element(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(CustomPolyglotSchema).toReject(input, expectedError);
+      } else {
+        expect(CustomPolyglotSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("ShowPbSchema", () => {
+    it.each([
+      { description: "valid true", input: true },
+      { description: "valid false", input: false },
+    ] as const)("$description", ({ input }) => {
+      expect(ShowPbSchema).toValidate(input);
+    });
+  });
+
+  describe("ColorHexValueSchema", () => {
+    it.each([
+      { description: "valid short #fff", input: "#fff" },
+      { description: "valid long #ffffff", input: "#ffffff" },
+      { description: "valid uppercase #ABC123", input: "#ABC123" },
+      {
+        description: "invalid - missing #",
+        input: "ffffff",
+        expectedError: "Invalid",
+      },
+      {
+        description: "invalid - wrong format",
+        input: "#gggggg",
+        expectedError: "Invalid",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(ColorHexValueSchema).toReject(input, expectedError);
+      } else {
+        expect(ColorHexValueSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("CustomThemeColorsSchema", () => {
+    it.each([
+      {
+        description: "valid tuple of 10 colors",
+        input: [
+          "#ffffff",
+          "#000000",
+          "#ff0000",
+          "#00ff00",
+          "#0000ff",
+          "#ffff00",
+          "#ff00ff",
+          "#00ffff",
+          "#123456",
+          "#abcdef",
+        ],
+      },
+      {
+        description: "invalid - too few items",
+        input: ["#ffffff"],
+        expectedError: "Array must contain at least 10 element(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(CustomThemeColorsSchema).toReject(input, expectedError);
+      } else {
+        expect(CustomThemeColorsSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("FavThemesSchema", () => {
+    it.each([
+      { description: "valid empty array", input: [] },
+      { description: "valid single theme", input: ["dracula"] },
+      {
+        description: "valid multiple themes",
+        input: ["dracula", "rose_pine", "monokai"],
+      },
+    ] as const)("$description", ({ input }) => {
+      expect(FavThemesSchema).toValidate(input);
+    });
+  });
+
+  describe("FunboxSchema", () => {
+    it.each([
+      { description: "valid empty array", input: [] },
+      { description: "valid single funbox", input: ["mirror"] },
+      {
+        description: "valid multiple funboxes",
+        input: ["mirror", "upside_down"],
+      },
+      { description: "valid 15 funboxes", input: Array(15).fill("mirror") },
+      {
+        description: "invalid 16 funboxes",
+        input: Array(16).fill("mirror"),
+        expectedError: "Array must contain at most 15 element(s)",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(FunboxSchema).toReject(input, expectedError);
+      } else {
+        expect(FunboxSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("PaceCaretCustomSpeedSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid positive number", input: 100 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(PaceCaretCustomSpeedSchema).toReject(input, expectedError);
+      } else {
+        expect(PaceCaretCustomSpeedSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("MinWpmCustomSpeedSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid positive number", input: 80 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(MinWpmCustomSpeedSchema).toReject(input, expectedError);
+      } else {
+        expect(MinWpmCustomSpeedSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("MinimumAccuracyCustomSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid 50", input: 50 },
+      { description: "valid max 100", input: 100 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+      {
+        description: "invalid above max",
+        input: 150,
+        expectedError: "Number must be less than or equal to 100",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(MinimumAccuracyCustomSchema).toReject(input, expectedError);
+      } else {
+        expect(MinimumAccuracyCustomSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("MinimumBurstCustomSpeedSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid positive number", input: 100 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(MinimumBurstCustomSpeedSchema).toReject(input, expectedError);
+      } else {
+        expect(MinimumBurstCustomSpeedSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("TimeConfigSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid positive number", input: 30 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+      {
+        description: "invalid decimal",
+        input: 30.5,
+        expectedError: "Expected integer, received float",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(TimeConfigSchema).toReject(input, expectedError);
+      } else {
+        expect(TimeConfigSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("WordCountSchema", () => {
+    it.each([
+      { description: "valid 0", input: 0 },
+      { description: "valid positive number", input: 100 },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than or equal to 0",
+      },
+      {
+        description: "invalid decimal",
+        input: 10.5,
+        expectedError: "Expected integer, received float",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(WordCountSchema).toReject(input, expectedError);
+      } else {
+        expect(WordCountSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("KeymapLayoutSchema", () => {
+    it.each([
+      { description: "valid overrideSync", input: "overrideSync" },
+      { description: "valid layout name", input: "qwerty" },
+    ] as const)("$description", ({ input }) => {
+      expect(KeymapLayoutSchema).toValidate(input);
+    });
+  });
+
+  describe("LayoutSchema", () => {
+    it.each([
+      { description: "valid default", input: "default" },
+      { description: "valid layout name", input: "qwerty" },
+    ] as const)("$description", ({ input }) => {
+      expect(LayoutSchema).toValidate(input);
+    });
+  });
+
+  describe("FontSizeSchema", () => {
+    it.each([
+      { description: "valid positive number", input: 12 },
+      { description: "valid small positive", input: 0.5 },
+      {
+        description: "invalid zero",
+        input: 0,
+        expectedError: "Number must be greater than 0",
+      },
+      {
+        description: "invalid negative",
+        input: -1,
+        expectedError: "Number must be greater than 0",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(FontSizeSchema).toReject(input, expectedError);
+      } else {
+        expect(FontSizeSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("MaxLineWidthSchema", () => {
+    it.each([
+      { description: "valid min 20", input: 20 },
+      { description: "valid middle value", input: 500 },
+      { description: "valid max 1000", input: 1000 },
+      { description: "valid zero (no limit)", input: 0 },
+      {
+        description: "invalid below min",
+        input: 19,
+        expectedError: "Number must be greater than or equal to 20",
+      },
+      {
+        description: "invalid above max",
+        input: 1001,
+        expectedError: "Number must be less than or equal to 1000",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(MaxLineWidthSchema).toReject(input, expectedError);
+      } else {
+        expect(MaxLineWidthSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("ConfigSchema", () => {
+    it.each([
+      {
+        description: "valid minimal config",
+        input: {
+          punctuation: false,
+          numbers: false,
+          words: 10,
+          time: 15,
+          mode: "time",
+          quoteLength: [],
+          language: "english",
+          burstHeatmap: false,
+          difficulty: "normal",
+          quickRestart: "off",
+          repeatQuotes: "off",
+          resultSaving: true,
+          blindMode: false,
+          alwaysShowWordsHistory: false,
+          singleListCommandLine: "manual",
+          minWpm: "off",
+          minWpmCustomSpeed: 0,
+          minAcc: "off",
+          minAccCustom: 0,
+          minBurst: "off",
+          minBurstCustomSpeed: 0,
+          britishEnglish: false,
+          funbox: [],
+          customLayoutfluid: ["qwerty", "colemak"],
+          customPolyglot: ["english", "spanish"],
+          freedomMode: false,
+          strictSpace: false,
+          oppositeShiftMode: "off",
+          stopOnError: "off",
+          confidenceMode: "off",
+          quickEnd: false,
+          indicateTypos: "off",
+          compositionDisplay: "off",
+          hideExtraLetters: false,
+          lazyMode: false,
+          layout: "default",
+          codeUnindentOnBackspace: false,
+          soundVolume: 1,
+          playSoundOnClick: "off",
+          playSoundOnError: "off",
+          playTimeWarning: "off",
+          smoothCaret: "off",
+          caretStyle: "default",
+          paceCaret: "off",
+          paceCaretCustomSpeed: 0,
+          paceCaretStyle: "default",
+          repeatedPace: false,
+          timerStyle: "bar",
+          liveSpeedStyle: "off",
+          liveAccStyle: "off",
+          liveBurstStyle: "off",
+          timerColor: "black",
+          timerOpacity: "1",
+          highlightMode: "off",
+          typedEffect: "keep",
+          tapeMode: "off",
+          tapeMargin: 50,
+          smoothLineScroll: false,
+          showAllLines: false,
+          alwaysShowDecimalPlaces: false,
+          typingSpeedUnit: "wpm",
+          startGraphsAtZero: true,
+          maxLineWidth: 500,
+          fontSize: 16,
+          fontFamily: "terranova",
+          keymapMode: "off",
+          keymapLayout: "overrideSync",
+          keymapStyle: "staggered",
+          keymapLegendStyle: "lowercase",
+          keymapShowTopRow: "always",
+          keymapSize: 1,
+          flipTestColors: false,
+          colorfulMode: false,
+          customBackground: "",
+          customBackgroundSize: "cover",
+          customBackgroundFilter: [0, 0, 0, 0],
+          autoSwitchTheme: false,
+          themeLight: "dracula",
+          themeDark: "rose_pine",
+          randomTheme: "off",
+          favThemes: [],
+          theme: "dark",
+          customTheme: false,
+          customThemeColors: Array(10).fill("#ffffff"),
+          showKeyTips: false,
+          showOutOfFocusWarning: true,
+          capsLockWarning: false,
+          showAverage: "off",
+          showPb: false,
+          accountChart: ["off", "off", "off", "off"],
+          monkey: false,
+          monkeyPowerLevel: "off",
+          ads: "off",
+        },
+      },
+    ] as const)("$description", ({ input }) => {
+      expect(ConfigSchema).toValidate(input);
+    });
+  });
+
+  describe("ConfigKeySchema", () => {
+    it.each([
+      { description: "valid key punctuation", input: "punctuation" },
+      { description: "valid key time", input: "time" },
+      {
+        description: "invalid key",
+        input: "invalid_key",
+        expectedError: "Invalid enum value",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(ConfigKeySchema).toReject(input, expectedError);
+      } else {
+        expect(ConfigKeySchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("PartialConfigSchema", () => {
+    it.each([
+      {
+        description: "valid partial config",
+        input: { punctuation: true },
+      },
+    ] as const)("$description", ({ input }) => {
+      expect(PartialConfigSchema).toValidate(input);
     });
   });
 });

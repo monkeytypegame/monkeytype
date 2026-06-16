@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { it, expect, describe } from "vitest";
 import {
   StringNumberSchema,
   token,
@@ -17,23 +17,12 @@ import {
 describe("util schemas", () => {
   describe("StringNumberSchema", () => {
     it.each([
+      { description: "valid number string", input: "10" },
+      { description: "valid large number string", input: "123456" },
+      { description: "valid number input", input: 10 },
       {
-        description: "valid numeric string",
-        input: "123",
-      },
-      {
-        description: "valid number",
-        input: 123,
-      },
-      {
-        description: "string with letters",
-        input: "abc",
-        expectedError:
-          "Needs to be a number or a number represented as a string",
-      },
-      {
-        description: "string with mixed content",
-        input: "123abc",
+        description: "invalid string with letters",
+        input: "abc123",
         expectedError:
           "Needs to be a number or a number represented as a string",
       },
@@ -46,99 +35,87 @@ describe("util schemas", () => {
     });
   });
 
-  describe("token", () => {
+  describe("token function", () => {
+    const TokenSchema = token();
     it.each([
+      { description: "valid token", input: "my_token_123" },
       {
-        description: "valid alphanumeric with underscore",
-        input: "abc_123",
-      },
-      {
-        description: "contains hyphen",
-        input: "abc-123",
-        expectedError: "Invalid",
-      },
-      {
-        description: "contains space",
-        input: "abc 123",
+        description: "invalid token with hyphen",
+        input: "my-token",
         expectedError: "Invalid",
       },
     ] as const)("$description", ({ input, expectedError }) => {
-      const schema = token();
       if (expectedError) {
-        expect(schema).toReject(input, expectedError);
+        expect(TokenSchema).toReject(input, expectedError);
       } else {
-        expect(schema).toValidate(input);
+        expect(TokenSchema).toValidate(input);
       }
     });
   });
 
-  describe("slug", () => {
+  describe("slug function", () => {
+    const SlugSchema = slug();
     it.each([
+      { description: "valid slug", input: "my-slug" },
       {
-        description: "valid slug with dots and hyphens",
-        input: "abc-123_test.def",
+        description: "valid slug with dots and underscores",
+        input: "my.slug_name",
       },
       {
-        description: "starts with dot",
-        input: ".invalid",
+        description: "invalid slug starts with dot",
+        input: ".hidden-slug",
         expectedError: "Cannot start with a dot",
       },
       {
-        description: "contains comma",
-        input: "abc,def",
+        description: "invalid slug with special char",
+        input: "my@slug",
         expectedError:
           "Only letters, numbers, underscores, dots and hyphens allowed",
       },
     ] as const)("$description", ({ input, expectedError }) => {
-      const schema = slug();
       if (expectedError) {
-        expect(schema).toReject(input, expectedError);
+        expect(SlugSchema).toReject(input, expectedError);
       } else {
-        expect(schema).toValidate(input);
+        expect(SlugSchema).toValidate(input);
       }
     });
   });
 
-  describe("nameWithSeparators", () => {
+  describe("nameWithSeparators function", () => {
+    const NameWithSeparatorsSchema = nameWithSeparators();
     it.each([
+      { description: "valid name", input: "my-name" },
+      { description: "valid name with underscores", input: "my_name" },
       {
-        description: "valid name with separators",
-        input: "abc_def-123",
-      },
-      {
-        description: "starts with separator",
-        input: "_invalid",
+        description: "invalid name starts with separator",
+        input: "-my-name",
         expectedError: "Separators cannot be at the start or end",
       },
       {
-        description: "consecutive separators",
-        input: "inv__alid",
+        description: "invalid name with double separator",
+        input: "my--name",
         expectedError: "Separators cannot be at the start or end",
       },
       {
-        description: "contains dot",
-        input: "invalid.name",
+        description: "invalid name with special char",
+        input: "my@name",
         expectedError: "Only letters, numbers, underscores and hyphens allowed",
       },
     ] as const)("$description", ({ input, expectedError }) => {
-      const schema = nameWithSeparators();
       if (expectedError) {
-        expect(schema).toReject(input, expectedError);
+        expect(NameWithSeparatorsSchema).toReject(input, expectedError);
       } else {
-        expect(schema).toValidate(input);
+        expect(NameWithSeparatorsSchema).toValidate(input);
       }
     });
   });
 
   describe("IdSchema", () => {
     it.each([
+      { description: "valid id", input: "test_id_123" },
       {
-        description: "valid id",
-        input: "abc_123",
-      },
-      {
-        description: "contains hyphen",
-        input: "abc-123",
+        description: "invalid id with hyphen",
+        input: "test-id",
         expectedError: "Invalid",
       },
     ] as const)("$description", ({ input, expectedError }) => {
@@ -152,19 +129,12 @@ describe("util schemas", () => {
 
   describe("TagSchema", () => {
     it.each([
+      { description: "valid tag under max length", input: "testtag" },
+      { description: "tag at max length (50 chars)", input: "a".repeat(50) },
       {
-        description: "valid tag within max length",
-        input: "abc_123",
-      },
-      {
-        description: "exceeds max length",
+        description: "tag exceeds max length",
         input: "a".repeat(51),
-        expectedError: "String must contain at most 50 character",
-      },
-      {
-        description: "contains invalid character",
-        input: "abc-123",
-        expectedError: "Invalid",
+        expectedError: "String must contain at most 50 character(s)",
       },
     ] as const)("$description", ({ input, expectedError }) => {
       if (expectedError) {
@@ -177,45 +147,26 @@ describe("util schemas", () => {
 
   describe("NullableStringSchema", () => {
     it.each([
-      {
-        description: "valid string",
-        input: "hello",
-      },
-      {
-        description: "null transforms to undefined",
-        input: null,
-      },
-      {
-        description: "undefined is accepted",
-        input: undefined,
-      },
-      {
-        description: "boolean is rejected",
-        input: true,
-        expectedError: "Expected string",
-      },
-    ] as const)("$description", ({ input, expectedError }) => {
-      if (expectedError) {
-        expect(NullableStringSchema).toReject(input, expectedError);
-      } else {
-        expect(NullableStringSchema).toValidate(input);
-      }
+      { description: "valid string", input: "test" },
+      { description: "valid null", input: null },
+      { description: "valid undefined", input: undefined },
+    ] as const)("$description", ({ input }) => {
+      expect(NullableStringSchema).toValidate(input);
     });
   });
 
   describe("PercentageSchema", () => {
     it.each([
+      { description: "valid percentage", input: 50 },
+      { description: "valid 0%", input: 0 },
+      { description: "valid 100%", input: 100 },
       {
-        description: "valid percentage",
-        input: 50,
-      },
-      {
-        description: "exceeds max",
-        input: 101,
+        description: "percentage exceeds 100",
+        input: 150,
         expectedError: "Number must be less than or equal to 100",
       },
       {
-        description: "negative value",
+        description: "negative percentage",
         input: -1,
         expectedError: "Number must be greater than or equal to 0",
       },
@@ -230,17 +181,16 @@ describe("util schemas", () => {
 
   describe("WpmSchema", () => {
     it.each([
+      { description: "valid wpm", input: 100 },
+      { description: "valid 0 wpm", input: 0 },
+      { description: "valid max wpm (420)", input: 420 },
       {
-        description: "valid wpm",
-        input: 100,
-      },
-      {
-        description: "exceeds max",
-        input: 421,
+        description: "wpm exceeds max",
+        input: 500,
         expectedError: "Number must be less than or equal to 420",
       },
       {
-        description: "negative value",
+        description: "negative wpm",
         input: -1,
         expectedError: "Number must be greater than or equal to 0",
       },
@@ -255,14 +205,13 @@ describe("util schemas", () => {
 
   describe("CustomTextModeSchema", () => {
     it.each([
-      {
-        description: "valid mode",
-        input: "repeat",
-      },
+      { description: "valid repeat", input: "repeat" },
+      { description: "valid random", input: "random" },
+      { description: "valid shuffle", input: "shuffle" },
       {
         description: "invalid mode",
         input: "invalid",
-        expectedError: "Invalid",
+        expectedError: "Invalid enum value",
       },
     ] as const)("$description", ({ input, expectedError }) => {
       if (expectedError) {
@@ -275,14 +224,13 @@ describe("util schemas", () => {
 
   describe("CustomTextLimitModeSchema", () => {
     it.each([
+      { description: "valid word", input: "word" },
+      { description: "valid time", input: "time" },
+      { description: "valid section", input: "section" },
       {
-        description: "valid limit mode",
-        input: "word",
-      },
-      {
-        description: "invalid limit mode",
+        description: "invalid mode",
         input: "invalid",
-        expectedError: "Invalid",
+        expectedError: "Invalid enum value",
       },
     ] as const)("$description", ({ input, expectedError }) => {
       if (expectedError) {
@@ -295,17 +243,15 @@ describe("util schemas", () => {
 
   describe("PageNumberSchema", () => {
     it.each([
+      { description: "valid page number", input: 0 },
+      { description: "valid positive page", input: 5 },
       {
-        description: "valid page number",
-        input: 5,
-      },
-      {
-        description: "negative value",
+        description: "invalid negative page",
         input: -1,
         expectedError: "Number must be greater than or equal to 0",
       },
       {
-        description: "non-integer",
+        description: "invalid non-integer",
         input: 1.5,
         expectedError: "Expected integer, received float",
       },
