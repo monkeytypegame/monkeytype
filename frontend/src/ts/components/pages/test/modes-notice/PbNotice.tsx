@@ -1,12 +1,12 @@
 import { createMemo } from "solid-js";
 
-import { getConfig } from "../../../config/store";
-import { getLocalPB } from "../../../db";
-import { getFormatting, isAuthenticated } from "../../../states/core";
-import { getSnapshot } from "../../../states/snapshot";
-import { getCurrentQuote } from "../../../states/test";
-import { getActiveFunboxes } from "../../../test/funbox/list";
-import { getMode2 } from "../../../utils/misc";
+import { getConfig } from "../../../../config/store";
+import { getLocalPB } from "../../../../db";
+import { getFormatting, isAuthenticated } from "../../../../states/core";
+import { getSnapshot } from "../../../../states/snapshot";
+import { getCurrentQuote } from "../../../../states/test";
+import { getActiveFunboxes } from "../../../../test/funbox/list";
+import { getMode2 } from "../../../../utils/misc";
 import { Notice } from "./Notice";
 
 export function PbNotice() {
