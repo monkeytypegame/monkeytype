@@ -1,9 +1,9 @@
 ### **Table of Contents**
 
 - [Forking Monkeytype](#forking-monkeytype)
-- [Adding fonts](#adding-fonts)
-- [Committing Languages](#committing-languages)
-- [Language Guidelines](#language-guidelines)
+- [Adding Fonts](#adding-fonts)
+- [Committing Fonts](#committing-fonts)
+- [Font Guidelines](#font-guidelines)
 
 ### Forking Monkeytype
 
@@ -41,9 +41,9 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   }
 ```
 
-### Committing Languages
+## Committing Fonts
 
-Once you have created your language, you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your languages on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
+Once you have added your font, you now need to create a pull request to the main Monkeytype repository. Go to the branch where you added your font on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
 
 Update branch:
 <img width="1552" alt="Screenshot showing how to update the fork to match the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
@@ -51,6 +51,6 @@ Update branch:
 Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
-## Language Guidelines
+## Font Guidelines
 
-Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+Make sure your font follows the [Contributing guidelines](./CONTRIBUTING.md).
