@@ -272,7 +272,7 @@ function buildRow(options: {
         r5Grid += "-";
       }
       if (isRowEmpty(keyVisualValue)) {
-        keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}" data-key=" ">
+        keysHtml += `<div class="keymapKey keySpace layoutIndicator ${side}">
               <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
         r5Grid += "3";
