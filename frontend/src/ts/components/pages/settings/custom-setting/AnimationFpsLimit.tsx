@@ -13,7 +13,7 @@ export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
-      fpsLimit: "",
+      fpsLimit: String(getfpsLimit()),
     },
     onSubmit: ({ value }) => {
       const val = parseFloat(String(value.fpsLimit));
