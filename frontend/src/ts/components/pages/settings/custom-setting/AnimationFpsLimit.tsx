@@ -62,7 +62,13 @@ export function AnimationFpsLimit(): JSXElement {
                     value: val,
                   });
                 },
-                onBlur: () => {
+                onBlur: ({ value }) => {
+                  if (String(value) === "") {
+                    setfpsLimit(1000);
+                    form.setFieldValue("fpsLimit", "");
+                    savedIndicator.hide();
+                    return;
+                  }
                   void form.handleSubmit();
                 },
               }}
@@ -73,7 +79,6 @@ export function AnimationFpsLimit(): JSXElement {
                     placeholder={"custom limit"}
                     type="number"
                     schema={fpsLimitSchema}
-                    resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />
                 </div>
