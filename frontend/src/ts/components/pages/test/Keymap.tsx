@@ -4,7 +4,7 @@ import { createMemo, For, Show } from "solid-js";
 import { getConfig } from "../../../config/store";
 import { getModifierState } from "../../../states/modifiers";
 import { getKeymapLayout, keymapLayoutObject } from "../../../states/test";
-import { typedEntries, typedValues } from "../../../utils/misc";
+import { typedEntries } from "../../../utils/misc";
 import { convertLayoutToKeymap, KeyboardDefinition } from "./keymapConverter";
 
 export function Keymap() {
@@ -19,19 +19,12 @@ export function Keymap() {
 }
 
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
-  const hasAltGr = createMemo(() =>
-    typedValues(props.layoutData.keys).some((key) =>
-      key.some((legend) => legend.length > 2),
-    ),
-  );
-
   const layer = createMemo(() => {
-    if (hasAltGr() && getModifierState().shift && getModifierState().altGr) {
+    if (getModifierState().shift && getModifierState().altGr) {
       return 3;
     }
-    if (hasAltGr() && getModifierState().altGr) return 2;
+    if (getModifierState().altGr) return 2;
     if (getModifierState().shift) return 1;
-
     return 0;
   });
 
@@ -45,7 +38,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     convertLayoutToKeymap(props.layoutData, {
       displayName: props.displayName,
       keymapStyle: getConfig.keymapStyle,
-      showAllKeys: false,
+      showAllKeys: true,
     }),
   );
 

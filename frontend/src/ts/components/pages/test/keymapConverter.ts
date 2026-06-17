@@ -37,14 +37,22 @@ function convertStaggered(
   layout: LayoutObject,
   options: ConvertOptions,
 ): KeyboardDefinition {
+  const firstColGap =
+    (gap: number) =>
+    ({ col }: { col: number }) =>
+      options.showAllKeys ? 0 : col === 0 ? gap : 0;
   const base = convertBase(layout, options, {
-    row1: { skip: (it) => it.col === 0 },
-    row2: { x: (it) => (it.col === 0 ? 2 : 0), skip: (it) => it.col === 12 },
-    row3: { x: (it) => (it.col === 0 ? 4 : 0) },
-    row4: { x: (it) => (it.col === 0 ? 6 : 0) },
+    row1: { skip: ({ col }) => col === 0 },
+    row2: {
+      x: firstColGap(2),
+      skip: ({ col }) => col === 12,
+      width: ({ col }) => (col === 12 ? 1.5 : 1),
+    },
+    row3: { x: firstColGap(4) },
+    row4: { x: firstColGap(6) },
     row5: {
-      x: () => 3,
-      width: () => 6,
+      x: firstColGap(3),
+      width: () => 6.25,
       legend: () => new Array<string>(4).fill(options.displayName),
     },
   });
@@ -56,30 +64,37 @@ function convertSplit(
   layout: LayoutObject,
   options: ConvertOptions,
 ): KeyboardDefinition {
-  const insertGap = (it: RuleParams): number => (it.col === 5 ? 8 : 0);
+  if (layout.keys.row5.length === 1) {
+    layout.keys.row5.push(["", "", "", ""]);
+  }
+  const calcGap =
+    ({ col1Gap, splitCol }: { col1Gap: number; splitCol?: number }) =>
+    ({ col }: { col: number }) => {
+      if (col === 0) return options.showAllKeys ? 0 : col1Gap;
+      if (col === (splitCol ?? 5)) return 8;
+      return 0;
+    };
+
   const base = convertBase(layout, options, {
-    row1: { skip: (it) => it.col === 0, x: (it) => (it.col === 7 ? 8 : 0) },
-    row2: {
-      x: (it) => (it.col === 0 ? 2 : insertGap(it)),
-      skip: (it) => it.col === 12,
+    row1: {
+      x: calcGap({ col1Gap: 0, splitCol: 7 }),
+      skip: ({ col }) => col === 0,
     },
-    row3: { x: (it) => (it.col === 0 ? 4 : insertGap(it)) },
-    row4: { x: (it) => (it.col === 0 ? 6 : insertGap(it)) },
+    row2: {
+      x: calcGap({ col1Gap: 2 }),
+      skip: ({ col }) => col === 12,
+      width: ({ col }) => (col === 12 ? 1.5 : 1),
+    },
+    row3: { x: calcGap({ col1Gap: 4 }) },
+    row4: { x: calcGap({ col1Gap: 6 }) },
     row5: {
-      x: ({ col }) => (col === 0 ? 3 + 5 * 4 : 0),
-      width: () => 3,
-      legend: () => new Array<string>(4).fill(options.displayName),
+      x: calcGap({ col1Gap: 3 + 5 * 4, splitCol: 1 }),
+      width: ({ col }) =>
+        (options.showAllKeys ? { 0: 3.25, 1: 3 } : { 0: 3, 1: 3 })[col] ?? 1,
+      legend: ({ col }) =>
+        col === 0 ? new Array<string>(4).fill(options.displayName) : undefined,
     },
   });
-
-  if (base.row5.length === 1) {
-    base.row5.push({
-      height: 1,
-      width: 3,
-      x: 8,
-      legends: ["", "", "", ""],
-    });
-  }
 
   return base;
 }
@@ -95,7 +110,7 @@ function convertBase(
     Record<
       keyof LayoutObject["keys"],
       {
-        legend?: (options: RuleParams) => KeyLegends;
+        legend?: (options: RuleParams) => KeyLegends | undefined;
         height?: (options: RuleParams) => number;
         width?: (options: RuleParams) => number;
         x?: (options: RuleParams) => number;
@@ -124,6 +139,89 @@ function convertBase(
         .filter((it) => it !== undefined),
     ]),
   ) as KeyboardDefinition;
+
+  if (options.showAllKeys) {
+    result.row1.push({
+      legends: new Array<string>(4).fill("BS"),
+      x: 0,
+      width: 2,
+      height: 1,
+    });
+    result.row2.unshift({
+      legends: new Array<string>(4).fill("Tab"),
+      height: 1,
+      width: 1.5,
+      x: 0,
+    });
+    result.row3.unshift({
+      legends: new Array<string>(4).fill("Caps"),
+      height: 1,
+      width: 1.75,
+      x: 0,
+    });
+    result.row3.push({
+      legends: new Array<string>(4).fill("Enter"),
+      height: 1,
+      width: 2.25,
+      x: 0,
+    });
+    result.row4.unshift({
+      legends: new Array<string>(4).fill("Shift"),
+      height: 1,
+      width: 2.25,
+      x: 0,
+    });
+    result.row4.push({
+      legends: new Array<string>(4).fill("Shift"),
+      height: 1,
+      width: 2.75,
+      x: 0,
+    });
+
+    result.row5.unshift({
+      legends: new Array<string>(4).fill("Ctrl"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+    result.row5.unshift({
+      legends: new Array<string>(4).fill("Monke"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+    result.row5.unshift({
+      legends: new Array<string>(4).fill("Alt"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+
+    result.row5.push({
+      legends: new Array<string>(4).fill("Ctrl"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+    result.row5.push({
+      legends: new Array<string>(4).fill("Monke"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+    result.row5.push({
+      legends: new Array<string>(4).fill("Meta"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+    result.row5.push({
+      legends: new Array<string>(4).fill("Ctrl"),
+      height: 1,
+      width: 1.25,
+      x: 0,
+    });
+  }
 
   return result;
 }
