@@ -1,8 +1,8 @@
 import { createMemo, JSXElement } from "solid-js";
 
-import { useUserAverage10LiveQuery } from "../../../collections/results";
-import { getConfig } from "../../../config/store";
-import { getFormatting, isAuthenticated } from "../../../states/core";
+import { useUserAverage10LiveQuery } from "../../../../collections/results";
+import { getConfig } from "../../../../config/store";
+import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
