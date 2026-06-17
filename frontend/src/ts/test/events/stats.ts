@@ -322,7 +322,11 @@ function computeBurst(events: TestEventNoMs[], now?: number): number {
       firstKeypressTime = event.testMs;
     }
 
-    if (event.type === "input" && event.data.inputType === "insertText") {
+    if (
+      event.type === "input" &&
+      (event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText")
+    ) {
       if (event.data.charIndex === 0 && firstKeypressTime === undefined) {
         firstKeypressTime = event.testMs;
       }
@@ -590,7 +594,7 @@ export function getWordIndexesForSecond(
     if (prevBoundary !== undefined && event.testMs <= prevBoundary) continue;
     if (event.testMs > boundary) break;
 
-    if (event.type === "input" && event.data.inputType === "insertText") {
+    if ("wordIndex" in event.data) {
       wordIndexes.add(event.data.wordIndex);
     }
   }
