@@ -22,6 +22,7 @@ import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
+import { Keymap } from "./pages/test/Keymap";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
@@ -48,6 +49,7 @@ const components: Record<string, () => JSXElement> = {
   friendspage: () => <FriendsPage />,
   blockedusers: () => <BlockedUsers />,
   notfoundpage: () => <NotFoundPage />,
+  keymap: () => <Keymap />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

@@ -1,4 +1,9 @@
-import { createSignal, createEffect, createMemo } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  createResource,
+} from "solid-js";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { getConfig } from "../config/store";
 
@@ -8,6 +13,9 @@ import { getActivePage, getCustomTextIndicator } from "./core";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { getLayout } from "../utils/json-data";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -54,3 +62,21 @@ createEffect(() => {
     ),
   );
 });
+
+export const getKeymapLayout = createMemo<{
+  layout: string;
+  layoutNameDisplayString: string;
+}>(() => {
+  const isOverride = getConfig.keymapLayout === "overrideSync";
+  const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
+
+  const layout = raw === "default" ? "qwerty" : raw;
+  const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
+
+  return { layout: layout, layoutNameDisplayString };
+});
+
+export const [keymapLayoutObject] = createResource(
+  getKeymapLayout,
+  async (layout) => getLayout(layout.layout),
+);
