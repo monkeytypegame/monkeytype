@@ -184,3 +184,31 @@ export function findInputValueMismatches(
 
   return mismatches;
 }
+
+export function getEventsPerWord(
+  events: TestEventNoMs[],
+  startMs?: number,
+  testMsLimit?: number,
+): Map<number, TestEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
+  for (const event of events) {
+    if (!("wordIndex" in event.data)) {
+      continue;
+    }
+
+    if (startMs !== undefined && event.testMs < startMs) {
+      continue;
+    }
+
+    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
+      break;
+    }
+
+    const wordIndex = event.data.wordIndex;
+
+    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
+    existing.push(event);
+    eventsPerWordIndex.set(wordIndex, existing);
+  }
+  return eventsPerWordIndex;
+}
