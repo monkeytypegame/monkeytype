@@ -18,6 +18,7 @@ import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { download as downloadFile } from "../utils/misc";
 
 let revealReplay = false;
 
@@ -310,26 +311,16 @@ async function getBlob(): Promise<Blob | null> {
 
 export async function download(): Promise<void> {
   try {
-    const blob = await getBlob();
+    const data = await getBlob();
 
-    if (!blob) {
+    if (!data) {
       showErrorNotification("Failed to generate screenshot data");
       return;
     }
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    link.download = `monkeytype-result-${timestamp}.png`;
+    const filename = `monkeytype-result-${timestamp}.png`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
+    downloadFile({ data, filename });
 
     showSuccessNotification("Screenshot download started");
   } catch (error) {

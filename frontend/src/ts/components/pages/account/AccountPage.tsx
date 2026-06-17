@@ -4,7 +4,6 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 import {
   createResultsQueryState,
   getResultsQueryOnce,
-  getResultsSize,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
@@ -46,7 +45,11 @@ export function AccountPage(): JSXElement {
   );
   const [isExporting, setIsExporting] = createSignal(false);
 
-  const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
+  const resultsQuery = useResultsLiveQuery({
+    queryState,
+    sorting,
+    limit: () => limit() + 1,
+  });
 
   return (
     <Page id="account" needsAuthentication>
@@ -117,14 +120,15 @@ export function AccountPage(): JSXElement {
               {({ resultsQueryData }) => (
                 <>
                   <Table
-                    data={[...resultsQueryData()]}
+                    data={resultsQueryData().slice(0, limit())}
                     onSortingChange={(val) => setSorting(val)}
                     selectedRowId={selectedResultId}
                   />
                   <Button
                     text="load more"
                     disabled={
-                      resultsQuery.isLoading || getResultsSize() < limit() + 10
+                      resultsQuery.isLoading ||
+                      resultsQueryData().length <= limit()
                     }
                     onClick={() => setLimit((limit) => limit + 10)}
                     class="w-full text-center"

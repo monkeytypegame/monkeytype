@@ -8,10 +8,12 @@ vi.mock("../../../src/ts/test/test-state", () => ({
   activeWordIndex: 0,
   bailedOut: false,
   resultCalculating: false,
+  koreanStatus: false,
 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: "" },
+  Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
+  getConfig: {},
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {
@@ -30,20 +32,28 @@ vi.mock("../../../src/ts/test/test-words", () => {
   };
 });
 
+const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
 vi.mock("../../../src/ts/test/custom-text", () => ({
-  getLimit: () => ({ mode: "words", value: 0 }),
+  getLimit: () => customTextLimit,
+}));
+
+vi.mock("../../../src/ts/states/test", () => ({
+  getCurrentQuote: () => null,
 }));
 
 import {
   logTestEvent,
   resetTestEvents,
   getAllTestEvents,
+  cleanupData,
+  buildEventLog,
   __testing,
 } from "../../../src/ts/test/events/data";
+import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
-  getRawPerSecond,
+  getBurstHistory,
   getTestDurationMs,
   getAccuracy,
   getKeypressSpacing,
@@ -53,8 +63,8 @@ import {
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
+  getInputHistory,
   getWpmHistory,
-  forceReleaseAllKeys,
   __testing as statsTesting,
 } from "../../../src/ts/test/events/stats";
 import type {
@@ -69,18 +79,14 @@ import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
-  return { code, ctrl: false, shift: false, alt: false, meta: false };
+  return { code };
 }
 
 function keyUp(code: Keycode = "KeyA"): KeyupEventData {
-  return {
-    code,
-    ctrl: false,
-    shift: false,
-    alt: false,
-    meta: false,
-  };
+  return { code };
 }
+
+const inputPerWord = new Map<number, string>();
 
 function input(
   overrides: Partial<{
@@ -91,8 +97,23 @@ function input(
     inputType: string;
     isCompositionEnding: boolean;
     inputStopped: boolean;
+    commitsWord: true;
+    inputValue: string;
   }> = {},
 ): InputEventData {
+  const wordIndex = overrides.wordIndex ?? 0;
+  const data = overrides.data ?? "a";
+  const inputStopped = overrides.inputStopped ?? false;
+
+  let inputValue: string;
+  if (overrides.inputValue !== undefined) {
+    inputValue = overrides.inputValue;
+  } else {
+    const prev = inputPerWord.get(wordIndex) ?? "";
+    inputValue = inputStopped ? prev : prev + data;
+    inputPerWord.set(wordIndex, inputValue);
+  }
+
   return {
     charIndex: 0,
     wordIndex: 0,
@@ -101,6 +122,7 @@ function input(
     correct: true,
     isCompositionEnding: false,
     inputStopped: false,
+    inputValue,
     ...overrides,
   } as InputEventData;
 }
@@ -140,8 +162,12 @@ describe("stats.ts", () => {
     resetTestEvents();
     __testing.resetPressedKeys();
     (Config as { mode: string }).mode = "words";
+    (Config as { funbox: string[] }).funbox = [];
+    (Config as { words: number }).words = 25;
+    (Config as { time: number }).time = 0;
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
     TestWords.list.length = 0;
+    inputPerWord.clear();
   });
 
   describe("getTimerBoundaries", () => {
@@ -152,21 +178,21 @@ describe("stats.ts", () => {
       logTestEvent("timer", 4000, timer("step", 3));
       logTestEvent("timer", 4000, timer("end", 3));
 
-      const events = getAllTestEvents();
+      const eventLog = buildEventLog();
       // end testMs=3000, last step testMs=3000 — gap is 0 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
         1000, 2000, 3000,
       ]);
     });
 
-    it("includes end as boundary when far enough from last step", () => {
+    it("includes end as boundary when endMs % 1000 >= 500ms", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
-      logTestEvent("timer", 3000, timer("end", 2));
+      logTestEvent("timer", 2500, timer("end", 1));
 
-      const events = getAllTestEvents();
-      // end at testMs 2000, last step at testMs 1000 — gap is 1000 >= 500
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000, 2000]);
+      const eventLog = buildEventLog();
+      // endMs=1500 → 1500%1000=500ms → roundTo2(0.5)=0.5 → boundary added
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000, 1500]);
     });
 
     it("skips end when too close to last step", () => {
@@ -174,9 +200,53 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2400, timer("end", 1));
 
-      const events = getAllTestEvents();
+      const eventLog = buildEventLog();
       // end at testMs 1400, last step at testMs 1000 — gap is 400 < 500
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
+    });
+
+    it("includes end boundary when endMs % 1000 rounds to 0.5s", () => {
+      // endMs=1496 → 1496%1000=496ms → roundTo2(0.496)=0.50 → boundary added
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000, 1496]);
+    });
+
+    it("skips end boundary when endMs % 1000 rounds below 0.5s", () => {
+      // endMs=1494 → 1494%1000=494ms → roundTo2(0.494)=0.49 → no boundary
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2494, timer("end", 1));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
+    });
+
+    it("skips end boundary for .49 test even when step fires slightly early (drift)", () => {
+      // Step fires 5ms early (at 995ms instead of 1000ms).
+      // Gap = 1490-995 = 495ms — the old gap-based check would have added a boundary
+      // (roundTo2(0.495)=0.5), but endMs%1000=490ms → roundTo2(0.49)<0.5 → no boundary.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 1995, timer("step", 1));
+      logTestEvent("timer", 2490, timer("end", 1));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([995]);
+    });
+
+    it("includes end boundary for .99 test even when step fires late (drift)", () => {
+      // Step fires 510ms late (at 1510ms instead of 1000ms).
+      // Gap = 1990-1510 = 480ms — gap-based check would miss the boundary,
+      // but endMs%1000=990ms → roundTo2(0.99)>=0.5 → boundary added.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2510, timer("step", 1));
+      logTestEvent("timer", 2990, timer("end", 1));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1510, 1990]);
     });
 
     it("excludes short trailing interval (<500ms) for non-round test duration", () => {
@@ -185,9 +255,9 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2350, timer("end", 1));
 
-      const events = getAllTestEvents();
+      const eventLog = buildEventLog();
       // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([1000]);
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
     });
 
     it("excludes short trailing interval (<500ms) for sub one second test duration", () => {
@@ -195,16 +265,16 @@ describe("stats.ts", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 1350, timer("end", 0));
 
-      const events = getAllTestEvents();
+      const eventLog = buildEventLog();
       // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([]);
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([]);
     });
 
     it("returns empty when no timer events", () => {
       logTestEvent("keydown", 1000, keyDown());
 
-      const events = getAllTestEvents();
-      expect(statsTesting.getTimerBoundaries(events)).toEqual([]);
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([]);
     });
 
     it("adjusts end in zen mode by removing trailing afk", () => {
@@ -217,10 +287,90 @@ describe("stats.ts", () => {
       // last keypress at testMs 500, end at testMs 4000 → lkte = 3500
       logTestEvent("timer", 5000, timer("end", 4));
 
-      const events = getAllTestEvents();
-      const boundaries = statsTesting.getTimerBoundaries(events);
+      const eventLog = buildEventLog();
+      const boundaries = statsTesting.getTimerBoundaries(eventLog);
       // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
       expect(boundaries).toEqual([500]);
+    });
+
+    it("skips end boundary when endMs rounds up to whole second", () => {
+      // endMs=19997: roundTo2(19.997)=20.00 → fractional 0 → no extra bucket
+      // Legacy CE1 doesn't push extra because stats.time=20.00 has no fractional.
+      // Naive (endMs % 1000)/1000 = 0.997 → roundTo2 = 1.0 would wrongly add.
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 20; i++) {
+        logTestEvent("timer", i * 1000 - 10, timer("step", i));
+      }
+      logTestEvent("timer", 19997, timer("end", 20));
+
+      const eventLog = buildEventLog();
+      // 20 step boundaries, no end boundary (testSeconds rounds to 20.00)
+      expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(20);
+    });
+
+    it("skips end boundary in time mode even when endMs %1000 >= 500ms", () => {
+      // 120s time test where timer fires step 120 slightly early at ~119.99s.
+      // Legacy time mode never pushes an extra bucket — CE2 must match by
+      // skipping the end boundary entirely.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      for (let i = 1; i <= 120; i++) {
+        logTestEvent("timer", i * 1000 - 8, timer("step", i));
+      }
+      logTestEvent("timer", 119994, timer("end", 120));
+
+      const eventLog = buildEventLog();
+      const boundaries = statsTesting.getTimerBoundaries(eventLog);
+      // 120 step boundaries, no end boundary
+      expect(boundaries).toHaveLength(120);
+    });
+
+    it("skips end boundary in custom time mode", () => {
+      (Config as { mode: string }).mode = "custom";
+      customTextLimit.mode = "time";
+      try {
+        logTestEvent("timer", 0, timer("start", 0));
+        for (let i = 1; i <= 30; i++) {
+          logTestEvent("timer", i * 1000, timer("step", i));
+        }
+        logTestEvent("timer", 29994, timer("end", 30));
+
+        const eventLog = buildEventLog();
+        expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(30);
+      } finally {
+        customTextLimit.mode = "words";
+      }
+    });
+
+    describe("invariant: boundaries.length === Math.round(endMs / 1000)", () => {
+      // Sanity invariant: for non-timed modes, the number of timer boundaries
+      // must equal Math.round(testDurationSeconds) — matches the legacy
+      // keypressCountHistory length contract. Catches drift-induced extra steps
+      // or off-by-one boundaries.
+      const cases: { name: string; endMs: number }[] = [
+        { name: ".00 (exactly 5s)", endMs: 5000 },
+        { name: ".49 (5.49s)", endMs: 5490 },
+        { name: ".50 (5.50s)", endMs: 5500 },
+        { name: ".99 (5.99s)", endMs: 5990 },
+        { name: "sub-1s .49", endMs: 490 },
+        { name: "sub-1s .99", endMs: 990 },
+      ];
+
+      for (const { name, endMs } of cases) {
+        it(`holds for ${name}`, () => {
+          logTestEvent("timer", 0, timer("start", 0));
+          const fullSeconds = Math.floor(endMs / 1000);
+          for (let i = 1; i <= fullSeconds; i++) {
+            logTestEvent("timer", i * 1000, timer("step", i));
+          }
+          logTestEvent("timer", endMs, timer("end", fullSeconds));
+
+          const eventLog = buildEventLog();
+          const boundaries = statsTesting.getTimerBoundaries(eventLog);
+          const roundedDuration = Math.round(endMs / 1000);
+          expect(boundaries).toHaveLength(roundedDuration);
+        });
+      }
     });
   });
 
@@ -229,14 +379,14 @@ describe("stats.ts", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1150, keyDown());
 
-      expect(getStartToFirstKeypressMs()).toBe(150);
+      expect(getStartToFirstKeypressMs(buildEventLog())).toBe(150);
     });
 
     it("returns 0 if keydown comes before start", () => {
       logTestEvent("keydown", 900, keyDown());
       logTestEvent("timer", 1000, timer("start", 0));
 
-      expect(getStartToFirstKeypressMs()).toBe(0);
+      expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
     });
 
     it("returns 0 in zen mode", () => {
@@ -244,11 +394,11 @@ describe("stats.ts", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1150, keyDown());
 
-      expect(getStartToFirstKeypressMs()).toBe(0);
+      expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
     });
 
     it("returns 0 if no events", () => {
-      expect(getStartToFirstKeypressMs()).toBe(0);
+      expect(getStartToFirstKeypressMs(buildEventLog())).toBe(0);
     });
   });
 
@@ -260,7 +410,7 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1800, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
 
-      expect(getLastKeypressToEndMs()).toBe(200);
+      expect(getLastKeypressToEndMs(buildEventLog())).toBe(200);
     });
 
     it("returns 0 in zen mode", () => {
@@ -269,7 +419,7 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
 
-      expect(getLastKeypressToEndMs()).toBe(0);
+      expect(getLastKeypressToEndMs(buildEventLog())).toBe(0);
     });
   });
 
@@ -279,20 +429,20 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("timer", 4000, timer("end", 3));
 
-      expect(getTestDurationMs()).toBe(3000);
+      expect(getTestDurationMs(buildEventLog())).toBe(3000);
     });
 
     it("returns 0 if no end event", () => {
       logTestEvent("timer", 1000, timer("start", 0));
-      expect(getTestDurationMs()).toBe(0);
+      expect(getTestDurationMs(buildEventLog())).toBe(0);
     });
   });
 
-  describe("getRawPerSecond", () => {
+  describe("getBurstHistory", () => {
     it("converts keypresses to WPM using real interval duration", () => {
       setupBasicTest();
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory(buildEventLog());
       // 3 keypresses in 1s = (3/5)*60 = 36 WPM
       expect(raw[0]).toBe(36);
       // 2 keypresses in 1s = (2/5)*60 = 24 WPM
@@ -312,7 +462,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2000, timer("end", 1));
 
-      const raw = getRawPerSecond();
+      const raw = getBurstHistory(buildEventLog());
       expect(raw).toEqual([12]); // 1 keypress in 1s
     });
   });
@@ -328,13 +478,13 @@ describe("stats.ts", () => {
       logTestEvent("timer", 3000, timer("step", 2));
       logTestEvent("timer", 3000, timer("end", 2));
 
-      const errors = getErrorCountHistory();
+      const errors = getErrorCountHistory(buildEventLog());
       expect(errors).toEqual([1, 2]);
     });
 
     it("returns zeros when all correct", () => {
       setupBasicTest();
-      const errors = getErrorCountHistory();
+      const errors = getErrorCountHistory(buildEventLog());
       expect(errors).toEqual([0, 0, 0]);
     });
   });
@@ -352,7 +502,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 4000, timer("step", 3));
       logTestEvent("timer", 4000, timer("end", 3));
 
-      expect(getAfkDuration()).toBe(1);
+      expect(getAfkDuration(buildEventLog())).toBe(1);
     });
 
     it("returns 0 when all intervals have keydowns", () => {
@@ -365,7 +515,111 @@ describe("stats.ts", () => {
       logTestEvent("timer", 3000, timer("step", 2));
       logTestEvent("timer", 3000, timer("end", 2));
 
-      expect(getAfkDuration()).toBe(0);
+      expect(getAfkDuration(buildEventLog())).toBe(0);
+    });
+  });
+
+  describe("getInputHistory", () => {
+    it("treats abandoned word as empty when Firefox Ctrl+Backspace ate the sentinel", () => {
+      // Firefox groups whitespace + non-word punctuation as one delete run.
+      // Sequence: type "=ri" at word 1, Ctrl+Backspace twice. The first delete
+      // leaves "=" (browser deletes "ri" only). The second deletes the
+      // sentinel + "=" together, which monkeytype interprets as crossing the
+      // word boundary → goToPreviousWord. Word 1 is abandoned with leftover
+      // "=" residue in its event stream; its final state should still be "".
+      TestWords.list.push("hello", "leave");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "h", charIndex: 0 }),
+      );
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "e", charIndex: 1 }),
+      );
+      logTestEvent(
+        "input",
+        1120,
+        input({ wordIndex: 0, data: "l", charIndex: 2 }),
+      );
+      logTestEvent(
+        "input",
+        1130,
+        input({ wordIndex: 0, data: "l", charIndex: 3 }),
+      );
+      logTestEvent(
+        "input",
+        1140,
+        input({ wordIndex: 0, data: "o", charIndex: 4 }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({
+          wordIndex: 0,
+          data: " ",
+          charIndex: 5,
+          commitsWord: true,
+        }),
+      );
+
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 1,
+          data: "=",
+          correct: false,
+          charIndex: 0,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1210,
+        input({
+          wordIndex: 1,
+          data: "r",
+          correct: false,
+          charIndex: 1,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1220,
+        input({
+          wordIndex: 1,
+          data: "i",
+          correct: false,
+          charIndex: 2,
+        }),
+      );
+
+      // first Ctrl+Backspace: "=ri" → "="
+      logTestEvent("input", 1300, {
+        wordIndex: 1,
+        charIndex: 3,
+        inputType: "deleteWordBackward",
+        inputValue: "=",
+      } as InputEventData);
+
+      // second Ctrl+Backspace: Firefox ate sentinel + "=" → goToPreviousWord;
+      // clearedNextWord marks word 1 (= wordIndex + 1) as abandoned
+      logTestEvent("input", 1400, {
+        wordIndex: 0,
+        charIndex: 0,
+        inputType: "deleteWordBackward",
+        inputValue: "",
+        clearedNextWord: true,
+      } as InputEventData);
+
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const history = getInputHistory(buildEventLog());
+      expect(history[0]).toBe("");
+      expect(history[1]).toBe("");
     });
   });
 
@@ -375,14 +629,14 @@ describe("stats.ts", () => {
       logTestEvent("input", 1200, input({ charIndex: 1 }));
       logTestEvent("input", 1300, input({ charIndex: 2, correct: false }));
 
-      const acc = getAccuracy();
+      const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(2);
       expect(acc.incorrect).toBe(1);
       expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
     it("returns 0% for no events", () => {
-      const acc = getAccuracy();
+      const acc = getAccuracy(buildEventLog());
       expect(acc.percentage).toBe(0);
     });
 
@@ -394,7 +648,7 @@ describe("stats.ts", () => {
         inputType: "deleteContentBackward",
       } as InputEventData);
 
-      const acc = getAccuracy();
+      const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(1);
       expect(acc.incorrect).toBe(0);
     });
@@ -407,7 +661,7 @@ describe("stats.ts", () => {
         input({ charIndex: 1, correct: false, inputStopped: true }),
       );
 
-      const acc = getAccuracy();
+      const acc = getAccuracy(buildEventLog());
       expect(acc.correct).toBe(1);
       expect(acc.incorrect).toBe(1);
       expect(acc.percentage).toBe(50);
@@ -423,14 +677,81 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1250, keyDown());
       logTestEvent("keyup", 1300, keyUp());
 
-      const spacings = getKeypressSpacing();
+      const spacings = getKeypressSpacing(buildEventLog());
       expect(spacings).toEqual([100, 150]);
     });
 
     it("returns empty for single keydown", () => {
       logTestEvent("keydown", 1000, keyDown());
 
-      expect(getKeypressSpacing()).toEqual([]);
+      expect(getKeypressSpacing(buildEventLog())).toEqual([]);
+    });
+
+    it("clamps a pre-start first keydown so the timing invariant holds", () => {
+      // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
+      // pressed seconds before the user starts typing). cleanupData keeps the
+      // last pre-start keydown by design, and getStartToFirstKeypressMs clamps
+      // its negative offset to 0 — so the first spacing must clamp the same
+      // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
+      // the testDuration vs key timings check.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("keydown", -16240, keyDown());
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("input", 0, input());
+      logTestEvent("keyup", 100, keyUp());
+      logTestEvent("keydown", 500, keyDown("KeyS"));
+      logTestEvent("keyup", 580, keyUp("KeyS"));
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+
+      const sumSpacing = getKeypressSpacing(buildEventLog()).reduce(
+        (a, b) => a + b,
+        0,
+      );
+      const total =
+        getStartToFirstKeypressMs(buildEventLog()) +
+        sumSpacing +
+        getLastKeypressToEndMs(buildEventLog());
+
+      expect(Math.abs(getTestDurationMs(buildEventLog()) - total)).toBeLessThan(
+        100,
+      );
+    });
+
+    it("cleanupData drops post-end keydowns so the timing invariant holds", () => {
+      // The compareCompletedEvents check in test-logic.ts relies on:
+      //   startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      // In time mode the user often keeps typing during finish()'s fade
+      // animation. Without filtering, post-end keydowns inflate keySpacing
+      // while getLastKeypressToEndMs clamps the negative diff to 0, breaking
+      // the invariant. finish() calls cleanupData() before the check —
+      // that's the centralised filter; this test exercises the same path.
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("keydown", 500, keyDown());
+      logTestEvent("keyup", 580, keyUp());
+      logTestEvent("keydown", 700, keyDown());
+      logTestEvent("keyup", 780, keyUp());
+      logTestEvent("timer", 1000, timer("step", 1));
+      logTestEvent("timer", 1000, timer("end", 1));
+      // user keeps typing through the fade
+      logTestEvent("keydown", 1120, keyDown());
+      logTestEvent("keyup", 1170, keyUp());
+
+      cleanupData();
+
+      const sumSpacing = getKeypressSpacing(buildEventLog()).reduce(
+        (a, b) => a + b,
+        0,
+      );
+      const total =
+        getStartToFirstKeypressMs(buildEventLog()) +
+        sumSpacing +
+        getLastKeypressToEndMs(buildEventLog());
+
+      expect(Math.abs(getTestDurationMs(buildEventLog()) - total)).toBeLessThan(
+        100,
+      );
     });
   });
 
@@ -442,7 +763,7 @@ describe("stats.ts", () => {
       logTestEvent("keyup", 1080, keyUp("KeyA"));
       logTestEvent("keyup", 1100, keyUp("KeyS"));
 
-      expect(getKeypressOverlap()).toBe(30);
+      expect(getKeypressOverlap(buildEventLog())).toBe(30);
     });
 
     it("returns 0 with no overlap", () => {
@@ -451,7 +772,7 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1100, keyDown("KeyS"));
       logTestEvent("keyup", 1150, keyUp("KeyS"));
 
-      expect(getKeypressOverlap()).toBe(0);
+      expect(getKeypressOverlap(buildEventLog())).toBe(0);
     });
   });
 
@@ -462,14 +783,14 @@ describe("stats.ts", () => {
       logTestEvent("keydown", 1100, keyDown("KeyS"));
       logTestEvent("keyup", 1200, keyUp("KeyS"));
 
-      const durations = getKeypressDurations();
+      const durations = getKeypressDurations(buildEventLog());
       expect(durations).toEqual([80, 100]);
     });
 
     it("returns 0 for keys without keyup", () => {
       logTestEvent("keydown", 1000, keyDown());
 
-      const durations = getKeypressDurations();
+      const durations = getKeypressDurations(buildEventLog());
       expect(durations).toEqual([0]);
     });
   });
@@ -478,7 +799,7 @@ describe("stats.ts", () => {
     it("counts insertText events per timer interval", () => {
       setupBasicTest();
 
-      const kps = getKeypressesPerSecond();
+      const kps = getKeypressesPerSecond(buildEventLog());
       expect(kps).toEqual([3, 2, 1]);
     });
 
@@ -493,12 +814,72 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2000, timer("end", 1));
 
-      expect(getKeypressesPerSecond()).toEqual([1]);
+      expect(getKeypressesPerSecond(buildEventLog())).toEqual([1]);
     });
 
     it("returns empty for no timer events", () => {
       logTestEvent("input", 1200, input());
-      expect(getKeypressesPerSecond()).toEqual([]);
+      expect(getKeypressesPerSecond(buildEventLog())).toEqual([]);
+    });
+
+    it("counts keypresses in last partial second when gap rounds to 0.5s", () => {
+      // mirrors the totalKeypressCountHistory mismatch: legacy pushes for roundTo2 >= 0.5,
+      // but the old boundary check (>= 500ms) skips a 496ms tail
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // first second
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // 496ms tail
+      logTestEvent("input", 2400, input({ charIndex: 2 }));
+      logTestEvent("timer", 2496, timer("end", 1));
+
+      // endMs=1496, 1496%1000=496ms → roundTo2(0.496)=0.5 → end boundary added → [1, 2]
+      expect(getKeypressesPerSecond(buildEventLog())).toEqual([1, 2]);
+    });
+  });
+
+  describe("getTargetWord", () => {
+    it("returns simulatedInput in zen mode", () => {
+      (Config as { mode: string }).mode = "zen";
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "anything", false),
+      ).toBe("anything");
+    });
+
+    it("returns word without trailing space when it ends with newline", () => {
+      TestWords.list.push("hello\n");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello\n");
+    });
+
+    it("appends trailing space for non-last word", () => {
+      TestWords.list.push("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello ");
+    });
+
+    it("does not append trailing space for last word", () => {
+      TestWords.list.push("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
+      ).toBe("hello");
+    });
+
+    it("does not append trailing space when nospace funbox is active", () => {
+      TestWords.list.push("hello");
+      (Config as { funbox: string[] }).funbox = ["nospace"];
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello");
+    });
+
+    it("does not append trailing space when underscore_spaces funbox is active", () => {
+      TestWords.list.push("hello");
+      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello");
     });
   });
 
@@ -516,7 +897,7 @@ describe("stats.ts", () => {
         );
       }
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(5);
       expect(chars.correctWord).toBe(5);
       expect(chars.incorrect).toBe(0);
@@ -540,7 +921,7 @@ describe("stats.ts", () => {
         input({ charIndex: 1, wordIndex: 0, data: "x", correct: false }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.allCorrect).toBe(1);
       expect(chars.incorrect).toBe(1);
     });
@@ -566,7 +947,7 @@ describe("stats.ts", () => {
         input({ charIndex: 2, wordIndex: 0, data: "c" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       expect(chars.extra).toBe(1);
     });
 
@@ -594,7 +975,12 @@ describe("stats.ts", () => {
       logTestEvent(
         "input",
         1250,
-        input({ charIndex: 3, wordIndex: 0, data: " " }),
+        input({
+          charIndex: 3,
+          wordIndex: 0,
+          data: " ",
+          commitsWord: true,
+        }),
       );
       // type "w" on second word
       logTestEvent(
@@ -603,7 +989,7 @@ describe("stats.ts", () => {
         input({ charIndex: 0, wordIndex: 1, data: "w" }),
       );
 
-      const chars = getChars();
+      const chars = getChars(buildEventLog());
       // word 0: "hel " vs "hello " → 3 correct, 1 incorrect, 2 missed
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
@@ -627,7 +1013,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2000, timer("step", 1));
       logTestEvent("timer", 2000, timer("end", 1));
 
-      const wpm = getWpmHistory();
+      const wpm = getWpmHistory(buildEventLog());
       // 5 correct chars in 1s = (5/5)*60 = 60 WPM
       expect(wpm).toEqual([60]);
     });
@@ -668,82 +1054,224 @@ describe("stats.ts", () => {
       logTestEvent("timer", 3000, timer("step", 2));
       logTestEvent("timer", 3000, timer("end", 2));
 
-      const wpm = getWpmHistory();
+      const wpm = getWpmHistory(buildEventLog());
       expect(wpm.length).toBe(2);
       // at 1s: "ab " fully correct = 3 correctWord chars → (3/5)*60 = 36
       expect(wpm[0]).toBe(36);
       // at 2s: 3 + 2 ("cd") = 5 correctWord chars → (5/5)*60/2 = 30
       expect(wpm[1]).toBe(30);
     });
+
+    it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
+      (Config as { funbox: string[] }).funbox = ["nospace"];
+      TestWords.list.push("ab", "cd");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "ab" then "cd" with no space between (nospace mode)
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 1, wordIndex: 0, data: "b" }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 1, wordIndex: 1, data: "d" }),
+      );
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2000, timer("end", 1));
+
+      const wpm = getWpmHistory(buildEventLog());
+      // both words fully correct → 4 correctWord chars in 1s = (4/5)*60 = 48
+      expect(wpm).toEqual([48]);
+    });
+
+    it("counts multiline word as correct when target ends in newline", () => {
+      TestWords.list.push("hello\n", "world");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "hello\n"
+      const word1 = "hello\n";
+      for (let i = 0; i < word1.length; i++) {
+        logTestEvent(
+          "input",
+          1100 + i * 50,
+          input({ charIndex: i, wordIndex: 0, data: word1[i] as string }),
+        );
+      }
+      // type "world"
+      const word2 = "world";
+      for (let i = 0; i < word2.length; i++) {
+        logTestEvent(
+          "input",
+          1500 + i * 50,
+          input({ charIndex: i, wordIndex: 1, data: word2[i] as string }),
+        );
+      }
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 2000, timer("end", 1));
+
+      const wpm = getWpmHistory(buildEventLog());
+      // word 0: "hello\n" target matches input "hello\n" → 6 correctWord
+      // word 1: "world" (last word) matches → 5 correctWord
+      // 11 chars in 1s = (11/5)*60 = 132
+      expect(wpm).toEqual([132]);
+    });
   });
 
-  describe("forceReleaseAllKeys", () => {
-    it("creates synthetic keyup events for pressed keys", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS is still held
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyups = events.filter(
-        (e) => e.type === "keyup" && e.data.code === "KeyS",
-      );
-      expect(keyups.length).toBe(1);
-      expect((keyups[0] as { data: { estimated?: true } }).data.estimated).toBe(
-        true,
-      );
+  describe("inferActiveWordIndex", () => {
+    it("returns 0 when no word has input", () => {
+      const eventsPerWord = new Map();
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
     });
 
-    it("uses average duration for estimated keyup timing", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      // KeyA held for 80ms
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
-      // KeyS held for 120ms
-      logTestEvent("keydown", 1200, keyDown("KeyS"));
-      logTestEvent("keyup", 1320, keyUp("KeyS"));
-      // KeyD still held at 1400
-      logTestEvent("keydown", 1400, keyDown("KeyD"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyD",
+    it("returns 0 when entries exist but none have input", () => {
+      // word events present but all input data is empty / inputValue=""
+      logTestEvent(
+        "input",
+        1000,
+        input({ wordIndex: 0, data: "", inputValue: "" }),
       );
-      // avg duration = (80+120)/2 = 100, so keyup at 1400+100 = 1500
-      expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1500);
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
     });
 
-    it("uses default 80ms when no completed key durations exist", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1200, keyDown("KeyA"));
-
-      forceReleaseAllKeys();
-
-      const events = getAllTestEvents();
-      const keyup = events.find(
-        (e) => e.type === "keyup" && e.data.code === "KeyA",
+    it("returns max wordIndex when last word has no committed space", () => {
+      // word 0: "hi"
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
       );
-      expect(keyup).toBeDefined();
-      expect(keyup!.ms).toBe(1280);
+      // space commit on word 0
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
+      // word 1: "yo" (no trailing space)
+      logTestEvent("input", 1200, input({ wordIndex: 1, data: "y" }));
+      logTestEvent(
+        "input",
+        1250,
+        input({ wordIndex: 1, charIndex: 1, data: "o" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
     });
 
-    it("does nothing when no keys are pressed", () => {
-      logTestEvent("timer", 1000, timer("start", 0));
-      logTestEvent("keydown", 1100, keyDown("KeyA"));
-      logTestEvent("keyup", 1180, keyUp("KeyA"));
+    it("advances past last word when trailing space was committed", () => {
+      // word 0: "hi "
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 2,
+          data: " ",
+          commitsWord: true,
+          inputValue: "hi ",
+        }),
+      );
 
-      // const beforeCount = getAllTestEvents().length;
-      forceReleaseAllKeys();
-      // cache invalidated, re-get
-      resetTestEvents();
-      // no new events should have been added — but we can't easily check after reset
-      // so instead verify no error is thrown
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+
+    it("does not advance when last event is a non-space insert", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("does not advance when last event is a backspace", () => {
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({ wordIndex: 0, charIndex: 1, data: "i" }),
+      );
+      logTestEvent(
+        "input",
+        1100,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(0);
+    });
+
+    it("picks max wordIndex across non-contiguous buckets (post-regression order)", () => {
+      // simulates a backspace that crosses back into word 0 AFTER word 1 events.
+      // Map insertion order is still 0, 1 (word 0 was set first), so the loop
+      // must compute true max by key, not by iteration position.
+      logTestEvent("input", 1000, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1050,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          data: " ",
+          commitsWord: true,
+          inputValue: "h ",
+        }),
+      );
+      logTestEvent("input", 1100, input({ wordIndex: 1, data: "y" }));
+      // backspace lands a destination event back into word 0
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          wordIndex: 0,
+          charIndex: 1,
+          inputType: "deleteContentBackward",
+          data: "",
+          inputValue: "h",
+        }),
+      );
+
+      const eventsPerWord = getEventsPerWord(getAllTestEvents());
+      // word 1 has input "y" (no trailing space) → max is 1, no advance
+      expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
     });
   });
 });

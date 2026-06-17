@@ -1,8 +1,11 @@
+import { Config } from "@monkeytype/schemas/configs";
 import { Keycode } from "../../constants/keys";
 import {
   DeleteInputType,
   InsertInputType,
 } from "../../input/helpers/input-type";
+import { CustomTextLimitMode } from "@monkeytype/schemas/util";
+import { getMode2 } from "../../utils/misc";
 
 export type TestEventType =
   | "keydown"
@@ -25,6 +28,15 @@ export type TestEvent =
   | InputEvent
   | CompositionTestEvent;
 
+export type TestEventNoMs =
+  | Omit<KeydownEvent, "ms">
+  | Omit<KeyupEvent, "ms">
+  | Omit<TimerEvent, "ms">
+  | InputEventNoMs
+  | Omit<CompositionTestEvent, "ms">;
+
+export type InputEventNoMs = Omit<InputEvent, "ms">;
+
 export type TestEventData =
   | KeydownEventData
   | KeyupEventData
@@ -36,20 +48,20 @@ export type KeydownEvent = EventProps<"keydown", KeydownEventData>;
 
 export type KeydownEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
-  ctrl: boolean;
-  shift: boolean;
-  alt: boolean;
-  meta: boolean;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
 };
 
 export type KeyupEvent = EventProps<"keyup", KeyupEventData>;
 
 export type KeyupEventData = {
   code: Keycode | "NoCode" | `NoCode${number}`;
-  ctrl: boolean;
-  shift: boolean;
-  alt: boolean;
-  meta: boolean;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
   estimated?: true; // true if this event never happened, but was estimated (force keyup on test end)
 };
 
@@ -69,21 +81,32 @@ export type TimerEventData =
 
 export type InputEvent = EventProps<"input", InputEventData>;
 
-export type InputEventData = {
+type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
-} & (
-  | {
+  inputValue: string;
+};
+
+export type InputEventData =
+  | (BaseInputEventData & {
       inputType: InsertInputType;
       data: string;
       correct: boolean;
-      isCompositionEnding: boolean;
-      inputStopped: boolean;
-    }
-  | {
+      isCompositionEnding?: true;
+      inputStopped?: true;
+      // true when this was a space that advanced to the next word (commit
+      // attempt) rather than being inserted as a literal character
+      commitsWord?: true;
+      lastWord?: true;
+    })
+  | (BaseInputEventData & {
       inputType: DeleteInputType;
-    }
-);
+      // true on the destination event of a regression that crossed back
+      // over a word with leftover content (e.g. Firefox Ctrl+Backspace
+      // eating sentinel + non-word residue). The cleared word is
+      // wordIndex + 1.
+      clearedNextWord?: true;
+    });
 
 export type CompositionTestEvent = EventProps<
   "composition",
@@ -93,8 +116,29 @@ export type CompositionTestEvent = EventProps<
 export type CompositionTestEventData =
   | {
       event: "start";
+      wordIndex: number;
     }
   | {
       event: "update" | "end";
       data: string;
+      wordIndex: number;
     };
+
+export type EventLogContext = {
+  targetWords: string[];
+  // isTimedTest: boolean;
+  mode: Config["mode"];
+  mode2: ReturnType<typeof getMode2>;
+  customTextLimitMode?: CustomTextLimitMode;
+  customTextLimitValue?: number;
+  isFunboxWithNospacePropertyActive?: boolean;
+  bailedOut: boolean;
+  koreanStatus: boolean;
+};
+
+export const EVENT_LOG_VERSION = 1;
+export type EventLog = {
+  version: typeof EVENT_LOG_VERSION;
+  events: TestEventNoMs[];
+  context: EventLogContext;
+};

@@ -35,7 +35,7 @@ export function CookiesModal(): JSXElement {
   return (
     <AnimatedModal
       id="Cookies"
-      modalClass="min-w-[500px]"
+      modalClass="max-w-[500px]"
       wrapperClass="justify-end items-end"
       closeOnEscape={false}
       closeOnWrapperClick={false}

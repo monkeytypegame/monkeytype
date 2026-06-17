@@ -189,7 +189,19 @@ export async function reportCompletedEventMismatch(
   req: MonkeyRequest<undefined, ReportCompletedEventMismatchRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { notMatching, mode, mode2, difficulty, duration } = req.body;
+  const {
+    notMatching,
+    mismatchedKeys,
+    groupKey,
+    language,
+    mode,
+    mode2,
+    difficulty,
+    duration,
+    funboxes,
+    version,
+    eventLog,
+  } = req.body;
   // Logger.warning(
   //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
   // );
@@ -197,7 +209,19 @@ export async function reportCompletedEventMismatch(
   // Logger.warning(`New CE: ${JSON.stringify(ce2)}`);
   void addLog(
     "completed_event_mismatch",
-    { notMatching, mode, mode2, difficulty, duration },
+    {
+      notMatching,
+      mismatchedKeys,
+      groupKey,
+      language,
+      mode,
+      mode2,
+      difficulty,
+      duration,
+      funboxes,
+      version,
+      eventLog,
+    },
     uid,
   );
   return new MonkeyResponse("Mismatch reported", null);

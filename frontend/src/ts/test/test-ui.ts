@@ -7,6 +7,11 @@ import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
+import {
+  getCurrentInput,
+  getInputHistory,
+  getInputForWord,
+} from "./test-input";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -56,8 +61,6 @@ import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
-import * as ModesNotice from "../elements/modes-notice";
-import * as Last10Average from "../elements/last-10-average";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import {
   ElementsWithUtils,
@@ -68,7 +71,7 @@ import {
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
-import { wordsHaveNewline } from "../states/test";
+import { getCurrentQuote, wordsHaveNewline } from "../states/test";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -493,7 +496,7 @@ function showWords(): void {
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
-    appendEmptyWordElement();
+    appendEmptyWordElement(0);
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -509,9 +512,7 @@ function showWords(): void {
   PaceCaret.resetCaretPosition();
 }
 
-export function appendEmptyWordElement(
-  index = TestInput.input.getHistory().length,
-): void {
+export function appendEmptyWordElement(index: number): void {
   wordsEl.appendHtml(
     `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
   );
@@ -700,8 +701,8 @@ export function addWord(
   //   // in case word addition took a long time and some input happened in the mean time
   //   // we need to update word letters for that word
   //   const inputHistory = [
-  //     ...TestInput.input.getHistory(),
-  //     TestInput.input.current,
+  //     ...getInputHistory(),
+  //     getCurrentInput(),
   //   ];
   //   const input = inputHistory[wordIndex];
   //   if (input !== undefined && input !== "") {
@@ -1068,7 +1069,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* calculate current word width to add to #words margin */
   let currentWordWidth = 0;
-  const inputLength = TestInput.input.current.length;
+  const inputLength = getCurrentInput().length;
   if (Config.tapeMode === "letter" && inputLength > 0) {
     const letters = activeWordEl.qsa("letter");
     let lastPositiveLetterWidth = 0;
@@ -1136,7 +1137,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 }
 
 export function updatePremid(): void {
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let fbtext = "";
   if (Config.funbox.length > 0) {
     fbtext = ` ${Config.funbox.join(" ")}`;
@@ -1276,20 +1277,26 @@ function buildWordLettersHTML(
     ) {
       extraCorrected = "extraCorrected";
     }
+
+    let displayLetter = inputCharacters[c];
+    if (displayLetter === " ") {
+      displayLetter = "_";
+    }
+
     if (Config.mode === "zen" || wordCharacters[c] !== undefined) {
       if (Config.mode === "zen" || inputCharacters[c] === wordCharacters[c]) {
         if (
           correctedChar === inputCharacters[c] ||
           correctedChar === undefined
         ) {
-          out += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
+          out += `<letter class="correct ${extraCorrected}">${displayLetter}</letter>`;
         } else {
           out += `<letter class="corrected ${extraCorrected}">${
-            inputCharacters[c]
+            displayLetter
           }</letter>`;
         }
       } else {
-        if (inputCharacters[c] === TestInput.input.current) {
+        if (inputCharacters[c] === getCurrentInput()) {
           out += `<letter class='correct ${extraCorrected}'>${
             wordCharacters[c]
           }</letter>`;
@@ -1302,7 +1309,7 @@ function buildWordLettersHTML(
         }
       }
     } else {
-      out += `<letter class="incorrect extra">${inputCharacters[c]}</letter>`;
+      out += `<letter class="incorrect extra">${displayLetter}</letter>`;
     }
   }
   return out;
@@ -1312,9 +1319,9 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistoryLength = TestInput.input.getHistory().length;
+  const inputHistoryLength = getInputHistory().length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
-    const input = TestInput.input.getHistory(i);
+    const input = getInputForWord(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
@@ -1390,7 +1397,10 @@ async function loadWordsHistory(): Promise<boolean> {
       );
     } catch (e) {
       try {
-        for (const char of word) {
+        for (let char of word) {
+          if (char === " ") {
+            char = "_";
+          }
           const letterEl = document.createElement("letter");
           letterEl.textContent = char;
           wordEl.appendChild(letterEl);
@@ -1743,7 +1753,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(TestInput.input.current.length),
+      TestWords.words.getCurrentText().charAt(getCurrentInput().length),
     );
   }
 
@@ -1764,7 +1774,7 @@ export function afterTestTextInput(
 
   if (!increasedWordIndex) {
     void updateWordLetters({
-      input: inputOverride ?? TestInput.input.current,
+      input: inputOverride ?? getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1775,7 +1785,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1785,7 +1795,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: TestInput.input.current,
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1815,7 +1825,7 @@ export function beforeTestWordChange(
     Config.strictSpace
   ) {
     void updateWordLetters({
-      input: TestInput.input.current,
+      input: getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1897,14 +1907,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();
 
-  if (Config.showAverage !== "off") {
-    void Last10Average.update().then(() => {
-      void ModesNotice.update();
-    });
-  } else {
-    void ModesNotice.update();
-  }
-
   if (source === "resultPage") {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
@@ -1944,11 +1946,11 @@ export function onTestFinish(): void {
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, TestInput.input.getHistory().length)
+      .slice(0, getInputHistory().length)
       .join(" ");
   }
   await copyToClipboard(words);
@@ -1957,7 +1959,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.getHistory().join(" ");
+    words = getInputHistory().join(" ");
   } else {
     words = Object.keys(TestInput.missedWords ?? {}).join(" ");
   }
@@ -2016,6 +2018,16 @@ qs("#wordsWrapper")?.on("click", () => {
   focusWords();
 });
 
+window.addEventListener("blur", () => {
+  OutOfFocus.show("window");
+});
+
+// little roadblock for basic cheating
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "hidden") return;
+  OutOfFocus.show("window");
+});
+
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
@@ -2050,7 +2062,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: TestInput.input.current,
+        input: getCurrentInput(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

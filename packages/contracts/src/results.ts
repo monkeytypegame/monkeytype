@@ -13,6 +13,12 @@ import {
   ResultMinifiedSchema,
   ResultSchema,
 } from "@monkeytype/schemas/results";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
+import {
+  DifficultySchema,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/schemas/shared";
 import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetResultsQuerySchema = z.object({
@@ -61,10 +67,20 @@ export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const ReportCompletedEventMismatchRequestSchema = z.object({
   notMatching: z.array(z.string().max(100)).max(50),
-  mode: z.string().optional(),
-  mode2: z.string().optional(),
-  difficulty: z.string().optional(),
-  duration: z.number().optional(),
+  mismatchedKeys: z.array(z.string().max(100)).max(50),
+  groupKey: z.string().max(500),
+  language: LanguageSchema.optional(),
+  mode: ModeSchema.optional(),
+  mode2: Mode2Schema.optional(),
+  difficulty: DifficultySchema.optional(),
+  duration: z.number().max(200).optional(),
+  funboxes: z.string().max(100).optional(),
+  version: z.literal(28),
+  eventLog: z.object({
+    version: z.number(),
+    context: z.record(z.unknown()),
+    events: z.array(z.record(z.unknown())).max(10000),
+  }),
   // ce: z.record(z.unknown()),
   // ce2: z.record(z.unknown()),
 });

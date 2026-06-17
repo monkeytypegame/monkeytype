@@ -1,6 +1,7 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
+import { getCurrentInput } from "../../test/test-input";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -86,8 +87,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
-      options.data
+    TestWords.words.getCurrentText()[getCurrentInput().length] !== options.data
   ) {
     // replace the data with the override
     setInputElementValue(
@@ -101,7 +101,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   // input and target word
-  const testInput = TestInput.input.current;
+  const testInput = getCurrentInput();
   const currentWord = TestWords.words.getCurrentText();
 
   // if the character is visually equal, replace it with the target character
@@ -149,12 +149,39 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
+  // handing cases where last char needs to be removed
+  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
+  // like accuracy, keypress errors, and missed words
+  let removeLastChar = false;
+  let visualInputOverride: string | undefined;
+  if (Config.stopOnError === "letter" && !correct) {
+    if (!Config.blindMode) {
+      visualInputOverride = testInput + data;
+    }
+    removeLastChar = true;
+  }
+
+  if (!isSpace(data) && correctShiftUsed === false) {
+    removeLastChar = true;
+    visualInputOverride = undefined;
+    incrementIncorrectShiftsInARow();
+    if (getIncorrectShiftsInARow() >= 5) {
+      showNoticeNotification("Opposite shift mode is on.", {
+        important: true,
+        customTitle: "Reminder",
+      });
+    }
+  } else {
+    resetIncorrectShiftsInARow();
+  }
+
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
     (testInput + data).length === TestWords.words.getCurrentText().length;
   const shouldGoToNextWord =
-    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
+    !removeLastChar &&
+    (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
 
   // update test input state
   if (!charIsSpace || shouldInsertSpace) {
@@ -182,36 +209,34 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     TestInput.corrected.update(data, correct);
   }
 
-  // handing cases where last char needs to be removed
-  // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
-  // like accuracy, keypress errors, and missed words
-  let removeLastChar = false;
-  let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
-    if (!Config.blindMode) {
-      visualInputOverride = testInput + data;
-    }
-    removeLastChar = true;
-  }
-
-  if (!isSpace(data) && correctShiftUsed === false) {
-    removeLastChar = true;
-    visualInputOverride = undefined;
-    incrementIncorrectShiftsInARow();
-    if (getIncorrectShiftsInARow() >= 5) {
-      showNoticeNotification("Opposite shift mode is on.", {
-        important: true,
-        customTitle: "Reminder",
-      });
-    }
-  } else {
-    resetIncorrectShiftsInARow();
-  }
-
   if (removeLastChar) {
     replaceInputElementLastValueChar("");
     TestInput.input.syncWithInputElement();
   }
+
+  // capture DOM before goToNextWord clears it for the new word
+  const inputValueAfterEvent = getCurrentInput();
+
+  // Log the event BEFORE goToNextWord so readers inside the navigation
+  // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
+  // completed event in derivation. Otherwise the just-typed trigger char
+  // (space/newline) is missing — visible as missing \n element in zen mode.
+  logTestEvent("input", now, {
+    inputType: "insertText",
+    data,
+    correct,
+    wordIndex,
+    charIndex: testInput.length,
+    isCompositionEnding: isCompositionEnding ? true : undefined,
+    inputStopped: removeLastChar ? true : undefined,
+    // when shouldInsertSpace is true, the space char was already inserted via
+    // syncWithInputElement above — only append " " for the advance-space case,
+    // else recorded inputValue ends up with a doubled trailing space.
+    inputValue:
+      inputValueAfterEvent + (charIsSpace && !shouldInsertSpace ? " " : ""),
+    commitsWord: shouldGoToNextWord ? true : undefined,
+    lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
+  });
 
   // going to next word
   let increasedWordIndex: null | boolean = null;
@@ -221,20 +246,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
       zenNewline: charIsNewline && Config.mode === "zen",
+      now,
     });
     lastBurst = result.lastBurst;
     increasedWordIndex = result.increasedWordIndex;
   }
-
-  logTestEvent("input", now, {
-    inputType: "insertText",
-    data,
-    correct,
-    wordIndex,
-    charIndex: testInput.length,
-    isCompositionEnding: isCompositionEnding === true,
-    inputStopped: removeLastChar,
-  });
 
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
@@ -249,7 +265,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   //this COULD be the next word because we are awaiting goToNextWord
   const nextWord = TestWords.words.getCurrentText();
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
-  const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
+  const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
 
   //code mode - auto insert tabs
   if (

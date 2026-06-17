@@ -1,6 +1,8 @@
 import {
   CompositionTestEvent,
   CompositionTestEventData,
+  EVENT_LOG_VERSION,
+  EventLog,
   InputEvent,
   InputEventData,
   KeydownEvent,
@@ -9,15 +11,44 @@ import {
   KeyupEventData,
   TestEvent,
   TestEventData,
+  TestEventNoMs,
   TestEventType,
   TimerEvent,
   TimerEventData,
 } from "./types";
 import { keysToTrack } from "./helpers";
-import { start } from "../test-stats";
 import { Keycode } from "../../constants/keys";
-import { roundTo2 } from "@monkeytype/util/numbers";
-import { resultCalculating } from "../test-state";
+import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
+import * as TestWords from "../test-words";
+import { Config } from "../../config/store";
+import * as CustomText from "../../test/custom-text";
+import { getMode2 } from "../../utils/misc";
+import { isFunboxActiveWithProperty } from "../funbox/list";
+import { getCurrentQuote } from "../../states/test";
+
+export function buildEventLog(): EventLog {
+  const context = {
+    targetWords: [...TestWords.words.list],
+    mode: Config.mode,
+    mode2: getMode2(Config, getCurrentQuote()),
+    koreanStatus: koreanStatus,
+    bailedOut: bailedOut,
+    ...(Config.mode === "custom" && {
+      customTextLimitMode: CustomText.getLimit().mode,
+      customTextLimitValue: CustomText.getLimit().value,
+    }),
+    ...(Config.funbox.length !== 0 && {
+      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+    }),
+  };
+
+  return {
+    version: EVENT_LOG_VERSION,
+    events: getAllTestEvents(),
+    context,
+  };
+}
 
 let keydownEvents: KeydownEvent[] = [];
 let keyupEvents: KeyupEvent[] = [];
@@ -25,7 +56,10 @@ let timerEvents: TimerEvent[] = [];
 let inputEvents: InputEvent[] = [];
 let compositionEvents: CompositionTestEvent[] = [];
 
-let cachedAllEvents: TestEvent[] | undefined;
+let cachedAllEvents: TestEventNoMs[] | undefined;
+
+const sortTieRank = (type: TestEventType): number =>
+  type === "keyup" ? 0 : type === "keydown" ? 1 : type === "timer" ? 3 : 2;
 
 let noCodeIndex = 0;
 let pressedKeys: Map<
@@ -44,6 +78,11 @@ export function logTestEvent(
 
   now = roundTo2(now);
 
+  //strip undefined values from eventData
+  eventData = Object.fromEntries(
+    Object.entries(eventData).filter(([_, v]) => v !== undefined),
+  ) as TestEventData;
+
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
     const code = data.code as Keycode | "NoCode";
@@ -53,8 +92,13 @@ export function logTestEvent(
     }
 
     if (pressedKeys.has(code)) {
-      //already pressed - ignore
-      return;
+      pressedKeys.delete(code);
+      keyupEvents.push({
+        type: "keyup",
+        ms: now,
+        testMs: 0,
+        data: { ...data, code },
+      });
     }
 
     if (resultCalculating) {
@@ -219,27 +263,47 @@ export function cleanupData(): void {
   );
 }
 
-export function getAllTestEvents(): TestEvent[] {
+export function getAllTestEvents(): TestEventNoMs[] {
   if (cachedAllEvents !== undefined) return cachedAllEvents;
 
-  // cachedAllEvents = testData300;
-  // return cachedAllEvents;
-  cachedAllEvents = [
-    ...keydownEvents,
-    ...keyupEvents,
-    ...timerEvents,
-    ...inputEvents,
-    ...compositionEvents,
-  ]
-    .sort(
-      (a, b) =>
-        a.ms - b.ms ||
-        (a.type === "timer" ? 1 : 0) - (b.type === "timer" ? 1 : 0),
-    )
-    .map((event) => {
-      event.testMs = roundTo2(event.ms - start);
-      return event;
-    });
+  const firstEventMs = Math.min(
+    ...[
+      keydownEvents[0]?.ms,
+      keyupEvents[0]?.ms,
+      timerEvents[0]?.ms,
+      inputEvents[0]?.ms,
+      compositionEvents[0]?.ms,
+    ].filter((ms): ms is number => ms !== undefined),
+  );
+
+  const startEventMs =
+    timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
+
+  const total =
+    keydownEvents.length +
+    keyupEvents.length +
+    timerEvents.length +
+    inputEvents.length +
+    compositionEvents.length;
+
+  const merged = new Array<TestEvent>(total);
+  let p = 0;
+  for (const e of keydownEvents) merged[p++] = e;
+  for (const e of keyupEvents) merged[p++] = e;
+  for (const e of timerEvents) merged[p++] = e;
+  for (const e of inputEvents) merged[p++] = e;
+  for (const e of compositionEvents) merged[p++] = e;
+
+  cachedAllEvents = merged
+    .sort((a, b) => a.ms - b.ms || sortTieRank(a.type) - sortTieRank(b.type))
+    .map(
+      (event) =>
+        ({
+          type: event.type,
+          testMs: roundTo2(event.ms - startEventMs),
+          data: event.data,
+        }) as TestEventNoMs,
+    );
 
   return cachedAllEvents;
 }
@@ -295,12 +359,6 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
 }
 
-export function getInputEvents(): InputEvent[] {
-  return getAllTestEvents().filter(
-    (event): event is InputEvent => event.type === "input",
-  );
-}
-
 export function getPressedKeys(): Map<
   Keycode | "NoCode" | `NoCode${number}`,
   { timestamp: number }
@@ -308,43 +366,28 @@ export function getPressedKeys(): Map<
   return pressedKeys;
 }
 
-export function getInputEventsPerWord(
-  startMs?: number,
-  testMsLimit?: number,
-): Map<number, InputEvent[]> {
-  let eventsPerWordIndex: Map<number, InputEvent[]> = new Map();
-  const events = getAllTestEvents();
-  for (const event of events) {
-    if (event.type !== "input") {
-      continue;
-    }
+export function forceReleaseAllKeys(): void {
+  const keydownMsByCode = new Map<string, number>();
+  for (const e of keydownEvents) keydownMsByCode.set(e.data.code, e.ms);
 
-    if (startMs !== undefined && event.testMs < startMs) {
-      continue;
-    }
-
-    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
-      break;
-    }
-
-    let wordIndex = event.data.wordIndex;
-
-    //special case for delete events on the 0th index
-    // because they affect the previous word - so we need to attribute them to the previous word
-    if (
-      (event.data.inputType === "deleteWordBackward" ||
-        event.data.inputType === "deleteContentBackward") &&
-      event.data.charIndex === 0 &&
-      wordIndex > 0
-    ) {
-      wordIndex -= 1;
-    }
-
-    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
-    existing.push(event);
-    eventsPerWordIndex.set(wordIndex, existing);
+  const durations: number[] = [];
+  for (const e of keyupEvents) {
+    const downMs = keydownMsByCode.get(e.data.code);
+    if (downMs === undefined) continue;
+    const d = e.ms - downMs;
+    if (d > 0) durations.push(d);
+    keydownMsByCode.delete(e.data.code);
   }
-  return eventsPerWordIndex;
+
+  // empty → test ended with all keys still held; will be "too short" anyway, magic number is fine
+  const avg = durations.length === 0 ? 80 : roundTo2(mean(durations));
+
+  for (const [key, { timestamp }] of pressedKeys.entries()) {
+    logTestEvent("keyup", timestamp + avg, {
+      code: key, //entries is not picking up the type
+      estimated: true,
+    });
+  }
 }
 
 export const __testing = {

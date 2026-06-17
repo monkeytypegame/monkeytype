@@ -1,21 +1,12 @@
-import {
-  getAllTestEvents,
-  getInputEvents,
-  getInputEventsPerWord,
-  getPressedKeys,
-  logTestEvent,
-} from "./data";
-import * as TestWords from "../../test/test-words";
-import { CharCounts, countChars, getLastChar } from "../../utils/strings";
-import * as CustomText from "../../test/custom-text";
-import { getSimulatedInput } from "./helpers";
-import { activeWordIndex, bailedOut } from "../test-state";
+import { CharCounts, countChars } from "../../utils/strings";
+import { getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
-import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { InputEvent, TestEvent } from "./types";
-import { Config } from "../../config/store";
+import { roundTo2 } from "@monkeytype/util/numbers";
+import { EventLog, TestEventNoMs } from "./types";
+import Hangul from "hangul-js";
 
-function getTimerBoundaries(events: TestEvent[]): number[] {
+function getTimerBoundaries(eventLog: EventLog): number[] {
+  const { events } = eventLog;
   const boundaries: number[] = [];
   let endMs: number | undefined;
 
@@ -29,8 +20,11 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   }
 
   // in zen/bailout, cap to adjusted end to remove trailing afk seconds
-  if (endMs !== undefined && (Config.mode === "zen" || bailedOut)) {
-    const lkte = getRawLastKeypressToEndMs();
+  if (
+    endMs !== undefined &&
+    (eventLog.context.mode === "zen" || eventLog.context.bailedOut)
+  ) {
+    const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
       // remove step boundaries past the adjusted end
@@ -44,8 +38,23 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   }
 
   if (endMs !== undefined) {
-    const last = boundaries[boundaries.length - 1];
-    if (endMs - (last ?? 0) >= 500) {
+    // Timed tests never push an extra bucket (legacy skips setLastSecondNotRound
+    // for time mode). For other modes, mirror the legacy condition exactly:
+    // Math.round(roundTo2(testSeconds) % 1) >= 0.5. The rounding must happen at
+    // the SECONDS level — taking the fractional ms first and rounding can give
+    // a different answer when the rounded seconds carry into the next integer
+    // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
+    // rounds to 0.5 → wrongly adds a bucket).
+
+    const { context } = eventLog;
+    const isTimedTest =
+      context.mode === "time" ||
+      (context.mode === "words" && context.mode2 === "0") ||
+      (context.mode === "custom" && context.customTextLimitMode === "time") ||
+      (context.mode === "custom" && context.customTextLimitValue === 0);
+
+    const testSeconds = roundTo2(endMs / 1000);
+    if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
       boundaries.push(endMs);
     }
   }
@@ -53,10 +62,10 @@ function getTimerBoundaries(events: TestEvent[]): number[] {
   return boundaries;
 }
 
-export function getStartToFirstKeypressMs(): number {
-  if (Config.mode === "zen") return 0;
+export function getStartToFirstKeypressMs(eventLog: EventLog): number {
+  if (eventLog.context.mode === "zen") return 0;
 
-  const events = getAllTestEvents();
+  const { events } = eventLog;
 
   let firstKeypress: number | undefined;
   let start: number | undefined;
@@ -89,8 +98,8 @@ export function getStartToFirstKeypressMs(): number {
 
 // raw version is needed internally by getTestDurationMs to adjust
 // duration in zen/bailout — the public version returns 0 for zen
-function getRawLastKeypressToEndMs(): number {
-  const events = getAllTestEvents();
+function getRawLastKeypressToEndMs(eventLog: EventLog): number {
+  const { events } = eventLog;
 
   let lastKeypress: number | undefined;
   let end: number | undefined;
@@ -128,17 +137,20 @@ function getRawLastKeypressToEndMs(): number {
   return calc < 0 ? 0 : roundTo2(calc);
 }
 
-export function getLastKeypressToEndMs(): number {
-  if (Config.mode === "zen") return 0;
-  return getRawLastKeypressToEndMs();
+export function getLastKeypressToEndMs(eventLog: EventLog): number {
+  if (eventLog.context.mode === "zen") return 0;
+  return getRawLastKeypressToEndMs(eventLog);
 }
 
-function countPerInterval(predicate: (event: TestEvent) => boolean): {
+function countPerInterval(
+  eventLog: EventLog,
+  predicate: (event: TestEventNoMs) => boolean,
+): {
   counts: number[];
   boundaries: number[];
 } {
-  const events = getAllTestEvents();
-  const boundaries = getTimerBoundaries(events);
+  const { events } = eventLog;
+  const boundaries = getTimerBoundaries(eventLog);
 
   const counts: number[] = [];
   let eventIndex = 0;
@@ -161,16 +173,18 @@ function countPerInterval(predicate: (event: TestEvent) => boolean): {
   return { counts, boundaries };
 }
 
-export function getKeypressesPerSecond(): number[] {
+export function getKeypressesPerSecond(eventLog: EventLog): number[] {
   const { counts } = countPerInterval(
+    eventLog,
     (e) => e.type === "input" && e.data.inputType === "insertText",
   );
 
   return counts;
 }
 
-export function getRawPerSecond(): number[] {
+export function getBurstHistory(eventLog: EventLog): number[] {
   const { counts, boundaries } = countPerInterval(
+    eventLog,
     (e) => e.type === "input" && e.data.inputType === "insertText",
   );
 
@@ -183,8 +197,8 @@ export function getRawPerSecond(): number[] {
   });
 }
 
-export function getTestDurationMs(): number {
-  const events = getAllTestEvents();
+export function getTestDurationMs(eventLog: EventLog): number {
+  const { events } = eventLog;
 
   let end: number | undefined;
 
@@ -210,14 +224,14 @@ export function getTestDurationMs(): number {
     return 0;
   }
 
-  if (Config.mode === "zen" || bailedOut) {
-    const lkte = getRawLastKeypressToEndMs();
+  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
+    const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       end -= lkte;
     }
   }
 
-  if (Config.mode !== "custom") {
+  if (eventLog.context.mode !== "custom") {
     end = roundTo2(end / 1000) * 1000;
   }
 
@@ -225,87 +239,172 @@ export function getTestDurationMs(): number {
 }
 
 function getTargetWord(
+  eventLog: EventLog,
   wordIndex: number,
   simulatedInput: string,
   lastWord: boolean,
 ): string {
-  if (Config.mode === "zen") {
+  if (eventLog.context.mode === "zen") {
     return simulatedInput;
   } else {
-    const word = TestWords.words.getText(wordIndex);
+    const word = eventLog.context.targetWords[wordIndex];
 
-    if (getLastChar(word) === "\n") {
+    if (word === undefined) {
+      return "";
+    }
+
+    if (word.endsWith("\n")) {
       // for multiline, dont add space
       return word;
     }
 
-    return word + (lastWord ? "" : " ");
+    let wordEnd = "";
+
+    if (!lastWord) {
+      wordEnd = " ";
+    }
+
+    if (eventLog.context.isFunboxWithNospacePropertyActive) {
+      wordEnd = "";
+    }
+
+    return word + wordEnd;
   }
 }
 
-export function getChars(): CharCounts {
-  const eventsPerWordIndex = getInputEventsPerWord();
+function countCharsForWordIndex(
+  eventLog: EventLog,
+  wordIndex: number,
+  wordEvents: TestEventNoMs[],
+  lastWord: boolean,
+  countPartial: boolean,
+): CharCounts {
+  let simulatedInput = getInputFromDom(wordEvents);
+  if (eventLog.context.koreanStatus) {
+    simulatedInput = Hangul.disassemble(simulatedInput).join("");
+  }
+
+  let targetWord = getTargetWord(eventLog, wordIndex, simulatedInput, lastWord);
+  if (eventLog.context.koreanStatus) {
+    targetWord = Hangul.disassemble(targetWord).join("");
+  }
+
+  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+}
+
+function inferActiveWordIndex(
+  eventsPerWord: Map<number, TestEventNoMs[]>,
+): number {
+  let maxWordIndex = -1;
+  let lastWordEvents: TestEventNoMs[] | undefined;
+  for (const [k, wordEvents] of eventsPerWord) {
+    if (getInputFromDom(wordEvents).length > 0 && k > maxWordIndex) {
+      maxWordIndex = k;
+      lastWordEvents = wordEvents;
+    }
+  }
+  if (lastWordEvents === undefined) return 0;
+  const lastEvt = lastWordEvents[lastWordEvents.length - 1];
+  // committed trailing space → cursor advanced to the next word
+  if (
+    lastEvt !== undefined &&
+    "inputType" in lastEvt.data &&
+    lastEvt.data.inputType === "insertText" &&
+    lastEvt.data.data === " "
+  ) {
+    return maxWordIndex + 1;
+  }
+  return maxWordIndex;
+}
+
+export function getChars(eventLog: EventLog): CharCounts {
+  const { events, context } = eventLog;
+  const { bailedOut } = context;
+
   const isTimedTest =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimit().mode === "time");
-  const shouldCountPartialLastWord = isTimedTest;
+    context.mode === "time" ||
+    (context.mode === "words" && context.mode2 === "0") ||
+    (context.mode === "custom" && context.customTextLimitMode === "time") ||
+    (context.mode === "custom" && context.customTextLimitValue === 0);
 
-  let allCorrect = 0;
-  let correctWord = 0;
-  let incorrect = 0;
-  let extra = 0;
-  let missed = 0;
+  const eventsPerWord = getEventsPerWord(events);
+  const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  for (const [wordIndex, events] of eventsPerWordIndex.entries()) {
-    const lastWord = wordIndex === activeWordIndex;
+  const countPartial = isTimedTest || bailedOut;
 
-    let simulatedInput = getSimulatedInput(events);
+  const acc: CharCounts = {
+    allCorrect: 0,
+    correctWord: 0,
+    incorrect: 0,
+    extra: 0,
+    missed: 0,
+  };
 
-    if (lastWord) {
-      //remove trailing space for last word
-      simulatedInput = simulatedInput.trimEnd();
+  for (const [wordIndex, wordEvents] of eventsPerWord) {
+    const lastWord = wordIndex === lastWordIndex;
+    const c = countCharsForWordIndex(
+      eventLog,
+      wordIndex,
+      wordEvents,
+      lastWord,
+      countPartial,
+    );
+    acc.allCorrect += c.allCorrect;
+    acc.correctWord += c.correctWord;
+    acc.incorrect += c.incorrect;
+    acc.extra += c.extra;
+    acc.missed += c.missed;
+
+    if (lastWord) break;
+  }
+
+  return acc;
+}
+
+export function getInputHistory(eventLog: EventLog): string[] {
+  const eventsPerWordIndex = getEventsPerWord(eventLog.events);
+  const history: string[] = [];
+
+  for (const [wordIndex, events] of eventsPerWordIndex) {
+    const lastEvent = events[events.length - 1];
+    if (lastEvent === undefined) {
+      history.push("");
+      continue;
     }
 
-    const targetWord = getTargetWord(wordIndex, simulatedInput, lastWord);
-
-    const charCounts = countChars(
-      simulatedInput,
-      targetWord,
-      lastWord,
-      shouldCountPartialLastWord,
+    // THANKS FIREFOX FOR THIS MESS
+    // A word is abandoned if the regression destination event — which
+    // lives in the previous word's bucket — carries clearedNextWord.
+    // Happens when Ctrl+Backspace eats the sentinel + non-word residue as
+    // one run; the residue stays as this word's last inputValue but its
+    // real final state is "".
+    const previousWord = eventsPerWordIndex.get(wordIndex - 1) ?? [];
+    const abandoned = previousWord.some(
+      (e) =>
+        e.testMs > lastEvent.testMs &&
+        "clearedNextWord" in e.data &&
+        e.data.clearedNextWord === true,
     );
 
-    allCorrect += charCounts.allCorrect;
-    correctWord += charCounts.correctWord;
-    incorrect += charCounts.incorrect;
-    extra += charCounts.extra;
-    missed += charCounts.missed;
-
-    if (lastWord) {
-      break;
-    }
+    history.push(abandoned ? "" : getInputFromDom(events));
   }
 
-  return {
-    allCorrect: allCorrect,
-    correctWord: correctWord,
-    incorrect: incorrect,
-    extra: extra,
-    missed: missed,
-  };
+  return history;
 }
 
-export function getAccuracy(): {
+export function getAccuracy(eventLog: EventLog): {
   correct: number;
   incorrect: number;
   percentage: number;
 } {
-  const events = getInputEvents();
+  const { events } = eventLog;
 
   let correct = 0;
   let incorrect = 0;
 
   for (const event of events) {
+    if (event.type !== "input") continue;
+
     if (!("correct" in event.data)) {
       continue;
     }
@@ -325,26 +424,28 @@ export function getAccuracy(): {
   };
 }
 
-export function getKeypressSpacing(): number[] {
-  const events = getAllTestEvents();
+export function getKeypressSpacing(eventLog: EventLog): number[] {
+  const { events } = eventLog;
 
   const spacings: number[] = [];
   let lastKeydownTime: number | undefined;
   for (const event of events) {
     if (event.type === "keydown") {
       if (lastKeydownTime !== undefined) {
-        const spacing = event.ms - lastKeydownTime;
+        const spacing = event.testMs - lastKeydownTime;
         spacings.push(spacing);
       }
-      lastKeydownTime = event.ms;
+      // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
+      // keeping startToFirstKey + sum(keySpacing) + lastKeyToEnd ≈ testDuration
+      lastKeydownTime = Math.max(0, event.testMs);
     }
   }
 
   return spacings;
 }
 
-export function getKeypressOverlap(): number {
-  const events = getAllTestEvents();
+export function getKeypressOverlap(eventLog: EventLog): number {
+  const { events } = eventLog;
 
   const keydownTimes: Map<
     string,
@@ -358,15 +459,15 @@ export function getKeypressOverlap(): number {
   for (const event of events) {
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
+        timestamp: event.testMs,
       });
       if (lastStartTime === undefined && keydownTimes.size > 1) {
-        lastStartTime = event.ms;
+        lastStartTime = event.testMs;
       }
     } else if (event.type === "keyup") {
       keydownTimes.delete(event.data.code);
       if (lastStartTime !== undefined && keydownTimes.size === 1) {
-        const endTime = event.ms;
+        const endTime = event.testMs;
         overlap += endTime - lastStartTime;
         lastStartTime = undefined;
       }
@@ -375,8 +476,9 @@ export function getKeypressOverlap(): number {
   return roundTo2(overlap);
 }
 
-export function getErrorCountHistory(): number[] {
+export function getErrorCountHistory(eventLog: EventLog): number[] {
   const { counts } = countPerInterval(
+    eventLog,
     (e) =>
       e.type === "input" &&
       e.data.inputType === "insertText" &&
@@ -385,73 +487,164 @@ export function getErrorCountHistory(): number[] {
   return counts;
 }
 
-export function getWpmHistory(): number[] {
-  const events = getAllTestEvents();
-  const timerBoundaries = getTimerBoundaries(events);
+export function getWpmHistory(eventLog: EventLog): number[] {
+  const { events } = eventLog;
+  const boundaries = getTimerBoundaries(eventLog);
+  if (boundaries.length === 0) return [];
+
+  const eventsPerWord = new Map<number, TestEventNoMs[]>();
+  const cachedIfLast = new Map<number, number>();
+  const cachedIfNotLast = new Map<number, number>();
+  const dirty = new Set<number>();
   const wpmHistory: number[] = [];
 
-  for (const boundary of timerBoundaries) {
-    const eventsPerWord = getInputEventsPerWord(undefined, boundary);
+  let eventIdx = 0;
 
-    // Compute simulated inputs first so we can determine the effective last word
-    const wordInputs = new Map<
-      number,
-      { input: string; events: InputEvent[] }
-    >();
-    let maxWordIndex = 0;
-    for (const [k, wordEvents] of eventsPerWord) {
-      const input = getSimulatedInput(wordEvents);
-      wordInputs.set(k, { input, events: wordEvents });
-      // Only count words with non-empty input for maxWordIndex,
-      // so that fully-deleted words don't prevent earlier words
-      // from being treated as the last word
-      if (input.length > 0 && k > maxWordIndex) maxWordIndex = k;
-    }
+  for (const boundary of boundaries) {
+    // incrementally extend eventsPerWord with events up to this boundary
+    while (eventIdx < events.length) {
+      const event = events[eventIdx];
+      if (event === undefined || event.testMs > boundary) break;
 
-    let totalCorrect = 0;
-    for (const [wordIndex, { input, events: wordEvents }] of wordInputs) {
-      if (input.length === 0) continue;
-
-      const lastEvt = wordEvents[wordEvents.length - 1];
-      let adjustedMax = maxWordIndex;
-      if (
-        lastEvt !== undefined &&
-        lastEvt.data.inputType === "insertText" &&
-        lastEvt.data.data === " "
-      ) {
-        adjustedMax = maxWordIndex + 1;
+      if ("wordIndex" in event.data) {
+        const wordIndex = event.data.wordIndex;
+        let list = eventsPerWord.get(wordIndex);
+        if (list === undefined) {
+          list = [];
+          eventsPerWord.set(wordIndex, list);
+        }
+        list.push(event);
+        dirty.add(wordIndex);
       }
-      const lastWord = wordIndex === adjustedMax;
-
-      const trimmed = lastWord ? input.trimEnd() : input;
-      const targetWord =
-        Config.mode === "zen"
-          ? trimmed
-          : TestWords.words.getText(wordIndex) + (lastWord ? "" : " ");
-      totalCorrect += countChars(
-        trimmed,
-        targetWord,
-        lastWord,
-        true,
-      ).correctWord;
+      eventIdx++;
     }
 
-    const durationSeconds = boundary / 1000;
-    wpmHistory.push(Math.round(calculateWpm(totalCorrect, durationSeconds)));
+    // recompute correctWord (for both last/not-last roles) only for words
+    // whose event lists changed since the previous boundary
+    for (const wordIndex of dirty) {
+      const wordEvents = eventsPerWord.get(wordIndex);
+      if (wordEvents === undefined) continue;
+      cachedIfNotLast.set(
+        wordIndex,
+        countCharsForWordIndex(eventLog, wordIndex, wordEvents, false, true)
+          .correctWord,
+      );
+      cachedIfLast.set(
+        wordIndex,
+        countCharsForWordIndex(eventLog, wordIndex, wordEvents, true, true)
+          .correctWord,
+      );
+    }
+    dirty.clear();
+
+    const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+    let correctWord = 0;
+    for (const wordIndex of eventsPerWord.keys()) {
+      if (wordIndex === lastWordIndex) {
+        correctWord += cachedIfLast.get(wordIndex) ?? 0;
+        break;
+      }
+      correctWord += cachedIfNotLast.get(wordIndex) ?? 0;
+    }
+
+    wpmHistory.push(Math.round(calculateWpm(correctWord, boundary / 1000)));
   }
 
   return wpmHistory;
 }
 
-export function getAfkDuration(): number {
+export function getRawHistory(eventLog: EventLog): number[] {
+  const { events } = eventLog;
+  const boundaries = getTimerBoundaries(eventLog);
+  if (boundaries.length === 0) return [];
+
+  const eventsPerWord = new Map<number, TestEventNoMs[]>();
+  const cachedIfLast = new Map<number, number>();
+  const cachedIfNotLast = new Map<number, number>();
+  const dirty = new Set<number>();
+  const rawHistory: number[] = [];
+
+  let eventIdx = 0;
+
+  for (const boundary of boundaries) {
+    // incrementally extend eventsPerWord with events up to this boundary
+    while (eventIdx < events.length) {
+      const event = events[eventIdx];
+      if (event === undefined || event.testMs > boundary) break;
+
+      if ("wordIndex" in event.data) {
+        const wordIndex = event.data.wordIndex;
+        let list = eventsPerWord.get(wordIndex);
+        if (list === undefined) {
+          list = [];
+          eventsPerWord.set(wordIndex, list);
+        }
+        list.push(event);
+        dirty.add(wordIndex);
+      }
+      eventIdx++;
+    }
+
+    // recompute correctWord (for both last/not-last roles) only for words
+    // whose event lists changed since the previous boundary
+    for (const wordIndex of dirty) {
+      const wordEvents = eventsPerWord.get(wordIndex);
+      if (wordEvents === undefined) continue;
+
+      const notLastCount = countCharsForWordIndex(
+        eventLog,
+        wordIndex,
+        wordEvents,
+        false,
+        true,
+      );
+      const lastCount = countCharsForWordIndex(
+        eventLog,
+        wordIndex,
+        wordEvents,
+        true,
+        true,
+      );
+
+      cachedIfNotLast.set(
+        wordIndex,
+        notLastCount.allCorrect + notLastCount.extra + notLastCount.incorrect,
+      );
+      cachedIfLast.set(
+        wordIndex,
+        lastCount.allCorrect + lastCount.extra + lastCount.incorrect,
+      );
+    }
+    dirty.clear();
+
+    const lastWordIndex = inferActiveWordIndex(eventsPerWord);
+
+    let chars = 0;
+    for (const wordIndex of eventsPerWord.keys()) {
+      if (wordIndex === lastWordIndex) {
+        chars += cachedIfLast.get(wordIndex) ?? 0;
+        break;
+      }
+      chars += cachedIfNotLast.get(wordIndex) ?? 0;
+    }
+
+    rawHistory.push(Math.round(calculateWpm(chars, boundary / 1000)));
+  }
+
+  return rawHistory;
+}
+
+export function getAfkDuration(eventLog: EventLog): number {
   const { counts } = countPerInterval(
+    eventLog,
     (e) => e.type === "keydown" || e.type === "input",
   );
   return counts.reduce((total, c) => total + (c === 0 ? 1 : 0), 0);
 }
 
-export function getKeypressDurations(): number[] {
-  const events = getAllTestEvents();
+export function getKeypressDurations(eventLog: EventLog): number[] {
+  const { events } = eventLog;
 
   const keydownTimes: Map<
     string,
@@ -465,14 +658,14 @@ export function getKeypressDurations(): number[] {
   for (const event of events) {
     if (event.type === "keydown") {
       keydownTimes.set(event.data.code, {
-        timestamp: event.ms,
+        timestamp: event.testMs,
         index: durations.length,
       });
       durations.push(0); // placeholder
     } else if (event.type === "keyup") {
       const keydownTime = keydownTimes.get(event.data.code);
       if (keydownTime !== undefined) {
-        const duration = event.ms - keydownTime.timestamp;
+        const duration = event.testMs - keydownTime.timestamp;
         durations[keydownTime.index] = duration;
         keydownTimes.delete(event.data.code);
       }
@@ -482,30 +675,8 @@ export function getKeypressDurations(): number[] {
   return durations;
 }
 
-export function forceReleaseAllKeys(): void {
-  const filteredDurations = getKeypressDurations().filter((d) => d > 0);
-
-  let avg: number;
-  if (filteredDurations.length === 0) {
-    // this means the test ended while all keys were still held - probably safe to ignore
-    // since this will result in a "too short" test anyway, but ill just set it to a magic number
-    avg = 80;
-  } else {
-    avg = roundTo2(mean(filteredDurations));
-  }
-
-  for (const [key, { timestamp }] of getPressedKeys().entries()) {
-    logTestEvent("keyup", timestamp + avg, {
-      code: key, //entries is not picking up the type
-      ctrl: false,
-      shift: false,
-      alt: false,
-      meta: false,
-      estimated: true,
-    });
-  }
-}
-
 export const __testing = {
   getTimerBoundaries,
+  getTargetWord,
+  inferActiveWordIndex,
 };

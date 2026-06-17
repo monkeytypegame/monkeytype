@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
+import { getCurrentInput, getInputForWord } from "../test-input";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -52,17 +52,18 @@ export type FunboxFunctions = {
 };
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
+  const currentInput = getCurrentInput();
+  const inputCurrentChar = (currentInput ?? "").slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrentText()
-    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+    .slice(currentInput.length - 1, currentInput.length);
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
     event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current !== "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
+    (currentInput !== "" ||
+      getInputForWord(TestState.activeWordIndex - 1) !==
         TestWords.words.getText(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
@@ -425,7 +426,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
-          (TestInput.input.getHistory().length + 1) / wordsPerLayout,
+          (TestState.activeWordIndex + 1) / wordsPerLayout,
         );
         const mod =
           wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
@@ -452,9 +453,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrentText()
-              .charAt(TestInput.input.current.length),
+            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
           );
         }, 1);
       }

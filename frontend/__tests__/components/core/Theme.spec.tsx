@@ -83,12 +83,14 @@ describe("Theme component", () => {
   });
 
   it("removes CSS when theme has no CSS", async () => {
+    // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => ({ name: "light" }) as any);
     const { css } = renderComponent();
     expect(css).not.toBeInTheDocument();
   });
 
   it("removes CSS when theme is custom", async () => {
+    // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => ({ name: "custom" }) as any);
     const { css } = renderComponent();
     expect(css).not.toBeInTheDocument();

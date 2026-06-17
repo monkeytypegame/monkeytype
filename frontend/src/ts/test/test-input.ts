@@ -99,11 +99,9 @@ type ErrorHistoryObject = {
 class Input {
   current: string;
   private history: string[];
-  koreanStatus: boolean;
   constructor() {
     this.current = "";
     this.history = [];
-    this.koreanStatus = false;
   }
 
   reset(): void {
@@ -113,14 +111,6 @@ class Input {
 
   resetHistory(): void {
     this.history = [];
-  }
-
-  setKoreanStatus(val: boolean): void {
-    this.koreanStatus = val;
-  }
-
-  getKoreanStatus(): boolean {
-    return this.koreanStatus;
   }
 
   pushHistory(): void {
@@ -556,4 +546,24 @@ export function restart(): void {
   };
 
   resetKeypressTimings();
+}
+
+export function getCurrentInput(): string {
+  return input.current;
+}
+
+export function getInputForWord(wordIndex: number): string | undefined {
+  return input.get(wordIndex);
+}
+
+export function resetCurrentInput(): void {
+  input.current = "";
+}
+
+export function getMissedWords(): MissedWordsType {
+  return missedWords;
+}
+
+export function getInputHistory(): string[] {
+  return input.getHistory();
 }

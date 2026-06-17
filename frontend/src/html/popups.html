@@ -45,10 +45,6 @@
   </div>
 </dialog>
 
-<dialog id="simpleModal" class="modalWrapper hidden">
-  <form class="modal"></form>
-</dialog>
-
 <div id="videoAdPopupWrapper" class="popupWrapper hidden">
   <div id="videoAdPopup">
     <div class="preloader">
@@ -93,6 +89,7 @@
     <div class="button">ok</div>
   </div>
 </dialog>
+
 <dialog id="googleSignUpModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title">Account name</div>
@@ -163,44 +160,7 @@
     <button class="saveButton">save</button>
   </div>
 </dialog>
-<dialog id="editPresetModal" class="modalWrapper hidden">
-  <form class="modal">
-    <div class="title popupTitle"></div>
-    <div class="group">
-      <div class="presetNameTitle">name</div>
-      <input type="text" title="presets" />
-    </div>
-    <label class="changePresetToCurrentCheckbox checkbox">
-      <input type="checkbox" />
-      Change preset to current settings
-    </label>
-    <div class="inputs">
-      <div class="presetType group" data-id="presetType">
-        <div class="title">Preset Type</div>
-        <div class="presetTypeButtonGroup">
-          <button value="full" type="button">full</button>
-          <button value="partial" type="button">partial</button>
-        </div>
-      </div>
-      <div class="partialPresetGroups group">
-        <div class="title">partial groups</div>
-        <div class="checkboxList"></div>
-      </div>
-    </div>
-    <div class="text deletePrompt"></div>
-    <button class="submit" type="submit">add</button>
-  </form>
-</dialog>
-<dialog id="shareCustomThemeModal" class="modalWrapper hidden">
-  <div class="modal">
-    <div class="title">Share custom theme</div>
-    <label class="checkbox">
-      <input type="checkbox" id="includeBackground" />
-      Include background information
-    </label>
-    <button>copy link to clipboard</button>
-  </div>
-</dialog>
+
 <dialog id="commandLine" class="modalWrapper hidden">
   <div class="modal">
     <div

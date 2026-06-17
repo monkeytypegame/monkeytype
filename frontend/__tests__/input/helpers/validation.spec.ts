@@ -35,9 +35,11 @@ describe("isCharCorrect", () => {
       difficulty: "normal",
       strictSpace: false,
     });
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
       null,
     );
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
   });
 
