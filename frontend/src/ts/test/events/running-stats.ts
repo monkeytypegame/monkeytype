@@ -2,14 +2,18 @@ import { EventLog } from "./types";
 import { getTimerStartEventMs } from "./helpers";
 import { getChars } from "./stats";
 import { calculateWpm } from "../../utils/numbers";
+import { getLiveCache } from "./data";
 
-export function getLiveTestDurationMs(eventLog: EventLog, now: number): number {
+export function getRunningTestDurationMs(
+  eventLog: EventLog,
+  now: number,
+): number {
   const start = getTimerStartEventMs(eventLog.events);
   if (start === undefined) return 0;
   return now - start;
 }
 
-export function getLiveAccuracy(eventLog: EventLog): number {
+export function getRunningAccuracy(eventLog: EventLog): number {
   let correct = 0;
   let total = 0;
 
@@ -25,7 +29,14 @@ export function getLiveAccuracy(eventLog: EventLog): number {
   return total === 0 ? 100 : (correct / total) * 100;
 }
 
-export function getLiveWpmAndRaw(
+// Fast path for the live test: reads a running tally maintained in data.ts
+// instead of rescanning the event log. For replay, use getRunningAccuracy(eventLog).
+export function getLiveCachedAccuracy(): number {
+  const { correctInputs, totalInputs } = getLiveCache();
+  return totalInputs === 0 ? 100 : (correctInputs / totalInputs) * 100;
+}
+
+export function getRunningWpmAndRaw(
   eventLog: EventLog,
   now: number,
 ): {
@@ -33,7 +44,7 @@ export function getLiveWpmAndRaw(
   raw: number;
 } {
   const chars = getChars(eventLog, true);
-  const currentTestDurationMs = getLiveTestDurationMs(eventLog, now);
+  const currentTestDurationMs = getRunningTestDurationMs(eventLog, now);
   const wpm = Math.round(
     calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
   );

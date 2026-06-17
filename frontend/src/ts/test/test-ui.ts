@@ -6,8 +6,8 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import { buildEventLog, getCurrentInput } from "./events/data";
-import { getLiveAccuracy } from "./events/live-stats";
+import { getCurrentInput } from "./events/data";
+import { getLiveCachedAccuracy } from "./events/running-stats";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -1757,11 +1757,9 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  if (Config.liveAccStyle !== "off") {
-    const acc = Numbers.roundTo2(getLiveAccuracy(buildEventLog()));
-    if (!isNaN(acc)) {
-      LiveAcc.update(acc);
-    }
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  if (!isNaN(acc)) {
+    LiveAcc.update(acc);
   }
 
   if (Config.mode !== "time") {
