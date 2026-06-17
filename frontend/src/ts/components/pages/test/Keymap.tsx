@@ -1,10 +1,11 @@
-import { KeyLegends, LayoutObject } from "@monkeytype/schemas/layouts";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { createMemo, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getModifierState } from "../../../states/modifiers";
 import { getKeymapLayout, keymapLayoutObject } from "../../../states/test";
 import { typedEntries, typedValues } from "../../../utils/misc";
+import { convertLayoutToKeymap, KeyboardDefinition } from "./keymapConverter";
 
 export function Keymap() {
   return (
@@ -40,13 +41,19 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
       keymapLayoutObject()?.keymapShowTopRow);
 
   // Convert layout to KeyboardDefinition format
-  const keyboardDef = createMemo(() => props.layoutData);
+  const keyboardDef = createMemo(() =>
+    convertLayoutToKeymap(props.layoutData, {
+      displayName: props.displayName,
+      keymapStyle: getConfig.keymapStyle,
+      showAllKeys: false,
+    }),
+  );
 
   return (
     <div data-ui-element="keymap" class="flex flex-col gap-2 text-sm text-sub">
       <Show when={keyboardDef()} fallback={<div>Loading...</div>}>
         <KeyboardDefinitionRenderer
-          keyboardDef={keyboardDef().keys}
+          keyboardDef={keyboardDef()}
           layer={layer()}
           showFirstRow={showFirstRow ?? false}
         />
@@ -56,7 +63,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
 }
 
 function KeyboardDefinitionRenderer(props: {
-  keyboardDef: LayoutObject["keys"];
+  keyboardDef: KeyboardDefinition;
   layer: number;
   showFirstRow: boolean;
 }) {
@@ -64,12 +71,15 @@ function KeyboardDefinitionRenderer(props: {
     <For each={typedEntries(props.keyboardDef)}>
       {([rowId, keys]) => (
         <Show when={rowId !== "row1" || props.showFirstRow}>
-          <div class="flex flex-row gap-2">
+          <div class="flex flex-row">
             <For each={keys}>
-              {(key, col) => (
-                <Show when={rowId !== "row4" || col() !== 0}>
-                  <Key legend={key.at(props.layer) ?? ""} />
-                </Show>
+              {(key) => (
+                <Key
+                  legend={key.legends.at(props.layer) ?? ""}
+                  x={key.x}
+                  width={key.width}
+                  height={key.height}
+                />
               )}
             </For>
           </div>
@@ -79,22 +89,22 @@ function KeyboardDefinitionRenderer(props: {
   );
 }
 
-function Key(props: { legend: string; x?: number }) {
+function Key(props: {
+  legend: string;
+  x?: number;
+  width?: number;
+  height?: number;
+}) {
   return (
     <div
-      class="flex h-8 aspect-square bg-sub-alt rounded justify-center items-center"
-      style={{ transform: `translateX(${(props.x ?? 0) * 16}px)` }}
+      class="flex items-center justify-center rounded border-2 border-bg bg-sub-alt"
+      style={{
+        height: `${(props.height ?? 1) * 2}rem`,
+        width: `${(props.width ?? 1) * 2}rem`,
+        "margin-left": `${(props.x ?? 0) * 0.25}rem`,
+      }}
     >
       {props.legend}
     </div>
   );
 }
-
-type Row = "row1" | "row2" | "row3" | "row4" | "row5";
-type KeyDefinition = {
-  legends: KeyLegends;
-  width: number;
-  height: number;
-  x: number;
-};
-type KeyboardDefinition = Record<Row, KeyDefinition[]>;

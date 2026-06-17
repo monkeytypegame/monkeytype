@@ -13,7 +13,6 @@ import { getActivePage, getCustomTextIndicator } from "./core";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { getLayout } from "../utils/json-data";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
