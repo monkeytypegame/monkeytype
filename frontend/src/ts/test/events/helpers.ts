@@ -121,25 +121,26 @@ export function applyInputEvent(input: string, event: InputEventNoMs): string {
 }
 
 export function getInputFromDom(events: TestEventNoMs[]): string {
-  const lastInputEvent = events.findLast((e) => e.type === "input");
-
-  if (lastInputEvent === undefined) {
-    let input = "";
-    for (const event of events) {
-      if (event.type !== "input") continue;
-      input = applyInputEvent(input, event);
+  let lastInputEvent: InputEventNoMs | undefined;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i];
+    if (e !== undefined && e.type === "input") {
+      lastInputEvent = e;
+      break;
     }
-    return input;
   }
 
-  const inputValue = lastInputEvent.data.inputValue;
+  if (lastInputEvent === undefined) return "";
+
+  const { data } = lastInputEvent;
+  const inputValue = data.inputValue;
 
   if (
-    lastInputEvent.data.inputType === "insertText" &&
-    lastInputEvent.data.data === " " &&
-    lastInputEvent.data.lastWord &&
-    lastInputEvent.data.commitsWord &&
-    !lastInputEvent.data.correct
+    data.inputType === "insertText" &&
+    data.data === " " &&
+    data.lastWord &&
+    data.commitsWord &&
+    !data.correct
   ) {
     // if this is an incorrect word commit on the last word, we dont want to count it at all
     return inputValue.trimEnd();
@@ -182,4 +183,32 @@ export function findInputValueMismatches(
   }
 
   return mismatches;
+}
+
+export function getEventsPerWord(
+  events: TestEventNoMs[],
+  startMs?: number,
+  testMsLimit?: number,
+): Map<number, TestEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
+  for (const event of events) {
+    if (!("wordIndex" in event.data)) {
+      continue;
+    }
+
+    if (startMs !== undefined && event.testMs < startMs) {
+      continue;
+    }
+
+    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
+      break;
+    }
+
+    const wordIndex = event.data.wordIndex;
+
+    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
+    existing.push(event);
+    eventsPerWordIndex.set(wordIndex, existing);
+  }
+  return eventsPerWordIndex;
 }
