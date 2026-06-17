@@ -81,35 +81,6 @@ body.darkMode {
   }
 }
 
-#simpleModal {
-  .modal {
-    max-width: 500px;
-
-    form {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .inputs {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .text {
-      font-size: 1rem;
-      color: var(--text-color);
-    }
-  }
-  & [data-popup-id="viewApeKey"] {
-    textarea:disabled {
-      opacity: 1;
-    }
-  }
-  & [data-popup-id="devGenerateData"] {
-    max-width: 700px;
-  }
-}
-
 #googleSignUpModal {
   .modal {
     max-width: 425px;
