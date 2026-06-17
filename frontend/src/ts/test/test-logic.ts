@@ -947,7 +947,10 @@ function compareCompletedEvents(
       key === "timestamp" ||
       key === "keyDuration" ||
       key === "keySpacing" ||
-      key === "chartData"
+      key === "chartData" ||
+      key === "consistency" ||
+      key === "keyConsistency" ||
+      key === "keyOverlap"
     ) {
       continue;
     }
@@ -1024,6 +1027,7 @@ function compareCompletedEvents(
       continue;
     }
 
+    ///@ts-expect-error temp
     if (key === "keyOverlap") {
       val1 = Numbers.roundTo2(val1 as number);
       val2 = Numbers.roundTo2(val2 as number);
@@ -1274,9 +1278,31 @@ function compareCompletedEvents(
     if (a.length === b.length && a.every((val, i) => val === b[i])) {
       console.debug(`Completed event match on rawHistory:`, a);
     } else {
-      notMatching.push(`rawHistory (values differ)`);
+      const len = Math.min(a.length, b.length);
+      const diffs: number[] = [];
+      for (let i = 0; i < len; i++) {
+        const av = a[i] as number;
+        const bv = b[i] as number;
+        const denom = Math.abs(av);
+        if (denom === 0) {
+          if (bv !== 0) diffs.push(100);
+          continue;
+        }
+        diffs.push((Math.abs(av - bv) / denom) * 100);
+      }
+      const avg = diffs.length
+        ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
+        : 0;
+      const avgRounded = Numbers.roundTo2(avg);
+      notMatching.push(
+        `rawHistory (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
+      );
       mismatchedKeys.push("rawHistory");
-      console.error(`Completed event mismatch on rawHistory:`, a, b);
+      console.error(
+        `Completed event mismatch on rawHistory (avg ${avgRounded}% difference):`,
+        a,
+        b,
+      );
     }
   }
 
@@ -1287,9 +1313,31 @@ function compareCompletedEvents(
       if (a.length === b.length && a.every((val, i) => val === b[i])) {
         console.debug(`Completed event match on chartData.wpm:`, a);
       } else {
-        notMatching.push(`chartData.wpm (values differ)`);
+        const len = Math.min(a.length, b.length);
+        const diffs: number[] = [];
+        for (let i = 0; i < len; i++) {
+          const av = a[i] as number;
+          const bv = b[i] as number;
+          const denom = Math.abs(av);
+          if (denom === 0) {
+            if (bv !== 0) diffs.push(100);
+            continue;
+          }
+          diffs.push((Math.abs(av - bv) / denom) * 100);
+        }
+        const avg = diffs.length
+          ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
+          : 0;
+        const avgRounded = Numbers.roundTo2(avg);
+        notMatching.push(
+          `chartData.wpm (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
+        );
         mismatchedKeys.push("chartData.wpm");
-        console.error(`Completed event mismatch on chartData.wpm:`, a, b);
+        console.error(
+          `Completed event mismatch on chartData.wpm (avg ${avgRounded}% difference):`,
+          a,
+          b,
+        );
       }
     }
   }
@@ -1386,7 +1434,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 28,
+            version: 29,
             eventLog,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,

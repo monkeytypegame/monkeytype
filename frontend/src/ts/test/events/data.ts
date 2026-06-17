@@ -18,7 +18,7 @@ import {
 } from "./types";
 import { keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
-import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
@@ -77,6 +77,10 @@ export function logTestEvent(
   invalidateCache();
 
   now = roundTo2(now);
+
+  if (!isSafeNumber(now)) {
+    throw new Error(`Invalid timestamp: ${now}`);
+  }
 
   //strip undefined values from eventData
   eventData = Object.fromEntries(
@@ -188,83 +192,50 @@ function invalidateCache(): void {
 }
 
 export function cleanupData(): void {
-  invalidateCache();
-  getAllTestEvents();
+  const timerStart = timerEvents.find((e) => e.data.event === "start");
+  const timerEnd = timerEvents.find((e) => e.data.event === "end");
 
-  if (cachedAllEvents === undefined) {
-    throw new Error(
-      "cachedAllEvents should not be undefined after getAllTestEvents",
-    );
-  }
-
-  //remove all pre-start keydown/keyup events except the last keydown
-  const timerStartIndex = cachedAllEvents.findIndex(
-    (e) => e.type === "timer" && e.data.event === "start",
-  );
-  if (timerStartIndex !== -1) {
-    // find the last keydown before timer start
-    let lastPreStartKeydownIndex = -1;
-    for (let i = timerStartIndex - 1; i >= 0; i--) {
-      if (cachedAllEvents[i]?.type === "keydown") {
-        lastPreStartKeydownIndex = i;
-        break;
-      }
+  if (timerStart !== undefined) {
+    // keep only the last pre-start keydown; drop all pre-start keyups
+    let lastPreStartKeydown: KeydownEvent | undefined;
+    for (const e of keydownEvents) {
+      if (e.ms < timerStart.ms) lastPreStartKeydown = e;
+      else break;
     }
-    cachedAllEvents = cachedAllEvents.filter((e, index) => {
-      if (index >= timerStartIndex) return true;
-      if (e.type === "keydown") return index === lastPreStartKeydownIndex;
-      if (e.type === "keyup") return false;
-      return true;
-    });
+    keydownEvents = keydownEvents.filter(
+      (e) => e.ms >= timerStart.ms || e === lastPreStartKeydown,
+    );
+    keyupEvents = keyupEvents.filter((e) => e.ms >= timerStart.ms);
   }
 
-  //remove all input events after timer end
-  const timerEndIndex = cachedAllEvents.findIndex(
-    (e) => e.type === "timer" && e.data.event === "end",
-  );
-  if (timerEndIndex !== -1) {
-    cachedAllEvents = cachedAllEvents.filter(
-      (e, index) => !(e.type === "input" && index > timerEndIndex),
+  if (timerEnd !== undefined) {
+    inputEvents = inputEvents.filter((e) => e.ms <= timerEnd.ms);
+    const postEndKeydownCodes = new Set(
+      keydownEvents.filter((e) => e.ms > timerEnd.ms).map((e) => e.data.code),
+    );
+    keydownEvents = keydownEvents.filter((e) => e.ms <= timerEnd.ms);
+    keyupEvents = keyupEvents.filter(
+      (e) => e.ms <= timerEnd.ms || !postEndKeydownCodes.has(e.data.code),
     );
   }
 
-  //remove keydowns after timer end, and their associated keyups
-  if (timerEndIndex !== -1) {
-    const keydownsAfterTimerEnd = new Set(
-      cachedAllEvents
-        .filter((e, index) => e.type === "keydown" && index > timerEndIndex)
-        .map((e) => (e.data as KeydownEventData).code),
-    );
-    cachedAllEvents = cachedAllEvents.filter((e, index) => {
-      if (index <= timerEndIndex) return true;
-      if (e.type === "keydown") return false;
-      if (e.type === "keyup") {
-        return !keydownsAfterTimerEnd.has(e.data.code);
-      }
-      return true;
-    });
-  }
-
-  // sync source arrays back from cleaned cache
-  keydownEvents = cachedAllEvents.filter(
-    (e): e is KeydownEvent => e.type === "keydown",
-  );
-  keyupEvents = cachedAllEvents.filter(
-    (e): e is KeyupEvent => e.type === "keyup",
-  );
-  timerEvents = cachedAllEvents.filter(
-    (e): e is TimerEvent => e.type === "timer",
-  );
-  inputEvents = cachedAllEvents.filter(
-    (e): e is InputEvent => e.type === "input",
-  );
-  compositionEvents = cachedAllEvents.filter(
-    (e): e is CompositionTestEvent => e.type === "composition",
-  );
+  invalidateCache();
 }
 
 export function getAllTestEvents(): TestEventNoMs[] {
   if (cachedAllEvents !== undefined) return cachedAllEvents;
+
+  const total =
+    keydownEvents.length +
+    keyupEvents.length +
+    timerEvents.length +
+    inputEvents.length +
+    compositionEvents.length;
+
+  if (total === 0) {
+    cachedAllEvents = [];
+    return cachedAllEvents;
+  }
 
   const firstEventMs = Math.min(
     ...[
@@ -277,14 +248,11 @@ export function getAllTestEvents(): TestEventNoMs[] {
   );
 
   const startEventMs =
-    timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
+    timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs;
 
-  const total =
-    keydownEvents.length +
-    keyupEvents.length +
-    timerEvents.length +
-    inputEvents.length +
-    compositionEvents.length;
+  if (!isSafeNumber(startEventMs)) {
+    throw new Error(`Invalid startEventMs: ${startEventMs}`);
+  }
 
   const merged = new Array<TestEvent>(total);
   let p = 0;
