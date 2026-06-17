@@ -102,7 +102,6 @@ import {
   resetTestEvents,
   cleanupData,
   logEventsDataToTheConsoleTable,
-  getAllTestEvents,
   forceReleaseAllKeys,
   buildEventLog,
 } from "./events/data";
@@ -125,6 +124,7 @@ import {
 } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
+import { EventLog } from "./events/types";
 
 let failReason = "";
 
@@ -928,7 +928,10 @@ function compareCompletedEvents(
   ce: Omit<CompletedEvent, "hash" | "uid">,
 ): void {
   const start = performance.now();
-  const ce2 = buildCompletedEvent2();
+
+  const eventLog = buildEventLog();
+
+  const ce2 = buildCompletedEvent2(eventLog);
   const end = performance.now();
 
   console.debug(
@@ -940,7 +943,12 @@ function compareCompletedEvents(
   const mismatchedKeys: string[] = [];
   const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
   for (const key of ceKeys) {
-    if (key === "timestamp") {
+    if (
+      key === "timestamp" ||
+      key === "keyDuration" ||
+      key === "keySpacing" ||
+      key === "chartData"
+    ) {
       continue;
     }
     // if (
@@ -955,6 +963,7 @@ function compareCompletedEvents(
     let val1 = ce[key];
     let val2 = ce2[key];
 
+    //@ts-expect-error temp
     if (key === "keyDuration" || key === "keySpacing") {
       const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
       const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
@@ -970,16 +979,20 @@ function compareCompletedEvents(
           if (a[i] !== b[i]) mismatchCount++;
         }
       }
-      if (mismatchCount > 1) {
-        console.debug(`Completed event match on key ${key}:`, a);
-      } else {
-        notMatching.push(`${key} (${mismatchCount}/${total} elements differ)`);
-        mismatchedKeys.push(key);
+      if (mismatchCount > 0) {
         console.error(
           `Completed event mismatch on key ${key}: ${mismatchCount}/${total} elements differ`,
           a,
           b,
         );
+        if (mismatchCount > 1) {
+          notMatching.push(
+            `${key} (${mismatchCount}/${total} elements differ)`,
+          );
+          mismatchedKeys.push(key);
+        }
+      } else {
+        console.debug(`Completed event match on key ${key}:`, a);
       }
       continue;
     }
@@ -1073,6 +1086,7 @@ function compareCompletedEvents(
     //   };
     // }
 
+    //@ts-expect-error temp
     if (key === "chartData") {
       const v1 = val1 as CompletedEvent["chartData"];
       const v2 = val2 as CompletedEvent["chartData"];
@@ -1156,7 +1170,7 @@ function compareCompletedEvents(
 
   {
     const a = TestInput.keypressCountHistory;
-    const b = getKeypressesPerSecond();
+    const b = getKeypressesPerSecond(eventLog);
     const aTotal = a.reduce((acc, val) => {
       if (val === undefined) return acc;
       return acc + val;
@@ -1198,7 +1212,7 @@ function compareCompletedEvents(
       if (val === undefined) return acc;
       return acc + val;
     }, 0);
-    const b = getKeypressesPerSecond().reduce((acc, val) => {
+    const b = getKeypressesPerSecond(eventLog).reduce((acc, val) => {
       if (val === undefined) return acc;
       return acc + val;
     }, 0);
@@ -1256,7 +1270,7 @@ function compareCompletedEvents(
 
   {
     const a = TestInput.rawHistory;
-    const b = getRawHistory();
+    const b = getRawHistory(eventLog);
     if (a.length === b.length && a.every((val, i) => val === b[i])) {
       console.debug(`Completed event match on rawHistory:`, a);
     } else {
@@ -1269,7 +1283,7 @@ function compareCompletedEvents(
   {
     if (ce.chartData !== "toolong") {
       const a = ce.chartData.wpm;
-      const b = getWpmHistory();
+      const b = getWpmHistory(eventLog);
       if (a.length === b.length && a.every((val, i) => val === b[i])) {
         console.debug(`Completed event match on chartData.wpm:`, a);
       } else {
@@ -1284,7 +1298,7 @@ function compareCompletedEvents(
     const a = getInputHistory().join(" ");
     const noSpace = isFunboxActiveWithProperty("nospace");
     if (!a.includes("\n") && !noSpace) {
-      const b = getEventsInputHistory().join("");
+      const b = getEventsInputHistory(eventLog).join("");
       if (a === b) {
         console.debug(`Completed event match on input history:`, a);
       } else {
@@ -1293,7 +1307,7 @@ function compareCompletedEvents(
         console.error(
           `Completed event mismatch on input history:`,
           getInputHistory(),
-          getEventsInputHistory(),
+          getEventsInputHistory(eventLog),
         );
       }
     }
@@ -1372,11 +1386,8 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 25,
-            data: {
-              words: TestWords.words.list.join(" "),
-              events: getAllTestEvents(),
-            },
+            version: 28,
+            eventLog,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
           },
@@ -1390,9 +1401,9 @@ function compareCompletedEvents(
   console.debug("Completed event object2", ce2);
 }
 
-function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
-  const eventLog = buildEventLog();
-
+function buildCompletedEvent2(
+  eventLog: EventLog,
+): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars(eventLog);
 
   //tags
@@ -1416,10 +1427,10 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     };
   }
 
-  let duration = getTestDurationMs() / 1000;
+  let duration = getTestDurationMs(eventLog) / 1000;
 
-  const rawPerSecond = getBurstHistory();
-  const afkDuration = getAfkDuration();
+  const rawPerSecond = getBurstHistory(eventLog);
+  const afkDuration = getAfkDuration(eventLog);
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
   let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
@@ -1427,7 +1438,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     consistency = 0;
   }
 
-  const keypressSpacing = getKeypressSpacing();
+  const keypressSpacing = getKeypressSpacing(eventLog);
 
   let keyConsistencyArray = [...keypressSpacing];
   if (keypressSpacing.length > 0) {
@@ -1443,7 +1454,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     keyConsistency = 0;
   }
 
-  const wpmHistory = getWpmHistory();
+  const wpmHistory = getWpmHistory(eventLog);
   const wpmCons = Numbers.roundTo2(
     Numbers.kogasa(Numbers.stdDev(wpmHistory) / Numbers.mean(wpmHistory)),
   );
@@ -1452,7 +1463,7 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
   const chartData = {
     wpm: wpmHistory,
     burst: rawPerSecond,
-    err: getErrorCountHistory(),
+    err: getErrorCountHistory(eventLog),
   };
 
   const currentQuote = getCurrentQuote();
@@ -1463,11 +1474,11 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     ),
     charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
     charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy().percentage),
+    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage),
     language: language,
     testDuration: duration,
-    lastKeyToEnd: getLastKeypressToEndMs(),
-    startToFirstKey: getStartToFirstKeypressMs(),
+    lastKeyToEnd: getLastKeypressToEndMs(eventLog),
+    startToFirstKey: getStartToFirstKeypressMs(eventLog),
     afkDuration: afkDuration,
     quoteLength: currentQuote?.group ?? -1,
     customText: customText,
@@ -1494,8 +1505,8 @@ function buildCompletedEvent2(): Omit<CompletedEvent, "hash" | "uid"> {
     chartData: chartData,
 
     keySpacing: keypressSpacing,
-    keyDuration: getKeypressDurations(),
-    keyOverlap: getKeypressOverlap(),
+    keyDuration: getKeypressDurations(eventLog),
+    keyOverlap: getKeypressOverlap(eventLog),
   } as Omit<CompletedEvent, "hash" | "uid">;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;

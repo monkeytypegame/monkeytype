@@ -9,6 +9,7 @@ import {
   KeydownEventData,
   KeyupEvent,
   KeyupEventData,
+  TestEvent,
   TestEventData,
   TestEventNoMs,
   TestEventType,
@@ -18,23 +19,34 @@ import {
 import { keysToTrack } from "./helpers";
 import { Keycode } from "../../constants/keys";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
-import { bailedOut, resultCalculating } from "../test-state";
+import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
+import { getMode2 } from "../../utils/misc";
+import { isFunboxActiveWithProperty } from "../funbox/list";
+import { getCurrentQuote } from "../../states/test";
 
 export function buildEventLog(): EventLog {
+  const context = {
+    targetWords: [...TestWords.words.list],
+    mode: Config.mode,
+    mode2: getMode2(Config, getCurrentQuote()),
+    koreanStatus: koreanStatus,
+    bailedOut: bailedOut,
+    ...(Config.mode === "custom" && {
+      customTextLimitMode: CustomText.getLimit().mode,
+      customTextLimitValue: CustomText.getLimit().value,
+    }),
+    ...(Config.funbox.length !== 0 && {
+      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+    }),
+  };
+
   return {
     version: EVENT_LOG_VERSION,
     events: getAllTestEvents(),
-    context: {
-      targetWords: [...TestWords.words.list],
-      isTimedTest:
-        Config.mode === "time" ||
-        (Config.mode === "words" && Config.words === 0) ||
-        (Config.mode === "custom" && CustomText.getLimit().mode === "time"),
-      bailedOut: bailedOut,
-    },
+    context,
   };
 }
 
@@ -267,20 +279,31 @@ export function getAllTestEvents(): TestEventNoMs[] {
   const startEventMs =
     timerEvents.find((e) => e.data.event === "start")?.ms ?? firstEventMs ?? 0;
 
-  // cachedAllEvents = testData300;
-  // return cachedAllEvents;
-  cachedAllEvents = [
-    ...keydownEvents,
-    ...keyupEvents,
-    ...timerEvents,
-    ...inputEvents,
-    ...compositionEvents,
-  ]
+  const total =
+    keydownEvents.length +
+    keyupEvents.length +
+    timerEvents.length +
+    inputEvents.length +
+    compositionEvents.length;
+
+  const merged = new Array<TestEvent>(total);
+  let p = 0;
+  for (const e of keydownEvents) merged[p++] = e;
+  for (const e of keyupEvents) merged[p++] = e;
+  for (const e of timerEvents) merged[p++] = e;
+  for (const e of inputEvents) merged[p++] = e;
+  for (const e of compositionEvents) merged[p++] = e;
+
+  cachedAllEvents = merged
     .sort((a, b) => a.ms - b.ms || sortTieRank(a.type) - sortTieRank(b.type))
-    .map(({ ms, ...rest }) => ({
-      ...rest,
-      testMs: roundTo2(ms - startEventMs),
-    }));
+    .map(
+      (event) =>
+        ({
+          type: event.type,
+          testMs: roundTo2(event.ms - startEventMs),
+          data: event.data,
+        }) as TestEventNoMs,
+    );
 
   return cachedAllEvents;
 }
