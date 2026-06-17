@@ -204,7 +204,7 @@ function buildRow(options: {
 
   if (isMatrix) {
     if (rowId !== "row5" && layoutData.matrixShowRightColumn) {
-      keysHtml += `<div class="keymapKey" data-key=" "></div>`;
+      keysHtml += `<div class="keymapKey"></div>`;
     } else {
       keysHtml += `<div></div>`;
     }
