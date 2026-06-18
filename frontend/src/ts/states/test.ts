@@ -77,5 +77,5 @@ export const getKeymapLayout = createMemo<{
 
 export const [keymapLayoutObject] = createResource(
   getKeymapLayout,
-  async (layout) => structuredClone(await getLayout(layout.layout)),
+  async (layout) => await getLayout(layout.layout),
 );

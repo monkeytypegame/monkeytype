@@ -42,10 +42,12 @@ function convertStaggered(
   options: ConvertOptions,
 ): KeyboardDefinition {
   const split = options.keymapStyle === "split";
+  const isIso = layout.type === "iso";
 
   if (split && layout.keys.row5.length === 1) {
     layout.keys.row5.push(buildLegends([""]));
   }
+
   const calcGap =
     ({ col1Gap, splitCol }: { col1Gap: number; splitCol?: number }) =>
     ({ col }: { col: number }) => {
@@ -65,7 +67,7 @@ function convertStaggered(
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
     row3: { x: calcGap({ col1Gap: 4 }) },
-    row4: { x: calcGap({ col1Gap: 6 }) },
+    row4: { x: calcGap({ col1Gap: isIso ? 1 : 6 }) },
     row5: {
       x: calcGap({ col1Gap: split ? 3 + 5 * 4 : 22, splitCol: 1 }),
       width: ({ col }) => {
@@ -101,6 +103,7 @@ function convertBase(
     >
   >,
 ): KeyboardDefinition {
+  const isIso = layout.type === "iso";
   const result = Object.fromEntries(
     typedEntries(layout.keys).map(([row, keys]) => [
       row,
@@ -144,13 +147,21 @@ function convertBase(
       legends: buildLegends(["Caps"]),
       width: 1.75,
     });
-    result.row3.push({
-      legends: buildLegends(["Enter"]),
-      width: 2.25,
-    });
+    if (isIso) {
+      result.row2.push({
+        legends: buildLegends(["Enter"]),
+        width: 1.5,
+        height: 2,
+      });
+    } else {
+      result.row3.push({
+        legends: buildLegends(["Enter"]),
+        width: 2.25,
+      });
+    }
     result.row4.unshift({
       legends: buildLegends(["Shift"]),
-      width: 2.25,
+      width: isIso ? 1.25 : 2.25,
     });
     result.row4.push({
       legends: buildLegends(["Shift"]),

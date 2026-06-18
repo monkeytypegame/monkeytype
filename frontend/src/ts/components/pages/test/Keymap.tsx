@@ -61,7 +61,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   );
 
   return (
-    <div data-ui-element="keymap" class="flex flex-col gap-2 text-sm text-sub">
+    <div data-ui-element="keymap" class="flex flex-col text-sm text-sub">
       <Show when={keyboardDef()} fallback={<div>Loading...</div>}>
         <KeyboardDefinitionRenderer
           keyboardDef={keyboardDef()}
@@ -82,7 +82,7 @@ function KeyboardDefinitionRenderer(props: {
     <For each={typedEntries(props.keyboardDef)}>
       {([rowId, keys]) => (
         <Show when={rowId !== "row1" || props.showFirstRow}>
-          <div class="flex flex-row">
+          <div class="flex h-8 flex-row">
             <For each={keys}>
               {(key) => <Key {...key} layer={props.layer} />}
             </For>
