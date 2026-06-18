@@ -62,6 +62,16 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   return boundaries;
 }
 
+function isTimedTest(eventLog: EventLog): boolean {
+  const { context } = eventLog;
+  return (
+    context.mode === "time" ||
+    (context.mode === "words" && context.mode2 === "0") ||
+    (context.mode === "custom" && context.customTextLimitMode === "time") ||
+    (context.mode === "custom" && context.customTextLimitValue === 0)
+  );
+}
+
 export function getStartToFirstKeypressMs(eventLog: EventLog): number {
   if (eventLog.context.mode === "zen") return 0;
 
@@ -321,16 +331,12 @@ export function getChars(eventLog: EventLog): CharCounts {
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
-  const isTimedTest =
-    context.mode === "time" ||
-    (context.mode === "words" && context.mode2 === "0") ||
-    (context.mode === "custom" && context.customTextLimitMode === "time") ||
-    (context.mode === "custom" && context.customTextLimitValue === 0);
+  const isTimed = isTimedTest(eventLog);
 
   const eventsPerWord = getEventsPerWord(events);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimedTest || bailedOut;
+  const countPartial = isTimed || bailedOut;
 
   const acc: CharCounts = {
     allCorrect: 0,
