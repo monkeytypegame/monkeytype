@@ -13,7 +13,7 @@ export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
-      fpsLimit: String(getfpsLimit()),
+      fpsLimit: getfpsLimit() === 1000 ? "" : String(getfpsLimit()),
     },
     onSubmit: ({ value }) => {
       const val = parseFloat(String(value.fpsLimit));
@@ -54,6 +54,9 @@ export function AnimationFpsLimit(): JSXElement {
               name="fpsLimit"
               validators={{
                 onChange: ({ value }) => {
+                  if (value === "") {
+                    return;
+                  }
                   const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
