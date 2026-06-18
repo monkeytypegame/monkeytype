@@ -32,6 +32,9 @@ export function convertLayoutToKeymap(
     case "staggered":
     case "split":
       return convertStaggered(layout, options);
+    case "matrix":
+    case "split_matrix":
+      return convertMatrix(layout, options);
   }
 
   throw new Error("not supported");
@@ -59,11 +62,11 @@ function convertStaggered(
   const base = convertBase(layout, options, {
     row1: {
       x: calcGap({ col1Gap: 0, splitCol: 7 }),
-      skip: ({ col }) => col === 0,
+      skip: ({ col }) => (options.showAllKeys ? false : col === 0),
     },
     row2: {
       x: calcGap({ col1Gap: 2 }),
-      skip: ({ col }) => col === 12,
+      skip: ({ col }) => (options.showAllKeys ? false : col === 12),
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
     row3: { x: calcGap({ col1Gap: 4 }) },
@@ -87,9 +90,68 @@ function convertStaggered(
   return base;
 }
 
-function convertBase(
+function convertMatrix(
   layout: LayoutObject,
   options: ConvertOptions,
+): KeyboardDefinition {
+  const split = options.keymapStyle === "split_matrix";
+
+  if (split && layout.keys.row5.length === 1) {
+    layout.keys.row5.push(buildLegends([""]));
+  }
+
+  const calcGap =
+    ({ col1Gap, splitCol }: { col1Gap?: number; splitCol?: number }) =>
+    ({ col }: { col: number }) => {
+      if (col === 0) return options.showAllKeys ? undefined : col1Gap;
+      if (split && col === (splitCol ?? 5)) return 8;
+      return undefined;
+    };
+
+  const base = convertBase(
+    layout,
+    { ...options, isMatrix: true },
+    {
+      row1: {
+        skip: ({ col }) => col === 0 || col > 10,
+        x: calcGap({ splitCol: 6 }),
+      },
+      row2: {
+        skip: ({ col }) => col > 9,
+        x: calcGap({}),
+      },
+      row3: {
+        skip: ({ col }) => col > 9,
+        x: calcGap({}),
+      },
+      row4: {
+        skip: ({ col }) => col > 9,
+        x: calcGap({}),
+      },
+      row5: {
+        x: calcGap({ col1Gap: split ? 4 * 4 : 6 * 4, splitCol: 1 }),
+        width: ({ col }) => {
+          if (split) {
+            // oxlint-disable-next-line typescript/no-unsafe-return
+            return (
+              (options.showAllKeys ? { 0: 2.75, 1: 2 } : { 0: 3, 1: 3 })[col] ??
+              undefined
+            );
+          }
+          return options.showAllKeys ? 4.75 : 4;
+        },
+        legend: ({ col }) =>
+          col === 0 ? buildLegends([options.displayName]) : undefined,
+      },
+    },
+  );
+
+  return base;
+}
+
+function convertBase(
+  layout: LayoutObject,
+  options: ConvertOptions & { isMatrix?: boolean },
   cols?: Partial<
     Record<
       keyof LayoutObject["keys"],
@@ -109,10 +171,7 @@ function convertBase(
       row,
       keys
         .map((key, colNum) => {
-          if (
-            !options.showAllKeys &&
-            (cols?.[row]?.skip?.({ col: colNum }) ?? false)
-          ) {
+          if (cols?.[row]?.skip?.({ col: colNum }) ?? false) {
             return undefined;
           }
 
@@ -134,71 +193,74 @@ function convertBase(
     ]),
   ) as KeyboardDefinition;
 
+  const matrixWidth = (width: number): number | undefined =>
+    options.isMatrix ? undefined : width;
+
   if (options.showAllKeys) {
     result.row1.push({
       legends: buildLegends(["BS"]),
-      width: 2,
+      width: matrixWidth(2),
     });
     result.row2.unshift({
       legends: buildLegends(["Tab"]),
-      width: 1.5,
+      width: matrixWidth(1.5),
     });
     result.row3.unshift({
       legends: buildLegends(["Caps"]),
-      width: 1.75,
+      width: matrixWidth(1.75),
     });
     if (isIso) {
       result.row2.push({
         legends: buildLegends(["Enter"]),
-        width: 1.5,
+        width: matrixWidth(1.5),
         height: 2,
       });
     } else {
       result.row3.push({
         legends: buildLegends(["Enter"]),
-        width: 2.25,
+        width: matrixWidth(2.25),
       });
     }
     result.row4.unshift({
       legends: buildLegends(["Shift"]),
-      width: isIso ? 1.25 : 2.25,
+      width: matrixWidth(isIso ? 1.25 : 2.25),
     });
     result.row4.push({
       legends: buildLegends(["Shift"]),
-      width: 2.75,
+      width: matrixWidth(2.75),
     });
 
     result.row5.unshift(
       {
         legends: buildLegends(["Ctrl"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
       {
         legends: buildLegends(["Monke"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
       {
         legends: buildLegends(["Alt"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
     );
 
     result.row5.push(
       {
         legends: buildLegends(["Alt"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
       {
         legends: buildLegends(["Monke"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
       {
         legends: buildLegends(["Meta"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
       {
         legends: buildLegends(["Ctrl"]),
-        width: 1.25,
+        width: matrixWidth(1.25),
       },
     );
   }
