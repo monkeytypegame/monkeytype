@@ -547,3 +547,23 @@ export function restart(): void {
 
   resetKeypressTimings();
 }
+
+export function getCurrentInput(): string {
+  return input.current;
+}
+
+export function getInputForWord(wordIndex: number): string | undefined {
+  return input.get(wordIndex);
+}
+
+export function resetCurrentInput(): void {
+  input.current = "";
+}
+
+export function getMissedWords(): MissedWordsType {
+  return missedWords;
+}
+
+export function getInputHistory(): string[] {
+  return input.getHistory();
+}

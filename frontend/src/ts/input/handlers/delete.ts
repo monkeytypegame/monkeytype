@@ -1,6 +1,7 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import * as TestInput from "../../test/test-input";
+import { getCurrentInput } from "../../test/test-input";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import * as Replay from "../../test/replay";
@@ -13,20 +14,20 @@ import { activeWordIndex } from "../../test/test-state";
 export function onDelete(inputType: DeleteInputType, now: number): void {
   const { realInputValue } = getInputElementValue();
 
-  const inputBeforeDelete = TestInput.input.current;
+  const inputBeforeDelete = getCurrentInput();
   const activeWordIndexBeforeDelete = activeWordIndex;
 
   TestInput.input.syncWithInputElement();
 
-  const inputAfterDelete = TestInput.input.current;
+  const inputAfterDelete = getCurrentInput();
 
-  Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+  Replay.addReplayEvent("setLetterIndex", getCurrentInput().length);
   TestInput.setCurrentNotAfk();
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
     .getCurrentText()
-    .startsWith(TestInput.input.current);
+    .startsWith(getCurrentInput());
 
   //special check for code languages
   if (
@@ -62,7 +63,9 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   //normal backspace
   if (realInputValue === "") {
-    goToPreviousWord(inputType);
+    // if the input is NOT empty, that means the ctrl backspace deleted more than just the fake space (THANKS FIREFOX)
+    // which means we need to force update the current word element when we move back
+    goToPreviousWord(inputType, inputBeforeDelete !== "");
 
     // Record the resulting state of the destination word
     const postNavInputValue = getInputElementValue().inputValue;
@@ -71,6 +74,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
       wordIndex: activeWordIndex,
       charIndex: postNavInputValue.length,
       inputValue: postNavInputValue,
+      ...(inputBeforeDelete !== "" ? { clearedNextWord: true } : {}),
     });
   } else {
     // Delete within current word

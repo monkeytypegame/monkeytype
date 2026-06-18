@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
+import { getCurrentInput } from "../../test/test-input";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
@@ -61,7 +61,7 @@ export function onBeforeInsertText(data: string): boolean {
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
-  const overLimit = TestInput.input.current.length >= inputLimit;
+  const overLimit = getCurrentInput().length >= inputLimit;
   if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
     console.error("Hitting word limit");
     return true;
@@ -71,7 +71,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    TestInput.input.current.length >= TestWords.words.getCurrentText().length;
+    getCurrentInput().length >= TestWords.words.getCurrentText().length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active
@@ -91,7 +91,7 @@ export function onBeforeInsertText(data: string): boolean {
     );
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? TestInput.input.current) + data,
+        (pendingWordData ?? getCurrentInput()) + data,
       );
     if (topAfterAppend > TestUI.activeWordTop) {
       //word jumped to next line

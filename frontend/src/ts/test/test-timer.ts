@@ -8,6 +8,7 @@ import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
+import { getCurrentInput } from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -41,7 +42,7 @@ const newTimer = createTimer({
   onLoop: () => {
     const now = performance.now();
 
-    const drift = Math.abs(1000 - (now - lastLoop));
+    const drift = Numbers.roundTo2(Math.abs(1000 - (now - lastLoop)));
     checkIfTimerIsSlow(drift);
     lastLoop = now;
     timerStep();
@@ -160,9 +161,7 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrentText()
-              .charAt(TestInput.input.current.length),
+            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
           );
         }, 1);
       }

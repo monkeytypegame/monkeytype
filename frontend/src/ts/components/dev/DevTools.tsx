@@ -13,9 +13,9 @@ if (import.meta.env.DEV) {
       default: m.DevOptionsModal,
     })),
   );
-  const LazyTestDataPreviewModal = lazy(async () =>
-    import("../modals/TestDataPreviewModal").then((m) => ({
-      default: m.TestDataPreviewModal,
+  const LazyEventLogViewerModal = lazy(async () =>
+    import("../modals/EventLogViewerModal").then((m) => ({
+      default: m.EventLogViewerModal,
     })),
   );
 
@@ -38,7 +38,7 @@ if (import.meta.env.DEV) {
     <Suspense>
       <LazyTanstackDevtools />
       <LazyDevOptionsModal />
-      <LazyTestDataPreviewModal />
+      <LazyEventLogViewerModal />
       <LazySolidDevtoolsOverlay />
     </Suspense>
   );

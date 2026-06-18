@@ -7,7 +7,6 @@ import {
 } from "../states/core";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
-import * as Page404 from "../pages/404";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
@@ -108,6 +107,7 @@ const pages = {
     },
   }),
   profileSearch: solidPage("profileSearch"),
+  404: solidPage("404"),
   friends: solidPage("friends", {
     beforeShow: async () => {
       await invalidateConnections();
@@ -131,7 +131,6 @@ const pages = {
       ],
     },
   }),
-  404: Page404.page,
   accountSettings: PageAccountSettings.page,
   leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
