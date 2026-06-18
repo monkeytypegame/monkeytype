@@ -5,7 +5,87 @@ import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
 import Hangul from "hangul-js";
 
-function getTimerBoundaries(eventLog: EventLog): number[] {
+// Produces chart x-axis labels for an array of timer boundaries (the perfect
+// grid version). Each bucket is labeled by its index ("1", "2", ...). A
+// fractional tail boundary is labeled with its actual time, e.g. "7.25".
+// When showLagLabels is true, buckets that contained a catchup-recovery
+// moment (real-time burst dump from a stall) are labeled "LAG" to flag that
+// their data isn't a true per-second sample.
+export function getTimerBoundaryLabels(
+  eventLog: EventLog,
+  showLagLabels = true,
+): string[] {
+  const boundaries = getTimerBoundaries(eventLog);
+  const catchupTimes: number[] = [];
+  if (showLagLabels) {
+    for (const event of eventLog.events) {
+      if (event.type !== "timer") continue;
+      if (event.data.event === "step" && event.data.catchup === true) {
+        catchupTimes.push(event.testMs);
+      }
+    }
+  }
+
+  return boundaries.map((boundary, i) => {
+    // only the last boundary can be a tail; everything before it is on the grid
+    const isLast = i === boundaries.length - 1;
+    const isTail = isLast && Math.abs(boundary - (i + 1) * 1000) > 100;
+    if (isTail) return roundTo2(boundary / 1000).toFixed(2);
+    // bucket spans (prevBoundary, boundary] — mark LAG if a catchup recovery
+    // landed inside it (real-time events dumped into one perfect-grid bucket)
+    if (showLagLabels) {
+      const prevBoundary = i === 0 ? 0 : (boundaries[i - 1] as number);
+      const hasCatchup = catchupTimes.some(
+        (t) => t > prevBoundary && t <= boundary,
+      );
+      if (hasCatchup) return "LAG";
+    }
+    return `${i + 1}`;
+  });
+}
+
+// Ideal-grid boundaries: evenly spaced at 1-second intervals between start
+// and end, regardless of when real step events fired. Use for chart consumers
+// that want smooth per-second buckets unaffected by timer drift or catchup
+// bursts. For the real fire-time boundaries (drift/catchup-affected), use
+// getLaggedTimerBoundaries.
+export function getTimerBoundaries(eventLog: EventLog): number[] {
+  let endMs: number | undefined;
+  let tickCount = 0;
+  for (const event of eventLog.events) {
+    if (event.type !== "timer") continue;
+    if (event.data.event === "end") {
+      endMs = event.testMs;
+      // end event's `timer` field is Time.get() at finish — the canonical
+      // tick count, immune to step-event drift/early-fire artifacts
+      tickCount = event.data.timer;
+    }
+  }
+  if (endMs === undefined) return [];
+
+  // zen/bailout: trim trailing afk and cap tickCount to fit the adjusted end
+  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
+    const lkte = getRawLastKeypressToEndMs(eventLog);
+    if (lkte < 7000) {
+      endMs -= lkte;
+      tickCount = Math.min(tickCount, Math.floor(endMs / 1000));
+    }
+  }
+
+  const boundaries: number[] = [];
+  for (let i = 1; i <= tickCount; i++) boundaries.push(i * 1000);
+
+  // append a fractional tail boundary for non-timed tests with a .5s+ remainder
+  if (!isTimedTest(eventLog) && Math.round(roundTo2(endMs / 1000) % 1) >= 0.5) {
+    boundaries.push(endMs);
+  }
+
+  return boundaries;
+}
+
+// Real fire-time step boundaries: positions reflect when steps actually
+// fired (drift, catchup, etc.). For ideal grid positions, use getTimerBoundaries.
+export function getLaggedTimerBoundaries(eventLog: EventLog): number[] {
   const { events } = eventLog;
   const boundaries: number[] = [];
   let endMs: number | undefined;
@@ -27,7 +107,6 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
-      // remove step boundaries past the adjusted end
       while (
         boundaries.length > 0 &&
         (boundaries[boundaries.length - 1] as number) > endMs
@@ -38,28 +117,25 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   }
 
   if (endMs !== undefined) {
-    // Timed tests never push an extra bucket (legacy skips setLastSecondNotRound
-    // for time mode). For other modes, mirror the legacy condition exactly:
-    // Math.round(roundTo2(testSeconds) % 1) >= 0.5. The rounding must happen at
-    // the SECONDS level — taking the fractional ms first and rounding can give
-    // a different answer when the rounded seconds carry into the next integer
-    // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
-    // rounds to 0.5 → wrongly adds a bucket).
-
-    const { context } = eventLog;
-    const isTimedTest =
-      context.mode === "time" ||
-      (context.mode === "words" && context.mode2 === "0") ||
-      (context.mode === "custom" && context.customTextLimitMode === "time") ||
-      (context.mode === "custom" && context.customTextLimitValue === 0);
-
-    const testSeconds = roundTo2(endMs / 1000);
-    if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
+    if (
+      !isTimedTest(eventLog) &&
+      Math.round(roundTo2(endMs / 1000) % 1) >= 0.5
+    ) {
       boundaries.push(endMs);
     }
   }
 
   return boundaries;
+}
+
+function isTimedTest(eventLog: EventLog): boolean {
+  const { context } = eventLog;
+  return (
+    context.mode === "time" ||
+    (context.mode === "words" && context.mode2 === "0") ||
+    (context.mode === "custom" && context.customTextLimitMode === "time") ||
+    (context.mode === "custom" && context.customTextLimitValue === 0)
+  );
 }
 
 export function getStartToFirstKeypressMs(eventLog: EventLog): number {
@@ -321,16 +397,12 @@ export function getChars(eventLog: EventLog): CharCounts {
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
-  const isTimedTest =
-    context.mode === "time" ||
-    (context.mode === "words" && context.mode2 === "0") ||
-    (context.mode === "custom" && context.customTextLimitMode === "time") ||
-    (context.mode === "custom" && context.customTextLimitValue === 0);
+  const isTimed = isTimedTest(eventLog);
 
   const eventsPerWord = getEventsPerWord(events);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimedTest || bailedOut;
+  const countPartial = isTimed || bailedOut;
 
   const acc: CharCounts = {
     allCorrect: 0,
@@ -677,6 +749,8 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
 
 export const __testing = {
   getTimerBoundaries,
+  getLaggedTimerBoundaries,
+  getTimerBoundaryLabels,
   getTargetWord,
   inferActiveWordIndex,
 };
