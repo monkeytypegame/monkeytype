@@ -42,14 +42,19 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
         }
         return 0;
       }
+      default:
+        return 0;
     }
   });
 
-  const showFirstRow =
-    getConfig.keymapLayoutStyle === "full" ||
-    getConfig.keymapLayoutStyle === "minimal_numrow" ||
-    (getConfig.keymapLayoutStyle === "minimal" &&
-      keymapLayoutObject()?.keymapShowTopRow);
+  const showFirstRow = createMemo(
+    () =>
+      (getConfig.keymapLayoutStyle === "full" ||
+        getConfig.keymapLayoutStyle === "minimal_numrow" ||
+        (getConfig.keymapLayoutStyle === "minimal_layout" &&
+          props.layoutData.keymapShowTopRow)) ??
+      false,
+  );
 
   // Convert layout to KeyboardDefinition format
   const keyboardDef = createMemo(() =>
@@ -66,7 +71,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
         <KeyboardDefinitionRenderer
           keyboardDef={keyboardDef()}
           layer={layer()}
-          showFirstRow={showFirstRow ?? false}
+          showFirstRow={showFirstRow()}
         />
       </Show>
     </div>

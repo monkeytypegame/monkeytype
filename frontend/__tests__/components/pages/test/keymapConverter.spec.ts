@@ -399,4 +399,190 @@ describe("keymap converter", () => {
       });
     });
   });
+
+  it("converts qwerty matrix", () => {
+    const result = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
+      displayName: "qwerty",
+      keymapStyle: "matrix",
+      showAllKeys: false,
+    });
+
+    expect(result.row1, "row1").toEqual([
+      { legends: ["1", "!", "1", "!"] },
+      { legends: ["2", "@", "2", "@"] },
+      { legends: ["3", "#", "3", "#"] },
+      { legends: ["4", "$", "4", "$"] },
+      { legends: ["5", "%", "5", "%"] },
+      { legends: ["6", "^", "6", "^"] },
+      { legends: ["7", "&", "7", "&"] },
+      { legends: ["8", "*", "8", "*"] },
+      { legends: ["9", "(", "9", "("] },
+      { legends: ["0", ")", "0", ")"] },
+    ]);
+
+    expect(result.row2, "row2").toEqual([
+      { legends: ["q", "Q", "q", "Q"] },
+      { legends: ["w", "W", "w", "W"] },
+      { legends: ["e", "E", "e", "E"] },
+      { legends: ["r", "R", "r", "R"] },
+      { legends: ["t", "T", "t", "T"] },
+      { legends: ["y", "Y", "y", "Y"] },
+      { legends: ["u", "U", "u", "U"] },
+      { legends: ["i", "I", "i", "I"] },
+      { legends: ["o", "O", "o", "O"] },
+      { legends: ["p", "P", "p", "P"] },
+    ]);
+
+    expect(result.row3, "row3").toEqual([
+      { legends: ["a", "A", "a", "A"] },
+      { legends: ["s", "S", "s", "S"] },
+      { legends: ["d", "D", "d", "D"] },
+      { legends: ["f", "F", "f", "F"] },
+      { legends: ["g", "G", "g", "G"] },
+      { legends: ["h", "H", "h", "H"] },
+      { legends: ["j", "J", "j", "J"] },
+      { legends: ["k", "K", "k", "K"] },
+      { legends: ["l", "L", "l", "L"] },
+      { legends: [";", ":", ";", ":"] },
+    ]);
+
+    expect(result.row4, "row4").toEqual([
+      { legends: ["z", "Z", "z", "Z"] },
+      { legends: ["x", "X", "x", "X"] },
+      { legends: ["c", "C", "c", "C"] },
+      { legends: ["v", "V", "v", "V"] },
+      { legends: ["b", "B", "b", "B"] },
+      { legends: ["n", "N", "n", "N"] },
+      { legends: ["m", "M", "m", "M"] },
+      { legends: [",", "<", ",", "<"] },
+      { legends: [".", ">", ".", ">"] },
+      { legends: ["/", "?", "/", "?"] },
+    ]);
+
+    expect(result.row5, "row5").toEqual([
+      { legends: ["qwerty", "qwerty", "qwerty", "qwerty"], width: 4, x: 24 },
+    ]);
+  });
+
+  it.skip("converts qwerty matrix all keys", () => {
+    const result = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
+      displayName: "qwerty",
+      keymapStyle: "matrix",
+      showAllKeys: true,
+    });
+
+    // Test only keys added when showAllKeys is true (not covered by basic staggered test)
+    // Row1: BS added at end
+    expect(result.row1[result.row1.length - 1], "row1 last").toEqual({
+      legends: ["BS", "BS", "BS", "BS"],
+      width: 2,
+    });
+
+    // Row2: Tab added at start
+    expect(result.row2[0], "row2 first").toEqual({
+      legends: ["Tab", "Tab", "Tab", "Tab"],
+      width: 1.5,
+    });
+
+    // Row3: Caps added at start, Enter added at end
+    expect(result.row3[0], "row3 first").toEqual({
+      legends: ["Caps", "Caps", "Caps", "Caps"],
+      width: 1.75,
+    });
+    expect(result.row3[result.row3.length - 1], "row3 last").toEqual({
+      legends: ["Enter", "Enter", "Enter", "Enter"],
+      width: 2.25,
+    });
+
+    // Row4: Shift added at start and end
+    expect(result.row4[0], "row4 first").toEqual({
+      legends: ["Shift", "Shift", "Shift", "Shift"],
+      width: 2.25,
+    });
+    expect(result.row4[result.row4.length - 1], "row4 last").toEqual({
+      legends: ["Shift", "Shift", "Shift", "Shift"],
+      width: 2.75,
+    });
+
+    // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
+    expect(result.row5[0], "row5 first").toEqual({
+      legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+      width: 1.25,
+    });
+    expect(result.row5[1], "row5 second").toEqual({
+      legends: ["Monke", "Monke", "Monke", "Monke"],
+      width: 1.25,
+    });
+    expect(result.row5[2], "row5 third").toEqual({
+      legends: ["Alt", "Alt", "Alt", "Alt"],
+      width: 1.25,
+    });
+    expect(result.row5[result.row5.length - 4], "row5 Alt right").toEqual({
+      legends: ["Alt", "Alt", "Alt", "Alt"],
+      width: 1.25,
+    });
+    expect(result.row5[result.row5.length - 3], "row5 Monke right").toEqual({
+      legends: ["Monke", "Monke", "Monke", "Monke"],
+      width: 1.25,
+    });
+    expect(result.row5[result.row5.length - 2], "row5 Meta").toEqual({
+      legends: ["Meta", "Meta", "Meta", "Meta"],
+      width: 1.25,
+    });
+    expect(result.row5[result.row5.length - 1], "row5 last").toEqual({
+      legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+      width: 1.25,
+    });
+
+    // Also verify total counts are as expected with extra keys
+    expect(result.row1.length, "row1 length").toBe(14);
+    expect(result.row2.length, "row2 length").toBe(14);
+    expect(result.row3.length, "row3 length").toBe(13);
+    expect(result.row4.length, "row4 length").toBe(12);
+  });
+
+  it("converts qwerty split  matrix", () => {
+    const result = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
+      displayName: "qwerty",
+      keymapStyle: "split_matrix",
+      showAllKeys: false,
+    });
+
+    // Row 1: col6 (index 5) = '6' gets x=8
+    expect(result.row1[5], "row1 key 7").toEqual({
+      legends: ["6", "^", "6", "^"],
+      x: 8,
+    });
+
+    // Row 2: col6 (index 5) = 'y' gets x=8
+    expect(result.row2[5], "row2 key y").toEqual({
+      legends: ["y", "Y", "y", "Y"],
+      x: 8,
+    });
+
+    // Row 3: col6 (index 5) = 'h' gets x=8
+    expect(result.row3[5], "row3 key h").toEqual({
+      legends: ["h", "H", "h", "H"],
+      x: 8,
+    });
+
+    // Row 4: col6 (index 5) = 'n' gets x=8
+    expect(result.row4[5], "row4 key n").toEqual({
+      legends: ["n", "N", "n", "N"],
+      x: 8,
+    });
+
+    // Row 5: split has two keys with gap in middle
+    expect(result.row5.length, "row5 length").toBe(2);
+    expect(result.row5[0], "row5 left").toEqual({
+      legends: ["qwerty", "qwerty", "qwerty", "qwerty"],
+      width: 3,
+      x: 16,
+    });
+    expect(result.row5[1], "row5 right").toEqual({
+      legends: ["", "", "", ""],
+      width: 3,
+      x: 8,
+    });
+  });
 });
