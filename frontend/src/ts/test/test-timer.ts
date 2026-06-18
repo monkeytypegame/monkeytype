@@ -32,28 +32,68 @@ import {
 } from "./events/running-stats";
 import { roundTo2 } from "@monkeytype/util/numbers";
 
-let lastLoop = 0;
+let timerStartMs = 0;
+let stopped = true;
 const newTimer = createTimer({
   duration: 1000,
-  loop: true,
   autoplay: false,
-  onBegin: () => {
-    lastLoop = performance.now();
-  },
-  onLoop: () => {
+  onComplete: () => {
+    // sync guard — finish() is async and TestState.isActive flips behind an await
+    if (stopped) return;
     const now = performance.now();
+    const expectedThisFireMs = timerStartMs + (Time.get() + 1) * 1000;
+    const drift = roundTo2(now - expectedThisFireMs);
 
-    const drift = roundTo2(Math.abs(1000 - (now - lastLoop)));
+    // animejs is rAF-quantized and can fire fractionally early — reschedule
+    // the remainder; bounded by rAF granularity, can't tight-loop
+    if (drift < 0) {
+      console.debug("Rescheduling timer, fired early by", -drift, "ms");
+      newTimer.duration = expectedThisFireMs - now;
+      newTimer.restart();
+      return;
+    }
+
     checkIfTimerIsSlow(drift);
-    lastLoop = now;
-    timerStep();
 
-    logTestEvent("timer", now, {
-      event: "step",
-      timer: Time.get(),
-      slowTimer: SlowTimer.get() ? true : undefined,
-      drift,
-    });
+    // Catch up missed ticks via the cheap timerStep path, so a stall recovery
+    // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
+    // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
+    const ticksDue = Math.floor((now - timerStartMs) / 1000);
+    while (!stopped && Time.get() + 1 < ticksDue) {
+      console.debug(
+        "Catching up timer, missed tick at",
+        Time.get() + 1,
+        "seconds",
+      );
+      timerStep(now, true);
+      logTestEvent("timer", now, {
+        event: "step",
+        timer: Time.get(),
+        slowTimer: SlowTimer.get() ? true : undefined,
+        catchup: true,
+      });
+    }
+    // Gated on !stopped to avoid duplicating the last catch-up event when a
+    // catch-up tick was the one that triggered finish. timerStep itself can
+    // flip stopped (Time hits maxTime) — we still log because the tick ran.
+    if (!stopped) {
+      timerStep(now, false);
+      logTestEvent("timer", now, {
+        event: "step",
+        timer: Time.get(),
+        slowTimer: SlowTimer.get() ? true : undefined,
+        drift,
+      });
+    }
+
+    if (stopped) return;
+
+    // Anchor to the ideal grid relative to test start (not `now`) so a late
+    // tick doesn't permanently offset every tick after it.
+    const expectedNextFireMs = timerStartMs + (Time.get() + 1) * 1000;
+
+    newTimer.duration = Math.max(0, expectedNextFireMs - now);
+    newTimer.restart();
   },
 });
 
@@ -81,6 +121,7 @@ export function enableTimerDebug(): void {
 }
 
 export function clear(logEnd = false, now = performance.now()): void {
+  stopped = true;
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
@@ -231,13 +272,25 @@ export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
-function timerStep(): void {
+function timerStep(now: number, catchingUp: boolean): void {
   if (timerDebug) console.time("timer step -----------------------------");
 
-  //calc
   Time.increment();
+
+  // cheap per-tick side effects — must run for every missed tick during catch-up
+  // so warnings/layout switches still fire on the correct seconds
+  if (Config.playTimeWarning !== "off") playTimeWarning();
+  layoutfluid();
+  checkIfTimeIsUp();
+
+  if (catchingUp) {
+    if (timerDebug) console.timeEnd("timer step -----------------------------");
+    return;
+  }
+
+  //calc — only the final, real-time tick pays for these
   const eventLog = buildEventLog();
-  const wpmAndRaw = getRunningWpmAndRaw(eventLog, performance.now());
+  const wpmAndRaw = getRunningWpmAndRaw(eventLog, now);
   const acc = getLiveCachedAccuracy();
 
   //ui updates
@@ -250,11 +303,7 @@ function timerStep(): void {
   TimerProgress.update();
   LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
 
-  //logic
-  if (Config.playTimeWarning !== "off") playTimeWarning();
-  layoutfluid();
-  const failed = checkIfFailed(wpmAndRaw, acc);
-  if (!failed) checkIfTimeIsUp();
+  checkIfFailed(wpmAndRaw, acc);
 
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
@@ -300,10 +349,13 @@ export async function start(now: number): Promise<void> {
   }
   slowTimerNotifIds = [];
   void _startNew(now);
-  // void _startOld();
+  // void _startOld(now);
 }
 
 async function _startNew(now: number): Promise<void> {
+  stopped = false;
+  timerStartMs = now;
+  newTimer.duration = 1000;
   newTimer.play();
   logTestEvent("timer", now, {
     event: "start",
@@ -312,10 +364,10 @@ async function _startNew(now: number): Promise<void> {
   });
 }
 
-async function _startOld(): Promise<void> {
+async function _startOld(now: number): Promise<void> {
   timerStats = [];
-  // expected = TestStats.start + interval;
-  logTestEvent("timer", performance.now(), {
+  expected = now + interval;
+  logTestEvent("timer", now, {
     event: "start",
     timer: Time.get(),
     date: new Date().getTime(),
@@ -338,14 +390,16 @@ async function _startOld(): Promise<void> {
         return;
       }
 
-      logTestEvent("timer", performance.now(), {
+      const now = performance.now();
+
+      logTestEvent("timer", now, {
         event: "step",
         timer: Time.get(),
         drift: drift,
         slowTimer: SlowTimer.get() ? true : undefined,
       });
 
-      timerStep();
+      timerStep(now, false);
 
       expected += interval;
       loop();

@@ -58,7 +58,11 @@ import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { getCurrentQuote, isTestInvalid } from "../states/test";
-import { getAccuracy, getRawHistory } from "./events/stats";
+import {
+  getAccuracy,
+  getRawHistory,
+  getTimerBoundaryLabels,
+} from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -105,15 +109,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  let labels = [];
-
-  for (let i = 1; i <= Math.floor(result.testDuration); i++) {
-    labels.push(i.toString());
-  }
-
-  if (result.testDuration % 1 >= 0.5) {
-    labels.push(Numbers.roundTo2(result.testDuration).toString());
-  }
+  const labels = getTimerBoundaryLabels(TestState.lastEventLog, false);
 
   const chartData1 = [
     ...result.chartData.wpm.map((a) =>
