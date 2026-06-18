@@ -66,8 +66,8 @@ export const AddResultRequestSchema = z.object({
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const ReportCompletedEventMismatchRequestSchema = z.object({
-  notMatching: z.array(z.string().max(100)).max(50),
-  mismatchedKeys: z.array(z.string().max(100)).max(50),
+  notMatching: z.array(z.string().max(10000)).max(50),
+  mismatchedKeys: z.array(z.string().max(10000)).max(50),
   groupKey: z.string().max(500),
   language: LanguageSchema.optional(),
   mode: ModeSchema.optional(),
