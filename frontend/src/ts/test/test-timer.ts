@@ -26,11 +26,11 @@ import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
+import { roundTo2 } from "@monkeytype/util/numbers";
 import {
   getLiveCachedAccuracy,
   getRunningWpmAndRaw,
 } from "./events/running-stats";
-import { roundTo2 } from "@monkeytype/util/numbers";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -277,33 +277,34 @@ function timerStep(now: number, catchingUp: boolean): void {
 
   Time.increment();
 
-  // cheap per-tick side effects — must run for every missed tick during catch-up
-  // so warnings/layout switches still fire on the correct seconds
-  if (Config.playTimeWarning !== "off") playTimeWarning();
-  layoutfluid();
-  checkIfTimeIsUp();
-
   if (catchingUp) {
-    if (timerDebug) console.timeEnd("timer step -----------------------------");
-    return;
+    // cheap per-tick side effects — must run for every missed tick during catch-up
+    // so warnings/layout switches still fire on the correct seconds
+    if (Config.playTimeWarning !== "off") playTimeWarning();
+    layoutfluid();
+    checkIfTimeIsUp();
+  } else {
+    //calc — only the final, real-time tick pays for these
+    const eventLog = buildEventLog();
+    const wpmAndRaw = getRunningWpmAndRaw(eventLog, now);
+    const acc = getLiveCachedAccuracy();
+
+    //ui updates
+    requestDebouncedAnimationFrame("test-timer.timerStep", () => {
+      premid();
+      monkey(wpmAndRaw);
+    });
+
+    // already using raf
+    TimerProgress.update();
+    LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+
+    //logic
+    if (Config.playTimeWarning !== "off") playTimeWarning();
+    layoutfluid();
+    const failed = checkIfFailed(wpmAndRaw, acc);
+    if (!failed) checkIfTimeIsUp();
   }
-
-  //calc — only the final, real-time tick pays for these
-  const eventLog = buildEventLog();
-  const wpmAndRaw = getRunningWpmAndRaw(eventLog, now);
-  const acc = getLiveCachedAccuracy();
-
-  //ui updates
-  requestDebouncedAnimationFrame("test-timer.timerStep", () => {
-    premid();
-    monkey(wpmAndRaw);
-  });
-
-  // already using raf
-  TimerProgress.update();
-  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
-
-  checkIfFailed(wpmAndRaw, acc);
 
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }

@@ -498,16 +498,12 @@ export function getChars(
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
-  const isTimedTest =
-    context.mode === "time" ||
-    (context.mode === "words" && context.mode2 === "0") ||
-    (context.mode === "custom" && context.customTextLimitMode === "time") ||
-    (context.mode === "custom" && context.customTextLimitValue === 0);
+  const isTimed = isTimedTest(eventLog);
 
   const eventsPerWord = getEventsPerWord(events);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimedTest || bailedOut || countPartialLastWord;
+  const countPartial = isTimed || bailedOut || countPartialLastWord;
 
   const acc: CharCounts = {
     allCorrect: 0,

@@ -1,5 +1,5 @@
 import { generateOpenApi } from "@ts-rest/open-api";
-import { contract } from "@monkeytype/contracts/index";
+import { COMPATIBILITY_CHECK, contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
 import { EndpointMetadata, PermissionId } from "@monkeytype/contracts/util/api";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
@@ -24,7 +24,7 @@ export function getOpenApi(): OpenAPIObject {
         title: "Monkeytype API",
         description:
           "Documentation for the endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
-        version: "2.0.0",
+        version: `2.${COMPATIBILITY_CHECK}.0`,
         termsOfService: "https://monkeytype.com/terms-of-service",
         contact: {
           name: "Support",
