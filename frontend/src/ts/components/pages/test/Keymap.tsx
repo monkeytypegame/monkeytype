@@ -4,8 +4,13 @@ import { createMemo, For, Show } from "solid-js";
 import { getConfig } from "../../../config/store";
 import { getModifierState } from "../../../states/modifiers";
 import { getKeymapLayout, keymapLayoutObject } from "../../../states/test";
+import { cn } from "../../../utils/cn";
 import { typedEntries } from "../../../utils/misc";
-import { convertLayoutToKeymap, KeyboardDefinition } from "./keymapConverter";
+import {
+  convertLayoutToKeymap,
+  KeyboardDefinition,
+  KeyDefinition,
+} from "./keymapConverter";
 
 export function Keymap() {
   return (
@@ -20,12 +25,24 @@ export function Keymap() {
 
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const layer = createMemo(() => {
-    if (getModifierState().shift && getModifierState().altGr) {
-      return 3;
+    switch (getConfig.keymapLegendStyle) {
+      case "blank":
+        return -1;
+      case "lowercase":
+        return 0;
+      case "uppercase":
+        return 1;
+      case "dynamic": {
+        if (getModifierState().shift && getModifierState().altGr) {
+          return 3;
+        } else if (getModifierState().altGr) {
+          return 2;
+        } else if (getModifierState().shift) {
+          return 1;
+        }
+        return 0;
+      }
     }
-    if (getModifierState().altGr) return 2;
-    if (getModifierState().shift) return 1;
-    return 0;
   });
 
   const showFirstRow =
@@ -66,14 +83,7 @@ function KeyboardDefinitionRenderer(props: {
         <Show when={rowId !== "row1" || props.showFirstRow}>
           <div class="flex flex-row">
             <For each={keys}>
-              {(key) => (
-                <Key
-                  legend={key.legends.at(props.layer) ?? ""}
-                  x={key.x}
-                  width={key.width}
-                  height={key.height}
-                />
-              )}
+              {(key) => <Key {...key} layer={props.layer} />}
             </For>
           </div>
         </Show>
@@ -82,22 +92,24 @@ function KeyboardDefinitionRenderer(props: {
   );
 }
 
-function Key(props: {
-  legend: string;
-  x?: number;
-  width?: number;
-  height?: number;
-}) {
+function Key(
+  props: {
+    layer: number;
+  } & KeyDefinition,
+) {
   return (
     <div
-      class="flex items-center justify-center rounded border-2 border-bg bg-sub-alt"
+      class={cn(
+        "flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
+        (props.legends[props.layer] ?? "").length >= 3 && "text-em-xs",
+      )}
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 0.25}rem`,
       }}
     >
-      {props.legend}
+      {props.legends[props.layer]}
     </div>
   );
 }
