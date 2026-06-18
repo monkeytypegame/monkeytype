@@ -165,7 +165,7 @@ export function SettingsPage(): JSXElement {
               <KeymapLayout />
               <AutoSetting key="keymapStyle" wide />
               <AutoSetting key="keymapLegendStyle" wide />
-              <AutoSetting key="keymapShowTopRow" wide />
+              <AutoSetting key="keymapLayoutStyle" wide />
               <KeymapSize />
             </Show>
           </Section>

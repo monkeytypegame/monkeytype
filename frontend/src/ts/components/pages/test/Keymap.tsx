@@ -46,8 +46,9 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   });
 
   const showFirstRow =
-    getConfig.keymapShowTopRow === "always" ||
-    (getConfig.keymapShowTopRow === "layout" &&
+    getConfig.keymapLayoutStyle === "full" ||
+    getConfig.keymapLayoutStyle === "minimal_numrow" ||
+    (getConfig.keymapLayoutStyle === "minimal" &&
       keymapLayoutObject()?.keymapShowTopRow);
 
   // Convert layout to KeyboardDefinition format
@@ -55,7 +56,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     convertLayoutToKeymap(props.layoutData, {
       displayName: props.displayName,
       keymapStyle: getConfig.keymapStyle,
-      showAllKeys: true,
+      showAllKeys: getConfig.keymapLayoutStyle === "full",
     }),
   );
 

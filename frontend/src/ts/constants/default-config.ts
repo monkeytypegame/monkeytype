@@ -57,7 +57,7 @@ const obj: Config = {
   keymapStyle: "staggered",
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
-  keymapShowTopRow: "layout",
+  keymapLayoutStyle: "minimal_layout",
   keymapSize: 1,
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,

@@ -432,8 +432,8 @@ export async function refresh(): Promise<void> {
 
     const showTopRow =
       (TestWords.hasNumbers && Config.keymapMode === "next") ||
-      Config.keymapShowTopRow === "always" ||
-      (layoutData.keymapShowTopRow && Config.keymapShowTopRow !== "never");
+      Config.keymapLayoutStyle === "minimal_numrow" ||
+      (layoutData.keymapShowTopRow && Config.keymapLayoutStyle !== "minimal");
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
@@ -657,7 +657,7 @@ configEvent.subscribe(({ key }) => {
     (key === "layout" && Config.keymapLayout === "overrideSync") ||
     key === "keymapLayout" ||
     key === "keymapStyle" ||
-    key === "keymapShowTopRow" ||
+    key === "keymapLayoutStyle" ||
     key === "keymapMode"
   ) {
     void refresh();

@@ -664,7 +664,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       afterExec: () => TestLogic.restart(),
     },
   },
-  keymapShowTopRow: {
+  keymapLayoutStyle: {
     subgroup: {
       options: "fromSchema",
     },

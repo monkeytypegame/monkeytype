@@ -219,6 +219,21 @@ function replaceLegacyValues(
     }
   }
 
+  if ("keymapShowTopRow" in configObj) {
+    switch (configObj.keymapShowTopRow) {
+      case "never":
+        configObj.keymapLayoutStyle = "minimal";
+        break;
+      case "always":
+        configObj.keymapLayoutStyle = "minimal_numrow";
+        break;
+      case "layout":
+        configObj.keymapLayoutStyle = "minimal_layout";
+        break;
+    }
+    delete configObj.keymapShowTopRow;
+  }
+
   return configObj;
 }
 
