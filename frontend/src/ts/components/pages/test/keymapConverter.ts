@@ -157,35 +157,39 @@ function convertBase(
       width: 2.75,
     });
 
-    result.row5.unshift({
-      legends: buildLegends(["Ctrl"]),
-      width: 1.25,
-    });
-    result.row5.unshift({
-      legends: buildLegends(["Monke"]),
-      width: 1.25,
-    });
-    result.row5.unshift({
-      legends: buildLegends(["Alt"]),
-      width: 1.25,
-    });
+    result.row5.unshift(
+      {
+        legends: buildLegends(["Ctrl"]),
+        width: 1.25,
+      },
+      {
+        legends: buildLegends(["Monke"]),
+        width: 1.25,
+      },
+      {
+        legends: buildLegends(["Alt"]),
+        width: 1.25,
+      },
+    );
 
-    result.row5.push({
-      legends: buildLegends(["Ctrl"]),
-      width: 1.25,
-    });
-    result.row5.push({
-      legends: buildLegends(["Monke"]),
-      width: 1.25,
-    });
-    result.row5.push({
-      legends: buildLegends(["Meta"]),
-      width: 1.25,
-    });
-    result.row5.push({
-      legends: buildLegends(["Ctrl"]),
-      width: 1.25,
-    });
+    result.row5.push(
+      {
+        legends: buildLegends(["Alt"]),
+        width: 1.25,
+      },
+      {
+        legends: buildLegends(["Monke"]),
+        width: 1.25,
+      },
+      {
+        legends: buildLegends(["Meta"]),
+        width: 1.25,
+      },
+      {
+        legends: buildLegends(["Ctrl"]),
+        width: 1.25,
+      },
+    );
   }
 
   return result;

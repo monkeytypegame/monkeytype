@@ -148,11 +148,11 @@ describe("keymap converter", () => {
       ]);
 
       expect(result.row5, "row5").toEqual([
-        { legends: ["Alt", "Alt", "Alt", "Alt"], width: 1.25 },
+        { legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"], width: 1.25 },
         { legends: ["Monke", "Monke", "Monke", "Monke"], width: 1.25 },
-        { legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"], width: 1.25 },
+        { legends: ["Alt", "Alt", "Alt", "Alt"], width: 1.25 },
         { legends: ["qwerty", "qwerty", "qwerty", "qwerty"], width: 6.25 },
-        { legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"], width: 1.25 },
+        { legends: ["Alt", "Alt", "Alt", "Alt"], width: 1.25 },
         { legends: ["Monke", "Monke", "Monke", "Monke"], width: 1.25 },
         { legends: ["Meta", "Meta", "Meta", "Meta"], width: 1.25 },
         { legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"], width: 1.25 },
