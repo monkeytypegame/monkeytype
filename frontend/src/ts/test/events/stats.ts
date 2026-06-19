@@ -1,4 +1,3 @@
-import * as TestWords from "../../test/test-words";
 import { CharCounts, countChars } from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
@@ -440,7 +439,7 @@ export function getWordBurst(
 export function getWordBurstHistory(eventLog: EventLog): number[] {
   const eventsPerWord = getEventsPerWord(eventLog.events);
   const burstHistory: number[] = [];
-  for (let i = 0; i < TestWords.words.length; i++) {
+  for (let i = 0; i < eventLog.context.targetWords.length; i++) {
     burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
   }
   return burstHistory;
@@ -885,7 +884,7 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
       event.data.inputType === "insertText" &&
       !event.data.correct
     ) {
-      const word = TestWords.words.list[event.data.wordIndex];
+      const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
       missedWords[word] = (missedWords[word] ?? 0) + 1;
     }
