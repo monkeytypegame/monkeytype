@@ -226,10 +226,3 @@ export function getEventsForWord(
   }
   return result;
 }
-
-export function getTimerStartEventMs(
-  events: TestEventNoMs[],
-): number | undefined {
-  return events.find((e) => e.type === "timer" && e.data.event === "start")
-    ?.testMs;
-}

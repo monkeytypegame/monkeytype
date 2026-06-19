@@ -66,6 +66,7 @@ let cachedAllEvents: TestEventNoMs[] | undefined;
 const liveCache = {
   correctInputs: 0,
   totalInputs: 0,
+  timerStartMs: null as number | null,
 };
 
 const sortTieRank = (type: TestEventType): number =>
@@ -177,6 +178,10 @@ export function logTestEvent(
       testMs: 0,
       data: eventData as TimerEventData,
     });
+
+    if ((eventData as TimerEventData).event === "start") {
+      liveCache.timerStartMs = now;
+    }
   } else if (type === "input") {
     const data = eventData as InputEventData;
     inputEvents.push({
@@ -266,10 +271,17 @@ export function cleanupData(): void {
 function recomputeLiveCache(): void {
   liveCache.correctInputs = 0;
   liveCache.totalInputs = 0;
+  liveCache.timerStartMs = null;
   for (const e of inputEvents) {
     if ("correct" in e.data) {
       liveCache.totalInputs++;
       if (e.data.correct) liveCache.correctInputs++;
+    }
+  }
+  for (const e of timerEvents) {
+    if (e.data.event === "start") {
+      liveCache.timerStartMs = e.ms;
+      break;
     }
   }
 }
@@ -383,6 +395,7 @@ export function resetTestEvents(): void {
   noCodeIndex = 0;
   liveCache.correctInputs = 0;
   liveCache.totalInputs = 0;
+  liveCache.timerStartMs = null;
 }
 
 export function getPressedKeys(): Map<

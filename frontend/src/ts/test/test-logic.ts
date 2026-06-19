@@ -116,7 +116,7 @@ import {
   getKeypressSpacing,
 } from "./events/stats";
 import {
-  getRunningAccuracy,
+  getLiveCachedAccuracy,
   getRunningTestDurationMs,
 } from "./events/running-stats";
 import { calculateWpm } from "../utils/numbers";
@@ -284,12 +284,11 @@ export function restart(options = {} as RestartOptions): void {
 
     if (Config.resultSaving) {
       const liveEventLog = buildEventLog();
-      const testSeconds =
-        getRunningTestDurationMs(liveEventLog, performance.now()) / 1000;
+      const testSeconds = getRunningTestDurationMs(performance.now()) / 1000;
       const afkseconds = getAfkDuration(liveEventLog);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
-      const acc = Numbers.roundTo2(getRunningAccuracy(liveEventLog));
+      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
   }
