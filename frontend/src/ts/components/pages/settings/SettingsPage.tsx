@@ -52,6 +52,7 @@ import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
 import { Setting } from "./Setting";
+import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
   const [hasLocalBg] = createResource(
@@ -62,6 +63,7 @@ export function SettingsPage(): JSXElement {
   return (
     <Page id="settings">
       <div class="grid gap-8">
+        <SettingsSearch />
         <QuickNav />
         <Show when={getConfig.showKeyTips}>
           <div class="text-center text-sub">
