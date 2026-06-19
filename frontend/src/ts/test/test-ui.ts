@@ -1840,7 +1840,7 @@ export function beforeTestWordChange(
     Config.strictSpace
   ) {
     void updateWordLetters({
-      input: getCurrentInput(),
+      input: direction === "back" ? "" : getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
