@@ -23,9 +23,9 @@ import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
 import { Keymap } from "./pages/test/Keymap";
+import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
-import { TestModesNotice } from "./test/modes-notice/TestModesNotice";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,

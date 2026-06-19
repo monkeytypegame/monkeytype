@@ -534,7 +534,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   timerStyle: {
     subgroup: {
       options: "fromSchema",
-      display: (value) => value.replaceAll(/_/g, " "),
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "timer",
   },
@@ -557,6 +557,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   highlightMode: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
   },
   typedEffect: {
@@ -642,6 +643,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   keymapStyle: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "keyboard",
   },
