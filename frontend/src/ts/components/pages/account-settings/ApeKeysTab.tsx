@@ -1,4 +1,5 @@
 import { ApeKeyNameSchema } from "@monkeytype/schemas/ape-keys";
+import { tryCatch } from "@monkeytype/util/trycatch";
 import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns";
 import { createMemo, Show } from "solid-js";
@@ -128,7 +129,12 @@ function getColumns(): DataTableColumnDef<ApeKeyEntry>[] {
                 text: "Are you sure?",
                 buttonText: "delete",
                 execFn: async () => {
-                  await removeApeKey({ apeKeyId: info.getValue() });
+                  const { error } = await tryCatch(
+                    removeApeKey({ apeKeyId: info.getValue() }),
+                  );
+                  if (error !== null) {
+                    return { status: "error", message: error.message };
+                  }
                   return { status: "success", message: "Key deleted" };
                 },
               });
@@ -157,7 +163,12 @@ function addNewKey(): void {
     },
 
     execFn: async ({ name }) => {
-      await insertApeKey({ name });
+      const { error } = await tryCatch(insertApeKey({ name }));
+
+      if (error !== null) {
+        return { status: "error", message: error.message };
+      }
+
       return {
         status: "success",
         message: "Key generated",
@@ -183,7 +194,12 @@ function showRenameModal(apeKeyId: string): void {
     },
 
     execFn: async ({ name }) => {
-      await renameApeKey({ apeKeyId, name });
+      const { error } = await tryCatch(renameApeKey({ apeKeyId, name }));
+
+      if (error !== null) {
+        return { status: "error", message: error.message };
+      }
+
       return {
         status: "success",
         message: "Key updated",
