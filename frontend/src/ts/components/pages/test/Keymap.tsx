@@ -120,7 +120,7 @@ function Key(
       class={cn(
         "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
         (props.legends[props.layer] ?? "").length >= 3 && "text-em-xs",
-        isActive() && "bg-main",
+        isActive() && "bg-main text-bg",
       )}
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
@@ -134,7 +134,12 @@ function Key(
           <>
             {props.legends[props.layer]}
             <Show when={props.isHoming}>
-              <div class="bg-em-xs absolute bottom-1 left-auto h-px w-2 rounded bg-sub"></div>
+              <div
+                class={cn(
+                  "bg-em-xs absolute bottom-1 left-auto h-px w-2 rounded",
+                  isActive() ? "bg-bg" : "bg-sub",
+                )}
+              ></div>
             </Show>
           </>
         }
@@ -142,7 +147,7 @@ function Key(
         <Button
           variant="text"
           active={isActive()}
-          class="text-xs text-sub [--themable-button-active:var(--bg-color)]"
+          class="text-xs [--themable-button-active:var(--bg-color)]"
           text={getKeymapLayout().layoutNameDisplayString}
           onClick={() => showCommandLineForConfig("keymapLayout")}
         />
