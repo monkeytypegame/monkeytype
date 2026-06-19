@@ -41,6 +41,9 @@ export function convertLayoutToKeymap(
     case "matrix":
     case "split_matrix":
       return convertMatrix(layout, options);
+    case "steno":
+    case "steno_matrix":
+      return convertSteno(options);
   }
 
   throw new Error("not supported");
@@ -250,6 +253,74 @@ function convertMatrix(
     );
   }
   return result;
+}
+
+function convertSteno(options: ConvertOptions): KeyboardDefinition {
+  const isSplit = options.keymapStyle === "steno_matrix";
+
+  const layout: LayoutObject = {
+    keymapShowTopRow: true,
+    type: "matrix",
+    keys: {
+      row1: [],
+      row2: [
+        ["s", "S"],
+        ["t", "T"],
+        ["p", "P"],
+        ["h", "H"],
+        ["*", "*"],
+        ["f", "F"],
+        ["p", "P"],
+        ["l", "L"],
+        ["t", "T"],
+        ["d", "D"],
+      ],
+      row3: [
+        ["s", "S"],
+        ["k", "K"],
+        ["w", "W"],
+        ["r", "R"],
+        ["*", "*"],
+        ["r", "R"],
+        ["b", "B"],
+        ["g", "G"],
+        ["s", "S"],
+        ["z", "Z"],
+      ],
+      row4: [
+        ["a", "A"],
+        ["o", "O"],
+        ["e", "E"],
+        ["u", "U"],
+      ],
+      row5: [],
+    },
+  };
+
+  const calcGap =
+    (options: { colGap?: Record<number, number> }) =>
+    ({ col }: { col: number }) => {
+      const gap = options?.colGap?.[col];
+      if (!isSplit && gap !== undefined) return gap;
+      return isSplit && col === 5 ? 1 : undefined;
+    };
+
+  const isLargeKey = (col: number): boolean => !isSplit && [0, 4].includes(col);
+
+  const base = convertBase(layout, options, {
+    row2: {
+      height: ({ col }) => (isLargeKey(col) ? 2 : undefined),
+      x: calcGap({}),
+    },
+    row3: {
+      skip: ({ col }) => isLargeKey(col),
+      x: calcGap({ colGap: { 1: 1, 5: 1 } }),
+    },
+    row4: {
+      x: ({ col }) => (isSplit ? { 0: 3, 2: 1 } : { 0: 2.25, 2: 0.5 })[col],
+    },
+  });
+  return base;
 }
 
 function convertBase(

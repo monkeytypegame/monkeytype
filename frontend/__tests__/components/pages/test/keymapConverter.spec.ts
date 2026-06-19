@@ -599,4 +599,84 @@ describe("keymap converter", () => {
       x: 1,
     });
   });
+
+  it("converts steno", () => {
+    const result = convertLayoutToKeymap({} as any, {
+      displayName: "steno",
+      keymapStyle: "steno",
+      showAllKeys: false,
+    });
+
+    expect(result.row1, "row1").toEqual([]);
+    expect(result.row2, "row2").toEqual([
+      { legends: ["s", "S", "s", "S"], height: 2 },
+      { legends: ["t", "T", "t", "T"] },
+      { legends: ["p", "P", "p", "P"] },
+      { legends: ["h", "H", "h", "H"] },
+      { legends: ["*", "*", "*", "*"], height: 2 },
+      { legends: ["f", "F", "f", "F"] },
+      { legends: ["p", "P", "p", "P"] },
+      { legends: ["l", "L", "l", "L"] },
+      { legends: ["t", "T", "t", "T"] },
+      { legends: ["d", "D", "d", "D"] },
+    ]);
+    expect(result.row3, "row3").toEqual([
+      { legends: ["k", "K", "k", "K"], x: 1 },
+      { legends: ["w", "W", "w", "W"] },
+      { legends: ["r", "R", "r", "R"] },
+      { legends: ["r", "R", "r", "R"], x: 1 },
+      { legends: ["b", "B", "b", "B"] },
+      { legends: ["g", "G", "g", "G"] },
+      { legends: ["s", "S", "s", "S"] },
+      { legends: ["z", "Z", "z", "Z"] },
+    ]);
+    expect(result.row4, "row4").toEqual([
+      { legends: ["a", "A", "a", "A"], x: 2.25 },
+      { legends: ["o", "O", "o", "O"] },
+      { legends: ["e", "E", "e", "E"], x: 0.5 },
+      { legends: ["u", "U", "u", "U"] },
+    ]);
+    expect(result.row5, "row5").toEqual([]);
+  });
+
+  it("converts steno matrix", () => {
+    const result = convertLayoutToKeymap({} as any, {
+      displayName: "steno matrix",
+      keymapStyle: "steno_matrix",
+      showAllKeys: false,
+    });
+
+    expect(result.row1, "row1").toEqual([]);
+    expect(result.row2, "row2").toEqual([
+      { legends: ["s", "S", "s", "S"] },
+      { legends: ["t", "T", "t", "T"] },
+      { legends: ["p", "P", "p", "P"] },
+      { legends: ["h", "H", "h", "H"] },
+      { legends: ["*", "*", "*", "*"] },
+      { legends: ["f", "F", "f", "F"], x: 1 },
+      { legends: ["p", "P", "p", "P"] },
+      { legends: ["l", "L", "l", "L"] },
+      { legends: ["t", "T", "t", "T"] },
+      { legends: ["d", "D", "d", "D"] },
+    ]);
+    expect(result.row3, "row3").toEqual([
+      { legends: ["s", "S", "s", "S"] },
+      { legends: ["k", "K", "k", "K"] },
+      { legends: ["w", "W", "w", "W"] },
+      { legends: ["r", "R", "r", "R"] },
+      { legends: ["*", "*", "*", "*"] },
+      { legends: ["r", "R", "r", "R"], x: 1 },
+      { legends: ["b", "B", "b", "B"] },
+      { legends: ["g", "G", "g", "G"] },
+      { legends: ["s", "S", "s", "S"] },
+      { legends: ["z", "Z", "z", "Z"] },
+    ]);
+    expect(result.row4, "row4").toEqual([
+      { legends: ["a", "A", "a", "A"], x: 3 },
+      { legends: ["o", "O", "o", "O"] },
+      { legends: ["e", "E", "e", "E"], x: 1 },
+      { legends: ["u", "U", "u", "U"] },
+    ]);
+    expect(result.row5, "row5").toEqual([]);
+  });
 });

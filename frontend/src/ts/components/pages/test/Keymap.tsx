@@ -115,12 +115,17 @@ function Key(
     layer: number;
   } & KeyDefinition,
 ) {
+  const isSteno = () =>
+    getConfig.keymapStyle === "steno" ||
+    getConfig.keymapStyle === "steno_matrix";
+
   const [flashTick, setFlashTick] = createSignal(0);
   const [flashCorrect, setFlashCorrect] = createSignal(true);
-  const isNext = () => getKeymapHighlightKey() === props.legends[props.layer];
+  const isNext = () =>
+    !isSteno() && getKeymapHighlightKey() === props.legends[props.layer];
 
   keymapEvent.useListener((event) => {
-    if (event.mode !== "flash") return;
+    if (event.mode !== "flash" || isSteno()) return;
     if (event.key !== props.legends[props.layer]) return;
     setFlashCorrect(event.correct ?? true);
     setFlashTick((t) => t + 1);
