@@ -8,7 +8,7 @@ export type KeyDefinition = {
   width?: number;
   /** height in u  */
   height?: number;
-  /** x-offset in 1/4 u  */
+  /** x-offset in u  */
   x?: number;
 };
 export type KeyboardDefinition = Record<
@@ -58,7 +58,7 @@ function convertStaggered(
     ({ col1Gap, splitCol }: { col1Gap: number; splitCol?: number }) =>
     ({ col }: { col: number }) => {
       if (col === 0) return options.showAllKeys ? undefined : col1Gap;
-      if (isSplit && col === (splitCol ?? 5)) return 4;
+      if (isSplit && col === (splitCol ?? 5)) return 1;
       return undefined;
     };
 
@@ -68,14 +68,14 @@ function convertStaggered(
       skip: ({ col }) => (options.showAllKeys ? false : col === 0),
     },
     row2: {
-      x: calcGap({ col1Gap: 2 }),
+      x: calcGap({ col1Gap: 0.5 }),
       skip: ({ col }) => (options.showAllKeys ? false : col === 12),
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
-    row3: { x: calcGap({ col1Gap: 4 }) },
-    row4: { x: calcGap({ col1Gap: isIso ? 1 : 6 }) },
+    row3: { x: calcGap({ col1Gap: 1 }) },
+    row4: { x: calcGap({ col1Gap: isIso ? 0.25 : 1.5 }) },
     row5: {
-      x: calcGap({ col1Gap: 6 + 2 * 4, splitCol: 1 }),
+      x: calcGap({ col1Gap: 3.5, splitCol: 1 }),
       width: ({ col }) => {
         if (isSplit) {
           return (
@@ -179,7 +179,7 @@ function convertMatrix(
     ({ col1Gap, splitCol }: { col1Gap?: number; splitCol?: number }) =>
     ({ col }: { col: number }) => {
       if (col === 0) return options.showAllKeys ? undefined : col1Gap;
-      if (isSplit && col === (splitCol ?? 5)) return 4;
+      if (isSplit && col === (splitCol ?? 5)) return 1;
       return undefined;
     };
 
@@ -201,7 +201,7 @@ function convertMatrix(
       x: calcGap({}),
     },
     row5: {
-      x: calcGap({ col1Gap: isSplit ? 2 * 4 : 3 * 4, splitCol: 1 }),
+      x: calcGap({ col1Gap: isSplit ? 2 : 3, splitCol: 1 }),
       width: () => (isSplit ? 3 : options.showAllKeys ? 6 : 4),
       legend: ({ col }) =>
         col === 0 ? buildLegends([options.displayName]) : undefined,
