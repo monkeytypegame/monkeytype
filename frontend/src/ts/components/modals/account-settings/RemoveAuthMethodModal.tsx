@@ -52,10 +52,6 @@ export function showRemoveAuthMethodModal(options: {
 
     execFn: async ({ password }) => {
       const result = await removeAuthProvider(options.authMethod, { password });
-      if (result.status !== "success") {
-        return result;
-      }
-
       return result;
     },
   });
