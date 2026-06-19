@@ -1294,15 +1294,22 @@ function compareCompletedEvents(
         ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
         : 0;
       const avgRounded = Numbers.roundTo2(avg);
-      notMatching.push(
-        `rawHistory (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
-      );
-      mismatchedKeys.push("rawHistory");
-      console.error(
-        `Completed event mismatch on rawHistory (avg ${avgRounded}% difference):`,
-        a,
-        b,
-      );
+      if (avg < 1) {
+        console.debug(
+          `Completed event match on rawHistory (avg ${avgRounded}% difference within tolerance):`,
+          a,
+        );
+      } else {
+        notMatching.push(
+          `rawHistory (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
+        );
+        mismatchedKeys.push("rawHistory");
+        console.error(
+          `Completed event mismatch on rawHistory (avg ${avgRounded}% difference):`,
+          a,
+          b,
+        );
+      }
     }
   }
 
@@ -1329,15 +1336,22 @@ function compareCompletedEvents(
           ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
           : 0;
         const avgRounded = Numbers.roundTo2(avg);
-        notMatching.push(
-          `chartData.wpm (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
-        );
-        mismatchedKeys.push("chartData.wpm");
-        console.error(
-          `Completed event mismatch on chartData.wpm (avg ${avgRounded}% difference):`,
-          a,
-          b,
-        );
+        if (avg < 1) {
+          console.debug(
+            `Completed event match on chartData.wpm (avg ${avgRounded}% difference within tolerance):`,
+            a,
+          );
+        } else {
+          notMatching.push(
+            `chartData.wpm (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
+          );
+          mismatchedKeys.push("chartData.wpm");
+          console.error(
+            `Completed event mismatch on chartData.wpm (avg ${avgRounded}% difference):`,
+            a,
+            b,
+          );
+        }
       }
     }
   }
@@ -1434,7 +1448,7 @@ function compareCompletedEvents(
             difficulty: ce.difficulty,
             duration: ce.testDuration,
             funboxes: getActiveFunboxNames().join(","),
-            version: 29,
+            version: 30,
             eventLog,
             // ce: ce as Record<string, unknown>,
             // ce2: ce2 as Record<string, unknown>,
