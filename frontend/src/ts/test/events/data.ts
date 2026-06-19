@@ -275,7 +275,7 @@ function recomputeLiveCache(): void {
 }
 
 export function getLiveCache(): Readonly<typeof liveCache> {
-  return liveCache;
+  return { ...liveCache };
 }
 
 export function getAllTestEvents(): TestEventNoMs[] {
