@@ -75,7 +75,7 @@ export const ReportCompletedEventMismatchRequestSchema = z.object({
   difficulty: DifficultySchema.optional(),
   duration: z.number().max(200).optional(),
   funboxes: z.string().max(100).optional(),
-  version: z.literal(29),
+  version: z.literal(30),
   eventLog: z.object({
     version: z.number(),
     context: z.record(z.unknown()),
