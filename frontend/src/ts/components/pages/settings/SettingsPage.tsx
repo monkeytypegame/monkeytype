@@ -79,7 +79,8 @@ export function SettingsPage(): JSXElement {
         <Show when={!isSettingsSearchActive()}>
           <AccountSettingsNotice />
         </Show>
-        <div>
+        {/* while filtering, lay the matching sections out with a uniform gap */}
+        <div class={cn(isSettingsSearchActive() && "grid gap-8")}>
           <Section title="behavior">
             <Show when={isAuthenticated()}>
               <Tags />
@@ -297,7 +298,13 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
   const [isOpen, setIsOpen] = createSignal(true);
 
   return (
-    <div id={`group_${wordsToCamelCase(props.title)}`}>
+    <div
+      id={`group_${wordsToCamelCase(props.title)}`}
+      class={cn(
+        // when filtering, drop sections that have no matching setting
+        isSettingsSearchActive() && "not-has-[[data-setting-key]]:hidden",
+      )}
+    >
       <Show when={!isSettingsSearchActive()}>
         <Button
           variant="text"
