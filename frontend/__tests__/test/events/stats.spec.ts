@@ -130,9 +130,12 @@ function input(
 function timer(
   event: "start" | "step" | "end",
   timerVal: number,
+  opts: { catchup?: true } = {},
 ): TimerEventData {
   if (event === "step") {
-    return { event, timer: timerVal, drift: 0 };
+    return opts.catchup
+      ? { event, timer: timerVal, catchup: true }
+      : { event, timer: timerVal, drift: 0 };
   }
   return { event, timer: timerVal };
 }
@@ -170,7 +173,7 @@ describe("stats.ts", () => {
     inputPerWord.clear();
   });
 
-  describe("getTimerBoundaries", () => {
+  describe("getLaggedTimerBoundaries", () => {
     it("returns step boundaries and end", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 2000, timer("step", 1));
@@ -180,7 +183,7 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // end testMs=3000, last step testMs=3000 — gap is 0 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([
         1000, 2000, 3000,
       ]);
     });
@@ -192,7 +195,9 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // endMs=1500 → 1500%1000=500ms → roundTo2(0.5)=0.5 → boundary added
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000, 1500]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([
+        1000, 1500,
+      ]);
     });
 
     it("skips end when too close to last step", () => {
@@ -202,7 +207,7 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // end at testMs 1400, last step at testMs 1000 — gap is 400 < 500
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([1000]);
     });
 
     it("includes end boundary when endMs % 1000 rounds to 0.5s", () => {
@@ -212,7 +217,9 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2496, timer("end", 1));
 
       const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000, 1496]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([
+        1000, 1496,
+      ]);
     });
 
     it("skips end boundary when endMs % 1000 rounds below 0.5s", () => {
@@ -222,7 +229,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2494, timer("end", 1));
 
       const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([1000]);
     });
 
     it("skips end boundary for .49 test even when step fires slightly early (drift)", () => {
@@ -234,7 +241,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2490, timer("end", 1));
 
       const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([995]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([995]);
     });
 
     it("includes end boundary for .99 test even when step fires late (drift)", () => {
@@ -246,7 +253,9 @@ describe("stats.ts", () => {
       logTestEvent("timer", 2990, timer("end", 1));
 
       const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1510, 1990]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([
+        1510, 1990,
+      ]);
     });
 
     it("excludes short trailing interval (<500ms) for non-round test duration", () => {
@@ -257,7 +266,7 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([1000]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([1000]);
     });
 
     it("excludes short trailing interval (<500ms) for sub one second test duration", () => {
@@ -267,14 +276,14 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // end testMs=1350, last step testMs=1000 — gap is 350 < 500, end skipped
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([]);
     });
 
     it("returns empty when no timer events", () => {
       logTestEvent("keydown", 1000, keyDown());
 
       const eventLog = buildEventLog();
-      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([]);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toEqual([]);
     });
 
     it("adjusts end in zen mode by removing trailing afk", () => {
@@ -288,7 +297,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 5000, timer("end", 4));
 
       const eventLog = buildEventLog();
-      const boundaries = statsTesting.getTimerBoundaries(eventLog);
+      const boundaries = statsTesting.getLaggedTimerBoundaries(eventLog);
       // adjusted end = 4000 - 3500 = 500, steps at 1000 and 2000 are past it
       expect(boundaries).toEqual([500]);
     });
@@ -305,7 +314,7 @@ describe("stats.ts", () => {
 
       const eventLog = buildEventLog();
       // 20 step boundaries, no end boundary (testSeconds rounds to 20.00)
-      expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(20);
+      expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toHaveLength(20);
     });
 
     it("skips end boundary in time mode even when endMs %1000 >= 500ms", () => {
@@ -320,7 +329,7 @@ describe("stats.ts", () => {
       logTestEvent("timer", 119994, timer("end", 120));
 
       const eventLog = buildEventLog();
-      const boundaries = statsTesting.getTimerBoundaries(eventLog);
+      const boundaries = statsTesting.getLaggedTimerBoundaries(eventLog);
       // 120 step boundaries, no end boundary
       expect(boundaries).toHaveLength(120);
     });
@@ -336,7 +345,9 @@ describe("stats.ts", () => {
         logTestEvent("timer", 29994, timer("end", 30));
 
         const eventLog = buildEventLog();
-        expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(30);
+        expect(statsTesting.getLaggedTimerBoundaries(eventLog)).toHaveLength(
+          30,
+        );
       } finally {
         customTextLimit.mode = "words";
       }
@@ -366,11 +377,167 @@ describe("stats.ts", () => {
           logTestEvent("timer", endMs, timer("end", fullSeconds));
 
           const eventLog = buildEventLog();
-          const boundaries = statsTesting.getTimerBoundaries(eventLog);
+          const boundaries = statsTesting.getLaggedTimerBoundaries(eventLog);
           const roundedDuration = Math.round(endMs / 1000);
           expect(boundaries).toHaveLength(roundedDuration);
         });
       }
+    });
+  });
+
+  describe("getTimerBoundaries", () => {
+    it("returns empty when no end event", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([]);
+    });
+
+    it("returns ideal-grid boundaries based on end event's tick count", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // step events with arbitrary drift — should not affect output
+      logTestEvent("timer", 1995, timer("step", 1));
+      logTestEvent("timer", 3050, timer("step", 2));
+      logTestEvent("timer", 3990, timer("step", 3));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+        1000, 2000, 3000,
+      ]);
+    });
+
+    it("uses end event's timer field for tick count, ignoring step count", () => {
+      // simulates a stall: only one real step fired, but the test ended at tick 5
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2079, timer("step", 1));
+      // catch-up + recovery would have logged more step events here
+      logTestEvent("timer", 6000, timer("end", 5));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+        1000, 2000, 3000, 4000, 5000,
+      ]);
+    });
+
+    it("appends fractional tail for non-timed test with .5s+ remainder", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 4500, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      // 3 ticks + tail at 3500ms
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+        1000, 2000, 3000, 3500,
+      ]);
+    });
+
+    it("omits fractional tail under .5s for non-timed test", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 4250, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+        1000, 2000, 3000,
+      ]);
+    });
+
+    it("omits fractional tail in time mode regardless of remainder", () => {
+      (Config as { mode: string }).mode = "time";
+      logTestEvent("timer", 0, timer("start", 0));
+      logTestEvent("timer", 15500, timer("end", 15));
+
+      const eventLog = buildEventLog();
+      // 15 boundaries, no tail
+      expect(statsTesting.getTimerBoundaries(eventLog)).toHaveLength(15);
+    });
+
+    it("trims zen-mode trailing afk and caps tick count", () => {
+      (Config as { mode: string }).mode = "zen";
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("keydown", 1500, keyDown());
+      logTestEvent("keyup", 1600, keyUp());
+      // last keypress at testMs 500, end at testMs 4000 → afk = 3500
+      // adjusted endMs = 500 → 0 full ticks, plus tail (500ms >= .5s)
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([500]);
+    });
+  });
+
+  describe("getTimerBoundaryLabels", () => {
+    it("returns empty when no timer events", () => {
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaryLabels(eventLog)).toEqual([]);
+    });
+
+    it("labels clean step boundaries by index", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 3000, timer("step", 2));
+      logTestEvent("timer", 4000, timer("step", 3));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaryLabels(eventLog)).toEqual([
+        "1",
+        "2",
+        "3",
+      ]);
+    });
+
+    it("labels a fractional trailing end boundary with its time", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2000, timer("step", 1));
+      logTestEvent("timer", 3000, timer("step", 2));
+      logTestEvent("timer", 4000, timer("step", 3));
+      logTestEvent("timer", 4500, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaryLabels(eventLog)).toEqual([
+        "1",
+        "2",
+        "3",
+        "3.50",
+      ]);
+    });
+
+    it("tolerates small step drift (within ~1 frame)", () => {
+      // steps fire ~5ms early due to drift — still label "1", "2", etc.
+      // end at a clean whole second so no tail boundary is added
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 1995, timer("step", 1));
+      logTestEvent("timer", 2990, timer("step", 2));
+      logTestEvent("timer", 3985, timer("step", 3));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaryLabels(eventLog)).toEqual([
+        "1",
+        "2",
+        "3",
+      ]);
+    });
+
+    it("labels the bucket containing a catchup recovery with LAG", () => {
+      // tick 2 (catchup) fires at testMs 3101 — falls in bucket (3000, 4000]
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 2079, timer("step", 1));
+      logTestEvent("timer", 4101, timer("step", 2, { catchup: true }));
+      logTestEvent("timer", 4101, timer("step", 3));
+      logTestEvent("timer", 5050, timer("step", 4));
+      logTestEvent("timer", 5050, timer("end", 4));
+
+      const eventLog = buildEventLog();
+      // perfect-grid boundaries: [1000, 2000, 3000, 4000]
+      // bucket 4 (boundary 4000, range (3000, 4000]) contains catchup at 3101 → LAG
+      expect(statsTesting.getTimerBoundaryLabels(eventLog)).toEqual([
+        "1",
+        "2",
+        "3",
+        "LAG",
+      ]);
     });
   });
 
