@@ -16,6 +16,7 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useSavedIndicator } from "../../../hooks/useSavedIndicator";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
+import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
@@ -51,7 +52,6 @@ import { SoundVolume } from "./custom-setting/SoundVolume";
 import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
-import { isSettingsSearchActive } from "./search-state";
 import { Setting } from "./Setting";
 import { SettingsSearch } from "./SettingsSearch";
 

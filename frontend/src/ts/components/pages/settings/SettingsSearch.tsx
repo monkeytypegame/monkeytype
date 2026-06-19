@@ -1,8 +1,11 @@
 import { JSXElement, onCleanup } from "solid-js";
 
+import {
+  getSettingsSearch,
+  setSettingsSearch,
+} from "../../../states/settings-search";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
-import { getSettingsSearch, setSettingsSearch } from "./search-state";
 
 export function SettingsSearch(): JSXElement {
   // reset the filter when leaving the settings page

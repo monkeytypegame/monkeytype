@@ -6,11 +6,11 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../../states/notifications";
+import { getSettingsSearch } from "../../../states/settings-search";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { FaProps } from "../../common/Fa";
 import { H3 } from "../../common/Headers";
-import { getSettingsSearch } from "./search-state";
 
 type Props = {
   key: string;
