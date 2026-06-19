@@ -51,6 +51,7 @@ import { SoundVolume } from "./custom-setting/SoundVolume";
 import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
+import { isSettingsSearchActive } from "./search-state";
 import { Setting } from "./Setting";
 import { SettingsSearch } from "./SettingsSearch";
 
@@ -64,15 +65,20 @@ export function SettingsPage(): JSXElement {
     <Page id="settings">
       <div class="grid gap-8">
         <SettingsSearch />
-        <QuickNav />
-        <Show when={getConfig.showKeyTips}>
+        {/* while filtering, show only the matching settings (hide everything else) */}
+        <Show when={!isSettingsSearchActive()}>
+          <QuickNav />
+        </Show>
+        <Show when={getConfig.showKeyTips && !isSettingsSearchActive()}>
           <div class="text-center text-sub">
             tip: You can also change all these settings quickly using the
             command line
             <br />( <CommandlineHotkey /> )
           </div>
         </Show>
-        <AccountSettingsNotice />
+        <Show when={!isSettingsSearchActive()}>
+          <AccountSettingsNotice />
+        </Show>
         <div>
           <Section title="behavior">
             <Show when={isAuthenticated()}>
@@ -250,7 +256,9 @@ export function SettingsPage(): JSXElement {
           </Section>
         </div>
 
-        <AccountSettingsNotice />
+        <Show when={!isSettingsSearchActive()}>
+          <AccountSettingsNotice />
+        </Show>
       </div>
     </Page>
   );
@@ -290,27 +298,70 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
 
   return (
     <div id={`group_${wordsToCamelCase(props.title)}`}>
-      <Button
-        variant="text"
-        class="mb-8 w-max gap-4 p-0 text-4xl"
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        <Anime
-          animation={{
-            rotate: isOpen() ? 0 : -90,
-            duration: 125,
-          }}
+      <Show when={!isSettingsSearchActive()}>
+        <Button
+          variant="text"
+          class="mb-8 w-max gap-4 p-0 text-4xl"
+          onClick={() => setIsOpen((prev) => !prev)}
         >
-          <Fa icon="fa-chevron-down" />
-        </Anime>
-        {props.title}
-      </Button>
-      <AnimeShow when={isOpen()} slide class="grid gap-8">
+          <Anime
+            animation={{
+              rotate: isOpen() ? 0 : -90,
+              duration: 125,
+            }}
+          >
+            <Fa icon="fa-chevron-down" />
+          </Anime>
+          {props.title}
+        </Button>
+      </Show>
+      <AnimeShow
+        when={isOpen() || isSettingsSearchActive()}
+        slide
+        class="grid gap-8"
+      >
         {props.children}
-        <div class="h-16"></div>
+        <Show when={!isSettingsSearchActive()}>
+          <div class="h-16"></div>
+        </Show>
       </AnimeShow>
     </div>
   );
+}
+
+// the label shown for a single option (and used to match it while searching)
+function getOptionLabel<T extends keyof Config>(
+  key: T,
+  option: Config[T],
+): string {
+  const optionMeta = (
+    configMetadata[key] as {
+      optionsMetadata?: Record<string, OptionMetadata> | undefined;
+    }
+  ).optionsMetadata?.[String(option)];
+
+  if (optionMeta?.displayString !== undefined) return optionMeta.displayString;
+  if (option === true) return "on";
+  if (option === false) return "off";
+  return String(option).replace(/_/g, " ");
+}
+
+// option labels for a setting, so the search filter can match on them too
+function getOptionSearchTerms<T extends keyof Config>(key: T): string {
+  const optionsMeta = (
+    configMetadata[key] as {
+      optionsMetadata?: Record<string, OptionMetadata> | undefined;
+    }
+  ).optionsMetadata;
+
+  const options = getOptions(ConfigSchema.shape[key])?.filter(
+    (option) => optionsMeta?.[String(option)]?.visible !== false,
+  );
+  if (options === undefined) return "";
+
+  return options
+    .map((option) => getOptionLabel(key, option as Config[T]))
+    .join(" ");
 }
 
 function AutoSetting<T extends keyof Config>(props: {
@@ -407,39 +458,18 @@ function AutoSetting<T extends keyof Config>(props: {
           )}
         >
           <For each={options}>
-            {(option) => {
-              const text = () => {
-                const optionsMeta = configMetadata[props.key]
-                  .optionsMetadata as
-                  | Record<string, { displayString?: string }>
-                  | undefined;
-                const match = optionsMeta?.[String(option)];
-                if (match?.displayString !== undefined) {
-                  return match.displayString;
-                }
-
-                if (option === true) {
-                  return "on";
-                }
-                if (option === false) {
-                  return "off";
-                }
-
-                return (option as string).toString().replace(/_/g, " ");
-              };
-              return (
-                <Button
-                  active={getConfig[props.key] === option}
-                  onClick={() => {
-                    if (getConfig[props.key] === option) return;
-                    props.onOptionClick?.(option as Config[T]);
-                    setConfig(props.key, option as Config[T]);
-                  }}
-                >
-                  {text()}
-                </Button>
-              );
-            }}
+            {(option) => (
+              <Button
+                active={getConfig[props.key] === option}
+                onClick={() => {
+                  if (getConfig[props.key] === option) return;
+                  props.onOptionClick?.(option as Config[T]);
+                  setConfig(props.key, option as Config[T]);
+                }}
+              >
+                {getOptionLabel(props.key, option as Config[T])}
+              </Button>
+            )}
           </For>
         </div>
       );
@@ -453,6 +483,7 @@ function AutoSetting<T extends keyof Config>(props: {
       title={configMetadata[props.key].displayString ?? props.key}
       fa={configMetadata[props.key].fa}
       description={configMetadata[props.key].description}
+      searchTerms={getOptionSearchTerms(props.key)}
       inputs={!props.wide ? autoInputs() : props.inputs}
       fullWidthInputs={
         props.wide ? (autoInputs() ?? props.inputs) : props.inputs
