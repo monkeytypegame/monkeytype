@@ -150,6 +150,7 @@ function Key(
           class="text-xs [--themable-button-active:var(--bg-color)]"
           text={getKeymapLayout().layoutNameDisplayString}
           onClick={() => showCommandLineForConfig("keymapLayout")}
+          tabIndex={-1}
         />
       </Show>
     </div>
