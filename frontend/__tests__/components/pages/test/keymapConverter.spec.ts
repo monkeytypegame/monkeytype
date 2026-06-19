@@ -49,10 +49,10 @@ describe("keymap converter", () => {
         { legends: ["a", "A", "a", "A"], x: 1 },
         { legends: ["s", "S", "s", "S"] },
         { legends: ["d", "D", "d", "D"] },
-        { legends: ["f", "F", "f", "F"] },
+        { legends: ["f", "F", "f", "F"], isHoming: true },
         { legends: ["g", "G", "g", "G"] },
         { legends: ["h", "H", "h", "H"] },
-        { legends: ["j", "J", "j", "J"] },
+        { legends: ["j", "J", "j", "J"], isHoming: true },
         { legends: ["k", "K", "k", "K"] },
         { legends: ["l", "L", "l", "L"] },
         { legends: [";", ":", ";", ":"] },
@@ -73,7 +73,12 @@ describe("keymap converter", () => {
       ]);
 
       expect(result.row5, "row5").toEqual([
-        { legends: ["qwerty", "qwerty", "qwerty", "qwerty"], width: 6, x: 3.5 },
+        {
+          legends: [" ", " ", " ", " "],
+          width: 6,
+          x: 3.5,
+          isLayoutIndicator: true,
+        },
       ]);
     });
 
@@ -191,12 +196,13 @@ describe("keymap converter", () => {
       // Row 5: split has two keys with gap in middle
       expect(result.row5.length, "row5 length").toBe(2);
       expect(result.row5[0], "row5 left").toEqual({
-        legends: ["qwerty", "qwerty", "qwerty", "qwerty"],
+        legends: [" ", " ", " ", " "],
         width: 3,
         x: 3.5,
+        isLayoutIndicator: true,
       });
       expect(result.row5[1], "row5 right").toEqual({
-        legends: ["", "", "", ""],
+        legends: [" ", " ", " ", " "],
         width: 3,
         x: 1,
       });
@@ -243,10 +249,10 @@ describe("keymap converter", () => {
         { legends: ["a", "A", "a", "A"], x: 1 },
         { legends: ["s", "S", "s", "S"] },
         { legends: ["d", "D", "d", "D"] },
-        { legends: ["f", "F", "f", "F"] },
+        { legends: ["f", "F", "f", "F"], isHoming: true },
         { legends: ["g", "G", "g", "G"] },
         { legends: ["h", "H", "h", "H"] },
-        { legends: ["j", "J", "j", "J"] },
+        { legends: ["j", "J", "j", "J"], isHoming: true },
         { legends: ["k", "K", "k", "K"] },
         { legends: ["l", "L", "l", "L"] },
         { legends: ["ö", "Ö", "ö", "Ö"] },
@@ -269,7 +275,12 @@ describe("keymap converter", () => {
       ]);
 
       expect(result.row5, "row5").toEqual([
-        { legends: ["qwertz", "qwertz", "qwertz", "qwertz"], width: 6, x: 3.5 },
+        {
+          legends: [" ", " ", " ", " "],
+          width: 6,
+          x: 3.5,
+          isLayoutIndicator: true,
+        },
       ]);
     });
 
@@ -388,12 +399,13 @@ describe("keymap converter", () => {
       // Row 5: split has two keys with gap in middle
       expect(result.row5.length, "row5 length").toBe(2);
       expect(result.row5[0], "row5 left").toEqual({
-        legends: ["qwertz", "qwertz", "qwertz", "qwertz"],
+        legends: [" ", " ", " ", " "],
         width: 3,
         x: 3.5,
+        isLayoutIndicator: true,
       });
       expect(result.row5[1], "row5 right").toEqual({
-        legends: ["", "", "", ""],
+        legends: [" ", " ", " ", " "],
         width: 3,
         x: 1,
       });
@@ -437,10 +449,10 @@ describe("keymap converter", () => {
       { legends: ["a", "A", "a", "A"] },
       { legends: ["s", "S", "s", "S"] },
       { legends: ["d", "D", "d", "D"] },
-      { legends: ["f", "F", "f", "F"] },
+      { legends: ["f", "F", "f", "F"], isHoming: true },
       { legends: ["g", "G", "g", "G"] },
       { legends: ["h", "H", "h", "H"] },
-      { legends: ["j", "J", "j", "J"] },
+      { legends: ["j", "J", "j", "J"], isHoming: true },
       { legends: ["k", "K", "k", "K"] },
       { legends: ["l", "L", "l", "L"] },
       { legends: [";", ":", ";", ":"] },
@@ -460,7 +472,12 @@ describe("keymap converter", () => {
     ]);
 
     expect(result.row5, "row5").toEqual([
-      { legends: ["qwerty", "qwerty", "qwerty", "qwerty"], width: 4, x: 3 },
+      {
+        legends: [" ", " ", " ", " "],
+        width: 4,
+        x: 3,
+        isLayoutIndicator: true,
+      },
     ]);
   });
 
@@ -571,12 +588,13 @@ describe("keymap converter", () => {
     // Row 5: split has two keys with gap in middle
     expect(result.row5.length, "row5 length").toBe(2);
     expect(result.row5[0], "row5 left").toEqual({
-      legends: ["qwerty", "qwerty", "qwerty", "qwerty"],
+      legends: [" ", " ", " ", " "],
       width: 3,
       x: 2,
+      isLayoutIndicator: true,
     });
     expect(result.row5[1], "row5 right").toEqual({
-      legends: ["", "", "", ""],
+      legends: [" ", " ", " ", " "],
       width: 3,
       x: 1,
     });

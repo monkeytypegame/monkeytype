@@ -10,6 +10,9 @@ export type KeyDefinition = {
   height?: number;
   /** x-offset in u  */
   x?: number;
+
+  isLayoutIndicator?: boolean;
+  isHoming?: boolean;
 };
 export type KeyboardDefinition = Record<
   keyof LayoutObject["keys"],
@@ -51,7 +54,7 @@ function convertStaggered(
   const isIso = layout.type === "iso";
 
   if (isSplit && layout.keys.row5.length === 1) {
-    layout.keys.row5.push(buildLegends([""]));
+    layout.keys.row5.push(buildLegends([" "]));
   }
 
   const calcGap =
@@ -72,7 +75,10 @@ function convertStaggered(
       skip: ({ col }) => (options.showAllKeys ? false : col === 12),
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
-    row3: { x: calcGap({ col1Gap: 1 }) },
+    row3: {
+      x: calcGap({ col1Gap: 1 }),
+      isHoming: ({ col }) => col === 3 || col === 6,
+    },
     row4: { x: calcGap({ col1Gap: isIso ? 0.25 : 1.5 }) },
     row5: {
       x: calcGap({ col1Gap: 3.5, splitCol: 1 }),
@@ -85,8 +91,7 @@ function convertStaggered(
         }
         return options.showAllKeys ? 6.25 : 6;
       },
-      legend: ({ col }) =>
-        col === 0 ? buildLegends([options.displayName]) : undefined,
+      isLayoutIndicator: ({ col }) => col === 0,
     },
   });
 
@@ -172,7 +177,7 @@ function convertMatrix(
   const isSplit = options.keymapStyle === "split_matrix";
 
   if (isSplit && layout.keys.row5.length === 1) {
-    layout.keys.row5.push(buildLegends([""]));
+    layout.keys.row5.push(buildLegends([" "]));
   }
 
   const calcGap =
@@ -195,6 +200,7 @@ function convertMatrix(
     row3: {
       skip: ({ col }) => col > (options.showAllKeys ? 10 : 9),
       x: calcGap({}),
+      isHoming: ({ col }) => col === 3 || col === 6,
     },
     row4: {
       skip: ({ col }) => col > 9,
@@ -203,8 +209,7 @@ function convertMatrix(
     row5: {
       x: calcGap({ col1Gap: isSplit ? 2 : 3, splitCol: 1 }),
       width: () => (isSplit ? 3 : options.showAllKeys ? 6 : 4),
-      legend: ({ col }) =>
-        col === 0 ? buildLegends([options.displayName]) : undefined,
+      isLayoutIndicator: ({ col }) => col === 0,
     },
   });
 
@@ -259,6 +264,8 @@ function convertBase(
         width?: (options: RuleParams) => number | undefined;
         x?: (options: RuleParams) => number | undefined;
         skip?: (options: RuleParams) => boolean;
+        isLayoutIndicator?: (options: RuleParams) => boolean;
+        isHoming?: (options: RuleParams) => boolean;
       }
     >
   >,
@@ -278,12 +285,18 @@ function convertBase(
           const height = cols?.[row]?.height?.({ col: colNum });
           const width = cols?.[row]?.width?.({ col: colNum });
           const x = cols?.[row]?.x?.({ col: colNum });
+          const isLayoutIndicator = cols?.[row]?.isLayoutIndicator?.({
+            col: colNum,
+          });
+          const isHoming = cols?.[row]?.isHoming?.({ col: colNum });
 
           return {
             legends,
             ...(height !== undefined ? { height } : {}),
             ...(width !== undefined ? { width } : {}),
             ...(x !== undefined ? { x } : {}),
+            ...(isLayoutIndicator === true ? { isLayoutIndicator: true } : {}),
+            ...(isHoming === true ? { isHoming: true } : {}),
           } satisfies KeyDefinition;
         })
         .filter((it) => it !== undefined),

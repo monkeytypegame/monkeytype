@@ -15,6 +15,7 @@ import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { getLayout } from "../utils/json-data";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
+import { keymapEvent } from "../events/keymap";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -79,3 +80,14 @@ export const [keymapLayoutObject] = createResource(
   getKeymapLayout,
   async (layout) => await getLayout(layout.layout),
 );
+
+const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
+  string | undefined
+>(undefined);
+
+export { getKeymapHighlightKey };
+
+keymapEvent.subscribe(({ mode, key }) => {
+  const mappedKey = key === "" ? " " : key;
+  setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+});

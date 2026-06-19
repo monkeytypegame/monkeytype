@@ -2,10 +2,16 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { createMemo, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getModifierState } from "../../../states/modifiers";
-import { getKeymapLayout, keymapLayoutObject } from "../../../states/test";
+import { showCommandLineForConfig } from "../../../states/core";
+import { getModifierState, isCapsLockOn } from "../../../states/modifiers";
+import {
+  getKeymapHighlightKey,
+  getKeymapLayout,
+  keymapLayoutObject,
+} from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { typedEntries } from "../../../utils/misc";
+import { Button } from "../../common/Button";
 import {
   convertLayoutToKeymap,
   KeyboardDefinition,
@@ -24,6 +30,7 @@ export function Keymap() {
 }
 
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
+  //TODO check for mac specific shift+capslock
   const layer = createMemo(() => {
     switch (getConfig.keymapLegendStyle) {
       case "blank":
@@ -37,7 +44,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
           return 3;
         } else if (getModifierState().altGr) {
           return 2;
-        } else if (getModifierState().shift) {
+        } else if (getModifierState().shift || isCapsLockOn()) {
           return 1;
         }
         return 0;
@@ -47,6 +54,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     }
   });
 
+  //TODO show if test has numbers and keymapMode is next
   const showFirstRow = createMemo(
     () =>
       (getConfig.keymapLayoutStyle === "full" ||
@@ -57,6 +65,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   );
 
   // Convert layout to KeyboardDefinition format
+  //TODO handle funbox layout_mirror
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
       displayName: props.displayName,
@@ -103,11 +112,15 @@ function Key(
     layer: number;
   } & KeyDefinition,
 ) {
+  const isActive = () =>
+    props.legends.some((it) => it === getKeymapHighlightKey());
+
   return (
     <div
       class={cn(
-        "flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
+        "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
         (props.legends[props.layer] ?? "").length >= 3 && "text-em-xs",
+        isActive() && "bg-main",
       )}
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
@@ -115,7 +128,25 @@ function Key(
         "margin-left": `${(props.x ?? 0) * 2}rem`,
       }}
     >
-      {props.legends[props.layer]}
+      <Show
+        when={props.isLayoutIndicator}
+        fallback={
+          <>
+            {props.legends[props.layer]}
+            <Show when={props.isHoming}>
+              <div class="bg-em-xs absolute bottom-1 left-auto h-px w-2 rounded bg-sub"></div>
+            </Show>
+          </>
+        }
+      >
+        <Button
+          variant="text"
+          active={isActive()}
+          class="text-xs text-sub [--themable-button-active:var(--bg-color)]"
+          text={getKeymapLayout().layoutNameDisplayString}
+          onClick={() => showCommandLineForConfig("keymapLayout")}
+        />
+      </Show>
     </div>
   );
 }
