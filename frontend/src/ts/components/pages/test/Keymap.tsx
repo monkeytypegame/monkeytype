@@ -1,7 +1,8 @@
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { createMemo, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import { keymapEvent } from "../../../events/keymap";
 import { showCommandLineForConfig } from "../../../states/core";
 import { getModifierState, isCapsLockOn } from "../../../states/modifiers";
 import {
@@ -9,8 +10,10 @@ import {
   getKeymapLayout,
   keymapLayoutObject,
 } from "../../../states/test";
+import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import { typedEntries } from "../../../utils/misc";
+import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 import {
   convertLayoutToKeymap,
@@ -112,20 +115,43 @@ function Key(
     layer: number;
   } & KeyDefinition,
 ) {
-  const isActive = () =>
-    props.legends.some((it) => it === getKeymapHighlightKey());
+  const [flashTick, setFlashTick] = createSignal(0);
+  const [flashCorrect, setFlashCorrect] = createSignal(true);
+  const isNext = () => getKeymapHighlightKey() === props.legends[props.layer];
+
+  keymapEvent.useListener((event) => {
+    if (event.mode !== "flash") return;
+    if (event.key !== props.legends[props.layer]) return;
+    setFlashCorrect(event.correct ?? true);
+    setFlashTick((t) => t + 1);
+  });
 
   return (
-    <div
+    <Anime
       class={cn(
         "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
         (props.legends[props.layer] ?? "").length >= 3 && "text-em-xs",
-        isActive() && "bg-main text-bg",
       )}
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 2}rem`,
+        "background-color": "var(--keybgcolor)",
+        color: "var(--keycolor)",
+      }}
+      animation={{
+        "--keybgcolor":
+          flashTick() === 0
+            ? [isNext() ? getTheme().main : getTheme().subAlt]
+            : [
+                flashCorrect() ? getTheme().main : getTheme().error,
+                isNext() ? getTheme().main : getTheme().subAlt,
+              ],
+        "--keycolor":
+          flashTick() === 0
+            ? [isNext() ? getTheme().bg : getTheme().sub]
+            : [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub],
+        duration: isNext() ? 0 : 250,
       }}
     >
       <Show
@@ -137,8 +163,10 @@ function Key(
               <div
                 class={cn(
                   "bg-em-xs absolute bottom-1 left-auto h-px w-2 rounded",
-                  isActive() ? "bg-bg" : "bg-sub",
                 )}
+                style={{
+                  "background-color": "var(--keycolor)",
+                }}
               ></div>
             </Show>
           </>
@@ -146,13 +174,12 @@ function Key(
       >
         <Button
           variant="text"
-          active={isActive()}
-          class="text-xs [--themable-button-active:var(--bg-color)]"
+          class="text-xs [--themable-button-bg:transparent] [--themable-button-text:var(--keycolor)]"
           text={getKeymapLayout().layoutNameDisplayString}
           onClick={() => showCommandLineForConfig("keymapLayout")}
           tabIndex={-1}
         />
       </Show>
-    </div>
+    </Anime>
   );
 }
