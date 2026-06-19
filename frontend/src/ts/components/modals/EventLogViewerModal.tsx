@@ -10,21 +10,18 @@ import {
 } from "solid-js";
 
 import type {
+  EventLog,
   InputEventNoMs,
-  TestEvent,
+  TestEventNoMs,
   TestEventType,
 } from "../../test/events/types";
 
 import { hideModal } from "../../states/modals";
 import { getInputFromDom } from "../../test/events/helpers";
+import { EVENT_LOG_VERSION } from "../../test/events/types";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-
-type TestContext = {
-  events: TestEvent[];
-  words: string[];
-};
 
 type Stage = "input" | "preview";
 
@@ -62,7 +59,7 @@ type TimelineSegment = {
 type RawSegment = Omit<TimelineSegment, "topPx">;
 
 function buildLanes(
-  events: TestEvent[],
+  events: TestEventNoMs[],
   visible: Set<TestEventType>,
 ): { segments: TimelineSegment[]; totalHeight: number } {
   const byType = new Map<TestEventType, RawSegment[]>();
@@ -183,34 +180,44 @@ function buildLanes(
   return { segments, totalHeight: Math.max(y, TIMELINE_TRACK_HEIGHT) };
 }
 
-function parseContext(raw: string): TestContext {
+function parseContext(raw: string): EventLog {
   const parsed = JSON.parse(raw) as unknown;
-  if (typeof parsed !== "object") {
-    throw new Error("Expected an object");
+  if (typeof parsed !== "object" || parsed === null) {
+    throw new Error("Expected an EventLog object");
   }
-  if (parsed === null) {
-    throw new Error("Expected an object, got null");
+  if (
+    !("version" in parsed) ||
+    !("events" in parsed) ||
+    !("context" in parsed)
+  ) {
+    throw new Error(
+      `Expected EventLog { version: ${EVENT_LOG_VERSION}, events, context }`,
+    );
   }
-  if (!("events" in parsed) || !("words" in parsed)) {
-    throw new Error("Expected { events: TestEvent[], words: string[] }");
+  if (parsed.version !== EVENT_LOG_VERSION) {
+    throw new Error(
+      `Unsupported EventLog version ${String(parsed.version)} (expected ${EVENT_LOG_VERSION})`,
+    );
   }
-  if (typeof parsed.words === "string") {
-    parsed.words = parsed.words.split(" ");
+  if (!Array.isArray((parsed as EventLog).events)) {
+    throw new Error("EventLog.events must be an array");
   }
-  if (!Array.isArray((parsed as TestContext).events)) {
-    throw new Error("Expected { events: TestEvent[], words: string[] }");
+  const ctx = (parsed as EventLog).context as unknown;
+  if (
+    typeof ctx !== "object" ||
+    ctx === null ||
+    !Array.isArray((ctx as { targetWords?: unknown }).targetWords)
+  ) {
+    throw new Error("EventLog.context.targetWords must be a string array");
   }
-  if (!Array.isArray((parsed as TestContext).words)) {
-    throw new Error("Expected { events: TestEvent[], words: string[] }");
-  }
-  return parsed as TestContext;
+  return parsed as EventLog;
 }
 
 function visualizeWhitespace(s: string): string {
   return s.replace(/ /g, "␣").replace(/\t/g, "→").replace(/\n/g, "↵");
 }
 
-function inputsPerWord(events: TestEvent[], wordCount: number): string[] {
+function inputsPerWord(events: TestEventNoMs[], wordCount: number): string[] {
   const buckets = new Map<number, InputEventNoMs[]>();
   for (const e of events) {
     if (e.type !== "input") continue;
@@ -223,10 +230,10 @@ function inputsPerWord(events: TestEvent[], wordCount: number): string[] {
   );
 }
 
-export function TestDataPreviewModal(): JSXElement {
+export function EventLogViewerModal(): JSXElement {
   const [stage, setStage] = createSignal<Stage>("input");
   const [raw, setRaw] = createSignal("");
-  const [ctx, setCtx] = createSignal<TestContext | null>(null);
+  const [ctx, setCtx] = createSignal<EventLog | null>(null);
   const [err, setErr] = createSignal<string | null>(null);
 
   const reset = (): void => {
@@ -249,8 +256,8 @@ export function TestDataPreviewModal(): JSXElement {
 
   return (
     <AnimatedModal
-      id="TestDataPreview"
-      title="Test Data Preview"
+      id="EventLogViewer"
+      title="Event Log Viewer"
       modalClass="max-w-full"
       beforeShow={reset}
     >
@@ -258,7 +265,7 @@ export function TestDataPreviewModal(): JSXElement {
         <div class="flex flex-col gap-4">
           <textarea
             class="bg-bg-secondary h-64 w-full rounded p-2 font-mono text-xs text-text"
-            placeholder='{"events": [...], "words": [...]}'
+            placeholder='{"version": 1, "events": [...], "context": {...}}'
             value={raw()}
             onInput={(e) => setRaw(e.currentTarget.value)}
             autocomplete="off"
@@ -269,7 +276,7 @@ export function TestDataPreviewModal(): JSXElement {
           <div class="flex justify-end gap-2">
             <Button
               variant="button"
-              onClick={() => hideModal("TestDataPreview")}
+              onClick={() => hideModal("EventLogViewer")}
               text="Cancel"
             />
             <Button variant="button" onClick={onShow} text="Show" />
@@ -278,7 +285,7 @@ export function TestDataPreviewModal(): JSXElement {
       </Show>
       <Show when={stage() === "preview" && ctx() !== null}>
         <PreviewContent
-          ctx={ctx() as TestContext}
+          ctx={ctx() as EventLog}
           onBack={() => setStage("input")}
         />
       </Show>
@@ -287,7 +294,7 @@ export function TestDataPreviewModal(): JSXElement {
 }
 
 function PreviewContent(props: {
-  ctx: TestContext;
+  ctx: EventLog;
   onBack: () => void;
 }): JSXElement {
   const maxMs = untrack(() =>
@@ -362,8 +369,8 @@ function PreviewContent(props: {
     if (!isSynced()) return { startEff: 0, slope: 1 };
     const sM = syncStartMark() as Mark;
     const eM = syncEndMark() as Mark;
-    const sE = syncStartEvent() as TestEvent;
-    const eE = syncEndEvent() as TestEvent;
+    const sE = syncStartEvent() as TestEventNoMs;
+    const eE = syncEndEvent() as TestEventNoMs;
     const a = sE.testMs;
     const b = eE.testMs;
     if (b === a) return { startEff: sM.videoMs, slope: 1 };
@@ -449,11 +456,11 @@ function PreviewContent(props: {
   );
 
   const finalInputs = untrack(() =>
-    inputsPerWord(props.ctx.events, props.ctx.words.length),
+    inputsPerWord(props.ctx.events, props.ctx.context.targetWords.length),
   );
 
   const liveInputs = createMemo(() =>
-    inputsPerWord(visibleEvents(), props.ctx.words.length),
+    inputsPerWord(visibleEvents(), props.ctx.context.targetWords.length),
   );
 
   const simulatedInput = createMemo(() =>
@@ -505,7 +512,7 @@ function PreviewContent(props: {
     let idx = -1;
     let best = -Infinity;
     for (let i = 0; i < events.length; i++) {
-      const ms = (events[i] as TestEvent).testMs;
+      const ms = (events[i] as TestEventNoMs).testMs;
       if (ms <= currentMs() && ms > best) {
         idx = i;
         best = ms;
@@ -1124,7 +1131,7 @@ function PreviewContent(props: {
               </tr>
             </thead>
             <tbody>
-              <For each={props.ctx.words}>
+              <For each={props.ctx.context.targetWords}>
                 {(word, i) => (
                   <tr
                     data-row={i()}
