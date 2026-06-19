@@ -5,6 +5,10 @@ import { z } from "zod";
 
 import { resetConfig } from "../../../config/lifecycle";
 import { configMetadata, OptionMetadata } from "../../../config/metadata";
+import {
+  getOptionLabel,
+  getOptionSearchTerms,
+} from "../../../config/option-strings";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import {
@@ -334,41 +338,6 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
       </AnimeShow>
     </div>
   );
-}
-
-// the label shown for a single option (and used to match it while searching)
-function getOptionLabel<T extends keyof Config>(
-  key: T,
-  option: Config[T],
-): string {
-  const optionMeta = (
-    configMetadata[key] as {
-      optionsMetadata?: Record<string, OptionMetadata> | undefined;
-    }
-  ).optionsMetadata?.[String(option)];
-
-  if (optionMeta?.displayString !== undefined) return optionMeta.displayString;
-  if (option === true) return "on";
-  if (option === false) return "off";
-  return String(option).replace(/_/g, " ");
-}
-
-// option labels for a setting, so the search filter can match on them too
-function getOptionSearchTerms<T extends keyof Config>(key: T): string {
-  const optionsMeta = (
-    configMetadata[key] as {
-      optionsMetadata?: Record<string, OptionMetadata> | undefined;
-    }
-  ).optionsMetadata;
-
-  const options = getOptions(ConfigSchema.shape[key])?.filter(
-    (option) => optionsMeta?.[String(option)]?.visible !== false,
-  );
-  if (options === undefined) return "";
-
-  return options
-    .map((option) => getOptionLabel(key, option as Config[T]))
-    .join(" ");
 }
 
 function AutoSetting<T extends keyof Config>(props: {

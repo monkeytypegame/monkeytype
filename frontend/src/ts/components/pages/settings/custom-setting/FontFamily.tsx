@@ -3,6 +3,7 @@ import { createResource, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
 import { configMetadata } from "../../../../config/metadata";
+import { getOptionSearchTerms } from "../../../../config/option-strings";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
@@ -38,6 +39,7 @@ export function FontFamily(): JSXElement {
       key="fontFamily"
       title={configMetadata.fontFamily.displayString ?? "font family"}
       fa={configMetadata.fontFamily.fa}
+      searchTerms={getOptionSearchTerms("fontFamily")}
       description={
         <>
           {configMetadata.fontFamily.description}

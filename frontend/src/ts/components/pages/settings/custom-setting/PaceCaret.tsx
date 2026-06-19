@@ -6,6 +6,7 @@ import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
+import { getOptionSearchTerms } from "../../../../config/option-strings";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
@@ -40,6 +41,7 @@ export function PaceCaret(): JSXElement {
       key="paceCaret"
       title={configMetadata.paceCaret.displayString ?? "pace caret"}
       fa={configMetadata.paceCaret.fa}
+      searchTerms={getOptionSearchTerms("paceCaret")}
       description={configMetadata.paceCaret.description}
       inputs={
         <div class="grid w-full gap-2">

@@ -6,6 +6,7 @@ import { createForm } from "@tanstack/solid-form";
 import { createResource, JSXElement, For, Show } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
+import { getOptionSearchTerms } from "../../../../config/option-strings";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { applyCustomBackground } from "../../../../controllers/theme-controller";
@@ -56,6 +57,7 @@ export function CustomBackground(): JSXElement {
         configMetadata.customBackground.displayString ?? "custom background"
       }
       fa={configMetadata.customBackground.fa}
+      searchTerms={getOptionSearchTerms("customBackgroundSize")}
       description={
         <>
           {configMetadata.customBackground.description}
