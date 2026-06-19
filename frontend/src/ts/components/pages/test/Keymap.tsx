@@ -112,7 +112,7 @@ function Key(
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
-        "margin-left": `${(props.x ?? 0) * 0.25}rem`,
+        "margin-left": `${(props.x ?? 0) * 0.5}rem`,
       }}
     >
       {props.legends[props.layer]}
