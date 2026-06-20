@@ -9,12 +9,12 @@ import {
 import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import { getCurrentInput } from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
+import { getCurrentInput } from "../../test/events/data";
 
 const inputEl = getInputElement();
 

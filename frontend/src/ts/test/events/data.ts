@@ -16,16 +16,22 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
-import { keysToTrack } from "./helpers";
+import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
+import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
-import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
+import {
+  bailedOut,
+  koreanStatus,
+  activeWordIndex,
+  resultCalculating,
+} from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import { getMode2 } from "../../utils/misc";
-import { isFunboxActiveWithProperty } from "../funbox/list";
 import { getCurrentQuote } from "../../states/test";
+import { isFunboxActiveWithProperty } from "../funbox/active";
 
 export function buildEventLog(): EventLog {
   const context = {
@@ -161,19 +167,23 @@ export function logTestEvent(
       data: { ...data, code: key },
     });
   } else if (type === "timer") {
-    timerEvents.push({
+    const event: TimerEvent = {
       type,
       ms: now,
       testMs: 0,
       data: eventData as TimerEventData,
-    });
+    };
+    timerEvents.push(event);
+    recordEventForCache(event);
   } else if (type === "input") {
-    inputEvents.push({
+    const event: InputEvent = {
       type,
       ms: now,
       testMs: 0,
       data: eventData as InputEventData,
-    });
+    };
+    inputEvents.push(event);
+    recordEventForCache(event);
   } else if (type === "composition") {
     compositionEvents.push({
       type,
@@ -189,6 +199,31 @@ export function logTestEvent(
 
 function invalidateCache(): void {
   cachedAllEvents = undefined;
+}
+
+export function getCurrentInput(): string {
+  const last = inputEvents[inputEvents.length - 1];
+
+  if (last !== undefined) {
+    const lastWordIndex = last.data.wordIndex;
+    //just advanced to a new word - no input event for it yet
+    if (lastWordIndex + 1 === activeWordIndex) return "";
+    //last event is for the active word - return its snapshot
+    if (
+      lastWordIndex === activeWordIndex &&
+      last.data.inputValue !== undefined
+    ) {
+      return last.data.inputValue;
+    }
+  }
+
+  return getInputFromDom(getEventsForWord(getAllTestEvents(), activeWordIndex));
+}
+
+export function getInputForWord(wordIndex: number): string {
+  return getInputFromDom(
+    getEventsForWord(getAllTestEvents(), wordIndex),
+  ).trimEnd();
 }
 
 export function cleanupData(): void {
@@ -217,9 +252,16 @@ export function cleanupData(): void {
     keyupEvents = keyupEvents.filter(
       (e) => e.ms <= timerEnd.ms || !postEndKeydownCodes.has(e.data.code),
     );
+    recomputeLiveCache();
   }
 
   invalidateCache();
+}
+
+function recomputeLiveCache(): void {
+  resetLiveCache();
+  for (const e of inputEvents) recordEventForCache(e);
+  for (const e of timerEvents) recordEventForCache(e);
 }
 
 export function getAllTestEvents(): TestEventNoMs[] {
@@ -325,6 +367,7 @@ export function resetTestEvents(): void {
   invalidateCache();
   pressedKeys = new Map();
   noCodeIndex = 0;
+  resetLiveCache();
 }
 
 export function getPressedKeys(): Map<
