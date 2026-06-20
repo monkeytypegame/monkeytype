@@ -79,7 +79,7 @@ function convertStaggered(
   const result = convertBase(layout, options, {
     row1: {
       x: calcGap({ firstColGap: 0, splitCol: 7, isSplit, showAllKeys }),
-      skip: ({ col }) => (options.showAllKeys ? false : col === 0),
+      skip: ({ col }) => !options.showAllKeys && col === 0,
     },
     row2: {
       x: calcGap({ firstColGap: 0.5, isSplit, showAllKeys }),
@@ -102,19 +102,19 @@ function convertStaggered(
       }),
       width: ({ col }) => {
         if (
-          (!options.showAllKeys || !isSplit) &&
+          (!showAllKeys || !isSplit) &&
           layout.keys.row5[col]?.at(0) !== " "
         ) {
           return undefined;
         }
         if (isSplit) {
-          if (options.showAllKeys) {
+          if (showAllKeys) {
             return col === layoutIndicatorIndex ? 3.5 : 3;
           } else {
             return 3;
           }
         }
-        if (options.showAllKeys) return hasRow5ExtraKey ? 5.25 : 6.25;
+        if (showAllKeys) return hasRow5ExtraKey ? 5.25 : 6.25;
         return 6;
       },
       isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
@@ -167,7 +167,7 @@ function convertMatrix(
 
   const result = convertBase(layout, options, {
     row1: {
-      skip: ({ col }) => (!options.showAllKeys && col === 0) || col > 10,
+      skip: ({ col }) => (!showAllKeys && col === 0) || col > 10,
       x: calcGap({ splitCol: 6, isSplit, showAllKeys }),
     },
     row2: {
@@ -175,7 +175,7 @@ function convertMatrix(
       x: calcGap({ isSplit, showAllKeys }),
     },
     row3: {
-      skip: ({ col }) => col > (options.showAllKeys ? 10 : 9),
+      skip: ({ col }) => col > (showAllKeys ? 10 : 9),
       x: calcGap({ isSplit, showAllKeys }),
       isHoming: ({ col }) => col === 3 || col === 6,
     },
@@ -190,8 +190,7 @@ function convertMatrix(
         isSplit,
         showAllKeys,
       }),
-      width: () =>
-        isSplit || hasRow5ExtraKey ? 3 : options.showAllKeys ? 6 : 4,
+      width: () => (isSplit || hasRow5ExtraKey ? 3 : showAllKeys ? 6 : 4),
       isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
     },
   });
