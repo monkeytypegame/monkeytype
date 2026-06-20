@@ -3,6 +3,7 @@ import { convertLayoutToKeymap } from "../../../../src/ts/components/pages/test/
 
 import qwertyLayout from "../../../../static/layouts/qwerty.json";
 import qwertzLayout from "../../../../static/layouts/qwertz.json";
+import handsdownLayout from "../../../../static/layouts/handsdown_promethium.json";
 
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 
@@ -318,6 +319,39 @@ describe("keymap converter", () => {
         expect(result.row3.length, "row3 length").toBe(13);
         expect(result.row4.length, "row4 length").toBe(13);
       });
+
+      it("converts handsdown", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "staggered",
+          showAllKeys: false,
+        });
+
+        expect(result.row5, "row5").toEqual([
+          { legends: ["r", "R", "r", "R"], x: 4 },
+          {
+            legends: [" ", " ", " ", " "],
+            isLayoutIndicator: true,
+            width: 6,
+          },
+        ]);
+      });
+      it("converts handsdown full", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "staggered",
+          showAllKeys: true,
+        });
+
+        expect(result.row5[3], "row5 extra key").toEqual({
+          legends: ["r", "R", "r", "R"],
+        });
+        expect(result.row5[4], "row5 space key").toEqual({
+          legends: [" ", " ", " ", " "],
+          isLayoutIndicator: true,
+          width: 5.25,
+        });
+      });
     });
 
     describe("split", () => {
@@ -414,6 +448,42 @@ describe("keymap converter", () => {
         expect(result.row5[1], "row5 right").toEqual({
           legends: [" ", " ", " ", " "],
           width: 3,
+          x: 1,
+        });
+      });
+
+      it("converts handsdown", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "split",
+          showAllKeys: false,
+        });
+
+        expect(result.row5, "row5").toEqual([
+          { legends: ["r", "R", "r", "R"], x: 5.5 },
+          {
+            legends: [" ", " ", " ", " "],
+            isLayoutIndicator: true,
+            width: 3,
+            x: 1,
+          },
+        ]);
+      });
+      it("converts handsdown full", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "split",
+          showAllKeys: true,
+        });
+
+        expect(result.row5[3], "row5 extra key").toEqual({
+          legends: ["r", "R", "r", "R"],
+          width: 3,
+        });
+        expect(result.row5[4], "row5 space key").toEqual({
+          legends: [" ", " ", " ", " "],
+          isLayoutIndicator: true,
+          width: 3.5,
           x: 1,
         });
       });
@@ -561,6 +631,40 @@ describe("keymap converter", () => {
         expect(result.row3.length, "row3 length").toBe(12);
         expect(result.row4.length, "row4 length").toBe(12);
       });
+
+      it("converts handsdown", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "matrix",
+          showAllKeys: false,
+        });
+
+        expect(result.row5, "row5").toEqual([
+          { legends: ["r", "R", "r", "R"], width: 3, x: 2 },
+          {
+            legends: [" ", " ", " ", " "],
+            isLayoutIndicator: true,
+            width: 3,
+          },
+        ]);
+      });
+      it("converts handsdown full", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "matrix",
+          showAllKeys: true,
+        });
+
+        expect(result.row5[3], "row5 extra key").toEqual({
+          legends: ["r", "R", "r", "R"],
+          width: 3,
+        });
+        expect(result.row5[4], "row5 space key").toEqual({
+          legends: [" ", " ", " ", " "],
+          isLayoutIndicator: true,
+          width: 3,
+        });
+      });
     });
 
     describe("split matrix", () => {
@@ -605,6 +709,42 @@ describe("keymap converter", () => {
         });
         expect(result.row5[1], "row5 right").toEqual({
           legends: [" ", " ", " ", " "],
+          width: 3,
+          x: 1,
+        });
+      });
+
+      it("converts handsdown", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "split_matrix",
+          showAllKeys: false,
+        });
+
+        expect(result.row5, "row5").toEqual([
+          { legends: ["r", "R", "r", "R"], width: 3, x: 2 },
+          {
+            legends: [" ", " ", " ", " "],
+            isLayoutIndicator: true,
+            width: 3,
+            x: 1,
+          },
+        ]);
+      });
+      it("converts handsdown full", () => {
+        const result = convertLayoutToKeymap(handsdownLayout as LayoutObject, {
+          displayName: "handsdown",
+          keymapStyle: "split_matrix",
+          showAllKeys: true,
+        });
+
+        expect(result.row5[3], "row5 extra key").toEqual({
+          legends: ["r", "R", "r", "R"],
+          width: 3,
+        });
+        expect(result.row5[4], "row5 space key").toEqual({
+          legends: [" ", " ", " ", " "],
+          isLayoutIndicator: true,
           width: 3,
           x: 1,
         });

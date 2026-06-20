@@ -123,13 +123,19 @@ function Key(
   const [flashCorrect, setFlashCorrect] = createSignal(true);
   const isNext = () =>
     !isSteno() &&
-    props.legends.some((legend) => legend === getKeymapHighlightKey());
+    props.legends?.some((legend) => legend === getKeymapHighlightKey());
 
   keymapEvent.useListener((event) => {
-    if (event.mode !== "flash" || isSteno()) return;
-    if (event.key !== props.legends[props.layer]) return;
-    setFlashCorrect(event.correct ?? true);
-    setFlashTick((t) => t + 1);
+    if (
+      event.mode === "flash" &&
+      !isSteno() &&
+      event.key === props.legends[props.layer]
+    ) {
+      setFlashCorrect(event.correct ?? true);
+      setFlashTick((t) => t + 1);
+    } else {
+      setFlashTick(0);
+    }
   });
 
   return (

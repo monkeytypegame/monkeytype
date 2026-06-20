@@ -55,8 +55,9 @@ function convertStaggered(
 ): KeyboardDefinition {
   const isSplit = options.keymapStyle === "split";
   const isIso = layout.type === "iso";
+  const hasRow5ExtraKey = layout.keys.row5.length !== 1;
 
-  if (isSplit && layout.keys.row5.length === 1) {
+  if (isSplit && !hasRow5ExtraKey) {
     layout.keys.row5.push(buildLegends([" "]));
   }
 
@@ -67,6 +68,10 @@ function convertStaggered(
       if (isSplit && col === (splitCol ?? 5)) return 1;
       return undefined;
     };
+
+  const layoutIndicatorIndex = layout.keys.row5.findIndex(
+    (it) => it.at(0) === " ",
+  );
 
   const result = convertBase(layout, options, {
     row1: {
@@ -84,17 +89,28 @@ function convertStaggered(
     },
     row4: { x: calcGap({ col1Gap: isIso ? 0.25 : 1.5 }) },
     row5: {
-      x: calcGap({ col1Gap: 3.5, splitCol: 1 }),
+      x: calcGap({
+        col1Gap: hasRow5ExtraKey ? (isSplit ? 5.5 : 4) : 3.5,
+        splitCol: 1,
+      }),
       width: ({ col }) => {
-        if (isSplit) {
-          return (
-            (options.showAllKeys ? { 0: 3.5, 1: 3 } : { 0: 3, 1: 3 })[col] ??
-            undefined
-          );
+        if (
+          (!options.showAllKeys || !isSplit) &&
+          layout.keys.row5[col]?.at(0) !== " "
+        ) {
+          return undefined;
         }
-        return options.showAllKeys ? 6.25 : 6;
+        if (isSplit) {
+          if (options.showAllKeys) {
+            return col === layoutIndicatorIndex ? 3.5 : 3;
+          } else {
+            return 3;
+          }
+        }
+        if (options.showAllKeys) return hasRow5ExtraKey ? 5.25 : 6.25;
+        return 6;
       },
-      isLayoutIndicator: ({ col }) => col === 0,
+      isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
     },
   });
 
@@ -178,8 +194,9 @@ function convertMatrix(
   options: ConvertOptions,
 ): KeyboardDefinition {
   const isSplit = options.keymapStyle === "split_matrix";
+  const hasRow5ExtraKey = layout.keys.row5.length !== 1;
 
-  if (isSplit && layout.keys.row5.length === 1) {
+  if (isSplit && !hasRow5ExtraKey) {
     layout.keys.row5.push(buildLegends([" "]));
   }
 
@@ -190,6 +207,10 @@ function convertMatrix(
       if (isSplit && col === (splitCol ?? 5)) return 1;
       return undefined;
     };
+
+  const layoutIndicatorIndex = layout.keys.row5.findIndex(
+    (it) => it.at(0) === " ",
+  );
 
   const result = convertBase(layout, options, {
     row1: {
@@ -210,9 +231,10 @@ function convertMatrix(
       x: calcGap({}),
     },
     row5: {
-      x: calcGap({ col1Gap: isSplit ? 2 : 3, splitCol: 1 }),
-      width: () => (isSplit ? 3 : options.showAllKeys ? 6 : 4),
-      isLayoutIndicator: ({ col }) => col === 0,
+      x: calcGap({ col1Gap: isSplit || hasRow5ExtraKey ? 2 : 3, splitCol: 1 }),
+      width: () =>
+        isSplit || hasRow5ExtraKey ? 3 : options.showAllKeys ? 6 : 4,
+      isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
     },
   });
 
