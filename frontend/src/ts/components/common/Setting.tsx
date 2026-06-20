@@ -65,7 +65,7 @@ export function Setting(props: SettingProps): JSXElement {
 
       <Show
         when={props.disabled === undefined || !props.disabled}
-        fallback={props.disabledDescription}
+        fallback=<div>{props.disabledDescription}</div>
       >
         <div
           class={cn(
@@ -82,7 +82,7 @@ export function Setting(props: SettingProps): JSXElement {
           )}
         >
           <Show when={props.description !== ""}>
-            <div class="">{props.description}</div>
+            <div>{props.description}</div>
           </Show>
           <Show when={props.inputs !== undefined}>
             <div>{props.inputs}</div>
