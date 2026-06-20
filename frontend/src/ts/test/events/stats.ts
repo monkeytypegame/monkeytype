@@ -439,7 +439,7 @@ export function getWordBurst(
 export function getWordBurstHistory(eventLog: EventLog): number[] {
   const eventsPerWord = getEventsPerWord(eventLog.events);
   const burstHistory: number[] = [];
-  for (let i = 0; i < eventLog.context.targetWords.length; i++) {
+  for (let i = 0; i < eventsPerWord.size; i++) {
     burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
   }
   return burstHistory;
