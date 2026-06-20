@@ -13,7 +13,7 @@ import {
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
-import { typedEntries } from "../../../utils/misc";
+import { isMacLike, typedEntries } from "../../../utils/misc";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 import {
@@ -34,7 +34,6 @@ export function Keymap() {
 }
 
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
-  //TODO check for mac specific shift+capslock
   const layer = createMemo(() => {
     switch (getConfig.keymapLegendStyle) {
       case "blank":
@@ -101,7 +100,9 @@ function KeyboardDefinitionRenderer(props: {
         <Show when={rowId !== "row1" || props.showFirstRow}>
           <div class="flex h-8 flex-row">
             <For each={keys}>
-              {(key) => <Key {...key} layer={props.layer} />}
+              {(key) => (
+                <Key {...key} isNumRow={rowId === "row1"} layer={props.layer} />
+              )}
             </For>
           </div>
         </Show>
@@ -112,12 +113,21 @@ function KeyboardDefinitionRenderer(props: {
 
 function Key(
   props: {
+    isNumRow: boolean;
     layer: number;
   } & KeyDefinition,
 ) {
   const isSteno = () =>
     getConfig.keymapStyle === "steno" ||
     getConfig.keymapStyle === "steno_matrix";
+
+  const label = () => {
+    const layer =
+      props.isNumRow && isMacLike() && isCapsLockOn()
+        ? props.layer - 1
+        : props.layer;
+    return props.legends[layer];
+  };
 
   const [flashTick, setFlashTick] = createSignal(0);
   const [flashCorrect, setFlashCorrect] = createSignal(true);
@@ -126,11 +136,7 @@ function Key(
     props.legends?.some((legend) => legend === getKeymapHighlightKey());
 
   keymapEvent.useListener((event) => {
-    if (
-      event.mode === "flash" &&
-      !isSteno() &&
-      event.key === props.legends[props.layer]
-    ) {
+    if (event.mode === "flash" && !isSteno() && event.key === label()) {
       setFlashCorrect(event.correct ?? true);
       setFlashTick((t) => t + 1);
     } else {
@@ -142,7 +148,7 @@ function Key(
     <Anime
       class={cn(
         "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
-        (props.legends[props.layer] ?? "").length >= 3 && "text-em-xs",
+        (label() ?? "").length >= 3 && "text-em-xs",
       )}
       style={{
         height: `${(props.height ?? 1) * 2}rem`,
@@ -170,7 +176,7 @@ function Key(
         when={props.isLayoutIndicator}
         fallback={
           <>
-            {props.legends[props.layer]}
+            {label()}
             <Show when={props.isHoming}>
               <div
                 class={cn(
