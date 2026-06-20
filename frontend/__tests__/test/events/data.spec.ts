@@ -285,18 +285,8 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getEventsPerWord(getAllTestEvents(), undefined, 50);
-      expect(perWord.get(0)).toHaveLength(1);
-    });
-
-    it("respects startMs", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
-
       const perWord = getEventsPerWord(getAllTestEvents(), 50);
       expect(perWord.get(0)).toHaveLength(1);
-      const first = perWord.get(0)?.[0];
-      expect(first?.type === "input" && first.data.charIndex).toBe(1);
     });
   });
 

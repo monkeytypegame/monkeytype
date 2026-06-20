@@ -27,8 +27,12 @@ import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { getLiveCachedAccuracy } from "./events/live-cache";
-import { getRunningWpmAndRaw } from "./events/running-stats";
+import {
+  getLiveCachedAccuracy,
+  getLiveCachedTestDurationMs,
+} from "./events/live-cache";
+import { getChars } from "./events/stats";
+import { calculateWpm } from "../utils/numbers";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -284,8 +288,22 @@ function timerStep(now: number, catchingUp: boolean): void {
   } else {
     //calc — only the final, real-time tick pays for these
     const eventLog = buildEventLog();
-    const wpmAndRaw = getRunningWpmAndRaw(eventLog, now);
+
+    const chars = getChars(eventLog, true);
+
+    const currentTestDurationMs = getLiveCachedTestDurationMs(now);
     const acc = getLiveCachedAccuracy();
+    const wpmAndRaw = {
+      wpm: Math.round(
+        calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
+      ),
+      raw: Math.round(
+        calculateWpm(
+          chars.allCorrect + chars.extra + chars.incorrect,
+          currentTestDurationMs / 1000,
+        ),
+      ),
+    };
 
     //ui updates
     requestDebouncedAnimationFrame("test-timer.timerStep", () => {

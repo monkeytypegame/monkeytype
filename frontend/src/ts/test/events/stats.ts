@@ -493,13 +493,14 @@ function inferActiveWordIndex(
 export function getChars(
   eventLog: EventLog,
   countPartialLastWord = false,
+  testMs?: number,
 ): CharCounts {
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
   const isTimed = isTimedTest(eventLog);
 
-  const eventsPerWord = getEventsPerWord(events);
+  const eventsPerWord = getEventsPerWord(events, testMs);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
   const countPartial = isTimed || bailedOut || countPartialLastWord;
@@ -564,7 +565,10 @@ export function getInputHistory(eventLog: EventLog): string[] {
   return history;
 }
 
-export function getAccuracy(eventLog: EventLog): {
+export function getAccuracy(
+  eventLog: EventLog,
+  testMs?: number,
+): {
   correct: number;
   incorrect: number;
   percentage: number;
@@ -575,6 +579,7 @@ export function getAccuracy(eventLog: EventLog): {
   let incorrect = 0;
 
   for (const event of events) {
+    if (testMs !== undefined && event.testMs > testMs) break;
     if (event.type !== "input") continue;
 
     if (!("correct" in event.data)) {
