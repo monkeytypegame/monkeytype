@@ -10,6 +10,8 @@ export type KeyDefinition = {
   height?: number;
   /** x-offset in u  */
   x?: number;
+  /** rotation in degrees  */
+  rotation?: number;
 
   isLayoutIndicator?: boolean;
   isHoming?: boolean;
@@ -285,6 +287,7 @@ function convertBase(
         height?: (options: RuleParams) => number | undefined;
         width?: (options: RuleParams) => number | undefined;
         x?: (options: RuleParams) => number | undefined;
+        rotation?: (options: RuleParams) => number | undefined;
         skip?: (options: RuleParams) => boolean;
         isLayoutIndicator?: (options: RuleParams) => boolean;
         isHoming?: (options: RuleParams) => boolean;
@@ -307,6 +310,7 @@ function convertBase(
           const height = cols?.[row]?.height?.({ col: colNum });
           const width = cols?.[row]?.width?.({ col: colNum });
           const x = cols?.[row]?.x?.({ col: colNum });
+          const rotation = cols?.[row]?.rotation?.({ col: colNum });
           const isLayoutIndicator = cols?.[row]?.isLayoutIndicator?.({
             col: colNum,
           });
@@ -317,6 +321,7 @@ function convertBase(
             ...(height !== undefined ? { height } : {}),
             ...(width !== undefined ? { width } : {}),
             ...(x !== undefined ? { x } : {}),
+            ...(rotation !== undefined ? { rotation } : {}),
             ...(isLayoutIndicator === true ? { isLayoutIndicator: true } : {}),
             ...(isHoming === true ? { isHoming: true } : {}),
           } satisfies KeyDefinition;
