@@ -82,9 +82,7 @@ function convertStaggered(
       return undefined;
     };
 
-  const layoutIndicatorIndex = layout.keys.row5.findIndex(
-    (it) => it.at(0) === " ",
-  );
+  const layoutIndicatorIndex = findLayoutIndicatorIndex(layout.keys.row5);
 
   const result = convertBase(layout, options, {
     row1: {
@@ -178,9 +176,7 @@ function convertMatrix(
     layout.keys.row5.push(buildLegends([" "]));
   }
 
-  const layoutIndicatorIndex = layout.keys.row5.findIndex(
-    (it) => it.at(0) === " ",
-  );
+  const layoutIndicatorIndex = findLayoutIndicatorIndex(layout.keys.row5);
 
   const result = convertBase(layout, options, {
     row1: {
@@ -400,6 +396,10 @@ function buildExtraKey(
   if (options?.width !== undefined) row.width = options.width;
   if (options?.height !== undefined) row.height = options.height;
   return row;
+}
+
+function findLayoutIndicatorIndex(keys: KeyLegends[]): number {
+  return keys.findIndex((it) => it.at(0) === " ");
 }
 
 function calcGap(params: {
