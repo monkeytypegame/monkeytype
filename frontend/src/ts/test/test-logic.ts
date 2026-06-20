@@ -46,6 +46,7 @@ import {
   setLastResult,
   setResultVisible,
   setWordsHaveNewline,
+  setWordsHaveNumbers,
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
@@ -603,7 +604,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestWords.setHasNumbers(hasNumbers);
+  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 

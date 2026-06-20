@@ -56,8 +56,3 @@ class Words {
 }
 
 export const words = new Words();
-export let hasNumbers = false;
-
-export function setHasNumbers(tf: boolean): void {
-  hasNumbers = tf;
-}

@@ -19,6 +19,7 @@ import { keymapEvent } from "../events/keymap";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
+export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);

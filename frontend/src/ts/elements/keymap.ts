@@ -6,7 +6,6 @@ import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
 import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
-import * as TestWords from "../test/test-words";
 import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as AltTracker from "../test/alt-tracker";
@@ -20,6 +19,7 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 import { getTheme } from "../states/theme";
 
 import { createEffectOn } from "../hooks/effects";
+import { wordsHaveNumbers } from "../states/test";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -431,7 +431,7 @@ export async function refresh(): Promise<void> {
     }
 
     const showTopRow =
-      (TestWords.hasNumbers && Config.keymapMode === "next") ||
+      (wordsHaveNumbers() && Config.keymapMode === "next") ||
       Config.keymapLayoutStyle === "minimal_numrow" ||
       (layoutData.keymapShowTopRow && Config.keymapLayoutStyle !== "minimal");
 

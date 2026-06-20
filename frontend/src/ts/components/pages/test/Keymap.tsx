@@ -9,6 +9,7 @@ import {
   getKeymapHighlightKey,
   getKeymapLayout,
   keymapLayoutObject,
+  wordsHaveNumbers,
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
@@ -57,14 +58,13 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     }
   });
 
-  //TODO show if test has numbers and keymapMode is next
   const showFirstRow = createMemo(
     () =>
-      (getConfig.keymapLayoutStyle === "full" ||
-        getConfig.keymapLayoutStyle === "minimal_numrow" ||
-        (getConfig.keymapLayoutStyle === "minimal_layout" &&
-          props.layoutData.keymapShowTopRow)) ??
-      false,
+      (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
+      getConfig.keymapLayoutStyle === "full" ||
+      getConfig.keymapLayoutStyle === "minimal_numrow" ||
+      (getConfig.keymapLayoutStyle === "minimal_layout" &&
+        props.layoutData.keymapShowTopRow),
   );
 
   // Convert layout to KeyboardDefinition format
