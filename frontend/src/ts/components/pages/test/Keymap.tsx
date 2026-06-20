@@ -122,7 +122,8 @@ function Key(
   const [flashTick, setFlashTick] = createSignal(0);
   const [flashCorrect, setFlashCorrect] = createSignal(true);
   const isNext = () =>
-    !isSteno() && getKeymapHighlightKey() === props.legends[props.layer];
+    !isSteno() &&
+    props.legends.some((legend) => legend === getKeymapHighlightKey());
 
   keymapEvent.useListener((event) => {
     if (event.mode !== "flash" || isSteno()) return;
