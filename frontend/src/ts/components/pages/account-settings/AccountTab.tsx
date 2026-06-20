@@ -35,7 +35,7 @@ function Discord() {
       title="discord integration"
       fa={{ variant: "brand", icon: "fa-discord" }}
       description=<>
-        When you connect your monkeytype account to your Discord account, you
+        When you connect your Monkeytype account to your Discord account, you
         will be automatically assigned a new role every time you achieve a new
         personal best in a 60 second test. If you link your accounts before
         joining the Discord server, the bot <i>will not</i> give you a role.
