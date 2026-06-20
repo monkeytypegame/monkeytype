@@ -58,9 +58,11 @@ export function convertLayoutToKeymap(
     case "steno":
     case "steno_matrix":
       return convertSteno(options);
+    case "alice":
+      return convertAlice(layout, options);
+    default:
+      throw new Error(`not supported style ${options.keymapStyle}`);
   }
-
-  throw new Error("not supported");
 }
 
 function convertStaggered(
@@ -276,6 +278,106 @@ function convertSteno(options: ConvertOptions): KeyboardDefinition {
   return base;
 }
 
+function convertAlice(
+  layout: LayoutObject,
+  options: ConvertOptions,
+): KeyboardDefinition {
+  const hasRow5ExtraKey = layout.keys.row5.length !== 1;
+  const showAllKeys = options.showAllKeys;
+
+  if (!hasRow5ExtraKey) {
+    layout.keys.row5.push(buildLegends([" "]));
+  }
+
+  const layoutIndicatorIndex = findLayoutIndicatorIndex(layout.keys.row5);
+
+  const calcRotation =
+    ({ start, split, end }: { start: number; split: number; end: number }) =>
+    ({ col }: { col: number }): number | undefined =>
+      col >= start && col <= split
+        ? 10
+        : col > split && col <= end
+          ? -10
+          : undefined;
+
+  const result = convertBase(layout, options, {
+    row1: {
+      x: calcGap({
+        firstColGap: 0,
+        colGaps: { 7: 0.25 },
+        showAllKeys,
+      }),
+      skip: ({ col }) => !options.showAllKeys && col === 0,
+      rotation: calcRotation({ start: 3, split: 6, end: 10 }),
+    },
+    row2: {
+      x: calcGap({
+        firstColGap: 0.25,
+        colGaps: { 1: 0.25, 5: 0.5, 9: 0.25 },
+        showAllKeys,
+      }),
+      skip: ({ col }) => !options.showAllKeys && col === 12,
+      rotation: calcRotation({ start: 1, split: 4, end: 8 }),
+    },
+    row3: {
+      x: calcGap({
+        firstColGap: 0.5,
+        colGaps: { 1: 0.25, 5: 0.75, 9: 0.25 },
+        showAllKeys,
+      }),
+      isHoming: ({ col }) => col === 3 || col === 6,
+      rotation: calcRotation({ start: 1, split: 4, end: 8 }),
+    },
+    row4: {
+      x: calcGap({ firstColGap: 1, colGaps: { 8: 0.25 }, showAllKeys }),
+      rotation: calcRotation({ start: 1, split: 4, end: 7 }),
+    },
+    row5: {
+      x: calcGap({
+        firstColGap: hasRow5ExtraKey ? 4.75 : 3,
+        colGaps: { 1: 0.5 },
+        showAllKeys,
+      }),
+      width: ({ col }) => (hasRow5ExtraKey && col === 1 ? undefined : 3),
+
+      isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
+      rotation: ({ col }) => (col === 0 ? 10 : -10),
+    },
+  });
+
+  result.row4.splice(5, 0, buildKey(["b", "B"], { rotation: -10, x: 0.25 }));
+
+  /*
+  if (options.showAllKeys) {
+    const extraKeysConfig: ExtraKeysConfig = {
+      row1Append: [buildKey(["BS"], { width: 2 })],
+      row2Prepend: [buildKey(["Tab"], { width: 1.5 })],
+      row2Append: isIso
+        ? [buildKey(["Enter"], { width: 1.5, height: 2 })]
+        : undefined,
+      row3Prepend: [buildKey(["Caps"], { width: 1.75 })],
+      row3Append: !isIso ? [buildKey(["Enter"], { width: 2.25 })] : undefined,
+      row4Prepend: [buildKey(["Shift"], { width: isIso ? 1.25 : 2.25 })],
+      row4Append: [buildKey(["Shift"], { width: 2.75 })],
+      row5Prepend: [
+        buildKey(["Ctrl"], { width: 1.25 }),
+        buildKey(["Monke"], { width: 1.25 }),
+        buildKey(["Alt"], { width: 1.25 }),
+      ],
+      row5Append: [
+        buildKey(["Alt"], { width: 1.25 }),
+        buildKey(["Monke"], { width: 1.25 }),
+        buildKey(["Meta"], { width: 1.25 }),
+        buildKey(["Ctrl"], { width: 1.25 }),
+      ],
+    };
+
+    addExtraKeys(result, extraKeysConfig);
+  }
+*/
+  return result;
+}
+
 function convertBase(
   layout: LayoutObject,
   options: ConvertOptions,
@@ -365,12 +467,11 @@ function addExtraKeys(
 
 function buildKey(
   legends: KeyLegends,
-  options?: Pick<KeyDefinition, "width" | "height">,
+  options?: Partial<KeyDefinition>,
 ): KeyDefinition {
-  const row: KeyDefinition = { legends: buildLegends(legends) };
-  if (options?.width !== undefined) row.width = options.width;
-  if (options?.height !== undefined) row.height = options.height;
-  return row;
+  const key: KeyDefinition = { ...options, legends: buildLegends(legends) };
+
+  return key;
 }
 
 function findLayoutIndicatorIndex(keys: KeyLegends[]): number {
@@ -382,13 +483,15 @@ type NonZeroColGaps = Record<Exclude<keyof Record<number, number>, 0>, number>;
 function calcGap(params: {
   firstColGap?: number;
   splitCol?: number;
-  isSplit: boolean;
+  isSplit?: boolean;
   showAllKeys: boolean;
   colGaps?: NonZeroColGaps;
 }) {
   return ({ col }: { col: number }) => {
     if (col === 0) return params.showAllKeys ? undefined : params.firstColGap;
-    if (params.isSplit && col === (params.splitCol ?? 5)) return 1;
+    if (params.isSplit && col === (params.splitCol ?? 5)) {
+      return 1;
+    }
     if (params.isSplit) return undefined;
     return params.colGaps?.[col];
   };
