@@ -74,37 +74,31 @@ function convertStaggered(
     layout.keys.row5.push(buildLegends([" "]));
   }
 
-  const calcGapForRow5 =
-    ({ col1Gap, splitCol }: { col1Gap: number; splitCol?: number }) =>
-    ({ col }: { col: number }) => {
-      if (col === 0) return options.showAllKeys ? undefined : col1Gap;
-      if (isSplit && col === (splitCol ?? 5)) return 1;
-      return undefined;
-    };
-
   const layoutIndicatorIndex = findLayoutIndicatorIndex(layout.keys.row5);
 
   const result = convertBase(layout, options, {
     row1: {
-      x: calcGap({ col1Gap: 0, splitCol: 7, isSplit, showAllKeys }),
+      x: calcGap({ firstColGap: 0, splitCol: 7, isSplit, showAllKeys }),
       skip: ({ col }) => (options.showAllKeys ? false : col === 0),
     },
     row2: {
-      x: calcGap({ col1Gap: 0.5, isSplit, showAllKeys }),
+      x: calcGap({ firstColGap: 0.5, isSplit, showAllKeys }),
       skip: ({ col }) => (options.showAllKeys ? false : col === 12),
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
     row3: {
-      x: calcGap({ col1Gap: 1, isSplit, showAllKeys }),
+      x: calcGap({ firstColGap: 1, isSplit, showAllKeys }),
       isHoming: ({ col }) => col === 3 || col === 6,
     },
     row4: {
-      x: calcGap({ col1Gap: isIso ? 0.25 : 1.5, isSplit, showAllKeys }),
+      x: calcGap({ firstColGap: isIso ? 0.25 : 1.5, isSplit, showAllKeys }),
     },
     row5: {
-      x: calcGapForRow5({
-        col1Gap: hasRow5ExtraKey ? (isSplit ? 5.5 : 4) : 3.5,
+      x: calcGap({
+        firstColGap: hasRow5ExtraKey ? (isSplit ? 5.5 : 4) : 3.5,
         splitCol: 1,
+        isSplit,
+        showAllKeys,
       }),
       width: ({ col }) => {
         if (
@@ -193,7 +187,7 @@ function convertMatrix(
     },
     row5: {
       x: calcGap({
-        col1Gap: isSplit || hasRow5ExtraKey ? 2 : 3,
+        firstColGap: isSplit || hasRow5ExtraKey ? 2 : 3,
         splitCol: 1,
         isSplit,
         showAllKeys,
@@ -273,14 +267,6 @@ function convertSteno(options: ConvertOptions): KeyboardDefinition {
     },
   };
 
-  const calcGapForRow3 =
-    (colGap: Record<number, number>) =>
-    ({ col }: { col: number }) => {
-      const gap = colGap[col];
-      if (!isSplit && gap !== undefined) return gap;
-      return isSplit && col === 5 ? 1 : undefined;
-    };
-
   const isLargeKey = (col: number): boolean => !isSplit && [0, 4].includes(col);
 
   const base = convertBase(layout, options, {
@@ -290,7 +276,7 @@ function convertSteno(options: ConvertOptions): KeyboardDefinition {
     },
     row3: {
       skip: ({ col }) => isLargeKey(col),
-      x: calcGapForRow3({ 1: 1, 5: 1 }),
+      x: calcGap({ isSplit, showAllKeys, colGaps: { 1: 1, 5: 1 } }),
     },
     row4: {
       x: ({ col }) => (isSplit ? { 0: 3, 2: 1 } : { 0: 2.25, 2: 0.5 })[col],
@@ -397,15 +383,19 @@ function findLayoutIndicatorIndex(keys: KeyLegends[]): number {
   return keys.findIndex((it) => it.at(0) === " ");
 }
 
+type NonZeroColGaps = Record<Exclude<keyof Record<number, number>, 0>, number>;
+
 function calcGap(params: {
-  col1Gap?: number;
+  firstColGap?: number;
   splitCol?: number;
   isSplit: boolean;
   showAllKeys: boolean;
+  colGaps?: NonZeroColGaps;
 }) {
   return ({ col }: { col: number }) => {
-    if (col === 0) return params.showAllKeys ? undefined : params.col1Gap;
+    if (col === 0) return params.showAllKeys ? undefined : params.firstColGap;
     if (params.isSplit && col === (params.splitCol ?? 5)) return 1;
-    return undefined;
+    if (params.isSplit) return undefined;
+    return params.colGaps?.[col];
   };
 }
