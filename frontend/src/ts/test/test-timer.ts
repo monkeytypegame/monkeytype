@@ -27,10 +27,8 @@ import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import {
-  getLiveCachedAccuracy,
-  getRunningWpmAndRaw,
-} from "./events/running-stats";
+import { getLiveCachedAccuracy } from "./events/live-cache";
+import { getRunningWpmAndRaw } from "./events/running-stats";
 
 let timerStartMs = 0;
 let stopped = true;

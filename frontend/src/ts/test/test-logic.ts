@@ -117,8 +117,8 @@ import {
 } from "./events/stats";
 import {
   getLiveCachedAccuracy,
-  getRunningTestDurationMs,
-} from "./events/running-stats";
+  getLiveCachedTestDurationMs,
+} from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
@@ -284,7 +284,7 @@ export function restart(options = {} as RestartOptions): void {
 
     if (Config.resultSaving) {
       const liveEventLog = buildEventLog();
-      const testSeconds = getRunningTestDurationMs(performance.now()) / 1000;
+      const testSeconds = getLiveCachedTestDurationMs(performance.now()) / 1000;
       const afkseconds = getAfkDuration(liveEventLog);
       let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;

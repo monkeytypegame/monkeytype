@@ -17,6 +17,7 @@ import {
   TimerEventData,
 } from "./types";
 import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
+import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import {
@@ -62,16 +63,6 @@ let inputEvents: InputEvent[] = [];
 let compositionEvents: CompositionTestEvent[] = [];
 
 let cachedAllEvents: TestEventNoMs[] | undefined;
-
-const liveCache = {
-  correctInputs: 0,
-  totalInputs: 0,
-  timerStartMs: null as number | null,
-  msSinceLastInputEvent: {
-    value: null as number | null,
-    lastEventMs: null as number | null,
-  },
-};
 
 const sortTieRank = (type: TestEventType): number =>
   type === "keyup" ? 0 : type === "keydown" ? 1 : type === "timer" ? 3 : 2;
@@ -176,34 +167,23 @@ export function logTestEvent(
       data: { ...data, code: key },
     });
   } else if (type === "timer") {
-    timerEvents.push({
+    const event: TimerEvent = {
       type,
       ms: now,
       testMs: 0,
       data: eventData as TimerEventData,
-    });
-
-    if ((eventData as TimerEventData).event === "start") {
-      liveCache.timerStartMs = now;
-    }
+    };
+    timerEvents.push(event);
+    recordEventForCache(event);
   } else if (type === "input") {
-    const data = eventData as InputEventData;
-    inputEvents.push({
+    const event: InputEvent = {
       type,
       ms: now,
       testMs: 0,
-      data,
-    });
-    if ("correct" in data) {
-      liveCache.totalInputs++;
-      if (data.correct) liveCache.correctInputs++;
-    }
-    if (liveCache.msSinceLastInputEvent.lastEventMs !== null) {
-      liveCache.msSinceLastInputEvent.value = roundTo2(
-        now - liveCache.msSinceLastInputEvent.lastEventMs,
-      );
-    }
-    liveCache.msSinceLastInputEvent.lastEventMs = now;
+      data: eventData as InputEventData,
+    };
+    inputEvents.push(event);
+    recordEventForCache(event);
   } else if (type === "composition") {
     compositionEvents.push({
       type,
@@ -279,33 +259,9 @@ export function cleanupData(): void {
 }
 
 function recomputeLiveCache(): void {
-  liveCache.correctInputs = 0;
-  liveCache.totalInputs = 0;
-  liveCache.timerStartMs = null;
-  liveCache.msSinceLastInputEvent.value = null;
-  liveCache.msSinceLastInputEvent.lastEventMs = null;
-  for (const e of inputEvents) {
-    if ("correct" in e.data) {
-      liveCache.totalInputs++;
-      if (e.data.correct) liveCache.correctInputs++;
-    }
-    if (liveCache.msSinceLastInputEvent.lastEventMs !== null) {
-      liveCache.msSinceLastInputEvent.value = roundTo2(
-        e.ms - liveCache.msSinceLastInputEvent.lastEventMs,
-      );
-    }
-    liveCache.msSinceLastInputEvent.lastEventMs = e.ms;
-  }
-  for (const e of timerEvents) {
-    if (e.data.event === "start") {
-      liveCache.timerStartMs = e.ms;
-      break;
-    }
-  }
-}
-
-export function getLiveCache(): Readonly<typeof liveCache> {
-  return { ...liveCache };
+  resetLiveCache();
+  for (const e of inputEvents) recordEventForCache(e);
+  for (const e of timerEvents) recordEventForCache(e);
 }
 
 export function getAllTestEvents(): TestEventNoMs[] {
@@ -411,11 +367,7 @@ export function resetTestEvents(): void {
   invalidateCache();
   pressedKeys = new Map();
   noCodeIndex = 0;
-  liveCache.correctInputs = 0;
-  liveCache.totalInputs = 0;
-  liveCache.timerStartMs = null;
-  liveCache.msSinceLastInputEvent.value = null;
-  liveCache.msSinceLastInputEvent.lastEventMs = null;
+  resetLiveCache();
 }
 
 export function getPressedKeys(): Map<

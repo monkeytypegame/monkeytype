@@ -1,4 +1,4 @@
-import { getLiveCachedMsSinceLastInputEvent } from "./events/running-stats";
+import { getLiveCachedMsSinceLastInputEvent } from "./events/live-cache";
 import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
