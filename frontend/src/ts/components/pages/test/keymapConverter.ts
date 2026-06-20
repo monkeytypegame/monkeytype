@@ -29,6 +29,18 @@ type RuleParams = {
   col: number;
 };
 
+type ExtraKeysConfig = {
+  row1Append?: KeyDefinition[];
+  row2Prepend?: KeyDefinition[];
+  row2Append?: KeyDefinition[];
+  row3Prepend?: KeyDefinition[];
+  row3Append?: KeyDefinition[];
+  row4Prepend?: KeyDefinition[];
+  row4Append?: KeyDefinition[];
+  row5Prepend?: KeyDefinition[];
+  row5Append?: KeyDefinition[];
+};
+
 export function convertLayoutToKeymap(
   rawLayout: LayoutObject,
   options: ConvertOptions,
@@ -56,12 +68,13 @@ function convertStaggered(
   const isSplit = options.keymapStyle === "split";
   const isIso = layout.type === "iso";
   const hasRow5ExtraKey = layout.keys.row5.length !== 1;
+  const showAllKeys = options.showAllKeys;
 
   if (isSplit && !hasRow5ExtraKey) {
     layout.keys.row5.push(buildLegends([" "]));
   }
 
-  const calcGap =
+  const calcGapForRow5 =
     ({ col1Gap, splitCol }: { col1Gap: number; splitCol?: number }) =>
     ({ col }: { col: number }) => {
       if (col === 0) return options.showAllKeys ? undefined : col1Gap;
@@ -75,21 +88,23 @@ function convertStaggered(
 
   const result = convertBase(layout, options, {
     row1: {
-      x: calcGap({ col1Gap: 0, splitCol: 7 }),
+      x: calcGap({ col1Gap: 0, splitCol: 7, isSplit, showAllKeys }),
       skip: ({ col }) => (options.showAllKeys ? false : col === 0),
     },
     row2: {
-      x: calcGap({ col1Gap: 0.5 }),
+      x: calcGap({ col1Gap: 0.5, isSplit, showAllKeys }),
       skip: ({ col }) => (options.showAllKeys ? false : col === 12),
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
     row3: {
-      x: calcGap({ col1Gap: 1 }),
+      x: calcGap({ col1Gap: 1, isSplit, showAllKeys }),
       isHoming: ({ col }) => col === 3 || col === 6,
     },
-    row4: { x: calcGap({ col1Gap: isIso ? 0.25 : 1.5 }) },
+    row4: {
+      x: calcGap({ col1Gap: isIso ? 0.25 : 1.5, isSplit, showAllKeys }),
+    },
     row5: {
-      x: calcGap({
+      x: calcGapForRow5({
         col1Gap: hasRow5ExtraKey ? (isSplit ? 5.5 : 4) : 3.5,
         splitCol: 1,
       }),
@@ -114,76 +129,38 @@ function convertStaggered(
     },
   });
 
-  if (!options.showAllKeys) return result;
-
-  //extra keys
   if (options.showAllKeys) {
-    result.row1.push({
-      legends: buildLegends(["BS"]),
-      width: 2,
-    });
-    result.row2.unshift({
-      legends: buildLegends(["Tab"]),
-      width: 1.5,
-    });
-    result.row3.unshift({
-      legends: buildLegends(["Caps"]),
-      width: 1.75,
-    });
+    const extraKeysConfig: ExtraKeysConfig = {
+      row1Append: [buildExtraKey(["BS"], { width: 2 })],
+      row2Prepend: [buildExtraKey(["Tab"], { width: 1.5 })],
+      row3Prepend: [buildExtraKey(["Caps"], { width: 1.75 })],
+      row4Prepend: [buildExtraKey(["Shift"], { width: isIso ? 1.25 : 2.25 })],
+      row5Prepend: [
+        buildExtraKey(["Ctrl"], { width: 1.25 }),
+        buildExtraKey(["Monke"], { width: 1.25 }),
+        buildExtraKey(["Alt"], { width: 1.25 }),
+      ],
+      row5Append: [
+        buildExtraKey(["Alt"], { width: 1.25 }),
+        buildExtraKey(["Monke"], { width: 1.25 }),
+        buildExtraKey(["Meta"], { width: 1.25 }),
+        buildExtraKey(["Ctrl"], { width: 1.25 }),
+      ],
+    };
+
+    // Enter position depends on iso vs non-iso layout
     if (isIso) {
-      result.row2.push({
-        legends: buildLegends(["Enter"]),
-        width: 1.5,
-        height: 2,
-      });
+      extraKeysConfig.row2Append = [
+        buildExtraKey(["Enter"], { width: 1.5, height: 2 }),
+      ];
     } else {
-      result.row3.push({
-        legends: buildLegends(["Enter"]),
-        width: 2.25,
-      });
+      extraKeysConfig.row3Append = [buildExtraKey(["Enter"], { width: 2.25 })];
     }
-    result.row4.unshift({
-      legends: buildLegends(["Shift"]),
-      width: isIso ? 1.25 : 2.25,
-    });
-    result.row4.push({
-      legends: buildLegends(["Shift"]),
-      width: 2.75,
-    });
 
-    result.row5.unshift(
-      {
-        legends: buildLegends(["Ctrl"]),
-        width: 1.25,
-      },
-      {
-        legends: buildLegends(["Monke"]),
-        width: 1.25,
-      },
-      {
-        legends: buildLegends(["Alt"]),
-        width: 1.25,
-      },
-    );
+    // Right-side Shift (row4)
+    extraKeysConfig.row4Append = [buildExtraKey(["Shift"], { width: 2.75 })];
 
-    result.row5.push(
-      {
-        legends: buildLegends(["Alt"]),
-        width: 1.25,
-      },
-      {
-        legends: buildLegends(["Monke"]),
-        width: 1.25,
-      },
-      {
-        legends: buildLegends(["Meta"]),
-        width: 1.25,
-      },
-      {
-        legends: buildLegends(["Ctrl"]),
-        width: 1.25,
-      },
-    );
+    addExtraKeys(result, extraKeysConfig);
   }
 
   return result;
@@ -195,18 +172,11 @@ function convertMatrix(
 ): KeyboardDefinition {
   const isSplit = options.keymapStyle === "split_matrix";
   const hasRow5ExtraKey = layout.keys.row5.length !== 1;
+  const showAllKeys = options.showAllKeys;
 
   if (isSplit && !hasRow5ExtraKey) {
     layout.keys.row5.push(buildLegends([" "]));
   }
-
-  const calcGap =
-    ({ col1Gap, splitCol }: { col1Gap?: number; splitCol?: number }) =>
-    ({ col }: { col: number }) => {
-      if (col === 0) return options.showAllKeys ? undefined : col1Gap;
-      if (isSplit && col === (splitCol ?? 5)) return 1;
-      return undefined;
-    };
 
   const layoutIndicatorIndex = layout.keys.row5.findIndex(
     (it) => it.at(0) === " ",
@@ -215,70 +185,63 @@ function convertMatrix(
   const result = convertBase(layout, options, {
     row1: {
       skip: ({ col }) => (!options.showAllKeys && col === 0) || col > 10,
-      x: calcGap({ splitCol: 6 }),
+      x: calcGap({ splitCol: 6, isSplit, showAllKeys }),
     },
     row2: {
       skip: ({ col }) => col > 9,
-      x: calcGap({}),
+      x: calcGap({ isSplit, showAllKeys }),
     },
     row3: {
       skip: ({ col }) => col > (options.showAllKeys ? 10 : 9),
-      x: calcGap({}),
+      x: calcGap({ isSplit, showAllKeys }),
       isHoming: ({ col }) => col === 3 || col === 6,
     },
     row4: {
       skip: ({ col }) => col > 9,
-      x: calcGap({}),
+      x: calcGap({ isSplit, showAllKeys }),
     },
     row5: {
-      x: calcGap({ col1Gap: isSplit || hasRow5ExtraKey ? 2 : 3, splitCol: 1 }),
+      x: calcGap({
+        col1Gap: isSplit || hasRow5ExtraKey ? 2 : 3,
+        splitCol: 1,
+        isSplit,
+        showAllKeys,
+      }),
       width: () =>
         isSplit || hasRow5ExtraKey ? 3 : options.showAllKeys ? 6 : 4,
       isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
     },
   });
 
-  //extra keys
   if (options.showAllKeys) {
-    result.row1.push({
-      legends: buildLegends(["BS"]),
-    });
+    const extraKeysConfig: ExtraKeysConfig = {
+      row1Append: [buildExtraKey(["BS"])],
+      row2Prepend: [buildExtraKey(["Tab"])],
+      row2Append: [buildExtraKey(["Del"])],
+      row3Prepend: [buildExtraKey(["Esc"])],
+      row4Prepend: [buildExtraKey(["Shift"])],
+      row4Append: [buildExtraKey(["Enter"])],
+      row5Prepend: [
+        buildExtraKey(["Ctrl"]),
+        buildExtraKey(["Monke"]),
+        buildExtraKey(["Alt"]),
+      ],
+      row5Append: [
+        buildExtraKey(["Alt"]),
+        buildExtraKey(["Meta"]),
+        buildExtraKey(["Ctrl"]),
+      ],
+    };
 
-    result.row2.unshift({
-      legends: buildLegends(["Tab"]),
-    });
-    result.row2.push({
-      legends: buildLegends(["Del"]),
-    });
-
-    result.row3.unshift({
-      legends: buildLegends(["Esc"]),
-    });
-
-    result.row4.unshift({
-      legends: buildLegends(["Shift"]),
-    });
-    result.row4.push({
-      legends: buildLegends(["Enter"]),
-    });
-
-    result.row5.unshift(
-      { legends: buildLegends(["Ctrl"]) },
-      { legends: buildLegends(["Monke"]) },
-      { legends: buildLegends(["Alt"]) },
-    );
-
-    result.row5.push(
-      { legends: buildLegends(["Alt"]) },
-      { legends: buildLegends(["Meta"]) },
-      { legends: buildLegends(["Ctrl"]) },
-    );
+    addExtraKeys(result, extraKeysConfig);
   }
+
   return result;
 }
 
 function convertSteno(options: ConvertOptions): KeyboardDefinition {
   const isSplit = options.keymapStyle === "steno_matrix";
+  const showAllKeys = options.showAllKeys;
 
   const layout: LayoutObject = {
     keymapShowTopRow: true,
@@ -319,10 +282,10 @@ function convertSteno(options: ConvertOptions): KeyboardDefinition {
     },
   };
 
-  const calcGap =
-    (options: { colGap?: Record<number, number> }) =>
+  const calcGapForRow3 =
+    (colGap: Record<number, number>) =>
     ({ col }: { col: number }) => {
-      const gap = options?.colGap?.[col];
+      const gap = colGap[col];
       if (!isSplit && gap !== undefined) return gap;
       return isSplit && col === 5 ? 1 : undefined;
     };
@@ -332,11 +295,11 @@ function convertSteno(options: ConvertOptions): KeyboardDefinition {
   const base = convertBase(layout, options, {
     row2: {
       height: ({ col }) => (isLargeKey(col) ? 2 : undefined),
-      x: calcGap({}),
+      x: calcGap({ isSplit, showAllKeys }),
     },
     row3: {
       skip: ({ col }) => isLargeKey(col),
-      x: calcGap({ colGap: { 1: 1, 5: 1 } }),
+      x: calcGapForRow3({ 1: 1, 5: 1 }),
     },
     row4: {
       x: ({ col }) => (isSplit ? { 0: 3, 2: 1 } : { 0: 2.25, 2: 0.5 })[col],
@@ -410,4 +373,44 @@ function buildLegends(legends: KeyLegends): KeyLegends {
     default:
       return legends;
   }
+}
+
+function addExtraKeys(
+  keyboard: KeyboardDefinition,
+  config: ExtraKeysConfig | undefined,
+): void {
+  if (!config) return;
+
+  if (config.row1Append) keyboard.row1.push(...config.row1Append);
+  if (config.row2Prepend) keyboard.row2.unshift(...config.row2Prepend);
+  if (config.row2Append) keyboard.row2.push(...config.row2Append);
+  if (config.row3Prepend) keyboard.row3.unshift(...config.row3Prepend);
+  if (config.row3Append) keyboard.row3.push(...config.row3Append);
+  if (config.row4Prepend) keyboard.row4.unshift(...config.row4Prepend);
+  if (config.row4Append) keyboard.row4.push(...config.row4Append);
+  if (config.row5Prepend) keyboard.row5.unshift(...config.row5Prepend);
+  if (config.row5Append) keyboard.row5.push(...config.row5Append);
+}
+
+function buildExtraKey(
+  legends: KeyLegends,
+  options?: Pick<KeyDefinition, "width" | "height">,
+): KeyDefinition {
+  const row: KeyDefinition = { legends: buildLegends(legends) };
+  if (options?.width !== undefined) row.width = options.width;
+  if (options?.height !== undefined) row.height = options.height;
+  return row;
+}
+
+function calcGap(params: {
+  col1Gap?: number;
+  splitCol?: number;
+  isSplit: boolean;
+  showAllKeys: boolean;
+}) {
+  return ({ col }: { col: number }) => {
+    if (col === 0) return params.showAllKeys ? undefined : params.col1Gap;
+    if (params.isSplit && col === (params.splitCol ?? 5)) return 1;
+    return undefined;
+  };
 }
