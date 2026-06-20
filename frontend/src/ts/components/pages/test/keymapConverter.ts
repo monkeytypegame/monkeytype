@@ -83,7 +83,7 @@ function convertStaggered(
     },
     row2: {
       x: calcGap({ firstColGap: 0.5, isSplit, showAllKeys }),
-      skip: ({ col }) => (options.showAllKeys ? false : col === 12),
+      skip: ({ col }) => !options.showAllKeys && col === 12,
       width: ({ col }) => (col === 12 ? 1.5 : undefined),
     },
     row3: {
@@ -123,27 +123,25 @@ function convertStaggered(
 
   if (options.showAllKeys) {
     const extraKeysConfig: ExtraKeysConfig = {
-      row1Append: [buildExtraKey(["BS"], { width: 2 })],
-      row2Prepend: [buildExtraKey(["Tab"], { width: 1.5 })],
+      row1Append: [buildKey(["BS"], { width: 2 })],
+      row2Prepend: [buildKey(["Tab"], { width: 1.5 })],
       row2Append: isIso
-        ? [buildExtraKey(["Enter"], { width: 1.5, height: 2 })]
+        ? [buildKey(["Enter"], { width: 1.5, height: 2 })]
         : undefined,
-      row3Prepend: [buildExtraKey(["Caps"], { width: 1.75 })],
-      row3Append: !isIso
-        ? [buildExtraKey(["Enter"], { width: 2.25 })]
-        : undefined,
-      row4Prepend: [buildExtraKey(["Shift"], { width: isIso ? 1.25 : 2.25 })],
-      row4Append: [buildExtraKey(["Shift"], { width: 2.75 })],
+      row3Prepend: [buildKey(["Caps"], { width: 1.75 })],
+      row3Append: !isIso ? [buildKey(["Enter"], { width: 2.25 })] : undefined,
+      row4Prepend: [buildKey(["Shift"], { width: isIso ? 1.25 : 2.25 })],
+      row4Append: [buildKey(["Shift"], { width: 2.75 })],
       row5Prepend: [
-        buildExtraKey(["Ctrl"], { width: 1.25 }),
-        buildExtraKey(["Monke"], { width: 1.25 }),
-        buildExtraKey(["Alt"], { width: 1.25 }),
+        buildKey(["Ctrl"], { width: 1.25 }),
+        buildKey(["Monke"], { width: 1.25 }),
+        buildKey(["Alt"], { width: 1.25 }),
       ],
       row5Append: [
-        buildExtraKey(["Alt"], { width: 1.25 }),
-        buildExtraKey(["Monke"], { width: 1.25 }),
-        buildExtraKey(["Meta"], { width: 1.25 }),
-        buildExtraKey(["Ctrl"], { width: 1.25 }),
+        buildKey(["Alt"], { width: 1.25 }),
+        buildKey(["Monke"], { width: 1.25 }),
+        buildKey(["Meta"], { width: 1.25 }),
+        buildKey(["Ctrl"], { width: 1.25 }),
       ],
     };
 
@@ -200,22 +198,14 @@ function convertMatrix(
 
   if (options.showAllKeys) {
     const extraKeysConfig: ExtraKeysConfig = {
-      row1Append: [buildExtraKey(["BS"])],
-      row2Prepend: [buildExtraKey(["Tab"])],
-      row2Append: [buildExtraKey(["Del"])],
-      row3Prepend: [buildExtraKey(["Esc"])],
-      row4Prepend: [buildExtraKey(["Shift"])],
-      row4Append: [buildExtraKey(["Enter"])],
-      row5Prepend: [
-        buildExtraKey(["Ctrl"]),
-        buildExtraKey(["Monke"]),
-        buildExtraKey(["Alt"]),
-      ],
-      row5Append: [
-        buildExtraKey(["Alt"]),
-        buildExtraKey(["Meta"]),
-        buildExtraKey(["Ctrl"]),
-      ],
+      row1Append: [buildKey(["BS"])],
+      row2Prepend: [buildKey(["Tab"])],
+      row2Append: [buildKey(["Del"])],
+      row3Prepend: [buildKey(["Esc"])],
+      row4Prepend: [buildKey(["Shift"])],
+      row4Append: [buildKey(["Enter"])],
+      row5Prepend: [buildKey(["Ctrl"]), buildKey(["Monke"]), buildKey(["Alt"])],
+      row5Append: [buildKey(["Alt"]), buildKey(["Meta"]), buildKey(["Ctrl"])],
     };
 
     addExtraKeys(result, extraKeysConfig);
@@ -369,7 +359,7 @@ function addExtraKeys(
   if (config.row5Append) keyboard.row5.push(...config.row5Append);
 }
 
-function buildExtraKey(
+function buildKey(
   legends: KeyLegends,
   options?: Pick<KeyDefinition, "width" | "height">,
 ): KeyDefinition {
