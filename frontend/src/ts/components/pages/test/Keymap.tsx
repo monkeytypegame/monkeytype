@@ -22,9 +22,11 @@ import {
   KeyDefinition,
 } from "./keymapConverter";
 
+type FlashEntry = { tick: number; correct: boolean };
+
 export function Keymap() {
   return (
-    <Show when={keymapLayoutObject()} fallback={<div>Loading...</div>}>
+    <Show when={keymapLayoutObject()}>
       <Keyboard
         displayName={getKeymapLayout().layoutNameDisplayString}
         layoutData={keymapLayoutObject() as LayoutObject}
@@ -57,6 +59,27 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     }
   });
 
+  const [flashState, setFlashState] = createSignal<Map<string, FlashEntry>>(
+    new Map(),
+  );
+
+  keymapEvent.useListener((event) => {
+    if (event.mode === "flash") {
+      const key = event.key || " ";
+      const current = flashState();
+      const next = new Map<string, FlashEntry>();
+      const existing = current.get(key);
+      next.set(key, {
+        tick: existing ? existing.tick + 1 : 1,
+        correct: event.correct ?? true,
+      });
+      setFlashState(next);
+    } else {
+      // highlight event — reset flash state
+      setFlashState(new Map());
+    }
+  });
+
   const showFirstRow = createMemo(
     () =>
       (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
@@ -66,7 +89,6 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
         props.layoutData.keymapShowTopRow),
   );
 
-  // Convert layout to KeyboardDefinition format
   //TODO handle funbox layout_mirror
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
@@ -83,6 +105,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
           keyboardDef={keyboardDef()}
           layer={layer()}
           showFirstRow={showFirstRow()}
+          flashState={flashState}
         />
       </Show>
     </div>
@@ -93,6 +116,7 @@ function KeyboardDefinitionRenderer(props: {
   keyboardDef: KeyboardDefinition;
   layer: number;
   showFirstRow: boolean;
+  flashState: () => Map<string, FlashEntry>;
 }) {
   return (
     <For each={typedEntries(props.keyboardDef)}>
@@ -101,7 +125,12 @@ function KeyboardDefinitionRenderer(props: {
           <div class="flex h-8 flex-row">
             <For each={keys}>
               {(key) => (
-                <Key {...key} isNumRow={rowId === "row1"} layer={props.layer} />
+                <Key
+                  {...key}
+                  isNumRow={rowId === "row1"}
+                  layer={props.layer}
+                  flashState={props.flashState}
+                />
               )}
             </For>
           </div>
@@ -115,6 +144,7 @@ function Key(
   props: {
     isNumRow: boolean;
     layer: number;
+    flashState: () => Map<string, FlashEntry>;
   } & KeyDefinition,
 ) {
   const isSteno = () =>
@@ -129,20 +159,17 @@ function Key(
     return props.legends[layer];
   };
 
-  const [flashTick, setFlashTick] = createSignal(0);
-  const [flashCorrect, setFlashCorrect] = createSignal(true);
+  // Read from centralized flash state instead of managing per-key signals.
+  // Steno keys never flash.
+  const flashInfo = createMemo(() => {
+    if (isSteno()) return { tick: 0, correct: true };
+    const entry = props.flashState().get(label() ?? "");
+    return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
+  });
+
   const isNext = () =>
     !isSteno() &&
     props.legends?.some((legend) => legend === getKeymapHighlightKey());
-
-  keymapEvent.useListener((event) => {
-    if (event.mode === "flash" && !isSteno() && event.key === label()) {
-      setFlashCorrect(event.correct ?? true);
-      setFlashTick((t) => t + 1);
-    } else {
-      setFlashTick(0);
-    }
-  });
 
   return (
     <Anime
@@ -161,14 +188,14 @@ function Key(
       }}
       animation={{
         "--keybgcolor":
-          flashTick() === 0
+          flashInfo().tick === 0
             ? [isNext() ? getTheme().main : getTheme().subAlt]
             : [
-                flashCorrect() ? getTheme().main : getTheme().error,
+                flashInfo().correct ? getTheme().main : getTheme().error,
                 isNext() ? getTheme().main : getTheme().subAlt,
               ],
         "--keycolor":
-          flashTick() === 0
+          flashInfo().tick === 0
             ? [isNext() ? getTheme().bg : getTheme().sub]
             : [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub],
         duration: isNext() ? 0 : 250,
