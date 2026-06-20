@@ -67,6 +67,10 @@ const liveCache = {
   correctInputs: 0,
   totalInputs: 0,
   timerStartMs: null as number | null,
+  msSinceLastInputEvent: {
+    value: null as number | null,
+    lastEventMs: null as number | null,
+  },
 };
 
 const sortTieRank = (type: TestEventType): number =>
@@ -194,6 +198,12 @@ export function logTestEvent(
       liveCache.totalInputs++;
       if (data.correct) liveCache.correctInputs++;
     }
+    if (liveCache.msSinceLastInputEvent.lastEventMs !== null) {
+      liveCache.msSinceLastInputEvent.value = roundTo2(
+        now - liveCache.msSinceLastInputEvent.lastEventMs,
+      );
+    }
+    liveCache.msSinceLastInputEvent.lastEventMs = now;
   } else if (type === "composition") {
     compositionEvents.push({
       type,
@@ -272,11 +282,19 @@ function recomputeLiveCache(): void {
   liveCache.correctInputs = 0;
   liveCache.totalInputs = 0;
   liveCache.timerStartMs = null;
+  liveCache.msSinceLastInputEvent.value = null;
+  liveCache.msSinceLastInputEvent.lastEventMs = null;
   for (const e of inputEvents) {
     if ("correct" in e.data) {
       liveCache.totalInputs++;
       if (e.data.correct) liveCache.correctInputs++;
     }
+    if (liveCache.msSinceLastInputEvent.lastEventMs !== null) {
+      liveCache.msSinceLastInputEvent.value = roundTo2(
+        e.ms - liveCache.msSinceLastInputEvent.lastEventMs,
+      );
+    }
+    liveCache.msSinceLastInputEvent.lastEventMs = e.ms;
   }
   for (const e of timerEvents) {
     if (e.data.event === "start") {
@@ -396,6 +414,8 @@ export function resetTestEvents(): void {
   liveCache.correctInputs = 0;
   liveCache.totalInputs = 0;
   liveCache.timerStartMs = null;
+  liveCache.msSinceLastInputEvent.value = null;
+  liveCache.msSinceLastInputEvent.lastEventMs = null;
 }
 
 export function getPressedKeys(): Map<
@@ -427,18 +447,6 @@ export function forceReleaseAllKeys(): void {
       estimated: true,
     });
   }
-}
-
-export function getLastKeypressSpacing(): number | undefined {
-  const events = getAllTestEvents();
-  let last: number | undefined;
-  for (let i = events.length - 1; i >= 0; i--) {
-    if (events[i]?.type !== "keydown") continue;
-    const ms = (events[i] as TestEventNoMs).testMs;
-    if (last === undefined) last = ms;
-    else return Math.max(0, roundTo2(last - ms));
-  }
-  return undefined;
 }
 
 export const __testing = {

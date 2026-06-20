@@ -1,4 +1,4 @@
-import { getLastKeypressSpacing } from "./events/data";
+import { getLiveCachedMsSinceLastInputEvent } from "./events/running-stats";
 import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
@@ -33,8 +33,8 @@ class Score {
 }
 
 export function updateScore(char: string, isCorrect: boolean): void {
-  const spacing = getLastKeypressSpacing();
-  if (spacing === undefined) {
+  const spacing = getLiveCachedMsSinceLastInputEvent();
+  if (spacing === null) {
     return;
   }
   let score = spacing;

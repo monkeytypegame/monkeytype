@@ -177,8 +177,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     !removeLastChar &&
     (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
 
-  // general per keypress updates
-  WeakSpot.updateScore(data, correct);
   if (Config.keymapMode === "react") {
     flash(data, correct);
   }
@@ -207,6 +205,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     commitsWord: shouldGoToNextWord ? true : undefined,
     lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
+
+  // this needs to be called after event logging
+  WeakSpot.updateScore(data, correct);
 
   // going to next word
   let increasedWordIndex: null | boolean = null;

@@ -54,3 +54,8 @@ export function getRunningWpmAndRaw(
   );
   return { wpm, raw };
 }
+
+export function getLiveCachedMsSinceLastInputEvent(): number | null {
+  const { msSinceLastInputEvent } = getLiveCache();
+  return msSinceLastInputEvent.value;
+}
