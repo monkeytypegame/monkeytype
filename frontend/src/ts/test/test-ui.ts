@@ -1836,8 +1836,7 @@ export function beforeTestWordChange(
   if (
     (Config.stopOnError === "letter" && (correct || correct === null)) ||
     nospaceEnabled ||
-    forceUpdateActiveWordLetters ||
-    Config.strictSpace
+    forceUpdateActiveWordLetters
   ) {
     void updateWordLetters({
       input: direction === "back" ? "" : getCurrentInput(),
