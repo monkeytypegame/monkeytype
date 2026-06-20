@@ -131,8 +131,15 @@ function convertStaggered(
     const extraKeysConfig: ExtraKeysConfig = {
       row1Append: [buildExtraKey(["BS"], { width: 2 })],
       row2Prepend: [buildExtraKey(["Tab"], { width: 1.5 })],
+      row2Append: isIso
+        ? [buildExtraKey(["Enter"], { width: 1.5, height: 2 })]
+        : undefined,
       row3Prepend: [buildExtraKey(["Caps"], { width: 1.75 })],
+      row3Append: !isIso
+        ? [buildExtraKey(["Enter"], { width: 2.25 })]
+        : undefined,
       row4Prepend: [buildExtraKey(["Shift"], { width: isIso ? 1.25 : 2.25 })],
+      row4Append: [buildExtraKey(["Shift"], { width: 2.75 })],
       row5Prepend: [
         buildExtraKey(["Ctrl"], { width: 1.25 }),
         buildExtraKey(["Monke"], { width: 1.25 }),
@@ -145,18 +152,6 @@ function convertStaggered(
         buildExtraKey(["Ctrl"], { width: 1.25 }),
       ],
     };
-
-    // Enter position depends on iso vs non-iso layout
-    if (isIso) {
-      extraKeysConfig.row2Append = [
-        buildExtraKey(["Enter"], { width: 1.5, height: 2 }),
-      ];
-    } else {
-      extraKeysConfig.row3Append = [buildExtraKey(["Enter"], { width: 2.25 })];
-    }
-
-    // Right-side Shift (row4)
-    extraKeysConfig.row4Append = [buildExtraKey(["Shift"], { width: 2.75 })];
 
     addExtraKeys(result, extraKeysConfig);
   }
