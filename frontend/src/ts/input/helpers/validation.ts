@@ -12,9 +12,6 @@ function isCharOrWordAlwaysCorrectOrIncorrect(
 ): boolean | null {
   if (Config.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
-  if (data === undefined) {
-    throw new Error("Failed to check if char is correct - data is undefined");
-  }
   return null;
 }
 

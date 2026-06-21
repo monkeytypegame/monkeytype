@@ -149,7 +149,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
-  if (!charIsSpace && Config.stopOnError === "letter" && !charCorrect) {
+  if (Config.stopOnError === "letter" && !charCorrect) {
     if (!Config.blindMode) {
       visualInputOverride = testInput + data;
     }
