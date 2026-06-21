@@ -115,6 +115,13 @@ describe("isCharCorrect", () => {
         "word\n",
         true,
       ],
+      [
+        "returns false when committing an incorrect word with a newline",
+        "\n",
+        "xord",
+        "word\n",
+        false,
+      ],
     ])("%s", (_desc, char, input, word, expected) => {
       expect(
         isWordCorrect({
