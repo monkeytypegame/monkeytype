@@ -190,7 +190,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     resetIncorrectShiftsInARow();
   }
 
-  // stop-on-error can block navigation, so this is derived after removeLastChar
+  // stop-on-error and opposite shift mode can block navigation, so this is derived after removeLastChar
   const shouldGoToNextWord = goingToNextWord && !removeLastChar;
 
   if (Config.keymapMode === "react") {
