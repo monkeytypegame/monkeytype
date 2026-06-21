@@ -14,16 +14,14 @@ type ConvertOptions = {
 };
 
 export function convertLayoutToKeymap(
-  rawLayout: LayoutObject,
+  layout: LayoutObject,
   options: ConvertOptions,
 ): KeyboardDefinition {
-  const layout = structuredClone(rawLayout);
-
-  const keymapLayout = keymapLayouts[options.keymapStyle]?.[rawLayout.type];
+  const keymapLayout = keymapLayouts[options.keymapStyle]?.[layout.type];
 
   if (keymapLayout === undefined) {
     throw new Error(
-      `not supported style ${options.keymapStyle} and layout type ${rawLayout.type}`,
+      `not supported style ${options.keymapStyle} and layout type ${layout.type}`,
     );
   }
 
