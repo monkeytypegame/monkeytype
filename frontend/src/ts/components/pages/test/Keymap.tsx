@@ -178,6 +178,8 @@ function Key(
         (label() ?? "").length >= 3 && "text-em-xs",
       )}
       style={{
+        "--keybgcolor": isNext() ? getTheme().main : getTheme().subAlt,
+        "--keycolor": isNext() ? getTheme().bg : getTheme().sub,
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 2}rem`,
