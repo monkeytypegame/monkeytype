@@ -30,7 +30,7 @@ type LayoutKey = Omit<KeyDefinition, "legends"> & {
   layoutPosition?: LayoutPosition;
 } & OneOf<{
     isLayoutIndicator: true;
-    legend?: string;
+    legend?: string | string[];
   }>;
 
 export type KeymapLayout = LayoutKey[][];
@@ -149,6 +149,72 @@ const staggeredIso: KeymapLayout = [
   ],
 ];
 
+const steno: KeymapLayout = [
+  [], //emtpy first row, avoid it to be hidden
+  [
+    { legend: ["s", "S"], height: 2 },
+    { legend: ["t", "T"] },
+    { legend: ["p", "P"] },
+    { legend: ["h", "H"] },
+    { legend: "*", height: 2 },
+    { legend: ["f", "F"] },
+    { legend: ["p", "P"] },
+    { legend: ["l", "L"] },
+    { legend: ["t", "T"] },
+    { legend: ["d", "D"] },
+  ],
+  [
+    { legend: ["k", "K"], x: 1 },
+    { legend: ["w", "W"] },
+    { legend: ["r", "R"] },
+    { legend: ["r", "R"], x: 1 },
+    { legend: ["b", "B"] },
+    { legend: ["g", "G"] },
+    { legend: ["s", "S"] },
+    { legend: ["z", "Z"] },
+  ],
+  [
+    { legend: ["a", "A"], x: 2.25 },
+    { legend: ["o", "O"] },
+    { legend: ["e", "E"], x: 0.5 },
+    { legend: ["u", "U"] },
+  ],
+];
+
+const stenoMatrix: KeymapLayout = [
+  [], //emtpy first row, avoid it to be hidden
+  [
+    { legend: ["s", "S"] },
+    { legend: ["t", "T"] },
+    { legend: ["p", "P"] },
+    { legend: ["h", "H"] },
+    { legend: "*" },
+    { legend: ["f", "F"], x: 1 },
+    { legend: ["p", "P"] },
+    { legend: ["l", "L"] },
+    { legend: ["t", "T"] },
+    { legend: ["d", "D"] },
+  ],
+  [
+    { legend: ["s", "S"] },
+    { legend: ["k", "K"] },
+    { legend: ["w", "W"] },
+    { legend: ["r", "R"] },
+    { legend: "*" },
+    { legend: ["r", "R"], x: 1 },
+    { legend: ["b", "B"] },
+    { legend: ["g", "G"] },
+    { legend: ["s", "S"] },
+    { legend: ["z", "Z"] },
+  ],
+  [
+    { legend: ["a", "A"], x: 3 },
+    { legend: ["o", "O"] },
+    { legend: ["e", "E"], x: 1 },
+    { legend: ["u", "U"] },
+  ],
+];
+
 function buildRow(
   row: keyof LayoutObject["keys"],
   keys: (Omit<LayoutKey, "legends"> & { layoutPosition?: { col?: number } })[],
@@ -173,8 +239,7 @@ function buildRow(
 export const keymapLayouts: Partial<
   Record<KeymapStyle, Partial<Record<LayoutObject["type"], KeymapLayout>>>
 > = {
-  staggered: {
-    ansi: staggeredAnsi,
-    iso: staggeredIso,
-  },
+  staggered: { ansi: staggeredAnsi, iso: staggeredIso },
+  steno: { iso: steno, ansi: steno },
+  steno_matrix: { iso: stenoMatrix, ansi: stenoMatrix },
 };

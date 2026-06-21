@@ -747,7 +747,7 @@ describe("keymap converter", () => {
     describe("steno", () => {
       it("converts steno", () => {
         const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
-          {} as any,
+          { type: "ansi" } as LayoutObject,
           {
             keymapStyle: "steno",
             showAllKeys: false,
@@ -783,12 +783,12 @@ describe("keymap converter", () => {
           { legends: ["e", "E", "e", "E"], x: 0.5 },
           { legends: ["u", "U", "u", "U"] },
         ]);
-        expect(row5, "row5").toEqual([]);
+        expect(row5, "row5").toBeUndefined();
       });
 
       it("converts steno matrix", () => {
         const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
-          {} as any,
+          { type: "ansi" } as LayoutObject,
           {
             keymapStyle: "steno_matrix",
             showAllKeys: false,

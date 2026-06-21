@@ -51,10 +51,8 @@ function convert(options: {
           ];
 
         const legends = keyDef.isLayoutIndicator
-          ? buildLegends([" "])
-          : buildLegends(
-              keyDef.legend !== undefined ? [keyDef.legend] : layoutLegend,
-            );
+          ? buildLegends(" ")
+          : buildLegends(keyDef.legend ?? layoutLegend);
 
         if (keyDef.isExtraKey && !isShowAllKeys) {
           return undefined;
@@ -83,8 +81,12 @@ function convert(options: {
   );
 }
 
-function buildLegends(legends: KeyLegends | undefined): KeyLegends {
+function buildLegends(legends: string | KeyLegends | undefined): KeyLegends {
   if (legends === undefined) return ["", "", "", ""];
+  if (typeof legends === "string") {
+    return new Array<string>(4).fill(legends);
+  }
+
   switch (legends.length) {
     case 1:
       return new Array<string>(4).fill(legends.at(0) as string);
