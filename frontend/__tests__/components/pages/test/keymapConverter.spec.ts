@@ -5,6 +5,11 @@ import qwertyLayout from "../../../../static/layouts/qwerty.json";
 import qwertzLayout from "../../../../static/layouts/qwertz.json";
 
 import { LayoutObject } from "@monkeytype/schemas/layouts";
+import {
+  Alt,
+  Ctrl,
+  Meta,
+} from "../../../../src/ts/components/pages/test/keymapLayouts";
 
 describe("keymap converter", () => {
   describe("convertLayoutToKeymap", () => {
@@ -130,15 +135,15 @@ describe("keymap converter", () => {
         // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
             width: 1.25,
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            legends: [Meta, Meta, Meta, Meta],
             width: 1.25,
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
             width: 1.25,
           },
           {
@@ -148,7 +153,11 @@ describe("keymap converter", () => {
             x: 0,
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
+            width: 1.25,
+          },
+          {
+            legends: [Meta, Meta, Meta, Meta],
             width: 1.25,
           },
           {
@@ -156,11 +165,7 @@ describe("keymap converter", () => {
             width: 1.25,
           },
           {
-            legends: ["Meta", "Meta", "Meta", "Meta"],
-            width: 1.25,
-          },
-          {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
             width: 1.25,
           },
         ]);
@@ -297,15 +302,15 @@ describe("keymap converter", () => {
         // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
             width: 1.25,
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            legends: [Meta, Meta, Meta, Meta],
             width: 1.25,
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
             width: 1.25,
           },
           {
@@ -315,7 +320,11 @@ describe("keymap converter", () => {
             x: 0,
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
+            width: 1.25,
+          },
+          {
+            legends: [Meta, Meta, Meta, Meta],
             width: 1.25,
           },
           {
@@ -323,11 +332,7 @@ describe("keymap converter", () => {
             width: 1.25,
           },
           {
-            legends: ["Meta", "Meta", "Meta", "Meta"],
-            width: 1.25,
-          },
-          {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
             width: 1.25,
           },
         ]);
@@ -608,13 +613,13 @@ describe("keymap converter", () => {
         // Row5: Ctrl, Monke, Alt at start; Alt,  Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            legends: [Meta, Meta, Meta, Meta],
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
           },
           {
             isLayoutIndicator: true,
@@ -623,13 +628,13 @@ describe("keymap converter", () => {
             x: 0,
           },
           {
-            legends: ["Alt", "Alt", "Alt", "Alt"],
+            legends: [Alt, Alt, Alt, Alt],
           },
           {
-            legends: ["Meta", "Meta", "Meta", "Meta"],
+            legends: ["Monke", "Monke", "Monke", "Monke"],
           },
           {
-            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
           },
         ]);
         // Also verify total counts are as expected with extra keys

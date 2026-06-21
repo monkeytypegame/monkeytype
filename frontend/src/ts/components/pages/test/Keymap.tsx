@@ -171,7 +171,7 @@ function Key(
     <Anime
       class={cn(
         "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
-        (label() ?? "").length >= 3 && "text-em-xs",
+        (label() ?? "").length >= 2 && "text-em-xs",
       )}
       style={{
         "--keybgcolor": isNext() ? getTheme().main : getTheme().subAlt,
