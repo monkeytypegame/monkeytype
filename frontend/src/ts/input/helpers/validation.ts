@@ -2,20 +2,6 @@ import { Config } from "../../config/store";
 import { isSpace } from "../../utils/strings";
 
 /**
- * Check if a character or a word are always correct/incorrect, used by isCharCorrect
- * and isWordCorrect.
- * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
- */
-function isCharOrWordAlwaysCorrectOrIncorrect(
-  data: string,
-  correctShiftUsed: boolean | null,
-): boolean | null {
-  if (Config.mode === "zen") return true;
-  if (correctShiftUsed === false) return false;
-  return null;
-}
-
-/**
  * Check if the input data is correct
  * @param options - Options object
  * @param options.data - Input data
@@ -31,13 +17,8 @@ export function isCharCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  const isCharAlwaysCorrectOrIncorrect = isCharOrWordAlwaysCorrectOrIncorrect(
-    data,
-    correctShiftUsed,
-  );
-  if (isCharAlwaysCorrectOrIncorrect !== null) {
-    return isCharAlwaysCorrectOrIncorrect;
-  }
+  if (Config.mode === "zen") return true;
+  if (correctShiftUsed === false) return false;
 
   const targetChar = targetWord[inputValue.length];
 
@@ -63,13 +44,8 @@ export function isWordCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  const isCharAlwaysCorrectOrIncorrect = isCharOrWordAlwaysCorrectOrIncorrect(
-    data,
-    correctShiftUsed,
-  );
-  if (isCharAlwaysCorrectOrIncorrect !== null) {
-    return isCharAlwaysCorrectOrIncorrect;
-  }
+  if (Config.mode === "zen") return true;
+  if (correctShiftUsed === false) return false;
 
   const finalInputValue = inputValue + (isSpace(data) ? "" : data);
   return finalInputValue === targetWord;
