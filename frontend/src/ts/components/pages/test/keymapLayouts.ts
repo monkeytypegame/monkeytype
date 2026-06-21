@@ -35,20 +35,6 @@ type LayoutKey = Omit<KeyDefinition, "legends"> & {
 
 export type KeymapLayout = LayoutKey[][];
 
-function addLayoutKeys(
-  count: number,
-  options: { start?: number },
-): LayoutKey[] {
-  return new Array<LayoutKey>(count).fill({}).map((it, index) => {
-    return {
-      ...it,
-      layoutPosition: {
-        col: index + (options.start ?? 0),
-      },
-    };
-  });
-}
-
 const staggeredBottomRow: LayoutKey[] = [
   { legend: "Ctrl", width: 1.25, isExtraKey: true },
   { legend: "Monke", width: 1.25, isExtraKey: true },
@@ -63,18 +49,6 @@ const staggeredBottomRow: LayoutKey[] = [
   { legend: "Monke", width: 1.25, isExtraKey: true },
   { legend: "Meta", width: 1.25, isExtraKey: true },
   { legend: "Ctrl", width: 1.25, isExtraKey: true },
-];
-
-const splitBottomRow: LayoutKey[] = [
-  ...staggeredBottomRow.slice(0, 3),
-  {
-    isLayoutIndicator: true,
-    width: 3,
-    x: 3.5,
-    extraKeysOverride: { x: 0 },
-  },
-  { legend: " ", width: 3, x: 1 },
-  ...staggeredBottomRow.slice(4),
 ];
 
 const staggeredAnsi: KeymapLayout = [
@@ -113,14 +87,6 @@ const staggeredAnsi: KeymapLayout = [
   staggeredBottomRow,
 ];
 
-const splitAnsi: KeymapLayout = [
-  insertGap(7, staggeredAnsi[0]),
-  insertGap(6, staggeredAnsi[1]),
-  insertGap(6, staggeredAnsi[2]),
-  insertGap(6, staggeredAnsi[3]),
-  splitBottomRow,
-];
-
 const staggeredIso: KeymapLayout = [
   buildRow("row1", [
     { layoutPosition: { col: 0 }, isExtraKey: true },
@@ -156,6 +122,27 @@ const staggeredIso: KeymapLayout = [
   ]),
   staggeredBottomRow,
 ];
+
+const splitBottomRow: LayoutKey[] = [
+  ...staggeredBottomRow.slice(0, 3),
+  {
+    isLayoutIndicator: true,
+    width: 3,
+    x: 3.5,
+    extraKeysOverride: { x: 0 },
+  },
+  { legend: " ", width: 3, x: 1 },
+  ...staggeredBottomRow.slice(4),
+];
+
+const splitAnsi: KeymapLayout = [
+  insertGap(7, staggeredAnsi[0]),
+  insertGap(6, staggeredAnsi[1]),
+  insertGap(6, staggeredAnsi[2]),
+  insertGap(6, staggeredAnsi[3]),
+  splitBottomRow,
+];
+
 const splitIso: KeymapLayout = [
   insertGap(7, staggeredIso[0]),
   insertGap(6, staggeredIso[1]),
@@ -230,6 +217,70 @@ const stenoMatrix: KeymapLayout = [
   ],
 ];
 
+const matrixBottomRow: LayoutKey[] = [
+  { legend: "Ctrl", isExtraKey: true },
+  { legend: "Monke", isExtraKey: true },
+  { legend: "Alt", isExtraKey: true },
+  {
+    isLayoutIndicator: true,
+    width: 4,
+    x: 3,
+    extraKeysOverride: { width: 6, x: 0 },
+  },
+  { legend: "Alt", isExtraKey: true },
+  { legend: "Meta", isExtraKey: true },
+  { legend: "Ctrl", isExtraKey: true },
+];
+
+const matrix: KeymapLayout = [
+  buildRow("row1", [
+    { layoutPosition: { col: 0 }, isExtraKey: true },
+    ...addLayoutKeys(10, { start: 1 }),
+    { legend: "BS", isExtraKey: true },
+  ]),
+  buildRow("row2", [
+    { legend: "Tab", isExtraKey: true },
+    ...addLayoutKeys(10),
+    { legend: "Del", isExtraKey: true },
+  ]),
+  buildRow("row3", [
+    { legend: "Esc", isExtraKey: true },
+    ...addLayoutKeys(3),
+    { layoutPosition: { col: 3 }, isHoming: true },
+    { layoutPosition: { col: 4 } },
+    { layoutPosition: { col: 5 } },
+    { layoutPosition: { col: 6 }, isHoming: true },
+    ...addLayoutKeys(3, { start: 7 }),
+    { layoutPosition: { col: 10 }, isExtraKey: true },
+  ]),
+  buildRow("row4", [
+    { legend: "Shift", isExtraKey: true },
+    ...addLayoutKeys(10),
+    { legend: "Enter", isExtraKey: true },
+  ]),
+  matrixBottomRow,
+];
+
+const splitMatrixBottomRow: LayoutKey[] = [
+  ...matrixBottomRow.slice(0, 3),
+  {
+    isLayoutIndicator: true,
+    width: 3,
+    x: 2,
+    extraKeysOverride: { x: 0 },
+  },
+  { legend: " ", width: 3, x: 1 },
+  ...matrixBottomRow.slice(4),
+];
+
+const splitMatrix: KeymapLayout = [
+  insertGap(6, matrix[0]),
+  insertGap(6, matrix[1]),
+  insertGap(6, matrix[2]),
+  insertGap(6, matrix[3]),
+  splitMatrixBottomRow,
+];
+
 function buildRow(
   row: keyof LayoutObject["keys"],
   keys: (Omit<LayoutKey, "legends"> & { layoutPosition?: { col?: number } })[],
@@ -259,6 +310,9 @@ export const keymapLayouts: Partial<
 
   steno: { iso: steno, ansi: steno },
   steno_matrix: { iso: stenoMatrix, ansi: stenoMatrix },
+
+  matrix: { iso: matrix, ansi: matrix },
+  split_matrix: { iso: splitMatrix, ansi: splitMatrix },
 };
 
 function insertGap(gapCol: number, row: LayoutKey[] | undefined): LayoutKey[] {
@@ -266,4 +320,18 @@ function insertGap(gapCol: number, row: LayoutKey[] | undefined): LayoutKey[] {
     ...def,
     x: col === gapCol ? 1 : def.x,
   }));
+}
+
+function addLayoutKeys(
+  count: number,
+  options?: { start?: number },
+): LayoutKey[] {
+  return new Array<LayoutKey>(count).fill({}).map((it, index) => {
+    return {
+      ...it,
+      layoutPosition: {
+        col: index + (options?.start ?? 0),
+      },
+    };
+  });
 }

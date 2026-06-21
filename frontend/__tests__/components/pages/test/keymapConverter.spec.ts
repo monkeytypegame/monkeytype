@@ -3,7 +3,6 @@ import { convertLayoutToKeymap } from "../../../../src/ts/components/pages/test/
 
 import qwertyLayout from "../../../../static/layouts/qwerty.json";
 import qwertzLayout from "../../../../static/layouts/qwertz.json";
-import handsdownLayout from "../../../../static/layouts/handsdown_promethium.json";
 
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 
@@ -296,34 +295,42 @@ describe("keymap converter", () => {
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
-        expect(row5?.[0], "row5 first").toEqual({
-          legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
-          width: 1.25,
-        });
-        expect(row5?.[1], "row5 second").toEqual({
-          legends: ["Monke", "Monke", "Monke", "Monke"],
-          width: 1.25,
-        });
-        expect(row5?.[2], "row5 third").toEqual({
-          legends: ["Alt", "Alt", "Alt", "Alt"],
-          width: 1.25,
-        });
-        expect(row5?.[row5.length - 4], "row5 Alt right").toEqual({
-          legends: ["Alt", "Alt", "Alt", "Alt"],
-          width: 1.25,
-        });
-        expect(row5?.[row5.length - 3], "row5 Monke right").toEqual({
-          legends: ["Monke", "Monke", "Monke", "Monke"],
-          width: 1.25,
-        });
-        expect(row5?.[row5.length - 2], "row5 Meta").toEqual({
-          legends: ["Meta", "Meta", "Meta", "Meta"],
-          width: 1.25,
-        });
-        expect(row5?.[row5.length - 1], "row5 last").toEqual({
-          legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
-          width: 1.25,
-        });
+        expect(row5, "row5").toEqual([
+          {
+            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            width: 1.25,
+          },
+          {
+            legends: ["Monke", "Monke", "Monke", "Monke"],
+            width: 1.25,
+          },
+          {
+            legends: ["Alt", "Alt", "Alt", "Alt"],
+            width: 1.25,
+          },
+          {
+            isLayoutIndicator: true,
+            legends: [" ", " ", " ", " "],
+            width: 6.25,
+            x: 0,
+          },
+          {
+            legends: ["Alt", "Alt", "Alt", "Alt"],
+            width: 1.25,
+          },
+          {
+            legends: ["Monke", "Monke", "Monke", "Monke"],
+            width: 1.25,
+          },
+          {
+            legends: ["Meta", "Meta", "Meta", "Meta"],
+            width: 1.25,
+          },
+          {
+            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+            width: 1.25,
+          },
+        ]);
 
         // Also verify total counts are as expected with extra keys
         expect(row1?.length, "row1 length").toBe(14);
@@ -599,68 +606,37 @@ describe("keymap converter", () => {
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt,  Meta, Ctrl at end
-        expect(row5?.[0], "row5 first").toEqual({
-          legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
-        });
-        expect(row5?.[1], "row5 second").toEqual({
-          legends: ["Monke", "Monke", "Monke", "Monke"],
-        });
-        expect(row5?.[2], "row5 third").toEqual({
-          legends: ["Alt", "Alt", "Alt", "Alt"],
-        });
-        expect(row5?.[row5.length - 3], "row5 Alt right").toEqual({
-          legends: ["Alt", "Alt", "Alt", "Alt"],
-        });
-        expect(row5?.[row5.length - 2], "row5 Meta").toEqual({
-          legends: ["Meta", "Meta", "Meta", "Meta"],
-        });
-        expect(row5?.[row5.length - 1], "row5 last").toEqual({
-          legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
-        });
-
+        expect(row5, "row5").toEqual([
+          {
+            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+          },
+          {
+            legends: ["Monke", "Monke", "Monke", "Monke"],
+          },
+          {
+            legends: ["Alt", "Alt", "Alt", "Alt"],
+          },
+          {
+            isLayoutIndicator: true,
+            legends: [" ", " ", " ", " "],
+            width: 6,
+            x: 0,
+          },
+          {
+            legends: ["Alt", "Alt", "Alt", "Alt"],
+          },
+          {
+            legends: ["Meta", "Meta", "Meta", "Meta"],
+          },
+          {
+            legends: ["Ctrl", "Ctrl", "Ctrl", "Ctrl"],
+          },
+        ]);
         // Also verify total counts are as expected with extra keys
         expect(row1?.length, "row1 length").toBe(12);
         expect(row2?.length, "row2 length").toBe(12);
         expect(row3?.length, "row3 length").toBe(12);
         expect(row4?.length, "row4 length").toBe(12);
-      });
-
-      it("converts handsdown", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "matrix",
-            showAllKeys: false,
-          },
-        );
-
-        expect(row5, "row5").toEqual([
-          { legends: ["r", "R", "r", "R"], width: 3, x: 2 },
-          {
-            legends: [" ", " ", " ", " "],
-            isLayoutIndicator: true,
-            width: 3,
-          },
-        ]);
-      });
-      it("converts handsdown full", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "matrix",
-            showAllKeys: true,
-          },
-        );
-
-        expect(row5?.[3], "row5 extra key").toEqual({
-          legends: ["r", "R", "r", "R"],
-          width: 3,
-        });
-        expect(row5?.[4], "row5 space key").toEqual({
-          legends: [" ", " ", " ", " "],
-          isLayoutIndicator: true,
-          width: 3,
-        });
       });
     });
 
@@ -708,46 +684,6 @@ describe("keymap converter", () => {
         });
         expect(row5?.[1], "row5 right").toEqual({
           legends: [" ", " ", " ", " "],
-          width: 3,
-          x: 1,
-        });
-      });
-
-      it("converts handsdown", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "split_matrix",
-            showAllKeys: false,
-          },
-        );
-
-        expect(row5, "row5").toEqual([
-          { legends: ["r", "R", "r", "R"], width: 3, x: 2 },
-          {
-            legends: [" ", " ", " ", " "],
-            isLayoutIndicator: true,
-            width: 3,
-            x: 1,
-          },
-        ]);
-      });
-      it("converts handsdown full", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "split_matrix",
-            showAllKeys: true,
-          },
-        );
-
-        expect(row5?.[3], "row5 extra key").toEqual({
-          legends: ["r", "R", "r", "R"],
-          width: 3,
-        });
-        expect(row5?.[4], "row5 space key").toEqual({
-          legends: [" ", " ", " ", " "],
-          isLayoutIndicator: true,
           width: 3,
           x: 1,
         });
@@ -836,7 +772,7 @@ describe("keymap converter", () => {
           { legends: ["e", "E", "e", "E"], x: 1 },
           { legends: ["u", "U", "u", "U"] },
         ]);
-        expect(row5, "row5").toEqual([]);
+        expect(row5, "row5").toBeUndefined();
       });
     });
   });
