@@ -49,6 +49,34 @@ function addLayoutKeys(
   });
 }
 
+const staggeredBottomRow: LayoutKey[] = [
+  { legend: "Ctrl", width: 1.25, isExtraKey: true },
+  { legend: "Monke", width: 1.25, isExtraKey: true },
+  { legend: "Alt", width: 1.25, isExtraKey: true },
+  {
+    isLayoutIndicator: true,
+    width: 6,
+    x: 3.5,
+    extraKeysOverride: { width: 6.25, x: 0 },
+  },
+  { legend: "Alt", width: 1.25, isExtraKey: true },
+  { legend: "Monke", width: 1.25, isExtraKey: true },
+  { legend: "Meta", width: 1.25, isExtraKey: true },
+  { legend: "Ctrl", width: 1.25, isExtraKey: true },
+];
+
+const splitBottomRow: LayoutKey[] = [
+  ...staggeredBottomRow.slice(0, 3),
+  {
+    isLayoutIndicator: true,
+    width: 3,
+    x: 3.5,
+    extraKeysOverride: { x: 0 },
+  },
+  { legend: " ", width: 3, x: 1 },
+  ...staggeredBottomRow.slice(4),
+];
+
 const staggeredAnsi: KeymapLayout = [
   buildRow("row1", [
     { layoutPosition: { col: 0 }, isExtraKey: true },
@@ -82,21 +110,15 @@ const staggeredAnsi: KeymapLayout = [
     ...addLayoutKeys(9, { start: 1 }),
     { legend: "Shift", width: 2.75, isExtraKey: true },
   ]),
-  [
-    { legend: "Ctrl", width: 1.25, isExtraKey: true },
-    { legend: "Monke", width: 1.25, isExtraKey: true },
-    { legend: "Alt", width: 1.25, isExtraKey: true },
-    {
-      isLayoutIndicator: true,
-      width: 6,
-      x: 3.5,
-      extraKeysOverride: { width: 6.25, x: 0 },
-    },
-    { legend: "Alt", width: 1.25, isExtraKey: true },
-    { legend: "Monke", width: 1.25, isExtraKey: true },
-    { legend: "Meta", width: 1.25, isExtraKey: true },
-    { legend: "Ctrl", width: 1.25, isExtraKey: true },
-  ],
+  staggeredBottomRow,
+];
+
+const splitAnsi: KeymapLayout = [
+  insertGap(7, staggeredAnsi[0]),
+  insertGap(6, staggeredAnsi[1]),
+  insertGap(6, staggeredAnsi[2]),
+  insertGap(6, staggeredAnsi[3]),
+  splitBottomRow,
 ];
 
 const staggeredIso: KeymapLayout = [
@@ -132,21 +154,14 @@ const staggeredIso: KeymapLayout = [
     ...addLayoutKeys(10, { start: 1 }),
     { legend: "Shift", width: 2.75, isExtraKey: true },
   ]),
-  [
-    { legend: "Ctrl", width: 1.25, isExtraKey: true },
-    { legend: "Monke", width: 1.25, isExtraKey: true },
-    { legend: "Alt", width: 1.25, isExtraKey: true },
-    {
-      isLayoutIndicator: true,
-      width: 6,
-      x: 3.5,
-      extraKeysOverride: { width: 6.25, x: 0 },
-    },
-    { legend: "Alt", width: 1.25, isExtraKey: true },
-    { legend: "Monke", width: 1.25, isExtraKey: true },
-    { legend: "Meta", width: 1.25, isExtraKey: true },
-    { legend: "Ctrl", width: 1.25, isExtraKey: true },
-  ],
+  staggeredBottomRow,
+];
+const splitIso: KeymapLayout = [
+  insertGap(7, staggeredIso[0]),
+  insertGap(6, staggeredIso[1]),
+  insertGap(6, staggeredIso[2]),
+  insertGap(7, staggeredIso[3]),
+  splitBottomRow,
 ];
 
 const steno: KeymapLayout = [
@@ -240,6 +255,15 @@ export const keymapLayouts: Partial<
   Record<KeymapStyle, Partial<Record<LayoutObject["type"], KeymapLayout>>>
 > = {
   staggered: { ansi: staggeredAnsi, iso: staggeredIso },
+  split: { ansi: splitAnsi, iso: splitIso },
+
   steno: { iso: steno, ansi: steno },
   steno_matrix: { iso: stenoMatrix, ansi: stenoMatrix },
 };
+
+function insertGap(gapCol: number, row: LayoutKey[] | undefined): LayoutKey[] {
+  return (row as LayoutKey[]).map((def, col) => ({
+    ...def,
+    x: col === gapCol ? 1 : def.x,
+  }));
+}
