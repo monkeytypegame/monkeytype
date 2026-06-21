@@ -2,6 +2,19 @@ import { Config } from "../../config/store";
 import { isSpace } from "../../utils/strings";
 
 /**
+ * Check if a character or a word are always correct/incorrect, used by isCharCorrect
+ * and isWordCorrect.
+ * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
+ */
+function isCharOrWordAlwaysCorrectOrIncorrect(
+  correctShiftUsed: boolean | null,
+): boolean | null {
+  if (Config.mode === "zen") return true;
+  if (correctShiftUsed === false) return false;
+  return null;
+}
+
+/**
  * Check if the input data is correct
  * @param options - Options object
  * @param options.data - Input data
@@ -17,16 +30,14 @@ export function isCharCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  if (Config.mode === "zen") return true;
-
-  if (correctShiftUsed === false) return false;
+  const isCharAlwaysCorrectOrIncorrect =
+    isCharOrWordAlwaysCorrectOrIncorrect(correctShiftUsed);
+  if (isCharAlwaysCorrectOrIncorrect !== null) {
+    return isCharAlwaysCorrectOrIncorrect;
+  }
 
   if (data === undefined) {
     throw new Error("Failed to check if char is correct - data is undefined");
-  }
-
-  if (isSpace(data)) {
-    return inputValue === targetWord;
   }
 
   const targetChar = targetWord[inputValue.length];
@@ -35,11 +46,30 @@ export function isCharCorrect(options: {
     return false;
   }
 
-  if (data === targetChar) {
-    return true;
+  return data === targetChar;
+}
+
+/**
+ * Check if the input data is correct
+ * @param options - Options object
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
+ * @param options.targetWord - Target word
+ * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
+ */
+export function isWordCorrect(options: {
+  inputValue: string;
+  targetWord: string;
+  correctShiftUsed: boolean | null; //null means disabled
+}): boolean {
+  const { inputValue, targetWord, correctShiftUsed } = options;
+
+  const isCharAlwaysCorrectOrIncorrect =
+    isCharOrWordAlwaysCorrectOrIncorrect(correctShiftUsed);
+  if (isCharAlwaysCorrectOrIncorrect !== null) {
+    return isCharAlwaysCorrectOrIncorrect;
   }
 
-  return false;
+  return inputValue === targetWord;
 }
 
 /**

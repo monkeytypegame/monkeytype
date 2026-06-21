@@ -33,6 +33,7 @@ import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
+  isWordCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
@@ -134,7 +135,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     data,
     currentWord[(testInput + data).length - 1] ?? "",
   );
-  const correct =
+  const charCorrect =
     funboxCorrect ??
     isCharCorrect({
       data,
@@ -148,14 +149,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
+  if (!charIsSpace && Config.stopOnError === "letter" && !charCorrect) {
     if (!Config.blindMode) {
       visualInputOverride = testInput + data;
     }
     removeLastChar = true;
   }
 
-  if (!isSpace(data) && correctShiftUsed === false) {
+  if (!charIsSpace && correctShiftUsed === false) {
     removeLastChar = true;
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
@@ -176,6 +177,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const shouldGoToNextWord =
     !removeLastChar &&
     (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
+
+  const correct = shouldGoToNextWord
+    ? (funboxCorrect ??
+      isWordCorrect({
+        inputValue: testInput + (charIsSpace ? "" : data),
+        targetWord: currentWord,
+        correctShiftUsed,
+      }))
+    : charCorrect;
 
   if (Config.keymapMode === "react") {
     flash(data, correct);
