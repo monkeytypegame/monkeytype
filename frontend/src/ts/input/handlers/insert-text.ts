@@ -148,7 +148,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
     (testInput + data).length === TestWords.words.getCurrentText().length;
-  // does this input try to move to the next word (before stop-on-error can block it)
+  // does this input try to move to the next word (before removeLastChar can block it)
   const goingToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
