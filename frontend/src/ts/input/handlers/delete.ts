@@ -1,14 +1,11 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
-import * as TestInput from "../../test/test-input";
-import { getCurrentInput } from "../../test/test-input";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
-import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
-import { logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { activeWordIndex } from "../../test/test-state";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {
@@ -17,17 +14,12 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
   const inputBeforeDelete = getCurrentInput();
   const activeWordIndexBeforeDelete = activeWordIndex;
 
-  TestInput.input.syncWithInputElement();
-
-  const inputAfterDelete = getCurrentInput();
-
-  Replay.addReplayEvent("setLetterIndex", getCurrentInput().length);
-  TestInput.setCurrentNotAfk();
+  const inputAfterDelete = getInputElementValue().inputValue;
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
     .getCurrentText()
-    .startsWith(getCurrentInput());
+    .startsWith(inputAfterDelete);
 
   //special check for code languages
   if (

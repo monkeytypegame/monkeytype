@@ -1,11 +1,91 @@
 import { CharCounts, countChars } from "../../utils/strings";
-import { getEventsPerWord, getInputFromDom } from "./helpers";
+import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
 import Hangul from "hangul-js";
 
-function getTimerBoundaries(eventLog: EventLog): number[] {
+// Produces chart x-axis labels for an array of timer boundaries (the perfect
+// grid version). Each bucket is labeled by its index ("1", "2", ...). A
+// fractional tail boundary is labeled with its actual time, e.g. "7.25".
+// When showLagLabels is true, buckets that contained a catchup-recovery
+// moment (real-time burst dump from a stall) are labeled "LAG" to flag that
+// their data isn't a true per-second sample.
+export function getTimerBoundaryLabels(
+  eventLog: EventLog,
+  showLagLabels = true,
+): string[] {
+  const boundaries = getTimerBoundaries(eventLog);
+  const catchupTimes: number[] = [];
+  if (showLagLabels) {
+    for (const event of eventLog.events) {
+      if (event.type !== "timer") continue;
+      if (event.data.event === "step" && event.data.catchup === true) {
+        catchupTimes.push(event.testMs);
+      }
+    }
+  }
+
+  return boundaries.map((boundary, i) => {
+    // only the last boundary can be a tail; everything before it is on the grid
+    const isLast = i === boundaries.length - 1;
+    const isTail = isLast && Math.abs(boundary - (i + 1) * 1000) > 100;
+    if (isTail) return roundTo2(boundary / 1000).toFixed(2);
+    // bucket spans (prevBoundary, boundary] — mark LAG if a catchup recovery
+    // landed inside it (real-time events dumped into one perfect-grid bucket)
+    if (showLagLabels) {
+      const prevBoundary = i === 0 ? 0 : (boundaries[i - 1] as number);
+      const hasCatchup = catchupTimes.some(
+        (t) => t > prevBoundary && t <= boundary,
+      );
+      if (hasCatchup) return "LAG";
+    }
+    return `${i + 1}`;
+  });
+}
+
+// Ideal-grid boundaries: evenly spaced at 1-second intervals between start
+// and end, regardless of when real step events fired. Use for chart consumers
+// that want smooth per-second buckets unaffected by timer drift or catchup
+// bursts. For the real fire-time boundaries (drift/catchup-affected), use
+// getLaggedTimerBoundaries.
+export function getTimerBoundaries(eventLog: EventLog): number[] {
+  let endMs: number | undefined;
+  let tickCount = 0;
+  for (const event of eventLog.events) {
+    if (event.type !== "timer") continue;
+    if (event.data.event === "end") {
+      endMs = event.testMs;
+      // end event's `timer` field is Time.get() at finish — the canonical
+      // tick count, immune to step-event drift/early-fire artifacts
+      tickCount = event.data.timer;
+    }
+  }
+  if (endMs === undefined) return [];
+
+  // zen/bailout: trim trailing afk and cap tickCount to fit the adjusted end
+  if (eventLog.context.mode === "zen" || eventLog.context.bailedOut) {
+    const lkte = getRawLastKeypressToEndMs(eventLog);
+    if (lkte < 7000) {
+      endMs -= lkte;
+      tickCount = Math.min(tickCount, Math.floor(endMs / 1000));
+    }
+  }
+
+  const boundaries: number[] = [];
+  for (let i = 1; i <= tickCount; i++) boundaries.push(i * 1000);
+
+  // append a fractional tail boundary for non-timed tests with a .5s+ remainder
+  if (!isTimedTest(eventLog) && Math.round(roundTo2(endMs / 1000) % 1) >= 0.5) {
+    boundaries.push(endMs);
+  }
+
+  return boundaries;
+}
+
+// Real fire-time step boundaries: positions reflect when steps actually
+// fired (drift, catchup, etc.). For ideal grid positions, use getTimerBoundaries.
+export function getLaggedTimerBoundaries(eventLog: EventLog): number[] {
   const { events } = eventLog;
   const boundaries: number[] = [];
   let endMs: number | undefined;
@@ -27,7 +107,6 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
     const lkte = getRawLastKeypressToEndMs(eventLog);
     if (lkte < 7000) {
       endMs -= lkte;
-      // remove step boundaries past the adjusted end
       while (
         boundaries.length > 0 &&
         (boundaries[boundaries.length - 1] as number) > endMs
@@ -38,28 +117,25 @@ function getTimerBoundaries(eventLog: EventLog): number[] {
   }
 
   if (endMs !== undefined) {
-    // Timed tests never push an extra bucket (legacy skips setLastSecondNotRound
-    // for time mode). For other modes, mirror the legacy condition exactly:
-    // Math.round(roundTo2(testSeconds) % 1) >= 0.5. The rounding must happen at
-    // the SECONDS level — taking the fractional ms first and rounding can give
-    // a different answer when the rounded seconds carry into the next integer
-    // (e.g. endMs=19997: roundTo2(19.997)=20.00 → no bucket, but 997ms/1000
-    // rounds to 0.5 → wrongly adds a bucket).
-
-    const { context } = eventLog;
-    const isTimedTest =
-      context.mode === "time" ||
-      (context.mode === "words" && context.mode2 === "0") ||
-      (context.mode === "custom" && context.customTextLimitMode === "time") ||
-      (context.mode === "custom" && context.customTextLimitValue === 0);
-
-    const testSeconds = roundTo2(endMs / 1000);
-    if (!isTimedTest && Math.round(testSeconds % 1) >= 0.5) {
+    if (
+      !isTimedTest(eventLog) &&
+      Math.round(roundTo2(endMs / 1000) % 1) >= 0.5
+    ) {
       boundaries.push(endMs);
     }
   }
 
   return boundaries;
+}
+
+function isTimedTest(eventLog: EventLog): boolean {
+  const { context } = eventLog;
+  return (
+    context.mode === "time" ||
+    (context.mode === "words" && context.mode2 === "0") ||
+    (context.mode === "custom" && context.customTextLimitMode === "time") ||
+    (context.mode === "custom" && context.customTextLimitValue === 0)
+  );
 }
 
 export function getStartToFirstKeypressMs(eventLog: EventLog): number {
@@ -238,6 +314,34 @@ export function getTestDurationMs(eventLog: EventLog): number {
   return end;
 }
 
+export function getDateBasedTestDurationMs(eventLog: EventLog): number {
+  let start: number | undefined;
+  let end: number | undefined;
+
+  for (const event of eventLog.events) {
+    if (
+      start === undefined &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      start = event.data.date;
+    }
+    if (
+      end === undefined &&
+      event.type === "timer" &&
+      event.data.event === "end"
+    ) {
+      end = event.data.date;
+    }
+  }
+
+  if (start === undefined || end === undefined) {
+    return 0;
+  }
+
+  return end - start;
+}
+
 function getTargetWord(
   eventLog: EventLog,
   wordIndex: number,
@@ -270,6 +374,75 @@ function getTargetWord(
 
     return word + wordEnd;
   }
+}
+
+function computeBurst(events: TestEventNoMs[], now?: number): number {
+  const inputEvents = events.filter((e) => e.type === "input");
+  const input = getInputFromDom(inputEvents);
+
+  let inputLength = input.length;
+  if (!input.endsWith(" ") && !input.endsWith("\n")) {
+    inputLength += 1; // account for trigger char (space/newline) on word submit
+  }
+
+  let firstKeypressTime: number | undefined;
+  let lastKeypressTime: number | undefined;
+
+  for (const event of events) {
+    if (
+      event.type === "composition" &&
+      event.data.event === "start" &&
+      firstKeypressTime === undefined
+    ) {
+      firstKeypressTime = event.testMs;
+    }
+
+    if (
+      event.type === "input" &&
+      (event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText")
+    ) {
+      if (event.data.charIndex === 0 && firstKeypressTime === undefined) {
+        firstKeypressTime = event.testMs;
+      }
+      if (firstKeypressTime !== undefined) {
+        lastKeypressTime = event.testMs;
+      }
+    }
+  }
+
+  if (firstKeypressTime === undefined || input.length === 0) {
+    return 0;
+  }
+
+  if (lastKeypressTime !== undefined && lastKeypressTime < firstKeypressTime) {
+    lastKeypressTime = undefined;
+  }
+
+  const endTime = lastKeypressTime ?? now ?? performance.now();
+
+  const durationSeconds = (endTime - firstKeypressTime) / 1000;
+  if (durationSeconds <= 0) return Infinity;
+
+  return Math.round(calculateWpm(inputLength, durationSeconds));
+}
+
+export function getWordBurst(
+  eventLog: EventLog,
+  wordIndex: number,
+  now?: number,
+): number {
+  const events = getEventsForWord(eventLog.events, wordIndex);
+  return computeBurst(events, now);
+}
+
+export function getWordBurstHistory(eventLog: EventLog): number[] {
+  const eventsPerWord = getEventsPerWord(eventLog.events);
+  const burstHistory: number[] = [];
+  for (let i = 0; i < eventsPerWord.size; i++) {
+    burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
+  }
+  return burstHistory;
 }
 
 function countCharsForWordIndex(
@@ -317,20 +490,20 @@ function inferActiveWordIndex(
   return maxWordIndex;
 }
 
-export function getChars(eventLog: EventLog): CharCounts {
+export function getChars(
+  eventLog: EventLog,
+  countPartialLastWord = false,
+  testMs?: number,
+): CharCounts {
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
-  const isTimedTest =
-    context.mode === "time" ||
-    (context.mode === "words" && context.mode2 === "0") ||
-    (context.mode === "custom" && context.customTextLimitMode === "time") ||
-    (context.mode === "custom" && context.customTextLimitValue === 0);
+  const isTimed = isTimedTest(eventLog);
 
-  const eventsPerWord = getEventsPerWord(events);
+  const eventsPerWord = getEventsPerWord(events, testMs);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimedTest || bailedOut;
+  const countPartial = isTimed || bailedOut || countPartialLastWord;
 
   const acc: CharCounts = {
     allCorrect: 0,
@@ -392,7 +565,10 @@ export function getInputHistory(eventLog: EventLog): string[] {
   return history;
 }
 
-export function getAccuracy(eventLog: EventLog): {
+export function getAccuracy(
+  eventLog: EventLog,
+  testMs?: number,
+): {
   correct: number;
   incorrect: number;
   percentage: number;
@@ -403,6 +579,7 @@ export function getAccuracy(eventLog: EventLog): {
   let incorrect = 0;
 
   for (const event of events) {
+    if (testMs !== undefined && event.testMs > testMs) break;
     if (event.type !== "input") continue;
 
     if (!("correct" in event.data)) {
@@ -474,6 +651,31 @@ export function getKeypressOverlap(eventLog: EventLog): number {
     }
   }
   return roundTo2(overlap);
+}
+
+export function getWordIndexesForSecond(
+  eventLog: EventLog,
+  second: number,
+): number[] {
+  const { events } = eventLog;
+  const boundaries = getTimerBoundaries(eventLog);
+
+  const boundary = boundaries[second];
+  if (boundary === undefined) return [];
+
+  const prevBoundary = second > 0 ? boundaries[second - 1] : undefined;
+  const wordIndexes = new Set<number>();
+
+  for (const event of events) {
+    if (prevBoundary !== undefined && event.testMs <= prevBoundary) continue;
+    if (event.testMs > boundary) break;
+
+    if ("wordIndex" in event.data) {
+      wordIndexes.add(event.data.wordIndex);
+    }
+  }
+
+  return [...wordIndexes];
 }
 
 export function getErrorCountHistory(eventLog: EventLog): number[] {
@@ -675,8 +877,77 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
   return durations;
 }
 
+export function getMissedWords(eventLog: EventLog): Record<string, number> {
+  const missedWords: Record<string, number> = Object.create(null) as Record<
+    string,
+    number
+  >;
+
+  for (const event of eventLog.events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      const word = eventLog.context.targetWords[event.data.wordIndex];
+      if (word === undefined) continue;
+      missedWords[word] = (missedWords[word] ?? 0) + 1;
+    }
+  }
+
+  return missedWords;
+}
+
+export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
+  const ev = getEventsPerWord(eventLog.events);
+  const correctedWords: string[] = [];
+
+  for (const [, events] of ev.entries()) {
+    const correctedChars: string[] = [];
+    const currentChars: string[] = [];
+    let cursorPos = 0;
+
+    for (const event of events) {
+      if (event.type !== "input") continue;
+      if (
+        event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText"
+      ) {
+        if (
+          event.data.inputStopped ||
+          (event.data.data === " " && event.data.commitsWord)
+        ) {
+          continue;
+        }
+        currentChars[cursorPos] = event.data.data;
+        cursorPos++;
+      } else if (event.data.inputType === "deleteContentBackward") {
+        if (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      } else if (event.data.inputType === "deleteWordBackward") {
+        while (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      }
+    }
+
+    const result: string[] = [];
+    for (let i = 0; i < currentChars.length; i++) {
+      result.push(correctedChars[i] ?? currentChars[i] ?? "");
+    }
+    correctedWords.push(result.join(""));
+  }
+
+  return correctedWords;
+}
+
 export const __testing = {
   getTimerBoundaries,
+  getLaggedTimerBoundaries,
+  getTimerBoundaryLabels,
   getTargetWord,
   inferActiveWordIndex,
 };
