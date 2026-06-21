@@ -92,7 +92,6 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   //TODO handle funbox layout_mirror
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
-      displayName: props.displayName,
       keymapStyle: getConfig.keymapStyle,
       showAllKeys: getConfig.keymapLayoutStyle === "full",
     }),

@@ -12,7 +12,6 @@ describe("keymap converter", () => {
     describe("staggered", () => {
       it("converts qwerty staggered", () => {
         const result = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
-          displayName: "qwerty",
           keymapStyle: "staggered",
           showAllKeys: false,
         });
@@ -86,7 +85,6 @@ describe("keymap converter", () => {
 
       it("converts qwerty staggered all keys", () => {
         const result = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
-          displayName: "qwerty",
           keymapStyle: "staggered",
           showAllKeys: true,
         });
@@ -94,7 +92,7 @@ describe("keymap converter", () => {
         // Test only keys added when showAllKeys is true (not covered by basic staggered test)
         // Row1: BS added at end
         expect(result.row1[result.row1.length - 1], "row1 last").toEqual({
-          legends: ["BS", "BS", "BS", "BS"],
+          legends: ["Backspace", "Backspace", "Backspace", "Backspace"],
           width: 2,
         });
 
@@ -165,7 +163,6 @@ describe("keymap converter", () => {
 
       it("converts qwertz staggered", () => {
         const result = convertLayoutToKeymap(qwertzLayout as LayoutObject, {
-          displayName: "qwertz",
           keymapStyle: "staggered",
           showAllKeys: false,
         });
