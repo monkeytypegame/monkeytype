@@ -309,20 +309,19 @@ function convertAlice(
         colGaps: { 7: 0.25 },
         showAllKeys,
       }),
-      y: ({ col }) => {
-        // if (col === 0) return 0.25;
-        if (col === 2) return -0.1;
-        if (col === 3) return 0.1;
-        if (col === 4) return 0.3;
-        if (col === 5) return 0.5;
-        if (col === 6) return 0.7;
-        if (col === 7) return 0.7;
-        if (col === 8) return 0.5;
-        if (col === 9) return 0.3;
-        if (col === 10) return 0.1;
-        if (col === 11) return -0.1;
-        return undefined;
-      },
+      y: ({ col }) =>
+        ({
+          2: -0.1,
+          3: 0.1,
+          4: 0.3,
+          5: 0.5,
+          6: 0.7,
+          7: 0.7,
+          8: 0.5,
+          9: 0.3,
+          10: 0.1,
+          11: -0.1,
+        })[col],
       skip: ({ col }) => !options.showAllKeys && col === 0,
       rotation: calcRotation({ start: 3, split: 6, end: 10 }),
     },
@@ -332,20 +331,16 @@ function convertAlice(
         colGaps: { 1: 0.25, 5: 0.5, 9: 0.25 },
         showAllKeys,
       }),
-      y: ({ col }) => {
-        // if (col === 0) return 0.25;
-        if (col === 2) return 0.2;
-        if (col === 3) return 0.4;
-        if (col === 4) return 0.6;
-        //
-        if (col === 5) return 0.7;
-        if (col === 6) return 0.5;
-        if (col === 7) return 0.3;
-        if (col === 8) return 0.1;
-        // if (col === 10) return 0.1;
-        // if (col === 11) return -0.1;
-        return undefined;
-      },
+      y: ({ col }) =>
+        ({
+          2: 0.2,
+          3: 0.4,
+          4: 0.6,
+          5: 0.7,
+          6: 0.5,
+          7: 0.3,
+          8: 0.1,
+        })[col],
       skip: ({ col }) => !options.showAllKeys && col === 12,
       rotation: calcRotation({ start: 1, split: 4, end: 8 }),
     },
@@ -355,41 +350,29 @@ function convertAlice(
         colGaps: { 1: 0.25, 5: 0.75, 9: 0.25 },
         showAllKeys,
       }),
-      y: ({ col }) => {
-        // if (col === 0) return 0.25;
-        if (col === 2) return 0.2;
-        if (col === 3) return 0.4;
-        if (col === 4) return 0.6;
-        //
-        if (col === 5) return 0.6;
-        if (col === 6) return 0.4;
-        if (col === 7) return 0.2;
-        // if (col === 8) return 0.2;
-        // if (col === 9) return 0;
-        // if (col === 10) return 0.1;
-        // if (col === 11) return -0.1;
-        return undefined;
-      },
+      y: ({ col }) =>
+        ({
+          2: 0.2,
+          3: 0.4,
+          4: 0.6,
+          5: 0.6,
+          6: 0.4,
+          7: 0.2,
+        })[col],
       isHoming: ({ col }) => col === 3 || col === 6,
       rotation: calcRotation({ start: 1, split: 4, end: 8 }),
     },
     row4: {
       x: calcGap({ firstColGap: 1, colGaps: { 8: 0.25 }, showAllKeys }),
-      y: ({ col }) => {
-        // if (col === 0) return 0.25;
-        if (col === 2) return 0.2;
-        if (col === 3) return 0.4;
-        if (col === 4) return 0.6;
-        //
-        if (col === 5) return 0.45;
-        if (col === 6) return 0.25;
-        if (col === 7) return 0.1;
-        // if (col === 8) return 0.2;
-        // if (col === 9) return 0;
-        // if (col === 10) return 0.1;
-        // if (col === 11) return -0.1;
-        return undefined;
-      },
+      y: ({ col }) =>
+        ({
+          2: 0.2,
+          3: 0.4,
+          4: 0.6,
+          5: 0.45,
+          6: 0.25,
+          7: 0.1,
+        })[col],
       rotation: calcRotation({ start: 1, split: 4, end: 7 }),
     },
     row5: {
@@ -398,11 +381,11 @@ function convertAlice(
         colGaps: { 1: 0.4 },
         showAllKeys,
       }),
-      y: ({ col }) => {
-        if (col === 0) return 0.4;
-        if (col === 1) return 0.4;
-        return undefined;
-      },
+      y: ({ col }) =>
+        ({
+          0: 0.4,
+          1: 0.4,
+        })[col],
       width: ({ col }) => (hasRow5ExtraKey && col === 1 ? undefined : 3),
 
       isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
