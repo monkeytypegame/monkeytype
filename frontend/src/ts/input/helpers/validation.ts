@@ -7,10 +7,14 @@ import { isSpace } from "../../utils/strings";
  * @param correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
 function isCharOrWordAlwaysCorrectOrIncorrect(
+  data: string,
   correctShiftUsed: boolean | null,
 ): boolean | null {
   if (Config.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
+  if (data === undefined) {
+    throw new Error("Failed to check if char is correct - data is undefined");
+  }
   return null;
 }
 
@@ -30,14 +34,12 @@ export function isCharCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  const isCharAlwaysCorrectOrIncorrect =
-    isCharOrWordAlwaysCorrectOrIncorrect(correctShiftUsed);
+  const isCharAlwaysCorrectOrIncorrect = isCharOrWordAlwaysCorrectOrIncorrect(
+    data,
+    correctShiftUsed,
+  );
   if (isCharAlwaysCorrectOrIncorrect !== null) {
     return isCharAlwaysCorrectOrIncorrect;
-  }
-
-  if (data === undefined) {
-    throw new Error("Failed to check if char is correct - data is undefined");
   }
 
   const targetChar = targetWord[inputValue.length];
@@ -57,19 +59,23 @@ export function isCharCorrect(options: {
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
 export function isWordCorrect(options: {
+  data: string;
   inputValue: string;
   targetWord: string;
   correctShiftUsed: boolean | null; //null means disabled
 }): boolean {
-  const { inputValue, targetWord, correctShiftUsed } = options;
+  const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  const isCharAlwaysCorrectOrIncorrect =
-    isCharOrWordAlwaysCorrectOrIncorrect(correctShiftUsed);
+  const isCharAlwaysCorrectOrIncorrect = isCharOrWordAlwaysCorrectOrIncorrect(
+    data,
+    correctShiftUsed,
+  );
   if (isCharAlwaysCorrectOrIncorrect !== null) {
     return isCharAlwaysCorrectOrIncorrect;
   }
 
-  return inputValue === targetWord;
+  const finalInputValue = inputValue + (isSpace(data) ? "" : data);
+  return finalInputValue === targetWord;
 }
 
 /**

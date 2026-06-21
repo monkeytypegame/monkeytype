@@ -181,7 +181,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const correct = shouldGoToNextWord
     ? (funboxCorrect ??
       isWordCorrect({
-        inputValue: testInput + (charIsSpace ? "" : data),
+        data,
+        inputValue: testInput,
         targetWord: currentWord,
         correctShiftUsed,
       }))
