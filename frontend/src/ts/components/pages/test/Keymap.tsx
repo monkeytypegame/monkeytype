@@ -156,14 +156,14 @@ function Key(
       props.isNumRow && isMacLike() && isCapsLockOn()
         ? props.layer - 1
         : props.layer;
-    return props.legends[layer];
+    return props.legends[layer] ?? "";
   };
 
   // Read from centralized flash state instead of managing per-key signals.
   // Steno keys never flash.
   const flashInfo = createMemo(() => {
     if (isSteno()) return { tick: 0, correct: true };
-    const entry = props.flashState().get(label() ?? "");
+    const entry = props.flashState().get(label());
     return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
   });
 

@@ -7,7 +7,6 @@ import "solid-devtools";
 import "./event-handlers/global";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/modifiers";
 import "./modals/google-sign-up";
 
 import { init } from "./firebase";

@@ -345,7 +345,15 @@ function convertAlice(
     },
   });
 
-  result.row4.splice(5, 0, buildKey(["b", "B"], { rotation: -10, x: 0.25 }));
+  //insert second B key
+  result.row4 = [
+    ...result.row4.slice(0, 5),
+    buildKey(result.row4.at(4)?.legends as string[], {
+      rotation: -10,
+      x: 0.25,
+    }),
+    ...result.row4.slice(5),
+  ];
 
   /*
   if (options.showAllKeys) {
