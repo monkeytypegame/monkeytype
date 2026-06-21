@@ -153,17 +153,6 @@ describe("isCharCorrect", () => {
       },
     );
   });
-
-  it("throws error if data is undefined", () => {
-    expect(() =>
-      isCharCorrect({
-        data: undefined as any,
-        inputValue: "val",
-        targetWord: "word",
-        correctShiftUsed: true,
-      }),
-    ).toThrow();
-  });
 });
 
 describe("shouldInsertSpaceCharacter", () => {

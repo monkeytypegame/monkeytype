@@ -144,12 +144,32 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
+  // word navigation check
+  const noSpaceForce =
+    isFunboxActiveWithProperty("nospace") &&
+    (testInput + data).length === TestWords.words.getCurrentText().length;
+  // does this input try to move to the next word (before stop-on-error can block it)
+  const goingToNextWord =
+    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
+
+  // when moving to the next word, correctness is word-level (a correct word-completing
+  // space has charCorrect === false, so charCorrect can't be used below)
+  const correct = goingToNextWord
+    ? (funboxCorrect ??
+      isWordCorrect({
+        data,
+        inputValue: testInput,
+        targetWord: currentWord,
+        correctShiftUsed,
+      }))
+    : charCorrect;
+
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
   // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !charCorrect) {
+  if (Config.stopOnError === "letter" && !correct) {
     if (!Config.blindMode) {
       visualInputOverride = testInput + data;
     }
@@ -170,23 +190,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     resetIncorrectShiftsInARow();
   }
 
-  // word navigation check
-  const noSpaceForce =
-    isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrentText().length;
-  const shouldGoToNextWord =
-    !removeLastChar &&
-    (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
-
-  const correct = shouldGoToNextWord
-    ? (funboxCorrect ??
-      isWordCorrect({
-        data,
-        inputValue: testInput,
-        targetWord: currentWord,
-        correctShiftUsed,
-      }))
-    : charCorrect;
+  // stop-on-error can block navigation, so this is derived after removeLastChar
+  const shouldGoToNextWord = goingToNextWord && !removeLastChar;
 
   if (Config.keymapMode === "react") {
     flash(data, correct);
