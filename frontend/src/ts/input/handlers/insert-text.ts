@@ -225,12 +225,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // this needs to be called after event logging
   WeakSpot.updateScore(data, correct);
 
+  const commitCorrect = noSpaceForce
+    ? testInput + data === currentWord
+    : correct;
+
   // going to next word
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
   if (shouldGoToNextWord) {
     const result = await goToNextWord({
-      correctInsert: correct,
+      correctInsert: commitCorrect,
       isCompositionEnding: isCompositionEnding === true,
       zenNewline: charIsNewline && Config.mode === "zen",
       now,
