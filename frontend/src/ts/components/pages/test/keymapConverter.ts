@@ -10,6 +10,8 @@ export type KeyDefinition = {
   height?: number;
   /** x-offset in u  */
   x?: number;
+  /** y-offset in u  */
+  y?: number;
   /** rotation in degrees  */
   rotation?: number;
 
@@ -307,6 +309,20 @@ function convertAlice(
         colGaps: { 7: 0.25 },
         showAllKeys,
       }),
+      y: ({ col }) => {
+        // if (col === 0) return 0.25;
+        if (col === 2) return -0.1;
+        if (col === 3) return 0.1;
+        if (col === 4) return 0.3;
+        if (col === 5) return 0.5;
+        if (col === 6) return 0.7;
+        if (col === 7) return 0.7;
+        if (col === 8) return 0.5;
+        if (col === 9) return 0.3;
+        if (col === 10) return 0.1;
+        if (col === 11) return -0.1;
+        return undefined;
+      },
       skip: ({ col }) => !options.showAllKeys && col === 0,
       rotation: calcRotation({ start: 3, split: 6, end: 10 }),
     },
@@ -316,6 +332,20 @@ function convertAlice(
         colGaps: { 1: 0.25, 5: 0.5, 9: 0.25 },
         showAllKeys,
       }),
+      y: ({ col }) => {
+        // if (col === 0) return 0.25;
+        if (col === 2) return 0.2;
+        if (col === 3) return 0.4;
+        if (col === 4) return 0.6;
+        //
+        if (col === 5) return 0.7;
+        if (col === 6) return 0.5;
+        if (col === 7) return 0.3;
+        if (col === 8) return 0.1;
+        // if (col === 10) return 0.1;
+        // if (col === 11) return -0.1;
+        return undefined;
+      },
       skip: ({ col }) => !options.showAllKeys && col === 12,
       rotation: calcRotation({ start: 1, split: 4, end: 8 }),
     },
@@ -325,19 +355,54 @@ function convertAlice(
         colGaps: { 1: 0.25, 5: 0.75, 9: 0.25 },
         showAllKeys,
       }),
+      y: ({ col }) => {
+        // if (col === 0) return 0.25;
+        if (col === 2) return 0.2;
+        if (col === 3) return 0.4;
+        if (col === 4) return 0.6;
+        //
+        if (col === 5) return 0.6;
+        if (col === 6) return 0.4;
+        if (col === 7) return 0.2;
+        // if (col === 8) return 0.2;
+        // if (col === 9) return 0;
+        // if (col === 10) return 0.1;
+        // if (col === 11) return -0.1;
+        return undefined;
+      },
       isHoming: ({ col }) => col === 3 || col === 6,
       rotation: calcRotation({ start: 1, split: 4, end: 8 }),
     },
     row4: {
       x: calcGap({ firstColGap: 1, colGaps: { 8: 0.25 }, showAllKeys }),
+      y: ({ col }) => {
+        // if (col === 0) return 0.25;
+        if (col === 2) return 0.2;
+        if (col === 3) return 0.4;
+        if (col === 4) return 0.6;
+        //
+        if (col === 5) return 0.45;
+        if (col === 6) return 0.25;
+        if (col === 7) return 0.1;
+        // if (col === 8) return 0.2;
+        // if (col === 9) return 0;
+        // if (col === 10) return 0.1;
+        // if (col === 11) return -0.1;
+        return undefined;
+      },
       rotation: calcRotation({ start: 1, split: 4, end: 7 }),
     },
     row5: {
       x: calcGap({
         firstColGap: hasRow5ExtraKey ? 4.75 : 3,
-        colGaps: { 1: 0.5 },
+        colGaps: { 1: 0.4 },
         showAllKeys,
       }),
+      y: ({ col }) => {
+        if (col === 0) return 0.4;
+        if (col === 1) return 0.4;
+        return undefined;
+      },
       width: ({ col }) => (hasRow5ExtraKey && col === 1 ? undefined : 3),
 
       isLayoutIndicator: ({ col }) => col === layoutIndicatorIndex,
@@ -351,6 +416,7 @@ function convertAlice(
     buildKey(result.row4.at(4)?.legends as string[], {
       rotation: -10,
       x: 0.25,
+      y: 0.6,
     }),
     ...result.row4.slice(5),
   ];
@@ -397,6 +463,7 @@ function convertBase(
         height?: (options: RuleParams) => number | undefined;
         width?: (options: RuleParams) => number | undefined;
         x?: (options: RuleParams) => number | undefined;
+        y?: (options: RuleParams) => number | undefined;
         rotation?: (options: RuleParams) => number | undefined;
         skip?: (options: RuleParams) => boolean;
         isLayoutIndicator?: (options: RuleParams) => boolean;
@@ -420,6 +487,7 @@ function convertBase(
           const height = cols?.[row]?.height?.({ col: colNum });
           const width = cols?.[row]?.width?.({ col: colNum });
           const x = cols?.[row]?.x?.({ col: colNum });
+          const y = cols?.[row]?.y?.({ col: colNum });
           const rotation = cols?.[row]?.rotation?.({ col: colNum });
           const isLayoutIndicator = cols?.[row]?.isLayoutIndicator?.({
             col: colNum,
@@ -431,6 +499,7 @@ function convertBase(
             ...(height !== undefined ? { height } : {}),
             ...(width !== undefined ? { width } : {}),
             ...(x !== undefined ? { x } : {}),
+            ...(y !== undefined ? { y } : {}),
             ...(rotation !== undefined ? { rotation } : {}),
             ...(isLayoutIndicator === true ? { isLayoutIndicator: true } : {}),
             ...(isHoming === true ? { isHoming: true } : {}),

@@ -183,6 +183,7 @@ function Key(
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 2}rem`,
+        "margin-top": `${(props.y ?? 0) * 2}rem`,
         transform:
           props.rotation !== undefined ? `rotate(${props.rotation}deg)` : "",
         "background-color": "var(--keybgcolor)",
