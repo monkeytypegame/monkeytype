@@ -105,6 +105,43 @@ describe("isCharCorrect", () => {
     });
   });
 
+  describe("newline handling", () => {
+    it.each([
+      [
+        "returns true at the end of a correct word",
+        "\n",
+        "word",
+        "word\n",
+        true,
+      ],
+      [
+        "returns false at the end of an incorrect word",
+        "\n",
+        "worx",
+        "word\n",
+        false,
+      ],
+      ["returns false in the middle of a word", "\n", "wor", "word\n", false],
+      ["returns false at the start of a word", "\n", "", "word\n", false],
+      [
+        "returns false when longer than a word",
+        "\n",
+        "wordwordword",
+        "word\n",
+        false,
+      ],
+    ])("%s", (_desc, char, input, word, expected) => {
+      expect(
+        isCharCorrect({
+          data: char,
+          inputValue: input,
+          targetWord: word,
+          correctShiftUsed: true,
+        }),
+      ).toBe(expected);
+    });
+  });
+
   describe("Standard Matching", () => {
     it.each([
       ["a", "te", "tea", true],

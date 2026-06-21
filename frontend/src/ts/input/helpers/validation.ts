@@ -29,6 +29,10 @@ export function isCharCorrect(options: {
     return inputValue === targetWord;
   }
 
+  if (data === "\n") {
+    return inputValue + data === targetWord;
+  }
+
   const targetChar = targetWord[inputValue.length];
 
   if (targetChar === undefined) {
