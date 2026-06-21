@@ -26,7 +26,7 @@ const keymap = qsr("#keymap");
 
 const stenoKeys: LayoutObject = {
   keymapShowTopRow: true,
-  type: "matrix",
+  type: "ansi",
   keys: {
     row1: [],
     row2: [

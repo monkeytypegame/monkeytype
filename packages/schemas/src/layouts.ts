@@ -290,22 +290,6 @@ const isoLayoutSchema = commonLayoutSchema
   })
   .strict();
 
-const matrixLayoutSchema = commonLayoutSchema
-  .extend({
-    type: z.literal("matrix"),
-    keys: z
-      .object({
-        row1: z.array(KeyLegendsSchema).length(0),
-        row2: z.array(KeyLegendsSchema).length(10),
-        row3: z.array(KeyLegendsSchema).length(10),
-        row4: z.array(KeyLegendsSchema).length(4),
-        row5: z.array(row5CharDefinitionSchema).length(0),
-      })
-      .strict(),
-  })
-  .strict();
+export const LayoutObjectSchema = ansiLayoutSchema.or(isoLayoutSchema);
 
-export const LayoutObjectSchema = ansiLayoutSchema
-  .or(isoLayoutSchema)
-  .or(matrixLayoutSchema);
 export type LayoutObject = z.infer<typeof LayoutObjectSchema>;

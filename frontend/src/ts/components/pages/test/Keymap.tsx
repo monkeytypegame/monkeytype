@@ -13,14 +13,11 @@ import {
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
-import { isMacLike, typedEntries } from "../../../utils/misc";
+import { isMacLike } from "../../../utils/misc";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
-import {
-  convertLayoutToKeymap,
-  KeyboardDefinition,
-  KeyDefinition,
-} from "./keymapConverter";
+import { convertLayoutToKeymap } from "./keymapConverter";
+import { KeyboardDefinition, KeyDefinition } from "./keymapLayouts";
 
 type FlashEntry = { tick: number; correct: boolean };
 
@@ -118,15 +115,15 @@ function KeyboardDefinitionRenderer(props: {
   flashState: () => Map<string, FlashEntry>;
 }) {
   return (
-    <For each={typedEntries(props.keyboardDef)}>
-      {([rowId, keys]) => (
-        <Show when={rowId !== "row1" || props.showFirstRow}>
+    <For each={props.keyboardDef}>
+      {(keys, rowNum) => (
+        <Show when={rowNum() !== 0 || props.showFirstRow}>
           <div class="flex h-8 flex-row">
             <For each={keys}>
               {(key) => (
                 <Key
                   {...key}
-                  isNumRow={rowId === "row1"}
+                  isNumRow={rowNum() === 0}
                   layer={props.layer}
                   flashState={props.flashState}
                 />

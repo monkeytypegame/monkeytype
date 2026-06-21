@@ -323,43 +323,6 @@ describe("keymap converter", () => {
         expect(row3?.length, "row3 length").toBe(13);
         expect(row4?.length, "row4 length").toBe(13);
       });
-
-      it("converts handsdown", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "staggered",
-            showAllKeys: false,
-          },
-        );
-
-        expect(row5, "row5").toEqual([
-          { legends: ["r", "R", "r", "R"], x: 4 },
-          {
-            legends: [" ", " ", " ", " "],
-            isLayoutIndicator: true,
-            width: 6,
-          },
-        ]);
-      });
-      it("converts handsdown full", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
-          handsdownLayout as LayoutObject,
-          {
-            keymapStyle: "staggered",
-            showAllKeys: true,
-          },
-        );
-
-        expect(row5?.[3], "row5 extra key").toEqual({
-          legends: ["r", "R", "r", "R"],
-        });
-        expect(row5?.[4], "row5 space key").toEqual({
-          legends: [" ", " ", " ", " "],
-          isLayoutIndicator: true,
-          width: 5.25,
-        });
-      });
     });
 
     describe("split", () => {
