@@ -1839,7 +1839,7 @@ export function beforeTestWordChange(
     forceUpdateActiveWordLetters
   ) {
     void updateWordLetters({
-      input: direction === "back" ? "" : getCurrentInput(),
+      input: getCurrentInput().trimEnd(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
