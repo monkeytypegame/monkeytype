@@ -34,6 +34,7 @@ export function isCharCorrect(options: {
 /**
  * Check if the input data is correct
  * @param options - Options object
+ * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
