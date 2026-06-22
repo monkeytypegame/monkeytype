@@ -76,10 +76,7 @@ export const cachedFetchJson = memoizeAsync(fetchJson);
  * @throws {Error} If the layout list or layout doesn't exist.
  */
 export async function getLayout(layoutName: string): Promise<LayoutObject> {
-  //TODO remove structuredClone, should not be needed with the new keymap implementation
-  return structuredClone(
-    await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`),
-  );
+  return await cachedFetchJson<LayoutObject>(`/layouts/${layoutName}.json`);
 }
 
 // used for polyglot wordset language-specific properties
