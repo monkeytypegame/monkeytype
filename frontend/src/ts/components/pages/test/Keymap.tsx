@@ -76,7 +76,13 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   );
 
   return (
-    <div data-ui-element="keymap" class="flex flex-col text-sm text-sub">
+    <div
+      data-ui-element="keymap"
+      class="flex w-full flex-col items-center py-8 text-sm text-sub debug"
+      style={{
+        zoom: getConfig.keymapSize,
+      }}
+    >
       <Show when={keyboardDef()} fallback={<div>Loading...</div>}>
         <KeyboardDefinitionRenderer
           keyboardDef={keyboardDef()}

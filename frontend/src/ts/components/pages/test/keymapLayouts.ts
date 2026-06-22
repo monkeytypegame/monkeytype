@@ -138,7 +138,7 @@ const splitBottomRow: LayoutKey[] = [
     x: 3.5,
     extraKeysOverride: { x: 0 },
   },
-  { legend: " ", width: 3, x: 1 },
+  { legend: " ", width: 3, x: 1, extraKeysOverride: { x: 1.25 } },
   ...staggeredBottomRow.slice(4),
 ];
 
