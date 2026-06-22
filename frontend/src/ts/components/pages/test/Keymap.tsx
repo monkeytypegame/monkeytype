@@ -68,7 +68,9 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
       keymapStyle: getConfig.keymapStyle,
-      showAllKeys: getConfig.keymapLayoutStyle === "full",
+      showAllKeys:
+        getConfig.keymapLayoutStyle === "full" ||
+        props.layoutData.matrixShowRightColumn === true,
     }),
   );
 

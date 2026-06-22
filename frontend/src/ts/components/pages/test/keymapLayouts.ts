@@ -248,7 +248,7 @@ const matrix: KeymapLayout = [
   buildRow("row2", [
     { legend: "Tab", isExtraKey: true },
     ...addLayoutKeys(10),
-    { legend: "Del", isExtraKey: true },
+    { layoutPosition: { col: 10 }, isExtraKey: true },
   ]),
   buildRow("row3", [
     { legend: "Esc", isExtraKey: true },
