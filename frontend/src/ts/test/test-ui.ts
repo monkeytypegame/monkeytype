@@ -54,7 +54,6 @@ import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import {
@@ -1916,7 +1915,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
-  void Keymap.refresh();
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();

@@ -78,7 +78,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   return (
     <div
       data-ui-element="keymap"
-      class="flex w-full flex-col items-center py-8 text-sm text-sub debug"
+      class="flex w-full flex-col items-center py-8 text-sm text-sub"
       style={{
         zoom: getConfig.keymapSize,
       }}

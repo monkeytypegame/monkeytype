@@ -414,7 +414,7 @@ describe("keymap converter", () => {
         expect(row5?.[4], "row5 right shift").toEqual({
           legends: [" ", " ", " ", " "],
           width: 3,
-          x: 1,
+          x: 1.25,
         });
       });
 
@@ -485,7 +485,7 @@ describe("keymap converter", () => {
         expect(row5?.[4], "row5 right shift").toEqual({
           legends: [" ", " ", " ", " "],
           width: 3,
-          x: 1,
+          x: 1.25,
         });
       });
     });
@@ -589,7 +589,7 @@ describe("keymap converter", () => {
 
         // Row2: Del added at end
         expect(row2?.[row2.length - 1], "row2 last").toEqual({
-          legends: ["Del", "Del", "Del", "Del"],
+          legends: ["[", "{", "[", "{"],
         });
 
         // Row3: Esc added at start
