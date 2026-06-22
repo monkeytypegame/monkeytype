@@ -1013,41 +1013,40 @@ describe("stats.ts", () => {
       ).toBe("anything");
     });
 
-    it("returns word without trailing space when it ends with newline", () => {
+    it("returns the stored word as-is for a non-last word", () => {
+      // storage keeps the separator as a trailing space
+      TestWords.list.push("hello ");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello ");
+    });
+
+    it("strips the trailing separator for the last word", () => {
+      // the last reached word has no committed separator (the test ended)
+      TestWords.list.push("hello ");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
+      ).toBe("hello");
+    });
+
+    it("returns a newline-terminated word as-is", () => {
       TestWords.list.push("hello\n");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
       ).toBe("hello\n");
     });
 
-    it("appends trailing space for non-last word", () => {
-      TestWords.list.push("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello ");
-    });
-
-    it("does not append trailing space for last word", () => {
+    it("returns a bare word as-is (nospace storage)", () => {
       TestWords.list.push("hello");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
       ).toBe("hello");
     });
 
-    it("does not append trailing space when nospace funbox is active", () => {
-      TestWords.list.push("hello");
-      (Config as { funbox: string[] }).funbox = ["nospace"];
+    it("returns empty string for an out-of-range word index", () => {
       expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
-    });
-
-    it("does not append trailing space when underscore_spaces funbox is active", () => {
-      TestWords.list.push("hello");
-      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
+        statsTesting.getTargetWord(buildEventLog(), 5, "hello", false),
+      ).toBe("");
     });
   });
 
@@ -1120,7 +1119,8 @@ describe("stats.ts", () => {
     });
 
     it("counts missed chars for completed non-last words", () => {
-      TestWords.list.push("hello", "world");
+      // stored words carry the separator as a trailing space (last word is bare)
+      TestWords.list.push("hello ", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1187,7 +1187,8 @@ describe("stats.ts", () => {
     });
 
     it("returns cumulative wpm across boundaries", () => {
-      TestWords.list.push("ab", "cd");
+      // stored words carry the separator as a trailing space (last word is bare)
+      TestWords.list.push("ab ", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));

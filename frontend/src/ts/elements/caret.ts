@@ -2,7 +2,7 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "../utils/misc";
-import { isWordRightToLeft } from "../utils/strings";
+import { isWordRightToLeft, removeTrailingSeparator } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
@@ -287,7 +287,10 @@ export class Caret {
       const word = wordsCache.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
-      const wordText = TestWords.words.getText(options.wordIndex) ?? "";
+      // strip the stored trailing separator space; it isn't rendered as a letter
+      const wordText = removeTrailingSeparator(
+        TestWords.words.getText(options.wordIndex) ?? "",
+      );
       const wordLength = Array.from(wordText).length;
 
       // caret can be either on the left side of the target letter or the right

@@ -9,6 +9,7 @@ import {
   getInputForWord,
 } from "./events/data";
 import { getInputHistory, getWpmHistory } from "./events/stats";
+import { removeTrailingSeparator } from "../utils/strings";
 
 type ReplayAction =
   | "correctLetter"
@@ -41,7 +42,7 @@ const replayEl = qsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
-  return TestWords.words.list.slice();
+  return TestWords.words.list.map(removeTrailingSeparator);
 }
 
 function deriveReplayActions(): Replay[] {
@@ -59,7 +60,9 @@ function deriveReplayActions(): Replay[] {
         const target =
           Config.mode === "zen"
             ? typed
-            : TestWords.words.getText(prevWordIndex);
+            : removeTrailingSeparator(
+                TestWords.words.getText(prevWordIndex) ?? "",
+              );
         const correct = typed === target;
         actions.push({
           action: correct ? "submitCorrectWord" : "submitErrorWord",

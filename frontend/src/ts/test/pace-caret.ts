@@ -1,4 +1,5 @@
 import * as TestWords from "./test-words";
+import { removeTrailingSeparator } from "../utils/strings";
 import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
@@ -173,6 +174,12 @@ export function reset(): void {
   startTimestamp = 0;
 }
 
+// visible word length (excludes the stored trailing separator space); throws
+// when the word index is out of range, which signals the pace caret is out of words
+function wordVisibleLength(wordIndex: number): number {
+  return removeTrailingSeparator(TestWords.words.getText(wordIndex)).length;
+}
+
 function incrementLetterIndex(): void {
   if (settings === null) return;
 
@@ -180,7 +187,7 @@ function incrementLetterIndex(): void {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
+      wordVisibleLength(settings.currentWordIndex) + 1
     ) {
       //go to the next word
       settings.currentLetterIndex = 0;
@@ -193,7 +200,7 @@ function incrementLetterIndex(): void {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
+              wordVisibleLength(settings.currentWordIndex - 1) - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -203,7 +210,7 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
+            wordVisibleLength(settings.currentWordIndex)
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -230,7 +237,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -= currentWord.length + 1;
+      settings.correction -= removeTrailingSeparator(currentWord).length + 1;
     }
   } else {
     if (

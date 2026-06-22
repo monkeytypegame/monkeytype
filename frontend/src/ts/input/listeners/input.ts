@@ -15,6 +15,7 @@ import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
 import { areAllTestWordsGenerated } from "../../test/test-logic";
 import { getCurrentInput } from "../../test/events/data";
+import { removeTrailingSeparator } from "../../utils/strings";
 
 const inputEl = getInputElement();
 
@@ -129,7 +130,8 @@ inputEl.addEventListener("input", async (event) => {
     const inputPlusComposition =
       getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
-      TestWords.words.getCurrentText() === inputPlusComposition;
+      removeTrailingSeparator(TestWords.words.getCurrentText()) ===
+      inputPlusComposition;
 
     // composition quick end
     // if the user typed the entire word correctly but is still in composition

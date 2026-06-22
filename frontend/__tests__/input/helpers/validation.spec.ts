@@ -100,12 +100,12 @@ describe("isCharCorrect", () => {
 
   describe("Space Handling at the end of a word", () => {
     it.each([
-      ["returns true at the end of a correct word", " ", "word", "word", true],
+      ["returns true at the end of a correct word", " ", "word", "word ", true],
       [
         "returns false at the end of an incorrect word",
         " ",
         "worx",
-        "word",
+        "word ",
         false,
       ],
       [

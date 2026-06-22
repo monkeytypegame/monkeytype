@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import { isSpace } from "../../utils/strings";
+import { isSpace, removeTrailingSeparator } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -47,8 +47,9 @@ export function isWordCorrect(options: {
   if (Config.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
 
-  const finalInputValue = inputValue + (isSpace(data) ? "" : data);
-  return finalInputValue === targetWord;
+  // The committing separator (space/newline) is part of the target word, so the
+  // typed control char completes it directly.
+  return inputValue + data === targetWord;
 }
 
 /**
@@ -72,7 +73,9 @@ export function shouldInsertSpaceCharacter(options: {
   if (Config.mode === "zen") {
     return false;
   }
-  const correctSoFar = `${targetWord} `.startsWith(`${inputValue} `);
+  // correct so far means the full visible word has been typed correctly (the
+  // separator is the trailing space stored on the target word)
+  const correctSoFar = inputValue === removeTrailingSeparator(targetWord);
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correctSoFar;
   const stopOnErrorWordAndIncorrect =

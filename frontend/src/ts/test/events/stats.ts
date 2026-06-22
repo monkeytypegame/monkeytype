@@ -1,4 +1,8 @@
-import { CharCounts, countChars } from "../../utils/strings";
+import {
+  CharCounts,
+  countChars,
+  removeTrailingSeparator,
+} from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -357,22 +361,9 @@ function getTargetWord(
       return "";
     }
 
-    if (word.endsWith("\n")) {
-      // for multiline, dont add space
-      return word;
-    }
-
-    let wordEnd = "";
-
-    if (!lastWord) {
-      wordEnd = " ";
-    }
-
-    if (eventLog.context.isFunboxWithNospacePropertyActive) {
-      wordEnd = "";
-    }
-
-    return word + wordEnd;
+    // Target words store their separator as a trailing space. The last word the
+    // user reached has no committed separator (the test ended), so strip it.
+    return lastWord ? removeTrailingSeparator(word) : word;
   }
 }
 
@@ -891,7 +882,8 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      missedWords[word] = (missedWords[word] ?? 0) + 1;
+      const bareWord = removeTrailingSeparator(word);
+      missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }
 

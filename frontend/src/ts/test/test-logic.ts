@@ -588,6 +588,7 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.setHasNumbers(hasNumbers);
+  TestWords.words.setNospace(isFunboxActiveWithProperty("nospace"));
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -713,11 +714,19 @@ export async function addWord(): Promise<void> {
   }
 
   try {
+    const prevWord = TestWords.words.getText(TestWords.words.length - 1) as
+      | string
+      | undefined;
+    const prevWord2 = TestWords.words.getText(TestWords.words.length - 2) as
+      | string
+      | undefined;
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      TestWords.words.getText(TestWords.words.length - 1),
-      TestWords.words.getText(TestWords.words.length - 2),
+      prevWord !== undefined ? Strings.removeTrailingSeparator(prevWord) : "",
+      prevWord2 !== undefined
+        ? Strings.removeTrailingSeparator(prevWord2)
+        : undefined,
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -1079,7 +1088,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
+      if (
+        lastWordInputLength <
+        Strings.removeTrailingSeparator(
+          TestWords.words.getText(wordIndex) ?? "",
+        ).length
+      ) {
         historyLength--;
       }
 

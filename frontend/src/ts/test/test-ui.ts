@@ -378,7 +378,10 @@ function buildWordHTML(word: string, wordIndex: number): string {
   let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  const chars = Strings.splitIntoCharacters(word);
+  // the stored trailing separator space is not rendered as a letter
+  const chars = Strings.splitIntoCharacters(
+    Strings.removeTrailingSeparator(word),
+  );
   for (const char of chars) {
     if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
@@ -736,7 +739,10 @@ export async function updateWordLetters({
     `test-ui.updateWordLetters.${wordIndex}`,
     async () => {
       pendingWordData.delete(wordIndex);
-      const currentWord = TestWords.words.getText(wordIndex);
+      // strip the stored trailing separator space; it isn't rendered as a letter
+      const currentWord = Strings.removeTrailingSeparator(
+        TestWords.words.getText(wordIndex) ?? "",
+      );
       if (!currentWord && Config.mode !== "zen") return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
@@ -1333,7 +1339,9 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const corrected = correctedHistory[i];
-    const word = TestWords.words.getText(i) ?? "";
+    const word = Strings.removeTrailingSeparator(
+      TestWords.words.getText(i) ?? "",
+    );
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =

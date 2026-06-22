@@ -1,4 +1,5 @@
 import * as TestWords from "./test-words";
+import { removeTrailingSeparator } from "../utils/strings";
 import { showNoticeNotification } from "../states/notifications";
 
 import { Config } from "../config/store";
@@ -63,7 +64,9 @@ export function init(
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      const missedWord = TestWords.words.getText(i);
+      const missedWord = removeTrailingSeparator(
+        TestWords.words.getText(i) ?? "",
+      );
       const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
         if (i === 0) {
@@ -71,7 +74,7 @@ export function init(
         } else {
           sortableMissedBiwords.push([
             missedWord,
-            TestWords.words.getText(i - 1),
+            removeTrailingSeparator(TestWords.words.getText(i - 1) ?? ""),
             missedWordCount,
           ]);
         }

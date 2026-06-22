@@ -5,6 +5,7 @@ import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
+import { removeTrailingSeparator } from "../../utils/strings";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!TestState.isActive) {
@@ -52,7 +53,9 @@ export function onBeforeDelete(event: InputEvent): void {
   const confidence = Config.confidenceMode;
   const previousWordCorrect =
     getInputForWord(TestState.activeWordIndex - 1) ===
-    TestWords.words.getText(TestState.activeWordIndex - 1);
+    removeTrailingSeparator(
+      TestWords.words.getText(TestState.activeWordIndex - 1) ?? "",
+    );
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

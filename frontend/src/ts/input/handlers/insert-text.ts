@@ -152,8 +152,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const goingToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
-  // when moving to the next word, correctness is word-level (a correct word-completing
-  // space has charCorrect === false, so charCorrect can't be used below)
+  // when moving to the next word, correctness is word-level (whether the whole
+  // word — including its trailing separator — was typed correctly)
   const correct = goingToNextWord
     ? (funboxCorrect ??
       isWordCorrect({
