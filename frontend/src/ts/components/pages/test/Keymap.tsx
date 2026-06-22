@@ -204,7 +204,7 @@ function Key(
       >
         <Button
           variant="text"
-          class="text-xs [--themable-button-bg:transparent] [--themable-button-text:var(--keycolor)]"
+          class="text-[0.5em] [--themable-button-bg:transparent] [--themable-button-text:var(--keycolor)]"
           text={getKeymapLayout().layoutNameDisplayString}
           onClick={() => showCommandLineForConfig("keymapLayout")}
           tabIndex={-1}
