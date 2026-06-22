@@ -97,7 +97,7 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-keymapEvent.subscribe(({ mode, key, correct }) => {
+keymapEvent.useListener(({ mode, key, correct }) => {
   const mappedKey = key === "" ? " " : key;
   setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
 
