@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import { getCurrentInput } from "../../test/test-input";
+import { getCurrentInput } from "../../test/events/data";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
