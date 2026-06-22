@@ -1,11 +1,12 @@
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { keymapEvent } from "../../../events/keymap";
 import { showCommandLineForConfig } from "../../../states/core";
 import { getModifierState, isCapsLockOn } from "../../../states/modifiers";
 import {
+  FlashEntry,
+  getKeymapFlashState,
   getKeymapHighlightKey,
   getKeymapLayout,
   keymapLayoutObject,
@@ -18,8 +19,6 @@ import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { convertLayoutToKeymap } from "./keymapConverter";
 import { KeyboardDefinition, KeyDefinition } from "./keymapLayouts";
-
-type FlashEntry = { tick: number; correct: boolean };
 
 export function Keymap() {
   return (
@@ -56,27 +55,6 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     }
   });
 
-  const [flashState, setFlashState] = createSignal<Map<string, FlashEntry>>(
-    new Map(),
-  );
-
-  keymapEvent.useListener((event) => {
-    if (event.mode === "flash") {
-      const key = event.key || " ";
-      const current = flashState();
-      const next = new Map<string, FlashEntry>();
-      const existing = current.get(key);
-      next.set(key, {
-        tick: existing ? existing.tick + 1 : 1,
-        correct: event.correct ?? true,
-      });
-      setFlashState(next);
-    } else {
-      // highlight event — reset flash state
-      setFlashState(new Map());
-    }
-  });
-
   const showFirstRow = createMemo(
     () =>
       (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
@@ -101,7 +79,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
           keyboardDef={keyboardDef()}
           layer={layer()}
           showFirstRow={showFirstRow()}
-          flashState={flashState}
+          flashState={getKeymapFlashState}
         />
       </Show>
     </div>
@@ -112,7 +90,7 @@ function KeyboardDefinitionRenderer(props: {
   keyboardDef: KeyboardDefinition;
   layer: number;
   showFirstRow: boolean;
-  flashState: () => Map<string, FlashEntry>;
+  flashState: Record<string, FlashEntry>;
 }) {
   return (
     <For each={props.keyboardDef}>
@@ -140,7 +118,7 @@ function Key(
   props: {
     isNumRow: boolean;
     layer: number;
-    flashState: () => Map<string, FlashEntry>;
+    flashState: Record<string, FlashEntry>;
   } & KeyDefinition,
 ) {
   const isSteno = () =>
@@ -155,11 +133,13 @@ function Key(
     return props.legends[layer] ?? "";
   };
 
-  // Read from centralized flash state instead of managing per-key signals.
   // Steno keys never flash.
   const flashInfo = createMemo(() => {
-    if (isSteno()) return { tick: 0, correct: true };
-    const entry = props.flashState().get(label());
+    if (isSteno() || getConfig.keymapMode !== "react") {
+      return { tick: 0, correct: true };
+    }
+
+    const entry = props.flashState[label()];
     return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
   });
 

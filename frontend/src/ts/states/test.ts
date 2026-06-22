@@ -4,6 +4,7 @@ import {
   createMemo,
   createResource,
 } from "solid-js";
+import { createStore } from "solid-js/store";
 import { Challenge } from "@monkeytype/schemas/challenges";
 import { getConfig } from "../config/store";
 
@@ -88,7 +89,23 @@ const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
 
 export { getKeymapHighlightKey };
 
-keymapEvent.subscribe(({ mode, key }) => {
+export type FlashEntry = { tick: number; correct: boolean };
+
+const [getKeymapFlashState, setKeymapFlashState] = createStore<
+  Record<string, FlashEntry>
+>({});
+
+export { getKeymapFlashState, setKeymapFlashState };
+
+keymapEvent.subscribe(({ mode, key, correct }) => {
   const mappedKey = key === "" ? " " : key;
   setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+
+  if (mode === "flash" && getConfig.keymapMode === "react") {
+    const existing = getKeymapFlashState[mappedKey];
+    setKeymapFlashState(mappedKey, {
+      tick: existing ? existing.tick + 1 : 1,
+      correct: correct ?? true,
+    });
+  }
 });
