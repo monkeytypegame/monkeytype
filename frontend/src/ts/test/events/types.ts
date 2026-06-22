@@ -83,6 +83,7 @@ export type TimerEventData =
   | {
       event: "start" | "end";
       timer: number;
+      date: number;
     };
 
 export type InputEvent = EventProps<"input", InputEventData>;

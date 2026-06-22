@@ -1,10 +1,10 @@
 import { Config } from "../config/store";
+import { getCurrentInput } from "./events/data";
 import * as TestState from "../test/test-state";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
-import { getCurrentInput } from "./test-input";
 
 export function stopAnimation(): void {
   caret.stopBlinking();

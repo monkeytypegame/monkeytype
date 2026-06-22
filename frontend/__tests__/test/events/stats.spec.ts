@@ -56,7 +56,6 @@ import {
   getBurstHistory,
   getTestDurationMs,
   getAccuracy,
-  getKeypressSpacing,
   getKeypressOverlap,
   getErrorCountHistory,
   getAfkDuration,
@@ -66,6 +65,8 @@ import {
   getInputHistory,
   getWpmHistory,
   __testing as statsTesting,
+  getCorrectedWordsHistory,
+  getKeypressSpacing,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -137,7 +138,7 @@ function timer(
       ? { event, timer: timerVal, catchup: true }
       : { event, timer: timerVal, drift: 0 };
   }
-  return { event, timer: timerVal };
+  return { event, timer: timerVal, date: 0 };
 }
 
 // Helper: sets up a basic test with timer start, steps at 1s intervals,
@@ -1161,6 +1162,46 @@ describe("stats.ts", () => {
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
     });
+
+    it("credits a word committed with an IME full-width space", () => {
+      // Japanese IME commits words with the ideographic space U+3000, while the
+      // target word separator is a regular space — normalize so it still counts
+      TestWords.list.push("しり", "かこ");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "し" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "り" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          charIndex: 2,
+          wordIndex: 0,
+          data: "　",
+          commitsWord: true,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "か" }),
+      );
+
+      const chars = getChars(buildEventLog());
+      // word 0 "しり " is fully correct (2 chars + separator)
+      expect(chars.correctWord).toBe(3);
+      expect(chars.incorrect).toBe(0);
+      expect(chars.extra).toBe(0);
+    });
   });
 
   describe("getWpmHistory", () => {
@@ -1439,6 +1480,321 @@ describe("stats.ts", () => {
       const eventsPerWord = getEventsPerWord(getAllTestEvents());
       // word 1 has input "y" (no trailing space) → max is 1, no advance
       expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+  });
+
+  describe("getCorrectedWords", () => {
+    it("returns input as-is when no corrections made", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
+    });
+
+    it("returns last deleted char per position (xact -> fact)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xact"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1400, {
+        charIndex: 1,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1450, {
+        charIndex: 0,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "fact"
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 0, wordIndex: 0, data: "f" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1600,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1650,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["xact"]);
+    });
+
+    it("returns last deleted char per position across multiple corrections (xest -> west -> test)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xest"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "west"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 0, data: "w" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1600, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "test"
+      logTestEvent(
+        "input",
+        1700,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1750,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1800,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1850,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["west"]);
+    });
+
+    it("handles partial correction (tset -> delete last 2 -> st)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "tset"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete last 2
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "st"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      // pos 0: "t" never deleted, pos 1: "s" never deleted, pos 2: "e" deleted, pos 3: "t" deleted
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["tset"]);
+    });
+
+    it("handles multiple words", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // word 0: type "ab" correctly
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "b" }),
+      );
+      // word 1: type "xy", delete both, type "zw"
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 0, wordIndex: 1, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 1, wordIndex: 1, data: "y" }),
+      );
+      logTestEvent("input", 1300, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 1, data: "z" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 1, data: "w" }),
+      );
+
+      const result = getCorrectedWordsHistory(buildEventLog());
+      expect(result[0]).toEqual("ab");
+      expect(result[1]).toEqual("xy");
+    });
+
+    it("ignores the space that commits a word", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // committing space — must not appear in the corrected word
+      logTestEvent(
+        "input",
+        1300,
+        input({
+          charIndex: 4,
+          wordIndex: 0,
+          data: " ",
+          commitsWord: true,
+        }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
     });
   });
 });
