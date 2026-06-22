@@ -103,7 +103,7 @@ export { getKeymapHighlightKey };
 export type FlashEntry = { tick: number; correct: boolean };
 
 const [getKeymapFlashState, setKeymapFlashState] = createStore<
-  Record<string, FlashEntry>
+  Record<string, FlashEntry | undefined>
 >({});
 
 export { getKeymapFlashState, setKeymapFlashState };

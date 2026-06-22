@@ -10,6 +10,7 @@ import {
   getKeymapHighlightKey,
   getKeymapLayout,
   keymapLayoutObject,
+  setKeymapFlashState,
   wordsHaveNumbers,
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
@@ -92,7 +93,7 @@ function KeyboardDefinitionRenderer(props: {
   keyboardDef: KeyboardDefinition;
   layer: number;
   showFirstRow: boolean;
-  flashState: Record<string, FlashEntry>;
+  flashState: Record<string, FlashEntry | undefined>;
 }) {
   return (
     <For each={props.keyboardDef}>
@@ -100,14 +101,17 @@ function KeyboardDefinitionRenderer(props: {
         <Show when={rowNum() !== 0 || props.showFirstRow}>
           <div class="flex h-8 flex-row">
             <For each={keys}>
-              {(key) => (
-                <Key
-                  {...key}
-                  isNumRow={rowNum() === 0}
-                  layer={props.layer}
-                  flashState={props.flashState}
-                />
-              )}
+              {(key) => {
+                const label = () => {
+                  const layer =
+                    rowNum() === 0 && isMacLike() && isCapsLockOn()
+                      ? props.layer - 1
+                      : props.layer;
+                  return key.legends[layer] ?? "";
+                };
+                const flashEntry = () => props.flashState[label()];
+                return <Key {...key} label={label()} flashEntry={flashEntry} />;
+              }}
             </For>
           </div>
         </Show>
@@ -118,22 +122,13 @@ function KeyboardDefinitionRenderer(props: {
 
 function Key(
   props: {
-    isNumRow: boolean;
-    layer: number;
-    flashState: Record<string, FlashEntry>;
+    label: string;
+    flashEntry: () => FlashEntry | undefined;
   } & KeyDefinition,
 ) {
   const isSteno = () =>
     getConfig.keymapStyle === "steno" ||
     getConfig.keymapStyle === "steno_matrix";
-
-  const label = () => {
-    const layer =
-      props.isNumRow && isMacLike() && isCapsLockOn()
-        ? props.layer - 1
-        : props.layer;
-    return props.legends[layer] ?? "";
-  };
 
   // Steno keys never flash.
   const flashInfo = createMemo(() => {
@@ -141,7 +136,7 @@ function Key(
       return { tick: 0, correct: true };
     }
 
-    const entry = props.flashState[label()];
+    const entry = props.flashEntry();
     return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
   });
 
@@ -153,7 +148,7 @@ function Key(
     <Anime
       class={cn(
         "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
-        (label() ?? "").length >= 2 && "text-em-xs",
+        (props.label ?? "").length >= 2 && "text-em-xs",
       )}
       style={{
         "--keybgcolor": isNext() ? getTheme().main : getTheme().subAlt,
@@ -180,13 +175,14 @@ function Key(
             ? [isNext() ? getTheme().bg : getTheme().sub]
             : [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub],
         duration: isNext() ? 0 : 250,
+        onComplete: () => setKeymapFlashState(props.label, undefined),
       }}
     >
       <Show
         when={props.isLayoutIndicator}
         fallback={
           <>
-            {label()}
+            {props.label}
             <Show when={props.isHoming}>
               <div
                 class={cn(
