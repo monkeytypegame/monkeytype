@@ -21,6 +21,7 @@ import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
+import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -170,6 +171,15 @@ export function DevOptionsModal(): JSXElement {
       icon: "fa-vials",
       label: () => "Event Log Viewer",
       onClick: () => showModal("EventLogViewer"),
+    },
+    {
+      icon: "fa-stopwatch",
+      label: () => `Profiler Mode (${isProfilerMode() ? "ON" : "OFF"})`,
+      onClick: () => {
+        setProfilerMode(!isProfilerMode());
+        showNoticeNotification("Profiler mode toggled, reloading...");
+        setTimeout(() => location.reload(), 500);
+      },
     },
   ];
 

@@ -125,7 +125,7 @@ export function Theme(): JSXElement {
           onClick={() => {
             showSimpleModal({
               title: "Share custom theme",
-              schema: z.object({ includeBackground: z.boolean() }),
+              schema: z.object({ includeBackground: z.boolean().optional() }),
               inputs: {
                 includeBackground: {
                   label: "Include background link, size and filters",

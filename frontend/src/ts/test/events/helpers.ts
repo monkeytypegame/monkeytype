@@ -187,16 +187,11 @@ export function findInputValueMismatches(
 
 export function getEventsPerWord(
   events: TestEventNoMs[],
-  startMs?: number,
   testMsLimit?: number,
 ): Map<number, TestEventNoMs[]> {
   let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
   for (const event of events) {
     if (!("wordIndex" in event.data)) {
-      continue;
-    }
-
-    if (startMs !== undefined && event.testMs < startMs) {
       continue;
     }
 
@@ -211,4 +206,18 @@ export function getEventsPerWord(
     eventsPerWordIndex.set(wordIndex, existing);
   }
   return eventsPerWordIndex;
+}
+
+export function getEventsForWord(
+  events: TestEventNoMs[],
+  wordIndex: number,
+): TestEventNoMs[] {
+  const result: TestEventNoMs[] = [];
+  for (const event of events) {
+    if (!("wordIndex" in event.data)) continue;
+    if (event.data.wordIndex === wordIndex) {
+      result.push(event);
+    }
+  }
+  return result;
 }

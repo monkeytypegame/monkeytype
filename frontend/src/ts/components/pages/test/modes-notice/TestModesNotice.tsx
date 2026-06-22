@@ -1,14 +1,14 @@
 import { createMemo } from "solid-js";
 
-import { useActiveTagsLiveQuery } from "../../../collections/tags";
-import * as Commandline from "../../../commandline/commandline";
-import { getConfig } from "../../../config/store";
+import { useActiveTagsLiveQuery } from "../../../../collections/tags";
+import * as Commandline from "../../../../commandline/commandline";
+import { getConfig } from "../../../../config/store";
 import {
   getCustomTextIndicator,
   getFormatting,
   showCommandLineForConfig,
-} from "../../../states/core";
-import { hotkeys } from "../../../states/hotkeys";
+} from "../../../../states/core";
+import { hotkeys } from "../../../../states/hotkeys";
 import {
   getFocus,
   getLoadedChallenge,
@@ -17,14 +17,14 @@ import {
   isRepeated,
   wordsHaveNewline,
   wordsHaveTab,
-} from "../../../states/test";
-import { getActiveFunboxNames } from "../../../test/funbox/list";
-import { cn } from "../../../utils/cn";
+} from "../../../../states/test";
+import { getActiveFunboxNames } from "../../../../test/funbox/list";
+import { cn } from "../../../../utils/cn";
 import {
   getLanguageDisplayString,
   replaceUnderscoresWithSpaces,
-} from "../../../utils/strings";
-import { Kbd } from "../../common/Kbd";
+} from "../../../../utils/strings";
+import { Kbd } from "../../../common/Kbd";
 import { AverageNotice } from "./AverageNotice";
 import { Notice } from "./Notice";
 import { PbNotice } from "./PbNotice";
