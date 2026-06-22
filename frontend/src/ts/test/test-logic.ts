@@ -13,8 +13,6 @@ import {
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
@@ -126,6 +124,7 @@ import {
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { resetModifierState } from "../states/modifiers";
 
 let failReason = "";
 
@@ -346,8 +345,7 @@ export function restart(options = {} as RestartOptions): void {
   TestStats.restart();
   TestInput.restart();
   TestInput.corrected.reset();
-  ShiftTracker.reset();
-  AltTracker.reset();
+  resetModifierState();
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();

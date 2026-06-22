@@ -9,7 +9,7 @@ import { getActivePage } from "./core";
 
 type ModifierState = {
   shift: boolean;
-  altGr: boolean;
+  alt: boolean;
   leftShift: boolean;
   rightShift: boolean;
 };
@@ -17,17 +17,26 @@ type ModifierState = {
 export const [getModifierState, { updateModifierState }] =
   createSignalWithSetters<ModifierState>({
     shift: false,
-    altGr: false,
+    alt: false,
     leftShift: false,
     rightShift: false,
   })({
-    updateModifierState: (set, val: Partial<Omit<ModifierState, "shift">>) =>
+    updateModifierState: (set, val: Partial<ModifierState>) =>
       set((prev) => ({
         ...prev,
         ...val,
-        shift: val.leftShift ?? val.rightShift ?? prev.shift,
+        shift: val.shift ?? val.leftShift ?? val.rightShift ?? prev.shift,
       })),
   });
+
+export function resetModifierState(): void {
+  updateModifierState({
+    shift: false,
+    alt: false,
+    leftShift: false,
+    rightShift: false,
+  });
+}
 
 const [isCapsLockOn, setCapsLockOn] = createSignal<boolean>(checkCapsLockOn());
 export { isCapsLockOn };
@@ -63,6 +72,6 @@ function handleModifierState(e: KeyboardEvent, updateValue: boolean): void {
   if (e.code === "ShiftLeft") updateModifierState({ leftShift: updateValue });
   if (e.code === "ShiftRight") updateModifierState({ rightShift: updateValue });
   if (e.code === "AltRight" || e.code === "AltLeft") {
-    updateModifierState({ altGr: updateValue });
+    updateModifierState({ alt: updateValue });
   }
 }

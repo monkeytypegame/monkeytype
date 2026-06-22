@@ -33,6 +33,7 @@ export function Keymap() {
 
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const layer = createMemo(() => {
+    const { alt, shift } = getModifierState();
     switch (getConfig.keymapLegendStyle) {
       case "blank":
         return -1;
@@ -41,11 +42,11 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
       case "uppercase":
         return 1;
       case "dynamic": {
-        if (getModifierState().shift && getModifierState().altGr) {
+        if (shift && alt) {
           return 3;
-        } else if (getModifierState().altGr) {
+        } else if (alt) {
           return 2;
-        } else if (getModifierState().shift || isCapsLockOn()) {
+        } else if (shift || isCapsLockOn()) {
           return 1;
         }
         return 0;

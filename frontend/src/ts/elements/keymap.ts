@@ -8,7 +8,6 @@ import { showErrorNotification } from "../states/notifications";
 import { getActivePage } from "../states/core";
 import { onCapsLockChange, isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import * as ShiftTracker from "../test/shift-tracker";
-import * as AltTracker from "../test/alt-tracker";
 import * as KeyConverter from "../utils/key-converter";
 import { getActiveFunboxNames } from "../test/funbox/list";
 import { areSortedArraysEqual } from "../utils/arrays";
@@ -20,6 +19,7 @@ import { getTheme } from "../states/theme";
 
 import { createEffectOn } from "../hooks/effects";
 import { wordsHaveNumbers } from "../states/test";
+import { getModifierState } from "../states/modifiers";
 
 export const keyDataDelimiter = "\uE000";
 const keymap = qsr("#keymap");
@@ -502,8 +502,7 @@ function getLegendStates(): KeymapLegendStates | undefined {
   // pressed, but not both at once.
   // MacOS instead capitalizes when either or both are pressed,
   // so we have to check for that.
-  const shiftState = ShiftTracker.leftState || ShiftTracker.rightState;
-  const altState = AltTracker.leftState || AltTracker.rightState;
+  const { shift: shiftState, alt: altState } = getModifierState();
   const capsState = isCapsLockOn();
 
   const osDependentLettersState = isMacLike
