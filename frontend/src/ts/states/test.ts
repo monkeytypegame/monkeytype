@@ -1,22 +1,25 @@
+import { Challenge } from "@monkeytype/schemas/challenges";
 import {
-  createSignal,
   createEffect,
   createMemo,
   createResource,
+  createSignal,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { getConfig } from "../config/store";
 
-import { canQuickRestart } from "../utils/quick-restart";
-import { getData as getCustomTextData } from "../test/custom-text";
-import { getActivePage, getCustomTextIndicator } from "./core";
-import { QuoteWithTextSplit } from "../types/quotes";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
-import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { getLayout } from "../utils/json-data";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { keymapEvent } from "../events/keymap";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { getData as getCustomTextData } from "../test/custom-text";
+import { QuoteWithTextSplit } from "../types/quotes";
+import { getLayout } from "../utils/json-data";
+import { mirrorLayoutKeys } from "../utils/key-converter";
+import { sleep } from "../utils/misc";
+import { canQuickRestart } from "../utils/quick-restart";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
+import { getActivePage, getCustomTextIndicator } from "./core";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -68,19 +71,27 @@ createEffect(() => {
 export const getKeymapLayout = createMemo<{
   layout: string;
   layoutNameDisplayString: string;
+  isMirrored: boolean;
 }>(() => {
   const isOverride = getConfig.keymapLayout === "overrideSync";
   const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
 
   const layout = raw === "default" ? "qwerty" : raw;
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
+  const isMirrored = getConfig.funbox.includes("layout_mirror");
 
-  return { layout: layout, layoutNameDisplayString };
+  return { layout: layout, layoutNameDisplayString, isMirrored };
 });
 
 export const [keymapLayoutObject] = createResource(
   getKeymapLayout,
-  async (layout) => await getLayout(layout.layout),
+  async (layout) => {
+    const result = await getLayout(layout.layout);
+    if (layout.isMirrored) {
+      return mirrorLayoutKeys(result);
+    }
+    return result;
+  },
 );
 
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
@@ -109,3 +120,23 @@ keymapEvent.useListener(({ mode, key, correct }) => {
     });
   }
 });
+
+async function _getKeymapLayout(): Promise<LayoutObject> {
+  while (
+    keymapLayoutObject.state !== "ready" &&
+    keymapLayoutObject.state !== "errored"
+  ) {
+    await sleep(10);
+  }
+  if (keymapLayoutObject.state === "errored") {
+    throw new Error("Failed to load keymap layout");
+  }
+  return keymapLayoutObject();
+}
+
+/**
+ * Used for non reactive access. Do not use in Solid components.
+ */
+export const __nonReactive = {
+  getKeymapLayout: _getKeymapLayout,
+};

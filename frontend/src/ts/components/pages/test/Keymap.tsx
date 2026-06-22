@@ -64,7 +64,6 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
         props.layoutData.keymapShowTopRow),
   );
 
-  //TODO handle funbox layout_mirror
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
       keymapStyle: getConfig.keymapStyle,
