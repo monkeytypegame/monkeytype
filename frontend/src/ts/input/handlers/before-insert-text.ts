@@ -7,7 +7,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { isJumpToNextWordBlocked, isCommitChar } from "../helpers/validation";
+import { shouldJumpToNextWord } from "../helpers/validation";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 
@@ -53,18 +53,11 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  const isCommitData = isCommitChar({
+  const shouldGoToNextWord = shouldJumpToNextWord({
     data,
     inputValue,
+    targetWord: TestWords.words.getCurrentText(),
   });
-
-  const shouldGoToNextWord =
-    isCommitData &&
-    !isJumpToNextWordBlocked({
-      data,
-      inputValue,
-      targetWord: TestWords.words.getCurrentText(),
-    });
 
   // block input if the word is too long
   const inputLimit =

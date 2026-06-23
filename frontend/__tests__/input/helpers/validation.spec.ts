@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import {
   isCharCorrect,
   isWordCorrect,
-  isJumpToNextWordBlocked,
+  shouldJumpToNextWord,
 } from "../../../src/ts/input/helpers/validation";
 import { __testing } from "../../../src/ts/config/testing";
 import * as FunboxList from "../../../src/ts/test/funbox/list";
@@ -13,6 +13,7 @@ const { replaceConfig } = __testing;
 // Mock dependencies
 vi.mock("../../../src/ts/test/funbox/list", () => ({
   findSingleActiveFunboxWithFunction: vi.fn(),
+  isFunboxActiveWithProperty: vi.fn(),
 }));
 
 vi.mock("../../../src/ts/utils/strings", async () => {
@@ -155,7 +156,7 @@ describe("isCharCorrect", () => {
   });
 });
 
-describe("isJumpToNextWordBlocked", () => {
+describe("shouldJumpToNextWord", () => {
   beforeEach(() => {
     replaceConfig({
       mode: "time",
@@ -172,7 +173,7 @@ describe("isJumpToNextWordBlocked", () => {
   it("returns false in zen mode", () => {
     replaceConfig({ mode: "zen" });
     expect(
-      isJumpToNextWordBlocked({
+      shouldJumpToNextWord({
         data: " ",
         inputValue: "test",
         targetWord: "test",
@@ -276,7 +277,7 @@ describe("isJumpToNextWordBlocked", () => {
     ])("$desc", ({ inputValue, targetWord, config, expected }) => {
       replaceConfig(config as any);
       expect(
-        isJumpToNextWordBlocked({
+        shouldJumpToNextWord({
           data: " ",
           inputValue,
           targetWord,

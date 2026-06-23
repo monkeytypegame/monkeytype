@@ -54,6 +54,21 @@ export function isWordCorrect(options: {
   return finalInputValue === targetWord;
 }
 
+export function isCommitChar(options: {
+  data: string;
+  inputValue: string;
+}): boolean {
+  const { data, inputValue } = options;
+
+  const charIsSpace = isSpace(data);
+  const charIsNewline = data === "\n";
+  const noSpaceForce =
+    isFunboxActiveWithProperty("nospace") &&
+    (inputValue + data).length === TestWords.words.getCurrentText().length;
+
+  return charIsSpace || charIsNewline || noSpaceForce;
+}
+
 /**
  * Determines if a space character should be inserted as a character, or act
  * as a "control character" (moving to the next word)
@@ -62,7 +77,7 @@ export function isWordCorrect(options: {
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  */
-export function isJumpToNextWordBlocked(options: {
+export function shouldJumpToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
@@ -83,21 +98,9 @@ export function isJumpToNextWordBlocked(options: {
     inputValue.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
   return (
-    stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
+    isCommitChar({ data, inputValue }) &&
+    (stopOnErrorLetterAndIncorrect ||
+      stopOnErrorWordAndIncorrect ||
+      strictSpace)
   );
-}
-
-export function isCommitChar(options: {
-  data: string;
-  inputValue: string;
-}): boolean {
-  const { data, inputValue } = options;
-
-  const charIsSpace = isSpace(data);
-  const charIsNewline = data === "\n";
-  const noSpaceForce =
-    isFunboxActiveWithProperty("nospace") &&
-    (inputValue + data).length === TestWords.words.getCurrentText().length;
-
-  return charIsSpace || charIsNewline || noSpaceForce;
 }
