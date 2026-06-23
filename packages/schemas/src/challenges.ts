@@ -82,7 +82,7 @@ export const ChallengeSchema = z
     name: ChallengeNameSchema,
     display: z.string(),
     autoRole: z.boolean().optional(),
-    discordRoleId: z.string().optional(), //TODO fix
+    discordRoleId: z.string(),
     type: z.enum([
       "customTime",
       "customWords",

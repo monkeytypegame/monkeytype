@@ -84,6 +84,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       time: { min: 28800 },
     },
+    discordRoleId: "736528159956271126",
   },
   theBig12: {
     display: "The Big 12",
@@ -92,6 +93,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       time: { min: 43200 },
     },
+    discordRoleId: "740532256388546581",
   },
   "1Day": {
     display: "1 Day",
@@ -100,6 +102,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       time: { min: 86400 },
     },
+    discordRoleId: "751801958511149057",
   },
   trueSimp: {
     display: "True Simp",
@@ -241,6 +244,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       config: { tapeMode: "off" },
     },
+    discordRoleId: "740004324301602907",
   },
   beepBoop: {
     display: "Beep Boop",
@@ -252,6 +256,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       acc: { min: 100 },
       funbox: { exact: ["nospace"] },
     },
+    discordRoleId: "813076265145729024",
   },
   whosYourDaddy: {
     display: "Who's your daddy?",
@@ -260,6 +265,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       config: { tapeMode: "off" },
     },
+    discordRoleId: "742171915405361204",
   },
   itsATrap: {
     display: "It's a trap!",
@@ -268,6 +274,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       config: { tapeMode: "off" },
     },
+    discordRoleId: "744325174668820550",
   },
   jolly: {
     display: "Jolly",
@@ -317,33 +324,39 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     display: "Little Chef",
     type: "script",
     parameters: ["littlechef.txt", null, null],
+    discordRoleId: "763544714028122153",
   },
   crosstalk: {
     display: "(CROSSTALK)",
     type: "script",
     parameters: ["crosstalk.txt", null, null],
+    discordRoleId: "761276009664217129",
   },
   bees: {
     display: "Bees!",
     type: "script",
     parameters: ["bees.txt", null, null],
+    discordRoleId: "739636003182084307",
   },
   getOffMySwamp: {
     display: "Get off my swamp",
     type: "script",
     parameters: ["shrek.txt", null, null],
+    discordRoleId: "757346966987342026",
   },
   lookAtMeIAmTheDeveloperNow: {
     display: "Look at me. I am the developer now.",
     autoRole: true,
     type: "script",
     parameters: ["sourcecode.txt", null, null],
+    discordRoleId: "937358772635074600",
   },
   beLikeWater: {
     display: "Be like water",
     type: "funbox",
     parameters: [["layoutfluid"], "time", 60],
     message: "Remember: You need to achieve at least 50 wpm in each layout.",
+    discordRoleId: "740568679485276201",
   },
   rollercoaster: {
     display: "Rollercoaster",
@@ -385,6 +398,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       config: { tapeMode: "off" },
     },
+    discordRoleId: "782005606852067328",
   },
   earfquake: {
     display: "Earfquake",
@@ -498,6 +512,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       time: { min: 60 },
       funbox: { exact: ["sPoNgEcAsE"] },
     },
+    discordRoleId: "760999194525171724",
   },
   oneNauseousMonkey: {
     display: "One Nauseous Monkey",
@@ -514,26 +529,31 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     display: "Thumb warrior",
     type: "customTime",
     parameters: [3600],
+    discordRoleId: "761794585109200906",
   },
   mouseWarrior: {
     display: "Mouse warrior",
     type: "customTime",
     parameters: [3600],
+    discordRoleId: "744580294442614790",
   },
   mobileWarrior: {
     display: "Mobile warrior",
     type: "customTime",
     parameters: [3600],
+    discordRoleId: "744723801526370407",
   },
   upsideDown: {
     display: "Upside down",
     type: "customTime",
     parameters: [60],
+    discordRoleId: "782725716114014237",
   },
   oneArmedBandit: {
     display: "One armed bandit",
     type: "customWords",
     parameters: [10000],
+    discordRoleId: "765919192557682708",
   },
   englishMaster: {
     display: "English master",
@@ -550,6 +570,7 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     display: "Feet warrior",
     type: "customTime",
     parameters: [3600],
+    discordRoleId: "751953592860147822",
   },
   wingdings: {
     display: "Ten Words of Pain",
@@ -560,5 +581,6 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     requirements: {
       acc: { exact: 100 },
     },
+    discordRoleId: "863192575984140338",
   },
 };
