@@ -119,12 +119,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
-  const isNextWordBlocked =
-    isJumpToNextWordBlocked({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-    }) === true;
+  const isNextWordBlocked = isJumpToNextWordBlocked({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+  });
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
