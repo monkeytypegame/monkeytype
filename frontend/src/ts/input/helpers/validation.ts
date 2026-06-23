@@ -3,7 +3,7 @@ import { isSpace } from "../../utils/strings";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import * as TestWords from "../../test/test-words";
 
-type SharedOptions = {
+type sharedOptions = {
   data: string;
   inputValue: string;
   targetWord: string;
@@ -18,7 +18,7 @@ type SharedOptions = {
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
 export function isCharCorrect(
-  options: SharedOptions & {
+  options: sharedOptions & {
     correctShiftUsed: boolean | null; //null means disabled
   },
 ): boolean {
@@ -45,7 +45,7 @@ export function isCharCorrect(
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
 export function isWordCorrect(
-  options: SharedOptions & {
+  options: sharedOptions & {
     correctShiftUsed: boolean | null; //null means disabled
   },
 ): boolean {
@@ -65,7 +65,7 @@ export function isWordCorrect(
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  */
 export function isCommitCharacter(
-  options: Omit<SharedOptions, "targetWord"> & {
+  options: Omit<sharedOptions, "targetWord"> & {
     data: string;
     inputValue: string;
   },
@@ -90,7 +90,7 @@ export function isCommitCharacter(
  * @param options.isCommitChar - Whether this character commits the current word
  */
 export function shouldJumpToNextWord(
-  options: SharedOptions & {
+  options: sharedOptions & {
     isCommitChar?: boolean;
   },
 ): boolean {
