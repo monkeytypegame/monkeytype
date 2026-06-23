@@ -4,7 +4,7 @@ import { navigate } from "../../controllers/route-controller";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
-import { typedEntries } from "../../utils/misc";
+import { typedEntries } from "@monkeytype/util/objects";
 
 const subgroup: CommandsSubgroup = {
   title: "Load challenge...",

@@ -103,7 +103,7 @@ const challengeNameByRoleId: Record<string, ChallengeName> = Object.fromEntries(
   Object.entries(Challenges)
     .filter(([_, challenge]) => challenge.discordRoleId !== undefined)
     .map(([name, challenge]) => [
-      challenge.discordRoleId as string,
+      challenge.discordRoleId,
       name as ChallengeName,
     ]),
 );

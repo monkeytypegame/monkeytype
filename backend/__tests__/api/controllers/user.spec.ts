@@ -1604,7 +1604,7 @@ describe("user controller test", () => {
         avatar: "discordUserAvatar",
       });
       getDiscordRoleIdsMock.mockResolvedValue([
-        Challenges["100hours"].discordRoleId as string,
+        Challenges["100hours"].discordRoleId,
       ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);

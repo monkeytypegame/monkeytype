@@ -5,7 +5,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
-import * as Misc from "../utils/misc";
 
 import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
@@ -27,6 +26,7 @@ import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { qs } from "../utils/dom";
+import { typedKeys } from "@monkeytype/util/objects";
 
 let challengeLoading = false;
 
@@ -136,7 +136,7 @@ function verifyRequirement(
     }
   } else if (requirementType === "config" && requirements.config) {
     const requirementValue = requirements.config;
-    for (const configKey of Misc.typedKeys(requirementValue)) {
+    for (const configKey of typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
       if (Config[configKey as keyof ConfigType] !== configValue) {
         requirementsMet = false;
@@ -166,9 +166,7 @@ export function verify(result: CompletedEvent): string | null {
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
-      for (const requirementType of Misc.typedKeys(
-        loadedChallenge.requirements,
-      )) {
+      for (const requirementType of typedKeys(loadedChallenge.requirements)) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
           loadedChallenge.requirements,
