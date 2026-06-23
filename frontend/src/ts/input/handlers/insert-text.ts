@@ -134,6 +134,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
+  // Whether this character finishes the current word
   const isCommitData = isCommitChar({ data, inputValue: testInput });
 
   // does this input try to move to the next word (before removeLastChar can block it)

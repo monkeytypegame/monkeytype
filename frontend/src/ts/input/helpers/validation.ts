@@ -69,6 +69,10 @@ export function isJumpToNextWordBlocked(options: {
 }): boolean {
   const { data, inputValue } = options;
 
+  if (Config.mode === "zen") {
+    return false;
+  }
+
   const correct = isWordCorrect({ ...options, correctShiftUsed: null });
 
   const stopOnErrorLetterAndIncorrect =
