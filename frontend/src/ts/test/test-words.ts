@@ -18,24 +18,16 @@ class Words {
     this.nospace = tf;
   }
 
-  getText(i?: undefined, raw?: boolean): string[];
-  getText(i: number, raw?: boolean): string;
-  getText(i?: number, raw = false): string | string[] | undefined {
+  getText(i?: undefined): string[];
+  getText(i: number): string;
+  getText(i?: number): string | string[] | undefined {
     if (i === undefined) {
       return this.list;
-    } else {
-      if (raw) {
-        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-      } else {
-        return this.list[i];
-      }
     }
+    return this.list[i];
   }
   getCurrentText(): string {
     return this.list[TestState.activeWordIndex] ?? "";
-  }
-  getLast(): string {
-    return this.list[this.list.length - 1] as string;
   }
   push(word: string, sectionIndex: number): void {
     // The word separator is stored as a trailing space on the preceding word.
@@ -56,18 +48,6 @@ class Words {
     this.list = [];
     this.sectionIndexList = [];
     this.length = this.list.length;
-  }
-  clean(): void {
-    for (const s of this.list) {
-      if (/ +/.test(s)) {
-        const id = this.list.indexOf(s);
-        const tempList = s.split(" ");
-        this.list.splice(id, 1);
-        for (let i = 0; i < tempList.length; i++) {
-          this.list.splice(id + i, 0, tempList[i] as string);
-        }
-      }
-    }
   }
 }
 

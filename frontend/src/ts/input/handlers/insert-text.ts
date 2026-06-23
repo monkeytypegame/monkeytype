@@ -256,13 +256,13 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   /*
-  Probably a good place to explain what the heck is going on with all these space related variables:
-   - spaceOrNewLine: did the user input a space or a new line?
-   - shouldInsertSpace: should space be treated as a character, or should it move us to the next word
-     monkeytype doesnt actually have space characters in words, so we need this distinction
-     and also moving to the next word might get blocked by things like stop on error
-   - shouldGoToNextWord: IF input is space and we DONT insert a space CHARACTER, we will TRY to go to the next word
-   - increasedWordIndex: the only reason this is here because on the last word we dont move to the next word
+  Space/word-navigation variables:
+   - charIsSpace / charIsNewline: was the input a space or a newline?
+   - goingToNextWord: should this input commit the current word and move on?
+     The separator is part of the target word (stored as a trailing space), so a
+     space/newline matches it positionally; navigation can still be blocked by
+     stop-on-error, strict space, or opposite shift (removeLastChar).
+   - increasedWordIndex: only set because on the last word we don't move on.
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
