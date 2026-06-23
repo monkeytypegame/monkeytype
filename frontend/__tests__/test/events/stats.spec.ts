@@ -1165,8 +1165,9 @@ describe("stats.ts", () => {
 
     it("credits a word committed with an IME full-width space", () => {
       // Japanese IME commits words with the ideographic space U+3000, while the
-      // target word separator is a regular space — normalize so it still counts
-      TestWords.list.push("しり", "かこ");
+      // target word separator is a regular space — normalize so it still counts.
+      // Stored words carry the separator as a trailing space (last word is bare).
+      TestWords.list.push("しり ", "かこ");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));

@@ -43,7 +43,7 @@ export function shouldGoToNextWord(options: {
 }): boolean {
   const { inputValue, targetWord, data } = options;
 
-  if (!isSpace(data)) {
+  if (!isSpace(data) && data !== "\n") {
     return false;
   }
 
