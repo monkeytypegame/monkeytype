@@ -1,5 +1,7 @@
 import { Config } from "../../config/store";
 import { isSpace } from "../../utils/strings";
+import { isFunboxActiveWithProperty } from "../../test/funbox/list";
+import * as TestWords from "../../test/test-words";
 
 /**
  * Check if the input data is correct
@@ -79,4 +81,29 @@ export function isJumpToNextWordBlocked(options: {
   return (
     stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
   );
+}
+
+export function shouldJumpToNextWord(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  charIsSpace?: boolean;
+  charIsNewline?: boolean;
+}): boolean {
+  const {
+    data,
+    inputValue,
+    targetWord,
+    charIsSpace = isSpace(data),
+    charIsNewline = data === "\n",
+  } = options;
+  const isNextWordBlocked = isJumpToNextWordBlocked({
+    data,
+    inputValue,
+    targetWord,
+  });
+  const noSpaceForce =
+    isFunboxActiveWithProperty("nospace") &&
+    (inputValue + data).length === TestWords.words.getCurrentText().length;
+  return (charIsSpace || charIsNewline || noSpaceForce) && !isNextWordBlocked;
 }
