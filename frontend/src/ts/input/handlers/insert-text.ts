@@ -11,7 +11,7 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import { areCharactersVisuallyEqual } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { findSingleActiveFunboxWithFunction } from "../../test/funbox/list";
@@ -115,7 +115,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const wordIndex = TestState.activeWordIndex;
-  const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
@@ -170,7 +169,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     removeLastChar = true;
   }
 
-  if (!charIsSpace && correctShiftUsed === false) {
+  if (correctShiftUsed === false) {
     removeLastChar = true;
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
