@@ -43,12 +43,12 @@ export function isWordCorrect(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-  correctShiftUsed?: boolean;
+  correctShiftUsed: boolean | null; //null means disabled
 }): boolean {
-  const { data, inputValue, targetWord, correctShiftUsed = true } = options;
+  const { data, inputValue, targetWord, correctShiftUsed } = options;
 
   if (Config.mode === "zen") return true;
-  if (!correctShiftUsed) return false;
+  if (correctShiftUsed === false) return false;
 
   const finalInputValue = inputValue + (isSpace(data) ? "" : data);
   return finalInputValue === targetWord;
@@ -69,7 +69,7 @@ export function isJumpToNextWordBlocked(options: {
 }): boolean {
   const { data, inputValue } = options;
 
-  const correct = isWordCorrect(options);
+  const correct = isWordCorrect({ ...options, correctShiftUsed: null });
 
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correct;
