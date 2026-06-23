@@ -82,34 +82,36 @@ export function isCommitCharacter(options: {
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @param options.isCommitChar - Whether this character commits the current word
+ * @param options.wordCorrect - Whether the current word is correct
  */
 export function shouldJumpToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
   isCommitChar?: boolean;
+  wordCorrect?: boolean;
 }): boolean {
   const {
     data,
     inputValue,
     targetWord,
     isCommitChar = isCommitCharacter({ data, inputValue }),
+    wordCorrect = isWordCorrect({
+      data,
+      inputValue,
+      targetWord,
+      correctShiftUsed: null,
+    }),
   } = options;
 
   if (Config.mode === "zen") {
     return false;
   }
 
-  const correct = isWordCorrect({
-    data,
-    inputValue,
-    targetWord,
-    correctShiftUsed: null,
-  });
-
   const stopOnErrorLetterAndIncorrect =
-    Config.stopOnError === "letter" && !correct;
-  const stopOnErrorWordAndIncorrect = Config.stopOnError === "word" && !correct;
+    Config.stopOnError === "letter" && !wordCorrect;
+  const stopOnErrorWordAndIncorrect =
+    Config.stopOnError === "word" && !wordCorrect;
   const strictSpace =
     isSpace(data) &&
     inputValue.length === 0 &&

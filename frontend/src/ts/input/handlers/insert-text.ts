@@ -137,19 +137,20 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // Whether this character commits the current word
   const isCommitChar = isCommitCharacter({ data, inputValue: testInput });
 
+  const wordCorrect = isWordCorrect({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+    correctShiftUsed,
+  });
+
   // does this input try to move to the next word (before removeLastChar can block it)
   const goingToNextWord = shouldJumpToNextWord({
     data,
     inputValue: testInput,
     targetWord: currentWord,
     isCommitChar,
-  });
-
-  const wordCorrect = isWordCorrect({
-    data,
-    inputValue: testInput,
-    targetWord: currentWord,
-    correctShiftUsed,
+    wordCorrect,
   });
 
   // when moving to the next word, correctness is word-level (a correct word-completing
