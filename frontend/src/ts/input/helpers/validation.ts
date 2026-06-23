@@ -54,6 +54,12 @@ export function isWordCorrect(options: {
   return finalInputValue === targetWord;
 }
 
+/**
+ * Determines if a character should commit the current word
+ * @param options - Options object
+ * @param options.data - Input data
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
+ */
 export function isCommitChar(options: {
   data: string;
   inputValue: string;
@@ -70,8 +76,7 @@ export function isCommitChar(options: {
 }
 
 /**
- * Determines if a space character should be inserted as a character, or act
- * as a "control character" (moving to the next word)
+ * Determines if we should move on to the next word or not.
  * @param options - Options object
  * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
