@@ -7,7 +7,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { isJumpToNextWordBlocked } from "../helpers/validation";
+import { shouldJumpToNextWord } from "../helpers/validation";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 
@@ -31,11 +31,6 @@ export function onBeforeInsertText(data: string): boolean {
 
   const { inputValue } = getInputElementValue();
   const dataIsSpace = isSpace(data);
-  const isNextWordBlocked = isJumpToNextWordBlocked({
-    data,
-    inputValue,
-    targetWord: TestWords.words.getCurrentText(),
-  });
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
@@ -58,11 +53,17 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
+  const shouldGoToNextWord = shouldJumpToNextWord({
+    data,
+    inputValue,
+    targetWord: TestWords.words.getCurrentText(),
+  });
+
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
   const overLimit = getCurrentInput().length >= inputLimit;
-  if (overLimit && (isNextWordBlocked || !dataIsSpace)) {
+  if (overLimit && !shouldGoToNextWord) {
     console.error("Hitting word limit");
     return true;
   }
@@ -79,7 +80,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    (isNextWordBlocked || !dataIsSpace) &&
+    !shouldGoToNextWord &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
