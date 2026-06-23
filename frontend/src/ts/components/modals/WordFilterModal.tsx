@@ -239,9 +239,10 @@ export function WordFilterModal(props: {
             />
           </LabeledField>
           <div class="text-xs text-sub">
-            You can manually filter words by length, words or characters
-            (separated by spaces) on the left side. On the right side you can
-            generate filters based on a preset and selected layout.
+            You can manually filter words by length, words, characters
+            (separated by spaces), or regular expressions on the left side. On
+            the right side you can generate filters based on a preset and
+            selected layout.
           </div>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
