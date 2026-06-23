@@ -193,7 +193,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
       {
         desc: "submit incorrect word (stopOnError off)",
@@ -204,7 +204,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
       // Stop on error
       {
@@ -216,7 +216,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: true,
+        expected: false,
       },
       {
         desc: "insert space if incorrect (stopOnError word)",
@@ -227,7 +227,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: true,
+        expected: false,
       },
       {
         desc: "submit if correct (stopOnError letter)",
@@ -238,7 +238,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
       // Strict space / Difficulty
       {
@@ -250,7 +250,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: true,
           difficulty: "normal",
         },
-        expected: true,
+        expected: false,
       },
       {
         desc: "insert space if empty input (difficulty not normal - expert or master)",
@@ -261,7 +261,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: false,
           difficulty: "expert",
         },
-        expected: true,
+        expected: false,
       },
       {
         desc: "submit if not empty input (strictSpace on)",
@@ -272,7 +272,7 @@ describe("shouldJumpToNextWord", () => {
           strictSpace: true,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
     ])("$desc", ({ inputValue, targetWord, config, expected }) => {
       replaceConfig(config as any);
