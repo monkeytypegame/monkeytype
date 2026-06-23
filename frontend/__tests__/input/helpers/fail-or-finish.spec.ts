@@ -322,7 +322,7 @@ describe("checkIfFinished", () => {
       allWordsTyped: true,
       testInputWithData: "wo ",
       currentWord: "word",
-      shouldGoToNextWord: true,
+      goingToNextWord: true,
       expected: true,
     },
     {
@@ -336,7 +336,7 @@ describe("checkIfFinished", () => {
     desc: string;
     allWordsTyped: boolean;
     allWordsGenerated?: boolean;
-    shouldGoToNextWord: boolean;
+    goingToNextWord: boolean;
     testInputWithData: string;
     currentWord: string;
     config?: Record<string, any>;
@@ -347,7 +347,7 @@ describe("checkIfFinished", () => {
     ({
       allWordsTyped,
       allWordsGenerated,
-      shouldGoToNextWord,
+      goingToNextWord,
       testInputWithData,
       currentWord,
       config,
@@ -356,7 +356,7 @@ describe("checkIfFinished", () => {
       if (config) replaceConfig(config as any);
 
       const result = checkIfFinished({
-        shouldGoToNextWord,
+        goingToNextWord,
         testInputWithData,
         currentWord,
         allWordsTyped,

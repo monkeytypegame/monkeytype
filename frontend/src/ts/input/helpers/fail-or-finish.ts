@@ -68,21 +68,21 @@ export function checkIfFailedDueToDifficulty(options: {
 /**
  * Determines if the test should finish
  * @param options - Options object
- * @param options.shouldGoToNextWord - Should go to next word
+ * @param options.goingToNextWord - Is this input committing the word and moving on
  * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.currentWord - Current target word
  * @param options.allWordsTyped - Have all words been typed
  * @returns Boolean if test should finish
  */
 export function checkIfFinished(options: {
-  shouldGoToNextWord: boolean;
+  goingToNextWord: boolean;
   testInputWithData: string;
   currentWord: string;
   allWordsTyped: boolean;
   allWordsGenerated: boolean;
 }): boolean {
   const {
-    shouldGoToNextWord,
+    goingToNextWord,
     testInputWithData,
     currentWord,
     allWordsTyped,
@@ -96,7 +96,7 @@ export function checkIfFinished(options: {
   if (
     allWordsTyped &&
     allWordsGenerated &&
-    (wordIsCorrect || shouldQuickEnd || shouldGoToNextWord)
+    (wordIsCorrect || shouldQuickEnd || goingToNextWord)
   ) {
     return true;
   }
