@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import {
   isCharCorrect,
   isWordCorrect,
-  shouldInsertSpaceCharacter,
+  isJumpToNextWordBlocked,
 } from "../../../src/ts/input/helpers/validation";
 import { __testing } from "../../../src/ts/config/testing";
 import * as FunboxList from "../../../src/ts/test/funbox/list";
@@ -155,7 +155,7 @@ describe("isCharCorrect", () => {
   });
 });
 
-describe("shouldInsertSpaceCharacter", () => {
+describe("isJumpToNextWordBlocked", () => {
   beforeEach(() => {
     replaceConfig({
       mode: "time",
@@ -169,20 +169,10 @@ describe("shouldInsertSpaceCharacter", () => {
     replaceConfig({});
   });
 
-  it("returns null if data is not a space", () => {
-    expect(
-      shouldInsertSpaceCharacter({
-        data: "a",
-        inputValue: "test",
-        targetWord: "test",
-      }),
-    ).toBe(null);
-  });
-
   it("returns false in zen mode", () => {
     replaceConfig({ mode: "zen" });
     expect(
-      shouldInsertSpaceCharacter({
+      isJumpToNextWordBlocked({
         data: " ",
         inputValue: "test",
         targetWord: "test",
@@ -286,7 +276,7 @@ describe("shouldInsertSpaceCharacter", () => {
     ])("$desc", ({ inputValue, targetWord, config, expected }) => {
       replaceConfig(config as any);
       expect(
-        shouldInsertSpaceCharacter({
+        isJumpToNextWordBlocked({
           data: " ",
           inputValue,
           targetWord,

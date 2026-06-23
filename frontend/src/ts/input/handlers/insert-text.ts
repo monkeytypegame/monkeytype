@@ -34,7 +34,7 @@ import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
   isWordCorrect,
-  shouldInsertSpaceCharacter,
+  isJumpToNextWordBlocked,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
@@ -119,8 +119,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
-  const shouldInsertSpace =
-    shouldInsertSpaceCharacter({
+  const isNextWordBlocked =
+    isJumpToNextWordBlocked({
       data,
       inputValue: testInput,
       targetWord: currentWord,
@@ -150,7 +150,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     (testInput + data).length === TestWords.words.getCurrentText().length;
   // does this input try to move to the next word (before removeLastChar can block it)
   const goingToNextWord =
-    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
+    (charIsSpace || charIsNewline || noSpaceForce) && !isNextWordBlocked;
 
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has charCorrect === false, so charCorrect can't be used below)
@@ -246,9 +246,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
    - spaceOrNewLine: did the user input a space or a new line?
-   - shouldInsertSpace: should space be treated as a character, or should it move us to the next word
-     monkeytype doesnt actually have space characters in words, so we need this distinction
-     and also moving to the next word might get blocked by things like stop on error
    - shouldGoToNextWord: IF input is space and we DONT insert a space CHARACTER, we will TRY to go to the next word
    - increasedWordIndex: the only reason this is here because on the last word we dont move to the next word
   */

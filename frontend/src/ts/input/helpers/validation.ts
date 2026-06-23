@@ -60,24 +60,20 @@ export function isWordCorrect(options: {
  * @param options.targetWord - Target word
  * @returns Boolean if data is space, null if not
  */
-export function shouldInsertSpaceCharacter(options: {
+export function isJumpToNextWordBlocked(options: {
   data: string;
   inputValue: string;
   targetWord: string;
 }): boolean | null {
-  const { data, inputValue, targetWord } = options;
-  if (!isSpace(data)) {
-    return null;
-  }
-  if (Config.mode === "zen") {
-    return false;
-  }
-  const correctSoFar = `${targetWord} `.startsWith(`${inputValue} `);
+  const { data, inputValue } = options;
+
+  const correct = isWordCorrect({ ...options, correctShiftUsed: null });
+
   const stopOnErrorLetterAndIncorrect =
-    Config.stopOnError === "letter" && !correctSoFar;
-  const stopOnErrorWordAndIncorrect =
-    Config.stopOnError === "word" && !correctSoFar;
+    Config.stopOnError === "letter" && !correct;
+  const stopOnErrorWordAndIncorrect = Config.stopOnError === "word" && !correct;
   const strictSpace =
+    isSpace(data) &&
     inputValue.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
   return (
