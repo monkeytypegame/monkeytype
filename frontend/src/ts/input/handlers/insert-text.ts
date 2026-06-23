@@ -14,10 +14,7 @@ import {
 import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import {
-  findSingleActiveFunboxWithFunction,
-  isFunboxActiveWithProperty,
-} from "../../test/funbox/list";
+import { findSingleActiveFunboxWithFunction } from "../../test/funbox/list";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -34,7 +31,7 @@ import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
   isWordCorrect,
-  isJumpToNextWordBlocked,
+  shouldJumpToNextWord,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
@@ -119,11 +116,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
-  const isNextWordBlocked = isJumpToNextWordBlocked({
-    data,
-    inputValue: testInput,
-    targetWord: currentWord,
-  });
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -143,13 +135,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
-  // word navigation check
-  const noSpaceForce =
-    isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrentText().length;
   // does this input try to move to the next word (before removeLastChar can block it)
-  const goingToNextWord =
-    (charIsSpace || charIsNewline || noSpaceForce) && !isNextWordBlocked;
+  const goingToNextWord = shouldJumpToNextWord({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+    charIsSpace,
+    charIsNewline,
+  });
 
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has charCorrect === false, so charCorrect can't be used below)
@@ -224,16 +217,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // this needs to be called after event logging
   WeakSpot.updateScore(data, correct);
 
-  const commitCorrect = noSpaceForce
-    ? testInput + data === currentWord
-    : correct;
-
   // going to next word
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
   if (shouldGoToNextWord) {
     const result = await goToNextWord({
-      correctInsert: commitCorrect,
+      correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
       zenNewline: charIsNewline && Config.mode === "zen",
       now,
