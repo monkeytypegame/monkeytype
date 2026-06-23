@@ -111,8 +111,10 @@ export function shouldJumpToNextWord(options: {
 
   return (
     isCommitChar &&
-    (stopOnErrorLetterAndIncorrect ||
+    !(
+      stopOnErrorLetterAndIncorrect ||
       stopOnErrorWordAndIncorrect ||
-      strictSpace)
+      strictSpace
+    )
   );
 }
