@@ -1,4 +1,5 @@
 import { promiseWithResolvers } from "../utils/misc";
+import { EventLog } from "./events/types";
 
 export let isActive = false;
 export let bailedOut = false;
@@ -12,6 +13,11 @@ export let testRestarting = false;
 export let resultVisible = false;
 export let resultCalculating = false;
 export let koreanStatus = false;
+export let lastEventLog: EventLog | null = null;
+
+export function setLastEventLog(log: EventLog): void {
+  lastEventLog = log;
+}
 
 export function setKoreanStatus(val: boolean): void {
   koreanStatus = val;

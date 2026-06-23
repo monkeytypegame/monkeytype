@@ -256,6 +256,10 @@ async function goBackOrHide(): Promise<void> {
   }
 }
 
+function stripPunctuation(str: string): string {
+  return str.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+}
+
 async function filterSubgroup(): Promise<void> {
   const subgroup = await getSubgroup();
   subgroup.beforeList?.();
@@ -267,7 +271,9 @@ async function filterSubgroup(): Promise<void> {
     .trim();
 
   const inputSplit =
-    inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
+    inputNoQuickSingle.length === 0
+      ? []
+      : inputNoQuickSingle.split(" ").map(stripPunctuation).filter(Boolean);
 
   const matches: {
     matchCount: number;
@@ -299,8 +305,10 @@ async function filterSubgroup(): Promise<void> {
         : command.display
     )
       .toLowerCase()
-      .split(" ");
-    const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
+      .split(" ")
+      .map(stripPunctuation);
+    const aliasSplit =
+      command.alias?.toLowerCase().split(" ").map(stripPunctuation) ?? [];
 
     const displayAliasSplit = displaySplit.concat(aliasSplit);
     const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(

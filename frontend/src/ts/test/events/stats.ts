@@ -1,5 +1,5 @@
-import { CharCounts, countChars } from "../../utils/strings";
-import { getEventsPerWord, getInputFromDom } from "./helpers";
+import { CharCounts, countChars, isSpace } from "../../utils/strings";
+import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
@@ -314,6 +314,34 @@ export function getTestDurationMs(eventLog: EventLog): number {
   return end;
 }
 
+export function getDateBasedTestDurationMs(eventLog: EventLog): number {
+  let start: number | undefined;
+  let end: number | undefined;
+
+  for (const event of eventLog.events) {
+    if (
+      start === undefined &&
+      event.type === "timer" &&
+      event.data.event === "start"
+    ) {
+      start = event.data.date;
+    }
+    if (
+      end === undefined &&
+      event.type === "timer" &&
+      event.data.event === "end"
+    ) {
+      end = event.data.date;
+    }
+  }
+
+  if (start === undefined || end === undefined) {
+    return 0;
+  }
+
+  return end - start;
+}
+
 function getTargetWord(
   eventLog: EventLog,
   wordIndex: number,
@@ -348,6 +376,75 @@ function getTargetWord(
   }
 }
 
+function computeBurst(events: TestEventNoMs[], now?: number): number {
+  const inputEvents = events.filter((e) => e.type === "input");
+  const input = getInputFromDom(inputEvents);
+
+  let inputLength = input.length;
+  if (!input.endsWith(" ") && !input.endsWith("\n")) {
+    inputLength += 1; // account for trigger char (space/newline) on word submit
+  }
+
+  let firstKeypressTime: number | undefined;
+  let lastKeypressTime: number | undefined;
+
+  for (const event of events) {
+    if (
+      event.type === "composition" &&
+      event.data.event === "start" &&
+      firstKeypressTime === undefined
+    ) {
+      firstKeypressTime = event.testMs;
+    }
+
+    if (
+      event.type === "input" &&
+      (event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText")
+    ) {
+      if (event.data.charIndex === 0 && firstKeypressTime === undefined) {
+        firstKeypressTime = event.testMs;
+      }
+      if (firstKeypressTime !== undefined) {
+        lastKeypressTime = event.testMs;
+      }
+    }
+  }
+
+  if (firstKeypressTime === undefined || input.length === 0) {
+    return 0;
+  }
+
+  if (lastKeypressTime !== undefined && lastKeypressTime < firstKeypressTime) {
+    lastKeypressTime = undefined;
+  }
+
+  const endTime = lastKeypressTime ?? now ?? performance.now();
+
+  const durationSeconds = (endTime - firstKeypressTime) / 1000;
+  if (durationSeconds <= 0) return Infinity;
+
+  return Math.round(calculateWpm(inputLength, durationSeconds));
+}
+
+export function getWordBurst(
+  eventLog: EventLog,
+  wordIndex: number,
+  now?: number,
+): number {
+  const events = getEventsForWord(eventLog.events, wordIndex);
+  return computeBurst(events, now);
+}
+
+export function getWordBurstHistory(eventLog: EventLog): number[] {
+  const eventsPerWord = getEventsPerWord(eventLog.events);
+  const burstHistory: number[] = [];
+  for (let i = 0; i < eventsPerWord.size; i++) {
+    burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
+  }
+  return burstHistory;
+}
+
 function countCharsForWordIndex(
   eventLog: EventLog,
   wordIndex: number,
@@ -356,6 +453,12 @@ function countCharsForWordIndex(
   countPartial: boolean,
 ): CharCounts {
   let simulatedInput = getInputFromDom(wordEvents);
+  // IME commit chars (e.g. the full-width ideographic space U+3000) differ from
+  // the regular space the target word uses as a separator. Normalize them so
+  // the comparison matches the live input path, which treats them via isSpace.
+  simulatedInput = [...simulatedInput]
+    .map((c) => (isSpace(c) ? " " : c))
+    .join("");
   if (eventLog.context.koreanStatus) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
@@ -393,16 +496,20 @@ function inferActiveWordIndex(
   return maxWordIndex;
 }
 
-export function getChars(eventLog: EventLog): CharCounts {
+export function getChars(
+  eventLog: EventLog,
+  countPartialLastWord = false,
+  testMs?: number,
+): CharCounts {
   const { events, context } = eventLog;
   const { bailedOut } = context;
 
   const isTimed = isTimedTest(eventLog);
 
-  const eventsPerWord = getEventsPerWord(events);
+  const eventsPerWord = getEventsPerWord(events, testMs);
   const lastWordIndex = inferActiveWordIndex(eventsPerWord);
 
-  const countPartial = isTimed || bailedOut;
+  const countPartial = isTimed || bailedOut || countPartialLastWord;
 
   const acc: CharCounts = {
     allCorrect: 0,
@@ -464,7 +571,10 @@ export function getInputHistory(eventLog: EventLog): string[] {
   return history;
 }
 
-export function getAccuracy(eventLog: EventLog): {
+export function getAccuracy(
+  eventLog: EventLog,
+  testMs?: number,
+): {
   correct: number;
   incorrect: number;
   percentage: number;
@@ -475,6 +585,7 @@ export function getAccuracy(eventLog: EventLog): {
   let incorrect = 0;
 
   for (const event of events) {
+    if (testMs !== undefined && event.testMs > testMs) break;
     if (event.type !== "input") continue;
 
     if (!("correct" in event.data)) {
@@ -546,6 +657,31 @@ export function getKeypressOverlap(eventLog: EventLog): number {
     }
   }
   return roundTo2(overlap);
+}
+
+export function getWordIndexesForSecond(
+  eventLog: EventLog,
+  second: number,
+): number[] {
+  const { events } = eventLog;
+  const boundaries = getTimerBoundaries(eventLog);
+
+  const boundary = boundaries[second];
+  if (boundary === undefined) return [];
+
+  const prevBoundary = second > 0 ? boundaries[second - 1] : undefined;
+  const wordIndexes = new Set<number>();
+
+  for (const event of events) {
+    if (prevBoundary !== undefined && event.testMs <= prevBoundary) continue;
+    if (event.testMs > boundary) break;
+
+    if ("wordIndex" in event.data) {
+      wordIndexes.add(event.data.wordIndex);
+    }
+  }
+
+  return [...wordIndexes];
 }
 
 export function getErrorCountHistory(eventLog: EventLog): number[] {
@@ -745,6 +881,73 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
   }
 
   return durations;
+}
+
+export function getMissedWords(eventLog: EventLog): Record<string, number> {
+  const missedWords: Record<string, number> = Object.create(null) as Record<
+    string,
+    number
+  >;
+
+  for (const event of eventLog.events) {
+    if (
+      event.type === "input" &&
+      event.data.inputType === "insertText" &&
+      !event.data.correct
+    ) {
+      const word = eventLog.context.targetWords[event.data.wordIndex];
+      if (word === undefined) continue;
+      missedWords[word] = (missedWords[word] ?? 0) + 1;
+    }
+  }
+
+  return missedWords;
+}
+
+export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
+  const ev = getEventsPerWord(eventLog.events);
+  const correctedWords: string[] = [];
+
+  for (const [, events] of ev.entries()) {
+    const correctedChars: string[] = [];
+    const currentChars: string[] = [];
+    let cursorPos = 0;
+
+    for (const event of events) {
+      if (event.type !== "input") continue;
+      if (
+        event.data.inputType === "insertText" ||
+        event.data.inputType === "insertCompositionText"
+      ) {
+        if (
+          event.data.inputStopped ||
+          (event.data.data === " " && event.data.commitsWord)
+        ) {
+          continue;
+        }
+        currentChars[cursorPos] = event.data.data;
+        cursorPos++;
+      } else if (event.data.inputType === "deleteContentBackward") {
+        if (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      } else if (event.data.inputType === "deleteWordBackward") {
+        while (cursorPos > 0) {
+          cursorPos--;
+          correctedChars[cursorPos] = currentChars[cursorPos] ?? "";
+        }
+      }
+    }
+
+    const result: string[] = [];
+    for (let i = 0; i < currentChars.length; i++) {
+      result.push(correctedChars[i] ?? currentChars[i] ?? "");
+    }
+    correctedWords.push(result.join(""));
+  }
+
+  return correctedWords;
 }
 
 export const __testing = {
