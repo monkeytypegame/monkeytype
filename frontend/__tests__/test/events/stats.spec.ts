@@ -1162,6 +1162,46 @@ describe("stats.ts", () => {
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
     });
+
+    it("credits a word committed with an IME full-width space", () => {
+      // Japanese IME commits words with the ideographic space U+3000, while the
+      // target word separator is a regular space — normalize so it still counts
+      TestWords.list.push("しり", "かこ");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "し" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "り" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          charIndex: 2,
+          wordIndex: 0,
+          data: "　",
+          commitsWord: true,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "か" }),
+      );
+
+      const chars = getChars(buildEventLog());
+      // word 0 "しり " is fully correct (2 chars + separator)
+      expect(chars.correctWord).toBe(3);
+      expect(chars.incorrect).toBe(0);
+      expect(chars.extra).toBe(0);
+    });
   });
 
   describe("getWpmHistory", () => {

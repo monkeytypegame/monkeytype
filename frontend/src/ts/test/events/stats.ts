@@ -1,6 +1,7 @@
 import {
   CharCounts,
   countChars,
+  isSpace,
   removeTrailingSeparator,
 } from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
@@ -444,6 +445,12 @@ function countCharsForWordIndex(
   countPartial: boolean,
 ): CharCounts {
   let simulatedInput = getInputFromDom(wordEvents);
+  // IME commit chars (e.g. the full-width ideographic space U+3000) differ from
+  // the regular space the target word uses as a separator. Normalize them so
+  // the comparison matches the live input path, which treats them via isSpace.
+  simulatedInput = [...simulatedInput]
+    .map((c) => (isSpace(c) ? " " : c))
+    .join("");
   if (eventLog.context.koreanStatus) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
