@@ -241,9 +241,7 @@ export function getCurrentInputForDisplay(): string {
 }
 
 export function getInputForWord(wordIndex: number): string {
-  return getInputFromDom(
-    getEventsForWord(getAllTestEvents(), wordIndex),
-  ).trimEnd();
+  return getInputFromDom(getEventsForWord(getAllTestEvents(), wordIndex));
 }
 
 export function cleanupData(): void {

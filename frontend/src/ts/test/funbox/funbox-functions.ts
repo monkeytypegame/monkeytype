@@ -64,9 +64,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     !isCorrect &&
     (currentInput !== "" ||
       getInputForWord(TestState.activeWordIndex - 1) !==
-        Strings.removeTrailingSeparator(
-          TestWords.words.getText(TestState.activeWordIndex - 1) ?? "",
-        ) ||
+        (TestWords.words.getText(TestState.activeWordIndex - 1) ?? "") ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");

@@ -60,9 +60,7 @@ function deriveReplayActions(): Replay[] {
         const target =
           Config.mode === "zen"
             ? typed
-            : removeTrailingSeparator(
-                TestWords.words.getText(prevWordIndex) ?? "",
-              );
+            : (TestWords.words.getText(prevWordIndex) ?? "");
         const correct = typed === target;
         actions.push({
           action: correct ? "submitCorrectWord" : "submitErrorWord",
