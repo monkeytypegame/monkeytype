@@ -38,7 +38,7 @@ export function checkIfFailedDueToMinBurst(options: {
  * @param options - Options object
  * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.correct - Was the last input correct
- * @param options.isCommitChar - Whether the entered character finishes the word
+ * @param options.isCommitChar - Whether the entered character commits the current word
  */
 export function checkIfFailedDueToDifficulty(options: {
   testInputWithData: string;
