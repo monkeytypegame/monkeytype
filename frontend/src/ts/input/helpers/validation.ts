@@ -3,12 +3,6 @@ import { isSpace } from "../../utils/strings";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import * as TestWords from "../../test/test-words";
 
-type sharedOptions = {
-  data: string;
-  inputValue: string;
-  targetWord: string;
-};
-
 /**
  * Check if the input data is correct
  * @param options - Options object
@@ -17,11 +11,12 @@ type sharedOptions = {
  * @param options.targetWord - Target word
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
-export function isCharCorrect(
-  options: sharedOptions & {
-    correctShiftUsed: boolean | null; //null means disabled
-  },
-): boolean {
+export function isCharCorrect(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  correctShiftUsed: boolean | null; //null means disabled
+}): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
   if (Config.mode === "zen") return true;
@@ -44,11 +39,12 @@ export function isCharCorrect(
  * @param options.targetWord - Target word
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
-export function isWordCorrect(
-  options: sharedOptions & {
-    correctShiftUsed: boolean | null; //null means disabled
-  },
-): boolean {
+export function isWordCorrect(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  correctShiftUsed: boolean | null; //null means disabled
+}): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
   if (Config.mode === "zen") return true;
@@ -64,12 +60,10 @@ export function isWordCorrect(
  * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  */
-export function isCommitCharacter(
-  options: Omit<sharedOptions, "targetWord"> & {
-    data: string;
-    inputValue: string;
-  },
-): boolean {
+export function isCommitCharacter(options: {
+  data: string;
+  inputValue: string;
+}): boolean {
   const { data, inputValue } = options;
 
   const charIsSpace = isSpace(data);
@@ -89,11 +83,12 @@ export function isCommitCharacter(
  * @param options.targetWord - Target word
  * @param options.isCommitChar - Whether this character commits the current word
  */
-export function shouldJumpToNextWord(
-  options: sharedOptions & {
-    isCommitChar?: boolean;
-  },
-): boolean {
+export function shouldJumpToNextWord(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  isCommitChar?: boolean;
+}): boolean {
   const {
     data,
     inputValue,
