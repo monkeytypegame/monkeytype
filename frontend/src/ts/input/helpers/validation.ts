@@ -92,6 +92,7 @@ export function shouldJumpToNextWord(options: {
   const {
     data,
     inputValue,
+    targetWord,
     isCommitChar = isCommitCharacter({ data, inputValue }),
   } = options;
 
@@ -99,7 +100,12 @@ export function shouldJumpToNextWord(options: {
     return false;
   }
 
-  const correct = isWordCorrect({ ...options, correctShiftUsed: null });
+  const correct = isWordCorrect({
+    data,
+    inputValue,
+    targetWord,
+    correctShiftUsed: null,
+  });
 
   const stopOnErrorLetterAndIncorrect =
     Config.stopOnError === "letter" && !correct;
