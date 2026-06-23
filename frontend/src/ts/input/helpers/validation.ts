@@ -65,10 +65,7 @@ export function isWordCorrect(
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  */
 export function isCommitCharacter(
-  options: Omit<SharedOptions, "targetWord"> & {
-    data: string;
-    inputValue: string;
-  },
+  options: Omit<SharedOptions, "targetWord">,
 ): boolean {
   const { data, inputValue } = options;
 
