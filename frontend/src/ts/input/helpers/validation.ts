@@ -61,7 +61,6 @@ export function isWordCorrect(options: {
  * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
- * @returns Boolean if data is space, null if not
  */
 export function isJumpToNextWordBlocked(options: {
   data: string;
