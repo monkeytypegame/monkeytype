@@ -36,26 +36,26 @@ export function checkIfFailedDueToMinBurst(options: {
 /**
  * Check if the test should fail due to difficulty settings
  * @param options - Options object
- * @param options.testInputWithData - Current test input result (after adding data)
+ * @param options.data - Input data
+ * @param options.inputValue - Current test input result
  * @param options.correct - Was the last input correct
- * @param options.spaceOrNewline - Is the input a space or newline
+ * @param options.isCommitData - Whether the entered character finishes the word
  */
 export function checkIfFailedDueToDifficulty(options: {
-  testInputWithData: string;
+  data: string;
+  inputValue: string;
   correct: boolean;
-  spaceOrNewline: boolean;
+  isCommitData: boolean;
 }): boolean {
-  const { testInputWithData, correct, spaceOrNewline } = options;
-  // Using space or newline instead of shouldInsertSpace or increasedWordIndex
-  // because we want expert mode to fail no matter if confidence or stop on error is on
+  const { data, inputValue, correct, isCommitData } = options;
 
   if (Config.mode === "zen") return false;
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
     !correct &&
-    spaceOrNewline &&
-    testInputWithData.length > 1;
+    isCommitData &&
+    (inputValue + data).length > 1;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
 

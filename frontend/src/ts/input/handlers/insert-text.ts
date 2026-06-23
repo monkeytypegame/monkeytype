@@ -32,6 +32,7 @@ import {
   isCharCorrect,
   isWordCorrect,
   shouldJumpToNextWord,
+  isCommitChar,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
@@ -135,13 +136,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       correctShiftUsed,
     });
 
+  const isCommitData = isCommitChar({ data, inputValue: testInput });
+
   // does this input try to move to the next word (before removeLastChar can block it)
   const goingToNextWord = shouldJumpToNextWord({
     data,
     inputValue: testInput,
     targetWord: currentWord,
-    charIsSpace,
-    charIsNewline,
+    isCommitData,
   });
 
   // when moving to the next word, correctness is word-level (a correct word-completing
@@ -258,9 +260,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
-        testInputWithData: testInput + data,
+        data,
+        inputValue: testInput,
         correct,
-        spaceOrNewline: charIsSpace || charIsNewline,
+        isCommitData,
       })
     ) {
       TestLogic.fail("difficulty");

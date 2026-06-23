@@ -83,27 +83,32 @@ export function isJumpToNextWordBlocked(options: {
   );
 }
 
+export function isCommitChar(options: {
+  data: string;
+  inputValue: string;
+}): boolean {
+  const { data, inputValue } = options;
+
+  const charIsSpace = isSpace(data);
+  const charIsNewline = data === "\n";
+  const noSpaceForce =
+    isFunboxActiveWithProperty("nospace") &&
+    (inputValue + data).length === TestWords.words.getCurrentText().length;
+
+  return charIsSpace || charIsNewline || noSpaceForce;
+}
+
 export function shouldJumpToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-  charIsSpace?: boolean;
-  charIsNewline?: boolean;
+  isCommitData: boolean;
 }): boolean {
-  const {
-    data,
-    inputValue,
-    targetWord,
-    charIsSpace = isSpace(data),
-    charIsNewline = data === "\n",
-  } = options;
+  const { data, inputValue, targetWord, isCommitData } = options;
   const isNextWordBlocked = isJumpToNextWordBlocked({
     data,
     inputValue,
     targetWord,
   });
-  const noSpaceForce =
-    isFunboxActiveWithProperty("nospace") &&
-    (inputValue + data).length === TestWords.words.getCurrentText().length;
-  return (charIsSpace || charIsNewline || noSpaceForce) && !isNextWordBlocked;
+  return isCommitData && !isNextWordBlocked;
 }
