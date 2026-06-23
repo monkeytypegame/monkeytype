@@ -64,7 +64,7 @@ export function isJumpToNextWordBlocked(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-}): boolean | null {
+}): boolean {
   const { data, inputValue } = options;
 
   const correct = isWordCorrect({ ...options, correctShiftUsed: null });
