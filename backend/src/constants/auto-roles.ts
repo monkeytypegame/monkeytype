@@ -1,38 +1,5 @@
-export default [
-  "oneHourWarrior",
-  "doubleDown",
-  "tripleTrouble",
-  "quad",
-  "trueSimp",
-  "bigramSalad",
-  "simp",
-  "antidiseWhat",
-  "whatsThisWebsiteCalledAgain",
-  "developd",
-  "slowAndSteady",
-  "speedSpacer",
-  "iveGotThePower",
-  "accuracyExpert",
-  "accuracyMaster",
-  "accuracyGod",
-  "jolly",
-  "gottaCatchEmAll",
-  "rapGod",
-  "navySeal",
-  "rollercoaster",
-  "oneHourMirror",
-  "chooChoo",
-  "earfquake",
-  "simonSez",
-  "accountant",
-  "hidden",
-  "iCanSeeTheFuture",
-  "whatAreWordsAtThisPoint",
-  "specials",
-  "aeiou",
-  "asciiWarrior",
-  "iKiNdAlIkEhOwInEfFiCiEnTqWeRtYiS",
-  "oneNauseousMonkey",
-  "69",
-  "englishMaster",
-];
+import { Challenges } from "@monkeytype/challenges";
+
+export default Object.entries(Challenges)
+  .filter(([_, challenge]) => challenge.autoRole)
+  .map(([name]) => name);

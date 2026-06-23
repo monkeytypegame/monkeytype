@@ -5,11 +5,84 @@ const MinRequiredNumber = z.object({ min: z.number() }).strict();
 const MaxRequiredNumber = z.object({ max: z.number() }).strict();
 const ExactRequiredNumber = z.object({ exact: z.number() }).strict();
 
+import { customEnumErrorHandler } from "./util";
+
+export const ChallengeNameSchema = z.enum(
+  [
+    "oneHourWarrior",
+    "doubleDown",
+    "tripleTrouble",
+    "quad",
+    "8Ball",
+    "theBig12",
+    "1Day",
+    "trueSimp",
+    "bigramSalad",
+    "simp",
+    "antidiseWhat",
+    "whatsThisWebsiteCalledAgain",
+    "developd",
+    "slowAndSteady",
+    "speedSpacer",
+    "iveGotThePower",
+    "accuracyExpert",
+    "accuracyMaster",
+    "accuracyGod",
+    "inAGalaxyFarFarAway",
+    "beepBoop",
+    "whosYourDaddy",
+    "itsATrap",
+    "jolly",
+    "gottaCatchEmAll",
+    "rapGod",
+    "navySeal",
+    "littleChef",
+    "crosstalk",
+    "bees",
+    "getOffMySwamp",
+    "lookAtMeIAmTheDeveloperNow",
+    "beLikeWater",
+    "rollercoaster",
+    "oneHourMirror",
+    "chooChoo",
+    "mnemonist",
+    "earfquake",
+    "simonSez",
+    "accountant",
+    "hidden",
+    "iCanSeeTheFuture",
+    "whatAreWordsAtThisPoint",
+    "specials",
+    "aeiou",
+    "asciiWarrior",
+    "oneNauseousMonkey",
+    "thumbWarrior",
+    "mouseWarrior",
+    "mobileWarrior",
+    "69",
+    "upsideDown",
+    "oneArmedBandit",
+    "englishMaster",
+    "feetWarrior",
+    "wingdings",
+    "iKiNdAlIkEhOwInEfFiCiEnTqWeRtYiS",
+    "100hours",
+    "250hours",
+    "500hours",
+  ],
+  {
+    errorMap: customEnumErrorHandler("Must be a known challenge name"),
+  },
+);
+
+export type ChallengeName = z.infer<typeof ChallengeNameSchema>;
+
 export const ChallengeSchema = z
   .object({
-    name: z.string(),
+    name: ChallengeNameSchema,
     display: z.string(),
     autoRole: z.boolean().optional(),
+    discordRoleId: z.string().optional(), //TODO fix
     type: z.enum([
       "customTime",
       "customWords",
@@ -18,6 +91,7 @@ export const ChallengeSchema = z
       "accuracy",
       "funbox",
       "other",
+      "hidden",
     ]),
     message: z.string().optional(),
     parameters: z.array(

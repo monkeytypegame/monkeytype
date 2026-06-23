@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@monkeytype/challenges": "workspace:*",
     "@monkeytype/contracts": "workspace:*",
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/schemas": "workspace:*",

@@ -1,33 +1,32 @@
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
+import * as Misc from "../utils/misc";
 
-import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
+import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 
-import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { Challenges } from "@monkeytype/challenges";
+import { Challenge, ChallengeName } from "@monkeytype/schemas/challenges";
 import {
   Config as ConfigType,
   Difficulty,
-  ThemeName,
   FunboxName,
+  ThemeName,
 } from "@monkeytype/schemas/configs";
-import { Mode } from "@monkeytype/schemas/shared";
 import { CompletedEvent } from "@monkeytype/schemas/results";
-import { areUnsortedArraysEqual } from "../utils/arrays";
-import { tryCatch } from "@monkeytype/util/trycatch";
-import { Challenge } from "@monkeytype/schemas/challenges";
-import { qs } from "../utils/dom";
+import { Mode } from "@monkeytype/schemas/shared";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
+import { areUnsortedArraysEqual } from "../utils/arrays";
+import { qs } from "../utils/dom";
 
 let challengeLoading = false;
 
@@ -207,24 +206,13 @@ export function verify(result: CompletedEvent): string | null {
   }
 }
 
-export async function setup(challengeName: string): Promise<boolean> {
+export async function setup(challengeName: ChallengeName): Promise<boolean> {
   challengeLoading = true;
 
   setConfig("funbox", []);
 
-  const { data: list, error } = await tryCatch(JSONData.getChallengeList());
-  if (error) {
-    showErrorNotification("Failed to setup challenge", { error });
-    setTimeout(() => {
-      qs("header .config")?.show();
-      qs(".page.pageTest")?.show();
-    }, 250);
-    return false;
-  }
+  const challenge = Challenges[challengeName];
 
-  const challenge = list.find(
-    (c) => c.name.toLowerCase() === challengeName.toLowerCase(),
-  );
   let notitext;
   try {
     if (challenge === undefined) {
@@ -245,7 +233,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-      if (challenge.name === "englishMaster") {
+      if (challengeName === "englishMaster") {
         setConfig("language", "english_10k", {
           nosave: true,
         });
@@ -347,6 +335,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         throw new Error("Can't load challenge with current config");
       }
     } else if (challenge.type === "other") {
+      /* TODO: missing challenge
       if (challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         setConfig("mode", "time", {
@@ -373,7 +362,8 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("keymapMode", "static", {
           nosave: true,
         });
-      } else if (challenge.name === "wingdings") {
+      } else */
+      if (challengeName === "wingdings") {
         // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
         setConfig("mode", "words", {
           nosave: true,
@@ -401,7 +391,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else {
       showSuccessNotification(`Challenge loaded. ${notitext}`);
     }
-    setLoadedChallenge(challenge);
+    setLoadedChallenge({ name: challengeName, ...challenge });
     challengeLoading = false;
     return true;
   } catch (e) {

@@ -1,3 +1,4 @@
+import { ChallengeName } from "@monkeytype/schemas/challenges";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -45,10 +46,11 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const accessToken = fragment.get("access_token") as string;
     const tokenType = fragment.get("token_type") as string;
     const state = fragment.get("state") as string;
+    const scope = fragment.get("scope");
 
     showLoaderBar();
     const response = await Ape.users.linkDiscord({
-      body: { tokenType, accessToken, state },
+      body: { tokenType, accessToken, state, scope: scope?.split(" ") },
     });
     hideLoaderBar();
 
@@ -317,7 +319,7 @@ export async function loadChallengeFromUrl(
   ).toLowerCase();
   if (getValue === "") return;
 
-  ChallengeController.setup(getValue)
+  ChallengeController.setup(getValue as ChallengeName)
     .then((result) => {
       if (result) {
         restartTest({

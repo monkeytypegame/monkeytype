@@ -37,6 +37,7 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
 import Test from "supertest/lib/test";
+import { Challenges } from "@monkeytype/challenges";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -1552,7 +1553,7 @@ describe("user controller test", () => {
     it("should get oauth link", async () => {
       //WHEN
       const { body } = await mockApp
-        .get("/users/discord/oauth")
+        .get("/users/discord/oauth?includeRoles=true")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -1561,7 +1562,9 @@ describe("user controller test", () => {
         message: "Discord oauth link generated",
         data: { url },
       });
-      expect(getOauthLinkMock).toHaveBeenCalledWith(uid);
+      expect(getOauthLinkMock).toHaveBeenCalledWith(uid, {
+        includeRoles: true,
+      });
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
@@ -1587,6 +1590,7 @@ describe("user controller test", () => {
       "iStateValidForUser",
     );
     const getDiscordUserMock = vi.spyOn(DiscordUtils, "getDiscordUser");
+    const getDiscordRoleIdsMock = vi.spyOn(DiscordUtils, "getDiscordRoleIds");
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const userLinkDiscordMock = vi.spyOn(UserDal, "linkDiscord");
     const georgeLinkDiscordMock = vi.spyOn(GeorgeQueue, "linkDiscord");
@@ -1599,6 +1603,9 @@ describe("user controller test", () => {
         id: "discordUserId",
         avatar: "discordUserAvatar",
       });
+      getDiscordRoleIdsMock.mockResolvedValue([
+        Challenges["100hours"].discordRoleId as string,
+      ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);
       userLinkDiscordMock.mockResolvedValue();
@@ -1610,6 +1617,7 @@ describe("user controller test", () => {
         isStateValidForUserMock,
         isDiscordIdAvailableMock,
         getDiscordUserMock,
+        getDiscordRoleIdsMock,
         blocklistContainsMock,
         userLinkDiscordMock,
         georgeLinkDiscordMock,
@@ -1629,6 +1637,7 @@ describe("user controller test", () => {
           tokenType: "tokenType",
           accessToken: "accessToken",
           state: "statestatestatestate",
+          scope: ["scopeOne", "scopeTwo"],
         })
         .expect(200);
 
@@ -1653,6 +1662,11 @@ describe("user controller test", () => {
         "tokenType",
         "accessToken",
       );
+      expect(getDiscordRoleIdsMock).toHaveBeenCalledWith(
+        "tokenType",
+        "accessToken",
+        ["scopeOne", "scopeTwo"],
+      );
       expect(isDiscordIdAvailableMock).toHaveBeenCalledWith("discordUserId");
       expect(blocklistContainsMock).toHaveBeenCalledWith({
         discordId: "discordUserId",
@@ -1661,6 +1675,9 @@ describe("user controller test", () => {
         uid,
         "discordUserId",
         "discordUserAvatar",
+        {
+          "100hours": {},
+        },
       );
       expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
         "discordUserId",
