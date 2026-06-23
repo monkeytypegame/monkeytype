@@ -235,7 +235,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
-   - spaceOrNewLine: did the user input a space or a new line?
    - shouldGoToNextWord: IF input is space and we DONT insert a space CHARACTER, we will TRY to go to the next word
    - increasedWordIndex: the only reason this is here because on the last word we dont move to the next word
   */
