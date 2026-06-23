@@ -142,6 +142,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     data,
     inputValue: testInput,
     targetWord: currentWord,
+    isCommitChar,
   });
 
   // when moving to the next word, correctness is word-level (a correct word-completing
