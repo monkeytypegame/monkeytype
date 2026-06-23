@@ -60,7 +60,7 @@ export function isWordCorrect(options: {
  * @param options.data - Input data
  * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  */
-export function isCommitChar(options: {
+export function isCommitCharacter(options: {
   data: string;
   inputValue: string;
 }): boolean {
@@ -103,7 +103,7 @@ export function shouldJumpToNextWord(options: {
     inputValue.length === 0 &&
     (Config.strictSpace || Config.difficulty !== "normal");
   return (
-    isCommitChar({ data, inputValue }) &&
+    isCommitCharacter({ data, inputValue }) &&
     (stopOnErrorLetterAndIncorrect ||
       stopOnErrorWordAndIncorrect ||
       strictSpace)

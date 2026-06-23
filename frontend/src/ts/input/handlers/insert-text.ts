@@ -32,7 +32,7 @@ import {
   isCharCorrect,
   isWordCorrect,
   shouldJumpToNextWord,
-  isCommitChar,
+  isCommitCharacter,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
@@ -135,7 +135,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
 
   // Whether this character finishes the current word
-  const isCommitData = isCommitChar({ data, inputValue: testInput });
+  const isCommitChar = isCommitCharacter({ data, inputValue: testInput });
 
   // does this input try to move to the next word (before removeLastChar can block it)
   const goingToNextWord = shouldJumpToNextWord({
@@ -260,7 +260,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       checkIfFailedDueToDifficulty({
         testInputWithData: testInput + data,
         correct,
-        isCommitData,
+        isCommitChar,
       })
     ) {
       TestLogic.fail("difficulty");

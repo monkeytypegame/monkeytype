@@ -38,21 +38,21 @@ export function checkIfFailedDueToMinBurst(options: {
  * @param options - Options object
  * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.correct - Was the last input correct
- * @param options.isCommitData - Whether the entered character finishes the word
+ * @param options.isCommitChar - Whether the entered character finishes the word
  */
 export function checkIfFailedDueToDifficulty(options: {
   testInputWithData: string;
   correct: boolean;
-  isCommitData: boolean;
+  isCommitChar: boolean;
 }): boolean {
-  const { testInputWithData, correct, isCommitData } = options;
+  const { testInputWithData, correct, isCommitChar } = options;
 
   if (Config.mode === "zen") return false;
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
     !correct &&
-    isCommitData &&
+    isCommitChar &&
     testInputWithData.length > 1;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
