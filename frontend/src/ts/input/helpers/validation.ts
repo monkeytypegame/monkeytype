@@ -101,18 +101,3 @@ export function isCommitChar(options: {
 
   return charIsSpace || charIsNewline || noSpaceForce;
 }
-
-export function shouldJumpToNextWord(options: {
-  data: string;
-  inputValue: string;
-  targetWord: string;
-  isCommitData: boolean;
-}): boolean {
-  const { data, inputValue, targetWord, isCommitData } = options;
-  const isNextWordBlocked = isJumpToNextWordBlocked({
-    data,
-    inputValue,
-    targetWord,
-  });
-  return isCommitData && !isNextWordBlocked;
-}

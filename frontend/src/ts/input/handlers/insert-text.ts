@@ -31,7 +31,7 @@ import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
   isWordCorrect,
-  shouldJumpToNextWord,
+  isJumpToNextWordBlocked,
   isCommitChar,
 } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
@@ -138,12 +138,13 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const isCommitData = isCommitChar({ data, inputValue: testInput });
 
   // does this input try to move to the next word (before removeLastChar can block it)
-  const goingToNextWord = shouldJumpToNextWord({
-    data,
-    inputValue: testInput,
-    targetWord: currentWord,
-    isCommitData,
-  });
+  const goingToNextWord =
+    isCommitData &&
+    !isJumpToNextWordBlocked({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+    });
 
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has charCorrect === false, so charCorrect can't be used below)
