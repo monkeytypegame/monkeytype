@@ -11,7 +11,11 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import {
+  areCharactersVisuallyEqual,
+  isSpace,
+  removeLanguageSize,
+} from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import {
@@ -42,6 +46,10 @@ const charOverrides = new Map<string, string>([
   ["…", "..."],
   // ["œ", "oe"],
   // ["æ", "ae"],
+]);
+
+const languageCharOverrides = new Map<string, [string, string][]>([
+  ["dutch", [["ĳ", "ij"]]],
 ]);
 
 type OnInsertTextParams = {
@@ -93,6 +101,29 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       data: charOverride,
     });
     return;
+  }
+
+  const languageOverrides = languageCharOverrides.get(
+    removeLanguageSize(Config.language),
+  );
+  if (languageOverrides !== undefined) {
+    for (const [targetChar, overrideChar] of languageOverrides) {
+      if (
+        options.data === targetChar &&
+        TestWords.words.getCurrentText()[getCurrentInput().length] !==
+          options.data
+      ) {
+        // replace the data with the override
+        setInputElementValue(
+          inputValue.slice(0, -options.data.length) + overrideChar,
+        );
+        await onInsertText({
+          ...options,
+          data: overrideChar,
+        });
+        return;
+      }
+    }
   }
 
   // input and target word
