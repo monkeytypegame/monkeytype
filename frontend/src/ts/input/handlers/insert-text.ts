@@ -145,16 +145,17 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     isCommitChar,
   });
 
+  const wordCorrect = isWordCorrect({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+    correctShiftUsed,
+  });
+
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has charCorrect === false, so charCorrect can't be used below)
   const correct = goingToNextWord
-    ? (funboxCorrect ??
-      isWordCorrect({
-        data,
-        inputValue: testInput,
-        targetWord: currentWord,
-        correctShiftUsed,
-      }))
+    ? (funboxCorrect ?? wordCorrect)
     : charCorrect;
 
   // handing cases where last char needs to be removed
@@ -260,7 +261,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     if (
       checkIfFailedDueToDifficulty({
         testInputWithData: testInput + data,
-        correct,
+        // We need to use `wordCorrect` here instead of `correct`, because when stop on
+        // error = word and nospace is enabled and difficulty = expert, submitting an incorrect
+        // word will do letter comparison when calculating `correct` (as we aren't moving
+        // to the next word because of stop on error), but we always want to do word
+        // comparison for expert mode.
+        correct: wordCorrect,
         isCommitChar,
       })
     ) {
