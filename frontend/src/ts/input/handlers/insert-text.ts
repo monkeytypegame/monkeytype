@@ -115,7 +115,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const wordIndex = TestState.activeWordIndex;
-  const charIsNewline = data === "\n";
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -225,7 +224,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: correct,
       isCompositionEnding: isCompositionEnding === true,
-      zenNewline: charIsNewline && Config.mode === "zen",
+      zenNewline: data === "\n" && Config.mode === "zen",
       now,
     });
     lastBurst = result.lastBurst;
