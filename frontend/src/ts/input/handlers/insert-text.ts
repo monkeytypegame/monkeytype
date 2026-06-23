@@ -258,8 +258,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
-        data,
-        inputValue: testInput,
+        testInputWithData: testInput + data,
         correct,
         isCommitData,
       })

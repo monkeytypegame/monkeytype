@@ -36,18 +36,16 @@ export function checkIfFailedDueToMinBurst(options: {
 /**
  * Check if the test should fail due to difficulty settings
  * @param options - Options object
- * @param options.data - Input data
- * @param options.inputValue - Current test input result
+ * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.correct - Was the last input correct
  * @param options.isCommitData - Whether the entered character finishes the word
  */
 export function checkIfFailedDueToDifficulty(options: {
-  data: string;
-  inputValue: string;
+  testInputWithData: string;
   correct: boolean;
   isCommitData: boolean;
 }): boolean {
-  const { data, inputValue, correct, isCommitData } = options;
+  const { testInputWithData, correct, isCommitData } = options;
 
   if (Config.mode === "zen") return false;
 
@@ -55,7 +53,7 @@ export function checkIfFailedDueToDifficulty(options: {
     Config.difficulty === "expert" &&
     !correct &&
     isCommitData &&
-    (inputValue + data).length > 1;
+    testInputWithData.length > 1;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
 
