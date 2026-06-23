@@ -120,6 +120,7 @@ export function WordFilterModal(props: {
       exclude: "",
       minLength: "",
       maxLength: "",
+      regex: "",
       exactMatch: false,
     },
     onSubmit: async ({ value }) => {
@@ -127,6 +128,30 @@ export function WordFilterModal(props: {
       showLoaderBar();
       try {
         const exactMatchOnly = value.exactMatch;
+
+        // Source - https://stackoverflow.com/a/874742
+        // Retrieved 2026-06-23, License - CC BY-SA 3.0
+        // Separates string into regex expression
+
+        let reglit = new RegExp("");
+
+        try {
+          let flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
+          let pattern = value.regex.replace(
+            new RegExp(`^/(.*?)/${flags}$`),
+            "$1",
+          );
+          reglit = new RegExp(pattern, flags);
+        } catch (error) {
+          if (error instanceof SyntaxError) {
+            showNoticeNotification("Invaid Regex Expression");
+            return;
+          } else {
+            showNoticeNotification(String(error));
+            return;
+          }
+        }
+
         let filterin = Misc.escapeRegExp(value.include.trim());
         filterin = filterin.replace(/\s+/gi, "|");
 
@@ -134,7 +159,6 @@ export function WordFilterModal(props: {
           showNoticeNotification("Include field is required for exact match");
           return;
         }
-
         const regincl = exactMatchOnly
           ? new RegExp(`^[${filterin}]+$`, "i")
           : new RegExp(filterin, "i");
@@ -157,10 +181,14 @@ export function WordFilterModal(props: {
 
         const filteredWords: string[] = [];
         for (const word of languageWordList.words) {
-          const test1 = regincl.test(word);
-          const test2 = exactMatchOnly ? false : regexcl.test(word);
+          const testincl = regincl.test(word);
+          const testexcl =
+            exactMatchOnly || filterout === "" ? false : regexcl.test(word);
+          const testlit = exactMatchOnly ? true : reglit.test(word);
           if (
-            ((test1 && !test2) || (test1 && filterout === "")) &&
+            testincl &&
+            !testexcl &&
+            testlit &&
             word.length <= max &&
             word.length >= min
           ) {
@@ -205,6 +233,7 @@ export function WordFilterModal(props: {
     if (presetToApply.exactMatch === true) {
       form.setFieldValue("exactMatch", true);
       form.setFieldValue("exclude", "");
+      form.setFieldValue("regex", "");
     } else {
       form.setFieldValue("exactMatch", false);
       if (presetToApply.getExcludeString !== undefined) {
@@ -239,10 +268,9 @@ export function WordFilterModal(props: {
             />
           </LabeledField>
           <div class="text-xs text-sub">
-            You can manually filter words by length, words, characters
-            (separated by spaces), or regular expressions on the left side. On
-            the right side you can generate filters based on a preset and
-            selected layout.
+            You can manually filter words by length, regular expressions, words,
+            or characters (separated by spaces) on the left side. On the right
+            side you can generate filters based on a preset and selected layout.
           </div>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
@@ -259,6 +287,15 @@ export function WordFilterModal(props: {
                   </form.Field>
                 </LabeledField>
               </div>
+
+              <LabeledField label="regex">
+                <form.Field name="regex">
+                  {(field) => (
+                    <InputField field={field} disabled={isExactMatch()} />
+                  )}
+                </form.Field>
+              </LabeledField>
+
               <LabeledField label="include">
                 <form.Field name="include">
                   {(field) => <InputField field={field} />}
@@ -269,6 +306,7 @@ export function WordFilterModal(props: {
                     onChange: ({ value }) => {
                       if (value) {
                         form.setFieldValue("exclude", "");
+                        form.setFieldValue("regex", "");
                       }
                       return undefined;
                     },
