@@ -2979,6 +2979,9 @@ describe("user controller test", () => {
       testActivity: {
         "2024": fillYearWithDay(94),
       },
+      challenges: {
+        "100hours": {},
+      },
     };
 
     beforeEach(async () => {
@@ -3050,12 +3053,15 @@ describe("user controller test", () => {
       expect(getUserByNameMock).toHaveBeenCalledWith("bob", "get user profile");
       expect(getUserMock).not.toHaveBeenCalled();
     });
-    it("should get testActivity if enabled", async () => {
+    it("should get testActivity/challenges if enabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: { showActivityOnPublicProfile: true },
+        profileDetails: {
+          showActivityOnPublicProfile: true,
+          showChallengesOnPublicProfile: true,
+        },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3071,13 +3077,18 @@ describe("user controller test", () => {
           testsByDays: expect.arrayContaining([]),
         }),
       );
+
+      expect(body.data.challenges).toEqual({ "100hours": {} });
     });
     it("should not get testActivity if disabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: { showActivityOnPublicProfile: false },
+        profileDetails: {
+          showActivityOnPublicProfile: false,
+          showChallengesOnPublicProfile: false,
+        },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3088,6 +3099,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.data.testActivity).toBeUndefined();
+      expect(body.data.challenges).toBeUndefined();
     });
 
     it("should get base profile for banned user", async () => {
@@ -3205,6 +3217,7 @@ describe("user controller test", () => {
           website: "https://monkeytype.com",
         },
         showActivityOnPublicProfile: false,
+        showChallengesOnPublicProfile: false,
       };
 
       //WHEN
@@ -3233,6 +3246,7 @@ describe("user controller test", () => {
             website: "https://monkeytype.com",
           },
           showActivityOnPublicProfile: false,
+          showChallengesOnPublicProfile: false,
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],

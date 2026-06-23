@@ -1034,6 +1034,13 @@ export async function getProfile(
   } else {
     delete profileData.testActivity;
   }
+
+  if (user.profileDetails?.showChallengesOnPublicProfile) {
+    profileData.challenges = user.challenges;
+  } else {
+    delete profileData.challenges;
+  }
+
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
@@ -1047,6 +1054,7 @@ export async function updateProfile(
     socialProfiles,
     selectedBadgeId,
     showActivityOnPublicProfile,
+    showChallengesOnPublicProfile,
   } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "update user profile", [
@@ -1076,6 +1084,7 @@ export async function updateProfile(
       ]),
     ),
     showActivityOnPublicProfile,
+    showChallengesOnPublicProfile,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);

@@ -40,7 +40,9 @@ export function EditProfile() {
       twitter: snapshot.details?.socialProfiles?.twitter ?? "",
       website: snapshot.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        snapshot.details?.showActivityOnPublicProfile ?? true,
+        snapshot.details?.showActivityOnPublicProfile,
+      showChallengesOnPublicProfile:
+        snapshot.details?.showChallengesOnPublicProfile,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
     },
     onSubmit: async ({ value }) => {
@@ -53,6 +55,7 @@ export function EditProfile() {
           website: value.website || undefined,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
+        showChallengesOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
       const response = await Ape.users.updateProfile({
@@ -254,6 +257,18 @@ export function EditProfile() {
               <Checkbox
                 field={field}
                 label="Include test activity graph on your public profile."
+              />
+            )}
+          </form.Field>
+        </div>
+
+        <div>
+          <label class="mb-[0.25em] block text-sub">public challenges</label>
+          <form.Field name="showChallengesOnPublicProfile">
+            {(field) => (
+              <Checkbox
+                field={field}
+                label="Include challenges on your public profile."
               />
             )}
           </form.Field>

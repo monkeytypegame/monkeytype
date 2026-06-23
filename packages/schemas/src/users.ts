@@ -118,6 +118,7 @@ export const UserProfileDetailsSchema = z
       .strict()
       .optional(),
     showActivityOnPublicProfile: z.boolean().optional(),
+    showChallengesOnPublicProfile: z.boolean().optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;

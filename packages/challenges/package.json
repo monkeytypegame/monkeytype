@@ -15,7 +15,8 @@
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint ."
+    "lint-fast": "oxlint .",
+    "george-mapping": "tsx ./scripts/challenge-roles"
   },
   "dependencies": {
     "@monkeytype/schemas": "workspace:*"
