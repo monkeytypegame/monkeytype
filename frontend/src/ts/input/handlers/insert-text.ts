@@ -35,11 +35,7 @@ import {
 import { showNoticeNotification } from "../../states/notifications";
 import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
-import {
-  isCharCorrect,
-  isWordCorrect,
-  shouldInsertSpaceCharacter,
-} from "../helpers/validation";
+import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
@@ -150,12 +146,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const wordIndex = TestState.activeWordIndex;
   const charIsSpace = isSpace(data);
   const charIsNewline = data === "\n";
-  const shouldInsertSpace =
-    shouldInsertSpaceCharacter({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-    }) === true;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -166,7 +156,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     data,
     currentWord[(testInput + data).length - 1] ?? "",
   );
-  const charCorrect =
+  const correct =
     funboxCorrect ??
     isCharCorrect({
       data,
@@ -179,21 +169,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
     (testInput + data).length === TestWords.words.getCurrentText().length;
-  // does this input try to move to the next word (before removeLastChar can block it)
-  const goingToNextWord =
-    ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
-
-  // when moving to the next word, correctness is word-level (whether the whole
-  // word — including its trailing separator — was typed correctly)
-  const correct = goingToNextWord
-    ? (funboxCorrect ??
-      isWordCorrect({
-        data,
-        inputValue: testInput,
-        targetWord: currentWord,
-        correctShiftUsed,
-      }))
-    : charCorrect;
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
@@ -206,6 +181,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }
     removeLastChar = true;
   }
+
+  const goingToNextWord =
+    (charIsSpace || charIsNewline || noSpaceForce) &&
+    !removeLastChar &&
+    shouldGoToNextWord({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+    });
 
   if (!charIsSpace && correctShiftUsed === false) {
     removeLastChar = true;
@@ -220,9 +204,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   } else {
     resetIncorrectShiftsInARow();
   }
-
-  // stop-on-error and opposite shift mode can block navigation, so this is derived after removeLastChar
-  const shouldGoToNextWord = goingToNextWord && !removeLastChar;
 
   if (Config.keymapMode === "react") {
     flash(data, correct);
@@ -249,7 +230,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     inputStopped: removeLastChar ? true : undefined,
     // inputValue is captured from the input element after this event (before goToNextWord clears it).
     inputValue: inputValueAfterEvent,
-    commitsWord: shouldGoToNextWord ? true : undefined,
+    commitsWord: goingToNextWord ? true : undefined,
     lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
 
@@ -263,7 +244,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // going to next word
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
-  if (shouldGoToNextWord) {
+  if (goingToNextWord) {
     const result = await goToNextWord({
       correctInsert: commitCorrect,
       isCompositionEnding: isCompositionEnding === true,
@@ -321,7 +302,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       TestLogic.fail("min burst");
     } else if (
       checkIfFinished({
-        shouldGoToNextWord,
+        shouldGoToNextWord: goingToNextWord,
         testInputWithData: testInput + data,
         currentWord,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,

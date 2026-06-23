@@ -7,7 +7,6 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace, removeTrailingSeparator } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 
@@ -31,11 +30,6 @@ export function onBeforeInsertText(data: string): boolean {
 
   const { inputValue } = getInputElementValue();
   const dataIsSpace = isSpace(data);
-  const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
-    data,
-    inputValue,
-    targetWord: TestWords.words.getCurrentText(),
-  });
 
   //prevent space from being inserted if input is empty
   //allow if strict space is enabled
@@ -62,7 +56,7 @@ export function onBeforeInsertText(data: string): boolean {
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
   const overLimit = getCurrentInput().length >= inputLimit;
-  if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
+  if (overLimit && !dataIsSpace) {
     console.error("Hitting word limit");
     return true;
   }
@@ -80,7 +74,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    (shouldInsertSpaceAsCharacter === true || !dataIsSpace) &&
+    !dataIsSpace &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary

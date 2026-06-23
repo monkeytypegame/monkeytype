@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import { isSpace, removeTrailingSeparator } from "../../utils/strings";
+import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -30,60 +30,43 @@ export function isCharCorrect(options: {
 }
 
 /**
- * Check if the input data is correct
- * @param options - Options object
- * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
- * @param options.targetWord - Target word
- * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
- */
-export function isWordCorrect(options: {
-  data: string;
-  inputValue: string;
-  targetWord: string;
-  correctShiftUsed: boolean | null; //null means disabled
-}): boolean {
-  const { data, inputValue, targetWord, correctShiftUsed } = options;
-
-  if (Config.mode === "zen") return true;
-  if (correctShiftUsed === false) return false;
-
-  // The committing separator (space/newline) is part of the target word, so the
-  // typed control char completes it directly.
-  return inputValue + data === targetWord;
-}
-
-/**
- * Determines if a space character should be inserted as a character, or act
- * as a "control character" (moving to the next word)
+ * Check if the input data should move to the next word
  * @param options - Options object
  * @param options.data - Input data
- * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
+ * @param options.inputValue - Current input value
  * @param options.targetWord - Target word
- * @returns Boolean if data is space, null if not
  */
-export function shouldInsertSpaceCharacter(options: {
+export function shouldGoToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-}): boolean | null {
-  const { data, inputValue, targetWord } = options;
+}): boolean {
+  const { inputValue, targetWord, data } = options;
+
   if (!isSpace(data)) {
-    return null;
-  }
-  if (Config.mode === "zen") {
     return false;
   }
-  // correct so far means the full visible word has been typed correctly (the
-  // separator is the trailing space stored on the target word)
-  const correctSoFar = inputValue === removeTrailingSeparator(targetWord);
-  const stopOnErrorLetterAndIncorrect =
-    Config.stopOnError === "letter" && !correctSoFar;
-  const stopOnErrorWordAndIncorrect =
-    Config.stopOnError === "word" && !correctSoFar;
-  const strictSpace =
+
+  if (Config.mode === "zen") return true;
+
+  //strict space
+  if (
     inputValue.length === 0 &&
-    (Config.strictSpace || Config.difficulty !== "normal");
-  return (
-    stopOnErrorLetterAndIncorrect || stopOnErrorWordAndIncorrect || strictSpace
-  );
+    (Config.strictSpace || Config.difficulty !== "normal")
+  ) {
+    return false;
+  }
+
+  const correct = inputValue + data === targetWord;
+
+  //stop on error
+  if (Config.stopOnError === "word" && !correct) {
+    return false;
+  }
+
+  if (Config.stopOnError === "letter" && !correct) {
+    return false;
+  }
+
+  return true;
 }
