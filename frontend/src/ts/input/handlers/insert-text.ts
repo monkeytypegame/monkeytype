@@ -148,14 +148,15 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has isCharCorrect === false, so isCharCorrect can't be used below)
   const correct =
-    (funboxCorrect ?? goingToNextWord)
+    funboxCorrect ??
+    (goingToNextWord
       ? wordCorrect
       : isCharCorrect({
           data,
           inputValue: testInput,
           targetWord: currentWord,
           correctShiftUsed,
-        });
+        }));
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
