@@ -9,6 +9,7 @@ import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
+import { shouldGoToNextWord } from "../helpers/validation";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -56,7 +57,17 @@ export function onBeforeInsertText(data: string): boolean {
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
   const overLimit = getCurrentInput().length >= inputLimit;
-  if (overLimit && !dataIsSpace) {
+  if (
+    overLimit &&
+    !(
+      (data === "\n" || isSpace(data)) &&
+      shouldGoToNextWord({
+        data,
+        inputValue: getCurrentInput(),
+        targetWord: TestWords.words.getCurrentText(),
+      })
+    )
+  ) {
     console.error("Hitting word limit");
     return true;
   }
