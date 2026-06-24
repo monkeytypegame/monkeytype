@@ -42,7 +42,6 @@ export type FunboxFunctions = {
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
   handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
@@ -260,42 +259,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === "a" ||
-          char === "ArrowLeft" ||
-          char === "j" ||
-          char === "←") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === "s" ||
-          char === "ArrowDown" ||
-          char === "k" ||
-          char === "↓") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === "d" ||
-          char === "ArrowRight" ||
-          char === "l" ||
-          char === "→") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
     },
     getWordHtml(char: string, letterTag?: boolean): string {
       let retval = "";
