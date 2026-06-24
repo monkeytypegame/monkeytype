@@ -588,7 +588,6 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.words.setNospace(isFunboxActiveWithProperty("nospace"));
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -608,6 +607,10 @@ async function init(): Promise<boolean> {
       generatedWords[i] as string,
       generatedSectionIndexes[i] as number,
     );
+  }
+
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -630,31 +633,12 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", generatedWords);
+  console.debug("Test initialized with words", TestWords.words.list);
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
   return true;
-}
-
-export function areAllTestWordsGenerated(): boolean {
-  return (
-    (Config.mode === "words" &&
-      TestWords.words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      TestWords.words.length >= CustomText.getLimitValue() &&
-      CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
-      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
-      WordsGenerator.currentSection.length === 0 &&
-      CustomText.getLimitValue() !== 0)
-  );
 }
 
 //add word during the test
@@ -678,7 +662,7 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, enough words already");
     return;
   }
-  if (areAllTestWordsGenerated()) {
+  if (WordsGenerator.areAllWordsGenerated()) {
     console.debug("Not adding word, all words generated");
     return;
   }
@@ -723,10 +707,8 @@ export async function addWord(): Promise<void> {
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      prevWord !== undefined ? Strings.removeTrailingSeparator(prevWord) : "",
-      prevWord2 !== undefined
-        ? Strings.removeTrailingSeparator(prevWord2)
-        : undefined,
+      prevWord ?? "",
+      prevWord2,
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -740,6 +722,12 @@ export async function addWord(): Promise<void> {
         important: true,
       },
     );
+  }
+
+  // strip the trailing commit separator once the final word has been generated
+  // (covers the section and lazy paths)
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 }
 

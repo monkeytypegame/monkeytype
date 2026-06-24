@@ -9,40 +9,50 @@ import { words } from "../../src/ts/test/test-words";
 describe("test-words", () => {
   beforeEach(() => {
     words.reset();
-    words.setNospace(false);
   });
 
-  describe("push (separator storage)", () => {
-    it("stores the separator as a trailing space on each non-last word", () => {
-      words.push("the", 0);
-      words.push("cat", 0);
+  describe("push", () => {
+    // separators are part of the word text (added by the generator); push stores
+    // words verbatim and does not insert or strip separators
+    it("appends words verbatim", () => {
+      words.push("the ", 0);
+      words.push("cat ", 0);
       words.push("sat", 0);
       expect(words.list).toEqual(["the ", "cat ", "sat"]);
     });
 
-    it("leaves a single word bare", () => {
-      words.push("hello", 0);
-      expect(words.list).toEqual(["hello"]);
+    it("tracks length and section indexes", () => {
+      words.push("a ", 3);
+      words.push("b", 5);
+      expect(words.length).toBe(2);
+      expect(words.sectionIndexList).toEqual([3, 5]);
+    });
+  });
+
+  describe("removeCommitCharacterFromLastWord", () => {
+    it("strips a trailing space from the last word", () => {
+      words.push("the ", 0);
+      words.push("end ", 0);
+      words.removeCommitCharacterFromLastWord();
+      expect(words.list).toEqual(["the ", "end"]);
     });
 
-    it("terminates the previous word as new words are appended mid-test", () => {
-      words.push("a", 0);
-      expect(words.list).toEqual(["a"]);
-      words.push("b", 0);
-      expect(words.list).toEqual(["a ", "b"]);
-    });
-
-    it("does not add a space after a newline-terminated word", () => {
+    it("strips a trailing newline from the last word", () => {
       words.push("line\n", 0);
-      words.push("next", 0);
-      expect(words.list).toEqual(["line\n", "next"]);
+      words.removeCommitCharacterFromLastWord();
+      expect(words.list).toEqual(["line"]);
     });
 
-    it("adds no separators when nospace is set", () => {
-      words.setNospace(true);
-      words.push("猫", 0);
-      words.push("犬", 0);
-      expect(words.list).toEqual(["猫", "犬"]);
+    it("leaves a bare last word unchanged", () => {
+      words.push("the ", 0);
+      words.push("end", 0);
+      words.removeCommitCharacterFromLastWord();
+      expect(words.list).toEqual(["the ", "end"]);
+    });
+
+    it("does nothing on an empty list", () => {
+      expect(() => words.removeCommitCharacterFromLastWord()).not.toThrow();
+      expect(words.list).toEqual([]);
     });
   });
 });

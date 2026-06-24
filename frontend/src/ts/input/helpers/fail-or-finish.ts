@@ -56,6 +56,8 @@ export function checkIfFailedDueToDifficulty(options: {
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
     isCommitCharacter &&
+    // a leading separator (empty input) commits nothing and must not fail
+    testInput.length > 0 &&
     testInput + data !== targetWord;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;

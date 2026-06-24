@@ -13,9 +13,9 @@ import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
-import { areAllTestWordsGenerated } from "../../test/test-logic";
 import { getCurrentInput } from "../../test/events/data";
 import { removeTrailingSeparator } from "../../utils/strings";
+import { areAllWordsGenerated } from "../../test/words-generator";
 
 const inputEl = getInputElement();
 
@@ -138,7 +138,7 @@ inputEl.addEventListener("input", async (event) => {
     // dont wait for them to end the composition manually, just end the test
     // by dispatching a compositionend which will trigger onInsertText
     if (
-      areAllTestWordsGenerated() &&
+      areAllWordsGenerated() &&
       allWordsTyped &&
       inputPlusCompositionIsCorrect
     ) {

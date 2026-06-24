@@ -6,7 +6,6 @@ import {
 } from "../../../src/ts/input/helpers/fail-or-finish";
 import { __testing } from "../../../src/ts/config/testing";
 import * as Misc from "../../../src/ts/utils/misc";
-import * as TestLogic from "../../../src/ts/test/test-logic";
 import * as Strings from "../../../src/ts/utils/strings";
 
 const { replaceConfig } = __testing;
@@ -19,10 +18,6 @@ vi.mock("../../../src/ts/utils/misc", async (importOriginal) => {
     whorf: vi.fn(),
   };
 });
-
-vi.mock("../../../src/ts/test/test-logic", () => ({
-  areAllTestWordsGenerated: vi.fn(),
-}));
 
 vi.mock("../../../src/ts/utils/strings", () => ({
   isSpace: vi.fn(),
@@ -38,8 +33,6 @@ describe("checkIfFailedDueToMinBurst", () => {
     });
     // oxlint-disable-next-line typescript/no-unsafe-call
     (Misc.whorf as any).mockReturnValue(0);
-    // oxlint-disable-next-line typescript/no-unsafe-call
-    (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(true);
   });
 
   afterAll(() => {
@@ -139,16 +132,20 @@ describe("checkIfFailedDueToDifficulty", () => {
       desc: "zen mode, master - never fails",
       config: { mode: "zen", difficulty: "master" },
       correct: false,
-      spaceOrNewline: true,
-      input: "hello",
+      data: " ",
+      testInput: "hello",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     {
       desc: "zen mode - never fails",
       config: { mode: "zen", difficulty: "normal" },
       correct: false,
-      spaceOrNewline: true,
-      input: "hello",
+      data: " ",
+      testInput: "hello",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     //
@@ -156,32 +153,40 @@ describe("checkIfFailedDueToDifficulty", () => {
       desc: "normal typing incorrect- never fails",
       config: { difficulty: "normal" },
       correct: false,
-      spaceOrNewline: false,
-      input: "hello",
+      data: "h",
+      testInput: "hell",
+      targetWord: "hello",
+      isCommitCharacter: false,
       expected: false,
     },
     {
       desc: "normal typing space incorrect - never fails",
       config: { difficulty: "normal" },
       correct: false,
-      spaceOrNewline: true,
-      input: "hello",
+      data: " ",
+      testInput: "hell",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     {
       desc: "normal typing correct - never fails",
       config: { difficulty: "normal" },
       correct: true,
-      spaceOrNewline: false,
-      input: "hello",
+      data: "o",
+      testInput: "hell",
+      targetWord: "hello",
+      isCommitCharacter: false,
       expected: false,
     },
     {
       desc: "normal typing space correct - never fails",
       config: { difficulty: "normal" },
       correct: true,
-      spaceOrNewline: true,
-      input: "hello",
+      data: " ",
+      testInput: "hello",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     //
@@ -189,32 +194,40 @@ describe("checkIfFailedDueToDifficulty", () => {
       desc: "expert - fail if incorrect space",
       config: { difficulty: "expert" },
       correct: false,
-      spaceOrNewline: true,
-      input: "he",
+      data: " ",
+      testInput: "he",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: true,
     },
     {
       desc: "expert - dont fail if space is the first character",
       config: { difficulty: "expert" },
       correct: false,
-      spaceOrNewline: true,
-      input: " ",
+      data: " ",
+      testInput: "",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     {
       desc: "expert: - dont fail if just typing",
       config: { difficulty: "expert" },
       correct: false,
-      spaceOrNewline: false,
-      input: "h",
+      data: "h",
+      testInput: "hell",
+      targetWord: "hello",
+      isCommitCharacter: false,
       expected: false,
     },
     {
       desc: "expert: - dont fail if just typing",
       config: { difficulty: "expert" },
       correct: true,
-      spaceOrNewline: false,
-      input: "h",
+      data: "o",
+      testInput: "hell",
+      targetWord: "hello",
+      isCommitCharacter: false,
       expected: false,
     },
     //
@@ -222,43 +235,64 @@ describe("checkIfFailedDueToDifficulty", () => {
       desc: "master - fail if incorrect char",
       config: { difficulty: "master" },
       correct: false,
-      spaceOrNewline: false,
-      input: "h",
+      data: "h",
+      testInput: "hell",
+      targetWord: "hello",
+      isCommitCharacter: false,
       expected: true,
     },
     {
       desc: "master - fail if incorrect first space",
       config: { difficulty: "master" },
       correct: true,
-      spaceOrNewline: true,
-      input: " ",
+      data: " ",
+      testInput: "",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
     {
       desc: "master - dont fail if correct char",
       config: { difficulty: "master" },
       correct: true,
-      spaceOrNewline: false,
-      input: "a",
+      data: "a",
+      testInput: "te",
+      targetWord: "tea",
+      isCommitCharacter: false,
       expected: false,
     },
     {
       desc: "master - dont fail if correct space",
       config: { difficulty: "master" },
       correct: true,
-      spaceOrNewline: true,
-      input: " ",
+      data: " ",
+      testInput: "hello",
+      targetWord: "hello ",
+      isCommitCharacter: true,
       expected: false,
     },
-  ])("$desc", ({ config, correct, spaceOrNewline, input, expected }) => {
-    replaceConfig(config as any);
-    const result = checkIfFailedDueToDifficulty({
-      testInputWithData: input,
+  ])(
+    "$desc",
+    ({
+      config,
       correct,
-      spaceOrNewline,
-    });
-    expect(result).toBe(expected);
-  });
+      data,
+      testInput,
+      targetWord,
+      isCommitCharacter,
+      expected,
+    }) => {
+      replaceConfig(config as any);
+      const result = checkIfFailedDueToDifficulty({
+        data,
+        testInput,
+        targetWord,
+        correct,
+        isCommitCharacter,
+      });
+      expect(result).toBe(expected);
+    },
+  );
 });
 
 describe("checkIfFinished", () => {
@@ -270,8 +304,6 @@ describe("checkIfFinished", () => {
     });
     // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.isSpace as any).mockReturnValue(false);
-    // oxlint-disable-next-line typescript/no-unsafe-call
-    (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(true);
   });
 
   afterAll(() => {

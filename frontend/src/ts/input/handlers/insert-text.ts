@@ -34,6 +34,7 @@ import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { isCommitCharacter } from "../helpers/util";
+import { areAllWordsGenerated } from "../../test/words-generator";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -300,7 +301,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         testInputWithData: testInput + data,
         currentWord,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,
-        allWordsGenerated: TestLogic.areAllTestWordsGenerated(),
+        allWordsGenerated: areAllWordsGenerated(),
       })
     ) {
       void TestLogic.finish();

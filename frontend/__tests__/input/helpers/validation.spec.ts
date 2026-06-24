@@ -173,12 +173,13 @@ describe("shouldGoToNextWord", () => {
     replaceConfig({});
   });
 
-  it("returns false if data is not a space or newline", () => {
+  it("returns false when the input is not a commit character", () => {
     expect(
       shouldGoToNextWord({
         data: "a",
         inputValue: "test",
         targetWord: "test ",
+        isCommitCharacter: false,
       }),
     ).toBe(false);
   });
@@ -190,6 +191,7 @@ describe("shouldGoToNextWord", () => {
         data: " ",
         inputValue: "test",
         targetWord: "test ",
+        isCommitCharacter: true,
       }),
     ).toBe(true);
   });
@@ -200,6 +202,7 @@ describe("shouldGoToNextWord", () => {
         data: "\n",
         inputValue: "word",
         targetWord: "word\n",
+        isCommitCharacter: true,
       }),
     ).toBe(true);
   });
@@ -304,6 +307,7 @@ describe("shouldGoToNextWord", () => {
           data: " ",
           inputValue,
           targetWord,
+          isCommitCharacter: true,
         }),
       ).toBe(expected);
     });

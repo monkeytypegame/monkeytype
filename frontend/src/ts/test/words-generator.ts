@@ -21,6 +21,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
@@ -28,6 +29,7 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import * as TestWords from "./test-words";
 
 //pin implementation
 const random = Math.random;
@@ -746,6 +748,13 @@ export async function getNextWord(
   previousWord: string,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
+  // words now carry a trailing commit separator; strip it before the previous
+  // words feed back into dedup/punctuation/capitalization logic below.
+  previousWord = Strings.removeTrailingSeparator(previousWord);
+  if (previousWord2 !== undefined) {
+    previousWord2 = Strings.removeTrailingSeparator(previousWord2);
+  }
+
   console.debug("Getting next word", {
     isRepeated: isRepeated(),
     currentWordset,
@@ -966,6 +975,10 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
+  if (!randomWord.endsWith("\n") && !isFunboxActiveWithProperty("nospace")) {
+    randomWord = `${randomWord} `;
+  }
+
   const ret = {
     word: randomWord,
     sectionIndex: sectionIndex,
@@ -974,4 +987,23 @@ export async function getNextWord(
   previousGetNextWordReturns.push(ret);
 
   return ret;
+}
+
+export function areAllWordsGenerated(): boolean {
+  return (
+    (Config.mode === "words" &&
+      TestWords.words.length >= Config.words &&
+      Config.words > 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
+    (Config.mode === "quote" &&
+      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      sectionIndex >= CustomText.getLimitValue() &&
+      currentSection.length === 0 &&
+      CustomText.getLimitValue() !== 0)
+  );
 }
