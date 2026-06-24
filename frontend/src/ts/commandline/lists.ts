@@ -40,8 +40,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { getAllTestEvents } from "../test/events/data";
-import * as TestWords from "../test/test-words";
+import { buildEventLog } from "../test/events/data";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -316,18 +315,13 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "copyResultData",
-      display: "Copy result data",
+      display: "Copy event log (result data)",
       alias: "stats events",
       icon: "fa-cog",
       visible: false,
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(
-            JSON.stringify({
-              events: getAllTestEvents(),
-              words: TestWords.words.list,
-            }),
-          )
+          .writeText(JSON.stringify(buildEventLog()))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

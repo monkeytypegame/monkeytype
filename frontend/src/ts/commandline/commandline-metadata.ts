@@ -1,7 +1,10 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import * as TestLogic from "../test/test-logic";
-import { getLanguageDisplayString } from "../utils/strings";
+import {
+  getLanguageDisplayString,
+  replaceUnderscoresWithSpaces,
+} from "../utils/strings";
 
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { Config } from "../config/store";
@@ -536,7 +539,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   timerStyle: {
     subgroup: {
       options: "fromSchema",
-      display: (value) => value.replaceAll(/_/g, " "),
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "timer",
   },
@@ -559,6 +562,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   highlightMode: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
   },
   typedEffect: {
@@ -644,6 +648,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   keymapStyle: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "keyboard",
   },

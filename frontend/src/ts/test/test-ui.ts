@@ -1287,16 +1287,22 @@ function buildWordLettersHTML(
     ) {
       extraCorrected = "extraCorrected";
     }
+
+    let displayLetter = inputCharacters[c];
+    if (displayLetter === " ") {
+      displayLetter = "_";
+    }
+
     if (Config.mode === "zen" || wordCharacters[c] !== undefined) {
       if (Config.mode === "zen" || inputCharacters[c] === wordCharacters[c]) {
         if (
           correctedChar === inputCharacters[c] ||
           correctedChar === undefined
         ) {
-          out += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
+          out += `<letter class="correct ${extraCorrected}">${displayLetter}</letter>`;
         } else {
           out += `<letter class="corrected ${extraCorrected}">${
-            inputCharacters[c]
+            displayLetter
           }</letter>`;
         }
       } else {
@@ -1313,7 +1319,7 @@ function buildWordLettersHTML(
         }
       }
     } else {
-      out += `<letter class="incorrect extra">${inputCharacters[c]}</letter>`;
+      out += `<letter class="incorrect extra">${displayLetter}</letter>`;
     }
   }
   return out;
@@ -1401,7 +1407,10 @@ async function loadWordsHistory(): Promise<boolean> {
       );
     } catch (e) {
       try {
-        for (const char of word) {
+        for (let char of word) {
+          if (char === " ") {
+            char = "_";
+          }
           const letterEl = document.createElement("letter");
           letterEl.textContent = char;
           wordEl.appendChild(letterEl);

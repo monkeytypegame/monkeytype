@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { isDevEnvironment } from "./env";
+import { isProfilerMode } from "./profiler-mode";
 
 export const nativeLog = console.log;
 const nativeWarn = console.warn;
@@ -14,7 +15,9 @@ const debugLogsLS = new LocalStorageWithSchema({
 
 let debugLogs = debugLogsLS.get();
 
-if (isDevEnvironment()) {
+if (isProfilerMode()) {
+  debugLogs = false;
+} else if (isDevEnvironment()) {
   debugLogs = true;
   debug("Debug logs automatically enabled on localhost");
 }

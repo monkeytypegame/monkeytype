@@ -66,8 +66,8 @@ export const AddResultRequestSchema = z.object({
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const ReportCompletedEventMismatchRequestSchema = z.object({
-  notMatching: z.array(z.string().max(100)).max(50),
-  mismatchedKeys: z.array(z.string().max(100)).max(50),
+  notMatching: z.array(z.string().max(10000)).max(50),
+  mismatchedKeys: z.array(z.string().max(10000)).max(50),
   groupKey: z.string().max(500),
   language: LanguageSchema.optional(),
   mode: ModeSchema.optional(),
@@ -75,10 +75,11 @@ export const ReportCompletedEventMismatchRequestSchema = z.object({
   difficulty: DifficultySchema.optional(),
   duration: z.number().max(200).optional(),
   funboxes: z.string().max(100).optional(),
-  version: z.literal(23),
-  data: z.object({
-    words: z.string().max(10000),
-    events: z.array(z.record(z.unknown())),
+  version: z.literal(30),
+  eventLog: z.object({
+    version: z.number(),
+    context: z.record(z.unknown()),
+    events: z.array(z.record(z.unknown())).max(10000),
   }),
   // ce: z.record(z.unknown()),
   // ce2: z.record(z.unknown()),

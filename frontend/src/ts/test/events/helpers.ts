@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
 import { Keycode } from "../../constants/keys";
-import { InputEventNoMs } from "./types";
+import { InputEventNoMs, TestEventNoMs } from "./types";
 
 export const keysToTrack = new Set<Keycode | "NoCode">([
   "NumpadMultiply",
@@ -120,34 +120,27 @@ export function applyInputEvent(input: string, event: InputEventNoMs): string {
   return input;
 }
 
-/**
- * Reads input from the DOM snapshots captured on each event (inputValue),
- * falling back to op-based derivation for events without a snapshot.
- * Use this whenever you need the actual current/past input state.
- *
- * Walks backward to find the latest event with a captured inputValue, then
- * replays any subsequent events forward — O(1) when the last event has a
- * snapshot (the common case), O(n) worst case.
- */
-export function getInputFromDom(events: InputEventNoMs[]): string {
-  const lastEvent = events[events.length - 1];
-
-  if (lastEvent === undefined) {
-    let input = "";
-    for (const event of events) {
-      input = applyInputEvent(input, event);
+export function getInputFromDom(events: TestEventNoMs[]): string {
+  let lastInputEvent: InputEventNoMs | undefined;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i];
+    if (e !== undefined && e.type === "input") {
+      lastInputEvent = e;
+      break;
     }
-    return input;
   }
 
-  const inputValue = lastEvent.data.inputValue;
+  if (lastInputEvent === undefined) return "";
+
+  const { data } = lastInputEvent;
+  const inputValue = data.inputValue;
 
   if (
-    lastEvent.data.inputType === "insertText" &&
-    lastEvent.data.data === " " &&
-    lastEvent.data.lastWord &&
-    lastEvent.data.commitsWord &&
-    !lastEvent.data.correct
+    data.inputType === "insertText" &&
+    data.data === " " &&
+    data.lastWord &&
+    data.commitsWord &&
+    !data.correct
   ) {
     // if this is an incorrect word commit on the last word, we dont want to count it at all
     return inputValue.trimEnd();
@@ -190,4 +183,32 @@ export function findInputValueMismatches(
   }
 
   return mismatches;
+}
+
+export function getEventsPerWord(
+  events: TestEventNoMs[],
+  startMs?: number,
+  testMsLimit?: number,
+): Map<number, TestEventNoMs[]> {
+  let eventsPerWordIndex: Map<number, TestEventNoMs[]> = new Map();
+  for (const event of events) {
+    if (!("wordIndex" in event.data)) {
+      continue;
+    }
+
+    if (startMs !== undefined && event.testMs < startMs) {
+      continue;
+    }
+
+    if (testMsLimit !== undefined && event.testMs > testMsLimit) {
+      break;
+    }
+
+    const wordIndex = event.data.wordIndex;
+
+    const existing = eventsPerWordIndex.get(wordIndex) ?? [];
+    existing.push(event);
+    eventsPerWordIndex.set(wordIndex, existing);
+  }
+  return eventsPerWordIndex;
 }
