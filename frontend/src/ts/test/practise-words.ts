@@ -64,17 +64,16 @@ export function init(
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
       const missedWord = TestWords.words.getText(i);
+
+      if (missedWord === undefined) continue; // wont happen, but ts complains
+
       const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
-        if (i === 0) {
-          sortableMissedBiwords.push([missedWord, "", missedWordCount]);
-        } else {
-          sortableMissedBiwords.push([
-            missedWord,
-            TestWords.words.getText(i - 1),
-            missedWordCount,
-          ]);
-        }
+        sortableMissedBiwords.push([
+          missedWord,
+          TestWords.words.getText(i - 1) ?? "",
+          missedWordCount,
+        ]);
       }
     }
     sortableMissedBiwords.sort((a, b) => {

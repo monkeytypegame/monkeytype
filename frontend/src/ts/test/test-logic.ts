@@ -1079,7 +1079,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
+      if (
+        lastWordInputLength < (TestWords.words.getText(wordIndex)?.length ?? 0)
+      ) {
         historyLength--;
       }
 

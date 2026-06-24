@@ -180,7 +180,7 @@ function incrementLetterIndex(): void {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
+      (TestWords.words.getText(settings.currentWordIndex)?.length ?? 0) + 1
     ) {
       //go to the next word
       settings.currentLetterIndex = 0;
@@ -193,7 +193,8 @@ function incrementLetterIndex(): void {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
+              (TestWords.words.getText(settings.currentWordIndex - 1)?.length ??
+                0) - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -203,7 +204,7 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
+            (TestWords.words.getText(settings.currentWordIndex)?.length ?? 0)
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
