@@ -1,4 +1,4 @@
-import { CharCounts, countChars } from "../../utils/strings";
+import { CharCounts, countChars, isSpace } from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -439,7 +439,7 @@ export function getWordBurst(
 export function getWordBurstHistory(eventLog: EventLog): number[] {
   const eventsPerWord = getEventsPerWord(eventLog.events);
   const burstHistory: number[] = [];
-  for (let i = 0; i < eventLog.context.targetWords.length; i++) {
+  for (let i = 0; i < eventsPerWord.size; i++) {
     burstHistory.push(computeBurst(eventsPerWord.get(i) ?? []));
   }
   return burstHistory;
@@ -453,6 +453,12 @@ function countCharsForWordIndex(
   countPartial: boolean,
 ): CharCounts {
   let simulatedInput = getInputFromDom(wordEvents);
+  // IME commit chars (e.g. the full-width ideographic space U+3000) differ from
+  // the regular space the target word uses as a separator. Normalize them so
+  // the comparison matches the live input path, which treats them via isSpace.
+  simulatedInput = [...simulatedInput]
+    .map((c) => (isSpace(c) ? " " : c))
+    .join("");
   if (eventLog.context.koreanStatus) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }

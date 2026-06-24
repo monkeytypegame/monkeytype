@@ -6,7 +6,7 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import { getCurrentInput } from "./events/data";
+import { getCurrentInput, getCurrentInputForDisplay } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
@@ -1799,7 +1799,7 @@ export function afterTestTextInput(
 
   if (!increasedWordIndex) {
     void updateWordLetters({
-      input: inputOverride ?? getCurrentInput(),
+      input: inputOverride ?? getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1810,7 +1810,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: getCurrentInput(),
+    input: getCurrentInputForDisplay(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1820,7 +1820,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: getCurrentInput(),
+    input: getCurrentInputForDisplay(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1849,7 +1849,7 @@ export function beforeTestWordChange(
     forceUpdateActiveWordLetters
   ) {
     void updateWordLetters({
-      input: direction === "back" ? "" : getCurrentInput(),
+      input: getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -2101,7 +2101,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: getCurrentInput(),
+        input: getCurrentInputForDisplay(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });
