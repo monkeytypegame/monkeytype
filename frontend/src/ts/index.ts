@@ -44,6 +44,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
 import { lastEventLog } from "./test/test-state";
+import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -97,6 +98,9 @@ addToGlobal({
   qsr: qsr,
   lastEventLog: () => {
     console.log(lastEventLog);
+  },
+  currentEventLog: () => {
+    console.log(buildEventLog());
   },
 });
 
