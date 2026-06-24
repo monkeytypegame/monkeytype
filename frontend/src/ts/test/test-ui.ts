@@ -502,7 +502,7 @@ function showWords(): void {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       const word = TestWords.words.getText(i);
-      if (word === undefined) continue; // wont happen, but ts complains
+      if (word === undefined) continue; // won't happen, but ts complains
       wordsHTML += buildWordHTML(word, i);
     }
     wordsEl.setHtml(wordsHTML);
