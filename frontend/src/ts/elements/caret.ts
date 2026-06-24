@@ -1,10 +1,11 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
-import { isWordRightToLeft } from "../utils/strings";
+import { isWordRightToLeft, removeTrailingSeparator } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
+import * as TestWords from "../test/test-words";
 
 const wordsCache = qsr("#words");
 const wordsWrapperCache = qsr("#wordsWrapper");
@@ -287,11 +288,9 @@ export class Caret {
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
 
-      const wordText =
-        word
-          ?.qsa("letter")
-          .map((l) => l.native.textContent ?? "")
-          .join("") ?? "";
+      const wordText = removeTrailingSeparator(
+        TestWords.words.getText(options.wordIndex) ?? "",
+      );
 
       const wordLength = Array.from(wordText).length;
 
