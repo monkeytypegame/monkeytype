@@ -145,11 +145,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     wordCorrect,
   });
 
-  // when moving to the next word, correctness is word-level (a correct word-completing
-  // space has isCharCorrect === false, so isCharCorrect can't be used below)
   const correct =
     funboxCorrect ??
-    (goingToNextWord || wordCorrect
+    (goingToNextWord
       ? wordCorrect
       : isCharCorrect({
           data,
