@@ -57,9 +57,8 @@ export async function goToNextWord({
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
-  Funbox.toggleScript(
-    TestWords.words.getText(TestState.activeWordIndex + 1) ?? "",
-  );
+  const nextWord = TestWords.words.getText(TestState.activeWordIndex + 1);
+  if (nextWord !== undefined) Funbox.toggleScript(nextWord);
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
