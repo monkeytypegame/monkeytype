@@ -65,7 +65,7 @@ export function init(
     for (let i = 0; i < TestWords.words.length; i++) {
       const missedWord = TestWords.words.getText(i);
 
-      if (missedWord === undefined) continue; // wont happen, but ts complains
+      if (missedWord === undefined) continue; // won't happen, but ts complains
 
       const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
