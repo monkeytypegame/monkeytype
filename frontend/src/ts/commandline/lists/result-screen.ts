@@ -7,7 +7,6 @@ import {
 } from "../../states/notifications";
 import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
-import { removeTrailingSeparator } from "../../utils/strings";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
@@ -149,10 +148,7 @@ const commands: Command[] = [
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
-          : TestWords.words.list
-              .slice(0, inputHistory.length)
-              .map(removeTrailingSeparator)
-              .join(" ");
+          : TestWords.words.list.slice(0, inputHistory.length).join("");
 
       navigator.clipboard.writeText(words).then(
         () => {
