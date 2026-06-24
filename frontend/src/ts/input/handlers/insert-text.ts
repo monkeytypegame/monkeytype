@@ -126,7 +126,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     currentWord[(testInput + data).length - 1] ?? "",
   );
 
-  // Whether this character commits the current word
   const isCommitChar = isCommitCharacter({ data, inputValue: testInput });
 
   const wordCorrect = isWordCorrect({
