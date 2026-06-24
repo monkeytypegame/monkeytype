@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import { isSpace } from "../../utils/strings";
 
 /**
  * Check if the input data is correct
@@ -43,9 +42,10 @@ export function shouldGoToNextWord(options: {
 }): boolean {
   const { inputValue, targetWord, data } = options;
 
-  if (!isSpace(data) && data !== "\n") {
-    return false;
-  }
+  // do not do this here, nospace can move to the next word with a letter
+  // if (!isSpace(data) && data !== "\n") {
+  //   return false;
+  // }
 
   if (Config.mode === "zen") return true;
 
