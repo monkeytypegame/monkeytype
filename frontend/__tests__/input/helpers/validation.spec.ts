@@ -208,7 +208,7 @@ describe("shouldJumpToNextWord", () => {
       },
       // Stop on error
       {
-        desc: "insert space if incorrect (stopOnError letter)",
+        desc: "not submit if incorrect (stopOnError letter)",
         inputValue: "hel",
         targetWord: "hello",
         config: {
@@ -219,7 +219,7 @@ describe("shouldJumpToNextWord", () => {
         expected: false,
       },
       {
-        desc: "insert space if incorrect (stopOnError word)",
+        desc: "not submit if incorrect (stopOnError word)",
         inputValue: "hel",
         targetWord: "hello",
         config: {
@@ -242,7 +242,7 @@ describe("shouldJumpToNextWord", () => {
       },
       // Strict space / Difficulty
       {
-        desc: "insert space if empty input (strictSpace on)",
+        desc: "not submit if empty input (strictSpace on)",
         inputValue: "",
         targetWord: "hello",
         config: {
@@ -253,7 +253,7 @@ describe("shouldJumpToNextWord", () => {
         expected: false,
       },
       {
-        desc: "insert space if empty input (difficulty not normal - expert or master)",
+        desc: "not submit if empty input (difficulty not normal - expert or master)",
         inputValue: "",
         targetWord: "hello",
         config: {
