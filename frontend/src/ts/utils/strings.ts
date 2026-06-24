@@ -360,13 +360,18 @@ export function toHex(buffer: ArrayBuffer): string {
 /**
  * Removes the trailing separator space from a target word. Target words store
  * the word separator as a trailing space (see test-words.ts); this strips that
- * single space to get the bare/visible word. Words ending in a newline, the
+ * single space to get the bare/visible word.
+ *
+ * Only the separator space is removed — not a trailing newline. A trailing
+ * newline is actual word content: it is rendered as a letter, typed by the
+ * user to advance, and counted in the word's visible length, whereas the
+ * separator space is none of those things. Words ending in a newline, the
  * final word, and nospace-funbox words have no trailing space, so this is a
  * no-op for them.
  * @param word The target word.
  * @returns The word without its trailing separator space.
  */
-export function removeTrailingSeparator(word: string): string {
+export function removeTrailingSeparatorSpace(word: string): string {
   return word.endsWith(" ") ? word.slice(0, -1) : word;
 }
 

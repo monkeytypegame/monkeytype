@@ -1078,7 +1078,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       if (
         lastWordInputLength <
-        Strings.removeTrailingSeparator(
+        Strings.removeTrailingSeparatorSpace(
           TestWords.words.getText(wordIndex) ?? "",
         ).length
       ) {

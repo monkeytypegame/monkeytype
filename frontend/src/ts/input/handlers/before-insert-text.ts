@@ -3,7 +3,7 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
-import { isSpace, removeTrailingSeparator } from "../../utils/strings";
+import { isSpace, removeTrailingSeparatorSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
@@ -80,7 +80,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    inputValue.length >= removeTrailingSeparator(targetWord).length;
+    inputValue.length >= removeTrailingSeparatorSpace(targetWord).length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active

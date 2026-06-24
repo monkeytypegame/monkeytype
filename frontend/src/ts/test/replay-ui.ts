@@ -9,7 +9,7 @@ import {
   getInputForWord,
 } from "./events/data";
 import { getInputHistory, getWpmHistory } from "./events/stats";
-import { removeTrailingSeparator } from "../utils/strings";
+import { removeTrailingSeparatorSpace } from "../utils/strings";
 
 type ReplayAction =
   | "correctLetter"
@@ -42,7 +42,7 @@ const replayEl = qsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
-  return TestWords.words.list.map(removeTrailingSeparator);
+  return TestWords.words.list.map(removeTrailingSeparatorSpace);
 }
 
 function deriveReplayActions(): Replay[] {

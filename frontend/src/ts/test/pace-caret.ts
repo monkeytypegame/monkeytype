@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { removeTrailingSeparator } from "../utils/strings";
+import { removeTrailingSeparatorSpace } from "../utils/strings";
 import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
@@ -177,7 +177,8 @@ export function reset(): void {
 // visible word length (excludes the stored trailing separator space); throws
 // when the word index is out of range, which signals the pace caret is out of words
 function wordVisibleLength(wordIndex: number): number {
-  return removeTrailingSeparator(TestWords.words.getText(wordIndex)).length;
+  return removeTrailingSeparatorSpace(TestWords.words.getText(wordIndex))
+    .length;
 }
 
 function incrementLetterIndex(): void {
@@ -237,7 +238,8 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -= removeTrailingSeparator(currentWord).length + 1;
+      settings.correction -=
+        removeTrailingSeparatorSpace(currentWord).length + 1;
     }
   } else {
     if (

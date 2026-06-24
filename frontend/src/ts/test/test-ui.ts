@@ -380,7 +380,7 @@ function buildWordHTML(word: string, wordIndex: number): string {
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   // the stored trailing separator space is not rendered as a letter
   const chars = Strings.splitIntoCharacters(
-    Strings.removeTrailingSeparator(word),
+    Strings.removeTrailingSeparatorSpace(word),
   );
   for (const char of chars) {
     if (funbox) {
@@ -740,7 +740,7 @@ export async function updateWordLetters({
     async () => {
       pendingWordData.delete(wordIndex);
       // strip the stored trailing separator space; it isn't rendered as a letter
-      const currentWord = Strings.removeTrailingSeparator(
+      const currentWord = Strings.removeTrailingSeparatorSpace(
         TestWords.words.getText(wordIndex) ?? "",
       );
       if (!currentWord && Config.mode !== "zen") return;
@@ -1339,7 +1339,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const corrected = correctedHistory[i];
-    const word = Strings.removeTrailingSeparator(
+    const word = Strings.removeTrailingSeparatorSpace(
       TestWords.words.getText(i) ?? "",
     );
     const koreanRegex =

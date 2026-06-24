@@ -1,7 +1,10 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
-import { isWordRightToLeft, removeTrailingSeparator } from "../utils/strings";
+import {
+  isWordRightToLeft,
+  removeTrailingSeparatorSpace,
+} from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
@@ -288,7 +291,7 @@ export class Caret {
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
 
-      const wordText = removeTrailingSeparator(
+      const wordText = removeTrailingSeparatorSpace(
         TestWords.words.getText(options.wordIndex) ?? "",
       );
 

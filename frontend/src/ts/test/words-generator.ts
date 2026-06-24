@@ -750,9 +750,9 @@ export async function getNextWord(
 ): Promise<GetNextWordReturn> {
   // words now carry a trailing commit separator; strip it before the previous
   // words feed back into dedup/punctuation/capitalization logic below.
-  previousWord = Strings.removeTrailingSeparator(previousWord);
+  previousWord = Strings.removeTrailingSeparatorSpace(previousWord);
   if (previousWord2 !== undefined) {
-    previousWord2 = Strings.removeTrailingSeparator(previousWord2);
+    previousWord2 = Strings.removeTrailingSeparatorSpace(previousWord2);
   }
 
   console.debug("Getting next word", {

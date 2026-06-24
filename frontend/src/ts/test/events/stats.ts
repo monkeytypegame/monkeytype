@@ -2,7 +2,7 @@ import {
   CharCounts,
   countChars,
   isSpace,
-  removeTrailingSeparator,
+  removeTrailingSeparatorSpace,
 } from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
@@ -364,7 +364,7 @@ function getTargetWord(
 
     // Target words store their separator as a trailing space. The last word the
     // user reached has no committed separator (the test ended), so strip it.
-    return lastWord ? removeTrailingSeparator(word) : word;
+    return lastWord ? removeTrailingSeparatorSpace(word) : word;
   }
 }
 
@@ -889,7 +889,7 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      const bareWord = removeTrailingSeparator(word);
+      const bareWord = removeTrailingSeparatorSpace(word);
       missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }

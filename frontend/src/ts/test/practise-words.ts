@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { removeTrailingSeparator } from "../utils/strings";
+import { removeTrailingSeparatorSpace } from "../utils/strings";
 import { showNoticeNotification } from "../states/notifications";
 
 import { Config } from "../config/store";
@@ -64,7 +64,7 @@ export function init(
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      const missedWord = removeTrailingSeparator(
+      const missedWord = removeTrailingSeparatorSpace(
         TestWords.words.getText(i) ?? "",
       );
       const missedWordCount = missedWords[missedWord];
@@ -74,7 +74,7 @@ export function init(
         } else {
           sortableMissedBiwords.push([
             missedWord,
-            removeTrailingSeparator(TestWords.words.getText(i - 1) ?? ""),
+            removeTrailingSeparatorSpace(TestWords.words.getText(i - 1) ?? ""),
             missedWordCount,
           ]);
         }
