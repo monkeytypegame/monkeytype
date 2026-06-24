@@ -230,6 +230,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // this needs to be called after event logging
   WeakSpot.updateScore(data, correct);
 
+  if (lastInMultiOrSingle) {
+    TestUI.afterTestTextInput(correct, visualInputOverride);
+  }
+
   const commitCorrect = noSpaceForce
     ? testInput + data === currentWord
     : correct;
@@ -306,10 +310,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     ) {
       void TestLogic.finish();
     }
-  }
-
-  if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, increasedWordIndex, visualInputOverride);
   }
 }
 

@@ -23,10 +23,7 @@ import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import {
-  findSingleActiveFunboxWithFunction,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
+import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import {
@@ -734,6 +731,12 @@ export async function updateWordLetters({
   input: string;
   compositionData: string;
 }): Promise<void> {
+  showNoticeNotification(`Updating word letters ${wordIndex}`, {
+    durationMs: 250,
+    important: true,
+  });
+  // console.log("updating word letters");
+  console.trace();
   pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,
@@ -1787,7 +1790,6 @@ function afterAnyTestInput(
 
 export function afterTestTextInput(
   correct: boolean,
-  increasedWordIndex: boolean | null,
   inputOverride?: string,
 ): void {
   //nospace cant be handled here becauseword index
@@ -1795,13 +1797,11 @@ export function afterTestTextInput(
 
   void MonkeyPower.addPower(correct);
 
-  if (!increasedWordIndex) {
-    void updateWordLetters({
-      input: inputOverride ?? getCurrentInputForDisplay(),
-      wordIndex: TestState.activeWordIndex,
-      compositionData: CompositionState.getData(),
-    });
-  }
+  void updateWordLetters({
+    input: inputOverride ?? getCurrentInputForDisplay(),
+    wordIndex: TestState.activeWordIndex,
+    compositionData: CompositionState.getData(),
+  });
 
   afterAnyTestInput("textInput", correct);
 }
@@ -1828,24 +1828,19 @@ export function afterTestDelete(): void {
 export function beforeTestWordChange(
   direction: "forward",
   correct: boolean,
-  forceUpdateActiveWordLetters: boolean,
+  forceUpdateActiveWordLetters?: boolean,
 ): void;
 export function beforeTestWordChange(
   direction: "back",
   correct: null,
-  forceUpdateActiveWordLetters: boolean,
+  forceUpdateActiveWordLetters?: boolean,
 ): void;
 export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null,
-  forceUpdateActiveWordLetters: boolean,
+  forceUpdateActiveWordLetters?: boolean, // this param is very likely not needed
 ): void {
-  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
-  if (
-    (Config.stopOnError === "letter" && (correct || correct === null)) ||
-    nospaceEnabled ||
-    forceUpdateActiveWordLetters
-  ) {
+  if (direction === "back" || forceUpdateActiveWordLetters) {
     void updateWordLetters({
       input: getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,
