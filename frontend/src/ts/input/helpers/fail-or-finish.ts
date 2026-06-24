@@ -1,5 +1,6 @@
 import { Config } from "../../config/store";
 import { whorf } from "../../utils/misc";
+import { isCommitCharacter } from "./util";
 
 /**
  * Check if the test should fail due to minimum burst settings
@@ -41,11 +42,12 @@ export function checkIfFailedDueToMinBurst(options: {
  * @param options.spaceOrNewline - Is the input a space or newline
  */
 export function checkIfFailedDueToDifficulty(options: {
-  testInputWithData: string;
+  data: string;
+  testInput: string;
+  targetWord: string;
   correct: boolean;
-  spaceOrNewline: boolean;
 }): boolean {
-  const { testInputWithData, correct, spaceOrNewline } = options;
+  const { data, testInput, correct, targetWord } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
@@ -53,9 +55,12 @@ export function checkIfFailedDueToDifficulty(options: {
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
-    !correct &&
-    spaceOrNewline &&
-    testInputWithData.length > 1;
+    isCommitCharacter({
+      data,
+      inputValue: testInput,
+      targetWord,
+    }) &&
+    testInput + data !== targetWord;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
 

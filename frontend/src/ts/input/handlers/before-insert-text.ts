@@ -59,14 +59,11 @@ export function onBeforeInsertText(data: string): boolean {
   const overLimit = getCurrentInput().length >= inputLimit;
   if (
     overLimit &&
-    !(
-      (data === "\n" || isSpace(data)) &&
-      shouldGoToNextWord({
-        data,
-        inputValue: getCurrentInput(),
-        targetWord: TestWords.words.getCurrentText(),
-      })
-    )
+    !shouldGoToNextWord({
+      data,
+      inputValue: getCurrentInput(),
+      targetWord: TestWords.words.getCurrentText(),
+    })
   ) {
     console.error("Hitting word limit");
     return true;

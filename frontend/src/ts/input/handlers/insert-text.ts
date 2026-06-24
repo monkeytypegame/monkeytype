@@ -172,7 +172,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   const goingToNextWord =
-    (charIsSpace || charIsNewline || noSpaceForce) &&
     !removeLastChar &&
     shouldGoToNextWord({
       data,
@@ -274,9 +273,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (!CompositionState.getComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
-        testInputWithData: testInput + data,
+        data,
+        testInput: testInput,
+        targetWord: currentWord,
         correct,
-        spaceOrNewline: charIsSpace || charIsNewline,
       })
     ) {
       TestLogic.fail("difficulty");
