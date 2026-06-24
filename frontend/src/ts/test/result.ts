@@ -26,8 +26,6 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestInput from "./test-input";
-import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import Ape from "../ape";
@@ -66,6 +64,11 @@ import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { getCurrentQuote, isTestInvalid } from "../states/test";
+import {
+  getAccuracy,
+  getRawHistory,
+  getTimerBoundaryLabels,
+} from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -100,7 +103,7 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong") {
+  if (result.chartData === "toolong" || TestState.lastEventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
     ChartController.result.getDataset("burst").data = [];
@@ -112,15 +115,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  let labels = [];
-
-  for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
-    if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
-      labels.push(Numbers.roundTo2(result.testDuration).toString());
-    } else {
-      labels.push(i.toString());
-    }
-  }
+  const labels = getTimerBoundaryLabels(TestState.lastEventLog, false);
 
   const chartData1 = [
     ...result.chartData.wpm.map((a) =>
@@ -128,11 +123,9 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = [
-    ...TestInput.rawHistory.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
-    ),
-  ];
+  const chartData2 = getRawHistory(TestState.lastEventLog).map((a) =>
+    Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+  );
 
   const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(
@@ -144,16 +137,6 @@ async function updateChartData(): Promise<void> {
   const chartData3 = [
     ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
-
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    result.testDuration % 1 < 0.5
-  ) {
-    labels.pop();
-    chartData1.pop();
-    chartData2.pop();
-  }
 
   const subcolor = getTheme().sub;
 
@@ -362,61 +345,65 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit !== "wpm") {
-      qs("#result .stats .wpm .bottom")?.setAttribute(
+  if (TestState.lastEventLog !== null) {
+    const acc = getAccuracy(TestState.lastEventLog);
+    if (Config.alwaysShowDecimalPlaces) {
+      if (Config.typingSpeedUnit !== "wpm") {
+        qs("#result .stats .wpm .bottom")?.setAttribute(
+          "aria-label",
+          `${result.wpm.toFixed(2)} wpm`,
+        );
+        qs("#result .stats .raw .bottom")?.setAttribute(
+          "aria-label",
+          `${result.rawWpm.toFixed(2)} wpm`,
+        );
+      } else {
+        qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
+        qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
+      }
+
+      let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
+      if (result.testDuration > 61) {
+        time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+      }
+      qs("#result .stats .time .bottom .text")?.setText(time);
+      // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+
+      qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        `${result.wpm.toFixed(2)} wpm`,
-      );
-      qs("#result .stats .raw .bottom")?.setAttribute(
-        "aria-label",
-        `${result.rawWpm.toFixed(2)} wpm`,
+        `${acc.correct} correct\n${acc.incorrect} incorrect`,
       );
     } else {
-      qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
-      qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
-    }
+      //not showing decimal places
+      const decimalsAndSuffix = {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      };
+      let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+      let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-    // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+      if (Config.typingSpeedUnit !== "wpm") {
+        wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
+        rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
+      }
 
-    qs("#result .stats .acc .bottom")?.setAttribute(
-      "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`,
-    );
-  } else {
-    //not showing decimal places
-    const decimalsAndSuffix = {
-      showDecimalPlaces: true,
-      suffix: ` ${Config.typingSpeedUnit}`,
-    };
-    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
-
-    if (Config.typingSpeedUnit !== "wpm") {
-      wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
-      rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
-    }
-
-    qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
-
-    qs("#result .stats .acc .bottom")
-      ?.setAttribute(
+      qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
+      qs("#result .stats .raw .bottom")?.setAttribute(
         "aria-label",
-        `${
-          result.acc === 100
-            ? "100%"
-            : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${TestInput.accuracy.correct} correct\n${
-          TestInput.accuracy.incorrect
-        } incorrect`,
-      )
-      ?.setAttribute("data-balloon-break", "");
+        rawWpmHover,
+      );
+
+      qs("#result .stats .acc .bottom")
+        ?.setAttribute(
+          "aria-label",
+          `${
+            result.acc === 100
+              ? "100%"
+              : Format.percentage(result.acc, { showDecimalPlaces: true })
+          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+        )
+        ?.setAttribute("data-balloon-break", "");
+    }
   }
 }
 

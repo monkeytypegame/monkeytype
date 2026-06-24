@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";
 import * as TestState from "../../test/test-state";
@@ -9,13 +8,13 @@ import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
-import * as TestStats from "../../test/test-stats";
-import * as Replay from "../../test/replay";
 import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
+import { getWordBurst } from "../../test/events/stats";
+import { buildEventLog, getInputForWord } from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -27,7 +26,7 @@ type GoToNextWordParams = {
 
 type GoToNextWordReturn = {
   increasedWordIndex: boolean;
-  lastBurst: number;
+  lastBurst: number | null;
 };
 
 export async function goToNextWord({
@@ -36,9 +35,9 @@ export async function goToNextWord({
   zenNewline,
   now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
-  const ret = {
+  const ret: GoToNextWordReturn = {
     increasedWordIndex: false,
-    lastBurst: 0,
+    lastBurst: null,
   };
 
   TestUI.beforeTestWordChange(
@@ -47,27 +46,18 @@ export async function goToNextWord({
     isCompositionEnding || zenNewline === true,
   );
 
-  if (correctInsert) {
-    Replay.addReplayEvent("submitCorrectWord");
-  } else {
-    Replay.addReplayEvent("submitErrorWord");
-  }
-
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
   }
 
-  //burst calculation and fail
-  const burst: number = TestStats.calculateBurst(now);
-  TestInput.pushBurstToHistory(burst);
-  ret.lastBurst = burst;
+  if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
+    const burst = getWordBurst(buildEventLog(), TestState.activeWordIndex, now);
+    ret.lastBurst = burst;
+  }
 
   PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
-
-  TestInput.input.pushHistory();
-  TestInput.corrected.pushHistory();
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -89,8 +79,7 @@ export async function goToNextWord({
   }
 
   setInputElementValue("");
-  TestInput.input.syncWithInputElement();
-  void TestUI.afterTestWordChange("forward");
+  void TestUI.afterTestWordChange("forward", ret.lastBurst);
 
   return ret;
 }
@@ -101,17 +90,12 @@ export function goToPreviousWord(
 ): void {
   if (TestState.activeWordIndex === 0) {
     setInputElementValue("");
-    TestInput.input.syncWithInputElement();
     return;
   }
 
   TestUI.beforeTestWordChange("back", null, forceUpdateActiveWordLetters);
 
-  Replay.addReplayEvent("backWord");
-
-  const word = TestInput.input.popHistory();
   TestState.decreaseActiveWordIndex();
-  TestInput.corrected.popHistory();
 
   Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
 
@@ -120,6 +104,7 @@ export function goToPreviousWord(
   if (inputType === "deleteWordBackward") {
     setInputElementValue("");
   } else if (inputType === "deleteContentBackward") {
+    const word = getInputForWord(TestState.activeWordIndex);
     if (nospaceEnabled) {
       setInputElementValue(word.slice(0, -1));
     } else if (word.endsWith("\n")) {
@@ -128,7 +113,5 @@ export function goToPreviousWord(
       setInputElementValue(word);
     }
   }
-  TestInput.input.syncWithInputElement();
-
   void TestUI.afterTestWordChange("back");
 }

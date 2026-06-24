@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
 import * as Monkey from "../../test/monkey";
@@ -140,9 +139,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   }
 
   const now = performance.now();
-  if (!TestState.resultCalculating) {
-    TestInput.recordKeydownTime(now, event);
-  }
 
   logTestEvent("keydown", now, {
     code: getTestEventCode(event),

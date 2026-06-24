@@ -1,7 +1,5 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
-import * as TestInput from "../../test/test-input";
-import { getCurrentInput } from "../../test/test-input";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -20,7 +18,6 @@ import {
   findSingleActiveFunboxWithFunction,
   isFunboxActiveWithProperty,
 } from "../../test/funbox/list";
-import * as Replay from "../../test/replay";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -38,7 +35,7 @@ import {
   isCharCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
-import { logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -67,10 +64,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (options.data.length > 1) {
     // remove the entire data from the input value
-    // make sure to not call TestInput.input.syncWithInputElement in here
-    // it will be updated later in the body of onInsertText
     setInputElementValue(inputValue.slice(0, -options.data.length));
-    TestInput.input.syncWithInputElement();
     for (let i = 0; i < options.data.length; i++) {
       const char = options.data[i] as string;
 
@@ -183,39 +177,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     !removeLastChar &&
     (((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce);
 
-  // update test input state
-  if (!charIsSpace || shouldInsertSpace) {
-    TestInput.input.syncWithInputElement();
-  }
-
-  // general per keypress updates
-  TestInput.setCurrentNotAfk();
-  Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-  TestInput.incrementAccuracy(correct);
-  WeakSpot.updateScore(data, correct);
-  TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(wordIndex);
-  if (!correct) {
-    TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrentText());
-  }
   if (Config.keymapMode === "react") {
     flash(data, correct);
-  }
-  if (testInput.length === 0 && !isCompositionEnding) {
-    TestInput.setBurstStart(now);
-  }
-  if (!shouldGoToNextWord) {
-    TestInput.corrected.update(data, correct);
   }
 
   if (removeLastChar) {
     replaceInputElementLastValueChar("");
-    TestInput.input.syncWithInputElement();
   }
 
   // capture DOM before goToNextWord clears it for the new word
-  const inputValueAfterEvent = getCurrentInput();
+  const inputValueAfterEvent = getInputElementValue().inputValue;
 
   // Log the event BEFORE goToNextWord so readers inside the navigation
   // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
@@ -229,14 +200,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     charIndex: testInput.length,
     isCompositionEnding: isCompositionEnding ? true : undefined,
     inputStopped: removeLastChar ? true : undefined,
-    // when shouldInsertSpace is true, the space char was already inserted via
-    // syncWithInputElement above — only append " " for the advance-space case,
-    // else recorded inputValue ends up with a doubled trailing space.
-    inputValue:
-      inputValueAfterEvent + (charIsSpace && !shouldInsertSpace ? " " : ""),
+    // inputValue is captured from the input element after this event (before goToNextWord clears it).
+    inputValue: inputValueAfterEvent,
     commitsWord: shouldGoToNextWord ? true : undefined,
     lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
+
+  // this needs to be called after event logging
+  WeakSpot.updateScore(data, correct);
 
   // going to next word
   let increasedWordIndex: null | boolean = null;
@@ -342,8 +313,6 @@ export async function emulateInsertText(
   }
 
   // default is prevented so we need to manually update the input value.
-  // remember to not call TestInput.input.syncWithInputElement in here
-  // it will be called later be updated in onInsertText
   appendToInputElementValue(options.data);
 
   await onInsertText(options);

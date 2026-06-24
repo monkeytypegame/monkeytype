@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import { getCurrentInput, getInputForWord } from "../test-input";
+import { getCurrentInput, getInputForWord } from "../events/data";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -53,7 +53,7 @@ export type FunboxFunctions = {
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const currentInput = getCurrentInput();
-  const inputCurrentChar = (currentInput ?? "").slice(-1);
+  const inputCurrentChar = currentInput.slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrentText()
     .slice(currentInput.length - 1, currentInput.length);
