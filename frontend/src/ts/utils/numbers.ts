@@ -84,7 +84,7 @@ export function abbreviateNumber(num: number, decimalPoints = 1): string {
  * or null if the array is empty.
  */
 export function findLineByLeastSquares(
-  values_y: number[]
+  values_y: number[],
 ): [[number, number], [number, number]] | null {
   let sum_x = 0;
   let sum_y = 0;
@@ -129,7 +129,31 @@ export function findLineByLeastSquares(
   const returnpoint1 = [1, 1 * m + b] as [number, number];
   const returnpoint2 = [values_length, values_length * m + b] as [
     number,
-    number
+    number,
   ];
   return [returnpoint1, returnpoint2];
+}
+
+/**
+ * Parses a string into an integer if it is not null or undefined, otherwise returns undefined.
+ *
+ * @param  The string to parse or null or undefined.
+ * @param radix A value between 2 and 36 that specifies the base of the number in `string`.
+ * @returns  A number if a string is provided, otherwise undefined.
+ */
+export function parseIntOptional<T extends string | null | undefined>(
+  value: T,
+  radix: number = 10,
+): T extends string ? number : undefined {
+  return (
+    value !== null && value !== undefined ? parseInt(value, radix) : undefined
+  ) as T extends string ? number : undefined;
+}
+
+export function calculateWpm(
+  charCount: number,
+  durationSeconds: number,
+): number {
+  if (durationSeconds <= 0) return 0;
+  return charCount / 5 / (durationSeconds / 60);
 }

@@ -17,6 +17,7 @@ import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
+import { createIndicies as connectionsDbSetup } from "./dal/connections";
 import { getErrorMessage } from "./utils/error";
 
 async function bootServer(port: number): Promise<Server> {
@@ -47,22 +48,22 @@ async function bootServer(port: number): Promise<Server> {
 
       Logger.info("Initializing queues...");
       queues.forEach((queue) => {
-        queue.init(connection);
+        queue.init(connection ?? undefined);
       });
       Logger.success(
         `Queues initialized: ${queues
           .map((queue) => queue.queueName)
-          .join(", ")}`
+          .join(", ")}`,
       );
 
       Logger.info("Initializing workers...");
       workers.forEach(async (worker) => {
-        await worker(connection).run();
+        await worker(connection ?? undefined).run();
       });
       Logger.success(
         `Workers initialized: ${workers
-          .map((worker) => worker(connection).name)
-          .join(", ")}`
+          .map((worker) => worker(connection ?? undefined).name)
+          .join(", ")}`,
       );
     }
 
@@ -76,6 +77,9 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Setting up blocklist indicies...");
     await blocklistDbSetup();
 
+    Logger.info("Setting up connections indicies...");
+    await connectionsDbSetup();
+
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
@@ -85,7 +89,7 @@ async function bootServer(port: number): Promise<Server> {
     return process.exit(1);
   }
 
-  return app.listen(PORT, () => {
+  return app.listen(port, () => {
     Logger.success(`API server listening on port ${port}`);
   });
 }

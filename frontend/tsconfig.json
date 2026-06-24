@@ -2,13 +2,27 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "node", "jquery"],
+    "types": ["vite/client", "node"],
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "allowUmdGlobalAccess": true,
     "target": "ES6",
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "paths": {
+      "virtual:language-hashes": [
+        "./src/ts/types/virtual-language-hashes.d.ts"
+      ],
+      "virtual:env-config": ["./src/ts/types/virtual-env-config.d.ts"]
+    }
   },
-  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
-  "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./scripts/**/*.ts",
+    "vite-plugins/**/*.ts",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "build", "setup-tests.ts", "./__tests__/**/*.*"]
 }

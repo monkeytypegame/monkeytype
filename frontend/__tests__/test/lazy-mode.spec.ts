@@ -1,9 +1,10 @@
+import { describe, it, expect } from "vitest";
 import { replaceAccents } from "../../src/ts/test/lazy-mode";
 
-let germanAccents = [
-  ["ö", "oe"],
-  ["ä", "ae"],
-  ["ü", "ue"],
+let additionalAccents = [
+  ["abc", "1"],
+  ["def", "22"],
+  ["gh", "333"],
 ] as [string, string][];
 
 describe("lazy-mode", () => {
@@ -24,18 +25,17 @@ describe("lazy-mode", () => {
       const result = replaceAccents("");
       expect(result).toBe("");
     });
-    describe("german accents", () => {
-      it("should replace additional accents", () => {
-        const result = replaceAccents("Tränenüberströmt", germanAccents);
-        expect(result).toBe("Traenenueberstroemt");
-      });
-      it("should replace starting with uppercase accent", () => {
-        const result = replaceAccents("Äpfel", germanAccents);
-        expect(result).toBe("Aepfel");
-      });
-      it("should replace common accents", () => {
-        const result = replaceAccents("äße", germanAccents);
-        expect(result).toBe("aesse");
+    it("should correctly use additional accents", () => {
+      const tests = [
+        { input: "abc", expected: "111" },
+        { input: "abcdef", expected: "111222222" },
+        { input: "gh", expected: "333333" },
+        { input: "abcdefgh", expected: "111222222333333" },
+        { input: "zzdzz", expected: "zz22zz" },
+      ];
+      tests.forEach(({ input, expected }) => {
+        const result = replaceAccents(input, additionalAccents);
+        expect(result).toBe(expected);
       });
     });
   });

@@ -1,6 +1,6 @@
 import { Section } from "../utils/json-data";
 
-const bannedChars = ["—", "_", " "];
+const bannedChars = new Set(["—", "_", " "]);
 const maxWords = 100;
 const apiURL = "https://poetrydb.org/random";
 
@@ -21,7 +21,7 @@ export class Poem extends Section {
     for (const word of this.words) {
       let scrubbed = "";
       for (const char of word) {
-        if (!bannedChars.includes(char)) {
+        if (!bannedChars.has(char)) {
           scrubbed += char;
         }
       }

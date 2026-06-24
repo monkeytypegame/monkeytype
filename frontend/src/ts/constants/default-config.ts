@@ -1,10 +1,6 @@
-import {
-  Config,
-  CustomThemeColors,
-} from "@monkeytype/contracts/schemas/configs";
-import { deepClone } from "../utils/misc";
+import { Config, CustomThemeColors } from "@monkeytype/schemas/configs";
 
-const obj = {
+const obj: Config = {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -43,9 +39,10 @@ const obj = {
   paceCaretStyle: "default",
   flipTestColors: false,
   layout: "default",
-  funbox: "none",
+  funbox: [],
   confidenceMode: "off",
   indicateTypos: "off",
+  compositionDisplay: "replace",
   timerStyle: "mini",
   liveSpeedStyle: "off",
   liveAccStyle: "off",
@@ -80,6 +77,7 @@ const obj = {
   minWpm: "off",
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
+  typedEffect: "keep",
   typingSpeedUnit: "wpm",
   ads: "result",
   hideExtraLetters: false,
@@ -88,11 +86,13 @@ const obj = {
   minAccCustom: 90,
   monkey: false,
   repeatQuotes: "off",
+  resultSaving: true,
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1],
-  customLayoutfluid: "qwerty#dvorak#colemak",
+  customLayoutfluid: ["qwerty", "dvorak", "colemak"],
+  customPolyglot: ["english", "spanish", "french", "german"],
   monkeyPowerLevel: "off",
   minBurst: "off",
   minBurstCustomSpeed: 100,
@@ -100,11 +100,13 @@ const obj = {
   britishEnglish: false,
   lazyMode: false,
   showAverage: "off",
+  showPb: false,
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
-} as Config;
+  playTimeWarning: "off",
+};
 
 export function getDefaultConfig(): Config {
-  return deepClone(obj);
+  return structuredClone(obj);
 }

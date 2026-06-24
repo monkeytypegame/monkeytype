@@ -1,6 +1,6 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import _, { omit } from "lodash";
+export { sanitizeString } from "@monkeytype/util/strings";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -54,10 +54,10 @@ export function buildAgentLog(req: MonkeyRequest): AgentLog {
 export function padNumbers(
   numbers: number[],
   maxLength: number,
-  fillString: string
+  fillString: string,
 ): string[] {
   return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
+    number.toString().padStart(maxLength, fillString),
   );
 }
 
@@ -87,7 +87,7 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 
 export function flattenObjectDeep(
   obj: Record<string, unknown>,
-  prefix = ""
+  prefix = "",
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
@@ -97,7 +97,7 @@ export function flattenObjectDeep(
 
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
@@ -114,18 +114,6 @@ export function flattenObjectDeep(
   });
 
   return result;
-}
-
-export function sanitizeString(str: string | undefined): string | undefined {
-  if (str === undefined || str === "") {
-    return str;
-  }
-
-  return str
-    .replace(/[\u0300-\u036F]/g, "")
-    .trim()
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/\s{3,}/g, "  ");
 }
 
 const suffixes = ["th", "st", "nd", "rd"];
@@ -154,7 +142,7 @@ export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
 export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
 
 export function formatSeconds(
-  seconds: number
+  seconds: number,
 ): `${number} ${TimeUnit}${"s" | ""}` {
   let unit: TimeUnit;
   let secondsInUnit: number;
@@ -193,26 +181,33 @@ export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
 
+export function getFrontendUrl(): string {
+  return isDevEnvironment()
+    ? "http://localhost:3000"
+    : (process.env["FRONTEND_URL"] ?? "https://monkeytype.com");
+}
+
 /**
  * convert database object into api object
  * @param data  database object with `_id: ObjectId`
  * @returns api object with `id: string`
  */
+
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T
+  data: T,
 ): T & { _id: string };
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null;
 export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null
+  data: T | null,
 ): (T & { _id: string }) | null {
   if (data === null) {
     return null;
   }
   const result = {
+    ...data,
     _id: data._id.toString(),
-    ...omit(data, "_id"),
   } as T & { _id: string };
   return result;
 }
@@ -223,7 +218,7 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
  * @returns api objects with `id: string`
  */
 export function replaceObjectIds<T extends { _id: ObjectId }>(
-  data: T[]
+  data: T[],
 ): (T & { _id: string })[] {
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
@@ -231,3 +226,23 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
 export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
   _id: ObjectId;
 };
+
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Omit<T, K> {
+  const result = { ...obj };
+  for (const key of keys) {
+    // oxlint-disable-next-line no-dynamic-delete
+    delete result[key];
+  }
+  return result;
+}
+
+export function isPlainObject(value: unknown): boolean {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  );
+}

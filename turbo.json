@@ -8,6 +8,9 @@
     "lint": {
       "dependsOn": ["^parallel", "^build"]
     },
+    "lint-fast": {
+      "dependsOn": ["^parallel", "^build"]
+    },
     "ts-check": {
       "dependsOn": ["^parallel"]
     },
@@ -19,7 +22,16 @@
       "dependsOn": ["^build"],
       "cache": false
     },
+    "integration-test": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
     "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "storybook": {
       "dependsOn": ["^build"],
       "persistent": true,
       "cache": false
@@ -27,12 +39,18 @@
     "start": {
       "dependsOn": ["build"]
     },
-    "@monkeytype/frontend#validate-json": {
+    "@monkeytype/frontend#check-assets": {
+      "dependsOn": ["^parallel", "@monkeytype/schemas#build"]
+    },
+    "//#lint-styles": {
+      "dependsOn": ["^parallel"]
+    },
+    "@monkeytype/frontend#lint-json": {
       "dependsOn": ["^parallel"]
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY"],
       "outputs": ["dist/**"]
     },
     "@monkeytype/frontend#dev": {

@@ -1,0 +1,323 @@
+{
+  "language": "hungarian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Egy bizonyos szint fölött nem süllyedünk bizonyos szint alá.",
+      "source": "Esterházy Péter – Termelési-regény",
+      "id": 1,
+      "length": 60
+    },
+    {
+      "text": "Boldoggá az tehet, aki boldogtalanná is.Van, akit azért gyűlölsz, mert szeretni is tudnád.A biztos megöl, de túléled. A kétely éltet, de belehalsz.Az igazit elhagyjuk a többiért. A többit az igazi miatt.",
+      "source": "Márai Sándor – Aforizmák",
+      "id": 2,
+      "length": 203
+    },
+    {
+      "text": "Nem tudom, miért, meddig maradok meg még neked, de a kezedet fogom s őrizem a szemedet.",
+      "source": "Ady Endre – Őrizem a szemed",
+      "id": 3,
+      "length": 87
+    },
+    {
+      "text": "Aki kinyit tehát egy könyvet, mindenekelőtt önmagát nyitja ki. Nem az író s nem is az író által teremtett alakok fájdalmába vagy reményébe ütközik, hanem saját magáéba.",
+      "source": "Csoóri Sándor",
+      "id": 4,
+      "length": 168
+    },
+    {
+      "text": "Ne kérj soha bocsánatot azért, mert követed az álmaidat! De azt megkérdezheted magadtól, hogy valóban ez-e az álmod.",
+      "source": "Karácsonyi vallomások",
+      "id": 5,
+      "length": 116
+    },
+    {
+      "text": "A pillanatban élek. Hamarosan, talán már holnap, elfelejtem, hogy itt álltam, és beszédet mondtam. De az, hogy talán már holnap elfelejtem, nem jelenti azt, hogy nem éltem meg a ma minden pillanatát. El fogom felejteni a mát, de ez nem jelenti azt, hogy a mai nap nem számít.",
+      "source": "Megmaradt Alice-nek",
+      "id": 6,
+      "length": 275
+    },
+    {
+      "text": "Gyerekként úgy ismerkedtem meg a webdesignnal, hogy lemásoltam a menő oldalakat. Megnéztem az oldal forrását a böngészőben, és ott is volt a kód, amit copy-paste-eltem, egy kicsit átalakítottam, beleírtam a nevemet, és tessék, máris az enyém volt. Forrás megtekintése. Mi lenne, ha embereken is működne? Vajon szívesen megnéznénk?",
+      "source": "Mr. Robot",
+      "id": 7,
+      "length": 330
+    },
+    {
+      "text": "A fontos információk a számtalan szűrő miatt a modern korban nemigen jutnak el a döntéshozókig, ezért is olyan a világ, amilyen.",
+      "source": "Spiró György",
+      "id": 8,
+      "length": 128
+    },
+    {
+      "text": "Az életben mindig van valami, ami megér egy mosolyt.",
+      "source": "Marilyn Monroe",
+      "id": 9,
+      "length": 52
+    },
+    {
+      "text": "Az élet nem arról szól, hogy várjuk, hogy a vihar elmúljon, hanem arról, hogy megtanuljuk, hogyan táncoljunk az esőben.",
+      "source": "Seneca",
+      "id": 10,
+      "length": 119
+    },
+    {
+      "text": "Bátrabb vagy, mint hinnéd, és erősebb, mint amilyennek látsz, és okosabb, mint gondolnád.",
+      "source": "AA enyém",
+      "id": 11,
+      "length": 89
+    },
+    {
+      "text": "Egy gyermek egyedül a könyvével valahol bent a lélek titkos szobáiban saját képeket alkot, amelyek minden mást felülmúlnak. Ezekre a képekre az embereknek szüksége van. Azon a napon, amikor a gyerekek fantáziája többé már nem tudja megalkotni őket, azon a napon az emberiség szegény lesz. Minden nagy dolog, ami a világban történt, először egy ember fantáziájában történt, és hogy a holnap világa hogyan fog kinézni, nagyrészt annak a képzelőerőnek a mértékétől függ, amit azok birtokolnak, akik éppen most tanulnak meg olvasni. Ezért van szüksége a gyerekeknek könyvekre.",
+      "source": "Astrid Lingren",
+      "id": 12,
+      "length": 572
+    },
+    {
+      "text": "Csak a vér s a nyelv tudja összetartani az embereket s a közös múlt emléke. Ha ez megszűnik, fölbomlik a világ.",
+      "source": "Ismeretlen",
+      "id": 13,
+      "length": 111
+    },
+    {
+      "text": "A gondolkodás a létező legnehezebb munka, ez az oka annak, hogy olyan kevesen foglalkoznak vele.",
+      "source": "Henry Ford",
+      "id": 14,
+      "length": 96
+    },
+    {
+      "text": "Hasonlítsd össze magad a jobbal és elégedetlen vagy, de hasonlítsd össze magad a legrosszabbal és máris több vagy az elégnél.",
+      "source": "kínai közmondás",
+      "id": 15,
+      "length": 125
+    },
+    {
+      "text": "Létfontosságú, hogy az ember időnként olyasmivel foglalkozzon, ami nem létfontosságú.",
+      "source": "Mérő László",
+      "id": 16,
+      "length": 85
+    },
+    {
+      "text": "Aki focizott vagy aki valódi drukker, az tudja, a futball a győzteseké. Idegen a játék szellemétől például azt mondani, hogy inkább játsszunk jól, szépen, és veszítsünk, mint rossz játékkal nyerjünk. Nem. Nyerni kell. És ha nyerünk, azt úgyse lehet mindig rossz játékkal.",
+      "source": "Esterházy Péter",
+      "id": 17,
+      "length": 271
+    },
+    {
+      "text": "Semmiben sem nyilvánul meg olyan világosan az emberek jelleme, mint a játékban.",
+      "source": "Lev Tolsztoj",
+      "id": 18,
+      "length": 79
+    },
+    {
+      "text": "Akinek a világon semmije sem maradt, az tudja a legjobban, mire van igazán szüksége.",
+      "source": "Erich Kästner",
+      "id": 19,
+      "length": 84
+    },
+    {
+      "text": "Mindent a maga idejében kell megcselekedni, nem gyáván utólag okosnak lenni.",
+      "source": "Sárándi József",
+      "id": 20,
+      "length": 76
+    },
+    {
+      "text": "Az igazi tiszteletet ki kell érdemelni. Nem lehet örökölni, sem megvenni. És erővel sem lehet kicsikarni.",
+      "source": "Assassin's Creed",
+      "id": 21,
+      "length": 105
+    },
+    {
+      "text": "Az ember hajt az országúton, és meglát egy kígyót, mozdulatlanul az úttest közepén. A fickó megállt, és látta, hogy a kígyó megsebesült. Ezért hazavitte, ápolta, meggyógyította. Amikor a kígyó fölépült, kinyitotta neki a bejárati ajtót, hogy elmehessen. Ahogy a csörgőkígyó kifelé tekergődzött, megmarta a lábán. Mielőtt a méreg végzett volna vele, még odaszólt a kígyónak: \"Befogadtalak, etettelek, meggyógyítottam a sebeidet, és most azzal fizetsz, hogy megmarsz?\" A kígyó megállt, és azt válaszolta: \"Ez mind igaz. De mindeközben végig tudtad, hogy én kígyó vagyok.\"",
+      "source": "Steve Berry",
+      "id": 22,
+      "length": 569
+    },
+    {
+      "text": "Jobb, ha az ember próbálkozik és kudarcot vall, mint ha egyszerűen csak feladná.",
+      "source": "Kate Morton",
+      "id": 23,
+      "length": 80
+    },
+    {
+      "text": "Az apróka pók-apóka, s a porhanyó potrohú pókanyó a pékségben a szennyezett mennyezetre nyálból való máló hálót font, - pont.",
+      "source": "Romhányi József",
+      "id": 24,
+      "length": 125
+    },
+    {
+      "text": "Ha meg akarod tudni, miként gondolkodik valaki, hallgasd meg, hogyan beszél.",
+      "source": "Ismeretlen",
+      "id": 25,
+      "length": 76
+    },
+    {
+      "text": "Végül is mindnyájan azért vagyunk a földön, hogy nevessünk. Amelyik napon nem nevetünk, az elveszett nap. Aztán meg az az egyetlen nyugtató, amelynek nincs mellékhatása. A nevetés nem öl: hiszen mind élünk. Ahogy a kínaiak mondják: legyél szegény vagy gazdag, elégedj meg a sorsoddal, mert bolond az, aki nem neveti ki a körülményeket.",
+      "source": "Temesi Ferenc",
+      "id": 26,
+      "length": 335
+    },
+    {
+      "text": "Az emberek sokféleképpen voltak bölcsek, de nevetni egyformán nevettek.",
+      "source": "Samuel Johnson",
+      "id": 27,
+      "length": 71
+    },
+    {
+      "text": "Az otthon sok kényelmet megenged; de még a családtagok előtt se menjen ez mértéken túl.",
+      "source": "Kalocsa Róza",
+      "id": 28,
+      "length": 87
+    },
+    {
+      "text": "Aki boldogtalan nem volt, nem tudja megbecsülni boldogságát.",
+      "source": "Petőfi Sándor",
+      "id": 29,
+      "length": 60
+    },
+    {
+      "text": "Ha hosszú távokat fut az ember, nem nehéz, sőt olykor szükséges is kikapcsolni az agyunkat.",
+      "source": "Scott Jurek",
+      "id": 30,
+      "length": 91
+    },
+    {
+      "text": "Ezért varázslatos úton lenni: néha azt is elfelejted, hova mész.",
+      "source": "Carol és a világvége",
+      "id": 31,
+      "length": 64
+    },
+    {
+      "text": "Abban a pillanatban, amikor elfogadod a neked adott gondokat, az összes ajtó kinyílik.",
+      "source": "Rumi",
+      "id": 32,
+      "length": 86
+    },
+    {
+      "text": "Aztán egyszer csak szörnyű reccsenés hallatszik... Majd még egy. Mintha szétszakadtak volna a hajót tartó eresztékek, a fedélzet egyik oldala megemelkedik, miközben a másik oldal majdhogynem belemerül a vízbe.",
+      "source": "Berg Judit: Rumini és az elsüllyedt világ",
+      "id": 33,
+      "length": 209
+    },
+    {
+      "text": "Egy népet nem a testi hasonlóság, hanem a közös múlt, a hasonló gond, az egy haza levegője egyesít s választ el egy más múltú és más jelenű néptől. Magyar az, akinek nyelve és esze magyarul forog. Becsületesen nem lehet más vizsgát találni arra, hogy kit tartsunk igazán magyarnak. Nem könnyű vizsga ez. Sokkal nehezebb annál, ami elé a fajta testi jegyeinek kutatói állítják az embert. Itt a lelket kell kitenni.",
+      "source": "Illyés Gyula: Ki a magyar?",
+      "id": 34,
+      "length": 413
+    },
+    {
+      "text": "Szent-Györgyi Albert 1893-ban született Budapesten, aki egyben a leghíresebb magyar feltalálók egyike is. Biokémikus és orvos, aki 1937-ben Nobel-díjat kapott a C-vitamin felfedezéséért és a biológiai égési folyamatok kutatásáért.",
+      "source": "www.10-legjobb.blog.hu: 10 leghíresebb magyar ember a világon",
+      "id": 35,
+      "length": 230
+    },
+    {
+      "text": "Talán nincs is olyan felnőtt magyar, aki ne hallott volna róla. Ő olyan a költészetben, mint a legkedveltebb fagyi ízek között a csokoládé. Népszerűsége időtlen. Petőfi Sándor 1823-ban született Kiskőrösön. Költő és forradalmár, aki a magyar romantikus költészet egyik legnagyobb alakja.",
+      "source": "www.10-legjobb.blog.hu: 10 leghíresebb magyar ember a világon",
+      "id": 36,
+      "length": 287
+    },
+    {
+      "text": "Míg egy ujjal mutogatsz valakire, másik négy ujjad magadra mutat.",
+      "source": "Közmondás",
+      "id": 37,
+      "length": 65
+    },
+    {
+      "text": "A hazugság már félig megkerülte a világot, amikor az igazság még csak a nadrágját húzza.",
+      "source": "Közmondás",
+      "id": 38,
+      "length": 88
+    },
+    {
+      "text": "Majd ha az ember kivágja az utolsó fát, megmérgezi az utolsó folyó vizét, kifogja az utolsó halat is, akkor rádöbben, hogy a pénzt nem lehet megenni.",
+      "source": "Közmondás",
+      "id": 39,
+      "length": 149
+    },
+    {
+      "text": "Az élet nagy ajándék, így nem áll szándékomban elpazarolni. Sosem tudni, ki osztja a következő lapot. Az ember megtanulja elfogadni a sorsát. Minden egyes nap számít.",
+      "source": "Titanic",
+      "id": 40,
+      "length": 166
+    },
+    {
+      "text": "A gyerek szavát, hiába is őszinte, nem hallják meg, akik elfelejtettek hallani.",
+      "source": "Harry Potter",
+      "id": 41,
+      "length": 79
+    },
+    {
+      "text": "Ha hallasz egy hangot magadban, amely azt mondja: „Nem tudsz festeni”, akkor mindenképp fess, és ez a hang elnémul.",
+      "source": "Vincent Van Gogh",
+      "id": 42,
+      "length": 115
+    },
+    {
+      "text": "A kreativitás csak dolgok összekapcsolása. Amikor megkérdezed a kreatív embereket, hogyan csináltak valamit, egy kicsit bűntudatot éreznek, mert valójában nem csinálták, csak láttak valamit. Egy idő után ez természetessé válik számukra.",
+      "source": "Steve Jobs",
+      "id": 43,
+      "length": 236
+    },
+    {
+      "text": "Tanulj a tegnapból, élj a mának, remélj a holnapban. A lényeg, hogy sose hagyd abba a kérdezést.",
+      "source": "Albert Einstein",
+      "id": 44,
+      "length": 96
+    },
+    {
+      "text": "Nem a legerősebb faj marad fenn, és nem is a legintelligensebb, hanem az, amelyik a legjobban alkalmazkodik a változásokhoz.",
+      "source": "Charles Darwin",
+      "id": 45,
+      "length": 124
+    },
+    {
+      "text": "Mindenki híres akar lenni, de senki nem akar dolgozni érte. Én ezen élek. Keményen dolgozol, hogy keményen játszhass. A nap végén mindent beleadsz, és végül kifizetődik. Lehet, hogy egy év múlva, lehet, hogy 30 év múlva. Végül a kemény munka meghozza gyümölcsét.",
+      "source": "Kevin Hart",
+      "id": 46,
+      "length": 262
+    },
+    {
+      "text": "A múlt is fájhat, de az én filozófiám szerint vagy elugrasz előle, vagy tanulsz belőle.",
+      "source": "Az oroszlánkirály -1994",
+      "id": 47,
+      "length": 87
+    },
+    {
+      "text": "Talán a legnagyobb kockázat, amit valaha is vállalhatsz, hogy olyannak látnak téged, amilyen valójában vagy.",
+      "source": "Hamupipőke -1950",
+      "id": 48,
+      "length": 108
+    },
+    {
+      "text": "A dolog, amik miatt különbözöm másoktól, azok a dolgok, amik miatt én vagyok én!",
+      "source": "Micimackó kalandjai -1977",
+      "id": 49,
+      "length": 80
+    },
+    {
+      "text": "Mátra alján, falu szélén,  lakik az én öreg néném melegszívű, dolgos, derék,  tőle tudom ezt a mesét. Őzgidácska, sete-suta, rátévedt az országútra, megbotlott egy kidőlt fában ,eltörött a gida lába. Panaszosan sír szegényke, arra ballag öreg néne,  ölbe veszi, megsajnálja, haza viszi kis házába.",
+      "source": "Fazekas Anna: Öreg Néne őzikéje",
+      "id": 50,
+      "length": 297
+    },
+    {
+      "text": "Az ember éppen ott nincs otthon, ahol van. Az ember azt hiszi, hogy ott lenne otthon, ahova kívánkozik.",
+      "source": "Zsolt Béla",
+      "id": 51,
+      "length": 103
+    },
+    {
+      "text": "A magyarság nem kalapdísz, hanem a szíve mélyében viseli a magyar, mint tenger csigája a gyöngyét. A magyarságunk érzése mélyen bent ég bennünk, hogy szinte magunk sem tudunk róla, mint a tűzhányó hegyek, amelyek hideg kőhegyek, de egyszer megmordulnak.",
+      "source": "Gárdonyi Géza",
+      "id": 52,
+      "length": 253
+    }
+  ]
+}

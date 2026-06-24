@@ -1,12 +1,12 @@
 import FirebaseAdmin from "./../init/firebase-admin";
-import LRUCache from "lru-cache";
+import { LRUCache } from "lru-cache";
 import {
   recordTokenCacheAccess,
   setTokenCacheLength,
   setTokenCacheSize,
 } from "./prometheus";
 import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
-import { isDevEnvironment } from "./misc";
+import { getFrontendUrl } from "./misc";
 import emailQueue from "../queues/email-queue";
 import * as UserDAL from "../dal/user";
 import { isFirebaseError } from "./error";
@@ -22,7 +22,7 @@ const TOKEN_CACHE_BUFFER = 1000 * 60 * 5; // 5 minutes
 
 export async function verifyIdToken(
   idToken: string,
-  noCache = false
+  noCache = false,
 ): Promise<DecodedIdToken> {
   if (noCache) {
     return await FirebaseAdmin().auth().verifyIdToken(idToken, true);
@@ -54,7 +54,7 @@ export async function verifyIdToken(
 
 export async function updateUserEmail(
   uid: string,
-  email: string
+  email: string,
 ): Promise<UserRecord> {
   await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
@@ -65,7 +65,7 @@ export async function updateUserEmail(
 
 export async function updateUserPassword(
   uid: string,
-  password: string
+  password: string,
 ): Promise<UserRecord> {
   await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
@@ -93,21 +93,17 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
     const { name } = await UserDAL.getPartialUser(
       uid,
       "request forgot password email",
-      ["name"]
+      ["name"],
     );
 
     const link = await FirebaseAdmin()
       .auth()
-      .generatePasswordResetLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      });
+      .generatePasswordResetLink(email, { url: getFrontendUrl() });
 
     await emailQueue.sendForgotPasswordEmail(email, name, link);
   } catch (err) {
     if (isFirebaseError(err) && err.errorInfo.code !== "auth/user-not-found") {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      // oxlint-disable-next-line only-throw-error
       throw err;
     }
   }

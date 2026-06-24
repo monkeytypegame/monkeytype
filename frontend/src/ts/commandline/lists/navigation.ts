@@ -1,7 +1,10 @@
 import { navigate } from "../../controllers/route-controller";
-import { isAuthenticated } from "../../firebase";
+import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
-import { Command } from "../types";
+import { Command, withValidation } from "../types";
+import { remoteValidation } from "../../utils/remote-validation";
+import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
+import Ape from "../../ape";
 
 const commands: Command[] = [
   {
@@ -10,7 +13,7 @@ const commands: Command[] = [
     alias: "navigate go to start begin type test",
     icon: "fa-keyboard",
     exec: (): void => {
-      navigate("/");
+      void navigate("/");
     },
   },
   {
@@ -19,7 +22,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-crown",
     exec: (): void => {
-      navigate("/leaderboards");
+      void navigate("/leaderboards");
     },
   },
   {
@@ -28,7 +31,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-info",
     exec: (): void => {
-      navigate("/about");
+      void navigate("/about");
     },
   },
   {
@@ -37,7 +40,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-cog",
     exec: (): void => {
-      navigate("/settings");
+      void navigate("/settings");
     },
   },
 
@@ -47,9 +50,30 @@ const commands: Command[] = [
     alias: "navigate go to stats",
     icon: "fa-user",
     exec: (): void => {
-      isAuthenticated() ? navigate("/account") : navigate("/login");
+      isAuthenticated() ? void navigate("/account") : void navigate("/login");
     },
   },
+  withValidation({
+    id: "searchProfile",
+    display: "Search for a profile",
+    alias: "profile user search find lookup",
+    icon: "fa-search",
+    input: true,
+    validation: {
+      schema: UserNameWithoutFilterSchema,
+      debounceDelay: 1000,
+      isValid: remoteValidation(
+        async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),
+        {
+          on4xx: () => "Unknown user",
+        },
+      ),
+    },
+    exec: ({ input }): void => {
+      if (input === undefined) return;
+      void navigate(`/profile/${input}`);
+    },
+  }),
   {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",

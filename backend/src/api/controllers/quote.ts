@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getPartialUser, updateQuoteRatings } from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
@@ -23,6 +22,7 @@ import {
 } from "@monkeytype/contracts/quotes";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import { MonkeyRequest } from "../types";
+import { Language } from "@monkeytype/schemas/languages";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -31,32 +31,32 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 }
 
 export async function getQuotes(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetQuotesResponse> {
   const { uid } = req.ctx.decodedToken;
   const quoteMod = (await getPartialUser(uid, "get quotes", ["quoteMod"]))
     .quoteMod;
-  const quoteModString = quoteMod === true ? "all" : (quoteMod as string);
+  const quoteModLanguage = quoteMod === true ? "all" : (quoteMod as Language);
 
-  const data = await NewQuotesDAL.get(quoteModString);
+  const data = await NewQuotesDAL.get(quoteModLanguage);
   return new MonkeyResponse(
     "Quote submissions retrieved",
-    replaceObjectIds(data)
+    replaceObjectIds(data),
   );
 }
 
 export async function isSubmissionEnabled(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<IsSubmissionEnabledResponse> {
   const { submissionsEnabled } = req.ctx.configuration.quotes;
   return new MonkeyResponse(
-    "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
-    { isEnabled: submissionsEnabled }
+    `Quote submission ${submissionsEnabled ? "enabled" : "disabled"}`,
+    { isEnabled: submissionsEnabled },
   );
 }
 
 export async function addQuote(
-  req: MonkeyRequest<undefined, AddQuoteRequest>
+  req: MonkeyRequest<undefined, AddQuoteRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { text, source, language, captcha } = req.body;
@@ -68,7 +68,7 @@ export async function addQuote(
 }
 
 export async function approveQuote(
-  req: MonkeyRequest<undefined, ApproveQuoteRequest>
+  req: MonkeyRequest<undefined, ApproveQuoteRequest>,
 ): Promise<ApproveQuoteResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
@@ -86,7 +86,7 @@ export async function approveQuote(
 }
 
 export async function refuseQuote(
-  req: MonkeyRequest<undefined, RejectQuoteRequest>
+  req: MonkeyRequest<undefined, RejectQuoteRequest>,
 ): Promise<MonkeyResponse> {
   const { quoteId } = req.body;
 
@@ -95,7 +95,7 @@ export async function refuseQuote(
 }
 
 export async function getRating(
-  req: MonkeyRequest<GetQuoteRatingQuery>
+  req: MonkeyRequest<GetQuoteRatingQuery>,
 ): Promise<GetQuoteRatingResponse> {
   const { quoteId, language } = req.query;
 
@@ -105,7 +105,7 @@ export async function getRating(
 }
 
 export async function submitRating(
-  req: MonkeyRequest<undefined, AddQuoteRatingRequest>
+  req: MonkeyRequest<undefined, AddQuoteRatingRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
@@ -122,10 +122,11 @@ export async function submitRating(
     quoteId,
     language,
     newRating,
-    shouldUpdateRating
+    shouldUpdateRating,
   );
 
-  _.setWith(userQuoteRatings, `[${language}][${quoteId}]`, rating, Object);
+  userQuoteRatings[language] ??= {};
+  userQuoteRatings[language][quoteId] = rating;
 
   await updateQuoteRatings(uid, userQuoteRatings);
 
@@ -136,7 +137,7 @@ export async function submitRating(
 }
 
 export async function reportQuote(
-  req: MonkeyRequest<undefined, ReportQuoteRequest>
+  req: MonkeyRequest<undefined, ReportQuoteRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {

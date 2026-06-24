@@ -1,40 +1,52 @@
-:root {
-  --bg-color: #1e1e2e;
-  --caret-color: #f2cdcd;
-  --main-color: #cba6f7;
-  --sub-color: #7f849c;
-  --sub-alt-color: #181825;
-  --text-color: #cdd6f4;
-  --error-color: #f38ba8;
-  --error-extra-color: #eba0ac;
-  --colorful-error-color: #f38ba8;
-  --colorful-error-extra-color: #eba0ac;
-}
-
-nav .view-start {
+[data-nav-item="test"] {
   color: #f38ba8;
+  &:hover {
+    color: color-mix(in srgb, #f38ba8 75%, white 25%);
+  }
 }
 
-nav .view-leaderboards {
+[data-nav-item="leaderboards"] {
   color: #fab387;
+  &:hover {
+    color: color-mix(in srgb, #fab387 75%, white 25%);
+  }
 }
 
-nav .view-about {
+[data-nav-item="about"] {
   color: #f9e2af;
+  &:hover {
+    color: color-mix(in srgb, #f9e2af 75%, white 25%);
+  }
 }
 
-nav .view-settings {
+[data-nav-item="settings"] {
   color: #a6e3a1;
+  &:hover {
+    color: color-mix(in srgb, #a6e3a1 75%, white 25%);
+  }
 }
 
-nav .view-account {
-  color: #89dceb;
+[data-nav-item="account"] {
+  --themable-button-text: #89dceb;
+  &:hover {
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
+  }
 }
 
-nav .showAlerts {
+[data-nav-item="alerts"] {
   color: #89b4fa;
+  &:hover {
+    color: color-mix(in srgb, #89b4fa 75%, white 25%);
+  }
 }
 
-nav .signInOut {
+[data-nav-item="login"] {
   color: #b4befe;
+  &:hover {
+    color: color-mix(in srgb, #b4befe 75%, white 25%);
+  }
 }

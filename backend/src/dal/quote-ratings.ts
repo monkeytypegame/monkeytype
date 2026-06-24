@@ -1,7 +1,8 @@
-import { QuoteRating } from "@monkeytype/contracts/schemas/quotes";
+import { QuoteRating } from "@monkeytype/schemas/quotes";
 import * as db from "../init/db";
 import { Collection } from "mongodb";
 import { WithObjectId } from "../utils/misc";
+import { Language } from "@monkeytype/schemas/languages";
 
 type DBQuoteRating = WithObjectId<QuoteRating>;
 
@@ -11,21 +12,21 @@ export const getQuoteRatingCollection = (): Collection<DBQuoteRating> =>
 
 export async function submit(
   quoteId: number,
-  language: string,
+  language: Language,
   rating: number,
-  update: boolean
+  update: boolean,
 ): Promise<void> {
   if (update) {
     await getQuoteRatingCollection().updateOne(
       { quoteId, language },
       { $inc: { totalRating: rating } },
-      { upsert: true }
+      { upsert: true },
     );
   } else {
     await getQuoteRatingCollection().updateOne(
       { quoteId, language },
       { $inc: { ratings: 1, totalRating: rating } },
-      { upsert: true }
+      { upsert: true },
     );
   }
 
@@ -36,18 +37,18 @@ export async function submit(
   const average = parseFloat(
     (
       Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
-    ).toFixed(1)
+    ).toFixed(1),
   );
 
   await getQuoteRatingCollection().updateOne(
     { quoteId, language },
-    { $set: { average } }
+    { $set: { average } },
   );
 }
 
 export async function get(
   quoteId: number,
-  language: string
+  language: Language,
 ): Promise<DBQuoteRating | null> {
   return await getQuoteRatingCollection().findOne({ quoteId, language });
 }

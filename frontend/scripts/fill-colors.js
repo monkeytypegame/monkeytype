@@ -1,11 +1,12 @@
+// oxlint-disable no-require-imports
 const fs = require("fs");
 
 function main() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const listFile = JSON.parse(
       fs.readFileSync("../static/themes/_list.json", {
         encoding: "utf8",
-      })
+      }),
     );
     const themeFiles = fs.readdirSync("../static/themes/");
     // themeFiles.forEach((filename) => {
@@ -27,16 +28,16 @@ function main() {
       const textMatches = /--text-color: (#.+);/g.exec(themeData);
 
       listFile.find(
-        (theme) => theme.name === filename.split(".css")[0]
+        (theme) => theme.name === filename.split(".css")[0],
       ).subColor = subMatches[1];
       listFile.find(
-        (theme) => theme.name === filename.split(".css")[0]
+        (theme) => theme.name === filename.split(".css")[0],
       ).textColor = textMatches[1];
       listFile.find(
-        (theme) => theme.name === filename.split(".css")[0]
+        (theme) => theme.name === filename.split(".css")[0],
       ).bgColor = bgMatches[1];
       listFile.find(
-        (theme) => theme.name === filename.split(".css")[0]
+        (theme) => theme.name === filename.split(".css")[0],
       ).mainColor = mainMatches[1];
 
       // console.log(themeData);
@@ -48,7 +49,7 @@ function main() {
     }
     fs.writeFileSync(
       `../static/themes/_list.json`,
-      JSON.stringify(listFile, null, 2)
+      JSON.stringify(listFile, null, 2),
     );
     resolve();
   });

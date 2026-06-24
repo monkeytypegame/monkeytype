@@ -1,4 +1,5 @@
-import { FunboxMetadata, FunboxName } from "./types";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { FunboxMetadata } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {
@@ -13,7 +14,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "getWord",
       "punctuateWord",
       "rememberSettings",
-      "handleChar",
+      "getEmulatedChar",
     ],
     name: "58008",
     alias: "numbers",
@@ -62,7 +63,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     },
     frontendFunctions: ["applyConfig", "rememberSettings"],
   },
-
   tts: {
     canGetPb: true,
     difficultyLevel: 1,
@@ -80,7 +80,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 2,
     properties: [
       "hasCssFile",
-      "noLigatures",
+      "noJoiningScript",
       "conflictsWithSymmetricChars",
       "ignoreReducedMotion",
     ],
@@ -107,20 +107,27 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: [
       "getWord",
       "rememberSettings",
-      "handleChar",
+      "getEmulatedChar",
       "isCharCorrect",
-      "preventDefaultEvent",
       "getWordHtml",
     ],
     name: "arrows",
   },
   rAnDoMcAsE: {
-    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    description: "raNdomIze ThE CApitaLizatIon Of EveRY LeTtEr.",
     canGetPb: false,
     difficultyLevel: 2,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "rAnDoMcAsE",
+  },
+  sPoNgEcAsE: {
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "sPoNgEcAsE",
   },
   capitals: {
     description: "Capitalize Every Word.",
@@ -129,6 +136,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "capitals",
+  },
+  layout_mirror: {
+    description: "Mirror the keyboard layout",
+    canGetPb: true,
+    difficultyLevel: 3,
+    properties: ["changesLayout"],
+    frontendFunctions: ["applyConfig", "rememberSettings"],
+    name: "layout_mirror",
   },
   layoutfluid: {
     description:
@@ -141,7 +156,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "rememberSettings",
       "handleSpace",
       "getResultContent",
-      "restart",
     ],
     name: "layoutfluid",
   },
@@ -149,7 +163,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures", "ignoreReducedMotion"],
+    properties: ["hasCssFile", "noJoiningScript", "ignoreReducedMotion"],
     name: "earthquake",
     cssModifications: ["words"],
   },
@@ -193,19 +207,19 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["getWord"],
     name: "specials",
   },
-  plus_one: {
-    description: "Only one future word is visible.",
-    canGetPb: true,
-    difficultyLevel: 0,
-    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
-    name: "plus_one",
-  },
   plus_zero: {
     description: "React quickly! Only the current word is visible.",
     canGetPb: true,
     difficultyLevel: 1,
     properties: ["changesWordsVisibility", "toPush:1", "noInfiniteDuration"],
     name: "plus_zero",
+  },
+  plus_one: {
+    description: "Only one future word is visible.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
+    name: "plus_one",
   },
   plus_two: {
     description: "Only two future words are visible.",
@@ -386,7 +400,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Go back to the 1980s",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noJoiningScript"],
     frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "crt",
     cssModifications: ["body"],
@@ -396,9 +410,9 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "backwards",
     properties: [
       "hasCssFile",
-      "noLigatures",
       "conflictsWithSymmetricChars",
       "wordOrder:reverse",
+      "reverseDirection",
     ],
     canGetPb: true,
     frontendFunctions: ["alterText"],
@@ -409,14 +423,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["noLigatures"],
+    properties: ["noJoiningScript"],
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
   },
   instant_messaging: {
     description: "Who needs shift anyway?",
     canGetPb: false,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "instant_messaging",
@@ -424,7 +438,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   underscore_spaces: {
     description: "Underscores_are_better.",
     canGetPb: false,
-    difficultyLevel: 0,
+    difficultyLevel: 1,
     properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
     frontendFunctions: ["alterText"],
     name: "underscore_spaces",
@@ -437,35 +451,44 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "ALL_CAPS",
   },
+  polyglot: {
+    description: "Use words from multiple languages in a single test.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage"],
+    frontendFunctions: ["withWords"],
+    name: "polyglot",
+  },
+  asl: {
+    description: "Practice american sign language.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["hasCssFile", "noJoiningScript"],
+    name: "asl",
+    cssModifications: ["words"],
+  },
+  rot13: {
+    description: "Vg znl abg or frpher, ohg vg vf sha gb glcr!",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: [],
+    frontendFunctions: ["alterText"],
+    name: "rot13",
+  },
+  no_quit: {
+    description: "You can't restart the test.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    name: "no_quit",
+  },
 };
-
-export function getFunbox(name: FunboxName): FunboxMetadata;
-export function getFunbox(names: FunboxName[]): FunboxMetadata[];
-export function getFunbox(
-  nameOrNames: FunboxName | FunboxName[]
-): FunboxMetadata | FunboxMetadata[] {
-  if (Array.isArray(nameOrNames)) {
-    const out = nameOrNames.map((name) => getObject()[name]);
-
-    //@ts-expect-error
-    if (out.includes(undefined)) {
-      throw new Error("One of the funboxes is invalid: " + nameOrNames);
-    }
-
-    return out;
-  } else {
-    const out = getObject()[nameOrNames];
-
-    if (out === undefined) {
-      throw new Error("Invalid funbox name: " + nameOrNames);
-    }
-
-    return out;
-  }
-}
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {
   return list;
+}
+
+export function getFunboxNames(): FunboxName[] {
+  return Object.keys(list) as FunboxName[];
 }
 
 export function getList(): FunboxMetadata[] {
@@ -476,6 +499,30 @@ export function getList(): FunboxMetadata[] {
   return out;
 }
 
-function getFunboxNames(): FunboxName[] {
-  return Object.keys(list) as FunboxName[];
+export function getFunbox(name: FunboxName): FunboxMetadata;
+export function getFunbox(names: FunboxName[]): FunboxMetadata[];
+export function getFunbox(
+  nameOrNames: FunboxName | FunboxName[],
+): FunboxMetadata | FunboxMetadata[] {
+  if (nameOrNames === undefined) return [];
+  if (Array.isArray(nameOrNames)) {
+    const out = nameOrNames.map((name) => getObject()[name]);
+
+    //@ts-expect-error sanity check
+    if (out.includes(undefined)) {
+      throw new Error(
+        `One of the funboxes is invalid: ${nameOrNames.toString()}`,
+      );
+    }
+
+    return out;
+  } else {
+    const out = getObject()[nameOrNames];
+
+    if (out === undefined) {
+      throw new Error(`Invalid funbox name: ${nameOrNames}`);
+    }
+
+    return out;
+  }
 }

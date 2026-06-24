@@ -1,47 +1,51 @@
-import * as Misc from "../utils/misc";
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
+import { qs, qsr } from "../utils/dom";
 
-export function updateBar(percentage: number, fast = false): void {
-  const speed = fast ? 100 : 1000;
-  $(".pageLoading .fill, .pageAccount .preloader .fill")
-    .stop(true, fast)
-    .animate(
-      {
-        width: percentage + "%",
-      },
-      speed
-    );
-}
+const pageEl = qs(".page.pageLoading");
+const barEl = pageEl?.qs(".bar");
+const errorEl = pageEl?.qs(".error");
+const spinnerEl = pageEl?.qs(".spinner");
+const textEl = pageEl?.qs(".text");
 
-export function updateText(text: string): void {
-  $(".pageLoading .text, .pageAccount .preloader .text").text(text);
-}
-
-export async function showBar(): Promise<void> {
-  return new Promise((resolve) => {
-    void Misc.swapElements(
-      $(".pageLoading .preloader .icon"),
-      $(".pageLoading .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
-    void Misc.swapElements(
-      $(".pageAccount .preloader .icon"),
-      $(".pageAccount .preloader .barWrapper"),
-      125,
-      async () => {
-        resolve();
-      }
-    );
+export async function updateBar(
+  percentage: number,
+  duration: number,
+): Promise<void> {
+  await barEl?.qs(".fill")?.promiseAnimate({
+    width: `${percentage}%`,
+    duration,
   });
 }
 
+export function updateText(text: string): void {
+  textEl?.show()?.setHtml(text);
+}
+
+export function showSpinner(): void {
+  barEl?.hide();
+  errorEl?.hide();
+  spinnerEl?.show();
+  textEl?.hide();
+}
+
+export function showError(): void {
+  barEl?.hide();
+  spinnerEl?.hide();
+  errorEl?.show();
+  textEl?.hide();
+}
+
+export async function showBar(): Promise<void> {
+  barEl?.show();
+  errorEl?.hide();
+  spinnerEl?.hide();
+  textEl?.hide();
+}
+
 export const page = new Page({
-  name: "loading",
-  element: $(".page.pageLoading"),
+  id: "loading",
+  element: qsr(".page.pageLoading"),
   path: "/",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");

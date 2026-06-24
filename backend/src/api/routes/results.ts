@@ -8,6 +8,9 @@ export default s.router(resultsContract, {
   get: {
     handler: async (r) => callController(ResultController.getResults)(r),
   },
+  getById: {
+    handler: async (r) => callController(ResultController.getResultById)(r),
+  },
   add: {
     handler: async (r) => callController(ResultController.addResult)(r),
   },

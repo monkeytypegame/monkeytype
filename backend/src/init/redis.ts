@@ -1,10 +1,57 @@
 import fs from "fs";
-import _ from "lodash";
 import { join } from "path";
-import IORedis from "ioredis";
+import IORedis, { Redis } from "ioredis";
 import Logger from "../utils/logger";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+import { kebabToCamelCase } from "@monkeytype/util/strings";
+
+// Define Redis connection with custom methods for type safety
+export type RedisConnectionWithCustomMethods = Redis & {
+  addResult: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    maxResults: number,
+    expirationTime: number,
+    uid: string,
+    score: number,
+    data: string,
+  ) => Promise<number>;
+  addResultIncrement: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    expirationTime: number,
+    uid: string,
+    score: number,
+    data: string,
+  ) => Promise<number>;
+  getResults: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    minRank: number,
+    maxRank: number,
+    withScores: string,
+    userIds: string,
+  ) => Promise<
+    [string[], string[], string, [string, string | number], string[]]
+  >; //entries, scores(optional), count, min_score(optiona)[uid, score], ranks(optional)
+  getRank: (
+    keyCount: number,
+    scoresKey: string,
+    resultsKey: string,
+    uid: string,
+    withScores: string,
+    userIds: string,
+  ) => Promise<[number, string, string, number]>; //rank, score(optional), entry json, friendsRank(optional)
+  purgeResults: (
+    keyCount: number,
+    uid: string,
+    namespace: string,
+  ) => Promise<void>;
+};
 
 let connection: IORedis.Redis;
 let connected = false;
@@ -17,7 +64,7 @@ function loadScripts(client: IORedis.Redis): void {
   scriptFiles.forEach((scriptFile) => {
     const scriptPath = join(REDIS_SCRIPTS_DIRECTORY_PATH, scriptFile);
     const scriptSource = fs.readFileSync(scriptPath, "utf-8");
-    const scriptName = _.camelCase(scriptFile.split(".")[0]);
+    const scriptName = kebabToCamelCase(scriptFile.split(".")[0] as string);
 
     client.defineCommand(scriptName, {
       lua: scriptSource,
@@ -58,11 +105,11 @@ export async function connect(): Promise<void> {
     if (isDevEnvironment()) {
       await connection.quit();
       Logger.warning(
-        `Failed to connect to redis. Continuing in dev mode, running without redis.`
+        `Failed to connect to redis. Continuing in dev mode, running without redis.`,
       );
     } else {
       Logger.error(
-        "Failed to connect to redis. Exiting with exit status code 1."
+        "Failed to connect to redis. Exiting with exit status code 1.",
       );
       process.exit(1);
     }
@@ -73,11 +120,11 @@ export function isConnected(): boolean {
   return connected;
 }
 
-export function getConnection(): IORedis.Redis | undefined {
+export function getConnection(): RedisConnectionWithCustomMethods | null {
   const status = connection?.status;
   if (connection === undefined || status !== "ready") {
-    return undefined;
+    return null;
   }
 
-  return connection;
+  return connection as RedisConnectionWithCustomMethods;
 }

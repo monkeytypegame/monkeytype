@@ -8,6 +8,7 @@ import { recordEmail } from "../utils/prometheus";
 import type { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
+import { tryCatch } from "@monkeytype/util/trycatch";
 
 type EmailMetadata = {
   subject: string;
@@ -27,6 +28,7 @@ const templates: Record<EmailType, EmailMetadata> = {
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
+let emailFrom = "Monkeytype <noreply@monkeytype.com>";
 
 export function isInitialized(): boolean {
   return transportInitialized;
@@ -37,12 +39,17 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
+  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT, EMAIL_FROM } =
+    process.env;
+
+  if (EMAIL_FROM !== undefined) {
+    emailFrom = EMAIL_FROM;
+  }
 
   if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning(
-        "No email client configuration provided. Running without email."
+        "No email client configuration provided. Running without email.",
       );
     } else if (process.env["BYPASS_EMAILCLIENT"] === "true") {
       Logger.warning("BYPASS_EMAILCLIENT is enabled! Running without email.");
@@ -55,7 +62,7 @@ export async function init(): Promise<void> {
   try {
     transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
-      secure: EMAIL_PORT === "465" ? true : false,
+      secure: EMAIL_PORT === "465",
       port: parseInt(EMAIL_PORT ?? "578", 10),
       auth: {
         user: EMAIL_USER,
@@ -69,7 +76,9 @@ export async function init(): Promise<void> {
 
     if (!result) {
       throw new Error(
-        `Could not verify email client configuration: ` + JSON.stringify(result)
+        `Could not verify email client configuration: ${JSON.stringify(
+          result,
+        )}`,
       );
     }
 
@@ -89,7 +98,7 @@ type MailResult = {
 export async function sendEmail(
   templateName: EmailType,
   to: string,
-  data: EmailTaskContexts[EmailType]
+  data: EmailTaskContexts[EmailType],
 ): Promise<MailResult> {
   if (!isInitialized()) {
     return {
@@ -101,7 +110,7 @@ export async function sendEmail(
   const template = await fillTemplate<typeof templateName>(templateName, data);
 
   const mailOptions = {
-    from: "Monkeytype <noreply@monkeytype.com>",
+    from: emailFrom,
     to,
     subject: templates[templateName].subject,
     html: template,
@@ -109,14 +118,15 @@ export async function sendEmail(
 
   type Result = { response: string; accepted: string[] };
 
-  let result: Result;
-  try {
-    result = (await transporter.sendMail(mailOptions)) as Result;
-  } catch (e) {
+  const { data: result, error } = await tryCatch(
+    transporter.sendMail(mailOptions) as Promise<Result>,
+  );
+
+  if (error) {
     recordEmail(templateName, "fail");
     return {
       success: false,
-      message: getErrorMessage(e) ?? "Unknown error",
+      message: getErrorMessage(error) ?? "Unknown error",
     };
   }
 
@@ -140,7 +150,7 @@ async function getTemplate(name: string): Promise<string> {
 
   const template = await fs.promises.readFile(
     `${EMAIL_TEMPLATES_DIRECTORY}/${name}`,
-    "utf-8"
+    "utf-8",
   );
 
   const html = mjml2html(template).html;
@@ -151,7 +161,7 @@ async function getTemplate(name: string): Promise<string> {
 
 async function fillTemplate<M extends EmailType>(
   type: M,
-  data: EmailTaskContexts[M]
+  data: EmailTaskContexts[M],
 ): Promise<string> {
   const template = await getTemplate(templates[type].templateName);
   return mustache.render(template, data);

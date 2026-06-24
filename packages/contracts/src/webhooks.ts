@@ -1,13 +1,13 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { PSASchema } from "./schemas/psas";
+import { PSASchema } from "@monkeytype/schemas/psas";
 
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
+} from "./util/api";
 
 /**
  *Schema: https://docs.github.com/en/webhooks/webhook-events-and-payloads?actionType=published#release
@@ -56,5 +56,5 @@ export const webhooksContract = c.router(
       rateLimit: "webhookLimit",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

@@ -7,15 +7,16 @@ import {
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   ApproveQuoteSchema,
   QuoteIdSchema,
   QuoteRatingSchema,
   QuoteReportReasonSchema,
   QuoteSchema,
-} from "./schemas/quotes";
-import { IdSchema, LanguageSchema, NullableStringSchema } from "./schemas/util";
+} from "@monkeytype/schemas/quotes";
+import { IdSchema, NullableStringSchema } from "@monkeytype/schemas/util";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
 
 export const GetQuotesResponseSchema = responseWithData(z.array(QuoteSchema));
 export type GetQuotesResponse = z.infer<typeof GetQuotesResponseSchema>;
@@ -23,7 +24,7 @@ export type GetQuotesResponse = z.infer<typeof GetQuotesResponseSchema>;
 export const IsSubmissionEnabledResponseSchema = responseWithData(
   z.object({
     isEnabled: z.boolean(),
-  })
+  }),
 );
 export type IsSubmissionEnabledResponse = z.infer<
   typeof IsSubmissionEnabledResponseSchema
@@ -212,5 +213,5 @@ export const quotesContract = c.router(
       openApiTags: "quotes",
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

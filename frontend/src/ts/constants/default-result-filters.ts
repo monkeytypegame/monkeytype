@@ -1,5 +1,6 @@
-import { ResultFilters } from "@monkeytype/contracts/schemas/users";
-import { deepClone } from "../utils/misc";
+import { ResultFilters } from "@monkeytype/schemas/users";
+import { LanguageList } from "./languages";
+import { getFunboxNames } from "@monkeytype/funbox";
 
 const object: ResultFilters = {
   _id: "default",
@@ -58,10 +59,11 @@ const object: ResultFilters = {
   tags: {
     none: true,
   },
-  language: {},
+  language: Object.fromEntries(LanguageList.map((lang) => [lang, true])),
   funbox: {
     none: true,
+    ...Object.fromEntries(getFunboxNames().map((funbox) => [funbox, true])),
   },
 };
 
-export default deepClone(object);
+export default structuredClone(object);

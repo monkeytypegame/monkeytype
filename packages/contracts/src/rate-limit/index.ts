@@ -13,7 +13,7 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 5000,
+    window: 5000, // 5 seconds
     max: 1,
   },
 
@@ -73,23 +73,23 @@ export const limits = {
 
   // Quote reporting
   quoteReportSubmit: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   // Quote favorites
   quoteFavoriteGet: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoritePost: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoriteDelete: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
@@ -120,7 +120,7 @@ export const limits = {
     max: 60,
   },
 
-  // get public speed stats
+  // Get public speed stats
   publicStatsGet: {
     window: "minute",
     max: 60,
@@ -136,6 +136,18 @@ export const limits = {
   resultsGetApe: {
     window: "day",
     max: 30,
+  },
+
+  // Result by id
+  resultByIdGet: {
+    window: "hour",
+    max: 300,
+  },
+
+  // Result by id
+  resultByIdGetApe: {
+    window: "hour",
+    max: 60,
   },
 
   resultsAdd: {
@@ -334,6 +346,11 @@ export const limits = {
     max: 60,
   },
 
+  userFriendGet: {
+    window: "hour",
+    max: 60,
+  },
+
   // ApeKeys Routing
   apeKeysGet: {
     window: "hour",
@@ -349,11 +366,31 @@ export const limits = {
     window: "second",
     max: 1,
   },
+
+  connectionGet: {
+    window: "hour",
+    max: 60,
+  },
+
+  connectionCreate: {
+    window: "hour",
+    max: 60,
+  },
+
+  connectionDelete: {
+    window: "hour",
+    max: 60,
+  },
+
+  connectionUpdate: {
+    window: "hour",
+    max: 60,
+  },
 } satisfies Record<string, RateLimitOptions>;
 
 export type RateLimiterId = keyof typeof limits;
 export type RateLimitIds = {
-  /** rate limiter options for non-apeKey requests */
+  /** Rate limiter options for non-apeKey requests */
   normal: RateLimiterId;
   /** Rate limiter options for apeKey requests */
   apeKey: RateLimiterId;

@@ -1,14 +1,12 @@
 name: Monkey CI
 
 env:
-  PNPM_VERSION: "9.6.0"
-  NODE_VERSION: "20.16.0"
+  PNPM_VERSION: "10.28.1"
+  NODE_VERSION: "24.11.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
 
 on:
   pull_request:
@@ -30,40 +28,35 @@ jobs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
       should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
-      assets-json: ${{ steps.export-changes.outputs.assets-json }}
+      assets-or-styles: ${{ steps.export-changes.outputs.assets-or-styles }}
 
     steps:
       - name: Full checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         # paths filter doesn't need checkout on pr
         if: github.event_name != 'pull_request'
 
       - name: Detect changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
-            json:
-              - 'frontend/**/*.json'
+            assets-or-styles:
+              - 'frontend/static/**/*'
+              - '**/*.{scss,css}'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss}'
-              - 'frontend/package.json'
+              - 'frontend/**/*.{ts,scss,html}'
+              - 'frontend/**/package.json'
             pkg-src:
               - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
-            workflows:
-              - '.github/workflows/**/*'
 
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: exit 1
-
-      - name: Check Workflow Changes
-        if: steps.filter.outputs.workflows == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: exit 1
 
       - name: Export changes
@@ -72,23 +65,22 @@ jobs:
           echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
-          echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
+          echo "assets-or-styles=${{ steps.filter.outputs.assets-or-styles }}" >> $GITHUB_OUTPUT
 
   prime-cache:
     name: prime-cache
     runs-on: ubuntu-latest
     needs: [pre-ci]
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
       - name: Checkout pnpm-lock
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             pnpm-lock.yaml
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -99,7 +91,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -109,11 +101,11 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Full checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -127,19 +119,19 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             backend
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -150,7 +142,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -161,7 +153,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-be
+        run: npm run lint-fast-be && npm run lint-be
 
       - name: Build
         run: npm run build-be
@@ -175,15 +167,14 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             frontend
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -192,7 +183,7 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -203,7 +194,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -214,7 +205,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-fe
+        run: npm run lint-fast-fe && npm run lint-fe
 
       - name: Build
         run: npm run build-fe
@@ -226,36 +217,40 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             frontend
             packages
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
-            language-json:
-              - 'frontend/static/languages/*.json'
-            quotes-json:
-              - 'frontend/static/quotes/*.json'
-            other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
-              - 'frontend/static/layouts/*.json'
+            styles:
+              - '**/*.{scss,css}'
+            json:
+              - 'frontend/static/**/*.json'
+            languages:
+              - 'frontend/static/languages/**'
+            quotes:
+              - 'frontend/static/quotes/**'
+            others:
+              - 'frontend/static/layouts/**'
+              - 'frontend/static/themes/**'
+              - 'frontend/static/webfonts/**'
+              - 'frontend/static/challenges/**'
+              - 'frontend/static/sounds/**'
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -266,7 +261,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -276,20 +271,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Lint styles
+        if: steps.filter.outputs.styles == 'true'
+        run: npm run lint-styles
+
       - name: Lint JSON
-        run: npm run pr-check-lint-json
+        if: steps.filter.outputs.json == 'true'
+        run: npm run lint-json-assets
 
-      - name: Validate languages JSON
-        if: steps.filter.outputs.language-json == 'true'
-        run: npm run pr-check-language-json
+      - name: Validate language assets
+        if: steps.filter.outputs.languages == 'true'
+        run: npm run check-assets-languages
 
-      - name: Validate quotes JSON
-        if: steps.filter.outputs.quotes-json == 'true'
-        run: npm run pr-check-quote-json
+      - name: Validate quote assets
+        if: steps.filter.outputs.quotes == 'true'
+        run: npm run check-assets-quotes
 
-      - name: Validate other JSON
-        if: steps.filter.outputs.other-json == 'true'
-        run: npm run pr-check-other-json
+      - name: Validate other assets
+        if: steps.filter.outputs.others == 'true'
+        run: npm run check-assets-others
 
   ci-pkg:
     name: ci-pkg
@@ -297,19 +297,18 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -320,7 +319,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-pnpm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
@@ -331,7 +330,7 @@ jobs:
         run: pnpm install
 
       - name: Check lint
-        run: npm run lint-pkg
+        run: npm run lint-fast-pkg && npm run lint-pkg
 
       - name: Build
         run: npm run build-pkg
@@ -340,7 +339,6 @@ jobs:
         run: npm run test-pkg
 
   on-failure:
-    permissions: write-all
     name: on-failure
     runs-on: ubuntu-latest
     needs: [ci-be, ci-fe, ci-assets, ci-pkg]
@@ -353,7 +351,7 @@ jobs:
         run: echo $PR_NUM > pr_num.txt
 
       - name: Upload the PR number
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pr_num
           path: ./pr_num.txt

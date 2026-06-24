@@ -1,62 +1,51 @@
-import { Preset } from "@monkeytype/contracts/schemas/presets";
-import * as UpdateConfig from "../config";
+import { Config } from "../config/store";
+import { applyConfig } from "../config/lifecycle";
 import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
+import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
-import { migrateConfig, replaceLegacyValues } from "../utils/config";
-import * as TagController from "./tag-controller";
-import { SnapshotPreset } from "../constants/default-snapshot";
+import {
+  clearActiveTags,
+  setTagActive,
+  saveActiveToLocalStorage,
+} from "../collections/tags";
+import { saveFullConfigToLocalStorage } from "../config/persistence";
+import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  const presetToApply = snapshot.presets?.find((preset) => preset._id === _id);
+  const presetToApply = __nonReactive.getPreset(_id);
   if (presetToApply === undefined) {
     return;
   }
+
   if (isPartialPreset(presetToApply)) {
-    const combinedConfig = {
-      ...UpdateConfig.getConfigChanges(),
-      ...replaceLegacyValues(presetToApply.config),
-    };
-    await UpdateConfig.apply(migrateConfig(combinedConfig));
+    await applyConfig({
+      ...structuredClone(Config),
+      ...presetToApply.config,
+    });
   } else {
-    await UpdateConfig.apply(migrateConfig(presetToApply.config));
+    await applyConfig(presetToApply.config);
   }
+
   if (
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
   ) {
-    TagController.clear(true);
+    await clearActiveTags({ noSave: true });
     if (presetToApply.config.tags) {
       for (const tagId of presetToApply.config.tags) {
-        TagController.set(tagId, true, false);
+        await setTagActive({ tagId, active: true });
       }
-      TagController.saveActiveToLocalStorage();
+      saveActiveToLocalStorage();
     }
   }
   TestLogic.restart();
-  Notifications.add("Preset applied", 1, {
-    duration: 2,
-  });
-  UpdateConfig.saveFullConfigToLocalStorage();
+  showSuccessNotification("Preset applied", { durationMs: 2000 });
+  saveFullConfigToLocalStorage();
 }
-function isPartialPreset(preset: SnapshotPreset): boolean {
+
+function isPartialPreset(preset: PresetItem): boolean {
   return preset.settingGroups !== undefined && preset.settingGroups !== null;
-}
-
-export async function getPreset(_id: string): Promise<Preset | undefined> {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) {
-    return;
-  }
-
-  const preset = snapshot.presets?.find((preset) => preset._id === _id);
-
-  if (preset === undefined) {
-    Notifications.add("Preset not found", 0);
-    return;
-  }
-  return preset;
 }

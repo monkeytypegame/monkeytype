@@ -1,8 +1,9 @@
 import { applyReducedMotion } from "../utils/misc";
+import { qs } from "../utils/dom";
 
 export function hide(): void {
   visible = false;
-  $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
+  qs("#result .stats .wpm .crown")?.setStyle({ opacity: "0" })?.hide();
 }
 
 export type CrownType =
@@ -22,22 +23,23 @@ export function getCurrentType(): CrownType {
 export function show(): void {
   if (visible) return;
   visible = true;
-  const el = $("#result .stats .wpm .crown");
-  el.removeClass("hidden").css("opacity", "0").animate(
-    {
-      opacity: 1,
+  const el = qs("#result .stats .wpm .crown");
+
+  el?.animate({
+    opacity: [0, 1],
+    duration: applyReducedMotion(125),
+    onBegin: () => {
+      el?.show();
     },
-    applyReducedMotion(250),
-    "easeOutCubic"
-  );
+  });
 }
 
 export function update(type: CrownType): void {
   currentType = type;
-  const el = $("#result .stats .wpm .crown");
-  el.removeClass("ineligible");
-  el.removeClass("pending");
-  el.removeClass("error");
-  el.removeClass("warning");
-  el.addClass(type);
+  qs("#result .stats .wpm .crown")
+    ?.removeClass("ineligible")
+    ?.removeClass("pending")
+    ?.removeClass("error")
+    ?.removeClass("warning")
+    ?.addClass(type);
 }

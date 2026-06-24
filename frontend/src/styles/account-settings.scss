@@ -116,15 +116,11 @@
             }
           }
         }
-        &[data-tab="api"] {
+        &[data-tab="apeKeys"] {
           table {
             width: 100%;
             border-spacing: 0;
             border-collapse: collapse;
-
-            tr td:first-child {
-              text-align: center;
-            }
 
             tr.me {
               td {
@@ -144,7 +140,6 @@
               td {
                 padding: 0.5rem;
                 background: var(--bg-color);
-                position: -webkit-sticky;
                 position: sticky;
                 top: 0;
                 z-index: 99;
@@ -162,7 +157,6 @@
             tfoot {
               td {
                 padding: 1rem 0.5rem;
-                position: -webkit-sticky;
                 position: sticky;
                 bottom: -5px;
                 background: var(--bg-color);
@@ -183,6 +177,12 @@
               display: flex;
               gap: 0.5rem;
             }
+          }
+        }
+
+        &[data-tab="apeKeys"] {
+          tr td:first-child {
+            text-align: center;
           }
         }
       }

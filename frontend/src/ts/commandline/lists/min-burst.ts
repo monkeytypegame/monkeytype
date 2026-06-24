@@ -1,9 +1,10 @@
-import Config, * as UpdateConfig from "../../config";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Change min burst mode...",
+  title: "Minimum word burst...",
   configKey: "minBurst",
   list: [
     {
@@ -11,7 +12,7 @@ const subgroup: CommandsSubgroup = {
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setMinBurst("off");
+        setConfig("minBurst", "off");
       },
     },
     {
@@ -21,11 +22,11 @@ const subgroup: CommandsSubgroup = {
       input: true,
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
-        UpdateConfig.setMinBurst("fixed");
+        setConfig("minBurst", "fixed");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
+          parseInt(input),
         );
-        UpdateConfig.setMinBurstCustomSpeed(newVal);
+        setConfig("minBurstCustomSpeed", newVal);
       },
     },
     {
@@ -35,11 +36,11 @@ const subgroup: CommandsSubgroup = {
       input: true,
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
-        UpdateConfig.setMinBurst("flex");
+        setConfig("minBurst", "flex");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
-          parseInt(input)
+          parseInt(input),
         );
-        UpdateConfig.setMinBurstCustomSpeed(newVal);
+        setConfig("minBurstCustomSpeed", newVal);
       },
     },
   ],
@@ -48,7 +49,7 @@ const subgroup: CommandsSubgroup = {
 const commands: Command[] = [
   {
     id: "changeMinBurst",
-    display: "Minimum burst...",
+    display: "Minimum word burst...",
     alias: "minimum",
     icon: "fa-bomb",
     subgroup,

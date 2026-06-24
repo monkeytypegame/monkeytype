@@ -1,14 +1,15 @@
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as PublicDal from "../../../src/dal/public";
-const mockApp = request(app);
+
+const { mockApp } = setup();
 
 describe("PublicController", () => {
   describe("get speed histogram", () => {
     const getSpeedHistogramMock = vi.spyOn(PublicDal, "getSpeedHistogram");
 
     afterEach(() => {
-      getSpeedHistogramMock.mockReset();
+      getSpeedHistogramMock.mockClear();
     });
 
     it("gets for english time 60", async () => {
@@ -30,7 +31,7 @@ describe("PublicController", () => {
       expect(getSpeedHistogramMock).toHaveBeenCalledWith(
         "english",
         "time",
-        "60"
+        "60",
       );
     });
 
@@ -39,7 +40,7 @@ describe("PublicController", () => {
         const response = await mockApp
           .get("/public/speedHistogram")
           .query({ language: "english", mode, mode2: "custom" });
-        expect(response.status, "for mode " + mode).toEqual(200);
+        expect(response.status, `for mode ${mode}`).toEqual(200);
       }
     });
 
@@ -60,7 +61,7 @@ describe("PublicController", () => {
           .get("/public/speedHistogram")
           .query({ language: "english", mode: "words", mode2 });
 
-        expect(response.status, "for mode2 " + mode2).toEqual(200);
+        expect(response.status, `for mode2 ${mode2}`).toEqual(200);
       }
     });
     it("fails for missing query", async () => {
@@ -88,7 +89,7 @@ describe("PublicController", () => {
       expect(body).toEqual({
         message: "Invalid query schema",
         validationErrors: [
-          '"language" Can only contain letters [a-zA-Z0-9_+]',
+          '"language" Invalid enum value. Must be a supported language',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
@@ -115,7 +116,7 @@ describe("PublicController", () => {
     const getTypingStatsMock = vi.spyOn(PublicDal, "getTypingStats");
 
     afterEach(() => {
-      getTypingStatsMock.mockReset();
+      getTypingStatsMock.mockClear();
     });
 
     it("gets without authentication", async () => {

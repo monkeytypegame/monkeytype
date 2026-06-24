@@ -1,13 +1,12 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-
+import { PartialConfigSchema } from "@monkeytype/schemas/configs";
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithNullableData,
-} from "./schemas/api";
-import { PartialConfigSchema } from "./schemas/configs";
+} from "./util/api";
 
 export const GetConfigResponseSchema =
   responseWithNullableData(PartialConfigSchema);
@@ -66,5 +65,5 @@ export const configsContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

@@ -6,13 +6,14 @@ import GeorgeQueue from "../../queues/george-queue";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AcceptReportsRequest,
+  ClearStreakHourOffsetRequest,
   RejectReportsRequest,
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
 import MonkeyError, { getErrorMessage } from "../../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
 
@@ -21,7 +22,7 @@ export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
 }
 
 export async function toggleBan(
-  req: MonkeyRequest<undefined, ToggleBanRequest>
+  req: MonkeyRequest<undefined, ToggleBanRequest>,
 ): Promise<ToggleBanResponse> {
   const { uid } = req.body;
 
@@ -42,24 +43,35 @@ export async function toggleBan(
   });
 }
 
+export async function clearStreakHourOffset(
+  req: MonkeyRequest<undefined, ClearStreakHourOffsetRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  await UserDAL.clearStreakHourOffset(uid);
+  void addImportantLog("admin_streak_hour_offset_cleared_by", {}, uid);
+
+  return new MonkeyResponse("Streak hour offset cleared", null);
+}
+
 export async function acceptReports(
-  req: MonkeyRequest<undefined, AcceptReportsRequest>
+  req: MonkeyRequest<undefined, AcceptReportsRequest>,
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     true,
-    req.ctx.configuration.users.inbox
+    req.ctx.configuration.users.inbox,
   );
   return new MonkeyResponse("Reports removed and users notified.", null);
 }
 
 export async function rejectReports(
-  req: MonkeyRequest<undefined, RejectReportsRequest>
+  req: MonkeyRequest<undefined, RejectReportsRequest>,
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     false,
-    req.ctx.configuration.users.inbox
+    req.ctx.configuration.users.inbox,
   );
   return new MonkeyResponse("Reports removed and users notified.", null);
 }
@@ -67,22 +79,22 @@ export async function rejectReports(
 export async function handleReports(
   reports: { reportId: string; reason?: string }[],
   accept: boolean,
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"],
 ): Promise<void> {
   const reportIds = reports.map(({ reportId }) => reportId);
 
   const reportsFromDb = await ReportDAL.getReports(reportIds);
   const reportById = new Map(reportsFromDb.map((it) => [it.id, it]));
 
-  const existingReportIds = reportsFromDb.map((report) => report.id);
+  const existingReportIds = new Set(reportsFromDb.map((report) => report.id));
   const missingReportIds = reportIds.filter(
-    (reportId) => !existingReportIds.includes(reportId)
+    (reportId) => !existingReportIds.has(reportId),
   );
 
   if (missingReportIds.length > 0) {
     throw new MonkeyError(
       404,
-      `Reports not found for some IDs ${missingReportIds.join(",")}`
+      `Reports not found for some IDs ${missingReportIds.join(",")}`,
     );
   }
 
@@ -120,7 +132,7 @@ export async function handleReports(
       } else {
         throw new MonkeyError(
           500,
-          "Error handling reports: " + getErrorMessage(e)
+          `Error handling reports: ${getErrorMessage(e)}`,
         );
       }
     }
@@ -128,7 +140,7 @@ export async function handleReports(
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyRequest<undefined, SendForgotPasswordEmailRequest>
+  req: MonkeyRequest<undefined, SendForgotPasswordEmailRequest>,
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);

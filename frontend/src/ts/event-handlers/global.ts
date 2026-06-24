@@ -1,63 +1,78 @@
 import * as Misc from "../utils/misc";
-import * as PageTransition from "../states/page-transition";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
-import { getCommandline } from "../utils/async-modules";
-import { log } from "../controllers/analytics-controller";
-import * as Notifications from "../elements/notifications";
+import * as PageTransition from "../legacy-states/page-transition";
+import { Config } from "../config/store";
+import { showErrorNotification } from "../states/notifications";
+import { getActivePage } from "../states/core";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { focusWords } from "../test/test-ui";
+import { isInputElementFocused } from "../input/input-element";
+import * as TestState from "../test/test-state";
+import { isDevEnvironment } from "../utils/env";
 
-document.addEventListener("keydown", async (e) => {
+document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
-  if (
-    (e.key === "Escape" && Config.quickRestart !== "esc") ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      !TestWords.hasTab &&
-      !e.shiftKey) ||
-    (e.key === "Tab" &&
-      Config.quickRestart === "esc" &&
-      TestWords.hasTab &&
-      e.shiftKey) ||
-    (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
-  ) {
-    e.preventDefault();
-    const popupVisible = Misc.isAnyPopupVisible();
-    if (!popupVisible) {
-      (await getCommandline()).show();
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  const pageTestActive: boolean = getActivePage() === "test";
+  if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
+    const popupVisible: boolean = Misc.isAnyPopupVisible();
+    // this is nested because isAnyPopupVisible is a bit expensive
+    // and we don't want to call it during the test
+    if (
+      !popupVisible &&
+      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+      !e.metaKey &&
+      !e.ctrlKey
+    ) {
+      //autofocus
+      focusWords();
+      if (Config.showOutOfFocusWarning) {
+        e.preventDefault();
+      }
     }
   }
 });
 
+//stop space scrolling
+window.addEventListener("keydown", function (e) {
+  if (
+    e.code === "Space" &&
+    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
+  ) {
+    e.preventDefault();
+  }
+});
+
 window.onerror = function (message, url, line, column, error): void {
-  if (Misc.isDevEnvironment()) {
-    //this is causing errors when using chrome responsive design dev tools
-    if (error?.message.includes("x_magnitude")) return;
-    Notifications.add(error?.message ?? "Undefined message", -1, {
+  if (isDevEnvironment()) {
+    showErrorNotification(error?.message ?? "Undefined message", {
       customTitle: "DEV: Unhandled error",
-      duration: 5,
+      durationMs: 5000,
       important: true,
     });
+    console.error({ message, url, line, column, error });
   }
-  void log("error", {
-    error: error?.stack ?? "",
-  });
 };
 
 window.onunhandledrejection = function (e): void {
-  if (Misc.isDevEnvironment()) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const message = (e.reason.message ?? e.reason) as string;
-    Notifications.add(`${message}`, -1, {
-      customTitle: "DEV: Unhandled rejection",
-      duration: 5,
-      important: true,
-    });
-    console.error(e);
+  if (isDevEnvironment()) {
+    showErrorNotification(
+      (e.reason as Error).message ?? e.reason ?? "Undefined message",
+      {
+        customTitle: "DEV: Unhandled rejection",
+        durationMs: 5000,
+        important: true,
+      },
+    );
   }
-  void log("error", {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    error: (e.reason.stack ?? "") as string,
-  });
 };

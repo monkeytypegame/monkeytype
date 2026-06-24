@@ -1,19 +1,27 @@
 import { ZodIssue } from "zod";
-import { deepClone } from "./misc";
 import { isZodError } from "@monkeytype/util/zod";
-import * as Notifications from "../elements/notifications";
+import { showErrorNotification } from "../states/notifications";
+import { tryCatchSync } from "@monkeytype/util/trycatch";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
   private schema: Zod.Schema<T>;
   private fallback: T;
-  private migrate?: (value: unknown, zodIssues: ZodIssue[], fallback: T) => T;
+  private migrate?: (
+    value: Record<string, unknown> | unknown[],
+    zodIssues?: ZodIssue[],
+  ) => T;
+  private cache?: T;
 
   constructor(options: {
     key: string;
     schema: Zod.Schema<T>;
     fallback: T;
-    migrate?: (value: unknown, zodIssues: ZodIssue[], fallback: T) => T;
+    migrate?: (
+      value: Record<string, unknown> | unknown[],
+      zodIssues?: ZodIssue[],
+    ) => T;
   }) {
     this.key = options.key;
     this.schema = options.schema;
@@ -22,61 +30,73 @@ export class LocalStorageWithSchema<T> {
   }
 
   public get(): T {
+    if (this.cache !== undefined) {
+      console.debug(`LS ${this.key} Got cached value:`, this.cache);
+      return structuredClone(this.cache);
+    }
+
+    console.debug(`LS ${this.key} Getting value from localStorage`);
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
-      return this.fallback;
+      console.debug(`LS ${this.key} No value found, returning fallback`);
+      this.cache = this.fallback;
+      return structuredClone(this.cache);
     }
 
-    let jsonParsed: unknown;
-    try {
-      jsonParsed = JSON.parse(value);
-    } catch (e) {
-      console.log(
-        `Value from localStorage ${this.key} was not a valid JSON, using fallback`,
-        e
-      );
-      window.localStorage.removeItem(this.key);
-      return this.fallback;
-    }
-
-    const schemaParsed = this.schema.safeParse(jsonParsed);
-
-    if (schemaParsed.success) {
-      return schemaParsed.data;
-    }
-
-    console.log(
-      `Value from localStorage ${this.key} failed schema validation, migrating`,
-      schemaParsed.error.issues
+    let migrated = false;
+    let { data: parsed, error } = tryCatchSync(() =>
+      parseJsonWithSchema(value, this.schema, {
+        fallback: this.fallback,
+        migrate: (oldData, zodIssues) => {
+          console.debug(`LS ${this.key} Schema validation failed`);
+          migrated = true;
+          if (this.migrate) {
+            console.debug(
+              `LS ${this.key} Migrating from old format to new format`,
+            );
+            this.cache = this.migrate(oldData, zodIssues);
+            return structuredClone(this.cache);
+          } else {
+            console.debug(
+              `LS ${this.key} No migration function provided, returning fallback`,
+            );
+            this.cache = this.fallback;
+            return structuredClone(this.cache);
+          }
+        },
+      }),
     );
 
-    let newValue = this.fallback;
-    if (this.migrate) {
-      const migrated = this.migrate(
-        jsonParsed,
-        schemaParsed.error.issues,
-        deepClone(this.fallback)
+    if (error) {
+      console.error(
+        `LS ${this.key} Failed to parse from localStorage: ${error.message}`,
       );
-      const parse = this.schema.safeParse(migrated);
-      if (parse.success) {
-        newValue = migrated;
-      } else {
-        console.error(
-          `Value from localStorage ${this.key} failed schema validation after migration! This is very bad!`,
-          parse.error.issues
-        );
-      }
+      window.localStorage.setItem(this.key, JSON.stringify(this.fallback));
+      this.cache = this.fallback;
+      return structuredClone(this.cache);
     }
 
-    window.localStorage.setItem(this.key, JSON.stringify(newValue));
-    return newValue;
+    if (migrated || parsed === this.fallback) {
+      console.debug(`LS ${this.key} Setting in localStorage`);
+      window.localStorage.setItem(this.key, JSON.stringify(parsed));
+    }
+
+    console.debug(`LS ${this.key} Got value:`, parsed);
+    this.cache = parsed as T;
+    return structuredClone(this.cache);
   }
 
   public set(data: T): boolean {
     try {
+      console.debug(`LS ${this.key} Parsing to set in localStorage`);
       const parsed = this.schema.parse(data);
-      window.localStorage.setItem(this.key, JSON.stringify(parsed));
+      const newValue = JSON.stringify(parsed);
+      if (newValue !== JSON.stringify(this.cache)) {
+        console.debug(`LS ${this.key} Setting in localStorage`);
+        window.localStorage.setItem(this.key, newValue);
+        this.cache = parsed;
+      }
       return true;
     } catch (e) {
       let message = "Unknown error occurred";
@@ -96,7 +116,7 @@ export class LocalStorageWithSchema<T> {
 
       const msg = `Failed to set ${this.key} in localStorage: ${message}`;
       console.error(msg);
-      Notifications.add(msg, -1);
+      showErrorNotification(msg);
 
       return false;
     }

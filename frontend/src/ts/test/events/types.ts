@@ -1,0 +1,151 @@
+import { Config } from "@monkeytype/schemas/configs";
+import { Keycode } from "../../constants/keys";
+import {
+  DeleteInputType,
+  InsertInputType,
+} from "../../input/helpers/input-type";
+import { CustomTextLimitMode } from "@monkeytype/schemas/util";
+import { getMode2 } from "../../utils/misc";
+
+export type TestEventType =
+  | "keydown"
+  | "keyup"
+  | "input"
+  | "timer"
+  | "composition";
+
+type EventProps<T extends TestEventType, TData> = {
+  type: T;
+  ms: number;
+  testMs: number;
+  data: TData;
+};
+
+export type TestEvent =
+  | KeydownEvent
+  | KeyupEvent
+  | TimerEvent
+  | InputEvent
+  | CompositionTestEvent;
+
+export type TestEventNoMs =
+  | Omit<KeydownEvent, "ms">
+  | Omit<KeyupEvent, "ms">
+  | Omit<TimerEvent, "ms">
+  | InputEventNoMs
+  | Omit<CompositionTestEvent, "ms">;
+
+export type InputEventNoMs = Omit<InputEvent, "ms">;
+
+export type TestEventData =
+  | KeydownEventData
+  | KeyupEventData
+  | TimerEventData
+  | InputEventData
+  | CompositionTestEventData;
+
+export type KeydownEvent = EventProps<"keydown", KeydownEventData>;
+
+export type KeydownEventData = {
+  code: Keycode | "NoCode" | `NoCode${number}`;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
+};
+
+export type KeyupEvent = EventProps<"keyup", KeyupEventData>;
+
+export type KeyupEventData = {
+  code: Keycode | "NoCode" | `NoCode${number}`;
+  ctrl?: true;
+  shift?: true;
+  alt?: true;
+  meta?: true;
+  estimated?: true; // true if this event never happened, but was estimated (force keyup on test end)
+};
+
+export type TimerEvent = EventProps<"timer", TimerEventData>;
+
+export type TimerEventData =
+  | {
+      event: "step";
+      timer: number;
+      // omitted on catchup steps (they all fire at the same testMs in a
+      // synchronous burst, so per-tick drift isn't a real measurement)
+      drift?: number;
+      slowTimer?: true;
+      // true when this step fired as part of a catch-up burst from a stall
+      // (timerStep ran with the cheap path; only the final step of the burst
+      // has the full WPM/UI side effects)
+      catchup?: true;
+    }
+  | {
+      event: "start" | "end";
+      timer: number;
+      date: number;
+    };
+
+export type InputEvent = EventProps<"input", InputEventData>;
+
+type BaseInputEventData = {
+  charIndex: number;
+  wordIndex: number;
+  inputValue: string;
+};
+
+export type InputEventData =
+  | (BaseInputEventData & {
+      inputType: InsertInputType;
+      data: string;
+      correct: boolean;
+      isCompositionEnding?: true;
+      inputStopped?: true;
+      // true when this was a space that advanced to the next word (commit
+      // attempt) rather than being inserted as a literal character
+      commitsWord?: true;
+      lastWord?: true;
+    })
+  | (BaseInputEventData & {
+      inputType: DeleteInputType;
+      // true on the destination event of a regression that crossed back
+      // over a word with leftover content (e.g. Firefox Ctrl+Backspace
+      // eating sentinel + non-word residue). The cleared word is
+      // wordIndex + 1.
+      clearedNextWord?: true;
+    });
+
+export type CompositionTestEvent = EventProps<
+  "composition",
+  CompositionTestEventData
+>;
+
+export type CompositionTestEventData =
+  | {
+      event: "start";
+      wordIndex: number;
+    }
+  | {
+      event: "update" | "end";
+      data: string;
+      wordIndex: number;
+    };
+
+export type EventLogContext = {
+  targetWords: string[];
+  // isTimedTest: boolean;
+  mode: Config["mode"];
+  mode2: ReturnType<typeof getMode2>;
+  customTextLimitMode?: CustomTextLimitMode;
+  customTextLimitValue?: number;
+  isFunboxWithNospacePropertyActive?: boolean;
+  bailedOut: boolean;
+  koreanStatus: boolean;
+};
+
+export const EVENT_LOG_VERSION = 1;
+export type EventLog = {
+  version: typeof EVENT_LOG_VERSION;
+  events: TestEventNoMs[];
+  context: EventLogContext;
+};

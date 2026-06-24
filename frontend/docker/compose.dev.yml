@@ -2,8 +2,12 @@ name: monkeytype
 services:
   frontend:
     container_name: monkeytype-frontend
-    image: node:20.16.0
-    user: "node"    ##this works as long as your local user has uid=1000
+    build:
+      dockerfile_inline: |
+        FROM node:24.11.0
+        RUN npm i -g pnpm@10.28.1
+        RUN mkdir /pnpm-store && chown -R 1000:1000 /pnpm-store
+    user: "node" ##this works as long as your local user has uid=1000
     # restart: on-failure
     environment:
       - SERVER_OPEN=false
@@ -14,9 +18,7 @@ services:
       - ../../:/monkeytype
     entrypoint: 'bash -c "echo starting, this may take a while... \
       && cd /monkeytype \
-      && npm i -g pnpm \
+      && pnpm config set store-dir /pnpm-store
       && pnpm i \
       && export SERVER_OPEN=false \
       && npm run dev-fe"'
-
-

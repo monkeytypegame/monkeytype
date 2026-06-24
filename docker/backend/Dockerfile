@@ -1,4 +1,4 @@
-FROM node:20.16.0-alpine3.19 AS builder
+FROM node:24.11.0-alpine3.22 AS builder
 
 WORKDIR /app
 
@@ -8,17 +8,17 @@ COPY packages packages
 COPY backend backend
 
 #gimme pnpm + build
-RUN npm i -g pnpm && \
+RUN npm i -g pnpm@10.28.1 && \
     pnpm i --frozen-lockfile && \
     npm run build
 
 #deploy (install all non-dev dependencies in a single node_module folder)
-RUN pnpm deploy --filter backend --prod /prod/backend
+RUN pnpm deploy --legacy --filter backend --prod /prod/backend
 
 #---------------------------------
 
 ## target image
-FROM node:20.16.0-alpine3.19
+FROM node:24.11.0-alpine3.22
 
 ## get server_version from build-arg, default to UNKNOWN
 ARG server_version=UNKNOWN
@@ -40,10 +40,11 @@ COPY ["docker/backend/entry-point.sh", "./"]
 
 RUN echo "${server_version}" > /app/backend/dist/server.version
 
-#run in prod mode, but don't require anti-cheat or email client
+#run in prod mode, but don't require anti-cheat, email client or firebase
 ENV MODE=prod
 ENV BYPASS_ANTICHEAT=true
 ENV BYPASS_EMAILCLIENT=true
+ENV BYPASS_FIREBASE=true
 
 EXPOSE 5005
 USER node

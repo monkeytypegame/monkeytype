@@ -1,11 +1,13 @@
-import Config from "../../config";
+import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import * as Notifications from "../../elements/notifications";
-import { isAuthenticated } from "../../firebase";
-import { createErrorMessage } from "../../utils/misc";
-import * as Loader from "../../elements/loader";
-import * as TestWords from "../../test/test-words";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../states/notifications";
+import { isAuthenticated } from "../../states/core";
+import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { Command } from "../types";
+import { getCurrentQuote } from "../../states/test";
 
 const commands: Command[] = [
   {
@@ -13,7 +15,7 @@ const commands: Command[] = [
     display: "Add current quote to favorite",
     icon: "fa-heart",
     available: (): boolean => {
-      const quote = TestWords.currentQuote;
+      const quote = getCurrentQuote();
       return (
         isAuthenticated() &&
         quote !== null &&
@@ -23,20 +25,16 @@ const commands: Command[] = [
     },
     exec: async (): Promise<void> => {
       try {
-        Loader.show();
+        showLoaderBar();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as Quote,
-          true
+          getCurrentQuote() as Quote,
+          true,
         );
-        Loader.hide();
-        Notifications.add("Quote added to favorites", 1);
+        hideLoaderBar();
+        showSuccessNotification("Quote added to favorites");
       } catch (e) {
-        Loader.hide();
-        const message = createErrorMessage(
-          e,
-          "Failed to add quote to favorites"
-        );
-        Notifications.add(message, -1);
+        hideLoaderBar();
+        showErrorNotification("Failed to add quote to favorites", { error: e });
       }
     },
   },
@@ -45,7 +43,7 @@ const commands: Command[] = [
     display: "Remove current quote from favorite",
     icon: "fa-heart-broken",
     available: (): boolean => {
-      const quote = TestWords.currentQuote;
+      const quote = getCurrentQuote();
       return (
         isAuthenticated() &&
         quote !== null &&
@@ -55,20 +53,18 @@ const commands: Command[] = [
     },
     exec: async (): Promise<void> => {
       try {
-        Loader.show();
+        showLoaderBar();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as Quote,
-          false
+          getCurrentQuote() as Quote,
+          false,
         );
-        Loader.hide();
-        Notifications.add("Quote removed from favorites", 1);
+        hideLoaderBar();
+        showSuccessNotification("Quote removed from favorites");
       } catch (e) {
-        Loader.hide();
-        const message = createErrorMessage(
-          e,
-          "Failed to remove quote from favorites"
-        );
-        Notifications.add(message, -1);
+        hideLoaderBar();
+        showErrorNotification("Failed to remove quote from favorites", {
+          error: e,
+        });
       }
     },
   },

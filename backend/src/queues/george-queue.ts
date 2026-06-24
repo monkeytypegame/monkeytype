@@ -1,4 +1,4 @@
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/schemas/leaderboards";
 import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";
@@ -30,9 +30,17 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
     await this.add(taskName, updateDiscordRoleTask);
   }
 
-  async linkDiscord(discordId: string, uid: string): Promise<void> {
+  async linkDiscord(
+    discordId: string,
+    uid: string,
+    lbOptOut: boolean,
+  ): Promise<void> {
     const taskName = "linkDiscord";
-    const linkDiscordTask = buildGeorgeTask(taskName, [discordId, uid]);
+    const linkDiscordTask = buildGeorgeTask(taskName, [
+      discordId,
+      uid,
+      lbOptOut,
+    ]);
     await this.add(taskName, linkDiscordTask);
   }
 
@@ -44,7 +52,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
 
   async awardChallenge(
     discordId: string,
-    challengeName: string
+    challengeName: string,
   ): Promise<void> {
     const taskName = "awardChallenge";
     const awardChallengeTask = buildGeorgeTask(taskName, [
@@ -62,7 +70,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
 
   async announceLeaderboardUpdate(
     newRecords: Omit<LeaderboardEntry, "_id">[],
-    leaderboardId: string
+    leaderboardId: string,
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
 
@@ -89,7 +97,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   async announceDailyLeaderboardTopResults(
     leaderboardId: string,
     leaderboardTimestamp: number,
-    topResults: LeaderboardEntry[]
+    topResults: LeaderboardEntry[],
   ): Promise<void> {
     const taskName = "announceDailyLeaderboardTopResults";
 

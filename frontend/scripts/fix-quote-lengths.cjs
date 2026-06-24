@@ -1,3 +1,4 @@
+// oxlint-disable no-require-imports
 const fs = require("fs");
 
 function fixQuoteLengths() {
@@ -9,7 +10,7 @@ function fixQuoteLengths() {
         fs.readFileSync(`../static/quotes/${quotefilename}.json`, {
           encoding: "utf8",
           flag: "r",
-        })
+        }),
       );
 
       quoteData.quotes.forEach((quote) => {
@@ -18,7 +19,7 @@ function fixQuoteLengths() {
 
       fs.writeFileSync(
         `../static/quotes/${quotefilename}.json`,
-        JSON.stringify(quoteData, null, 2)
+        JSON.stringify(quoteData, null, 2),
       );
     });
     resolve();

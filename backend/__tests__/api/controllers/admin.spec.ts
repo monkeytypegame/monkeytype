@@ -1,30 +1,30 @@
-import request, { Test as SuperTest } from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as AdminUuidDal from "../../../src/dal/admin-uids";
 import * as UserDal from "../../../src/dal/user";
 import * as ReportDal from "../../../src/dal/report";
+import * as LogsDal from "../../../src/dal/logs";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
-import _ from "lodash";
-import { enableRateLimitExpects } from "../../__testData__/rate-limit";
-import { mockBearerAuthentication } from "../../__testData__/auth";
 
-const mockApp = request(app);
+import { enableRateLimitExpects } from "../../__testData__/rate-limit";
+import Test from "supertest/lib/test";
+
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
 enableRateLimitExpects();
 
 describe("AdminController", () => {
   const isAdminMock = vi.spyOn(AdminUuidDal, "isAdmin");
+  const logsAddImportantLog = vi.spyOn(LogsDal, "addImportantLog");
 
   beforeEach(async () => {
-    isAdminMock.mockReset();
+    isAdminMock.mockClear();
     await enableAdminEndpoints(true);
     isAdminMock.mockResolvedValue(true);
-    mockAuth.beforeEach();
+    logsAddImportantLog.mockClear().mockResolvedValue();
   });
 
   describe("check for admin", () => {
@@ -47,17 +47,17 @@ describe("AdminController", () => {
     });
     it("should fail if user is no admin", async () => {
       await expectFailForNonAdmin(
-        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
       await expect(
-        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -69,8 +69,9 @@ describe("AdminController", () => {
 
     beforeEach(() => {
       [userBannedMock, georgeBannedMock, getUserMock].forEach((it) =>
-        it.mockReset()
+        it.mockClear(),
       );
+      userBannedMock.mockResolvedValue();
     });
 
     it("should ban user with discordId", async () => {
@@ -165,7 +166,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -174,7 +175,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
@@ -190,10 +191,100 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: victimUid })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
+
+  describe("clear streak hour offset", () => {
+    const clearStreakHourOffset = vi.spyOn(UserDal, "clearStreakHourOffset");
+
+    beforeEach(() => {
+      clearStreakHourOffset.mockClear();
+      clearStreakHourOffset.mockResolvedValue();
+    });
+
+    it("should clear streak hour offset for user", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({ uid: victimUid })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Streak hour offset cleared",
+        data: null,
+      });
+      expect(clearStreakHourOffset).toHaveBeenCalledWith(victimUid);
+    });
+    it("should fail without mandatory properties", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({})
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"uid" Required'],
+      });
+    });
+    it("should fail with unknown properties", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/clearStreakHourOffset")
+        .send({ uid: new ObjectId().toHexString(), extra: "value" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
+    });
+    it("should fail if user is no admin", async () => {
+      await expectFailForNonAdmin(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`),
+      );
+    });
+    it("should fail if admin endpoints are disabled", async () => {
+      //GIVEN
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`),
+      );
+    });
+    it("should be rate limited", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/clearStreakHourOffset")
+          .send({ uid: victimUid })
+          .set("Authorization", `Bearer ${uid}`),
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
+  });
+
   describe("accept reports", () => {
     const getReportsMock = vi.spyOn(ReportDal, "getReports");
     const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");
@@ -201,8 +292,9 @@ describe("AdminController", () => {
 
     beforeEach(() => {
       [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-        it.mockReset()
+        it.mockClear(),
       );
+      deleteReportsMock.mockResolvedValue();
     });
 
     it("should accept reports", async () => {
@@ -231,7 +323,7 @@ describe("AdminController", () => {
         data: null,
       });
 
-      expect(addToInboxMock).toBeCalledTimes(2);
+      expect(addToInboxMock).toHaveBeenCalledTimes(2);
       expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
     });
     it("should fail wihtout mandatory properties", async () => {
@@ -283,7 +375,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -292,7 +384,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
@@ -304,7 +396,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [{ reportId: "1" }] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -314,9 +406,10 @@ describe("AdminController", () => {
     const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
 
     beforeEach(() => {
-      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-        it.mockReset()
-      );
+      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) => {
+        it.mockClear();
+        deleteReportsMock.mockResolvedValue();
+      });
     });
 
     it("should reject reports", async () => {
@@ -400,7 +493,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -409,7 +502,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
@@ -421,18 +514,18 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [{ reportId: "1" }] })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
   describe("send forgot password email", () => {
     const sendForgotPasswordEmailMock = vi.spyOn(
       AuthUtil,
-      "sendForgotPasswordEmail"
+      "sendForgotPasswordEmail",
     );
 
     beforeEach(() => {
-      sendForgotPasswordEmailMock.mockReset();
+      sendForgotPasswordEmailMock.mockClear();
     });
 
     it("should send forgot password link", async () => {
@@ -452,7 +545,7 @@ describe("AdminController", () => {
       });
 
       expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
-        "meowdec@example.com"
+        "meowdec@example.com",
       );
     });
     it("should be rate limited", async () => {
@@ -461,28 +554,27 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/sendForgotPasswordEmail")
           .send({ email: "meowdec@example.com" })
-          .set("Authorization", `Bearer ${uid}`)
+          .set("Authorization", `Bearer ${uid}`),
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
 
-  async function expectFailForNonAdmin(call: SuperTest): Promise<void> {
+  async function expectFailForNonAdmin(call: Test): Promise<void> {
     isAdminMock.mockResolvedValue(false);
     const { body } = await call.expect(403);
     expect(body.message).toEqual("You don't have permission to do this.");
   }
-  async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+  async function expectFailForDisabledEndpoint(call: Test): Promise<void> {
     await enableAdminEndpoints(false);
     const { body } = await call.expect(503);
     expect(body.message).toEqual("Admin endpoints are currently disabled.");
   }
 });
 async function enableAdminEndpoints(enabled: boolean): Promise<void> {
-  const mockConfig = _.merge(await configuration, {
-    admin: { endpointsEnabled: enabled },
-  });
+  const mockConfig = await configuration;
+  mockConfig.admin = { ...mockConfig.admin, endpointsEnabled: enabled };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
-    mockConfig
+    mockConfig,
   );
 }

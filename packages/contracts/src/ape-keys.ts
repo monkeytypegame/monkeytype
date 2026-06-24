@@ -1,19 +1,17 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-
 import {
   CommonResponses,
   meta,
   MonkeyResponseSchema,
   responseWithData,
-} from "./schemas/api";
-
-import { IdSchema } from "./schemas/util";
+} from "./util/api";
 import {
   ApeKeySchema,
   ApeKeysSchema,
   ApeKeyUserDefinedSchema,
-} from "./schemas/ape-keys";
+} from "@monkeytype/schemas/ape-keys";
+import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetApeKeyResponseSchema = responseWithData(ApeKeysSchema);
 export type GetApeKeyResponse = z.infer<typeof GetApeKeyResponseSchema>;
@@ -26,7 +24,7 @@ export const AddApeKeyResponseSchema = responseWithData(
     apeKeyId: IdSchema,
     apeKey: z.string().base64(),
     apeKeyDetails: ApeKeySchema,
-  })
+  }),
 );
 export type AddApeKeyResponse = z.infer<typeof AddApeKeyResponseSchema>;
 
@@ -39,7 +37,6 @@ export const ApeKeyParamsSchema = z.object({
 export type ApeKeyParams = z.infer<typeof ApeKeyParamsSchema>;
 
 const c = initContract();
-
 export const apeKeysContract = c.router(
   {
     get: {
@@ -109,5 +106,5 @@ export const apeKeysContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

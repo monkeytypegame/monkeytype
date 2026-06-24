@@ -1,0 +1,137 @@
+{
+  "language": "code_typescript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "export class TreeNode<T> {\n\tvalue?: T;\n\tparent?: TreeNode<T>;\n\tchildren: TreeNode<T>[];\n\n\tconstructor(value?: T, opts?: { parent?: TreeNode<T>, children?: TreeNode<T>[] }) {\n\t\tthis.value = value;\n\t\tthis.parent = opts?.parent;\n\t\tthis.children = opts?.children ? [...opts.children] : [];\n\t}\n\n\tadd(value: T, opts?: { index?: number }): TreeNode<T> {\n\t\tconst child = new TreeNode<T>(value, { parent: this });\n\t\tconst idx = Math.min(Math.max(opts?.index ?? this.children.length, 0), this.children.length);\n\t\tthis.children.splice(idx, 0, child);\n\t\treturn child;\n\t}\n}",
+      "source": "typescript-algorithms",
+      "id": 1,
+      "length": 560
+    },
+    {
+      "text": "export function binarySearch(nums: number[], target: number): number {\n\tlet low = 0, high = nums.length - 1;\n\twhile (low <= high) {\n\t\tconst mid = (low + high) >> 1;\n\t\tconst value = nums[mid];\n\t\tif (value === target) return mid;\n\t\tif (value < target) low = mid + 1; else high = mid - 1;\n\t}\n\treturn -1; // not found\n}",
+      "source": "typescript-algorithms",
+      "id": 2,
+      "length": 315
+    },
+    {
+      "text": "export function quickSort(a: number[], lo = 0, hi = a.length - 1): void {\n\tif (lo >= hi) return; // base case\n\tconst p = partition(a, lo, hi);\n\tquickSort(a, lo, p - 1);\n\tquickSort(a, p + 1, hi);\n}\nfunction partition(a: number[], lo: number, hi: number): number {\n\tconst pivot = a[hi];\n\tlet i = lo;\n\tfor (let j = lo; j < hi; j++) {\n\t\tif (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }\n\t}\n\t[a[i], a[hi]] = [a[hi], a[i]];\n\treturn i;\n}",
+      "source": "typescript-algorithms",
+      "id": 3,
+      "length": 437
+    },
+    {
+      "text": "export function mergeSort(a: number[]): number[] {\n\tif (a.length <= 1) return a;\n\tconst mid = a.length >> 1;\n\tconst left = mergeSort(a.slice(0, mid));\n\tconst right = mergeSort(a.slice(mid));\n\treturn merge(left, right);\n}\nfunction merge(l: number[], r: number[]): number[] {\n\tconst out: number[] = [];\n\tlet i = 0, j = 0;\n\twhile (i < l.length && j < r.length) {\n\t\tif (l[i] <= r[j]) out.push(l[i++]); else out.push(r[j++]);\n\t}\n\treturn out.concat(l.slice(i)).concat(r.slice(j));\n}",
+      "source": "typescript-algorithms",
+      "id": 4,
+      "length": 476
+    },
+    {
+      "text": "export function dijkstra(graph: Record<string, [string, number][]>, start: string) {\n\tconst dist: Record<string, number> = {};\n\tconst seen = new Set<string>();\n\tObject.keys(graph).forEach(v => dist[v] = v === start ? 0 : Infinity);\n\tconst pq: [number, string][] = [[0, start]]; // [distance, node]\n\twhile (pq.length) {\n\t\tpq.sort((a, b) => a[0] - b[0]); // simple PQ for clarity\n\t\tconst [d, u] = pq.shift()!;\n\t\tif (seen.has(u)) continue;\n\t\tseen.add(u);\n\t\tfor (const [v, w] of graph[u] || []) {\n\t\t\tconst nd = d + w;\n\t\t\tif (nd < dist[v]) { dist[v] = nd; pq.push([nd, v]); }\n\t\t}\n\t}\n\treturn dist;\n}",
+      "source": "typescript-algorithms",
+      "id": 5,
+      "length": 593
+    },
+    {
+      "text": "export function bfs(adj: Record<string, string[]>, s: string): Record<string, number> {\n\tconst dist: Record<string, number> = { [s]: 0 };\n\tconst q: string[] = [s];\n\tlet head = 0;\n\twhile (head < q.length) {\n\t\tconst u = q[head++];\n\t\tfor (const v of adj[u] || []) {\n\t\t\tif (dist[v] === undefined) {\n\t\t\t\tdist[v] = dist[u] + 1; // tree edge\n\t\t\t\tq.push(v);\n\t\t\t}\n\t\t}\n\t}\n\treturn dist;\n}",
+      "source": "typescript-algorithms",
+      "id": 6,
+      "length": 377
+    },
+    {
+      "text": "export function dfs(adj: Record<string, string[]>, s: string): string[] {\n\tconst order: string[] = [];\n\tconst seen = new Set<string>();\n\tfunction visit(u: string) {\n\t\tseen.add(u);\n\t\tfor (const v of adj[u] || []) if (!seen.has(v)) visit(v);\n\t\torder.push(u); // postorder\n\t}\n\tvisit(s);\n\treturn order;\n}",
+      "source": "typescript-algorithms",
+      "id": 7,
+      "length": 300
+    },
+    {
+      "text": "export function topoSort(adj: Record<string, string[]>): string[] {\n\tconst indeg: Record<string, number> = {};\n\tfor (const u in adj) { indeg[u] ??= 0; for (const v of adj[u]) indeg[v] = (indeg[v] || 0) + 1; }\n\tconst q: string[] = Object.keys(indeg).filter(k => indeg[k] === 0);\n\tconst order: string[] = [];\n\tlet head = 0;\n\twhile (head < q.length) {\n\t\tconst u = q[head++];\n\t\torder.push(u);\n\t\tfor (const v of adj[u] || []) {\n\t\t\tif (--indeg[v] === 0) q.push(v);\n\t\t}\n\t}\n\treturn order; // if order.length < n, a cycle exists\n}",
+      "source": "typescript-algorithms",
+      "id": 8,
+      "length": 521
+    },
+    {
+      "text": "export function kadane(a: number[]): number {\n\tlet best = -Infinity;\n\tlet cur = 0;\n\tfor (const x of a) {\n\t\tcur = Math.max(x, cur + x);\n\t\tbest = Math.max(best, cur);\n\t}\n\treturn best;\n}",
+      "source": "typescript-algorithms",
+      "id": 9,
+      "length": 183
+    },
+    {
+      "text": "export class UnionFind {\n\tprivate parent: number[];\n\tprivate rank: number[];\n\tconstructor(n: number) {\n\t\tthis.parent = Array.from({length: n}, (_, i) => i);\n\t\tthis.rank = Array(n).fill(0);\n\t}\n\tfind(x: number): number {\n\t\treturn this.parent[x] === x ? x : (this.parent[x] = this.find(this.parent[x]));\n\t}\n\tunion(a: number, b: number): boolean {\n\t\tlet ra = this.find(a), rb = this.find(b);\n\t\tif (ra === rb) return false;\n\t\tif (this.rank[ra] < this.rank[rb]) [ra, rb] = [rb, ra];\n\t\tthis.parent[rb] = ra;\n\t\tif (this.rank[ra] === this.rank[rb]) this.rank[ra]++;\n\t\treturn true;\n\t}\n}",
+      "source": "typescript-algorithms",
+      "id": 10,
+      "length": 576
+    },
+    {
+      "text": "export function fib(n: number): number {\n\tif (n <= 1) return n;\n\tlet a = 0, b = 1;\n\tfor (let i = 2; i <= n; i++) {\n\t\tconst c = a + b;\n\t\ta = b;\n\t\tb = c;\n\t}\n\treturn b;\n}",
+      "source": "typescript-algorithms",
+      "id": 11,
+      "length": 167
+    },
+    {
+      "text": "export function heapSort(a: number[]): number[] {\n\tconst n = a.length;\n\tfor (let i = (n >> 1) - 1; i >= 0; i--) heapify(a, n, i); // build max-heap\n\tfor (let end = n - 1; end > 0; end--) {\n\t\t[a[0], a[end]] = [a[end], a[0]]; // move max to end\n\t\theapify(a, end, 0); // restore heap\n\t}\n\treturn a;\n}\nfunction heapify(a: number[], n: number, i: number): void {\n\tlet largest = i;\n\tconst l = 2 * i + 1, r = 2 * i + 2;\n\tif (l < n && a[l] > a[largest]) largest = l;\n\tif (r < n && a[r] > a[largest]) largest = r;\n\tif (largest !== i) { [a[i], a[largest]] = [a[largest], a[i]]; heapify(a, n, largest); }\n}",
+      "source": "typescript-algorithms",
+      "id": 12,
+      "length": 594
+    },
+    {
+      "text": "export function countingSort(a: number[], maxVal: number): number[] {\n\tconst count = new Array(maxVal + 1).fill(0);\n\tfor (const x of a) count[x]++; // count occurrences\n\tfor (let i = 1; i < count.length; i++) count[i] += count[i - 1]; // prefix sums\n\tconst out = new Array(a.length);\n\tfor (let i = a.length - 1; i >= 0; i--) {\n\t\tconst x = a[i];\n\t\tout[--count[x]] = x; // stable placement\n\t}\n\treturn out;\n}",
+      "source": "typescript-algorithms",
+      "id": 13,
+      "length": 405
+    },
+    {
+      "text": "export function prim(adj: Record<string, [string, number][]>, start: string) {\n\tconst inMST = new Set<string>();\n\tconst parent: Record<string, string | null> = {};\n\tconst key: Record<string, number> = {};\n\tfor (const u in adj) { key[u] = Infinity; parent[u] = null; }\n\tkey[start] = 0;\n\tconst pq: [number, string, string | null][] = [[0, start, null]]; // [key, node, parent]\n\twhile (pq.length) {\n\t\tpq.sort((a, b) => a[0] - b[0]);\n\t\tconst [k, u, p] = pq.shift()!;\n\t\tif (inMST.has(u)) continue;\n\t\tinMST.add(u); parent[u] = p;\n\t\tfor (const [v, w] of adj[u] || []) {\n\t\t\tif (!inMST.has(v) && w < key[v]) { key[v] = w; pq.push([w, v, u]); }\n\t\t}\n\t}\n\treturn { parent, key };\n}",
+      "source": "typescript-algorithms",
+      "id": 14,
+      "length": 668
+    },
+    {
+      "text": "export function kruskal(n: number, edges: [number, number, number][]) {\n\tedges.sort((a, b) => a[2] - b[2]);\n\tconst uf = new UF(n);\n\tconst mst: [number, number, number][] = [];\n\tfor (const [u, v, w] of edges) {\n\t\tif (uf.union(u, v)) mst.push([u, v, w]); // add edge if it connects two sets\n\t\tif (mst.length === n - 1) break;\n\t}\n\treturn mst;\n}\nclass UF {\n\tparent: number[];\n\trank: number[];\n\tconstructor(n: number) {\n\t\tthis.parent = Array.from({ length: n }, (_, i) => i);\n\t\tthis.rank = Array(n).fill(0);\n\t}\n\tfind(x: number): number {\n\t\treturn this.parent[x] === x ? x : (this.parent[x] = this.find(this.parent[x]));\n\t}\n\tunion(a: number, b: number): boolean {\n\t\tlet ra = this.find(a), rb = this.find(b);\n\t\tif (ra === rb) return false;\n\t\tif (this.rank[ra] < this.rank[rb]) [ra, rb] = [rb, ra];\n\t\tthis.parent[rb] = ra;\n\t\tif (this.rank[ra] === this.rank[rb]) this.rank[ra]++;\n\t\treturn true;\n\t}\n}",
+      "source": "typescript-algorithms",
+      "id": 15,
+      "length": 890
+    },
+    {
+      "text": "export function bellmanFord(n: number, edges: [number,number,number][], src: number) {\n\tconst dist = Array(n).fill(Infinity);\n\tdist[src] = 0;\n\tfor (let i = 0; i < n - 1; i++) {\n\t\tlet updated = false;\n\t\tfor (const [u,v,w] of edges) {\n\t\t\tif (dist[u] + w < dist[v]) { dist[v] = dist[u] + w; updated = true; }\n\t\t}\n\t\tif (!updated) break; // early stop if no changes\n\t}\n\tfor (const [u,v,w] of edges) {\n\t\tif (dist[u] + w < dist[v]) throw new Error('negative cycle');\n\t}\n\treturn dist;\n}",
+      "source": "typescript-algorithms",
+      "id": 16,
+      "length": 478
+    },
+    {
+      "text": "export function floydWarshall(dist: number[][]): number[][] {\n\tconst n = dist.length;\n\tconst d = dist.map(row => row.slice()); // copy\n\tfor (let k = 0; k < n; k++) {\n\t\tfor (let i = 0; i < n; i++) {\n\t\t\tfor (let j = 0; j < n; j++) {\n\t\t\t\tconst nd = d[i][k] + d[k][j];\n\t\t\t\tif (nd < d[i][j]) d[i][j] = nd;\n\t\t\t}\n\t\t}\n\t}\n\treturn d;\n}",
+      "source": "typescript-algorithms",
+      "id": 17,
+      "length": 325
+    },
+    {
+      "text": "export function kmpSearch(text: string, pattern: string): number[] {\n\tif (!pattern) return [];\n\tconst lps = buildLPS(pattern);\n\tconst res: number[] = [];\n\tlet i = 0, j = 0; // i over text, j over pattern\n\twhile (i < text.length) {\n\t\tif (text[i] === pattern[j]) { i++; j++; if (j === pattern.length) { res.push(i - j); j = lps[j-1]; } }\n\t\telse if (j > 0) j = lps[j-1]; else i++;\n\t}\n\treturn res;\n}\nfunction buildLPS(p: string): number[] {\n\tconst lps = Array(p.length).fill(0);\n\tlet len = 0;\n\tfor (let i = 1; i < p.length; ) {\n\t\tif (p[i] === p[len]) lps[i++] = ++len;\n\t\telse if (len) len = lps[len-1];\n\t\telse lps[i++] = 0;\n\t}\n\treturn lps;\n}",
+      "source": "typescript-algorithms",
+      "id": 18,
+      "length": 637
+    },
+    {
+      "text": "export function rabinKarp(text: string, pattern: string): number[] {\n\tconst n = text.length, m = pattern.length;\n\tif (!m) return [];\n\tconst base = 911382323, mod = 972663749; // large primes\n\tlet hp = 0, ht = 0, pow = 1;\n\tfor (let i = 0; i < m; i++) {\n\t\thp = (hp * base + pattern.charCodeAt(i)) % mod;\n\t\tht = (ht * base + text.charCodeAt(i)) % mod;\n\t\tif (i < m - 1) pow = (pow * base) % mod;\n\t}\n\tconst res: number[] = [];\n\tfor (let i = 0; i <= n - m; i++) {\n\t\tif (hp === ht && text.slice(i, i + m) === pattern) res.push(i);\n\t\tif (i < n - m) {\n\t\t\tht = ( (ht - text.charCodeAt(i) * pow % mod + mod) % mod );\n\t\t\tht = (ht * base + text.charCodeAt(i + m)) % mod;\n\t\t}\n\t}\n\treturn res;\n}",
+      "source": "typescript-algorithms",
+      "id": 19,
+      "length": 679
+    },
+    {
+      "text": "export function quickSelect(a: number[], k: number, lo = 0, hi = a.length - 1): number {\n\twhile (lo <= hi) {\n\t\tconst p = partition(a, lo, hi); // pivot index\n\t\tif (p === k) return a[p];\n\t\tif (p < k) lo = p + 1; else hi = p - 1;\n\t}\n\treturn NaN;\n}\nfunction partition(a: number[], lo: number, hi: number): number {\n\tconst pivot = a[hi];\n\tlet i = lo;\n\tfor (let j = lo; j < hi; j++) {\n\t\tif (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }\n\t}\n\t[a[i], a[hi]] = [a[hi], a[i]];\n\treturn i;\n}",
+      "source": "typescript-algorithms",
+      "id": 20,
+      "length": 486
+    },
+    {
+      "text": "export class Fenwick {\n\tprivate bit: number[];\n\tconstructor(size: number) { this.bit = new Array(size + 1).fill(0); }\n\tadd(index: number, delta: number): void {\n\t\tfor (let i = index + 1; i < this.bit.length; i += i & -i) this.bit[i] += delta;\n\t}\n\tsum(index: number): number { // prefix sum [0..index]\n\t\tlet res = 0;\n\t\tfor (let i = index + 1; i > 0; i -= i & -i) res += this.bit[i];\n\t\treturn res;\n\t}\n\trangeSum(l: number, r: number): number { // inclusive\n\t\treturn this.sum(r) - (l ? this.sum(l - 1) : 0);\n\t}\n}",
+      "source": "typescript-algorithms",
+      "id": 21,
+      "length": 508
+    }
+  ]
+}

@@ -5,9 +5,9 @@
  * @returns An array containing the elements that are present in both input arrays.
  */
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  if (b.length > a.length) {
+    [a, b] = [b, a]; // Swap a and b to loop over the shorter array
+  }
   const filtered = a.filter(function (e) {
     return b.includes(e);
   });

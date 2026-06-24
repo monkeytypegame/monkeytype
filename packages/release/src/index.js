@@ -1,24 +1,26 @@
-import { execSync } from "child_process";
 import { Octokit } from "@octokit/rest";
+import { execSync } from "child_process";
 import dotenv from "dotenv";
 import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const FILENAME = fileURLToPath(import.meta.url);
+const DIRNAME = dirname(FILENAME);
 
 dotenv.config();
 
-const args = process.argv.slice(2);
-const isFrontend = args.includes("--fe");
-const noDeploy = args.includes("--no-deploy");
-const isBackend = args.includes("--be");
-const isDryRun = args.includes("--dry");
-const noSyncCheck = args.includes("--no-sync-check");
+const args = new Set(process.argv.slice(2));
+const isFrontend = args.has("--fe");
+const noDeploy = args.has("--no-deploy");
+const isBackend = args.has("--be");
+const isDryRun = args.has("--dry");
+const noSyncCheck = args.has("--no-sync-check");
+const hotfix = args.has("--hotfix");
+const previewFe = args.has("--preview-fe");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../../../");
+const PROJECT_ROOT = path.resolve(DIRNAME, "../../../");
 
 const runCommand = (command, force) => {
   if (isDryRun && !force) {
@@ -34,6 +36,7 @@ const runCommand = (command, force) => {
       process.exit(1);
     }
   }
+  return undefined;
 };
 
 const runProjectRootCommand = (command, force) => {
@@ -52,46 +55,47 @@ const runProjectRootCommand = (command, force) => {
       process.exit(1);
     }
   }
+  return undefined;
 };
 
 const checkBranchSync = () => {
+  if (noSyncCheck) {
+    console.log("Skipping sync check.");
+    return;
+  }
   console.log("Checking if local branch is master...");
-  const currentBranch = runProjectRootCommand("git branch --show-current");
-  if (currentBranch !== "master") {
+  const currentBranch = runProjectRootCommand(
+    "git branch --show-current",
+  ).trim();
+  if (currentBranch !== "master" && !isDryRun) {
     console.error(
-      "Local branch is not master. Please checkout the master branch."
+      "Local branch is not master. Please checkout the master branch.",
     );
     process.exit(1);
   }
 
   console.log("Checking if local master branch is in sync with origin...");
 
-  if (noSyncCheck) {
-    console.log("Skipping sync check.");
-  } else if (isDryRun) {
-    console.log("[Dry Run] Checking sync...");
-  } else {
-    try {
-      // Fetch the latest changes from the remote repository
-      runProjectRootCommand("git fetch origin");
+  try {
+    // Fetch the latest changes from the remote repository
+    runProjectRootCommand("git fetch origin");
 
-      // Get the commit hashes of the local and remote master branches
-      const localMaster = runProjectRootCommand("git rev-parse master").trim();
-      const remoteMaster = runProjectRootCommand(
-        "git rev-parse origin/master"
-      ).trim();
+    // Get the commit hashes of the local and remote master branches
+    const localMaster = runProjectRootCommand("git rev-parse master").trim();
+    const remoteMaster = runProjectRootCommand(
+      "git rev-parse origin/master",
+    ).trim();
 
-      if (localMaster !== remoteMaster) {
-        console.error(
-          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding."
-        );
-        process.exit(1);
-      }
-    } catch (error) {
-      console.error("Error checking branch sync status.");
-      console.error(error);
+    if (localMaster !== remoteMaster && !isDryRun) {
+      console.error(
+        "Local master branch is not in sync with origin. Please pull the latest changes before proceeding.",
+      );
       process.exit(1);
     }
+  } catch (error) {
+    console.error("Error checking branch sync status.");
+    console.error(error);
+    process.exit(1);
   }
 };
 
@@ -99,7 +103,7 @@ const getCurrentVersion = () => {
   console.log("Getting current version...");
 
   const rootPackageJson = JSON.parse(
-    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8")
+    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8"),
   );
 
   return rootPackageJson.version;
@@ -108,13 +112,13 @@ const getCurrentVersion = () => {
 const incrementVersion = (currentVersion) => {
   console.log("Incrementing version...");
   const now = new Date();
-  const year = now.getFullYear().toString().slice(-2);
+  const year = Number(now.getFullYear().toString().slice(-2));
   const start = new Date(now.getFullYear(), 0, 1);
   const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
   const [prevYear, prevWeek, minor] = currentVersion.split(".").map(Number);
 
   let newMinor = minor + 1;
-  if (year != prevYear || week != prevWeek) {
+  if (year !== prevYear || week !== prevWeek) {
     newMinor = 0;
   }
 
@@ -140,8 +144,8 @@ const updatePackage = (newVersion) => {
   // Write the updated JSON back to package.json
   fs.writeFileSync(
     packagePath,
-    JSON.stringify(packageJson, null, 2) + "\n",
-    "utf8"
+    `${JSON.stringify(packageJson, null, 2)}\n`,
+    "utf8",
   );
 
   console.log(`Updated package.json to version ${newVersion}`);
@@ -150,62 +154,97 @@ const updatePackage = (newVersion) => {
 const checkUncommittedChanges = () => {
   console.log("Checking uncommitted changes...");
   const status = execSync("git status --porcelain").toString().trim();
-  if (isDryRun) {
-    console.log("[Dry Run] Checking uncommitted changes...");
-  } else if (status) {
+
+  if (status && !isDryRun) {
     console.error(
-      "You have uncommitted changes. Please commit or stash them before proceeding."
+      "You have uncommitted changes. Please commit or stash them before proceeding.",
     );
     process.exit(1);
   }
 };
 
+const installDependencies = () => {
+  console.log("Installing dependencies...");
+  runProjectRootCommand("pnpm i");
+};
+
 const buildProject = () => {
   console.log("Building project...");
-  let filter = "";
 
   if (isFrontend && !isBackend) {
-    filter = "--filter @monkeytype/frontend";
+    runProjectRootCommand(
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
+    );
   } else if (isBackend && !isFrontend) {
-    filter = "--filter @monkeytype/backend";
+    runProjectRootCommand(
+      "NODE_ENV=production SENTRY=1 npx turbo lint test build --filter @monkeytype/backend --force",
+    );
+  } else {
+    runProjectRootCommand(
+      "NODE_ENV=production SENTRY=1 npx turbo lint test check-assets build --force",
+    );
   }
-
-  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
 };
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  const p = path.resolve(__dirname, "../bin/deployBackend.sh");
+  const p = path.resolve(DIRNAME, "../bin/deployBackend.sh");
   runCommand(`sh ${p}`);
 };
 
 const deployFrontend = () => {
   console.log("Deploying frontend...");
   runProjectRootCommand(
-    "cd frontend && npx firebase deploy -P live --only hosting"
+    "cd frontend && npx firebase deploy -P live --only hosting",
   );
 };
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  const p = path.resolve(__dirname, "../bin/purgeCfCache.sh");
+  const p = path.resolve(DIRNAME, "../bin/purgeCfCache.sh");
   runCommand(`sh ${p}`);
 };
 
 const generateChangelog = async () => {
   console.log("Generating changelog...");
 
-  const p = path.resolve(__dirname, "./buildChangelog.js");
+  const p = path.resolve(DIRNAME, "./buildChangelog.js");
 
   const changelog = runCommand(`node ${p}`, true);
 
   return changelog;
 };
 
+const generateContributors = () => {
+  console.log("Generating contributors list...");
+  try {
+    const p = path.resolve(DIRNAME, "./buildContributors.js");
+
+    let contributors = runCommand(`node ${p}`, true);
+
+    contributors = JSON.parse(
+      contributors.replaceAll("\n", "").replace(/^.*?\[/, "["),
+    );
+
+    if (!isDryRun) {
+      fs.writeFileSync(
+        `${PROJECT_ROOT}/frontend/static/contributors.json`,
+        JSON.stringify(contributors, null, 2),
+        "utf8",
+      );
+    }
+
+    console.log("Contributors list updated.");
+  } catch (e) {
+    console.error("Failed to generate contributors list.");
+    console.error(e);
+  }
+};
+
 const createCommitAndTag = (version) => {
   console.log("Creating commit and tag... Pushing to Github...");
   runCommand(`git add .`);
-  runCommand(`git commit -m "chore: release ${version}" --no-verify`);
+  runCommand(`git commit -m "chore: release ${version}"`);
   runCommand(`git tag ${version}`);
   runCommand(`git push origin master --tags --no-verify`);
 };
@@ -214,7 +253,7 @@ const createGithubRelease = async (version, changelogContent) => {
   console.log("Creating GitHub release...");
   if (isDryRun) {
     console.log(
-      `[Dry Run] Sent release request to GitHub for version ${version}`
+      `[Dry Run] Sent release request to GitHub for version ${version}`,
     );
   } else {
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -233,27 +272,69 @@ const createGithubRelease = async (version, changelogContent) => {
 };
 
 const main = async () => {
-  console.log("Starting release process...");
+  if (previewFe) {
+    console.log(`Starting frontend preview deployment process...`);
+    installDependencies();
+    runProjectRootCommand(
+      "NODE_ENV=production npx turbo lint test check-assets build --filter @monkeytype/frontend --force",
+    );
 
-  checkBranchSync();
+    const name = readlineSync.question(
+      "Enter preview channel name (default: preview): ",
+    );
+    let channelName = name.trim();
+
+    if (channelName === "") {
+      channelName = "preview";
+    }
+
+    const expirationTime = readlineSync.question(
+      "Enter expiration time (e.g., 2h, default: 1d): ",
+    );
+    let expires = expirationTime.trim();
+
+    if (expires === "") {
+      expires = "1d";
+    }
+
+    console.log(
+      `Deploying frontend preview to channel "${channelName}" with expiration "${expires}"...`,
+    );
+    const result = runProjectRootCommand(
+      `cd frontend && npx firebase hosting:channel:deploy ${channelName} -P live --expires ${expires}`,
+    );
+    console.log(result);
+    console.log("Frontend preview deployed successfully.");
+    process.exit(0);
+  }
+
+  console.log(`Starting ${hotfix ? "hotfix" : "release"} process...`);
+
+  if (!hotfix) checkBranchSync();
 
   checkUncommittedChanges();
 
-  const changelogContent = await generateChangelog();
+  installDependencies();
 
-  console.log(changelogContent);
+  let changelogContent;
+  let newVersion;
+  if (!hotfix) {
+    changelogContent = await generateChangelog();
 
-  if (!readlineSync.keyInYN("Changelog looks good?")) {
-    console.log("Exiting.");
-    process.exit(1);
+    console.log(changelogContent);
+
+    if (!readlineSync.keyInYN("Changelog looks good?")) {
+      console.log("Exiting.");
+      process.exit(1);
+    }
+
+    const currentVersion = getCurrentVersion();
+    newVersion = incrementVersion(currentVersion);
+    console.log(`New version: ${newVersion}`);
   }
-
-  const currentVersion = getCurrentVersion();
-  const newVersion = incrementVersion(currentVersion);
-
   buildProject();
 
-  if (!readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
+  if (!hotfix && !readlineSync.keyInYN(`Ready to release ${newVersion}?`)) {
     console.log("Exiting.");
     process.exit(1);
   }
@@ -267,16 +348,23 @@ const main = async () => {
   }
 
   if (!noDeploy) purgeCache();
-  updatePackage(newVersion);
-  createCommitAndTag(newVersion);
-  try {
-    await createGithubRelease(newVersion, changelogContent);
-  } catch (e) {
-    console.error(`Failed to create release on GitHub: ${e}`);
-    console.log("Please create the release manually.");
+  if (!hotfix) {
+    generateContributors();
+    updatePackage(newVersion);
+    createCommitAndTag(newVersion);
+    try {
+      await createGithubRelease(newVersion, changelogContent);
+    } catch (e) {
+      console.error(`Failed to create release on GitHub: ${e}`);
+      console.log("Please create the release manually.");
+    }
   }
 
-  console.log(`Release ${newVersion} completed successfully.`);
+  if (hotfix) {
+    console.log("Hotfix completed successfully.");
+  } else {
+    console.log(`Release ${newVersion} completed successfully.`);
+  }
   process.exit(0);
 };
 

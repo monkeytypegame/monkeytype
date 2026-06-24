@@ -1,3 +1,8 @@
+//pin implementations
+const random = Math.random;
+const ceil = Math.ceil;
+const floor = Math.floor;
+
 /**
  * Rounds a number to one decimal places.
  * @param num The number to round.
@@ -17,23 +22,6 @@ export function roundTo2(num: number): number {
 }
 
 /**
- * Calculates the standard deviation of an array of numbers.
- * @param array An array of numbers.
- * @returns The standard deviation of the input array.
- */
-export function stdDev(array: number[]): number {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
  * Calculates the mean (average) of an array of numbers.
  * @param array An array of numbers.
  * @returns The mean of the input array.
@@ -42,6 +30,23 @@ export function mean(array: number[]): number {
   try {
     return (
       array.reduce((previous, current) => (current += previous)) / array.length
+    );
+  } catch (e) {
+    return 0;
+  }
+}
+
+/**
+ * Calculates the standard deviation of an array of numbers.
+ * @param array An array of numbers.
+ * @returns The standard deviation of the input array.
+ */
+export function stdDev(array: number[]): number {
+  try {
+    const n = array.length;
+    const meanValue = mean(array);
+    return Math.sqrt(
+      array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
     );
   } catch (e) {
     return 0;
@@ -85,9 +90,9 @@ export function kogasa(cov: number): number {
  * @returns Random integer betwen min and max.
  */
 export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+  const minNorm = ceil(min);
+  const maxNorm = floor(max);
+  return floor(random() * (maxNorm - minNorm + 1) + minNorm);
 }
 
 /**
@@ -106,7 +111,7 @@ export function mapRange(
   inMax: number,
   outMin: number,
   outMax: number,
-  clamp = true
+  clamp = true,
 ): number {
   if (inMin === inMax) {
     return outMin;
@@ -124,4 +129,30 @@ export function mapRange(
   }
 
   return result;
+}
+
+/**
+ * Checks if a value is a safe number. Safe numbers are finite and not NaN.
+ * @param value The value to check.
+ * @returns True if the value is a safe number, false otherwise.
+ */
+export function isSafeNumber(value: unknown): value is number {
+  if (typeof value === "number") {
+    return !isNaN(value) && isFinite(value);
+  }
+  return false;
+}
+
+/**
+ * Converts a number to a safe number or undefined. NaN, Infinity, and -Infinity are converted to undefined.
+ * @param value The value to convert.
+ * @returns The input number if it is safe, undefined otherwise.
+ */
+export function safeNumber(
+  value: number | undefined | null,
+): number | undefined {
+  if (isSafeNumber(value)) {
+    return value;
+  }
+  return undefined;
 }

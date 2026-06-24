@@ -1,4 +1,3 @@
-import { QuoteWithTextSplit } from "../controllers/quotes-controller";
 import * as TestState from "./test-state";
 
 class Words {
@@ -12,9 +11,9 @@ class Words {
     this.length = 0;
   }
 
-  get(i?: undefined, raw?: boolean): string[];
-  get(i: number, raw?: boolean): string;
-  get(i?: number | undefined, raw = false): string | string[] | undefined {
+  getText(i?: undefined, raw?: boolean): string[];
+  getText(i: number, raw?: boolean): string;
+  getText(i?: number, raw = false): string | string[] | undefined {
     if (i === undefined) {
       return this.list;
     } else {
@@ -25,7 +24,7 @@ class Words {
       }
     }
   }
-  getCurrent(): string {
+  getCurrentText(): string {
     return this.list[TestState.activeWordIndex] ?? "";
   }
   getLast(): string {
@@ -57,22 +56,7 @@ class Words {
 }
 
 export const words = new Words();
-export let hasTab = false;
-export let hasNewline = false;
 export let hasNumbers = false;
-export let currentQuote = null as QuoteWithTextSplit | null;
-
-export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
-  currentQuote = rq;
-}
-
-export function setHasTab(tf: boolean): void {
-  hasTab = tf;
-}
-
-export function setHasNewline(tf: boolean): void {
-  hasNewline = tf;
-}
 
 export function setHasNumbers(tf: boolean): void {
   hasNumbers = tf;

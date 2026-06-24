@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
-} from "./schemas/api";
+} from "./util/api";
 import {
   CountByYearAndDaySchema,
   CustomThemeNameSchema,
@@ -24,32 +24,25 @@ import {
   UserSchema,
   UserStreakSchema,
   UserTagSchema,
-} from "./schemas/users";
-import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
-import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
-import { CustomThemeColorsSchema } from "./schemas/configs";
-import { doesNotContainProfanity } from "./validation/validation";
-
-export const UserEmailSchema = z.string().email();
+  UserEmailSchema,
+  UserNameSchema,
+  FriendSchema,
+} from "@monkeytype/schemas/users";
+import {
+  Mode2Schema,
+  ModeSchema,
+  PersonalBestSchema,
+} from "@monkeytype/schemas/shared";
+import { IdSchema, StringNumberSchema } from "@monkeytype/schemas/util";
+import { LanguageSchema } from "@monkeytype/schemas/languages";
+import { CustomThemeColorsSchema } from "@monkeytype/schemas/configs";
 
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
     inboxUnreadSize: z.number().int().nonnegative(),
-  })
+  }),
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
-
-export const UserNameSchema = doesNotContainProfanity(
-  "substring",
-  z
-    .string()
-    .min(1)
-    .max(16)
-    .regex(
-      /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscore and minus."
-    )
-);
 
 export const CreateUserRequestSchema = z.object({
   email: UserEmailSchema.optional(),
@@ -65,6 +58,13 @@ export const CheckNamePathParametersSchema = z.object({
 export type CheckNamePathParameters = z.infer<
   typeof CheckNamePathParametersSchema
 >;
+
+export const CheckNameResponseSchema = responseWithData(
+  z.object({
+    available: z.boolean(),
+  }),
+);
+export type CheckNameResponse = z.infer<typeof CheckNameResponseSchema>;
 
 export const UpdateUserNameRequestSchema = z.object({
   name: UserNameSchema,
@@ -85,7 +85,7 @@ export const UpdateEmailRequestSchema = z.object({
   newEmail: UserEmailSchema,
   previousEmail: UserEmailSchema,
 });
-export type UpdateEmailRequestSchema = z.infer<typeof UpdateEmailRequestSchema>;
+export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
   newPassword: z.string().min(6),
@@ -109,7 +109,7 @@ export type AddResultFilterPresetRequest = z.infer<
   typeof AddResultFilterPresetRequestSchema
 >;
 export const AddResultFilterPresetResponseSchema = responseWithData(
-  IdSchema.describe("Id of the created result filter preset")
+  IdSchema.describe("Id of the created result filter preset"),
 );
 export type AddResultFilterPresetResponse = z.infer<
   typeof AddResultFilterPresetResponseSchema
@@ -145,7 +145,7 @@ export const TagIdPathParamsSchema = z.object({
 export type TagIdPathParams = z.infer<typeof TagIdPathParamsSchema>;
 
 export const GetCustomThemesResponseSchema = responseWithData(
-  z.array(CustomThemeSchema)
+  z.array(CustomThemeSchema),
 );
 export type GetCustomThemesResponse = z.infer<
   typeof GetCustomThemesResponseSchema
@@ -158,7 +158,7 @@ export const AddCustomThemeRequestSchema = z.object({
 export type AddCustomThemeRequest = z.infer<typeof AddCustomThemeRequestSchema>;
 
 export const AddCustomThemeResponseSchema = responseWithData(
-  CustomThemeSchema.pick({ _id: true, name: true })
+  CustomThemeSchema.pick({ _id: true, name: true }),
 );
 export type AddCustomThemeResponse = z.infer<
   typeof AddCustomThemeResponseSchema
@@ -180,7 +180,7 @@ export type EditCustomThemeRequst = z.infer<typeof EditCustomThemeRequstSchema>;
 export const GetDiscordOauthLinkResponseSchema = responseWithData(
   z.object({
     url: z.string().url(),
-  })
+  }),
 );
 export type GetDiscordOauthLinkResponse = z.infer<
   typeof GetDiscordOauthLinkResponseSchema
@@ -194,7 +194,7 @@ export const LinkDiscordRequestSchema = z.object({
 export type LinkDiscordRequest = z.infer<typeof LinkDiscordRequestSchema>;
 
 export const LinkDiscordResponseSchema = responseWithData(
-  UserSchema.pick({ discordId: true, discordAvatar: true })
+  UserSchema.pick({ discordId: true, discordAvatar: true }),
 );
 export type LinkDiscordResponse = z.infer<typeof LinkDiscordResponseSchema>;
 
@@ -203,7 +203,7 @@ export const GetStatsResponseSchema = responseWithData(
     completedTests: true,
     startedTests: true,
     timeTyping: true,
-  })
+  }),
 );
 export type GetStatsResponse = z.infer<typeof GetStatsResponseSchema>;
 
@@ -268,7 +268,7 @@ export type UpdateUserProfileRequest = z.infer<
 >;
 
 export const UpdateUserProfileResponseSchema = responseWithData(
-  UserProfileDetailsSchema
+  UserProfileDetailsSchema,
 );
 export type UpdateUserProfileResponse = z.infer<
   typeof UpdateUserProfileResponseSchema
@@ -278,7 +278,7 @@ export const GetUserInboxResponseSchema = responseWithData(
   z.object({
     inbox: z.array(MonkeyMailSchema),
     maxMail: z.number().int(),
-  })
+  }),
 );
 export type GetUserInboxResponse = z.infer<typeof GetUserInboxResponseSchema>;
 
@@ -312,7 +312,7 @@ export type ForgotPasswordEmailRequest = z.infer<
 >;
 
 export const GetTestActivityResponseSchema = responseWithNullableData(
-  CountByYearAndDaySchema
+  CountByYearAndDaySchema,
 );
 export type GetTestActivityResponse = z.infer<
   typeof GetTestActivityResponseSchema
@@ -326,7 +326,10 @@ export type GetCurrentTestActivityResponse = z.infer<
 
 export const GetStreakResponseSchema =
   responseWithNullableData(UserStreakSchema);
-export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
+export type GetStreakResponse = z.infer<typeof GetStreakResponseSchema>;
+
+export const GetFriendsResponseSchema = responseWithData(z.array(FriendSchema));
+export type GetFriendsResponse = z.infer<typeof GetFriendsResponseSchema>;
 
 const c = initContract();
 
@@ -368,8 +371,7 @@ export const usersContract = c.router(
       path: "/checkName/:name",
       pathParams: CheckNamePathParametersSchema.strict(),
       responses: {
-        200: MonkeyResponseSchema.describe("Name is available"),
-        409: MonkeyResponseSchema.describe("Name is not available"),
+        200: CheckNameResponseSchema,
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },
@@ -447,7 +449,7 @@ export const usersContract = c.router(
     },
     updatePassword: {
       summary: "update password",
-      description: "Updates a user's email",
+      description: "Updates a user's password",
       method: "PATCH",
       path: "/password",
       body: UpdatePasswordRequestSchema.strict(),
@@ -934,6 +936,22 @@ export const usersContract = c.router(
         rateLimit: "userStreak",
       }),
     },
+    getFriends: {
+      summary: "get friends",
+      description: "get friends list",
+      method: "GET",
+      path: "/friends",
+      responses: {
+        200: GetFriendsResponseSchema,
+      },
+      metadata: meta({
+        rateLimit: "userFriendGet",
+        requireConfiguration: {
+          path: "connections.enabled",
+          invalidMessage: "Connections are not available at this time.",
+        },
+      }),
+    },
   },
   {
     pathPrefix: "/users",
@@ -943,5 +961,5 @@ export const usersContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

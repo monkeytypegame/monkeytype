@@ -13,7 +13,7 @@ import type { Response, NextFunction, Request } from "express";
 export async function compatibilityCheckMiddleware(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   res.setHeader(COMPATIBILITY_CHECK_HEADER, COMPATIBILITY_CHECK);
   next();
