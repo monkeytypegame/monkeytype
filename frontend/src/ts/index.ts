@@ -15,8 +15,6 @@ import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
-import * as TestStats from "./test/test-stats";
-import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
@@ -45,6 +43,8 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
+import { lastEventLog } from "./test/test-state";
+import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -87,8 +87,6 @@ addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
   glarsesMode: enable,
-  stats: TestStats.getStats,
-  replay: Replay.getReplayExport,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst: Result.toggleSmoothedBurst,
@@ -98,6 +96,12 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
+  lastEventLog: () => {
+    console.log(lastEventLog);
+  },
+  currentEventLog: () => {
+    console.log(buildEventLog());
+  },
 });
 
 mountComponents();

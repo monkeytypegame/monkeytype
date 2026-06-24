@@ -17,10 +17,6 @@ export default s.router(resultsContract, {
   updateTags: {
     handler: async (r) => callController(ResultController.updateTags)(r),
   },
-  reportCompletedEventMismatch: {
-    handler: async (r) =>
-      callController(ResultController.reportCompletedEventMismatch)(r),
-  },
   deleteAll: {
     handler: async (r) => callController(ResultController.deleteAll)(r),
   },

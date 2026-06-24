@@ -1,8 +1,15 @@
 import * as Sound from "../controllers/sound-controller";
-import * as TestInput from "./test-input";
 import * as Arrays from "../utils/arrays";
 import { qs, qsr } from "../utils/dom";
 import { Config } from "../config/store";
+import * as TestWords from "./test-words";
+import {
+  buildEventLog,
+  getAllTestEvents,
+  getInputForWord,
+} from "./events/data";
+import { getInputHistory, getWpmHistory } from "./events/stats";
+
 type ReplayAction =
   | "correctLetter"
   | "incorrectLetter"
@@ -19,21 +26,86 @@ type Replay = {
 
 let wordsList: string[] = [];
 let replayData: Replay[] = [];
-let replayStartTime = 0;
-let replayRecording = true;
+let wpmHistory: number[] = [];
 let wordPos = 0;
 let curPos = 0;
 let targetWordPos = 0;
 let targetCurPos = 0;
 let timeoutList: NodeJS.Timeout[] = [];
 let stopwatchList: NodeJS.Timeout[] = [];
-const toggleButton = document.getElementById("playpauseReplayButton")
-  ?.children[0];
+
+const toggleButton = (): Element | undefined =>
+  document.getElementById("playpauseReplayButton")?.children[0];
 
 const replayEl = qsr(".pageTest #resultReplay");
 
-function replayGetWordsList(wordsListFromScript: string[]): void {
-  wordsList = wordsListFromScript;
+function getWordsList(): string[] {
+  if (Config.mode === "zen") return getInputHistory(buildEventLog());
+  return TestWords.words.list.slice();
+}
+
+function deriveReplayActions(): Replay[] {
+  const events = getAllTestEvents();
+  const actions: Replay[] = [];
+  let prevWordIndex: number | undefined;
+
+  for (const event of events) {
+    if (event.type !== "input") continue;
+    const wi = event.data.wordIndex;
+
+    if (prevWordIndex !== undefined && wi !== prevWordIndex) {
+      if (wi > prevWordIndex) {
+        const typed = getInputForWord(prevWordIndex);
+        const target =
+          Config.mode === "zen"
+            ? typed
+            : TestWords.words.getText(prevWordIndex);
+        const correct = typed === target;
+        actions.push({
+          action: correct ? "submitCorrectWord" : "submitErrorWord",
+          time: event.testMs,
+        });
+      } else {
+        actions.push({ action: "backWord", time: event.testMs });
+      }
+    }
+
+    if (
+      event.data.inputType === "insertText" ||
+      event.data.inputType === "insertCompositionText"
+    ) {
+      if (event.data.inputStopped) {
+        prevWordIndex = wi;
+        continue;
+      }
+      actions.push({
+        action: event.data.correct ? "correctLetter" : "incorrectLetter",
+        value: event.data.data,
+        time: event.testMs,
+      });
+    } else if (
+      event.data.inputType === "deleteContentBackward" ||
+      event.data.inputType === "deleteWordBackward"
+    ) {
+      if (prevWordIndex !== undefined && wi < prevWordIndex) {
+        // word transition already emitted backWord above
+      } else {
+        const newCharIndex =
+          event.data.inputValue !== undefined
+            ? event.data.inputValue.length
+            : event.data.charIndex;
+        actions.push({
+          action: "setLetterIndex",
+          value: newCharIndex,
+          time: event.testMs,
+        });
+      }
+    }
+
+    prevWordIndex = wi;
+  }
+
+  return actions;
 }
 
 function initializeReplayPrompt(): void {
@@ -44,7 +116,6 @@ function initializeReplayPrompt(): void {
   replayWordsElement.innerHTML = "";
   let wordCount = 0;
   replayData.forEach((item) => {
-    //trim wordsList for timed tests
     if (item.action === "backWord") {
       wordCount--;
     } else if (
@@ -79,13 +150,11 @@ export function pauseReplay(): void {
   targetCurPos = curPos;
   targetWordPos = wordPos;
 
-  if (toggleButton === undefined) return;
+  const btn = toggleButton();
+  if (btn === undefined) return;
 
-  toggleButton.className = "fas fa-play";
-  (toggleButton.parentNode as Element)?.setAttribute(
-    "aria-label",
-    "Resume replay",
-  );
+  btn.className = "fas fa-play";
+  (btn.parentNode as Element)?.setAttribute("aria-label", "Resume replay");
 }
 
 function playSound(error = false): void {
@@ -113,7 +182,6 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     if (!nosound) playSound(true);
     let myElement;
     if (curPos >= activeWord.children.length) {
-      //if letter is an extra
       myElement = document.createElement("letter");
       myElement?.classList.add("extra");
       myElement.innerHTML = item.value?.toString() ?? "";
@@ -128,7 +196,6 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
   ) {
     if (!nosound) playSound();
     curPos = item.value;
-    // remove all letters from cursor to end of word
     for (const myElement of [...activeWord.children].slice(curPos)) {
       if (myElement?.classList.contains("extra")) {
         myElement.remove();
@@ -170,7 +237,6 @@ function loadOldReplay(): number {
       wordPos < targetWordPos ||
       (wordPos === targetWordPos && curPos < targetCurPos)
     ) {
-      //quickly display everything up to the target
       handleDisplayLogic(item, true);
       startingIndex = i + 1;
     }
@@ -182,7 +248,7 @@ function loadOldReplay(): number {
     throw new Error("Failed to load old replay: datatime is undefined");
   }
 
-  const time = Math.floor(datatime / 1000);
+  const time = Math.max(0, Math.floor(datatime / 1000));
   updateStatsString(time);
 
   return startingIndex;
@@ -190,14 +256,13 @@ function loadOldReplay(): number {
 
 function toggleReplayDisplay(): void {
   if (replayEl.isHidden()) {
+    refreshReplayFromEvents();
     initializeReplayPrompt();
     loadOldReplay();
-    //show
     void replayEl.slideDown(250);
   } else {
-    //hide
     if (
-      (toggleButton?.parentNode as Element)?.getAttribute("aria-label") !==
+      (toggleButton()?.parentNode as Element)?.getAttribute("aria-label") !==
       "Start replay"
     ) {
       pauseReplay();
@@ -206,29 +271,16 @@ function toggleReplayDisplay(): void {
   }
 }
 
-function startReplayRecording(): void {
-  replayData = [];
-  replayStartTime = performance.now();
-  replayRecording = true;
+function refreshReplayFromEvents(): void {
+  wordsList = getWordsList();
+  replayData = deriveReplayActions();
+  wpmHistory = getWpmHistory(buildEventLog());
   targetCurPos = 0;
   targetWordPos = 0;
 }
 
-function stopReplayRecording(): void {
-  replayRecording = false;
-}
-
-function addReplayEvent(action: ReplayAction, value?: number | string): void {
-  if (!replayRecording) {
-    return;
-  }
-
-  const timeDelta = performance.now() - replayStartTime;
-  replayData.push({ action: action, value: value, time: timeDelta });
-}
-
 function updateStatsString(time: number): void {
-  const wpm = TestInput.wpmHistory[time - 1] ?? 0;
+  const wpm = wpmHistory[time - 1] ?? 0;
   const statsString = `${wpm}wpm\t${time}s`;
   qs("#replayStats")?.setText(statsString);
 }
@@ -237,13 +289,11 @@ function playReplay(): void {
   curPos = 0;
   wordPos = 0;
 
-  if (toggleButton === undefined) return;
+  const btn = toggleButton();
+  if (btn === undefined) return;
 
-  toggleButton.className = "fas fa-pause";
-  (toggleButton.parentNode as Element)?.setAttribute(
-    "aria-label",
-    "Pause replay",
-  );
+  btn.className = "fas fa-pause";
+  (btn.parentNode as Element)?.setAttribute("aria-label", "Pause replay");
   initializeReplayPrompt();
   const startingIndex = loadOldReplay();
   const lastTime = replayData[startingIndex]?.time;
@@ -252,7 +302,7 @@ function playReplay(): void {
     throw new Error("Failed to play replay: lastTime is undefined");
   }
 
-  let swTime = Math.round(lastTime / 1000); //starting time
+  let swTime = Math.round(lastTime / 1000);
   const swEndTime = Math.round(
     (Arrays.lastElementFromArray(replayData) as Replay).time / 1000,
   );
@@ -279,37 +329,26 @@ function playReplay(): void {
   timeoutList.push(
     setTimeout(
       () => {
-        //after the replay has finished, this will run
         targetCurPos = 0;
         targetWordPos = 0;
-        toggleButton.className = "fas fa-play";
-        (toggleButton.parentNode as Element).setAttribute(
-          "aria-label",
-          "Start replay",
-        );
+        btn.className = "fas fa-play";
+        (btn.parentNode as Element).setAttribute("aria-label", "Start replay");
       },
       (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime,
     ),
   );
 }
 
-function getReplayExport(): string {
-  return JSON.stringify({
-    replayData: replayData,
-    wordsList: wordsList,
-  });
-}
-
 qs(".pageTest #playpauseReplayButton")?.on("click", () => {
-  if (toggleButton?.className === "fas fa-play") {
+  const btn = toggleButton();
+  if (btn?.className === "fas fa-play") {
     playReplay();
-  } else if (toggleButton?.className === "fas fa-pause") {
+  } else if (btn?.className === "fas fa-pause") {
     pauseReplay();
   }
 });
 
 qs("#replayWords")?.onChild("click", "letter", (event) => {
-  //allows user to click on the place they want to start their replay at
   pauseReplay();
   const replayWords = qs("#replayWords");
 
@@ -329,11 +368,3 @@ qs("#replayWords")?.onChild("click", "letter", (event) => {
 qs(".pageTest")?.onChild("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
-
-export {
-  startReplayRecording,
-  stopReplayRecording,
-  addReplayEvent,
-  replayGetWordsList,
-  getReplayExport,
-};
