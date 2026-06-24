@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import { getCurrentInput } from "../../test/events/data";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
@@ -10,6 +9,7 @@ import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
+import { isCommitCharacter } from "../helpers/util";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -56,13 +56,20 @@ export function onBeforeInsertText(data: string): boolean {
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
-  const overLimit = getCurrentInput().length >= inputLimit;
+  const overLimit = inputValue.length >= inputLimit;
+  const targetWord = TestWords.words.getCurrentText();
+  const isCommit = isCommitCharacter({
+    data,
+    inputValue,
+    targetWord,
+  });
   if (
     overLimit &&
     !shouldGoToNextWord({
       data,
-      inputValue: getCurrentInput(),
-      targetWord: TestWords.words.getCurrentText(),
+      inputValue,
+      targetWord,
+      isCommitCharacter: isCommit,
     })
   ) {
     console.error("Hitting word limit");
@@ -73,8 +80,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    getCurrentInput().length >=
-    removeTrailingSeparator(TestWords.words.getCurrentText()).length;
+    inputValue.length >= removeTrailingSeparator(targetWord).length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active
@@ -82,7 +88,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    !dataIsSpace &&
+    !isCommit &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
@@ -94,7 +100,7 @@ export function onBeforeInsertText(data: string): boolean {
     );
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? getCurrentInput()) + data,
+        (pendingWordData ?? inputValue) + data,
       );
     if (topAfterAppend > TestUI.activeWordTop) {
       //word jumped to next line
