@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import { isCommitCharacter } from "./util";
 
 /**
  * Check if the input data is correct
@@ -40,12 +39,11 @@ export function shouldGoToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
+  isCommitCharacter: boolean;
 }): boolean {
-  const { inputValue, targetWord, data } = options;
+  const { inputValue, targetWord, data, isCommitCharacter } = options;
 
-  const isCommit = isCommitCharacter(options);
-
-  if (!isCommit) return false;
+  if (!isCommitCharacter) return false;
 
   if (Config.mode === "zen") return true;
 

@@ -33,6 +33,7 @@ import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
+import { isCommitCharacter } from "../helpers/util";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -142,6 +143,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const wordIndex = TestState.activeWordIndex;
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
+  const isCommit = isCommitCharacter({
+    data,
+    inputValue: testInput,
+    targetWord: currentWord,
+  });
 
   // is char correct
   const correct = isCharCorrect({
@@ -174,6 +180,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       data,
       inputValue: testInput,
       targetWord: currentWord,
+      isCommitCharacter: isCommit,
     });
 
   if (correctShiftUsed === false) {
@@ -274,6 +281,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         testInput: testInput,
         targetWord: currentWord,
         correct,
+        isCommitCharacter: isCommit,
       })
     ) {
       TestLogic.fail("difficulty");
