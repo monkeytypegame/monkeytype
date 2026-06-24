@@ -99,7 +99,8 @@ export function goToPreviousWord(
 
   TestState.decreaseActiveWordIndex();
 
-  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex) ?? "");
+  const word = TestWords.words.getText(TestState.activeWordIndex);
+  if (word !== undefined) Funbox.toggleScript(word);
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
