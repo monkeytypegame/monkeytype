@@ -146,7 +146,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   const correct =
     funboxCorrect ??
-    (goingToNextWord
+    (goingToNextWord || wordCorrect
       ? wordCorrect
       : isCharCorrect({
           data,
