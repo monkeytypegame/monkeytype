@@ -37,7 +37,7 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
 import Test from "supertest/lib/test";
-import { Challenges } from "@monkeytype/challenges";
+import { getChallenge } from "@monkeytype/challenges";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -1604,7 +1604,7 @@ describe("user controller test", () => {
         avatar: "discordUserAvatar",
       });
       getDiscordRoleIdsMock.mockResolvedValue([
-        Challenges["100hours"].discordRoleId,
+        getChallenge("100hours").discordRoleId,
       ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);

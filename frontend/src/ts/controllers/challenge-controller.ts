@@ -11,7 +11,6 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 
-import { Challenges } from "@monkeytype/challenges";
 import { Challenge, ChallengeName } from "@monkeytype/schemas/challenges";
 import {
   Config as ConfigType,
@@ -27,6 +26,7 @@ import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { qs } from "../utils/dom";
 import { typedKeys } from "@monkeytype/util/objects";
+import { getChallenge } from "@monkeytype/challenges";
 
 let challengeLoading = false;
 
@@ -147,7 +147,7 @@ function verifyRequirement(
   return [requirementsMet, failReasons];
 }
 
-export function verify(result: CompletedEvent): string | null {
+export function verify(result: CompletedEvent): ChallengeName | null {
   const loadedChallenge = getLoadedChallenge();
 
   if (loadedChallenge === null) return null;
@@ -209,7 +209,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
 
   setConfig("funbox", []);
 
-  const challenge = Challenges[challengeName];
+  const challenge = getChallenge(challengeName);
 
   let notitext;
   try {
@@ -333,34 +333,6 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         throw new Error("Can't load challenge with current config");
       }
     } else if (challenge.type === "other") {
-      /* TODO: missing challenge
-      if (challenge.name === "semimak") {
-        // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
-        setConfig("mode", "time", {
-          nosave: true,
-        });
-        setConfig("time", 120, {
-          nosave: true,
-        });
-        setConfig("language", "english_10k", {
-          nosave: true,
-        });
-        setConfig("punctuation", true, {
-          nosave: true,
-        });
-        setConfig("stopOnError", "word", {
-          nosave: true,
-        });
-        setConfig("layout", "semimak", {
-          nosave: true,
-        });
-        setConfig("keymapLayout", "overrideSync", {
-          nosave: true,
-        });
-        setConfig("keymapMode", "static", {
-          nosave: true,
-        });
-      } else */
       if (challengeName === "wingdings") {
         // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
         setConfig("mode", "words", {
@@ -389,7 +361,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
     } else {
       showSuccessNotification(`Challenge loaded. ${notitext}`);
     }
-    setLoadedChallenge({ name: challengeName, ...challenge });
+    setLoadedChallenge(challenge);
     challengeLoading = false;
     return true;
   } catch (e) {

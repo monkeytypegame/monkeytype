@@ -1,5 +1,5 @@
-import { Challenges } from "@monkeytype/challenges";
+import { getChallenges } from "@monkeytype/challenges";
 
-export default Object.entries(Challenges)
-  .filter(([_, challenge]) => challenge.autoRole)
-  .map(([name]) => name);
+export default getChallenges()
+  .filter((it) => it.autoRole)
+  .map((it) => it.name);

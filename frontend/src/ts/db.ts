@@ -138,6 +138,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
         firstDayOfTheWeek,
       );
     }
+    snap.challenges = userData.challenges;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset = hourOffset ?? undefined;

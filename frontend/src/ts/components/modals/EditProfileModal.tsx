@@ -55,7 +55,7 @@ export function EditProfile() {
           website: value.website || undefined,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
-        showChallengesOnPublicProfile: value.showActivityOnPublicProfile,
+        showChallengesOnPublicProfile: value.showChallengesOnPublicProfile,
       };
 
       const response = await Ape.users.updateProfile({

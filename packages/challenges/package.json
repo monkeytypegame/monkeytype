@@ -19,7 +19,8 @@
     "george-mapping": "tsx ./scripts/challenge-roles"
   },
   "dependencies": {
-    "@monkeytype/schemas": "workspace:*"
+    "@monkeytype/schemas": "workspace:*",
+    "@monkeytype/util": "workspace:*"
   },
   "devDependencies": {
     "@monkeytype/tsup-config": "workspace:*",

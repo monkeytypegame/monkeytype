@@ -1,9 +1,7 @@
-import { Challenges } from "../src/index";
+import { getChallenges } from "../src/index";
 
-const known: Record<string, string> = Object.fromEntries(
-  Object.entries(Challenges).map(
-    ([name, def]) => [name, def.discordRoleId] as [string, string],
-  ),
+const known = Object.fromEntries(
+  getChallenges().map((it) => [it.name, it.discordRoleId]),
 );
 
 console.log("roleid mapping");

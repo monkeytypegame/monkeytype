@@ -96,16 +96,13 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import * as ConnectionsDal from "../../dal/connections";
 import { PersonalBest } from "@monkeytype/schemas/shared";
 
-import { Challenges } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { getChallenges } from "@monkeytype/challenges";
 
 const challengeNameByRoleId: Record<string, ChallengeName> = Object.fromEntries(
-  Object.entries(Challenges)
-    .filter(([_, challenge]) => challenge.discordRoleId !== undefined)
-    .map(([name, challenge]) => [
-      challenge.discordRoleId,
-      name as ChallengeName,
-    ]),
+  getChallenges()
+    .filter((it) => it.discordRoleId !== undefined)
+    .map((it) => [it.discordRoleId, it.name]),
 );
 
 async function verifyCaptcha(captcha: string): Promise<void> {

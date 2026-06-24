@@ -11,6 +11,7 @@ import { getFormatting } from "../../../states/core";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
+import { Challenges } from "./Challenges";
 import { UserDetails } from "./UserDetails";
 
 export function UserProfile(props: {
@@ -54,6 +55,11 @@ export function UserProfile(props: {
       <ActivityCalendar
         testActivity={props.profile.testActivity}
         isAccountPage={props.isAccountPage}
+      />
+
+      <Challenges
+        isAccountPage={props.isAccountPage}
+        challenges={props.profile.challenges}
       />
     </div>
   );

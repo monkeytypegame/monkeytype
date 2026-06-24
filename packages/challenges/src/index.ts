@@ -1,6 +1,6 @@
 import { Challenge, ChallengeName } from "@monkeytype/schemas/challenges";
 
-export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
+const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   "100hours": {
     display: "100 hours",
     autoRole: false,
@@ -1082,3 +1082,22 @@ export const Challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description: "Collect 70 roles.",
   },
 };
+
+const map: Record<ChallengeName, Challenge> = Object.fromEntries(
+  Object.entries(challenges).map(([name, def]) => [name, { ...def, name }]),
+) as Record<ChallengeName, Challenge>;
+
+const list: Challenge[] = Object.values(map);
+const regular: Challenge[] = list.filter((it) => it.type !== "hidden");
+
+export function getChallenges(): Challenge[] {
+  return list;
+}
+
+export function getRegularChallenges(): Challenge[] {
+  return regular;
+}
+
+export function getChallenge(name: ChallengeName): Challenge {
+  return map[name];
+}
