@@ -13,7 +13,6 @@ import {
 } from "../helpers/fail-or-finish";
 import {
   areCharactersVisuallyEqual,
-  isSpace,
   removeLanguageSize,
 } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
@@ -141,8 +140,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const wordIndex = TestState.activeWordIndex;
-  const charIsSpace = isSpace(data);
-  const charIsNewline = data === "\n";
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
@@ -179,7 +176,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       targetWord: currentWord,
     });
 
-  if (!charIsSpace && correctShiftUsed === false) {
+  if (correctShiftUsed === false) {
     removeLastChar = true;
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
@@ -236,7 +233,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     const result = await goToNextWord({
       correctInsert: commitCorrect,
       isCompositionEnding: isCompositionEnding === true,
-      zenNewline: charIsNewline && Config.mode === "zen",
+      zenNewline: data === "\n" && Config.mode === "zen",
       now,
     });
     lastBurst = result.lastBurst;
