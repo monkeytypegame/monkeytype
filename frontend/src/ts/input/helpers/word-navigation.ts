@@ -60,9 +60,7 @@ export async function goToNextWord({
     TestWords.words.getCurrent()?.textWithCommit ?? "",
   );
 
-  const nextWord = TestWords.words.get(
-    TestState.activeWordIndex + 1,
-  )?.textWithCommit;
+  const nextWord = TestWords.words.get(TestState.activeWordIndex + 1)?.text;
   if (nextWord !== undefined) Funbox.toggleScript(nextWord);
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
@@ -103,7 +101,7 @@ export function goToPreviousWord(
 
   TestState.decreaseActiveWordIndex();
 
-  const word = TestWords.words.get(TestState.activeWordIndex)?.textWithCommit;
+  const word = TestWords.words.get(TestState.activeWordIndex)?.text;
   if (word !== undefined) Funbox.toggleScript(word);
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
