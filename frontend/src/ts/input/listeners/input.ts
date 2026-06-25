@@ -129,7 +129,7 @@ inputEl.addEventListener("input", async (event) => {
     const inputPlusComposition =
       getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
-      TestWords.words.getCurrentText() === inputPlusComposition;
+      TestWords.words.getCurrent().textWithCommit === inputPlusComposition;
 
     // composition quick end
     // if the user typed the entire word correctly but is still in composition

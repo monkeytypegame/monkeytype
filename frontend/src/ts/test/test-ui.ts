@@ -228,7 +228,7 @@ async function joinOverlappingHints(
   hintElements: HTMLCollection,
 ): Promise<void> {
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    TestWords.words.getCurrentText(),
+    TestWords.words.getCurrent().text,
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
   );
@@ -501,9 +501,9 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      const word = TestWords.words.getText(i);
+      const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      wordsHTML += buildWordHTML(word, i);
+      wordsHTML += buildWordHTML(word.display, i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -738,7 +738,7 @@ export async function updateWordLetters({
     `test-ui.updateWordLetters.${wordIndex}`,
     async () => {
       pendingWordData.delete(wordIndex);
-      const currentWord = TestWords.words.getText(wordIndex);
+      const currentWord = TestWords.words.get(wordIndex)?.display;
       if (currentWord === undefined && Config.mode !== "zen") return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
@@ -1335,7 +1335,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const corrected = correctedHistory[i];
-    const word = TestWords.words.getText(i) ?? "";
+    const word = TestWords.words.get(i)?.text ?? "";
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
     const containsKorean =
@@ -1770,7 +1770,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(getCurrentInput().length),
+      TestWords.words.getCurrent().text.charAt(getCurrentInput().length),
     );
   }
 
@@ -1966,8 +1966,9 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
     words = getInputHistory(TestState.lastEventLog).join("");
   } else {
     words = TestWords.words
-      .getText()
+      .get()
       .slice(0, getInputHistory(TestState.lastEventLog).length)
+      .map((w) => w.text)
       .join(" ");
   }
   await copyToClipboard(words);

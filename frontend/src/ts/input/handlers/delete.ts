@@ -18,8 +18,8 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
-    .getCurrentText()
-    .startsWith(inputAfterDelete);
+    .getCurrent()
+    .textWithCommit.startsWith(inputAfterDelete);
 
   //special check for code languages
   if (
