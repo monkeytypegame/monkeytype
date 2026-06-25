@@ -11,22 +11,17 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 
-import { Challenge, ChallengeName } from "@monkeytype/schemas/challenges";
-import {
-  Config as ConfigType,
-  Difficulty,
-  FunboxName,
-  ThemeName,
-} from "@monkeytype/schemas/configs";
+import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
+import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { Difficulty, FunboxName, ThemeName } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { qs } from "../utils/dom";
-import { typedKeys } from "@monkeytype/util/objects";
-import { getChallenge } from "@monkeytype/challenges";
 
 let challengeLoading = false;
 
@@ -43,8 +38,8 @@ export function clearActive(): void {
 
 function verifyRequirement(
   result: CompletedEvent,
-  requirements: NonNullable<Challenge["requirements"]>,
-  requirementType: keyof NonNullable<Challenge["requirements"]>,
+  requirements: NonNullable<ChallengeSettings["requirements"]>,
+  requirementType: keyof NonNullable<ChallengeSettings["requirements"]>,
 ): [boolean, string[]] {
   let requirementsMet = true;
   let failReasons: string[] = [];
@@ -138,7 +133,7 @@ function verifyRequirement(
     const requirementValue = requirements.config;
     for (const configKey of typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
-      if (Config[configKey as keyof ConfigType] !== configValue) {
+      if (Config[configKey] !== configValue) {
         requirementsMet = false;
         failReasons.push(`${configKey} not set to ${configValue}`);
       }
@@ -160,16 +155,18 @@ export function verify(result: CompletedEvent): ChallengeName | null {
       return null;
     }
 
-    if (loadedChallenge.requirements === undefined) {
+    if (loadedChallenge.settings?.requirements === undefined) {
       showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
       return loadedChallenge.name || null;
     } else {
       let requirementsMet = true;
       const failReasons: string[] = [];
-      for (const requirementType of typedKeys(loadedChallenge.requirements)) {
+      for (const requirementType of typedKeys(
+        loadedChallenge.settings.requirements,
+      )) {
         const [passed, requirementFailReasons] = verifyRequirement(
           result,
-          loadedChallenge.requirements,
+          loadedChallenge.settings.requirements,
           requirementType,
         );
         if (!passed) {
@@ -178,7 +175,7 @@ export function verify(result: CompletedEvent): ChallengeName | null {
         failReasons.push(...requirementFailReasons);
       }
       if (requirementsMet) {
-        if (loadedChallenge.autoRole) {
+        if (loadedChallenge.settings.autoRole) {
           showSuccessNotification(
             "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
             { durationMs: 5000 },
@@ -210,19 +207,20 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   setConfig("funbox", []);
 
   const challenge = getChallenge(challengeName);
+  const settings = challenge.settings;
 
   let notitext;
   try {
-    if (challenge === undefined) {
-      showNoticeNotification("Challenge not found");
+    if (challenge === undefined || settings === undefined) {
+      showNoticeNotification("Challenge not found or missing settings");
       setTimeout(() => {
         qs("header .config")?.show();
         qs(".page.pageTest")?.show();
       }, 250);
       return false;
     }
-    if (challenge.type === "customTime") {
-      setConfig("time", challenge.parameters[0] as number, {
+    if (settings.type === "customTime") {
+      setConfig("time", settings.parameters[0] as number, {
         nosave: true,
       });
       setConfig("mode", "time", {
@@ -242,8 +240,8 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
           nosave: true,
         });
       }
-    } else if (challenge.type === "customWords") {
-      setConfig("words", challenge.parameters[0] as number, {
+    } else if (settings.type === "customWords") {
+      setConfig("words", settings.parameters[0] as number, {
         nosave: true,
       });
       setConfig("mode", "words", {
@@ -252,22 +250,22 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-    } else if (challenge.type === "customText") {
-      CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setMode(challenge.parameters[1] as CustomTextMode);
-      CustomText.setLimitValue(challenge.parameters[2] as number);
-      CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
-      CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
+    } else if (settings.type === "customText") {
+      CustomText.setText((settings.parameters[0] as string).split(" "));
+      CustomText.setMode(settings.parameters[1] as CustomTextMode);
+      CustomText.setLimitValue(settings.parameters[2] as number);
+      CustomText.setLimitMode(settings.parameters[3] as CustomTextLimitMode);
+      CustomText.setPipeDelimiter(settings.parameters[4] as boolean);
       setConfig("mode", "custom", {
         nosave: true,
       });
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-    } else if (challenge.type === "script") {
+    } else if (settings.type === "script") {
       showLoaderBar();
       const response = await fetch(
-        `/challenges/${challenge.parameters[0] as string}`,
+        `/challenges/${settings.parameters[0] as string}`,
       );
       hideLoaderBar();
       if (response.status !== 200) {
@@ -287,13 +285,13 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-      if (challenge.parameters[1] !== null) {
-        setConfig("theme", challenge.parameters[1] as ThemeName);
+      if (settings.parameters[1] !== null) {
+        setConfig("theme", settings.parameters[1] as ThemeName);
       }
-      if (challenge.parameters[2] !== null) {
-        void Funbox.activate(challenge.parameters[2] as FunboxName[]);
+      if (settings.parameters[2] !== null) {
+        void Funbox.activate(settings.parameters[2] as FunboxName[]);
       }
-    } else if (challenge.type === "accuracy") {
+    } else if (settings.type === "accuracy") {
       setConfig("time", 0, {
         nosave: true,
       });
@@ -303,36 +301,36 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       setConfig("difficulty", "master", {
         nosave: true,
       });
-    } else if (challenge.type === "funbox") {
+    } else if (settings.type === "funbox") {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-      if (challenge.parameters[1] === "words") {
-        setConfig("words", challenge.parameters[2] as number, {
+      if (settings.parameters[1] === "words") {
+        setConfig("words", settings.parameters[2] as number, {
           nosave: true,
         });
-      } else if (challenge.parameters[1] === "time") {
-        setConfig("time", challenge.parameters[2] as number, {
+      } else if (settings.parameters[1] === "time") {
+        setConfig("time", settings.parameters[2] as number, {
           nosave: true,
         });
       }
-      setConfig("mode", challenge.parameters[1] as Mode, {
+      setConfig("mode", settings.parameters[1] as Mode, {
         nosave: true,
       });
-      if (challenge.parameters[3] !== undefined) {
-        setConfig("difficulty", challenge.parameters[3] as Difficulty, {
+      if (settings.parameters[3] !== undefined) {
+        setConfig("difficulty", settings.parameters[3] as Difficulty, {
           nosave: true,
         });
       }
 
       if (
-        !setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+        !setConfig("funbox", settings.parameters[0] as FunboxName[], {
           nosave: true,
         })
       ) {
         throw new Error("Can't load challenge with current config");
       }
-    } else if (challenge.type === "other") {
+    } else if (settings.type === "other") {
       if (challengeName === "wingdings") {
         // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
         setConfig("mode", "words", {
@@ -352,7 +350,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         });
       }
     }
-    notitext = challenge.message;
+    notitext = settings.message;
     qs("header .config")?.show();
     qs(".page.pageTest")?.show();
 

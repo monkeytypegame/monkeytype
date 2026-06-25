@@ -1,5 +1,9 @@
-import { getChallenge, getRegularChallenges } from "@monkeytype/challenges";
-import { Challenge, ChallengeName } from "@monkeytype/schemas/challenges";
+import {
+  Challenge,
+  getChallenge,
+  getRegularChallenges,
+} from "@monkeytype/challenges";
+import { ChallengeName } from "@monkeytype/schemas/challenges";
 import { UserChallenges } from "@monkeytype/schemas/users";
 import { typedEntries } from "@monkeytype/util/objects";
 import { createMemo, For, Show } from "solid-js";

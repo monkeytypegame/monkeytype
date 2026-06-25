@@ -1,4 +1,4 @@
-import { getRegularChallenges } from "@monkeytype/challenges";
+import { getChallenges } from "@monkeytype/challenges";
 import * as ChallengeController from "../../controllers/challenge-controller";
 import { navigate } from "../../controllers/route-controller";
 import * as TestLogic from "../../test/test-logic";
@@ -7,17 +7,19 @@ import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
   title: "Load challenge...",
-  list: getRegularChallenges().map((challenge) => ({
-    id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
-    display: challenge.display,
-    exec: async (): Promise<void> => {
-      await navigate("/");
-      await ChallengeController.setup(challenge.name);
-      TestLogic.restart({
-        nosave: true,
-      });
-    },
-  })),
+  list: getChallenges()
+    .filter((it) => it.settings !== undefined)
+    .map((challenge) => ({
+      id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
+      display: challenge.display,
+      exec: async (): Promise<void> => {
+        await navigate("/");
+        await ChallengeController.setup(challenge.name);
+        TestLogic.restart({
+          nosave: true,
+        });
+      },
+    })),
 };
 
 const commands: Command[] = [
