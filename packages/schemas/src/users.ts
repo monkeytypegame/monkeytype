@@ -14,7 +14,6 @@ import {
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
-import { ChallengeNameSchema } from "./challenges";
 
 export const ResultFilterPresetNameSchema = slug().max(16);
 
@@ -118,7 +117,6 @@ export const UserProfileDetailsSchema = z
       .strict()
       .optional(),
     showActivityOnPublicProfile: z.boolean().optional(),
-    showChallengesOnPublicProfile: z.boolean().optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
@@ -251,14 +249,6 @@ export const UserNameSchema = doesNotContainDisallowedWords(
   UserNameWithoutFilterSchema,
 );
 
-export const UserChallengesSchema = z.record(
-  ChallengeNameSchema,
-  z.object({
-    addedAt: z.number().int().nonnegative().optional(),
-  }),
-);
-export type UserChallenges = z.infer<typeof UserChallengesSchema>;
-
 export const UserSchema = z.object({
   name: UserNameSchema,
   email: UserEmailSchema,
@@ -294,7 +284,6 @@ export const UserSchema = z.object({
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActivity: TestActivitySchema.optional(),
-  challenges: UserChallengesSchema.optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -323,7 +312,6 @@ export const UserProfileSchema = UserSchema.pick({
   inventory: true,
   allTimeLbs: true,
   testActivity: true,
-  challenges: true,
 })
   .extend({
     typingStats: TypingStatsSchema,

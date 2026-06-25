@@ -26,7 +26,6 @@ import {
   User,
   CountByYearAndDay,
   Friend,
-  UserChallenges,
 } from "@monkeytype/schemas/users";
 import {
   Mode,
@@ -615,14 +614,10 @@ export async function linkDiscord(
   uid: string,
   discordId: string,
   discordAvatar?: string,
-  challenges?: UserChallenges,
 ): Promise<void> {
   const updates: Partial<DBUser> = { discordId };
   if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
-  }
-  if (challenges !== undefined) {
-    updates.challenges = challenges;
   }
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
@@ -631,7 +626,7 @@ export async function linkDiscord(
 export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
     { uid },
-    { $unset: { discordId: "", discordAvatar: "", challenges: "" } },
+    { $unset: { discordId: "", discordAvatar: "" } },
     { stack: "unlink discord" },
   );
 }
