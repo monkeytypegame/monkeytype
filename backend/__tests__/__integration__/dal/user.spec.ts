@@ -1335,6 +1335,35 @@ describe("UserDal", () => {
       expect(read.challenges).toBeUndefined();
     });
   });
+
+  describe("updateChallenge", () => {
+    it("throws for nonexisting user", async () => {
+      await expect(async () =>
+        UserDAL.updateChallenge("unknown", "69"),
+      ).rejects.toThrow("User not found\nStack: update challenge");
+    });
+    it("should update", async () => {
+      //given
+      vi.useFakeTimers();
+      const { uid } = await UserTestData.createUser({
+        challenges: {
+          "100hours": {},
+          "250hours": { addedAt: 1 },
+        },
+      });
+
+      //when
+      await UserDAL.updateChallenge(uid, "69");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.challenges).toEqual({
+        "100hours": {},
+        "250hours": { addedAt: 1 },
+        "69": { addedAt: Date.now() },
+      });
+    });
+  });
   describe("updateInbox", () => {
     it("claims rewards on read", async () => {
       //GIVEN

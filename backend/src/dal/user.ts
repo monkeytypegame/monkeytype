@@ -40,6 +40,7 @@ import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
 import { aggregateWithAcceptedConnections } from "./connections";
+import { ChallengeName } from "@monkeytype/schemas/challenges";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
@@ -632,6 +633,17 @@ export async function unlinkDiscord(uid: string): Promise<void> {
     { uid },
     { $unset: { discordId: "", discordAvatar: "", challenges: "" } },
     { stack: "unlink discord" },
+  );
+}
+
+export async function updateChallenge(
+  uid: string,
+  challengeName: ChallengeName,
+): Promise<void> {
+  await updateUser(
+    { uid },
+    { $set: { [`challenges.${challengeName}`]: { addedAt: Date.now() } } },
+    { stack: "update challenge" },
   );
 }
 
