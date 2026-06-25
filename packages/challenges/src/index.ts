@@ -81,7 +81,6 @@ export type ChallengeSettings = {
 const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   "69": {
     display: "6969696969",
-    isHidden: true,
     discordRoleId: "749505965174292511",
     category: "other",
     description:
@@ -102,7 +101,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   oneHourWarrior: {
     display: "One Hour Warrior",
-    isHidden: true,
     discordRoleId: "728371749737201855",
     category: "endurance",
     description: "Complete a one-hour test.",
@@ -115,7 +113,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   doubleDown: {
     display: "Double Down",
-    isHidden: true,
     discordRoleId: "732008008514535544",
     category: "endurance",
     description: "Complete a two-hour test.",
@@ -128,7 +125,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   tripleTrouble: {
     display: "Triple Trouble",
-    isHidden: true,
     discordRoleId: "732008047618293762",
     category: "endurance",
     description: "Complete a three-hour test.",
@@ -141,7 +137,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   quad: {
     display: "Quaaaaad",
-    isHidden: true,
     discordRoleId: "736215666352455801",
     category: "endurance",
     description: "Complete a four-hour test.",
@@ -154,7 +149,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   "8Ball": {
     display: "8 Ball",
-    isHidden: true,
     discordRoleId: "736528159956271126",
     category: "endurance",
     description: "Complete an eight-hour test.",
@@ -166,7 +160,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   theBig12: {
     display: "The Big 12",
-    isHidden: true,
     discordRoleId: "740532256388546581",
     category: "endurance",
     description: "Complete a twelve-hour test.",
@@ -178,7 +171,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   "1Day": {
     display: "1 Day",
-    isHidden: true,
     discordRoleId: "751801958511149057",
     category: "endurance",
     description: "Complete a twenty-four-hour test.",
@@ -190,7 +182,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   trueSimp: {
     display: "True Simp",
-    isHidden: true,
     discordRoleId: "744328648211038359",
     category: "script",
     description: "Type miodec ten thousand times.",
@@ -208,7 +199,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   bigramSalad: {
     display: "Bigram Salad",
-    isHidden: true,
     discordRoleId: "818535054145093652",
     category: "speed",
     description:
@@ -228,7 +218,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   simp: {
     display: "Simp",
-    isHidden: true,
     discordRoleId: "743854992699687023",
     category: "script",
     description: "Type miodec one thousand times.",
@@ -246,12 +235,10 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   simpLord: {
     display: "Simp Lord",
-    isHidden: true,
     discordRoleId: "984911956949479445",
     category: "script",
     description: "Type miodec one hundred thousand times.",
     settings: {
-      autoRole: false,
       type: "customText",
       parameters: {
         text: "miodec",
@@ -264,7 +251,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   antidiseWhat: {
     display: "Antidise-what?",
-    isHidden: true,
     discordRoleId: "782006507360616449",
     category: "script",
     description: "Get at least 200 wpm typing antidisestablishmentarianism.",
@@ -283,7 +269,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   whatsThisWebsiteCalledAgain: {
     display: "What's this website called again?",
-    isHidden: true,
     discordRoleId: "739276161603076116",
     category: "script",
     description: "Type monkeytype one thousand times.",
@@ -301,7 +286,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   developd: {
     display: "Develop'd",
-    isHidden: true,
     discordRoleId: "735964917877964932",
     category: "script",
     description: "Type develop one thousand times.",
@@ -319,7 +303,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   slowAndSteady: {
     display: "Slow and Steady",
-    isHidden: true,
     discordRoleId: "782005061935956008",
     category: "speed",
     description:
@@ -336,7 +319,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   speedSpacer: {
     display: "Speed Spacer",
-    isHidden: true,
     discordRoleId: "755244049446731856",
     category: "speed",
     description:
@@ -356,7 +338,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   iveGotThePower: {
     display: "I've got the POWER",
-    isHidden: true,
     discordRoleId: "764879734873915402",
     category: "speed",
     description: "Get 400 WPM while typing power 10 times.",
@@ -375,7 +356,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   accuracyExpert: {
     display: "Accuracy Expert",
-    isHidden: true,
     discordRoleId: "751168451263070259",
     category: "accuracy",
     description: "Complete a 10-minute Master mode test.",
@@ -393,7 +373,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   accuracyMaster: {
     display: "Accuracy Master",
-    isHidden: true,
     discordRoleId: "751168567432708239",
     category: "accuracy",
     description: "Complete a 20-minute Master mode test.",
@@ -411,7 +390,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   accuracyGod: {
     display: "Accuracy God",
-    isHidden: true,
     discordRoleId: "751168657626890361",
     category: "accuracy",
     description: "Complete a 30-minute Master mode test.",
@@ -429,7 +407,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   inAGalaxyFarFarAway: {
     display: "In a galaxy far, far away",
-    isHidden: true,
     discordRoleId: "740004324301602907",
     category: "script",
     description:
@@ -442,7 +419,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   beepBoop: {
     display: "Beep Boop",
-    isHidden: true,
     discordRoleId: "813076265145729024",
     category: "script",
     description:
@@ -459,8 +435,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   whosYourDaddy: {
-    display: "Who's your daddy",
-    isHidden: true,
+    display: "Who's your daddy?",
     discordRoleId: "742171915405361204",
     category: "script",
     description:
@@ -473,7 +448,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   itsATrap: {
     display: "It's a trap!!",
-    isHidden: true,
     discordRoleId: "744325174668820550",
     category: "script",
     description:
@@ -486,7 +460,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   jolly: {
     display: "Jolly",
-    isHidden: true,
     discordRoleId: "768497412548329563",
     category: "script",
     description: "Type the Jolly script with a minimum of 70 wpm.",
@@ -499,8 +472,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   gottaCatchEmAll: {
-    display: "Gotta Catch 'Em All",
-    isHidden: true,
+    display: "Gotta catch 'em all",
     discordRoleId: "767069340599975998",
     category: "script",
     description: "Type out the names of all Pokemon.",
@@ -512,7 +484,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   rapGod: {
     display: "Rap God",
-    isHidden: true,
     discordRoleId: "743844891045396603",
     category: "script",
     description:
@@ -527,7 +498,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   navySeal: {
     display: "Navy Seal",
-    isHidden: true,
     discordRoleId: "762345535969165342",
     category: "script",
     description:
@@ -542,7 +512,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   littleChef: {
     display: "Little Chef",
-    isHidden: true,
     discordRoleId: "763544714028122153",
     category: "script",
     description:
@@ -551,7 +520,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   crosstalk: {
     display: "(CROSSTALK)",
-    isHidden: true,
     discordRoleId: "761276009664217129",
     category: "script",
     description:
@@ -560,7 +528,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   bees: {
     display: "Bees!!!",
-    isHidden: true,
     discordRoleId: "739636003182084307",
     category: "script",
     description:
@@ -568,8 +535,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: { type: "script", parameters: { script: "bees.txt" } },
   },
   getOffMySwamp: {
-    display: "Get Off My Swamp",
-    isHidden: true,
+    display: "Get off my swamp",
     discordRoleId: "757346966987342026",
     category: "script",
     description:
@@ -578,7 +544,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   lookAtMeIAmTheDeveloperNow: {
     display: "Look at me. I am the developer now.",
-    isHidden: true,
     discordRoleId: "937358772635074600",
     category: "script",
     description:
@@ -590,8 +555,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   beLikeWater: {
-    display: "Be Like Water",
-    isHidden: true,
+    display: "Be like water",
     discordRoleId: "740568679485276201",
     category: "funbox",
     description:
@@ -604,7 +568,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   rollercoaster: {
     display: "Rollercoaster",
-    isHidden: true,
     discordRoleId: "736032495526740001",
     category: "funbox",
     description:
@@ -621,7 +584,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   oneHourMirror: {
     display: "ɿoɿɿim ɿυoʜ ɘno",
-    isHidden: true,
     discordRoleId: "737385182998429757",
     category: "funbox",
     description: "Complete at least a one-hour test using the mirror mode.",
@@ -634,7 +596,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   chooChoo: {
     display: "Choo choo",
-    isHidden: true,
     discordRoleId: "739306439574683710",
     category: "funbox",
     description: "Complete at least a one-hour test using choo choo mode.",
@@ -647,7 +608,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   mnemonist: {
     display: "Mnemonist",
-    isHidden: true,
     discordRoleId: "782005606852067328",
     category: "funbox",
     description:
@@ -665,7 +625,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   earfquake: {
     display: "Earfquake",
-    isHidden: true,
     discordRoleId: "740730587429601291",
     category: "funbox",
     description:
@@ -679,7 +638,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   simonSez: {
     display: "Simon Sez",
-    isHidden: true,
     discordRoleId: "742128871825997914",
     category: "funbox",
     description:
@@ -693,7 +651,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   accountant: {
     display: "Accountant",
-    isHidden: true,
     discordRoleId: "743962178821816391",
     category: "funbox",
     description:
@@ -707,7 +664,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   hidden: {
     display: "Hidden",
-    isHidden: true,
     discordRoleId: "782006137742557194",
     category: "funbox",
     description:
@@ -726,7 +682,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   iCanSeeTheFuture: {
     display: "I can see the future",
-    isHidden: true,
     discordRoleId: "814877508008411226",
     category: "funbox",
     description:
@@ -744,8 +699,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   whatAreWordsAtThisPoint: {
-    display: "What are words at this point",
-    isHidden: true,
+    display: "What are words at this point?",
     discordRoleId: "744209241396740176",
     category: "funbox",
     description:
@@ -759,7 +713,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   specials: {
     display: "Specials",
-    isHidden: true,
     discordRoleId: "744209452714033162",
     category: "funbox",
     description:
@@ -773,7 +726,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   aeiou: {
     display: "Aeiou.",
-    isHidden: true,
     discordRoleId: "744318102766092362",
     category: "funbox",
     description: "Complete at least a one-hour test using the tts funbox mode.",
@@ -786,7 +738,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   asciiWarrior: {
     display: "ASCII warrior",
-    isHidden: true,
     discordRoleId: "746142791326760980",
     category: "funbox",
     description:
@@ -800,7 +751,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   iKiNdAlIkEhOwInEfFiCiEnTqWeRtYiS: {
     display: "i KINda LikE HoW inEFFICIeNt QwErtY Is.",
-    isHidden: true,
     discordRoleId: "760999194525171724",
     category: "funbox",
     description:
@@ -814,7 +764,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   oneNauseousMonkey: {
     display: "One Nauseous Monkey",
-    isHidden: true,
     discordRoleId: "760930262740631633",
     category: "funbox",
     description:
@@ -827,8 +776,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   thumbWarrior: {
-    display: "Thumb Warrior",
-    isHidden: true,
+    display: "Thumb warrior",
     discordRoleId: "761794585109200906",
     category: "other",
     description: "Complete a one-hour test using only your thumbs.",
@@ -836,7 +784,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   mouseWarrior: {
     display: "Mouse warrior",
-    isHidden: true,
     discordRoleId: "744580294442614790",
     category: "other",
     description:
@@ -845,7 +792,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   mobileWarrior: {
     display: "Mobile warrior",
-    isHidden: true,
     discordRoleId: "744723801526370407",
     category: "other",
     description: "Complete a one-hour test on mobile.",
@@ -853,7 +799,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   upsideDown: {
     display: "uʍop ǝpᴉsdn",
-    isHidden: true,
     discordRoleId: "782725716114014237",
     category: "other",
     description:
@@ -862,7 +807,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   oneArmedBandit: {
     display: "One armed bandit",
-    isHidden: true,
     discordRoleId: "765919192557682708",
     category: "other",
     description:
@@ -871,7 +815,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   englishMaster: {
     display: "English master",
-    isHidden: true,
     discordRoleId: "751166528824672396",
     category: "other",
     description:
@@ -887,8 +830,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     },
   },
   feetWarrior: {
-    display: "Foot Warrior",
-    isHidden: true,
+    display: "Feet warrior",
     discordRoleId: "751953592860147822",
     category: "other",
     description: "Complete a one-hour test using your feet. Don't ask me why.",
@@ -896,7 +838,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   wingdings: {
     display: "Ten Words of Pain",
-    isHidden: true,
     discordRoleId: "863192575984140338",
     category: "other",
     description:
