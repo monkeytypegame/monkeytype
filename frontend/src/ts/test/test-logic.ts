@@ -612,7 +612,7 @@ async function init(): Promise<boolean> {
     highlight(TestWords.words.getCurrent()?.text[0] ?? "");
   }
 
-  Funbox.toggleScript(TestWords.words.getCurrent().text);
+  Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;

@@ -47,8 +47,8 @@ class Words {
       }
     }
   }
-  getCurrent(): Word {
-    return this.list[TestState.activeWordIndex] as Word;
+  getCurrent(): Word | undefined {
+    return this.list[TestState.activeWordIndex];
   }
   push(word: string, sectionIndex: number): void {
     let commit: CommitChar = "";

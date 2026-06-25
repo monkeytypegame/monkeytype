@@ -52,10 +52,17 @@ export type FunboxFunctions = {
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const currentInput = getCurrentInput();
+  const currentWord = TestWords.words.getCurrent();
+
+  if (!currentWord) {
+    return;
+  }
+
   const inputCurrentChar = currentInput.slice(-1);
-  const wordCurrentChar = TestWords.words
-    .getCurrent()
-    .display.slice(currentInput.length - 1, currentInput.length);
+  const wordCurrentChar = currentWord.display.slice(
+    currentInput.length - 1,
+    currentInput.length,
+  );
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
@@ -416,7 +423,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrent().text.charAt(getCurrentInput().length),
+            TestWords.words
+              .getCurrent()
+              ?.text.charAt(getCurrentInput().length) ?? "",
           );
         }, 1);
       }

@@ -227,8 +227,11 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
+  const currentWord = TestWords.words.getCurrent();
+  if (currentWord === undefined) return;
+
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    TestWords.words.getCurrent().text,
+    currentWord.text,
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
   );
@@ -1770,7 +1773,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrent().text.charAt(getCurrentInput().length),
+      TestWords.words.getCurrent()?.text.charAt(getCurrentInput().length) ?? "",
     );
   }
 

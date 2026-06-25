@@ -57,7 +57,7 @@ export async function goToNextWord({
 
   PaceCaret.handleSpace(
     correctInsert,
-    TestWords.words.getCurrent().textWithCommit,
+    TestWords.words.getCurrent()?.textWithCommit ?? "",
   );
 
   const nextWord = TestWords.words.get(
