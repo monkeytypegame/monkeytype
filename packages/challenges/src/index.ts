@@ -1,29 +1,12 @@
 import { ChallengeName } from "@monkeytype/schemas/challenges";
-import { Config, FunboxName } from "@monkeytype/schemas/configs";
-
-export type ChallengeSettings = {
-  autoRole?: boolean;
-  type:
-    | "customTime"
-    | "customWords"
-    | "customText"
-    | "script"
-    | "accuracy"
-    | "funbox"
-    | "other";
-  message?: string;
-  requirements?: {
-    wpm?: { min: number } | { exact: number };
-    acc?: { min: number } | { exact: number };
-    raw?: { exact: number };
-    con?: { exact: number };
-    afk?: { max: number };
-    time?: { min: number };
-    funbox?: { exact: FunboxName[] };
-    config?: Partial<Config>;
-  };
-  parameters: (string | null | number | boolean | FunboxName[])[];
-};
+import {
+  Config,
+  Difficulty,
+  FunboxName,
+  ThemeName,
+} from "@monkeytype/schemas/configs";
+import { Mode } from "@monkeytype/schemas/shared";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 
 export type Challenge = {
   name: ChallengeName;
@@ -43,6 +26,58 @@ export type Challenge = {
   settings?: ChallengeSettings;
 };
 
+type ChallengeParameter =
+  | {
+      type: "customTime";
+      parameters: { time: number };
+    }
+  | { type: "customWords"; parameters: { words: number } }
+  | {
+      type: "customText";
+      parameters: {
+        text: string;
+        mode: CustomTextMode;
+        limit: number;
+        limitMode: CustomTextLimitMode;
+        isPipeDelimiter: boolean;
+      };
+    }
+  | {
+      type: "script";
+      parameters: {
+        script: string;
+        theme?: ThemeName;
+        funboxes?: FunboxName[];
+      };
+    }
+  | { type: "accuracy" }
+  | {
+      type: "funbox";
+      parameters: {
+        funbox: FunboxName;
+        difficulty?: Difficulty;
+      } & (
+        | { mode: "time" | "words"; mode2: number }
+        | { mode: Exclude<Mode, "time" | "words"> }
+      );
+    }
+  | { type: "other" };
+
+export type ChallengeSettings = {
+  autoRole?: boolean;
+  message?: string;
+  requirements?: {
+    wpm?: { min: number } | { exact: number };
+    acc?: { min: number } | { exact: number };
+    raw?: { exact: number };
+    con?: { exact: number };
+    afk?: { max: number };
+    time?: { min: number };
+    funbox?: { exact: FunboxName[] };
+    config?: Partial<Config>;
+  };
+} & ChallengeParameter;
+
 const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   "69": {
     display: "6969696969",
@@ -56,7 +91,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       type: "customTime",
       message:
         "You need to achieve 69 wpm, 69 raw, 69% accuracy and 69% consistency.",
-      parameters: [69],
+      parameters: { time: 69 },
       requirements: {
         wpm: { exact: 69 },
         raw: { exact: 69 },
@@ -98,11 +133,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "728371749737201855",
     category: "endurance",
-    description: "Complete an one-hour test.",
+    description: "Complete a one-hour test.",
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [3600],
+      parameters: { time: 3600 },
       requirements: { time: { min: 3600 } },
     },
   },
@@ -115,7 +150,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [7200],
+      parameters: { time: 7200 },
       requirements: { time: { min: 7200 } },
     },
   },
@@ -128,7 +163,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [10800],
+      parameters: { time: 10800 },
       requirements: { time: { min: 10800 } },
     },
   },
@@ -141,7 +176,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [14400],
+      parameters: { time: 14400 },
       requirements: { time: { min: 14400 } },
     },
   },
@@ -153,7 +188,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description: "Complete an eight-hour test.",
     settings: {
       type: "customTime",
-      parameters: [28800],
+      parameters: { time: 28800 },
       requirements: { time: { min: 28800 } },
     },
   },
@@ -165,7 +200,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description: "Complete a twelve-hour test.",
     settings: {
       type: "customTime",
-      parameters: [43200],
+      parameters: { time: 43200 },
       requirements: { time: { min: 43200 } },
     },
   },
@@ -177,7 +212,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description: "Complete a twenty-four-hour test.",
     settings: {
       type: "customTime",
-      parameters: [86400],
+      parameters: { time: 86400 },
       requirements: { time: { min: 86400 } },
     },
   },
@@ -190,7 +225,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["miodec", "repeat", 10000, "word", false],
+      parameters: {
+        text: "miodec",
+        mode: "repeat",
+        limit: 10000,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
     },
   },
   bigramSalad: {
@@ -203,13 +244,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: [
-        "to of in it is as at be we he so on an or do if up by my go",
-        "random",
-        100,
-        "word",
-        false,
-      ],
+      parameters: {
+        text: "to of in it is as at be we he so on an or do if up by my go",
+        mode: "random",
+        limit: 100,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
       requirements: { wpm: { min: 100 } },
     },
   },
@@ -222,7 +263,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["miodec", "repeat", 1000, "word", false],
+      parameters: {
+        text: "miodec",
+        mode: "repeat",
+        limit: 1000,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
     },
   },
   simpLord: {
@@ -234,7 +281,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: false,
       type: "customText",
-      parameters: ["miodec", "repeat", 100000, "word", false],
+      parameters: {
+        text: "miodec",
+        mode: "repeat",
+        limit: 100000,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
     },
   },
   antidiseWhat: {
@@ -246,7 +299,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["antidisestablishmentarianism", "repeat", 1, "word", false],
+      parameters: {
+        text: "antidisestablishmentarianism",
+        mode: "repeat",
+        limit: 1,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
       requirements: { wpm: { min: 200 } },
     },
   },
@@ -259,7 +318,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["monkeytype", "repeat", 1000, "word", false],
+      parameters: {
+        text: "monkeytype",
+        mode: "repeat",
+        limit: 1000,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
     },
   },
   developd: {
@@ -271,7 +336,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["develop", "repeat", 1000, "word", false],
+      parameters: {
+        text: "develop",
+        mode: "repeat",
+        limit: 1000,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
     },
   },
   slowAndSteady: {
@@ -284,7 +355,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [300],
+      parameters: { time: 300 },
       requirements: {
         wpm: { exact: 60 },
         config: { liveSpeedStyle: "off", paceCaret: "off" },
@@ -301,13 +372,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: [
-        "a b c d e f g h i j k l m n o p q r s t u v w x y z",
-        "random",
-        100,
-        "word",
-        false,
-      ],
+      parameters: {
+        text: "a b c d e f g h i j k l m n o p q r s t u v w x y z",
+        mode: "random",
+        limit: 100,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
       requirements: { wpm: { min: 100 } },
     },
   },
@@ -320,7 +391,13 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customText",
-      parameters: ["power", "repeat", 10, "word", false],
+      parameters: {
+        text: "power",
+        mode: "repeat",
+        limit: 10,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
       requirements: { wpm: { min: 400 } },
     },
   },
@@ -334,7 +411,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
-      parameters: [],
       requirements: {
         wpm: { min: 60 },
         acc: { exact: 100 },
@@ -353,7 +429,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
-      parameters: [],
       requirements: {
         wpm: { min: 60 },
         acc: { exact: 100 },
@@ -372,7 +447,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
-      parameters: [],
       requirements: {
         wpm: { min: 60 },
         acc: { exact: 100 },
@@ -390,7 +464,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 4 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: ["episode4.txt", null, ["space_balls"]],
+      parameters: { script: "episode4.txt", funboxes: ["space_balls"] },
       requirements: { config: { tapeMode: "off" } },
     },
   },
@@ -404,7 +478,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       type: "script",
       message: "Mininum 45 WPM and 100% accuracy required.",
-      parameters: ["beepboop.txt", null, ["nospace"]],
+      parameters: { script: "beepboop.txt", funboxes: ["nospace"] },
       requirements: {
         wpm: { min: 45 },
         acc: { min: 100 },
@@ -421,7 +495,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 5 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: ["episode5.txt", null, ["space_balls"]],
+      parameters: { script: "episode5.txt", funboxes: ["space_balls"] },
       requirements: { config: { tapeMode: "off" } },
     },
   },
@@ -434,7 +508,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 6 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: ["episode6.txt", null, ["space_balls"]],
+      parameters: { script: "episode6.txt", funboxes: ["space_balls"] },
       requirements: { config: { tapeMode: "off" } },
     },
   },
@@ -448,7 +522,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "script",
       message: "Minimum 70wpm required.",
-      parameters: ["jolly.txt", null, null],
+      parameters: { script: "jolly.txt" },
       requirements: { wpm: { min: 70 } },
     },
   },
@@ -461,7 +535,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "script",
-      parameters: ["pokemon.txt", null, null],
+      parameters: { script: "pokemon.txt" },
     },
   },
   rapGod: {
@@ -475,7 +549,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "script",
       message: "Minimum 85wpm and 90% accuracy required.",
-      parameters: ["rapgod.txt", null, null],
+      parameters: { script: "rapgod.txt" },
       requirements: { wpm: { min: 85 }, acc: { min: 90 }, afk: { max: 5 } },
     },
   },
@@ -490,7 +564,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       autoRole: true,
       type: "script",
       message: "Minimum 60wpm and 100% accuracy required.",
-      parameters: ["navyseal.txt", null, null],
+      parameters: { script: "navyseal.txt" },
       requirements: { wpm: { min: 60 }, acc: { exact: 100 }, afk: { max: 5 } },
     },
   },
@@ -501,7 +575,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description:
       "Type out the entire Ratatouille script while watching the movie simultaneously.",
-    settings: { type: "script", parameters: ["littlechef.txt", null, null] },
+    settings: { type: "script", parameters: { script: "littlechef.txt" } },
   },
   crosstalk: {
     display: "(CROSSTALK)",
@@ -510,7 +584,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description:
       "Type out the entire transcript of the first 2020 Presidential Debate.",
-    settings: { type: "script", parameters: ["crosstalk.txt", null, null] },
+    settings: { type: "script", parameters: { script: "crosstalk.txt" } },
   },
   bees: {
     display: "Bees!!!",
@@ -519,7 +593,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description:
       "Type out the entire Bee Movie script while watching the movie simultaneously.",
-    settings: { type: "script", parameters: ["bees.txt", null, null] },
+    settings: { type: "script", parameters: { script: "bees.txt" } },
   },
   getOffMySwamp: {
     display: "Get Off My Swamp",
@@ -528,7 +602,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description:
       "Type out the entire Shrek script with punctuation while watching the movie simultaneously.",
-    settings: { type: "script", parameters: ["shrek.txt", null, null] },
+    settings: { type: "script", parameters: { script: "shrek.txt" } },
   },
   fiftyShadesOfHell: {
     display: "50 Shades of Hell",
@@ -536,7 +610,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "751802155119280128",
     category: "script",
     description: "Type out your favourite chapter from 50 Shades of Gray.",
-    settings: { type: "script", parameters: [] },
+    settings: { type: "other" },
   },
   lookAtMeIAmTheDeveloperNow: {
     display: "Look at me. I am the developer now.",
@@ -548,7 +622,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "script",
-      parameters: ["sourcecode.txt", null, null],
+      parameters: { script: "sourcecode.txt" },
     },
   },
   beLikeWater: {
@@ -561,7 +635,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       type: "funbox",
       message: "Remember: You need to achieve at least 50 wpm in each layout.",
-      parameters: [["layoutfluid"], "time", 60],
+      parameters: { funbox: "layoutfluid", mode: "time", mode2: 60 },
     },
   },
   rollercoaster: {
@@ -570,11 +644,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "736032495526740001",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the round round baby mode.",
+      "Complete at least a one-hour test using the round round baby mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["round_round_baby"], "time", 3600],
+      parameters: { funbox: "round_round_baby", mode: "time", mode2: 3600 },
       requirements: {
         time: { min: 3600 },
         funbox: { exact: ["round_round_baby"] },
@@ -586,11 +660,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "737385182998429757",
     category: "funbox",
-    description: "Complete at least an one-hour test using the mirror mode.",
+    description: "Complete at least a one-hour test using the mirror mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["mirror"], "time", 3600],
+      parameters: { funbox: "mirror", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["mirror"] } },
     },
   },
@@ -599,11 +673,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "739306439574683710",
     category: "funbox",
-    description: "Complete at least an one-hour test using choo choomode.",
+    description: "Complete at least a one-hour test using choo choo mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["choo_choo"], "time", 3600],
+      parameters: { funbox: "choo_choo", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["choo_choo"] } },
     },
   },
@@ -616,7 +690,12 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Achieve 100+ WPM with 100% accuracy on a 25-word test using the memory funbox.",
     settings: {
       type: "funbox",
-      parameters: [["memory"], "words", 25, "master"],
+      parameters: {
+        funbox: "memory",
+        mode: "words",
+        mode2: 25,
+        difficulty: "master",
+      },
       requirements: { config: { tapeMode: "off" } },
     },
   },
@@ -626,11 +705,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "740730587429601291",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the earthquake funbox mode.",
+      "Complete at least a one-hour test using the earthquake funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["earthquake"], "time", 3600],
+      parameters: { funbox: "earthquake", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["earthquake"] } },
     },
   },
@@ -640,11 +719,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "742128871825997914",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the simon says funbox mode.",
+      "Complete at least a one-hour test using the simon says funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["simon_says"], "time", 3600],
+      parameters: { funbox: "simon_says", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["simon_says"] } },
     },
   },
@@ -654,11 +733,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "743962178821816391",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the 58008 funbox mode.",
+      "Complete at least a one-hour test using the 58008 funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["58008"], "time", 3600],
+      parameters: { funbox: "58008", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["58008"] } },
     },
   },
@@ -672,7 +751,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["read_ahead"], "time", 60],
+      parameters: { funbox: "read_ahead", mode: "time", mode2: 60 },
       requirements: {
         wpm: { min: 100 },
         time: { min: 60 },
@@ -691,7 +770,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["read_ahead_hard"], "time", 60],
+      parameters: { funbox: "read_ahead_hard", mode: "time", mode2: 60 },
       requirements: {
         wpm: { min: 100 },
         time: { min: 60 },
@@ -706,11 +785,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "744209241396740176",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the gibberish funbox mode.",
+      "Complete at least a one-hour test using the gibberish funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["gibberish"], "time", 3600],
+      parameters: { funbox: "gibberish", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["gibberish"] } },
     },
   },
@@ -720,11 +799,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "744209452714033162",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the specials funbox mode.",
+      "Complete at least a one-hour test using the specials funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["specials"], "time", 3600],
+      parameters: { funbox: "specials", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["specials"] } },
     },
   },
@@ -733,12 +812,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "744318102766092362",
     category: "funbox",
-    description:
-      "Complete at least an one-hour test using the tts funbox mode.",
+    description: "Complete at least a one-hour test using the tts funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["tts"], "time", 3600],
+      parameters: { funbox: "tts", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["tts"] } },
     },
   },
@@ -748,11 +826,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "746142791326760980",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the ascii funbox mode.",
+      "Complete at least a one-hour test using the ascii funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["ascii"], "time", 3600],
+      parameters: { funbox: "ascii", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["ascii"] } },
     },
   },
@@ -762,11 +840,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "760999194525171724",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the randomcase funbox mode.",
+      "Complete at least a one-hour test using the randomcase funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["sPoNgEcAsE"], "time", 3600],
+      parameters: { funbox: "sPoNgEcAsE", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["sPoNgEcAsE"] } },
     },
   },
@@ -776,11 +854,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "760930262740631633",
     category: "funbox",
     description:
-      "Complete at least an one-hour test using the nausea funbox mode.",
+      "Complete at least a one-hour test using the nausea funbox mode.",
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: [["nausea"], "time", 3600],
+      parameters: { funbox: "nausea", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["nausea"] } },
     },
   },
@@ -789,8 +867,8 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "761794585109200906",
     category: "other",
-    description: "Complete an one-hour test using only your thumbs.",
-    settings: { type: "customTime", parameters: [3600] },
+    description: "Complete a one-hour test using only your thumbs.",
+    settings: { type: "customTime", parameters: { time: 3600 } },
   },
   mouseWarrior: {
     display: "Mouse warrior",
@@ -798,16 +876,16 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "744580294442614790",
     category: "other",
     description:
-      "Complete an one-hour test using only the on-screen keyboard. Funbox modes are not allowed.",
-    settings: { type: "customTime", parameters: [3600] },
+      "Complete a one-hour test using only the on-screen keyboard. Funbox modes are not allowed.",
+    settings: { type: "customTime", parameters: { time: 3600 } },
   },
   mobileWarrior: {
     display: "Mobile warrior",
     isHidden: true,
     discordRoleId: "744723801526370407",
     category: "other",
-    description: "Complete an one-hour test on mobile.",
-    settings: { type: "customTime", parameters: [3600] },
+    description: "Complete a one-hour test on mobile.",
+    settings: { type: "customTime", parameters: { time: 3600 } },
   },
   upsideDown: {
     display: "uʍop ǝpᴉsdn",
@@ -815,8 +893,8 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "782725716114014237",
     category: "other",
     description:
-      "Achieve at least 60 WPM on an one-minute test with your keyboard upside down.",
-    settings: { type: "customTime", parameters: [60] },
+      "Achieve at least 60 WPM on a one-minute test with your keyboard upside down.",
+    settings: { type: "customTime", parameters: { time: 60 } },
   },
   oneArmedBandit: {
     display: "One armed bandit",
@@ -824,8 +902,8 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "765919192557682708",
     category: "other",
     description:
-      "Complete an one-hour or 10k words test (whichever comes sooner, using an external timer) using an one-handed words list (either left or right) for your layout.",
-    settings: { type: "customWords", parameters: [10000] },
+      "Complete a one-hour or 10k words test (whichever comes sooner, using an external timer) using a one-handed words list (either left or right) for your layout.",
+    settings: { type: "customWords", parameters: { words: 10000 } },
   },
   englishMaster: {
     display: "English master",
@@ -833,11 +911,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "751166528824672396",
     category: "other",
     description:
-      "Complete an one-hour test using English 10k language with punctuation and numbers enabled.",
+      "Complete a one-hour test using English 10k language with punctuation and numbers enabled.",
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: [3600],
+      parameters: { time: 3600 },
       requirements: {
         time: { min: 3600 },
         config: { language: "english_10k", punctuation: true, numbers: true },
@@ -849,8 +927,8 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "751953592860147822",
     category: "other",
-    description: "Complete an one-hour test using your feet. Don't ask me why.",
-    settings: { type: "customTime", parameters: [3600] },
+    description: "Complete a one-hour test using your feet. Don't ask me why.",
+    settings: { type: "customTime", parameters: { time: 3600 } },
   },
   wingdings: {
     display: "Ten Words of Pain",
@@ -863,7 +941,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       type: "other",
       message:
         "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed. Minimum 60 WPM and 100% accuracy required.",
-      parameters: [],
       requirements: { acc: { exact: 100 } },
     },
   },
@@ -893,7 +970,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "728650773503934464",
     category: "champions",
-    description: "Achieve the highest WPM in an one-hour test.",
+    description: "Achieve the highest WPM in a one-hour test.",
   },
   fluidChampion: {
     display: "Fluid Champion",
@@ -979,7 +1056,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "878715678830510111",
     category: "speed",
-    description: "Achieve 200+ WPM on an one-hour test.",
+    description: "Achieve 200+ WPM on a one-hour test.",
   },
   flawless: {
     display: "Flawless",
@@ -1017,7 +1094,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     isHidden: true,
     discordRoleId: "910078947302191114",
     category: "other",
-    description: "Complete an one-hour test using tape mode and letter mode.",
+    description: "Complete a one-hour test using tape mode and letter mode.",
   },
   stickman: {
     display: "stickman",
@@ -1025,7 +1102,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "788107449151651890",
     category: "other",
     description:
-      "Complete an one-hour test using chopsticks/pencils/pens (you get the idea) with both hands.",
+      "Complete a one-hour test using chopsticks/pencils/pens (you get the idea) with both hands.",
   },
   waveDynamics: {
     display: "Wave Dynamics",
@@ -1041,7 +1118,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "863193901153779713",
     category: "other",
     description:
-      "Complete an one-hour test in a Tribe lobby with at least 10 players.",
+      "Complete a one-hour test in a Tribe lobby with at least 10 players.",
   },
   apesTogetherStronger: {
     display: "Apes Together Stronger",

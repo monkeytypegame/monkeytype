@@ -13,10 +13,7 @@ import * as TestState from "../test/test-state";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
-import { Difficulty, FunboxName, ThemeName } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
-import { Mode } from "@monkeytype/schemas/shared";
-import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
@@ -220,7 +217,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       return false;
     }
     if (settings.type === "customTime") {
-      setConfig("time", settings.parameters[0] as number, {
+      setConfig("time", settings.parameters.time, {
         nosave: true,
       });
       setConfig("mode", "time", {
@@ -241,7 +238,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         });
       }
     } else if (settings.type === "customWords") {
-      setConfig("words", settings.parameters[0] as number, {
+      setConfig("words", settings.parameters.words, {
         nosave: true,
       });
       setConfig("mode", "words", {
@@ -251,11 +248,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         nosave: true,
       });
     } else if (settings.type === "customText") {
-      CustomText.setText((settings.parameters[0] as string).split(" "));
-      CustomText.setMode(settings.parameters[1] as CustomTextMode);
-      CustomText.setLimitValue(settings.parameters[2] as number);
-      CustomText.setLimitMode(settings.parameters[3] as CustomTextLimitMode);
-      CustomText.setPipeDelimiter(settings.parameters[4] as boolean);
+      CustomText.setText(settings.parameters.text.split(" "));
+      CustomText.setMode(settings.parameters.mode);
+      CustomText.setLimitValue(settings.parameters.limit);
+      CustomText.setLimitMode(settings.parameters.limitMode);
+      CustomText.setPipeDelimiter(settings.parameters.isPipeDelimiter);
       setConfig("mode", "custom", {
         nosave: true,
       });
@@ -264,9 +261,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       });
     } else if (settings.type === "script") {
       showLoaderBar();
-      const response = await fetch(
-        `/challenges/${settings.parameters[0] as string}`,
-      );
+      const response = await fetch(`/challenges/${settings.parameters.script}`);
       hideLoaderBar();
       if (response.status !== 200) {
         throw new Error(`${response.status} ${response.statusText}`);
@@ -285,11 +280,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-      if (settings.parameters[1] !== null) {
-        setConfig("theme", settings.parameters[1] as ThemeName);
+      if (settings.parameters.theme !== undefined) {
+        setConfig("theme", settings.parameters.theme);
       }
-      if (settings.parameters[2] !== null) {
-        void Funbox.activate(settings.parameters[2] as FunboxName[]);
+      if (settings.parameters.funboxes !== undefined) {
+        void Funbox.activate(settings.parameters.funboxes);
       }
     } else if (settings.type === "accuracy") {
       setConfig("time", 0, {
@@ -305,26 +300,26 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       setConfig("difficulty", "normal", {
         nosave: true,
       });
-      if (settings.parameters[1] === "words") {
-        setConfig("words", settings.parameters[2] as number, {
+      if (settings.parameters.mode === "words") {
+        setConfig("words", settings.parameters.mode2, {
           nosave: true,
         });
-      } else if (settings.parameters[1] === "time") {
-        setConfig("time", settings.parameters[2] as number, {
+      } else if (settings.parameters.mode === "time") {
+        setConfig("time", settings.parameters.mode2, {
           nosave: true,
         });
       }
-      setConfig("mode", settings.parameters[1] as Mode, {
+      setConfig("mode", settings.parameters.mode, {
         nosave: true,
       });
-      if (settings.parameters[3] !== undefined) {
-        setConfig("difficulty", settings.parameters[3] as Difficulty, {
+      if (settings.parameters.difficulty !== undefined) {
+        setConfig("difficulty", settings.parameters.difficulty, {
           nosave: true,
         });
       }
 
       if (
-        !setConfig("funbox", settings.parameters[0] as FunboxName[], {
+        !setConfig("funbox", [settings.parameters.funbox], {
           nosave: true,
         })
       ) {
