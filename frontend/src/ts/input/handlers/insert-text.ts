@@ -11,13 +11,14 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import {
+  areCharactersVisuallyEqual,
+  isSpace,
+  removeLanguageSize,
+} from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import {
-  findSingleActiveFunboxWithFunction,
-  isFunboxActiveWithProperty,
-} from "../../test/funbox/list";
+import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -42,6 +43,10 @@ const charOverrides = new Map<string, string>([
   ["…", "..."],
   // ["œ", "oe"],
   // ["æ", "ae"],
+]);
+
+const languageCharOverrides = new Map<string, [string, string][]>([
+  ["dutch", [["ĳ", "ij"]]],
 ]);
 
 type OnInsertTextParams = {
@@ -95,6 +100,29 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  const languageOverrides = languageCharOverrides.get(
+    removeLanguageSize(Config.language),
+  );
+  if (languageOverrides !== undefined) {
+    for (const [targetChar, overrideChar] of languageOverrides) {
+      if (
+        options.data === targetChar &&
+        TestWords.words.getCurrentText()[getCurrentInput().length] !==
+          options.data
+      ) {
+        // replace the data with the override
+        setInputElementValue(
+          inputValue.slice(0, -options.data.length) + overrideChar,
+        );
+        await onInsertText({
+          ...options,
+          data: overrideChar,
+        });
+        return;
+      }
+    }
+  }
+
   // input and target word
   const testInput = getCurrentInput();
   const currentWord = TestWords.words.getCurrentText();
@@ -129,20 +157,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
   // is char correct
-  const funboxCorrect = findSingleActiveFunboxWithFunction(
-    "isCharCorrect",
-  )?.functions.isCharCorrect(
+  const charCorrect = isCharCorrect({
     data,
-    currentWord[(testInput + data).length - 1] ?? "",
-  );
-  const charCorrect =
-    funboxCorrect ??
-    isCharCorrect({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-      correctShiftUsed,
-    });
+    inputValue: testInput,
+    targetWord: currentWord,
+    correctShiftUsed,
+  });
 
   // word navigation check
   const noSpaceForce =
@@ -155,13 +175,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // when moving to the next word, correctness is word-level (a correct word-completing
   // space has charCorrect === false, so charCorrect can't be used below)
   const correct = goingToNextWord
-    ? (funboxCorrect ??
-      isWordCorrect({
+    ? isWordCorrect({
         data,
         inputValue: testInput,
         targetWord: currentWord,
         correctShiftUsed,
-      }))
+      })
     : charCorrect;
 
   // handing cases where last char needs to be removed
