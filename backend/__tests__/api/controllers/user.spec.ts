@@ -37,7 +37,6 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
 import Test from "supertest/lib/test";
-import { getChallenge } from "@monkeytype/challenges";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -1553,7 +1552,7 @@ describe("user controller test", () => {
     it("should get oauth link", async () => {
       //WHEN
       const { body } = await mockApp
-        .get("/users/discord/oauth?includeRoles=true")
+        .get("/users/discord/oauth")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -1562,9 +1561,7 @@ describe("user controller test", () => {
         message: "Discord oauth link generated",
         data: { url },
       });
-      expect(getOauthLinkMock).toHaveBeenCalledWith(uid, {
-        includeRoles: true,
-      });
+      expect(getOauthLinkMock).toHaveBeenCalledWith(uid);
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
@@ -1590,7 +1587,6 @@ describe("user controller test", () => {
       "iStateValidForUser",
     );
     const getDiscordUserMock = vi.spyOn(DiscordUtils, "getDiscordUser");
-    const getDiscordRoleIdsMock = vi.spyOn(DiscordUtils, "getDiscordRoleIds");
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const userLinkDiscordMock = vi.spyOn(UserDal, "linkDiscord");
     const georgeLinkDiscordMock = vi.spyOn(GeorgeQueue, "linkDiscord");
@@ -1603,9 +1599,6 @@ describe("user controller test", () => {
         id: "discordUserId",
         avatar: "discordUserAvatar",
       });
-      getDiscordRoleIdsMock.mockResolvedValue([
-        getChallenge("100hours").discordRoleId,
-      ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);
       userLinkDiscordMock.mockResolvedValue();
@@ -1617,7 +1610,6 @@ describe("user controller test", () => {
         isStateValidForUserMock,
         isDiscordIdAvailableMock,
         getDiscordUserMock,
-        getDiscordRoleIdsMock,
         blocklistContainsMock,
         userLinkDiscordMock,
         georgeLinkDiscordMock,
@@ -1637,7 +1629,6 @@ describe("user controller test", () => {
           tokenType: "tokenType",
           accessToken: "accessToken",
           state: "statestatestatestate",
-          scope: ["scopeOne", "scopeTwo"],
         })
         .expect(200);
 
@@ -1662,11 +1653,6 @@ describe("user controller test", () => {
         "tokenType",
         "accessToken",
       );
-      expect(getDiscordRoleIdsMock).toHaveBeenCalledWith(
-        "tokenType",
-        "accessToken",
-        ["scopeOne", "scopeTwo"],
-      );
       expect(isDiscordIdAvailableMock).toHaveBeenCalledWith("discordUserId");
       expect(blocklistContainsMock).toHaveBeenCalledWith({
         discordId: "discordUserId",
@@ -1675,9 +1661,6 @@ describe("user controller test", () => {
         uid,
         "discordUserId",
         "discordUserAvatar",
-        {
-          "100hours": {},
-        },
       );
       expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
         "discordUserId",
@@ -2979,9 +2962,6 @@ describe("user controller test", () => {
       testActivity: {
         "2024": fillYearWithDay(94),
       },
-      challenges: {
-        "100hours": {},
-      },
     };
 
     beforeEach(async () => {
@@ -3053,15 +3033,12 @@ describe("user controller test", () => {
       expect(getUserByNameMock).toHaveBeenCalledWith("bob", "get user profile");
       expect(getUserMock).not.toHaveBeenCalled();
     });
-    it("should get testActivity/challenges if enabled", async () => {
+    it("should get testActivity if enabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: {
-          showActivityOnPublicProfile: true,
-          showChallengesOnPublicProfile: true,
-        },
+        profileDetails: { showActivityOnPublicProfile: true },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3077,18 +3054,13 @@ describe("user controller test", () => {
           testsByDays: expect.arrayContaining([]),
         }),
       );
-
-      expect(body.data.challenges).toEqual({ "100hours": {} });
     });
     it("should not get testActivity if disabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: {
-          showActivityOnPublicProfile: false,
-          showChallengesOnPublicProfile: false,
-        },
+        profileDetails: { showActivityOnPublicProfile: false },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3099,7 +3071,6 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.data.testActivity).toBeUndefined();
-      expect(body.data.challenges).toBeUndefined();
     });
 
     it("should get base profile for banned user", async () => {
@@ -3217,7 +3188,6 @@ describe("user controller test", () => {
           website: "https://monkeytype.com",
         },
         showActivityOnPublicProfile: false,
-        showChallengesOnPublicProfile: false,
       };
 
       //WHEN
@@ -3246,7 +3216,6 @@ describe("user controller test", () => {
             website: "https://monkeytype.com",
           },
           showActivityOnPublicProfile: false,
-          showChallengesOnPublicProfile: false,
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],
