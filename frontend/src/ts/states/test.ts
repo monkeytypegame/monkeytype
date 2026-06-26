@@ -16,8 +16,8 @@ import { getData as getCustomTextData } from "../test/custom-text";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
-import { sleep } from "../utils/misc";
 import { canQuickRestart } from "../utils/quick-restart";
+import { promiseWithResolvers } from "../utils/misc";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage, getCustomTextIndicator } from "./core";
 
@@ -121,22 +121,40 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-async function _getKeymapLayout(): Promise<LayoutObject> {
-  while (
-    keymapLayoutObject.state !== "ready" &&
-    keymapLayoutObject.state !== "errored"
-  ) {
-    await sleep(10);
-  }
+let layoutPromise = promiseWithResolvers();
+
+async function waitForLayoutReady(): Promise<void> {
+  if (keymapLayoutObject.state === "ready") return;
+
   if (keymapLayoutObject.state === "errored") {
     throw new Error("Failed to load keymap layout");
   }
-  return keymapLayoutObject();
+
+  await layoutPromise.promise;
 }
+
+createEffect(() => {
+  const state = keymapLayoutObject.state;
+  if (state === "ready") {
+    layoutPromise.resolve();
+    layoutPromise.reset();
+  }
+  if (state === "errored") {
+    layoutPromise.reject(new Error("Failed to load keymap layout"));
+    layoutPromise.reset();
+  }
+});
 
 /**
  * Used for non reactive access. Do not use in Solid components.
  */
 export const __nonReactive = {
-  getKeymapLayout: _getKeymapLayout,
+  getKeymapLayout: async (): Promise<LayoutObject> => {
+    await waitForLayoutReady();
+    const result = keymapLayoutObject();
+    if (result === undefined) {
+      throw new Error("Failed to load keymap layout");
+    }
+    return result;
+  },
 };

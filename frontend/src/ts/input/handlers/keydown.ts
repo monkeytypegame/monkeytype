@@ -88,7 +88,6 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     }
 
     const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
-
     setCorrectShiftUsed(
       keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode),
     );

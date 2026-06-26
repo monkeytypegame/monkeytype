@@ -14,6 +14,7 @@ export function isUsingOppositeShift(keycode: Keycode): boolean {
   }
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(keycode);
+
   if (!leftSide && !rightSide) {
     return true;
   }

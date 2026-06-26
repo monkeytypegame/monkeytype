@@ -79,8 +79,9 @@ function convert(options: {
   );
 }
 
+const emptyLegends = ["", "", "", ""];
 function buildLegends(legends: string | KeyLegends | undefined): KeyLegends {
-  if (legends === undefined) return ["", "", "", ""];
+  if (legends === undefined) return emptyLegends;
   if (typeof legends === "string") {
     return new Array<string>(4).fill(legends);
   }

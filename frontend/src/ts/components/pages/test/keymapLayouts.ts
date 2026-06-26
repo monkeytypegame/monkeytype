@@ -288,27 +288,6 @@ const splitMatrix: KeymapLayout = [
   splitMatrixBottomRow,
 ];
 
-function buildRow(
-  row: keyof LayoutObject["keys"],
-  keys: (Omit<LayoutKey, "legends"> & { layoutPosition?: { col?: number } })[],
-): LayoutKey[] {
-  return keys.map((key, col) => {
-    const lp = key.layoutPosition;
-    return {
-      ...key,
-      ...(lp
-        ? {
-            layoutPosition: {
-              ...lp,
-              ...(lp.row !== undefined ? {} : { row }),
-              ...(lp.col !== undefined ? {} : { col }),
-            },
-          }
-        : {}),
-    } as LayoutKey;
-  });
-}
-
 const aliceBottomRow: LayoutKey[] = [
   { legend: Ctrl, width: 1.5, isExtraKey: true, x: 1 },
   { legend: Alt, width: 1.5, isExtraKey: true, rotation: 10, x: 1, y: 0.25 },
@@ -416,6 +395,27 @@ export const keymapLayouts: Partial<
 
   alice: { iso: alice, ansi: alice },
 };
+
+function buildRow(
+  row: keyof LayoutObject["keys"],
+  keys: (Omit<LayoutKey, "legends"> & { layoutPosition?: { col?: number } })[],
+): LayoutKey[] {
+  return keys.map((key, col) => {
+    const lp = key.layoutPosition;
+    return {
+      ...key,
+      ...(lp
+        ? {
+            layoutPosition: {
+              ...lp,
+              ...(lp.row !== undefined ? {} : { row }),
+              ...(lp.col !== undefined ? {} : { col }),
+            },
+          }
+        : {}),
+    } as LayoutKey;
+  });
+}
 
 function insertGap(gapCol: number, row: LayoutKey[] | undefined): LayoutKey[] {
   return (row as LayoutKey[]).map((def, col) => ({
