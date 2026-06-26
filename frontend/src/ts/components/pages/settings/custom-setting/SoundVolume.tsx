@@ -7,8 +7,8 @@ import {
   playClick,
   previewClick,
 } from "../../../../controllers/sound-controller";
+import { Setting } from "../../../common/Setting";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
 
 export function SoundVolume(): JSXElement {
   return (
