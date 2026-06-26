@@ -56,9 +56,13 @@ export async function goToNextWord({
     ret.lastBurst = burst;
   }
 
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
+  PaceCaret.handleSpace(
+    correctInsert,
+    TestWords.words.getCurrent()?.textWithCommit ?? "",
+  );
 
-  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
+  const nextWord = TestWords.words.get(TestState.activeWordIndex + 1)?.text;
+  if (nextWord !== undefined) Funbox.toggleScript(nextWord);
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -95,7 +99,8 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
 
   TestState.decreaseActiveWordIndex();
 
-  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
+  const word = TestWords.words.get(TestState.activeWordIndex)?.text;
+  if (word !== undefined) Funbox.toggleScript(word);
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 

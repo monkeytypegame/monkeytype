@@ -84,7 +84,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrentText()[getCurrentInput().length] !== options.data
+    TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length] !==
+      options.data
   ) {
     // replace the data with the override
     setInputElementValue(
@@ -104,8 +105,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     for (const [targetChar, overrideChar] of languageOverrides) {
       if (
         options.data === targetChar &&
-        TestWords.words.getCurrentText()[getCurrentInput().length] !==
-          options.data
+        TestWords.words.getCurrent()?.textWithCommit[
+          getCurrentInput().length
+        ] !== options.data
       ) {
         // replace the data with the override
         setInputElementValue(
@@ -122,7 +124,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = getCurrentInput();
-  const currentWord = TestWords.words.getCurrentText();
+  const currentWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
@@ -161,7 +163,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrentText().length;
+    (testInput + data).length ===
+      TestWords.words.getCurrent()?.textWithCommit.length;
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
@@ -263,7 +266,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
-  const nextWord = TestWords.words.getCurrentText();
+  const nextWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
   const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
 

@@ -55,9 +55,11 @@ export function onBeforeInsertText(data: string): boolean {
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
+    Config.mode === "zen"
+      ? 30
+      : (TestWords.words.getCurrent()?.textWithCommit ?? "").length + 20;
   const overLimit = inputValue.length >= inputLimit;
-  const targetWord = TestWords.words.getCurrentText();
+  const targetWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
   const isCommit = isCommitCharacter({
     data,
     inputValue,

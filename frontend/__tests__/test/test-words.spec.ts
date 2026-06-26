@@ -12,20 +12,26 @@ describe("test-words", () => {
   });
 
   describe("push", () => {
-    // separators are part of the word text (added by the generator); push stores
-    // words verbatim and does not insert or strip separators
-    it("appends words verbatim", () => {
+    // separators are added by the generator as a trailing space/newline; push
+    // splits that into the commit char while keeping the bare word as text
+    it("splits the trailing separator into the commit char", () => {
       words.push("the ", 0);
       words.push("cat ", 0);
       words.push("sat", 0);
-      expect(words.list).toEqual(["the ", "cat ", "sat"]);
+      expect(words.list.map((w) => w.text)).toEqual(["the", "cat", "sat"]);
+      expect(words.list.map((w) => w.commit)).toEqual([" ", " ", ""]);
+      expect(words.list.map((w) => w.textWithCommit)).toEqual([
+        "the ",
+        "cat ",
+        "sat",
+      ]);
     });
 
     it("tracks length and section indexes", () => {
       words.push("a ", 3);
       words.push("b", 5);
       expect(words.length).toBe(2);
-      expect(words.sectionIndexList).toEqual([3, 5]);
+      expect(words.list.map((w) => w.sectionIndex)).toEqual([3, 5]);
     });
   });
 
@@ -34,20 +40,20 @@ describe("test-words", () => {
       words.push("the ", 0);
       words.push("end ", 0);
       words.removeCommitCharacterFromLastWord();
-      expect(words.list).toEqual(["the ", "end"]);
+      expect(words.list.map((w) => w.textWithCommit)).toEqual(["the ", "end"]);
     });
 
     it("strips a trailing newline from the last word", () => {
       words.push("line\n", 0);
       words.removeCommitCharacterFromLastWord();
-      expect(words.list).toEqual(["line"]);
+      expect(words.list.map((w) => w.textWithCommit)).toEqual(["line"]);
     });
 
     it("leaves a bare last word unchanged", () => {
       words.push("the ", 0);
       words.push("end", 0);
       words.removeCommitCharacterFromLastWord();
-      expect(words.list).toEqual(["the ", "end"]);
+      expect(words.list.map((w) => w.textWithCommit)).toEqual(["the ", "end"]);
     });
 
     it("does nothing on an empty list", () => {

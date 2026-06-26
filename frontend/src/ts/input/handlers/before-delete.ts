@@ -50,9 +50,10 @@ export function onBeforeDelete(event: InputEvent): void {
   }
 
   const confidence = Config.confidenceMode;
+  const previousWord = TestWords.words.get(TestState.activeWordIndex - 1);
   const previousWordCorrect =
     getInputForWord(TestState.activeWordIndex - 1) ===
-    (TestWords.words.getText(TestState.activeWordIndex - 1) ?? "");
+    previousWord?.textWithCommit;
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

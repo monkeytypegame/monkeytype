@@ -17,16 +17,25 @@ vi.mock("../../../src/ts/config/store", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {
-  const list: string[] = [];
+  type CommitChar = " " | "\n" | "";
+  type Word = { text: string; textWithCommit: string; commit: CommitChar };
+  const list: Word[] = [];
   return {
     words: {
       list,
-      getText(i?: number) {
-        if (i === undefined) return list;
-        return list[i];
+      push(word: string) {
+        let commit: CommitChar = "";
+        if (word.endsWith(" ")) {
+          commit = " ";
+          word = word.slice(0, -1);
+        } else if (word.endsWith("\n")) {
+          commit = "\n";
+          word = word.slice(0, -1);
+        }
+        list.push({ text: word, textWithCommit: word + commit, commit });
       },
-      getCurrentText() {
-        return list[list.length - 1] ?? "";
+      reset() {
+        list.length = 0;
       },
     },
   };
@@ -78,6 +87,10 @@ import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
+
+function pushWords(...words: string[]): void {
+  words.forEach((word, i) => TestWords.push(word, i));
+}
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
   return { code };
@@ -170,7 +183,7 @@ describe("stats.ts", () => {
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
-    TestWords.list.length = 0;
+    TestWords.reset();
     inputPerWord.clear();
   });
 
@@ -695,7 +708,7 @@ describe("stats.ts", () => {
       // sentinel + "=" together, which monkeytype interprets as crossing the
       // word boundary → goToPreviousWord. Word 1 is abandoned with leftover
       // "=" residue in its event stream; its final state should still be "".
-      TestWords.list.push("hello", "leave");
+      pushWords("hello", "leave");
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1015,7 +1028,7 @@ describe("stats.ts", () => {
 
     it("returns the stored word as-is for a non-last word", () => {
       // storage keeps the separator as a trailing space
-      TestWords.list.push("hello ");
+      pushWords("hello ");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
       ).toBe("hello ");
@@ -1023,21 +1036,21 @@ describe("stats.ts", () => {
 
     it("strips the trailing separator for the last word", () => {
       // the last reached word has no committed separator (the test ended)
-      TestWords.list.push("hello ");
+      pushWords("hello ");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
       ).toBe("hello");
     });
 
     it("returns a newline-terminated word as-is", () => {
-      TestWords.list.push("hello\n");
+      pushWords("hello\n");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
       ).toBe("hello\n");
     });
 
     it("returns a bare word as-is (nospace storage)", () => {
-      TestWords.list.push("hello");
+      pushWords("hello");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
       ).toBe("hello");
@@ -1052,7 +1065,7 @@ describe("stats.ts", () => {
 
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
-      TestWords.list.push("hello");
+      pushWords("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1073,7 +1086,7 @@ describe("stats.ts", () => {
     });
 
     it("counts incorrect chars", () => {
-      TestWords.list.push("ab");
+      pushWords("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1094,7 +1107,7 @@ describe("stats.ts", () => {
     });
 
     it("counts extra chars", () => {
-      TestWords.list.push("ab");
+      pushWords("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1120,7 +1133,7 @@ describe("stats.ts", () => {
 
     it("counts missed chars for completed non-last words", () => {
       // stored words carry the separator as a trailing space (last word is bare)
-      TestWords.list.push("hello ", "world");
+      pushWords("hello ", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1167,7 +1180,7 @@ describe("stats.ts", () => {
       // Japanese IME commits words with the ideographic space U+3000, while the
       // target word separator is a regular space — normalize so it still counts.
       // Stored words carry the separator as a trailing space (last word is bare).
-      TestWords.list.push("しり ", "かこ");
+      pushWords("しり ", "かこ");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1207,7 +1220,7 @@ describe("stats.ts", () => {
 
   describe("getWpmHistory", () => {
     it("returns wpm at each timer boundary", () => {
-      TestWords.list.push("hello");
+      pushWords("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1229,7 +1242,7 @@ describe("stats.ts", () => {
 
     it("returns cumulative wpm across boundaries", () => {
       // stored words carry the separator as a trailing space (last word is bare)
-      TestWords.list.push("ab ", "cd");
+      pushWords("ab ", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1274,7 +1287,7 @@ describe("stats.ts", () => {
 
     it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
       (Config as { funbox: string[] }).funbox = ["nospace"];
-      TestWords.list.push("ab", "cd");
+      pushWords("ab", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1308,7 +1321,7 @@ describe("stats.ts", () => {
     });
 
     it("counts multiline word as correct when target ends in newline", () => {
-      TestWords.list.push("hello\n", "world");
+      pushWords("hello\n", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));

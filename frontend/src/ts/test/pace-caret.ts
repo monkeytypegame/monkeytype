@@ -174,13 +174,6 @@ export function reset(): void {
   startTimestamp = 0;
 }
 
-// visible word length (excludes the stored trailing separator space); throws
-// when the word index is out of range, which signals the pace caret is out of words
-function wordVisibleLength(wordIndex: number): number {
-  return removeTrailingSeparatorSpace(TestWords.words.getText(wordIndex))
-    .length;
-}
-
 function incrementLetterIndex(): void {
   if (settings === null) return;
 
@@ -188,7 +181,8 @@ function incrementLetterIndex(): void {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      wordVisibleLength(settings.currentWordIndex) + 1
+      // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+      TestWords.words.get(settings.currentWordIndex)!.display.length + 1
     ) {
       //go to the next word
       settings.currentLetterIndex = 0;
@@ -201,7 +195,9 @@ function incrementLetterIndex(): void {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              wordVisibleLength(settings.currentWordIndex - 1) - 1;
+              // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+              TestWords.words.get(settings.currentWordIndex - 1)!.display
+                .length - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -211,7 +207,8 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            wordVisibleLength(settings.currentWordIndex)
+            // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+            TestWords.words.get(settings.currentWordIndex)!.display.length
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
