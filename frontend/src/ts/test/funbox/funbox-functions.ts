@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import { getCurrentInput, getInputForWord } from "../test-input";
+import { getCurrentInput, getInputForWord } from "../events/data";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -42,7 +42,6 @@ export type FunboxFunctions = {
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
   handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
@@ -53,7 +52,7 @@ export type FunboxFunctions = {
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const currentInput = getCurrentInput();
-  const inputCurrentChar = (currentInput ?? "").slice(-1);
+  const inputCurrentChar = currentInput.slice(-1);
   const wordCurrentChar = TestWords.words
     .getCurrentText()
     .slice(currentInput.length - 1, currentInput.length);
@@ -260,42 +259,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === "a" ||
-          char === "ArrowLeft" ||
-          char === "j" ||
-          char === "←") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === "s" ||
-          char === "ArrowDown" ||
-          char === "k" ||
-          char === "↓") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === "d" ||
-          char === "ArrowRight" ||
-          char === "l" ||
-          char === "→") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
     },
     getWordHtml(char: string, letterTag?: boolean): string {
       let retval = "";
