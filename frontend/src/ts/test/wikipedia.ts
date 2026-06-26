@@ -101,7 +101,7 @@ export async function getSection(
           sectionText = sectionText.trim();
 
           // If this section is empty, fetch another one
-          if (!sectionText) {
+          if (sectionText === "") {
             res(getSection(language));
             return;
           }
