@@ -13,7 +13,7 @@ import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export function FontFamily(): JSXElement {
   const [hasLocalFont, { refetch }] = createResource(async () =>

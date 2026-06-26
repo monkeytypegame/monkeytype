@@ -41,7 +41,7 @@ import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
   const b1 = hexToHSL(a.bg);
