@@ -13,7 +13,7 @@ type Word = {
 const commitCharsToDisplay: CommitChar[] = ["\n"];
 
 class Words {
-  public list: Word[];
+  private list: Word[];
   public length: number;
 
   constructor() {
