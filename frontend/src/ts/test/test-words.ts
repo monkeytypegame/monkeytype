@@ -10,7 +10,7 @@ type Word = {
   sectionIndex: number;
 };
 
-const commitCharsToDisplay: CommitChar[] = ["\n"];
+const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
 
 class Words {
   private list: Word[];
@@ -37,8 +37,7 @@ class Words {
           text,
           textWithCommit: text + word.commit,
           display:
-            text +
-            (commitCharsToDisplay.includes(word.commit) ? word.commit : ""),
+            text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
           commit: word.commit,
           sectionIndex: word.sectionIndex,
         };
@@ -63,7 +62,7 @@ class Words {
       text: word,
       textWithCommit: word + commit,
       commit,
-      display: word + (commitCharsToDisplay.includes(commit) ? commit : ""),
+      display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
       sectionIndex,
     });
     this.length = this.list.length;
