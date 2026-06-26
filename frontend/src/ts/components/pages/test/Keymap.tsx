@@ -102,27 +102,31 @@ function KeyboardDefinitionRenderer(props: {
   flashState: Record<string, FlashEntry | undefined>;
 }) {
   return (
-    <For each={props.keyboardDef}>
-      {(keys, rowNum) => (
-        <Show when={rowNum() !== 0 || props.showFirstRow}>
-          <div class="flex h-8 flex-row">
-            <For each={keys}>
-              {(key) => {
-                const label = () => {
-                  const layer =
-                    rowNum() === 0 && isMacLike() && isCapsLockOn()
-                      ? props.layer - 1
-                      : props.layer;
-                  return key.legends[layer] ?? "";
-                };
-                const flashEntry = () => props.flashState[label()];
-                return <Key {...key} label={label()} flashEntry={flashEntry} />;
-              }}
-            </For>
-          </div>
-        </Show>
-      )}
-    </For>
+    <div class="w-fit">
+      <For each={props.keyboardDef}>
+        {(keys, rowNum) => (
+          <Show when={rowNum() !== 0 || props.showFirstRow}>
+            <div class="flex h-8 flex-row">
+              <For each={keys}>
+                {(key) => {
+                  const label = () => {
+                    const layer =
+                      rowNum() === 0 && isMacLike() && isCapsLockOn()
+                        ? props.layer - 1
+                        : props.layer;
+                    return key.legends[layer] ?? "";
+                  };
+                  const flashEntry = () => props.flashState[label()];
+                  return (
+                    <Key {...key} label={label()} flashEntry={flashEntry} />
+                  );
+                }}
+              </For>
+            </div>
+          </Show>
+        )}
+      </For>
+    </div>
   );
 }
 
