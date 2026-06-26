@@ -35,7 +35,7 @@ import { isFunboxActiveWithProperty } from "../funbox/active";
 
 export function buildEventLog(): EventLog {
   const context = {
-    targetWords: [...TestWords.words.list.map((w) => w.textWithCommit)],
+    targetWords: [...TestWords.words.get().map((w) => w.textWithCommit)],
     mode: Config.mode,
     mode2: getMode2(Config, getCurrentQuote()),
     koreanStatus: koreanStatus,

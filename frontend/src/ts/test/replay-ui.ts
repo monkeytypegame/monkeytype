@@ -41,7 +41,10 @@ const replayEl = qsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
-  return TestWords.words.list.slice().map((word) => word.text);
+  return TestWords.words
+    .get()
+    .slice()
+    .map((word) => word.text);
 }
 
 function deriveReplayActions(): Replay[] {
