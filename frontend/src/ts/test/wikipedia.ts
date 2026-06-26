@@ -100,6 +100,12 @@ export async function getSection(
           // Removing whitespace before and after text
           sectionText = sectionText.trim();
 
+          // If this section is empty, fetch another one
+          if (!sectionText) {
+            res(getSection(language));
+            return;
+          }
+
           const words = sectionText.split(" ");
 
           const section = new JSONData.Section(
