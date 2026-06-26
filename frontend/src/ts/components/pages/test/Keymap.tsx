@@ -196,11 +196,8 @@ function Key(
             <Show when={props.isHoming}>
               <div
                 class={cn(
-                  "bg-em-xs absolute bottom-1 left-auto h-px w-2 rounded",
+                  "bg-em-xs absolute bottom-0.75 left-auto h-0.5 w-2 rounded bg-bg",
                 )}
-                style={{
-                  "background-color": "var(--keycolor)",
-                }}
               ></div>
             </Show>
           </>
