@@ -1,15 +1,10 @@
 import { UserEmailSchema } from "@monkeytype/schemas/users";
-import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
 import { z } from "zod";
 
-import Ape from "../../../ape";
-import { getPasswordSchema, reauthenticate } from "../../../auth";
+import { addAuthProvider, getPasswordSchema } from "../../../auth";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { createErrorMessage } from "../../../utils/error";
 
-export function showAddPasswordAuthModal(options: {
-  callback: () => void;
-}): void {
+export function showAddPasswordAuthModal(): void {
   showSimpleModal({
     title: "Add password authentication",
     buttonText: "reauthenticate to add",
@@ -53,48 +48,11 @@ export function showAddPasswordAuthModal(options: {
         };
       }
 
-      const reauth = await reauthenticate({ password });
-      if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
-      }
-
-      try {
-        const credential = EmailAuthProvider.credential(email, password);
-        await linkWithCredential(reauth.user, credential);
-      } catch (e) {
-        const message = createErrorMessage(
-          e,
-          "Failed to add password authentication",
-        );
-        return {
-          status: "error",
-          message,
-        };
-      }
-
-      const response = await Ape.users.updateEmail({
-        body: {
-          newEmail: email,
-          previousEmail: reauth.user.email as string,
-        },
-      });
-      if (response.status !== 200) {
-        return {
-          status: "error",
-          message:
-            "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
-          notificationOptions: { response },
-        };
-      }
-
-      options.callback();
+      await addAuthProvider({ authMethod: "password", email, password });
 
       return {
         status: "success",
-        message: "Password authentication added",
+        showNotification: false,
       };
     },
   });

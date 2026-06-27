@@ -42,7 +42,6 @@ export type FunboxFunctions = {
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
   handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
@@ -53,10 +52,17 @@ export type FunboxFunctions = {
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
   const currentInput = getCurrentInput();
+  const currentWord = TestWords.words.getCurrent();
+
+  if (!currentWord) {
+    return;
+  }
+
   const inputCurrentChar = currentInput.slice(-1);
-  const wordCurrentChar = TestWords.words
-    .getCurrentText()
-    .slice(currentInput.length - 1, currentInput.length);
+  const wordCurrentChar = currentWord.display.slice(
+    currentInput.length - 1,
+    currentInput.length,
+  );
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
@@ -64,7 +70,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     !isCorrect &&
     (currentInput !== "" ||
       getInputForWord(TestState.activeWordIndex - 1) !==
-        TestWords.words.getText(TestState.activeWordIndex - 1) ||
+        TestWords.words.get(TestState.activeWordIndex - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");
@@ -261,42 +267,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
       return null;
     },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === "a" ||
-          char === "ArrowLeft" ||
-          char === "j" ||
-          char === "←") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === "s" ||
-          char === "ArrowDown" ||
-          char === "k" ||
-          char === "↓") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === "d" ||
-          char === "ArrowRight" ||
-          char === "l" ||
-          char === "→") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
-    },
     getWordHtml(char: string, letterTag?: boolean): string {
       let retval = "";
       if (char === "↑") {
@@ -453,7 +423,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
+            TestWords.words
+              .getCurrent()
+              ?.text.charAt(getCurrentInput().length) ?? "",
           );
         }, 1);
       }
