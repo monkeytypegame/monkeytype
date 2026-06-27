@@ -291,6 +291,7 @@ export const LanguageSchema = z.enum(
     "japanese_romaji",
     "japanese_romaji_1k",
     "sinhala",
+    "sindhi",
     "latvian",
     "latvian_1k",
     "maltese",
