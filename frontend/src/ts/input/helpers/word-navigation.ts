@@ -15,7 +15,6 @@ import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
 import { getWordBurst } from "../../test/events/stats";
 import { buildEventLog, getInputForWord } from "../../test/events/data";
-import { removeTrailingSeparatorSpace } from "../../utils/strings";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -107,12 +106,10 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
   if (inputType === "deleteWordBackward") {
     setInputElementValue("");
   } else if (inputType === "deleteContentBackward") {
-    const word = removeTrailingSeparatorSpace(
-      getInputForWord(TestState.activeWordIndex),
-    );
+    const word = getInputForWord(TestState.activeWordIndex);
     if (nospaceEnabled) {
       setInputElementValue(word.slice(0, -1));
-    } else if (word.endsWith("\n")) {
+    } else if (word.endsWith("\n") || word.endsWith(" ")) {
       setInputElementValue(word.slice(0, -1));
     } else {
       setInputElementValue(word);

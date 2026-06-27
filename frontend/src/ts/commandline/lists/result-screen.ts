@@ -148,7 +148,8 @@ const commands: Command[] = [
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
-          : TestWords.words.list
+          : TestWords.words
+              .get()
               .slice(0, inputHistory.length)
               .map((word) => word.textWithCommit)
               .join("");

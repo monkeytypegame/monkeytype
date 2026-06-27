@@ -1,9 +1,4 @@
-import {
-  CharCounts,
-  countChars,
-  isSpace,
-  removeTrailingSeparatorSpace,
-} from "../../utils/strings";
+import { CharCounts, countChars, isSpace } from "../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -350,22 +345,8 @@ export function getDateBasedTestDurationMs(eventLog: EventLog): number {
 function getTargetWord(
   eventLog: EventLog,
   wordIndex: number,
-  simulatedInput: string,
-  lastWord: boolean,
-): string {
-  if (eventLog.context.mode === "zen") {
-    return simulatedInput;
-  } else {
-    const word = eventLog.context.targetWords[wordIndex];
-
-    if (word === undefined) {
-      return "";
-    }
-
-    // Target words store their separator as a trailing space. The last word the
-    // user reached has no committed separator (the test ended), so strip it.
-    return lastWord ? removeTrailingSeparatorSpace(word) : word;
-  }
+): string | undefined {
+  return eventLog.context.targetWords[wordIndex];
 }
 
 function computeBurst(events: TestEventNoMs[], now?: number): number {
@@ -455,7 +436,7 @@ function countCharsForWordIndex(
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
-  let targetWord = getTargetWord(eventLog, wordIndex, simulatedInput, lastWord);
+  let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
   if (eventLog.context.koreanStatus) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
@@ -889,7 +870,7 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      const bareWord = removeTrailingSeparatorSpace(word);
+      const bareWord = word;
       missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }

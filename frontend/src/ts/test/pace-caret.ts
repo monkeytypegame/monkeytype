@@ -1,5 +1,4 @@
 import * as TestWords from "./test-words";
-import { removeTrailingSeparatorSpace } from "../utils/strings";
 import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
@@ -178,26 +177,26 @@ function incrementLetterIndex(): void {
   if (settings === null) return;
 
   try {
-    settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
       // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-      TestWords.words.get(settings.currentWordIndex)!.display.length + 1
+      TestWords.words.get(settings.currentWordIndex)!.text.length
     ) {
       //go to the next word
-      settings.currentLetterIndex = 0;
+      settings.currentLetterIndex = -1;
       settings.currentWordIndex++;
     }
+    settings.currentLetterIndex++;
+
     if (!Config.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
+          if (settings.currentLetterIndex <= -1) {
             //go to the previous word
             settings.currentLetterIndex =
               // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-              TestWords.words.get(settings.currentWordIndex - 1)!.display
-                .length - 1;
+              TestWords.words.get(settings.currentWordIndex - 1)!.text.length;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -208,7 +207,7 @@ function incrementLetterIndex(): void {
           if (
             settings.currentLetterIndex >=
             // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-            TestWords.words.get(settings.currentWordIndex)!.display.length
+            TestWords.words.get(settings.currentWordIndex)!.text.length + 1
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -235,8 +234,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -=
-        removeTrailingSeparatorSpace(currentWord).length + 1;
+      settings.correction -= currentWord.length;
     }
   } else {
     if (
@@ -245,7 +243,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = true;
-      settings.correction += currentWord.length + 1;
+      settings.correction += currentWord.length;
     }
   }
 }

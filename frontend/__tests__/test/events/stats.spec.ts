@@ -1022,54 +1022,12 @@ describe("stats.ts", () => {
   });
 
   describe("getTargetWord", () => {
-    it("returns simulatedInput in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "anything", false),
-      ).toBe("anything");
-    });
-
-    it("returns word without trailing space when it ends with newline", () => {
-      pushWords("hello\n");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello\n");
-    });
-
-    it("appends trailing space for non-last word", () => {
+    it("returns word", () => {
       pushWords("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello ");
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe("hello");
     });
-
-    it("does not append trailing space for last word", () => {
-      pushWords("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
-      ).toBe("hello");
-    });
-
-    it("does not append trailing space when nospace funbox is active", () => {
-      pushWords("hello");
-      (Config as { funbox: string[] }).funbox = ["nospace"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello\n");
-    });
-
-    it("does not append trailing space when underscore_spaces funbox is active", () => {
-      pushWords("hello");
-      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
-      ).toBe("hello");
-    });
-
-    it("returns empty string for an out-of-range word index", () => {
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 5, "hello", false),
-      ).toBe("");
+    it("returns for out-of-range", () => {
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe(undefined);
     });
   });
 

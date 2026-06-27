@@ -379,9 +379,7 @@ function buildWordHTML(word: string, wordIndex: number): string {
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   // the stored trailing separator space is not rendered as a letter
-  const chars = Strings.splitIntoCharacters(
-    Strings.removeTrailingSeparatorSpace(word),
-  );
+  const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
