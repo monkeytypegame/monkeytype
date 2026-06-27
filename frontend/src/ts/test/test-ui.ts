@@ -734,6 +734,8 @@ export async function updateWordLetters({
   input: string;
   compositionData: string;
 }): Promise<void> {
+  console.log("updateWordLetters", { wordIndex, input, compositionData });
+  console.trace();
   pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,
@@ -1820,19 +1822,13 @@ export function afterTestDelete(): void {
 export function beforeTestWordChange(
   direction: "forward",
   correct: boolean,
-  forceUpdateActiveWordLetters?: boolean,
 ): void;
-export function beforeTestWordChange(
-  direction: "back",
-  correct: null,
-  forceUpdateActiveWordLetters?: boolean,
-): void;
+export function beforeTestWordChange(direction: "back", correct: null): void;
 export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null,
-  forceUpdateActiveWordLetters?: boolean, // this param is very likely not needed
 ): void {
-  if (direction === "back" || forceUpdateActiveWordLetters) {
+  if (direction === "back") {
     void updateWordLetters({
       input: getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,

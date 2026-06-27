@@ -235,9 +235,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   let lastBurst: null | number = null;
   if (goingToNextWord) {
     const result = await goToNextWord({
-      correctInsert: testInput + data === currentWord,
-      isCompositionEnding: isCompositionEnding === true,
-      zenNewline: data === "\n" && Config.mode === "zen",
+      correctInsert:
+        Config.mode === "zen" ? true : testInput + data === currentWord,
       now,
     });
     lastBurst = result.lastBurst;
