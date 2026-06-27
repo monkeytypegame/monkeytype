@@ -143,7 +143,7 @@ export function getInputFromDom(events: TestEventNoMs[]): string {
     !data.correct
   ) {
     // if this is an incorrect word commit on the last word, we dont want to count it at all
-    return inputValue;
+    return inputValue.trimEnd();
   }
 
   return inputValue;
