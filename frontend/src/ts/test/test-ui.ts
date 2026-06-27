@@ -378,7 +378,6 @@ function buildWordHTML(word: string, wordIndex: number): string {
   let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  // the stored trailing separator space is not rendered as a letter
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (funbox) {
