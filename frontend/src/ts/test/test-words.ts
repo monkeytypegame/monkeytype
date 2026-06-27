@@ -86,6 +86,7 @@ class Words {
     ) {
       lastWord.textWithCommit = lastWord.textWithCommit.slice(0, -1);
       lastWord.display = lastWord.textWithCommit;
+      lastWord.commit = "";
     }
   }
 }
