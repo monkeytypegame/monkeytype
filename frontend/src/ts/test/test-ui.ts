@@ -6,12 +6,8 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
-import {
-  getCurrentInput,
-  getInputHistory,
-  getInputForWord,
-} from "./test-input";
+import { getCurrentInput, getCurrentInputForDisplay } from "./events/data";
+import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
@@ -39,7 +35,6 @@ import {
 } from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as TestStats from "./test-stats";
 import { highlight } from "../events/keymap";
 import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
@@ -72,6 +67,12 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import { getCurrentQuote, wordsHaveNewline } from "../states/test";
+import {
+  getCorrectedWordsHistory,
+  getInputHistory,
+  getMissedWords,
+  getWordBurstHistory,
+} from "./events/stats";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -500,7 +501,9 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += buildWordHTML(TestWords.words.getText(i), i);
+      const word = TestWords.words.getText(i);
+      if (word === undefined) continue; // won't happen, but ts complains
+      wordsHTML += buildWordHTML(word, i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -736,7 +739,7 @@ export async function updateWordLetters({
     async () => {
       pendingWordData.delete(wordIndex);
       const currentWord = TestWords.words.getText(wordIndex);
-      if (!currentWord && Config.mode !== "zen") return;
+      if (currentWord === undefined && Config.mode !== "zen") return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
       if (!wordAtIndex) return;
@@ -766,7 +769,7 @@ export async function updateWordLetters({
         const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
 
         const inputChars = Strings.splitIntoCharacters(input);
-        const currentWordChars = Strings.splitIntoCharacters(currentWord);
+        const currentWordChars = Strings.splitIntoCharacters(currentWord ?? "");
         for (let i = 0; i < inputChars.length; i++) {
           const charCorrect = currentWordChars[i] === inputChars[i];
 
@@ -866,7 +869,7 @@ export async function updateWordLetters({
           hintsHtml = createHintsHtml(
             hintIndices,
             wordAtIndexLetters,
-            currentWord,
+            currentWord ?? "",
           );
         } else {
           hintsHtml = createHintsHtml(hintIndices, wordAtIndexLetters, input);
@@ -1319,10 +1322,19 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const inputHistoryLength = getInputHistory().length;
+  if (TestState.lastEventLog === null) {
+    return false;
+  }
+
+  const inputHistory = getInputHistory(TestState.lastEventLog).map((i) =>
+    i.trimEnd(),
+  );
+  const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
+  const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
-    const input = getInputForWord(i);
-    const corrected = TestInput.corrected.getHistory(i);
+    const input = inputHistory[i];
+    const corrected = correctedHistory[i];
     const word = TestWords.words.getText(i) ?? "";
     const koreanRegex =
       /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
@@ -1357,7 +1369,7 @@ async function loadWordsHistory(): Promise<boolean> {
         wordEl.classList.add("error");
       }
 
-      const burstValue = TestInput.burstHistory[i];
+      const burstValue = burstHistory[i];
       if (burstValue !== undefined) {
         wordEl.setAttribute("burst", String(burstValue));
       }
@@ -1466,10 +1478,13 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 }
 
 export async function applyBurstHeatmap(): Promise<void> {
+  if (TestState.lastEventLog === null) return;
+
   if (Config.burstHeatmap) {
     qsa("#resultWordsHistory .heatmapLegend")?.show();
 
-    let burstlist = [...TestInput.burstHistory];
+    const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+    let burstlist = [...burstHistory];
 
     burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
 
@@ -1744,8 +1759,10 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  if (!isNaN(acc)) {
+    LiveAcc.update(acc);
+  }
 
   if (Config.mode !== "time") {
     TimerProgress.update();
@@ -1774,7 +1791,7 @@ export function afterTestTextInput(
 
   if (!increasedWordIndex) {
     void updateWordLetters({
-      input: inputOverride ?? getCurrentInput(),
+      input: inputOverride ?? getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1785,7 +1802,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: getCurrentInput(),
+    input: getCurrentInputForDisplay(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1795,7 +1812,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: getCurrentInput(),
+    input: getCurrentInputForDisplay(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1821,11 +1838,10 @@ export function beforeTestWordChange(
   if (
     (Config.stopOnError === "letter" && (correct || correct === null)) ||
     nospaceEnabled ||
-    forceUpdateActiveWordLetters ||
-    Config.strictSpace
+    forceUpdateActiveWordLetters
   ) {
     void updateWordLetters({
-      input: getCurrentInput(),
+      input: getCurrentInputForDisplay(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1842,14 +1858,14 @@ export function beforeTestWordChange(
 
 export async function afterTestWordChange(
   direction: "forward" | "back",
+  lastBurst?: number | null,
 ): Promise<void> {
   updateActiveElement({
     direction,
   });
   Caret.updatePosition();
 
-  const lastBurst = TestInput.burstHistory[TestInput.burstHistory.length - 1];
-  if (Numbers.isSafeNumber(lastBurst)) {
+  if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }
   if (direction === "forward") {
@@ -1944,24 +1960,26 @@ export function onTestFinish(): void {
 }
 
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
+  if (TestState.lastEventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join(" ");
+    words = getInputHistory(TestState.lastEventLog).join("");
   } else {
     words = TestWords.words
       .getText()
-      .slice(0, getInputHistory().length)
+      .slice(0, getInputHistory(TestState.lastEventLog).length)
       .join(" ");
   }
   await copyToClipboard(words);
 });
 
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
+  if (TestState.lastEventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory().join(" ");
+    words = getInputHistory(TestState.lastEventLog).join("");
   } else {
-    words = Object.keys(TestInput.missedWords ?? {}).join(" ");
+    words = Object.keys(getMissedWords(TestState.lastEventLog)).join(" ");
   }
   await copyToClipboard(words);
 });
@@ -2062,7 +2080,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: getCurrentInput(),
+        input: getCurrentInputForDisplay(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

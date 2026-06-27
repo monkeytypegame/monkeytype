@@ -11,8 +11,8 @@ import {
 } from "../../../../constants/languages";
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import { getLanguageDisplayString } from "../../../../utils/strings";
+import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
 
 export function CustomPolyglot(): JSXElement {
   return (

@@ -12,7 +12,7 @@ class Words {
   }
 
   getText(i?: undefined, raw?: boolean): string[];
-  getText(i: number, raw?: boolean): string;
+  getText(i: number, raw?: boolean): string | undefined;
   getText(i?: number, raw = false): string | string[] | undefined {
     if (i === undefined) {
       return this.list;
@@ -56,8 +56,3 @@ class Words {
 }
 
 export const words = new Words();
-export let hasNumbers = false;
-
-export function setHasNumbers(tf: boolean): void {
-  hasNumbers = tf;
-}
