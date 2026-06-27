@@ -971,9 +971,7 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  if (!randomWord.endsWith("\n") && !isFunboxActiveWithProperty("nospace")) {
-    randomWord = `${randomWord} `;
-  }
+  randomWord = appendCommitCharacter(randomWord);
 
   const ret = {
     word: randomWord,
@@ -983,6 +981,19 @@ export async function getNextWord(
   previousGetNextWordReturns.push(ret);
 
   return ret;
+}
+
+/**
+ * Appends the inter-word commit separator the way the generator does: a trailing
+ * space, unless the word already ends with a newline or the nospace funbox is
+ * active. Callers that push words outside of getNextWord (e.g. section funbox
+ * pulls) must use this so the separator is part of the target word.
+ */
+export function appendCommitCharacter(word: string): string {
+  if (word.endsWith("\n") || isFunboxActiveWithProperty("nospace")) {
+    return word;
+  }
+  return `${word} `;
 }
 
 export function areAllWordsGenerated(): boolean {

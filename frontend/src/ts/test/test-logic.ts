@@ -691,7 +691,10 @@ export async function addWord(): Promise<void> {
           break;
         }
         wordCount++;
-        const newWord = TestWords.words.push(word, i);
+        const newWord = TestWords.words.push(
+          WordsGenerator.appendCommitCharacter(word),
+          i,
+        );
         TestUI.addWord(newWord.display);
       }
     }
