@@ -171,15 +171,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     removeLastChar = true;
   }
 
-  const goingToNextWord =
-    !removeLastChar &&
-    shouldGoToNextWord({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-      isCommitCharacter: isCommit,
-    });
-
   if (correctShiftUsed === false) {
     removeLastChar = true;
     visualInputOverride = undefined;
@@ -193,6 +184,16 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   } else {
     resetIncorrectShiftsInARow();
   }
+
+  // derived after removeLastChar: stop-on-error and opposite shift mode can block navigation
+  const goingToNextWord =
+    !removeLastChar &&
+    shouldGoToNextWord({
+      data,
+      inputValue: testInput,
+      targetWord: currentWord,
+      isCommitCharacter: isCommit,
+    });
 
   if (Config.keymapMode === "react") {
     flash(data, correct);
