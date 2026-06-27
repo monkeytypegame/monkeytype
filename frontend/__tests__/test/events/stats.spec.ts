@@ -23,6 +23,9 @@ vi.mock("../../../src/ts/test/test-words", () => {
   return {
     words: {
       list,
+      get(): Word[] {
+        return [...list];
+      },
       push(word: string) {
         let commit: CommitChar = "";
         if (word.endsWith(" ")) {
