@@ -281,6 +281,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   azerbaijani: ["azerbaijani", "azerbaijani_1k"],
   malayalam: ["malayalam"],
   sinhala: ["sinhala"],
+  sindhi: ["sindhi"],
   latvian: ["latvian", "latvian_1k"],
   maltese: ["maltese", "maltese_1k"],
   toki_pona: ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"],
