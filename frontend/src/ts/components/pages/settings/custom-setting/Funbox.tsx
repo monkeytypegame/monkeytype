@@ -7,7 +7,7 @@ import { toggleFunbox } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { Button } from "../../../common/Button";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export function Funbox(): JSXElement {
   return (

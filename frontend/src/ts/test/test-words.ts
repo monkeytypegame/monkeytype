@@ -10,10 +10,10 @@ type Word = {
   sectionIndex: number;
 };
 
-const commitCharsToDisplay: CommitChar[] = ["\n"];
+const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
 
 class Words {
-  public list: Word[];
+  private list: Word[];
   public length: number;
 
   constructor() {
@@ -25,7 +25,7 @@ class Words {
   get(i: number, raw?: boolean): Word | undefined;
   get(i?: number, raw = false): Word | Word[] | undefined {
     if (i === undefined) {
-      return this.list;
+      return [...this.list];
     } else {
       const word = this.list[i];
       if (!word) {
@@ -37,8 +37,7 @@ class Words {
           text,
           textWithCommit: text + word.commit,
           display:
-            text +
-            (commitCharsToDisplay.includes(word.commit) ? word.commit : ""),
+            text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
           commit: word.commit,
           sectionIndex: word.sectionIndex,
         };
@@ -63,7 +62,7 @@ class Words {
       text: word,
       textWithCommit: word + commit,
       commit,
-      display: word + (commitCharsToDisplay.includes(commit) ? commit : ""),
+      display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
       sectionIndex,
     });
     this.length = this.list.length;

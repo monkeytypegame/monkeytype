@@ -23,6 +23,9 @@ vi.mock("../../../src/ts/test/test-words", () => {
   return {
     words: {
       list,
+      get(): Word[] {
+        return [...list];
+      },
       push(word: string) {
         let commit: CommitChar = "";
         if (word.endsWith(" ")) {
@@ -1026,31 +1029,38 @@ describe("stats.ts", () => {
       ).toBe("anything");
     });
 
-    it("returns the stored word as-is for a non-last word", () => {
-      // storage keeps the separator as a trailing space
-      pushWords("hello ");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello ");
-    });
-
-    it("strips the trailing separator for the last word", () => {
-      // the last reached word has no committed separator (the test ended)
-      pushWords("hello ");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
-      ).toBe("hello");
-    });
-
-    it("returns a newline-terminated word as-is", () => {
+    it("returns word without trailing space when it ends with newline", () => {
       pushWords("hello\n");
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
       ).toBe("hello\n");
     });
 
-    it("returns a bare word as-is (nospace storage)", () => {
+    it("appends trailing space for non-last word", () => {
       pushWords("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello ");
+    });
+
+    it("does not append trailing space for last word", () => {
+      pushWords("hello");
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
+      ).toBe("hello");
+    });
+
+    it("does not append trailing space when nospace funbox is active", () => {
+      pushWords("hello");
+      (Config as { funbox: string[] }).funbox = ["nospace"];
+      expect(
+        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
+      ).toBe("hello\n");
+    });
+
+    it("does not append trailing space when underscore_spaces funbox is active", () => {
+      pushWords("hello");
+      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
       expect(
         statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
       ).toBe("hello");
@@ -1132,8 +1142,7 @@ describe("stats.ts", () => {
     });
 
     it("counts missed chars for completed non-last words", () => {
-      // stored words carry the separator as a trailing space (last word is bare)
-      pushWords("hello ", "world");
+      pushWords("hello", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1178,9 +1187,8 @@ describe("stats.ts", () => {
 
     it("credits a word committed with an IME full-width space", () => {
       // Japanese IME commits words with the ideographic space U+3000, while the
-      // target word separator is a regular space — normalize so it still counts.
-      // Stored words carry the separator as a trailing space (last word is bare).
-      pushWords("しり ", "かこ");
+      // target word separator is a regular space — normalize so it still counts
+      pushWords("しり", "かこ");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1241,8 +1249,7 @@ describe("stats.ts", () => {
     });
 
     it("returns cumulative wpm across boundaries", () => {
-      // stored words carry the separator as a trailing space (last word is bare)
-      pushWords("ab ", "cd");
+      pushWords("ab", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));

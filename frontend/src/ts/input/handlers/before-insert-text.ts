@@ -3,13 +3,14 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
-import { isSpace, removeTrailingSeparatorSpace } from "../../utils/strings";
+import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { isCommitCharacter } from "../helpers/util";
+import { getCurrentInput } from "../../test/events/data";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -30,6 +31,8 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   const { inputValue } = getInputElementValue();
+  const currentWordTextWithCommit =
+    TestWords.words.getCurrent()?.textWithCommit ?? "";
   const dataIsSpace = isSpace(data);
 
   //prevent space from being inserted if input is empty
@@ -55,11 +58,9 @@ export function onBeforeInsertText(data: string): boolean {
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen"
-      ? 30
-      : (TestWords.words.getCurrent()?.textWithCommit ?? "").length + 20;
+    Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
-  const targetWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
+  const targetWord = currentWordTextWithCommit;
   const isCommit = isCommitCharacter({
     data,
     inputValue,
@@ -82,7 +83,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    inputValue.length >= removeTrailingSeparatorSpace(targetWord).length;
+    getCurrentInput().length >= currentWordTextWithCommit.length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active

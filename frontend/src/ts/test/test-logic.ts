@@ -121,6 +121,7 @@ import {
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
 
@@ -613,7 +614,14 @@ async function init(): Promise<boolean> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    highlight(TestWords.words.getCurrent()?.text[0] ?? "");
+    highlight(
+      nthElementFromArray(
+        // ignoring for now but this might need a different approach
+        // oxlint-disable-next-line no-misused-spread
+        [...(TestWords.words.getCurrent()?.text ?? "")],
+        0,
+      ) as string,
+    );
   }
 
   Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
@@ -625,7 +633,7 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", TestWords.words.list);
+  console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes,
@@ -1404,7 +1412,14 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
-        highlight(TestWords.words.getCurrent()?.text[0] ?? "");
+        highlight(
+          nthElementFromArray(
+            // ignoring for now but this might need a different approach
+            // oxlint-disable-next-line no-misused-spread
+            [...(TestWords.words.getCurrent()?.text ?? "")],
+            0,
+          ) as string,
+        );
       }, 0);
     }
     if (
