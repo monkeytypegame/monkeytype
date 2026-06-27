@@ -733,8 +733,6 @@ export async function updateWordLetters({
   input: string;
   compositionData: string;
 }): Promise<void> {
-  console.log("updateWordLetters", { wordIndex, input, compositionData });
-  console.trace();
   pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,

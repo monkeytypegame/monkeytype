@@ -90,9 +90,19 @@ import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
+import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
 
+// mirror the generator: each word carries a trailing space separator unless it
+// already ends with a newline, the nospace funbox is active, or it's the last
+// word (the final separator is stripped once all words are generated)
 function pushWords(...words: string[]): void {
-  words.forEach((word, i) => TestWords.push(word, i));
+  const nospace = isFunboxActiveWithProperty("nospace");
+  words.forEach((word, i) => {
+    const isLast = i === words.length - 1;
+    const withSeparator =
+      isLast || nospace || word.endsWith("\n") ? word : `${word} `;
+    TestWords.push(withSeparator, i);
+  });
 }
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
