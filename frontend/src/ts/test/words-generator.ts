@@ -38,7 +38,7 @@ function shouldCapitalize(lastChar: string): boolean {
 
 let spanishSentenceTracker = "";
 export async function punctuateWord(
-  previousWord: string,
+  previousWord: string | undefined,
   currentWord: string,
   index: number,
   maxindex: number,
@@ -48,7 +48,8 @@ export async function punctuateWord(
 
   const currentLanguage = language.name.split("_")[0];
 
-  const lastChar = Strings.getLastChar(previousWord);
+  const lastChar =
+    previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
 
   const funbox = findSingleActiveFunboxWithFunction("punctuateWord");
   if (funbox) {
@@ -57,7 +58,7 @@ export async function punctuateWord(
   if (
     currentLanguage !== "code" &&
     currentLanguage !== "georgian" &&
-    (index === 0 || shouldCapitalize(lastChar))
+    (index === 0 || (lastChar !== undefined && shouldCapitalize(lastChar)))
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
@@ -368,7 +369,7 @@ function applyFunboxesToWord(
 
 async function applyBritishEnglishToWord(
   word: string,
-  previousWord: string,
+  previousWord: string | undefined,
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
@@ -740,7 +741,7 @@ type GetNextWordReturn = {
 export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
-  previousWord: string,
+  previousWord: string | undefined,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
@@ -804,7 +805,9 @@ export async function getNextWord(
 
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
   let randomWord = currentWordset.randomWord(funboxFrequency);
-  const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
+  const previousWordRaw = previousWord
+    ?.replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
   const previousWord2Raw = previousWord2
     ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();

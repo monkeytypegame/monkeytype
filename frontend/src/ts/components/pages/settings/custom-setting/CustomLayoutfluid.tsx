@@ -6,8 +6,8 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
+import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
 
 export function CustomLayoutfluid(): JSXElement {
   return (

@@ -63,18 +63,17 @@ export function init(
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      const missedWord = TestWords.words.getText(i);
+      const missedWord = TestWords.words.get(i)?.text;
+
+      if (missedWord === undefined) continue; // won't happen, but ts complains
+
       const missedWordCount = missedWords[missedWord];
       if (missedWordCount !== undefined) {
-        if (i === 0) {
-          sortableMissedBiwords.push([missedWord, "", missedWordCount]);
-        } else {
-          sortableMissedBiwords.push([
-            missedWord,
-            TestWords.words.getText(i - 1),
-            missedWordCount,
-          ]);
-        }
+        sortableMissedBiwords.push([
+          missedWord,
+          TestWords.words.get(i - 1)?.text ?? "",
+          missedWordCount,
+        ]);
       }
     }
     sortableMissedBiwords.sort((a, b) => {
@@ -95,8 +94,9 @@ export function init(
   let sortableSlowWords: [string, number][] = [];
   if (slow) {
     const typedWords = TestWords.words
-      .getText()
-      .slice(0, getInputHistory(lastEventLog).length - 1);
+      .get()
+      .slice(0, getInputHistory(lastEventLog).length - 1)
+      .map((word) => word.text);
 
     const burstHistory = getWordBurstHistory(lastEventLog);
 

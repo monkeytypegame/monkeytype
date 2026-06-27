@@ -4,7 +4,7 @@ import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
 export async function replace(
   word: string,
-  previousWord: string,
+  previousWord: string | undefined,
 ): Promise<string> {
   // Convert American-style double quotes to British-style single quotes
   const us2ukQuotes = {
@@ -45,7 +45,11 @@ export async function replace(
         ? [rule, []]
         : [rule.britishWord, rule.exceptPreviousWords];
 
-    if (Config.mode === "quote" && exceptions.includes(previousWord)) {
+    if (
+      Config.mode === "quote" &&
+      previousWord !== undefined &&
+      exceptions.includes(previousWord)
+    ) {
       return word;
     }
 

@@ -1,63 +1,77 @@
 import * as TestState from "./test-state";
 
+type CommitChar = " " | "\n" | "";
+
+type Word = {
+  text: string;
+  textWithCommit: string;
+  commit: CommitChar;
+  display: string;
+  sectionIndex: number;
+};
+
+const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
+
 class Words {
-  public list: string[];
-  public sectionIndexList: number[];
+  private list: Word[];
   public length: number;
 
   constructor() {
     this.list = [];
-    this.sectionIndexList = [];
     this.length = 0;
   }
 
-  getText(i?: undefined, raw?: boolean): string[];
-  getText(i: number, raw?: boolean): string;
-  getText(i?: number, raw = false): string | string[] | undefined {
+  get(i?: undefined, raw?: boolean): Word[];
+  get(i: number, raw?: boolean): Word | undefined;
+  get(i?: number, raw = false): Word | Word[] | undefined {
     if (i === undefined) {
-      return this.list;
+      return [...this.list];
     } else {
+      const word = this.list[i];
+      if (!word) {
+        return undefined;
+      }
       if (raw) {
-        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+        const text = word.text.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+        return {
+          text,
+          textWithCommit: text + word.commit,
+          display:
+            text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
+          commit: word.commit,
+          sectionIndex: word.sectionIndex,
+        };
       } else {
-        return this.list[i];
+        return word;
       }
     }
   }
-  getCurrentText(): string {
-    return this.list[TestState.activeWordIndex] ?? "";
-  }
-  getLast(): string {
-    return this.list[this.list.length - 1] as string;
+  getCurrent(): Word | undefined {
+    return this.list[TestState.activeWordIndex];
   }
   push(word: string, sectionIndex: number): void {
-    this.list.push(word);
-    this.sectionIndexList.push(sectionIndex);
+    let commit: CommitChar = "";
+    if (word.endsWith(" ")) {
+      commit = " ";
+      word = word.slice(0, -1);
+    } else if (word.endsWith("\n")) {
+      commit = "\n";
+      word = word.slice(0, -1);
+    }
+    this.list.push({
+      text: word,
+      textWithCommit: word + commit,
+      commit,
+      display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
+      sectionIndex,
+    });
     this.length = this.list.length;
   }
 
   reset(): void {
     this.list = [];
-    this.sectionIndexList = [];
-    this.length = this.list.length;
-  }
-  clean(): void {
-    for (const s of this.list) {
-      if (/ +/.test(s)) {
-        const id = this.list.indexOf(s);
-        const tempList = s.split(" ");
-        this.list.splice(id, 1);
-        for (let i = 0; i < tempList.length; i++) {
-          this.list.splice(id + i, 0, tempList[i] as string);
-        }
-      }
-    }
+    this.length = 0;
   }
 }
 
 export const words = new Words();
-export let hasNumbers = false;
-
-export function setHasNumbers(tf: boolean): void {
-  hasNumbers = tf;
-}
