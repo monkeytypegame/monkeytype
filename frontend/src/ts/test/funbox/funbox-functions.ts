@@ -70,7 +70,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     !isCorrect &&
     (currentInput !== "" ||
       getInputForWord(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1)?.display ||
+        TestWords.words.get(TestState.activeWordIndex - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");
