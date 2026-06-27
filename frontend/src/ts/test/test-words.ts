@@ -25,7 +25,7 @@ class Words {
   get(i: number, raw?: boolean): Word | undefined;
   get(i?: number, raw = false): Word | Word[] | undefined {
     if (i === undefined) {
-      return this.list;
+      return [...this.list];
     } else {
       const word = this.list[i];
       if (!word) {
