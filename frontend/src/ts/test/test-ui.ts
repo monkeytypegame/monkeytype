@@ -734,12 +734,6 @@ export async function updateWordLetters({
   input: string;
   compositionData: string;
 }): Promise<void> {
-  showNoticeNotification(`Updating word letters ${wordIndex}`, {
-    durationMs: 250,
-    important: true,
-  });
-  // console.log("updating word letters");
-  console.trace();
   pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,
