@@ -133,7 +133,7 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     body: { result: notSignedInLastResult },
   });
   if (response.status !== 200) {
-    showErrorNotification(`Failed to save last result hello ${failReason} hi`, {
+    showErrorNotification(`Failed to save last result`, {
       response,
     });
     return;
@@ -587,7 +587,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestWords.setHasNumbers(hasNumbers);
+  TestState.setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -1079,7 +1079,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
+      if (
+        lastWordInputLength < (TestWords.words.getText(wordIndex)?.length ?? 0)
+      ) {
         historyLength--;
       }
 

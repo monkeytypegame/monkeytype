@@ -10,19 +10,21 @@ import {
 import { showSimpleModal } from "../../../states/simple-modal";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
-import { H3 } from "../../common/Headers";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import { Section } from "./utils";
 
-export function BlockedUsers() {
+export function BlockedUsersTab() {
   const query = useBlockedConnectionsQuery();
   const columns = createMemo(getColumns);
 
   return (
-    <div>
-      <H3 text="blocked users" fa={{ icon: "fa-user-shield" }} />
-      <p>Blocked users cannot send you friend requests.</p>
-
+    <Section
+      title="blocked users"
+      fa={{ icon: "fa-user-shield" }}
+      fullWidth
+      description=<>Blocked users cannot send you friend requests.</>
+    >
       <AsyncContent collections={{ query }}>
         {({ queryData }) => (
           <Show
@@ -37,7 +39,7 @@ export function BlockedUsers() {
           </Show>
         )}
       </AsyncContent>
-    </div>
+    </Section>
   );
 }
 

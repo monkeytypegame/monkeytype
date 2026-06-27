@@ -4,20 +4,6 @@
   .content-grid {
     --content-max-width: 768px;
   }
-  .pageAccountSettings .main {
-    gap: 2rem;
-    .right .tab .section {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "text" "buttons";
-      &.discordIntegration .info {
-        height: 8rem;
-        display: grid;
-        align-content: center;
-      }
-    }
-  }
   .pageTest {
     #result .wrapper .stats.morestats {
       display: grid;

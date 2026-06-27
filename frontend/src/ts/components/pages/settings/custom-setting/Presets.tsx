@@ -9,7 +9,7 @@ import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export function Presets(): JSXElement {
   const presets = usePresetsLiveQuery();

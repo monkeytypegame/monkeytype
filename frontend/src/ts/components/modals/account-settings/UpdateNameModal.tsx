@@ -7,14 +7,13 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import * as DB from "../../../db";
+import { setSnapshot, getSnapshot } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { reloadAfter } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
-  const snapshot = DB.getSnapshot();
+  const snapshot = getSnapshot();
   if (!isAuthenticated() || !snapshot) return;
 
   showSimpleModal({
@@ -22,7 +21,7 @@ export function showUpdateNameModal(): void {
     buttonText: isUsingPasswordAuthentication()
       ? "update"
       : "reauthenticate to update",
-    text: DB.getSnapshot()?.needsToChangeName
+    text: snapshot.needsToChangeName
       ? "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience."
       : undefined,
     schema: z.object({
@@ -70,10 +69,8 @@ export function showUpdateNameModal(): void {
       }
 
       snapshot.name = newName;
-      DB.setSnapshot(snapshot);
-      if (snapshot.needsToChangeName) {
-        reloadAfter(2);
-      }
+
+      setSnapshot(snapshot);
 
       return {
         status: "success",
