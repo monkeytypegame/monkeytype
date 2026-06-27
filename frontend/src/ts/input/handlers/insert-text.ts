@@ -17,7 +17,6 @@ import {
 } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -161,10 +160,10 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   });
 
   // word navigation check
-  const noSpaceForce =
-    isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length ===
-      TestWords.words.getCurrent()?.textWithCommit.length;
+  // const noSpaceForce =
+  //   isFunboxActiveWithProperty("nospace") &&
+  //   (testInput + data).length ===
+  //     TestWords.words.getCurrent()?.textWithCommit.length;
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
@@ -237,16 +236,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     TestUI.afterTestTextInput(correct, visualInputOverride);
   }
 
-  const commitCorrect = noSpaceForce
-    ? testInput + data === currentWord
-    : correct;
-
   // going to next word
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
   if (goingToNextWord) {
     const result = await goToNextWord({
-      correctInsert: commitCorrect,
+      correctInsert: testInput + data === currentWord,
       isCompositionEnding: isCompositionEnding === true,
       zenNewline: data === "\n" && Config.mode === "zen",
       now,
