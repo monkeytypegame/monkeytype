@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
-import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
@@ -122,6 +121,7 @@ import {
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
 
@@ -611,16 +611,16 @@ async function init(): Promise<boolean> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     highlight(
-      Arrays.nthElementFromArray(
+      nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
-        [...TestWords.words.getCurrentText()],
+        [...(TestWords.words.getCurrent()?.text ?? "")],
         0,
       ) as string,
     );
   }
 
-  Funbox.toggleScript(TestWords.words.getCurrentText());
+  Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
@@ -716,8 +716,8 @@ export async function addWord(): Promise<void> {
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      TestWords.words.getText(TestWords.words.length - 1),
-      TestWords.words.getText(TestWords.words.length - 2),
+      TestWords.words.get(TestWords.words.length - 1)?.text ?? "",
+      TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
     TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -1080,7 +1080,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
       if (
-        lastWordInputLength < (TestWords.words.getText(wordIndex)?.length ?? 0)
+        lastWordInputLength < (TestWords.words.get(wordIndex)?.text.length ?? 0)
       ) {
         historyLength--;
       }
@@ -1421,10 +1421,10 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
         highlight(
-          Arrays.nthElementFromArray(
+          nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
-            [...TestWords.words.getCurrentText()],
+            [...(TestWords.words.getCurrent()?.text ?? "")],
             0,
           ) as string,
         );
