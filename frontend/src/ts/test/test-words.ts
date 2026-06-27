@@ -49,7 +49,7 @@ class Words {
   getCurrent(): Word | undefined {
     return this.list[TestState.activeWordIndex];
   }
-  push(word: string, sectionIndex: number): void {
+  push(word: string, sectionIndex: number): Word {
     let commit: CommitChar = "";
     if (word.endsWith(" ")) {
       commit = " ";
@@ -58,14 +58,17 @@ class Words {
       commit = "\n";
       word = word.slice(0, -1);
     }
-    this.list.push({
+    const wordObj = {
       text: word,
       textWithCommit: word + commit,
       commit,
       display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
       sectionIndex,
-    });
+    };
+    this.list.push(wordObj);
     this.length = this.list.length;
+
+    return wordObj;
   }
 
   reset(): void {
