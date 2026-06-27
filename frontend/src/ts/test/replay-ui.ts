@@ -62,7 +62,7 @@ function deriveReplayActions(): Replay[] {
         const target =
           Config.mode === "zen"
             ? typed
-            : TestWords.words.get(prevWordIndex)?.text;
+            : TestWords.words.get(prevWordIndex)?.textWithCommit;
         const correct = typed === target;
         actions.push({
           action: correct ? "submitCorrectWord" : "submitErrorWord",
