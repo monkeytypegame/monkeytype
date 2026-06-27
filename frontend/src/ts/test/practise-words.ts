@@ -63,7 +63,7 @@ export function init(
   let sortableMissedBiwords: [string, string, number][] = [];
   if (missed === "biwords") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      const missedWord = TestWords.words.get(i)?.text;
+      const missedWord = TestWords.words.get(i)?.textWithCommit;
 
       if (missedWord === undefined) continue; // won't happen, but ts complains
 
