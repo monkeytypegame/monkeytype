@@ -37,9 +37,11 @@ export function checkIfFailedDueToMinBurst(options: {
 /**
  * Check if the test should fail due to difficulty settings
  * @param options - Options object
- * @param options.testInputWithData - Current test input result (after adding data)
- * @param options.correct - Was the last input correct
- * @param options.spaceOrNewline - Is the input a space or newline
+ * @param options.data - The text data to be inserted
+ * @param options.testInput - Current test input result (before adding data)
+ * @param options.targetWord - Current target word
+ * @param options.correct - Whether the input is correct
+ * @param options.commitCharacterType - Type of the commit character, false if not a commit character
  */
 export function checkIfFailedDueToDifficulty(options: {
   data: string;
