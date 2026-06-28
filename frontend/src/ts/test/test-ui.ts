@@ -1783,9 +1783,6 @@ export function afterTestTextInput(
   correct: boolean,
   inputOverride?: string,
 ): void {
-  //nospace cant be handled here becauseword index
-  // is already increased at this point
-
   void MonkeyPower.addPower(correct);
 
   void updateWordLetters({
