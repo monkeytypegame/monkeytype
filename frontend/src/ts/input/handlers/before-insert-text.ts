@@ -66,18 +66,14 @@ export function onBeforeInsertText(data: string): boolean {
     inputValue,
     targetWord,
   });
-  // shouldGoToNextWord runs here on the raw (pre-normalization) data, but only
-  // gated behind overLimit: when the input is 20+ (or 30+ for zen) chars too long, the commit
-  // equality is false for a regular space too, so an IME space does not diverge.
-  if (
-    overLimit &&
-    !shouldGoToNextWord({
-      data,
-      inputValue,
-      targetWord,
-      commitCharacterType,
-    })
-  ) {
+  const goingToNextWord = shouldGoToNextWord({
+    data,
+    inputValue,
+    targetWord,
+    commitCharacterType,
+  });
+
+  if (overLimit && !goingToNextWord) {
     console.error("Hitting word limit");
     return true;
   }
@@ -94,7 +90,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    commitCharacterType === false &&
+    !goingToNextWord &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
