@@ -1,4 +1,4 @@
-import { isFunboxActiveWithProperty } from "../../test/funbox/active";
+import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { isSpace } from "../../utils/strings";
 
 /**
