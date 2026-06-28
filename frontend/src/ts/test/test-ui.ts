@@ -1941,8 +1941,8 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
     words = TestWords.words
       .get()
       .slice(0, getInputHistory(TestState.lastEventLog).length)
-      .map((w) => w.text)
-      .join(" ");
+      .map((w) => w.textWithCommit)
+      .join("");
   }
   await copyToClipboard(words);
 });
