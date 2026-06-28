@@ -79,6 +79,7 @@ import {
   __testing as statsTesting,
   getCorrectedWordsHistory,
   getKeypressSpacing,
+  getMissedWords,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -1038,6 +1039,36 @@ describe("stats.ts", () => {
     });
     it("returns for out-of-range", () => {
       expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe(undefined);
+    });
+  });
+
+  describe("getMissedWords", () => {
+    it("strips the commit separator but keeps a trailing tab", () => {
+      // word 0 is a code-mode-style word ending in a tab; pushWords appends the
+      // " " separator, so targetWords[0] is "foo\t " — the key must be "foo\t"
+      pushWords("foo\t", "bar");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
+
+      expect(getMissedWords(buildEventLog())).toEqual({ "foo\t": 1 });
+    });
+
+    it("strips a trailing space separator", () => {
+      pushWords("hello", "world");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
+
+      expect(getMissedWords(buildEventLog())).toEqual({ hello: 1 });
     });
   });
 

@@ -870,8 +870,10 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      // targetWords store the trailing separator (commit char); key by the bare word
-      const bareWord = word.trimEnd();
+      // targetWords store the trailing separator (commit char); strip exactly
+      // that one separator (space/newline) to key by the bare word — not
+      // trimEnd(), which would also eat a meaningful trailing tab (code mode)
+      const bareWord = word.replace(/[ \n]$/, "");
       missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }
