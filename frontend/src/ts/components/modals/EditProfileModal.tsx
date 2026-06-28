@@ -42,6 +42,8 @@ export function EditProfile() {
       showActivityOnPublicProfile:
         snapshot.details?.showActivityOnPublicProfile ?? true,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
+      showChallengesOnPublicProfile:
+        snapshot.details?.showChallengesOnPublicProfile ?? true,
     },
     onSubmit: async ({ value }) => {
       const updates = {
@@ -254,6 +256,18 @@ export function EditProfile() {
               <Checkbox
                 field={field}
                 label="Include test activity graph on your public profile."
+              />
+            )}
+          </form.Field>
+        </div>
+
+        <div>
+          <label class="mb-[0.25em] block text-sub">public challenges</label>
+          <form.Field name="showChallengesOnPublicProfile">
+            {(field) => (
+              <Checkbox
+                field={field}
+                label="Include challenges on your public profile."
               />
             )}
           </form.Field>

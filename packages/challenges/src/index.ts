@@ -23,7 +23,7 @@ export type Challenge = {
     | "funbox"
     | "champions"
     | "roleCount";
-  settings: ChallengeSettings;
+  settings?: ChallengeSettings;
 };
 
 type ChallengeParameter =
@@ -848,6 +848,319 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
         "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed. Minimum 60 WPM and 100% accuracy required.",
       requirements: { acc: { exact: 100 } },
     },
+  },
+  "100hours": {
+    display: "100 hours",
+    isHidden: true,
+    discordRoleId: "761766710704603166",
+    category: "other",
+    description: "Achieve 100 hours of typing.",
+  },
+  "250hours": {
+    display: "250 hours",
+    isHidden: true,
+    discordRoleId: "799825381733433344",
+    category: "other",
+    description: "Achieve 250 hours of typing.",
+  },
+  "500hours": {
+    display: "500 hours",
+    isHidden: true,
+    discordRoleId: "951861792622125106",
+    category: "other",
+    description: "Achieve 500 hours of typing.",
+  },
+  "1000hours": {
+    display: "1000 hours",
+    isHidden: true,
+    discordRoleId: "1262175323588395100",
+    category: "other",
+    description: "Achieve 1000 hours of typing.",
+  },
+  ultimateMonkeyFlex: {
+    display: "Ultimate Monkey Flex",
+    isHidden: true,
+    discordRoleId: "768497815496032266",
+    category: "champions",
+    description: "Have the most champion roles in the server.",
+  },
+  oneRoleToRuleThemAll: {
+    display: "One role to rule them all",
+    isHidden: true,
+    discordRoleId: "758784729151176755",
+    category: "champions",
+    description: "Have the most challenge roles in the server.",
+  },
+  doYouKnowTheDefinitionOfInsanity: {
+    display: "Do You Know The Definition Of Insanity",
+    isHidden: true,
+    discordRoleId: "736527448757370880",
+    category: "champions",
+    description: "Complete the longest typing session in Monkeytype history.",
+  },
+  oneHourChampion: {
+    display: "One Hour Champion",
+    isHidden: true,
+    discordRoleId: "728650773503934464",
+    category: "champions",
+    description: "Achieve the highest WPM in a one-hour test.",
+  },
+  fluidChampion: {
+    display: "Fluid Champion",
+    isHidden: true,
+    discordRoleId: "740568718719058041",
+    category: "champions",
+    description: "Achieve the highest WPM in a 60-second layoutfluid test.",
+  },
+  accuracyChampion: {
+    display: "Accuracy Champion",
+    isHidden: true,
+    discordRoleId: "768499906511110235",
+    category: "champions",
+    description: "Achieve the longest Master mode test.",
+  },
+  literallyTheFastestPersonHere: {
+    display: "Literally The Fastest Person Here",
+    isHidden: true,
+    discordRoleId: "984922187385405460",
+    category: "champions",
+    description:
+      "Achieve 1st place on the time 60 English all-time leaderboard.",
+  },
+  bananaHoarder: {
+    display: "Banana Hoarder",
+    isHidden: true,
+    discordRoleId: "773590599227932754",
+    category: "champions",
+    description: "Achieve 1st place on the banana leaderboard.",
+  },
+  alpha: {
+    display: "A l p h a",
+    isHidden: true,
+    discordRoleId: "773590612762034176",
+    category: "speed",
+    description:
+      "Type a b c d e f g h i j k l m n o p q r s t u v w x y z in LESS than 3.37 seconds.",
+  },
+  blazeIt: {
+    display: "Blaze It",
+    isHidden: true,
+    discordRoleId: "803650889461006346",
+    category: "speed",
+    description: "Achieve 420 WPM (can be rounded) by typing weed.",
+  },
+  burstMaster: {
+    display: "Burst Master",
+    isHidden: true,
+    discordRoleId: "757330922726096917",
+    category: "speed",
+    description: "Achieve 200+ WPM on the words 10 mode.",
+  },
+  burstGod: {
+    display: "Burst God",
+    isHidden: true,
+    discordRoleId: "757330992821305366",
+    category: "speed",
+    description: "Achieve 250+ WPM on the words 10 mode.",
+  },
+  shotgun: {
+    display: "Shotgun",
+    isHidden: true,
+    discordRoleId: "757331084366184539",
+    category: "speed",
+    description: "Achieve 300+ WPM on the words 10 mode.",
+  },
+  nuke: {
+    display: "Nuke",
+    isHidden: true,
+    discordRoleId: "912522664604758016",
+    category: "speed",
+    description: "Achieve 350+ WPM on the words 10 mode.",
+  },
+  orbitalCannon: {
+    display: "Orbital Cannon",
+    isHidden: true,
+    discordRoleId: "1084094136199684196",
+    category: "speed",
+    description: "Achieve 400+ WPM on the words 10 mode.",
+  },
+  marathonSprinter: {
+    display: "Marathon Sprinter",
+    isHidden: true,
+    discordRoleId: "878715678830510111",
+    category: "speed",
+    description: "Achieve 200+ WPM on a one-hour test.",
+  },
+  flawless: {
+    display: "Flawless",
+    isHidden: true,
+    discordRoleId: "767070815987695637",
+    category: "accuracy",
+    description:
+      "Complete back-to-back tests in Master Mode: 15, 30, 60, 120 seconds and 10, 25, 50, 100 words. If you fail one, restart from the beginning. Order of modes is up to you.",
+  },
+  hesBeginningToBelieve: {
+    display: "He's beginning to believe",
+    isHidden: true,
+    discordRoleId: "979729541096431688",
+    category: "accuracy",
+    description:
+      "Achieve 100% accuracy in a 2-minute test under specified settings.",
+  },
+  goldenHands: {
+    display: "Golden Hands",
+    isHidden: true,
+    discordRoleId: "851096860969795684",
+    category: "accuracy",
+    description: "Complete a 1-hour Master mode test.",
+  },
+  fingerBlaster: {
+    display: "Finger Blaster",
+    isHidden: true,
+    discordRoleId: "787509606992969728",
+    category: "other",
+    description:
+      "Achieve at least 60 WPM using one finger on a 60-second test.",
+  },
+  whyAreTheWallsMoving: {
+    display: "Why are the walls moving?",
+    isHidden: true,
+    discordRoleId: "910078947302191114",
+    category: "other",
+    description: "Complete a one-hour test using tape mode and letter mode.",
+  },
+  stickman: {
+    display: "stickman",
+    isHidden: true,
+    discordRoleId: "788107449151651890",
+    category: "other",
+    description:
+      "Complete a one-hour test using chopsticks/pencils/pens (you get the idea) with both hands.",
+  },
+  waveDynamics: {
+    display: "Wave Dynamics",
+    isHidden: true,
+    discordRoleId: "1443311363794407586",
+    category: "other",
+    description:
+      "Achieve 30 wpm 100% acc on a 60 second test with the raw graph being a perfect wave (to achieve this, type 5 characters in 1 second, pause for 1 second, repeat). Must be completed with random words (time 60 mode). Must include words history in the screenshot.",
+  },
+  apesTogetherStrong: {
+    display: "Apes Together Strong",
+    isHidden: true,
+    discordRoleId: "863193901153779713",
+    category: "other",
+    description:
+      "Complete a one-hour test in a Tribe lobby with at least 10 players.",
+  },
+  apesTogetherStronger: {
+    display: "Apes Together Stronger",
+    isHidden: true,
+    discordRoleId: "898964842726195220",
+    category: "other",
+    description:
+      "Complete a two-hour test in a Tribe lobby with at least 10 players.",
+  },
+  apesTogetherInvincible: {
+    display: "Apes Together Invincible",
+    isHidden: true,
+    discordRoleId: "1367559768746758194",
+    category: "other",
+    description:
+      "Complete a three-hour test in a Tribe lobby with at least 10 players.",
+  },
+  footBarbarian: {
+    display: "Foot Barbarian",
+    isHidden: true,
+    discordRoleId: "1025814170962231336",
+    category: "other",
+    description: "Complete a two-hour test using your feet.",
+  },
+  bigFoot: {
+    display: "Big Foot",
+    isHidden: true,
+    discordRoleId: "1030531753082900610",
+    category: "other",
+    description: "Complete a three-hour test using your feet.",
+  },
+  woodPecker: {
+    display: "Wood Pecker",
+    isHidden: true,
+    discordRoleId: "753724531666845830",
+    category: "other",
+    description: "Complete a 200-word test using only your nose.",
+  },
+  mrWorldwide: {
+    display: "Mr Worldwide",
+    isHidden: true,
+    discordRoleId: "762345904279519292",
+    category: "other",
+    description:
+      "Achieve 100 WPM on a 60-second test in 5 different languages (English, English expanded, English 10k and coding languages all count as English which is 1 language).",
+  },
+  internalMetronome: {
+    display: "Internal Metronome",
+    isHidden: true,
+    discordRoleId: "934067904884916234",
+    category: "other",
+    description:
+      "Complete a 60-second test (standard English) with a minimum consistency of 90%, 100% accuracy and within 25% of your 60-second personal best.",
+  },
+  roleCollector: {
+    display: "Role Collector",
+    isHidden: true,
+    discordRoleId: "739306809554108520",
+    category: "roleCount",
+    description: "Collect 10 roles.",
+  },
+  roleEnthusiast: {
+    display: "Role Enthusiast",
+    isHidden: true,
+    discordRoleId: "753360663656529931",
+    category: "roleCount",
+    description: "Collect 20 roles.",
+  },
+  roleAddict: {
+    display: "Role Addict",
+    isHidden: true,
+    discordRoleId: "758783172833443850",
+    category: "roleCount",
+    description: "Collect 30 roles.",
+  },
+  roleOverdose: {
+    display: "Role Overdose",
+    isHidden: true,
+    discordRoleId: "758783365930811423",
+    category: "roleCount",
+    description: "Collect 40 roles.",
+  },
+  roleZombie: {
+    display: "Role Zombie",
+    isHidden: true,
+    discordRoleId: "762701731993616405",
+    category: "roleCount",
+    description: "Collect 50 roles.",
+  },
+  roleOverlord: {
+    display: "Role Overlord",
+    isHidden: true,
+    discordRoleId: "805519411502514187",
+    category: "roleCount",
+    description: "Collect 60 roles.",
+  },
+  roleImp: {
+    display: "Role Imp",
+    isHidden: true,
+    discordRoleId: "906565521271558214",
+    category: "roleCount",
+    description: "Collect 70 roles.",
+  },
+  fiftyShadesOfHell: {
+    display: "50 Shades of Hell",
+    isHidden: true,
+    discordRoleId: "751802155119280128",
+    category: "script",
+    description: "Type out your favourite chapter from 50 Shades of Gray.",
   },
 };
 
