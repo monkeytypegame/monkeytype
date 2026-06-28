@@ -1330,7 +1330,9 @@ async function loadWordsHistory(): Promise<boolean> {
     i.trimEnd(),
   );
   const burstHistory = getWordBurstHistory(TestState.lastEventLog);
-  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
+  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog).map(
+    (i) => i.trimEnd(),
+  );
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
