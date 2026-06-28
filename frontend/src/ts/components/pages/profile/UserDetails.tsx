@@ -473,7 +473,7 @@ function TypingStats(props: {
         </div>
 
         <Show when={props.completedChallenges !== undefined}>
-          <div class="flex flex-col">
+          <div class="hidden md:flex md:flex-col">
             <div class="text-em-sm text-sub">challenges</div>
             <div class="text-em-2xl leading-8">
               {props.completedChallenges}{" "}

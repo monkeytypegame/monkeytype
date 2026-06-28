@@ -6,11 +6,18 @@ import {
 import { ChallengeName } from "@monkeytype/schemas/challenges";
 import { UserChallenges } from "@monkeytype/schemas/users";
 import { typedEntries } from "@monkeytype/util/objects";
+import { format as dateFormat } from "date-fns";
 import { createMemo, For, Show } from "solid-js";
 
+import { showModal } from "../../../states/modals";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
+import { AnimatedModal } from "../../common/AnimatedModal";
+import { Balloon } from "../../common/Balloon";
+import { Bar } from "../../common/Bar";
+import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
+import { H2 } from "../../common/Headers";
 
 function sortNewestFirst(
   a: [ChallengeName, { addedAt?: number | undefined } | undefined],
@@ -48,37 +55,65 @@ export function Challenges(props: {
     getRegularChallenges().filter((it) => !completedNames().has(it.name)),
   );
 
+  const numIcons = () => 10;
+
+  const unlockPercentage = () =>
+    (Object.keys(props.challenges ?? {}).length * 100) /
+    getRegularChallenges().length;
+
   return (
     <Show when={props.challenges !== undefined}>
-      <div class="flex flex-col gap-4 rounded bg-sub-alt p-4">
-        <div class="flex w-full flex-row">
-          <h3>Challenges</h3>
-          <div class="ml-auto text-sub">
-            {Object.keys(props.challenges ?? {}).length} /{" "}
-            {getRegularChallenges().length} completed
-          </div>
+      <ChallengesModal completed={completedChallenges()} />
+      <div class="flex w-full min-w-0 flex-col gap-4 rounded bg-sub-alt p-4">
+        <h3>Challenges</h3>
+        <div class="text-sub">
+          You&apos;ve unlocked {Object.keys(props.challenges ?? {}).length}/
+          {getRegularChallenges().length} ({Math.round(unlockPercentage())}%)
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <For each={completedChallenges()}>
+        <Bar bg="bg" fill="main" percent={unlockPercentage()} />
+
+        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-3">
+          <For each={completedChallenges().slice(0, 1)}>
             {(challenge) => (
-              <ChallengeItem completed={true} challenge={challenge} />
+              <ChallengeItem
+                completed={true}
+                challenge={challenge}
+                unlocked={props.challenges?.[challenge.name]?.addedAt}
+              />
             )}
           </For>
-          <Show when={props.isAccountPage}>
-            <For each={incompleteChallenges()}>
-              {(challenge) => (
-                <ChallengeItem completed={false} challenge={challenge} />
-              )}
-            </For>
-          </Show>
         </div>
+        <ChallengeIcons
+          challenges={completedChallenges()}
+          max={numIcons()}
+          completed={true}
+        />
+
+        <p class="-mb-2 text-sub">Locked Challenges</p>
+        <ChallengeIcons
+          challenges={incompleteChallenges()}
+          max={numIcons()}
+          completed={false}
+        />
+
+        <Button
+          variant="text"
+          text="View Challenges"
+          class="ml-auto shrink-0"
+          onClick={() => showModal("AllChallengesModal")}
+        />
       </div>
     </Show>
   );
 }
 
-function ChallengeItem(props: { completed: boolean; challenge: Challenge }) {
+function ChallengeItem(props: {
+  completed: boolean;
+  challenge: Challenge;
+  iconOnly?: boolean;
+  unlocked?: number;
+}) {
   const icon = (): FaSolidIcon => {
     switch (props.challenge.category) {
       case "accuracy":
@@ -98,26 +133,73 @@ function ChallengeItem(props: { completed: boolean; challenge: Challenge }) {
         return "fa-trophy";
     }
   };
+
+  const unlocked = createMemo(() =>
+    props.unlocked !== undefined
+      ? `\n\nunlocked: ${dateFormat(props.unlocked, "dd MMM yyyy HH:mm")}`
+      : "",
+  );
+
   return (
-    <div
+    <Balloon
+      text={`${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`}
+      break
+      position="up"
+      length="xlarge"
       class={cn(
-        "flex flex-row gap-4 rounded bg-bg p-4",
+        "flex flex-row items-center gap-4 rounded",
         props.completed ? "text-text" : "text-sub",
       )}
     >
       <div
         class={cn(
-          props.completed ? "bg-main" : "bg-sub-alt",
+          props.completed ? "bg-main" : "bg-bg",
           props.completed ? "text-bg" : "text-sub",
-          "flex aspect-square h-14 items-center justify-center rounded-full",
+          "flex aspect-square items-center justify-center rounded",
+          "h-10",
         )}
       >
         <Fa icon={icon()} size={1.25} />
       </div>
-      <div>
-        <h4 class="text-md">{props.challenge.display}</h4>
-        <p class="text-xs">{props.challenge.description}</p>
-      </div>
+      <Show when={!props.iconOnly}>
+        <div>
+          <h4 class="text-md">{props.challenge.display}</h4>
+          <p class="text-xs">{props.challenge.description}</p>
+        </div>
+      </Show>
+    </Balloon>
+  );
+}
+
+function ChallengesModal(_props: { completed: Challenge[] }) {
+  return (
+    <AnimatedModal id="AllChallengesModal">
+      <H2 text="Challenges" />
+    </AnimatedModal>
+  );
+}
+
+function ChallengeIcons(props: {
+  challenges: Challenge[];
+  max: number;
+  completed: boolean;
+}) {
+  return (
+    <div class="flex gap-2">
+      <For each={props.challenges.slice(0, props.max)}>
+        {(challenge) => (
+          <ChallengeItem
+            completed={props.completed}
+            challenge={challenge}
+            iconOnly
+          />
+        )}
+      </For>
+      <Show when={props.challenges.length > props.max}>
+        <div class="flex h-full items-center px-4 text-right">
+          + {props.challenges.length - props.max}
+        </div>
+      </Show>
     </div>
   );
 }

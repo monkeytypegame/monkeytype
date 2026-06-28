@@ -30,7 +30,8 @@ export type ModalId =
   | "AddPresetModal"
   | "EditPresetModal"
   | "EditProfile"
-  | "ViewApeKey";
+  | "ViewApeKey"
+  | "AllChallengesModal";
 
 export type ModalVisibility = {
   visible: boolean;
