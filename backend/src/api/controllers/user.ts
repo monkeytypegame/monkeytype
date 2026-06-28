@@ -668,6 +668,7 @@ export async function linkDiscord(
     "banned",
     "discordId",
     "lbOptOut",
+    "challenges",
   ]);
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
@@ -676,8 +677,27 @@ export async function linkDiscord(
   const { id: discordId, avatar: discordAvatar } =
     await DiscordUtils.getDiscordUser(tokenType, accessToken);
 
+  let roles = await DiscordUtils.getDiscordRoleIds(
+    tokenType,
+    accessToken,
+    scope,
+  );
+
+  const challenges: UserChallenges = Object.fromEntries(
+    roles
+      .map((roleId) => challengeNameByRoleId[roleId])
+      .filter((it) => it !== undefined)
+      .filter((it) => userInfo.challenges?.[it] === undefined)
+      .map((it) => [it, { addedAt: Date.now() }]),
+  );
+
   if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
-    await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
+    await UserDAL.linkDiscord(
+      uid,
+      userInfo.discordId,
+      discordAvatar,
+      challenges,
+    );
     return new MonkeyResponse("Discord avatar updated", {
       discordId,
       discordAvatar,
@@ -703,19 +723,6 @@ export async function linkDiscord(
   if (await BlocklistDal.contains({ discordId })) {
     throw new MonkeyError(409, "The Discord account is blocked");
   }
-
-  let roles = await DiscordUtils.getDiscordRoleIds(
-    tokenType,
-    accessToken,
-    scope,
-  );
-
-  const challenges: UserChallenges = Object.fromEntries(
-    roles
-      .map((roleId) => challengeNameByRoleId[roleId])
-      .filter((it) => it !== undefined)
-      .map((it) => [it, {}]),
-  );
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar, challenges);
 

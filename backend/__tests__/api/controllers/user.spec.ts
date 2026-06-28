@@ -1597,6 +1597,7 @@ describe("user controller test", () => {
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(async () => {
+      vi.useFakeTimers();
       isStateValidForUserMock.mockResolvedValue(true);
       getUserMock.mockResolvedValue({} as any);
       getDiscordUserMock.mockResolvedValue({
@@ -1605,6 +1606,7 @@ describe("user controller test", () => {
       });
       getDiscordRoleIdsMock.mockResolvedValue([
         getChallenge("100hours").discordRoleId,
+        getChallenge("250hours").discordRoleId,
       ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);
@@ -1623,10 +1625,12 @@ describe("user controller test", () => {
         georgeLinkDiscordMock,
         addImportantLogMock,
       ].forEach((it) => it.mockClear());
+      vi.useRealTimers();
     });
 
     it("should link discord", async () => {
       //GIVEN
+
       getUserMock.mockResolvedValue({} as any);
 
       //WHEN
@@ -1676,7 +1680,8 @@ describe("user controller test", () => {
         "discordUserId",
         "discordUserAvatar",
         {
-          "100hours": {},
+          "100hours": { addedAt: Date.now() },
+          "250hours": { addedAt: Date.now() },
         },
       );
       expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
@@ -1693,7 +1698,10 @@ describe("user controller test", () => {
 
     it("should update existing discord avatar", async () => {
       //GIVEN
-      getUserMock.mockResolvedValue({ discordId: "existingDiscordId" } as any);
+      getUserMock.mockResolvedValue({
+        discordId: "existingDiscordId",
+        challenges: { "100hours": { addedAt: 1 } },
+      } as any);
 
       //WHEN
       const { body } = await mockApp
@@ -1718,6 +1726,7 @@ describe("user controller test", () => {
         uid,
         "existingDiscordId",
         "discordUserAvatar",
+        { "250hours": { addedAt: Date.now() } }, //only newly added
       );
       expect(isDiscordIdAvailableMock).not.toHaveBeenCalled();
       expect(blocklistContainsMock).not.toHaveBeenCalled();
@@ -2980,7 +2989,7 @@ describe("user controller test", () => {
         "2024": fillYearWithDay(94),
       },
       challenges: {
-        "100hours": {},
+        "100hours": { addedAt: 1 },
       },
     };
 

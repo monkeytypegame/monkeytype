@@ -631,7 +631,7 @@ export async function linkDiscord(
 export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
     { uid },
-    { $unset: { discordId: "", discordAvatar: "", challenges: "" } },
+    { $unset: { discordId: "", discordAvatar: "" } },
     { stack: "unlink discord" },
   );
 }

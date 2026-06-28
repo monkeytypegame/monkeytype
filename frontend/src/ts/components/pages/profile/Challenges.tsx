@@ -20,11 +20,6 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { H2 } from "../../common/Headers";
 
-function sortChallenges(a: Challenge, b: Challenge): number {
-  if (a.initialCount !== b.initialCount) return a.initialCount - b.initialCount;
-  return a.name.localeCompare(b.name);
-}
-
 export function Challenges(props: {
   isAccountPage?: true;
   challenges: UserChallenges | undefined;
@@ -37,7 +32,11 @@ export function Challenges(props: {
       ][]
     )
       .map(([name]) => getChallenge(name))
-      .sort(sortChallenges)
+      .sort((a, b) =>
+        a.initialCount !== b.initialCount
+          ? a.initialCount - b.initialCount
+          : a.name.localeCompare(b.name),
+      )
       .filter((it) => it !== undefined),
   );
 
@@ -48,7 +47,11 @@ export function Challenges(props: {
   const incompleteChallenges = createMemo((): Challenge[] =>
     getRegularChallenges()
       .filter((it) => !completedNames().has(it.name))
-      .sort(sortChallenges),
+      .sort((a, b) =>
+        a.initialCount !== b.initialCount
+          ? b.initialCount - a.initialCount
+          : a.name.localeCompare(b.name),
+      ),
   );
 
   const maxIcons = createMemo(() => {
@@ -145,9 +148,13 @@ function ChallengeItem(props: {
 
   return (
     <Balloon
-      text={`${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`}
+      text={
+        props.iconOnly
+          ? `${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`
+          : ""
+      }
       break
-      position="right"
+      position={props.iconOnly ? "right" : "down"}
       length="xlarge"
       class={cn(
         "flex flex-row items-center gap-4 rounded",
