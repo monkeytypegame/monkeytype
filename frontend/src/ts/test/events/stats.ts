@@ -896,10 +896,7 @@ export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
         event.data.inputType === "insertText" ||
         event.data.inputType === "insertCompositionText"
       ) {
-        if (
-          event.data.inputStopped ||
-          (event.data.data === " " && event.data.commitsWord)
-        ) {
+        if (event.data.inputStopped) {
           continue;
         }
         currentChars[cursorPos] = event.data.data;
