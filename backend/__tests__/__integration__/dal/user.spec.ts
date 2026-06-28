@@ -1316,7 +1316,7 @@ describe("UserDal", () => {
     });
     it("should update", async () => {
       //given
-      const { uid } = await UserTestData.createUser({
+      const { uid, challenges } = await UserTestData.createUser({
         discordId: "discordId",
         discordAvatar: "discordAvatar",
         challenges: {
@@ -1332,7 +1332,7 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toBeUndefined();
       expect(read.discordAvatar).toBeUndefined();
-      expect(read.challenges).toBeUndefined();
+      expect(read.challenges).toEqual(challenges);
     });
   });
 

@@ -3087,7 +3087,7 @@ describe("user controller test", () => {
         }),
       );
 
-      expect(body.data.challenges).toEqual({ "100hours": {} });
+      expect(body.data.challenges).toEqual({ "100hours": { addedAt: 1 } });
     });
     it("should not get testActivity if disabled", async () => {
       //GIVEN
