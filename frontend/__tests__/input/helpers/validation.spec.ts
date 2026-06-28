@@ -179,7 +179,7 @@ describe("shouldGoToNextWord", () => {
         data: "a",
         inputValue: "test",
         targetWord: "test ",
-        isCommitCharacter: false,
+        commitCharacterType: false,
       }),
     ).toBe(false);
   });
@@ -191,7 +191,7 @@ describe("shouldGoToNextWord", () => {
         data: " ",
         inputValue: "test",
         targetWord: "test ",
-        isCommitCharacter: true,
+        commitCharacterType: "separator",
       }),
     ).toBe(true);
   });
@@ -202,10 +202,30 @@ describe("shouldGoToNextWord", () => {
         data: "\n",
         inputValue: "word",
         targetWord: "word\n",
-        isCommitCharacter: true,
+        commitCharacterType: "separator",
       }),
     ).toBe(true);
   });
+
+  // the empty-input guard must not block a nospace commit on a 1-letter word,
+  // otherwise such words can never be advanced
+  it.each([
+    { desc: "strictSpace on", strictSpace: true, difficulty: "normal" },
+    { desc: "difficulty expert", strictSpace: false, difficulty: "expert" },
+  ])(
+    "commits a nospace 1-letter word on empty input ($desc)",
+    ({ strictSpace, difficulty }) => {
+      replaceConfig({ strictSpace, difficulty } as any);
+      expect(
+        shouldGoToNextWord({
+          data: "a",
+          inputValue: "",
+          targetWord: "a",
+          commitCharacterType: "nospace",
+        }),
+      ).toBe(true);
+    },
+  );
 
   describe("Logic Checks", () => {
     it.each([
@@ -307,7 +327,7 @@ describe("shouldGoToNextWord", () => {
           data: " ",
           inputValue,
           targetWord,
-          isCommitCharacter: true,
+          commitCharacterType: "separator",
         }),
       ).toBe(expected);
     });

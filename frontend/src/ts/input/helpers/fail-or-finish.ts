@@ -1,5 +1,6 @@
 import { Config } from "../../config/store";
 import { whorf } from "../../utils/misc";
+import { type CommitCharacterType } from "./util";
 
 /**
  * Check if the test should fail due to minimum burst settings
@@ -45,9 +46,9 @@ export function checkIfFailedDueToDifficulty(options: {
   testInput: string;
   targetWord: string;
   correct: boolean;
-  isCommitCharacter: boolean;
+  commitCharacterType: CommitCharacterType | false;
 }): boolean {
-  const { data, testInput, correct, targetWord, isCommitCharacter } = options;
+  const { data, testInput, correct, targetWord, commitCharacterType } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
@@ -55,7 +56,7 @@ export function checkIfFailedDueToDifficulty(options: {
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
-    isCommitCharacter &&
+    commitCharacterType !== false &&
     // a leading separator (empty input) commits nothing and must not fail
     testInput.length > 0 &&
     testInput + data !== targetWord;

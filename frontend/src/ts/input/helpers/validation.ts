@@ -1,4 +1,5 @@
 import { Config } from "../../config/store";
+import { type CommitCharacterType } from "./util";
 
 /**
  * Check if the input data is correct
@@ -39,17 +40,24 @@ export function shouldGoToNextWord(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-  isCommitCharacter: boolean;
+  commitCharacterType: CommitCharacterType | false;
 }): boolean {
-  const { inputValue, targetWord, data, isCommitCharacter } = options;
+  const {
+    inputValue,
+    targetWord,
+    data,
+    commitCharacterType: commitType,
+  } = options;
 
-  if (!isCommitCharacter) return false;
+  if (commitType === false) return false;
 
   if (Config.mode === "zen") return true;
 
-  //strict space
+  //strict space: a leading separator on empty input must not skip the word.
+  //nospace commits (final letter of a 1-letter word) are legitimate here.
   if (
     inputValue.length === 0 &&
+    commitType === "separator" &&
     (Config.strictSpace || Config.difficulty !== "normal")
   ) {
     return false;

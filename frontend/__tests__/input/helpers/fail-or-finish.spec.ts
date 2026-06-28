@@ -135,7 +135,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "hello",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     {
@@ -145,7 +145,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "hello",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     //
@@ -156,7 +156,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "h",
       testInput: "hell",
       targetWord: "hello",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: false,
     },
     {
@@ -166,7 +166,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "hell",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     {
@@ -176,7 +176,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "o",
       testInput: "hell",
       targetWord: "hello",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: false,
     },
     {
@@ -186,7 +186,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "hello",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     //
@@ -197,7 +197,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "he",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: true,
     },
     {
@@ -207,7 +207,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     {
@@ -217,7 +217,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "h",
       testInput: "hell",
       targetWord: "hello",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: false,
     },
     {
@@ -227,7 +227,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "o",
       testInput: "hell",
       targetWord: "hello",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: false,
     },
     //
@@ -238,7 +238,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "h",
       testInput: "hell",
       targetWord: "hello",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: true,
     },
     {
@@ -248,7 +248,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
     {
@@ -258,7 +258,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: "a",
       testInput: "te",
       targetWord: "tea",
-      isCommitCharacter: false,
+      commitCharacterType: false,
       expected: false,
     },
     {
@@ -268,7 +268,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data: " ",
       testInput: "hello",
       targetWord: "hello ",
-      isCommitCharacter: true,
+      commitCharacterType: "separator",
       expected: false,
     },
   ])(
@@ -279,7 +279,7 @@ describe("checkIfFailedDueToDifficulty", () => {
       data,
       testInput,
       targetWord,
-      isCommitCharacter,
+      commitCharacterType,
       expected,
     }) => {
       replaceConfig(config as any);
@@ -288,7 +288,7 @@ describe("checkIfFailedDueToDifficulty", () => {
         testInput,
         targetWord,
         correct,
-        isCommitCharacter,
+        commitCharacterType: commitCharacterType as "separator" | false,
       });
       expect(result).toBe(expected);
     },

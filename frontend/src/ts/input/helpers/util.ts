@@ -1,25 +1,32 @@
 import { isFunboxActiveWithProperty } from "../../test/funbox/active";
 import { isSpace } from "../../utils/strings";
 
-export function isCommitCharacter(options: {
+/**
+ * What kind of commit a character triggers, or false if it does not commit.
+ * - "separator": a space or newline that ends the current word
+ * - "nospace": the final letter of a word in a nospace funbox
+ */
+export type CommitCharacterType = "separator" | "nospace";
+
+export function getCommitCharacterType(options: {
   data: string;
   inputValue: string;
   targetWord: string;
-}): boolean {
+}): CommitCharacterType | false {
   const { data, inputValue, targetWord } = options;
 
   if (isSpace(data)) {
-    return true;
+    return "separator";
   }
 
   if (data === "\n") {
-    return true;
+    return "separator";
   }
 
   const nospace = isFunboxActiveWithProperty("nospace");
 
   if (nospace && (inputValue + data).length === targetWord.length) {
-    return true;
+    return "nospace";
   }
 
   return false;

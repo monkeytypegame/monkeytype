@@ -9,7 +9,7 @@ import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
-import { isCommitCharacter } from "../helpers/util";
+import { getCommitCharacterType } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
 
 /**
@@ -61,7 +61,7 @@ export function onBeforeInsertText(data: string): boolean {
     Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
   const targetWord = currentWordTextWithCommit;
-  const isCommit = isCommitCharacter({
+  const commitCharacterType = getCommitCharacterType({
     data,
     inputValue,
     targetWord,
@@ -72,7 +72,7 @@ export function onBeforeInsertText(data: string): boolean {
       data,
       inputValue,
       targetWord,
-      isCommitCharacter: isCommit,
+      commitCharacterType,
     })
   ) {
     console.error("Hitting word limit");
@@ -91,7 +91,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    !isCommit &&
+    commitCharacterType === false &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
