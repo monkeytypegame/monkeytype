@@ -60,16 +60,15 @@ export function onBeforeInsertText(data: string): boolean {
   const inputLimit =
     Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
-  const targetWord = currentWordTextWithCommit;
   const commitCharacterType = getCommitCharacterType({
     data,
     inputValue,
-    targetWord,
+    targetWord: currentWordTextWithCommit,
   });
   const goingToNextWord = shouldGoToNextWord({
     data,
     inputValue,
-    targetWord,
+    targetWord: currentWordTextWithCommit,
     commitCharacterType,
   });
 
