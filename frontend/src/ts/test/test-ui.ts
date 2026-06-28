@@ -803,14 +803,24 @@ export async function updateWordLetters({
             }
             ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
           } else {
-            ret += `<letter class="incorrect ${tabChar}${nlChar}">${
+            let charString = currentLetter;
+
+            if (
               Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
-                ? inputChars[i] === " " || inputChars[i] === "\t"
-                  ? "_"
-                  : inputChars[i]
-                : currentLetter
-            }</letter>`;
+            ) {
+              charString = inputChars[i] ?? currentLetter;
+
+              if (charString === " ") {
+                charString = "_";
+              } else if (charString === "\t") {
+                charString = "_";
+              } else if (charString === "\n") {
+                charString = "";
+              }
+            }
+
+            ret += `<letter class="incorrect ${tabChar}${nlChar}">${charString}</letter>`;
             if (
               Config.indicateTypos === "below" ||
               Config.indicateTypos === "both"
