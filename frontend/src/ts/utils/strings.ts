@@ -320,6 +320,12 @@ export function areCharactersVisuallyEqual(
     return true;
   }
 
+  // Any two Unicode spaces are interchangeable, so an IME-produced space
+  // (e.g. U+3000) is treated as the regular U+0020 used as the word separator
+  if (isSpace(char1) && isSpace(char2)) {
+    return true;
+  }
+
   // Check each equivalence map
   for (const map of CHAR_EQUIVALENCE_SETS) {
     if (map.has(char1) && map.has(char2)) {
