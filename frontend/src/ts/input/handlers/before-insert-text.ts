@@ -3,7 +3,6 @@ import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
-import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
@@ -11,6 +10,7 @@ import { wordsHaveNewline } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
+import { isSpace } from "../../utils/strings";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -30,15 +30,29 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
+  //only allow newlines if the test has newlines or in zen mode
+  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
+    return true;
+  }
+
+  //prevent space in nospace funbox
+  if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
+    return true;
+  }
+
   const { inputValue } = getInputElementValue();
   const currentWordTextWithCommit =
     TestWords.words.getCurrent()?.textWithCommit ?? "";
-  const dataIsSpace = isSpace(data);
+  const commitCharacterType = getCommitCharacterType({
+    data,
+    inputValue,
+    targetWord: currentWordTextWithCommit,
+  });
 
-  //prevent space from being inserted if input is empty
+  //prevent separator from being inserted if input is empty
   //allow if strict space is enabled
   if (
-    dataIsSpace &&
+    commitCharacterType === "separator" &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
@@ -46,25 +60,10 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  //prevent space in nospace funbox
-  if (dataIsSpace && isFunboxActiveWithProperty("nospace")) {
-    return true;
-  }
-
-  //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
-    return true;
-  }
-
   // block input if the word is too long
   const inputLimit =
     Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
-  const commitCharacterType = getCommitCharacterType({
-    data,
-    inputValue,
-    targetWord: currentWordTextWithCommit,
-  });
   const goingToNextWord = shouldGoToNextWord({
     data,
     inputValue,
