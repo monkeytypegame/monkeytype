@@ -320,9 +320,9 @@ export function areCharactersVisuallyEqual(
     return true;
   }
 
-  // Any two Unicode spaces are interchangeable, so an IME-produced space
-  // (e.g. U+3000) is treated as the regular U+0020 used as the word separator.
-  // The U+0020 guard short-circuits the common letter case before calling isSpace.
+  // Treat any Unicode space as equivalent to the regular U+0020 separator.
+  // This lets IME-produced spaces (e.g. U+3000) match stored word separators.
+  // The U+0020 guard short-circuits the common non-space case before calling isSpace.
   if ((char1 === " " || char2 === " ") && isSpace(char1) && isSpace(char2)) {
     return true;
   }
