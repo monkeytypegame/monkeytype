@@ -80,13 +80,10 @@ class Words {
     if (this.length === 0) return;
     const lastWord = this.list[this.length - 1];
     if (lastWord === undefined) return;
-    if (
-      lastWord.textWithCommit.endsWith(" ") ||
-      lastWord.textWithCommit.endsWith("\n")
-    ) {
-      lastWord.textWithCommit = lastWord.textWithCommit.slice(0, -1);
-      lastWord.display = lastWord.textWithCommit;
+    if (lastWord.commit === " " || lastWord.commit === "\n") {
       lastWord.commit = "";
+      lastWord.textWithCommit = lastWord.text;
+      lastWord.display = lastWord.text;
     }
   }
 }
