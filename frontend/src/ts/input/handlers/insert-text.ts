@@ -246,7 +246,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   /*
   Space/word-navigation variables:
-   - commitCharacterType: type of the commit character, flase if not a commit character
+   - commitCharacterType: type of the commit character, false if not a commit character
    - goingToNextWord: should this input commit the current word and move on?
      The separator is part of the target word (stored as a trailing space), so a
      space/newline matches it positionally; navigation can still be blocked by

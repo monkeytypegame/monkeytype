@@ -66,6 +66,9 @@ export function onBeforeInsertText(data: string): boolean {
     inputValue,
     targetWord,
   });
+  // shouldGoToNextWord runs here on the raw (pre-normalization) data, but only
+  // gated behind overLimit: when the input is 20+ chars too long, the commit
+  // equality is false for a regular space too, so an IME space does not diverge.
   if (
     overLimit &&
     !shouldGoToNextWord({

@@ -99,6 +99,9 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
   } else if (inputType === "deleteContentBackward") {
     const word = getInputForWord(TestState.activeWordIndex);
     if (nospaceEnabled) {
+      // nospace has no separator, so the prior word's commit was its last
+      // letter; a single backspace deletes that letter (same as non-nospace
+      // deletes the separator below)
       setInputElementValue(word.slice(0, -1));
     } else if (word.endsWith("\n") || word.endsWith(" ")) {
       setInputElementValue(word.slice(0, -1));
