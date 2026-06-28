@@ -1251,47 +1251,47 @@ export function setJoiningClass(isEnabled: boolean): void {
 }
 
 function buildWordLettersHTML(
-  charCount: number,
   input: string,
   corrected: string,
-  inputCharacters: string[],
-  wordCharacters: string[],
-  correctedCharacters: string[],
-  containsKorean: boolean,
+  targetWord: string,
 ): string {
   let out = "";
-  for (let c = 0; c < charCount; c++) {
-    let correctedChar;
-    try {
-      correctedChar = !containsKorean
-        ? correctedCharacters[c]
-        : Hangul.assemble(corrected.split(""))[c];
-    } catch (e) {
-      correctedChar = undefined;
+  for (
+    let c = 0;
+    c < Math.max(targetWord.length, input.length, corrected.length);
+    c++
+  ) {
+    let inputChar = Strings.splitIntoCharacters(input)[c];
+    let targetChar = Strings.splitIntoCharacters(targetWord)[c];
+
+    if (
+      (targetChar === " " || targetChar === "\n") &&
+      inputChar !== undefined
+    ) {
+      continue;
     }
+
+    let correctedChar = Strings.splitIntoCharacters(corrected)[c];
     let extraCorrected = "";
-    const historyWord: string = !containsKorean
+    const historyWord: string = !TestState.koreanStatus
       ? corrected
       : Hangul.assemble(corrected.split(""));
     if (
-      c + 1 === charCount &&
+      c + 1 === Math.max(input.length, corrected.length) &&
       historyWord !== undefined &&
       historyWord.length > input.length
     ) {
       extraCorrected = "extraCorrected";
     }
 
-    let displayLetter = inputCharacters[c];
+    let displayLetter = inputChar;
     if (displayLetter === " ") {
       displayLetter = "_";
     }
 
-    if (Config.mode === "zen" || wordCharacters[c] !== undefined) {
-      if (Config.mode === "zen" || inputCharacters[c] === wordCharacters[c]) {
-        if (
-          correctedChar === inputCharacters[c] ||
-          correctedChar === undefined
-        ) {
+    if (Config.mode === "zen" || targetChar !== undefined) {
+      if (Config.mode === "zen" || inputChar === targetChar) {
+        if (correctedChar === inputChar || correctedChar === undefined) {
           out += `<letter class="correct ${extraCorrected}">${displayLetter}</letter>`;
         } else {
           out += `<letter class="corrected ${extraCorrected}">${
@@ -1299,15 +1299,15 @@ function buildWordLettersHTML(
           }</letter>`;
         }
       } else {
-        if (inputCharacters[c] === getCurrentInput()) {
+        if (inputChar === getCurrentInput()) {
           out += `<letter class='correct ${extraCorrected}'>${
-            wordCharacters[c]
+            targetChar
           }</letter>`;
-        } else if (inputCharacters[c] === undefined) {
-          out += `<letter>${wordCharacters[c]}</letter>`;
+        } else if (inputChar === undefined) {
+          out += `<letter>${targetChar}</letter>`;
         } else {
           out += `<letter class="incorrect ${extraCorrected}">${
-            wordCharacters[c]
+            targetChar
           }</letter>`;
         }
       }
@@ -1326,22 +1326,17 @@ async function loadWordsHistory(): Promise<boolean> {
     return false;
   }
 
-  const inputHistory = getInputHistory(TestState.lastEventLog).map((i) =>
-    i.trimEnd(),
-  );
+  const inputHistory = getInputHistory(TestState.lastEventLog);
   const burstHistory = getWordBurstHistory(TestState.lastEventLog);
-  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog).map(
-    (i) => i.trimEnd(),
-  );
+
+  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
-    const corrected = correctedHistory[i];
-    const word = TestWords.words.get(i)?.text ?? "";
-    const koreanRegex =
-      /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
-    const containsKorean =
-      koreanRegex.test(input ?? "") || koreanRegex.test(word);
+    const target = TestWords.words.get(i)?.textWithCommit ?? "";
+    const corrected = TestState.koreanStatus
+      ? Hangul.assemble((correctedHistory[i] ?? "").split(""))
+      : correctedHistory[i];
 
     const wordEl = document.createElement("div");
     wordEl.className = "word";
@@ -1355,13 +1350,13 @@ async function loadWordsHistory(): Promise<boolean> {
         throw new Error("empty input word");
       }
 
-      const isIncorrectWord = input !== word;
+      const isIncorrectWord = input !== target;
       const isLastWord = i === inputHistoryLength - 1;
       const isTimedTest =
         Config.mode === "time" ||
         (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
         (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-      const isPartiallyCorrect = word.startsWith(input);
+      const isPartiallyCorrect = target.startsWith(input);
 
       const shouldShowError =
         Config.mode !== "zen" &&
@@ -1376,42 +1371,24 @@ async function loadWordsHistory(): Promise<boolean> {
         wordEl.setAttribute("burst", String(burstValue));
       }
 
+      let inputAttribute = input;
+
       if (corrected !== undefined && corrected !== "") {
-        const correctedChar = !containsKorean
-          ? corrected
-          : Hangul.assemble(corrected.split(""));
-        wordEl.setAttribute("input", correctedChar.replace(/ /g, "_"));
-      } else {
-        wordEl.setAttribute("input", input.replace(/ /g, "_"));
+        inputAttribute = corrected;
       }
 
-      const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word);
-      const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
-
-      let loop;
-      if (Config.mode === "zen" || input.length > word.length) {
-        //input is longer - extra characters possible (loop over input)
-        loop = inputCharacters.length;
-      } else {
-        //input is shorter or equal (loop over word list)
-        loop = wordCharacters.length;
+      if (inputAttribute.length >= target.length) {
+        inputAttribute = inputAttribute.trimEnd();
       }
+
+      wordEl.setAttribute("input", inputAttribute);
 
       if (corrected === undefined) throw new Error("empty corrected word");
 
-      wordEl.innerHTML = buildWordLettersHTML(
-        loop,
-        input,
-        corrected,
-        inputCharacters,
-        wordCharacters,
-        correctedCharacters,
-        containsKorean,
-      );
+      wordEl.innerHTML = buildWordLettersHTML(input, corrected, target);
     } catch (e) {
       try {
-        for (let char of word) {
+        for (let char of target) {
           if (char === " ") {
             char = "_";
           }
@@ -1469,9 +1446,10 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
   ResultWordHighlight.updateToggleWordsHistoryTime();
 
   if (resultWordsHistoryEl.isHidden()) {
-    if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
-      await loadWordsHistory();
-    }
+    // if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+    resultWordsHistoryEl.qsa(".words .word")?.remove();
+    await loadWordsHistory();
+    // }
     void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
     void applyBurstHeatmap();
   } else {
