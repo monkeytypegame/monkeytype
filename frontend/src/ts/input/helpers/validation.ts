@@ -35,6 +35,8 @@ export function isCharCorrect(options: {
  * @param options.data - Input data
  * @param options.inputValue - Current input value
  * @param options.targetWord - Target word
+ * @param options.commitCharacterType - Type of the commit character, false if not a commit character
+ * @returns Whether to move to the next word
  */
 export function shouldGoToNextWord(options: {
   data: string;
