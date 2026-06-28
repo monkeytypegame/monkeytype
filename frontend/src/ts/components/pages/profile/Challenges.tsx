@@ -9,6 +9,7 @@ import { typedEntries } from "@monkeytype/util/objects";
 import { format as dateFormat } from "date-fns";
 import { createMemo, For, Show } from "solid-js";
 
+import { bp } from "../../../states/breakpoints";
 import { showModal } from "../../../states/modals";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
@@ -19,16 +20,9 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { H2 } from "../../common/Headers";
 
-function sortNewestFirst(
-  a: [ChallengeName, { addedAt?: number | undefined } | undefined],
-  b: [ChallengeName, { addedAt?: number | undefined } | undefined],
-): number {
-  const aHas = a[1]?.addedAt !== undefined;
-  const bHas = b[1]?.addedAt !== undefined;
-  if (aHas && !bHas) return -1;
-  if (!aHas && bHas) return 1;
-  if (aHas && bHas) return (b[1]?.addedAt ?? 0) - (a[1]?.addedAt ?? 0);
-  return a[0].localeCompare(b[0]);
+function sortChallenges(a: Challenge, b: Challenge): number {
+  if (a.initialCount !== b.initialCount) return a.initialCount - b.initialCount;
+  return a.name.localeCompare(b.name);
 }
 
 export function Challenges(props: {
@@ -42,8 +36,8 @@ export function Challenges(props: {
         { addedAt?: number | undefined } | undefined,
       ][]
     )
-      .sort(sortNewestFirst)
       .map(([name]) => getChallenge(name))
+      .sort(sortChallenges)
       .filter((it) => it !== undefined),
   );
 
@@ -52,10 +46,20 @@ export function Challenges(props: {
   );
 
   const incompleteChallenges = createMemo((): Challenge[] =>
-    getRegularChallenges().filter((it) => !completedNames().has(it.name)),
+    getRegularChallenges()
+      .filter((it) => !completedNames().has(it.name))
+      .sort(sortChallenges),
   );
 
-  const numIcons = () => 10;
+  const maxIcons = createMemo(() => {
+    const points = bp();
+    if (points.lg) return 15;
+    if (points.md) return 10;
+    if (points.xs) return 5;
+    if (points.xxs) return 3;
+
+    return 7;
+  });
 
   const unlockPercentage = () =>
     (Object.keys(props.challenges ?? {}).length * 100) /
@@ -85,15 +89,15 @@ export function Challenges(props: {
           </For>
         </div>
         <ChallengeIcons
-          challenges={completedChallenges()}
-          max={numIcons()}
+          challenges={completedChallenges().slice(1, -1)}
+          max={maxIcons()}
           completed={true}
         />
 
         <p class="-mb-2 text-sub">Locked Challenges</p>
         <ChallengeIcons
           challenges={incompleteChallenges()}
-          max={numIcons()}
+          max={maxIcons()}
           completed={false}
         />
 
@@ -144,7 +148,7 @@ function ChallengeItem(props: {
     <Balloon
       text={`${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`}
       break
-      position="up"
+      position="right"
       length="xlarge"
       class={cn(
         "flex flex-row items-center gap-4 rounded",
