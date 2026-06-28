@@ -77,17 +77,16 @@ export function Challenges(props: {
 
         <Bar bg="bg" fill="main" percent={unlockPercentage()} />
 
-        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-3">
-          <For each={completedChallenges().slice(0, 1)}>
-            {(challenge) => (
-              <ChallengeItem
-                completed={true}
-                challenge={challenge}
-                unlocked={props.challenges?.[challenge.name]?.addedAt}
-              />
-            )}
-          </For>
-        </div>
+        <For each={completedChallenges().slice(0, 1)}>
+          {(challenge) => (
+            <ChallengeItem
+              completed={true}
+              challenge={challenge}
+              unlocked={props.challenges?.[challenge.name]?.addedAt}
+            />
+          )}
+        </For>
+
         <ChallengeIcons
           challenges={completedChallenges().slice(1, -1)}
           max={maxIcons()}
