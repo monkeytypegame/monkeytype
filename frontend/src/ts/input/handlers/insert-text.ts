@@ -244,16 +244,6 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     increasedWordIndex = result.increasedWordIndex;
   }
 
-  /*
-  Space/word-navigation variables:
-   - commitCharacterType: type of the commit character, false if not a commit character
-   - goingToNextWord: should this input commit the current word and move on?
-     The separator is part of the target word (stored as a trailing space), so a
-     space/newline matches it positionally; navigation can still be blocked by
-     stop-on-error, strict space, or opposite shift (removeLastChar).
-   - increasedWordIndex: only set because on the last word we don't move on.
-  */
-
   //this COULD be the next word because we are awaiting goToNextWord
   const nextWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
