@@ -57,8 +57,9 @@ export function checkIfFailedDueToDifficulty(options: {
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
     commitCharacterType !== false &&
-    // a leading separator (empty input) commits nothing and must not fail
-    testInput.length > 0 &&
+    // a leading separator (empty input) commits nothing and must not fail;
+    // a nospace commit (e.g. a 1-letter word) does commit on empty input
+    !(commitCharacterType === "separator" && testInput.length === 0) &&
     testInput + data !== targetWord;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
