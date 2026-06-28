@@ -171,7 +171,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     removeLastChar = true;
   }
 
-  if (correctShiftUsed === false) {
+  if (correctShiftUsed === false && commitCharacterType !== "separator") {
     removeLastChar = true;
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
