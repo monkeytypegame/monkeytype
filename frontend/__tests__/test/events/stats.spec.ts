@@ -1781,7 +1781,7 @@ describe("stats.ts", () => {
       expect(result[1]).toEqual("xy");
     });
 
-    it("ignores the space that commits a word", () => {
+    it("keeps the space that commits a word", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
         "input",
@@ -1803,7 +1803,7 @@ describe("stats.ts", () => {
         1250,
         input({ charIndex: 3, wordIndex: 0, data: "t" }),
       );
-      // committing space — must not appear in the corrected word
+      // committing space — kept as the trailing separator of the corrected word
       logTestEvent(
         "input",
         1300,
@@ -1815,7 +1815,7 @@ describe("stats.ts", () => {
         }),
       );
 
-      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test "]);
     });
   });
 });
