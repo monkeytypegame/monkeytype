@@ -50,7 +50,7 @@ export function checkIfFailedDueToDifficulty(options: {
   correct: boolean;
   commitCharacterType: CommitCharacterType | false;
 }): boolean {
-  const { data, testInput, correct, targetWord, commitCharacterType } = options;
+  const { data, testInput, targetWord, correct, commitCharacterType } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
