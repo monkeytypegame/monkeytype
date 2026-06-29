@@ -56,7 +56,10 @@ createEffectOn(getActivePage, (page) => {
   for (const listener of listeners) {
     listener.remove();
   }
+  // Ensure modifier state doesn't get stuck if keyup happens off-page.
   listeners.length = 0;
+
+  resetModifierState();
 
   if (page === "test") {
     const onKeyDown = (e: KeyboardEvent): void => handleModifierState(e, true);

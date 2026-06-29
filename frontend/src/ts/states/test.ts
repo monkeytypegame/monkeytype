@@ -124,23 +124,18 @@ keymapEvent.useListener(({ mode, key, correct }) => {
 let layoutPromise = promiseWithResolvers();
 
 async function waitForLayoutReady(): Promise<void> {
+  await layoutPromise.promise;
   if (keymapLayoutObject.state === "ready") return;
 
   if (keymapLayoutObject.state === "errored") {
     throw new Error("Failed to load keymap layout");
   }
-
-  await layoutPromise.promise;
 }
 
 createEffect(() => {
   const state = keymapLayoutObject.state;
-  if (state === "ready") {
+  if (state === "ready" || state === "errored") {
     layoutPromise.resolve();
-    layoutPromise.reset();
-  }
-  if (state === "errored") {
-    layoutPromise.reject(new Error("Failed to load keymap layout"));
     layoutPromise.reset();
   }
 });

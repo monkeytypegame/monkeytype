@@ -1,5 +1,5 @@
 import { KeymapStyle } from "@monkeytype/schemas/configs";
-import { KeyLegends, LayoutObject } from "@monkeytype/schemas/layouts";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { formatForDisplay } from "@tanstack/solid-hotkeys";
 import { OneOf } from "../../../utils/types";
 
@@ -10,7 +10,7 @@ export const Hyper = "Monke";
 export const Meta = formatForDisplay("meta");
 
 export type KeyDefinition = {
-  legends: KeyLegends;
+  legends: string[];
   /** width in u  */
   width?: number;
   /** height in u  */
