@@ -6,7 +6,7 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import { getCurrentInput, getCurrentInputForDisplay } from "./events/data";
+import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
@@ -1772,11 +1772,17 @@ function afterAnyTestInput(
 export function afterTestTextInput(
   correct: boolean,
   inputOverride?: string,
+  goingToNextWord = false,
 ): void {
   void MonkeyPower.addPower(correct);
 
+  let input = inputOverride ?? getCurrentInput();
+  if (goingToNextWord) {
+    input = input.replace(/ $/, "");
+  }
+
   void updateWordLetters({
-    input: inputOverride ?? getCurrentInputForDisplay(),
+    input,
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1786,7 +1792,7 @@ export function afterTestTextInput(
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: getCurrentInputForDisplay(),
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1796,7 +1802,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: getCurrentInputForDisplay(),
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1814,7 +1820,7 @@ export function beforeTestWordChange(
 ): void {
   if (direction === "back") {
     void updateWordLetters({
-      input: getCurrentInputForDisplay(),
+      input: getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -2054,7 +2060,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: getCurrentInputForDisplay(),
+        input: getCurrentInput(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

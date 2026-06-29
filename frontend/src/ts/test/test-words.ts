@@ -36,9 +36,9 @@ class Words {
         return {
           text,
           textWithCommit: text + word.commit,
+          commit: word.commit,
           display:
             text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
-          commit: word.commit,
           sectionIndex: word.sectionIndex,
         };
       } else {

@@ -228,7 +228,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   WeakSpot.updateScore(data, correct);
 
   if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, visualInputOverride);
+    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
   }
 
   // going to next word
