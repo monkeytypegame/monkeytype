@@ -22,11 +22,17 @@ export const [getModifierState, { updateModifierState }] =
     rightShift: false,
   })({
     updateModifierState: (set, val: Partial<ModifierState>) =>
-      set((prev) => ({
-        ...prev,
-        ...val,
-        shift: val.shift ?? val.leftShift ?? val.rightShift ?? prev.shift,
-      })),
+      set((prev) => {
+        const leftShift = val.leftShift ?? prev.leftShift;
+        const rightShift = val.rightShift ?? prev.rightShift;
+        return {
+          ...prev,
+          ...val,
+          leftShift,
+          rightShift,
+          shift: val.shift ?? (leftShift || rightShift),
+        };
+      }),
   });
 
 export function resetModifierState(): void {

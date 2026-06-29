@@ -159,7 +159,7 @@ const splitIso: KeymapLayout = [
 ];
 
 const steno: KeymapLayout = [
-  [], //emtpy first row, avoid it to be hidden
+  [], //empty first row, avoid it to be hidden
   [
     { legend: ["s", "S"], height: 2 },
     { legend: ["t", "T"] },
@@ -191,7 +191,7 @@ const steno: KeymapLayout = [
 ];
 
 const stenoMatrix: KeymapLayout = [
-  [], //emtpy first row, avoid it to be hidden
+  [], //empty first row, avoid it to be hidden
   [
     { legend: ["s", "S"] },
     { legend: ["t", "T"] },

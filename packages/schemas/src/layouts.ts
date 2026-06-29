@@ -251,7 +251,6 @@ export type LayoutName = z.infer<typeof LayoutNameSchema>;
 
 const KeyLegendsSchema = z.array(z.string().length(1)).min(1).max(4);
 export type KeyLegends = z.infer<typeof KeyLegendsSchema>;
-const row5CharDefinitionSchema = z.array(z.string().length(1)).min(1).max(4);
 
 const commonLayoutSchema = z
   .object({
@@ -269,7 +268,7 @@ const ansiLayoutSchema = commonLayoutSchema
         row2: z.array(KeyLegendsSchema).length(13),
         row3: z.array(KeyLegendsSchema).length(11),
         row4: z.array(KeyLegendsSchema).length(10),
-        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
       })
       .strict(),
   })
@@ -284,7 +283,7 @@ const isoLayoutSchema = commonLayoutSchema
         row2: z.array(KeyLegendsSchema).length(12),
         row3: z.array(KeyLegendsSchema).length(12),
         row4: z.array(KeyLegendsSchema).length(11),
-        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
       })
       .strict(),
   })

@@ -116,7 +116,10 @@ function KeyboardDefinitionRenderer(props: {
                         : props.layer;
                     return key.legends[layer] ?? "";
                   };
-                  const flashEntry = () => props.flashState[label()];
+                  const flashEntry = () =>
+                    key.legends
+                      .map((legend) => props.flashState[legend])
+                      .find((it) => it !== undefined);
                   return (
                     <Key {...key} label={label()} flashEntry={flashEntry} />
                   );
@@ -185,7 +188,8 @@ function Key(
             ? [isNext() ? getTheme().bg : getTheme().sub]
             : [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub],
         duration: isNext() ? 0 : 250,
-        onComplete: () => setKeymapFlashState(props.label, undefined),
+        onComplete: () =>
+          props.legends.forEach((l) => setKeymapFlashState(l, undefined)),
       }}
     >
       <Show

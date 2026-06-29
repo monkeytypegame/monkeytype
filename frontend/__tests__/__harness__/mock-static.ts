@@ -12,8 +12,9 @@ async function readJson<T>(filePath: string): Promise<T> {
 }
 
 vi.mock("../../src/ts/utils/json-data", async (importOriginal) => {
-  const original = (await importOriginal()) as Record<string, unknown>;
+  const original = (await importOriginal()) as any;
 
+  // oxlint-disable-next-line typescript/no-unsafe-return
   return {
     ...original,
     getLayout: async (name: string) => readJson(`/layouts/${name}.json`),
