@@ -11,6 +11,17 @@ import {
   Meta,
 } from "../../../../src/ts/components/pages/test/keymapLayouts";
 
+function expectLegend(...legends: string[]): { legends: string[] } {
+  if (legends.length === 1) {
+    return { legends: [...legends, ...legends, ...legends, ...legends] };
+  }
+  if (legends.length === 2) {
+    return { legends: [...legends, "", ""] };
+  }
+
+  return { legends };
+}
+
 describe("keymap converter", () => {
   describe("convertLayoutToKeymap", () => {
     describe("staggered", () => {
@@ -24,65 +35,65 @@ describe("keymap converter", () => {
         );
 
         expect(row1, "row1").toEqual([
-          { legends: ["1", "!", "1", "!"] },
-          { legends: ["2", "@", "2", "@"] },
-          { legends: ["3", "#", "3", "#"] },
-          { legends: ["4", "$", "4", "$"] },
-          { legends: ["5", "%", "5", "%"] },
-          { legends: ["6", "^", "6", "^"] },
-          { legends: ["7", "&", "7", "&"] },
-          { legends: ["8", "*", "8", "*"] },
-          { legends: ["9", "(", "9", "("] },
-          { legends: ["0", ")", "0", ")"] },
-          { legends: ["-", "_", "-", "_"] },
-          { legends: ["=", "+", "=", "+"] },
+          { ...expectLegend("1", "!") },
+          { ...expectLegend("2", "@") },
+          { ...expectLegend("3", "#") },
+          { ...expectLegend("4", "$") },
+          { ...expectLegend("5", "%") },
+          { ...expectLegend("6", "^") },
+          { ...expectLegend("7", "&") },
+          { ...expectLegend("8", "*") },
+          { ...expectLegend("9", "(") },
+          { ...expectLegend("0", ")") },
+          { ...expectLegend("-", "_") },
+          { ...expectLegend("=", "+") },
         ]);
 
         expect(row2, "row2").toEqual([
-          { legends: ["q", "Q", "q", "Q"], x: 0.5 },
-          { legends: ["w", "W", "w", "W"] },
-          { legends: ["e", "E", "e", "E"] },
-          { legends: ["r", "R", "r", "R"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["y", "Y", "y", "Y"] },
-          { legends: ["u", "U", "u", "U"] },
-          { legends: ["i", "I", "i", "I"] },
-          { legends: ["o", "O", "o", "O"] },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["[", "{", "[", "{"] },
-          { legends: ["]", "}", "]", "}"] },
+          { ...expectLegend("q", "Q"), x: 0.5 },
+          { ...expectLegend("w", "W") },
+          { ...expectLegend("e", "E") },
+          { ...expectLegend("r", "R") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("y", "Y") },
+          { ...expectLegend("u", "U") },
+          { ...expectLegend("i", "I") },
+          { ...expectLegend("o", "O") },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("[", "{") },
+          { ...expectLegend("]", "}") },
         ]);
 
         expect(row3, "row3").toEqual([
-          { legends: ["a", "A", "a", "A"], x: 1 },
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["d", "D", "d", "D"] },
-          { legends: ["f", "F", "f", "F"], isHoming: true },
-          { legends: ["g", "G", "g", "G"] },
-          { legends: ["h", "H", "h", "H"] },
-          { legends: ["j", "J", "j", "J"], isHoming: true },
-          { legends: ["k", "K", "k", "K"] },
-          { legends: ["l", "L", "l", "L"] },
-          { legends: [";", ":", ";", ":"] },
-          { legends: ["'", '"', "'", '"'] },
+          { ...expectLegend("a", "A"), x: 1 },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("d", "D") },
+          { ...expectLegend("f", "F"), isHoming: true },
+          { ...expectLegend("g", "G") },
+          { ...expectLegend("h", "H") },
+          { ...expectLegend("j", "J"), isHoming: true },
+          { ...expectLegend("k", "K") },
+          { ...expectLegend("l", "L") },
+          { ...expectLegend(";", ":") },
+          { ...expectLegend("'", '"') },
         ]);
 
         expect(row4, "row4").toEqual([
-          { legends: ["z", "Z", "z", "Z"], x: 1.5 },
-          { legends: ["x", "X", "x", "X"] },
-          { legends: ["c", "C", "c", "C"] },
-          { legends: ["v", "V", "v", "V"] },
-          { legends: ["b", "B", "b", "B"] },
-          { legends: ["n", "N", "n", "N"] },
-          { legends: ["m", "M", "m", "M"] },
-          { legends: [",", "<", ",", "<"] },
-          { legends: [".", ">", ".", ">"] },
-          { legends: ["/", "?", "/", "?"] },
+          { ...expectLegend("z", "Z"), x: 1.5 },
+          { ...expectLegend("x", "X") },
+          { ...expectLegend("c", "C") },
+          { ...expectLegend("v", "V") },
+          { ...expectLegend("b", "B") },
+          { ...expectLegend("n", "N") },
+          { ...expectLegend("m", "M") },
+          { ...expectLegend(",", "<") },
+          { ...expectLegend(".", ">") },
+          { ...expectLegend("/", "?") },
         ]);
 
         expect(row5, "row5").toEqual([
           {
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 6,
             x: 3.5,
             isLayoutIndicator: true,
@@ -102,70 +113,70 @@ describe("keymap converter", () => {
         // Test only keys added when showAllKeys is true (not covered by basic staggered test)
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          legends: ["Backspace", "Backspace", "Backspace", "Backspace"],
+          ...expectLegend("Backspace"),
           width: 2,
         });
 
         // Row2: Tab added at start
         expect(row2?.[0], "row2 first").toEqual({
-          legends: ["Tab", "Tab", "Tab", "Tab"],
+          ...expectLegend("Tab"),
           width: 1.5,
         });
 
         // Row3: Caps added at start, Enter added at end
         expect(row3?.[0], "row3 first").toEqual({
-          legends: ["Caps", "Caps", "Caps", "Caps"],
+          ...expectLegend("Caps"),
           width: 1.75,
         });
         expect(row3?.[row3?.length - 1], "row3 last").toEqual({
-          legends: ["Enter", "Enter", "Enter", "Enter"],
+          ...expectLegend("Enter"),
           width: 2.25,
         });
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          legends: ["Shift", "Shift", "Shift", "Shift"],
+          ...expectLegend("Shift"),
           width: 2.25,
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          legends: ["Shift", "Shift", "Shift", "Shift"],
+          ...expectLegend("Shift"),
           width: 2.75,
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
             width: 1.25,
           },
           {
-            legends: [Meta, Meta, Meta, Meta],
+            ...expectLegend(Meta),
             width: 1.25,
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
             width: 1.25,
           },
           {
             isLayoutIndicator: true,
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 6.25,
             x: 0,
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
             width: 1.25,
           },
           {
-            legends: [Meta, Meta, Meta, Meta],
+            ...expectLegend(Meta),
             width: 1.25,
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            ...expectLegend("Monke"),
             width: 1.25,
           },
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
             width: 1.25,
           },
         ]);
@@ -187,67 +198,67 @@ describe("keymap converter", () => {
         );
 
         expect(row1, "row1").toEqual([
-          { legends: ["1", "!", "1", "!"] },
-          { legends: ["2", `"`, "2", `"`] },
-          { legends: ["3", "§", "3", "§"] },
-          { legends: ["4", "$", "4", "$"] },
-          { legends: ["5", "%", "5", "%"] },
-          { legends: ["6", "&", "6", "&"] },
-          { legends: ["7", "/", "7", "/"] },
-          { legends: ["8", "(", "8", "("] },
-          { legends: ["9", ")", "9", ")"] },
-          { legends: ["0", "=", "0", "="] },
-          { legends: ["ß", "?", "ß", "?"] },
-          { legends: ["´", "`", "´", "`"] },
+          { ...expectLegend("1", "!") },
+          { ...expectLegend("2", `"`) },
+          { ...expectLegend("3", "§") },
+          { ...expectLegend("4", "$") },
+          { ...expectLegend("5", "%") },
+          { ...expectLegend("6", "&") },
+          { ...expectLegend("7", "/") },
+          { ...expectLegend("8", "(") },
+          { ...expectLegend("9", ")") },
+          { ...expectLegend("0", "=") },
+          { ...expectLegend("ß", "?") },
+          { ...expectLegend("´", "`") },
         ]);
 
         expect(row2, "row2").toEqual([
-          { legends: ["q", "Q", "q", "Q"], x: 0.5 },
-          { legends: ["w", "W", "w", "W"] },
-          { legends: ["e", "E", "e", "E"] },
-          { legends: ["r", "R", "r", "R"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["z", "Z", "z", "Z"] },
-          { legends: ["u", "U", "u", "U"] },
-          { legends: ["i", "I", "i", "I"] },
-          { legends: ["o", "O", "o", "O"] },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["ü", "Ü", "ü", "Ü"] },
-          { legends: ["+", "*", "+", "*"] },
+          { ...expectLegend("q", "Q"), x: 0.5 },
+          { ...expectLegend("w", "W") },
+          { ...expectLegend("e", "E") },
+          { ...expectLegend("r", "R") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("z", "Z") },
+          { ...expectLegend("u", "U") },
+          { ...expectLegend("i", "I") },
+          { ...expectLegend("o", "O") },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("ü", "Ü") },
+          { ...expectLegend("+", "*") },
         ]);
 
         expect(row3, "row3").toEqual([
-          { legends: ["a", "A", "a", "A"], x: 1 },
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["d", "D", "d", "D"] },
-          { legends: ["f", "F", "f", "F"], isHoming: true },
-          { legends: ["g", "G", "g", "G"] },
-          { legends: ["h", "H", "h", "H"] },
-          { legends: ["j", "J", "j", "J"], isHoming: true },
-          { legends: ["k", "K", "k", "K"] },
-          { legends: ["l", "L", "l", "L"] },
-          { legends: ["ö", "Ö", "ö", "Ö"] },
-          { legends: ["ä", "Ä", "ä", "Ä"] },
-          { legends: ["#", "'", "#", "'"] },
+          { ...expectLegend("a", "A"), x: 1 },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("d", "D") },
+          { ...expectLegend("f", "F"), isHoming: true },
+          { ...expectLegend("g", "G") },
+          { ...expectLegend("h", "H") },
+          { ...expectLegend("j", "J"), isHoming: true },
+          { ...expectLegend("k", "K") },
+          { ...expectLegend("l", "L") },
+          { ...expectLegend("ö", "Ö") },
+          { ...expectLegend("ä", "Ä") },
+          { ...expectLegend("#", "'") },
         ]);
 
         expect(row4, "row4").toEqual([
-          { legends: ["<", ">", "<", ">"], x: 0.25 },
-          { legends: ["y", "Y", "y", "Y"] },
-          { legends: ["x", "X", "x", "X"] },
-          { legends: ["c", "C", "c", "C"] },
-          { legends: ["v", "V", "v", "V"] },
-          { legends: ["b", "B", "b", "B"] },
-          { legends: ["n", "N", "n", "N"] },
-          { legends: ["m", "M", "m", "M"] },
-          { legends: [",", ";", ",", ";"] },
-          { legends: [".", ":", ".", ":"] },
-          { legends: ["-", "_", "-", "_"] },
+          { ...expectLegend("<", ">"), x: 0.25 },
+          { ...expectLegend("y", "Y") },
+          { ...expectLegend("x", "X") },
+          { ...expectLegend("c", "C") },
+          { ...expectLegend("v", "V") },
+          { ...expectLegend("b", "B") },
+          { ...expectLegend("n", "N") },
+          { ...expectLegend("m", "M") },
+          { ...expectLegend(",", ";") },
+          { ...expectLegend(".", ":") },
+          { ...expectLegend("-", "_") },
         ]);
 
         expect(row5, "row5").toEqual([
           {
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 6,
             x: 3.5,
             isLayoutIndicator: true,
@@ -268,71 +279,71 @@ describe("keymap converter", () => {
 
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          legends: ["Backspace", "Backspace", "Backspace", "Backspace"],
+          ...expectLegend("Backspace"),
           width: 2,
         });
 
         // Row2: Tab added at start, Enter (with height) added at end
         expect(row2?.[0], "row2 first").toEqual({
-          legends: ["Tab", "Tab", "Tab", "Tab"],
+          ...expectLegend("Tab"),
           width: 1.5,
         });
         expect(row2?.[row2.length - 1], "row2 last").toEqual({
-          legends: ["Enter", "Enter", "Enter", "Enter"],
+          ...expectLegend("Enter"),
           height: 2,
           width: 1.5,
         });
 
         // Row3: Caps added at start
         expect(row3?.[0], "row3 first").toEqual({
-          legends: ["Caps", "Caps", "Caps", "Caps"],
+          ...expectLegend("Caps"),
           width: 1.75,
         });
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          legends: ["Shift", "Shift", "Shift", "Shift"],
+          ...expectLegend("Shift"),
           width: 1.25,
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          legends: ["Shift", "Shift", "Shift", "Shift"],
+          ...expectLegend("Shift"),
           width: 2.75,
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt, Monke, Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
             width: 1.25,
           },
           {
-            legends: [Meta, Meta, Meta, Meta],
+            ...expectLegend(Meta),
             width: 1.25,
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
             width: 1.25,
           },
           {
             isLayoutIndicator: true,
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 6.25,
             x: 0,
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
             width: 1.25,
           },
           {
-            legends: [Meta, Meta, Meta, Meta],
+            ...expectLegend(Meta),
             width: 1.25,
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            ...expectLegend("Monke"),
             width: 1.25,
           },
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
             width: 1.25,
           },
         ]);
@@ -360,38 +371,38 @@ describe("keymap converter", () => {
 
         // Row 1: col7 (index 6) = '7' gets gap x=1
         expect(row1?.[6], "row1 key 7").toEqual({
-          legends: ["7", "&", "7", "&"],
+          ...expectLegend("7", "&"),
           x: 1,
         });
 
         // Row 2: col6 (index 5) = 'y' gets gap x=1
         expect(row2?.[5], "row2 key y").toEqual({
-          legends: ["y", "Y", "y", "Y"],
+          ...expectLegend("y", "Y"),
           x: 1,
         });
 
         // Row 3: col6 (index 5) = 'h' gets gap x=1
         expect(row3?.[5], "row3 key h").toEqual({
-          legends: ["h", "H", "h", "H"],
+          ...expectLegend("h", "H"),
           x: 1,
         });
 
         // Row 4: col6 (index 5) = 'n' gets gap x=1
         expect(row4?.[5], "row4 key n").toEqual({
-          legends: ["n", "N", "n", "N"],
+          ...expectLegend("n", "N"),
           x: 1,
         });
 
         // Row 5: split has two keys with gap in middle
         expect(row5?.length, "row5 length").toBe(2);
         expect(row5?.[0], "row5 left").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 3.5,
           isLayoutIndicator: true,
         });
         expect(row5?.[1], "row5 right").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 1,
         });
@@ -406,13 +417,13 @@ describe("keymap converter", () => {
           },
         );
         expect(row5?.[3], "row5 left shift").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 0,
           isLayoutIndicator: true,
         });
         expect(row5?.[4], "row5 right shift").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 1.25,
         });
@@ -431,38 +442,38 @@ describe("keymap converter", () => {
 
         // Row 1: col7 (index 6) = '7' gets gap x=1
         expect(row1?.[6], "row1 key 7").toEqual({
-          legends: ["7", "/", "7", "/"],
+          ...expectLegend("7", "/"),
           x: 1,
         });
 
         // Row 2: col6 (index 5) = 'z' gets gap x=1
         expect(row2?.[5], "row2 key z").toEqual({
-          legends: ["z", "Z", "z", "Z"],
+          ...expectLegend("z", "Z"),
           x: 1,
         });
 
         // Row 3: col6 (index 5) = 'h' gets gap x=1
         expect(row3?.[5], "row3 key h").toEqual({
-          legends: ["h", "H", "h", "H"],
+          ...expectLegend("h", "H"),
           x: 1,
         });
 
         // Row 4: col5 (index 6) = 'b' gets gap x=1
         expect(row4?.[6], "row4 key n").toEqual({
-          legends: ["n", "N", "n", "N"],
+          ...expectLegend("n", "N"),
           x: 1,
         });
 
         // Row 5: split has two keys with gap in middle
         expect(row5?.length, "row5 length").toBe(2);
         expect(row5?.[0], "row5 left").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 3.5,
           isLayoutIndicator: true,
         });
         expect(row5?.[1], "row5 right").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 1,
         });
@@ -477,13 +488,13 @@ describe("keymap converter", () => {
           },
         );
         expect(row5?.[3], "row5 left shift").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 0,
           isLayoutIndicator: true,
         });
         expect(row5?.[4], "row5 right shift").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 1.25,
         });
@@ -501,60 +512,60 @@ describe("keymap converter", () => {
         );
 
         expect(row1, "row1").toEqual([
-          { legends: ["1", "!", "1", "!"] },
-          { legends: ["2", "@", "2", "@"] },
-          { legends: ["3", "#", "3", "#"] },
-          { legends: ["4", "$", "4", "$"] },
-          { legends: ["5", "%", "5", "%"] },
-          { legends: ["6", "^", "6", "^"] },
-          { legends: ["7", "&", "7", "&"] },
-          { legends: ["8", "*", "8", "*"] },
-          { legends: ["9", "(", "9", "("] },
-          { legends: ["0", ")", "0", ")"] },
+          { ...expectLegend("1", "!") },
+          { ...expectLegend("2", "@") },
+          { ...expectLegend("3", "#") },
+          { ...expectLegend("4", "$") },
+          { ...expectLegend("5", "%") },
+          { ...expectLegend("6", "^") },
+          { ...expectLegend("7", "&") },
+          { ...expectLegend("8", "*") },
+          { ...expectLegend("9", "(") },
+          { ...expectLegend("0", ")") },
         ]);
 
         expect(row2, "row2").toEqual([
-          { legends: ["q", "Q", "q", "Q"] },
-          { legends: ["w", "W", "w", "W"] },
-          { legends: ["e", "E", "e", "E"] },
-          { legends: ["r", "R", "r", "R"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["y", "Y", "y", "Y"] },
-          { legends: ["u", "U", "u", "U"] },
-          { legends: ["i", "I", "i", "I"] },
-          { legends: ["o", "O", "o", "O"] },
-          { legends: ["p", "P", "p", "P"] },
+          { ...expectLegend("q", "Q") },
+          { ...expectLegend("w", "W") },
+          { ...expectLegend("e", "E") },
+          { ...expectLegend("r", "R") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("y", "Y") },
+          { ...expectLegend("u", "U") },
+          { ...expectLegend("i", "I") },
+          { ...expectLegend("o", "O") },
+          { ...expectLegend("p", "P") },
         ]);
 
         expect(row3, "row3").toEqual([
-          { legends: ["a", "A", "a", "A"] },
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["d", "D", "d", "D"] },
-          { legends: ["f", "F", "f", "F"], isHoming: true },
-          { legends: ["g", "G", "g", "G"] },
-          { legends: ["h", "H", "h", "H"] },
-          { legends: ["j", "J", "j", "J"], isHoming: true },
-          { legends: ["k", "K", "k", "K"] },
-          { legends: ["l", "L", "l", "L"] },
-          { legends: [";", ":", ";", ":"] },
+          { ...expectLegend("a", "A") },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("d", "D") },
+          { ...expectLegend("f", "F"), isHoming: true },
+          { ...expectLegend("g", "G") },
+          { ...expectLegend("h", "H") },
+          { ...expectLegend("j", "J"), isHoming: true },
+          { ...expectLegend("k", "K") },
+          { ...expectLegend("l", "L") },
+          { ...expectLegend(";", ":") },
         ]);
 
         expect(row4, "row4").toEqual([
-          { legends: ["z", "Z", "z", "Z"] },
-          { legends: ["x", "X", "x", "X"] },
-          { legends: ["c", "C", "c", "C"] },
-          { legends: ["v", "V", "v", "V"] },
-          { legends: ["b", "B", "b", "B"] },
-          { legends: ["n", "N", "n", "N"] },
-          { legends: ["m", "M", "m", "M"] },
-          { legends: [",", "<", ",", "<"] },
-          { legends: [".", ">", ".", ">"] },
-          { legends: ["/", "?", "/", "?"] },
+          { ...expectLegend("z", "Z") },
+          { ...expectLegend("x", "X") },
+          { ...expectLegend("c", "C") },
+          { ...expectLegend("v", "V") },
+          { ...expectLegend("b", "B") },
+          { ...expectLegend("n", "N") },
+          { ...expectLegend("m", "M") },
+          { ...expectLegend(",", "<") },
+          { ...expectLegend(".", ">") },
+          { ...expectLegend("/", "?") },
         ]);
 
         expect(row5, "row5").toEqual([
           {
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 4,
             x: 3,
             isLayoutIndicator: true,
@@ -574,67 +585,67 @@ describe("keymap converter", () => {
         // Test only keys added when showAllKeys is true (not covered by basic matrix test)
         //Row1: starting with `
         expect(row1?.[0], "row1 first").toEqual({
-          legends: ["`", "~", "`", "~"],
+          ...expectLegend("`", "~"),
         });
 
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          legends: ["BS", "BS", "BS", "BS"],
+          ...expectLegend("BS"),
         });
 
         // Row2: Tab added at start
         expect(row2?.[0], "row2 first").toEqual({
-          legends: ["Tab", "Tab", "Tab", "Tab"],
+          ...expectLegend("Tab"),
         });
 
         // Row2: Del added at end
         expect(row2?.[row2.length - 1], "row2 last").toEqual({
-          legends: ["[", "{", "[", "{"],
+          ...expectLegend("[", "{"),
         });
 
         // Row3: Esc added at start
         expect(row3?.[0], "row3 first").toEqual({
-          legends: ["Esc", "Esc", "Esc", "Esc"],
+          ...expectLegend("Esc"),
         });
 
         // Row3: ends with '
         expect(row3?.[row3.length - 1], "row3 last").toEqual({
-          legends: ["'", '"', "'", '"'],
+          ...expectLegend("'", '"'),
         });
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          legends: ["Shift", "Shift", "Shift", "Shift"],
+          ...expectLegend("Shift"),
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          legends: ["Enter", "Enter", "Enter", "Enter"],
+          ...expectLegend("Enter"),
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt,  Meta, Ctrl at end
         expect(row5, "row5").toEqual([
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
           },
           {
-            legends: [Meta, Meta, Meta, Meta],
+            ...expectLegend(Meta),
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
           },
           {
             isLayoutIndicator: true,
-            legends: [" ", " ", " ", " "],
+            ...expectLegend(" "),
             width: 6,
             x: 0,
           },
           {
-            legends: [Alt, Alt, Alt, Alt],
+            ...expectLegend(Alt),
           },
           {
-            legends: ["Monke", "Monke", "Monke", "Monke"],
+            ...expectLegend("Monke"),
           },
           {
-            legends: [Ctrl, Ctrl, Ctrl, Ctrl],
+            ...expectLegend(Ctrl),
           },
         ]);
         // Also verify total counts are as expected with extra keys
@@ -657,38 +668,38 @@ describe("keymap converter", () => {
 
         // Row 1: col6 (index 5) = '6' gets gap x=1
         expect(row1?.[5], "row1 key 7").toEqual({
-          legends: ["6", "^", "6", "^"],
+          ...expectLegend("6", "^"),
           x: 1,
         });
 
         // Row 2: col6 (index 5) = 'y' gets gap x=1
         expect(row2?.[5], "row2 key y").toEqual({
-          legends: ["y", "Y", "y", "Y"],
+          ...expectLegend("y", "Y"),
           x: 1,
         });
 
         // Row 3: col6 (index 5) = 'h' gets gap x=1
         expect(row3?.[5], "row3 key h").toEqual({
-          legends: ["h", "H", "h", "H"],
+          ...expectLegend("h", "H"),
           x: 1,
         });
 
         // Row 4: col6 (index 5) = 'n' gets gap x=1
         expect(row4?.[5], "row4 key n").toEqual({
-          legends: ["n", "N", "n", "N"],
+          ...expectLegend("n", "N"),
           x: 1,
         });
 
         // Row 5: split has two keys with gap in middle
         expect(row5?.length, "row5 length").toBe(2);
         expect(row5?.[0], "row5 left").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 2,
           isLayoutIndicator: true,
         });
         expect(row5?.[1], "row5 right").toEqual({
-          legends: [" ", " ", " ", " "],
+          ...expectLegend(" "),
           width: 3,
           x: 1,
         });
@@ -707,32 +718,32 @@ describe("keymap converter", () => {
 
         expect(row1, "row1").toEqual([]);
         expect(row2, "row2").toEqual([
-          { legends: ["s", "S", "s", "S"], height: 2 },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["h", "H", "h", "H"] },
-          { legends: ["*", "*", "*", "*"], height: 2 },
-          { legends: ["f", "F", "f", "F"] },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["l", "L", "l", "L"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["d", "D", "d", "D"] },
+          { ...expectLegend("s", "S"), height: 2 },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("h", "H") },
+          { ...expectLegend("*"), height: 2 },
+          { ...expectLegend("f", "F") },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("l", "L") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("d", "D") },
         ]);
         expect(row3, "row3").toEqual([
-          { legends: ["k", "K", "k", "K"], x: 1 },
-          { legends: ["w", "W", "w", "W"] },
-          { legends: ["r", "R", "r", "R"] },
-          { legends: ["r", "R", "r", "R"], x: 1 },
-          { legends: ["b", "B", "b", "B"] },
-          { legends: ["g", "G", "g", "G"] },
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["z", "Z", "z", "Z"] },
+          { ...expectLegend("k", "K"), x: 1 },
+          { ...expectLegend("w", "W") },
+          { ...expectLegend("r", "R") },
+          { ...expectLegend("r", "R"), x: 1 },
+          { ...expectLegend("b", "B") },
+          { ...expectLegend("g", "G") },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("z", "Z") },
         ]);
         expect(row4, "row4").toEqual([
-          { legends: ["a", "A", "a", "A"], x: 2.25 },
-          { legends: ["o", "O", "o", "O"] },
-          { legends: ["e", "E", "e", "E"], x: 0.5 },
-          { legends: ["u", "U", "u", "U"] },
+          { ...expectLegend("a", "A"), x: 2.25 },
+          { ...expectLegend("o", "O") },
+          { ...expectLegend("e", "E"), x: 0.5 },
+          { ...expectLegend("u", "U") },
         ]);
         expect(row5, "row5").toBeUndefined();
       });
@@ -748,34 +759,34 @@ describe("keymap converter", () => {
 
         expect(row1, "row1").toEqual([]);
         expect(row2, "row2").toEqual([
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["h", "H", "h", "H"] },
-          { legends: ["*", "*", "*", "*"] },
-          { legends: ["f", "F", "f", "F"], x: 1 },
-          { legends: ["p", "P", "p", "P"] },
-          { legends: ["l", "L", "l", "L"] },
-          { legends: ["t", "T", "t", "T"] },
-          { legends: ["d", "D", "d", "D"] },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("h", "H") },
+          { ...expectLegend("*") },
+          { ...expectLegend("f", "F"), x: 1 },
+          { ...expectLegend("p", "P") },
+          { ...expectLegend("l", "L") },
+          { ...expectLegend("t", "T") },
+          { ...expectLegend("d", "D") },
         ]);
         expect(row3, "row3").toEqual([
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["k", "K", "k", "K"] },
-          { legends: ["w", "W", "w", "W"] },
-          { legends: ["r", "R", "r", "R"] },
-          { legends: ["*", "*", "*", "*"] },
-          { legends: ["r", "R", "r", "R"], x: 1 },
-          { legends: ["b", "B", "b", "B"] },
-          { legends: ["g", "G", "g", "G"] },
-          { legends: ["s", "S", "s", "S"] },
-          { legends: ["z", "Z", "z", "Z"] },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("k", "K") },
+          { ...expectLegend("w", "W") },
+          { ...expectLegend("r", "R") },
+          { ...expectLegend("*") },
+          { ...expectLegend("r", "R"), x: 1 },
+          { ...expectLegend("b", "B") },
+          { ...expectLegend("g", "G") },
+          { ...expectLegend("s", "S") },
+          { ...expectLegend("z", "Z") },
         ]);
         expect(row4, "row4").toEqual([
-          { legends: ["a", "A", "a", "A"], x: 3 },
-          { legends: ["o", "O", "o", "O"] },
-          { legends: ["e", "E", "e", "E"], x: 1 },
-          { legends: ["u", "U", "u", "U"] },
+          { ...expectLegend("a", "A"), x: 3 },
+          { ...expectLegend("o", "O") },
+          { ...expectLegend("e", "E"), x: 1 },
+          { ...expectLegend("u", "U") },
         ]);
         expect(row5, "row5").toBeUndefined();
       });

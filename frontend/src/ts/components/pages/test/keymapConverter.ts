@@ -88,9 +88,9 @@ function buildLegends(legends: string | KeyLegends | undefined): KeyLegends {
 
   switch (legends.length) {
     case 1:
-      return new Array<string>(4).fill(legends.at(0) as string);
+      return [legends[0] as string, legends[0] as string, "", ""];
     case 2:
-      return [...legends, ...legends];
+      return [...legends, "", ""];
     case 3:
       return [...legends, ""];
     default:
