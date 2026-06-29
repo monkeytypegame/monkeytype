@@ -9,8 +9,11 @@ import { typedEntries } from "@monkeytype/util/objects";
 import { format as dateFormat } from "date-fns";
 import { createMemo, For, Show } from "solid-js";
 
+import { setup } from "../../../controllers/challenge-controller";
+import { navigate } from "../../../controllers/route-controller";
 import { bp } from "../../../states/breakpoints";
 import { showModal } from "../../../states/modals";
+import { restart } from "../../../test/test-logic";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
 import { AnimatedModal } from "../../common/AnimatedModal";
@@ -19,24 +22,26 @@ import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 
+type ChallengeUnlock = Challenge & { addedAt?: number };
+
 export function Challenges(props: {
   isAccountPage?: true;
   challenges: UserChallenges | undefined;
 }) {
-  const completedChallenges = createMemo((): Challenge[] =>
+  const completedChallenges = createMemo((): ChallengeUnlock[] =>
     (
       typedEntries(props.challenges ?? {}) as [
         ChallengeName,
         { addedAt?: number | undefined } | undefined,
       ][]
     )
-      .map(([name]) => getChallenge(name))
+      .map(([name, val]) => ({ ...getChallenge(name), addedAt: val?.addedAt }))
+      .filter((it) => it.name !== undefined) //filter unknown challenges
       .sort((a, b) =>
         a.initialCount !== b.initialCount
           ? a.initialCount - b.initialCount
           : a.name.localeCompare(b.name),
-      )
-      .filter((it) => it !== undefined),
+      ),
   );
 
   const completedNames = createMemo(
@@ -83,15 +88,11 @@ export function Challenges(props: {
 
         <Bar bg="bg" fill="main" percent={unlockPercentage()} />
 
-        <For each={completedChallenges().slice(0, 1)}>
-          {(challenge) => (
-            <ChallengeItem
-              completed={true}
-              challenge={challenge}
-              unlocked={props.challenges?.[challenge.name]?.addedAt}
-            />
-          )}
-        </For>
+        <ChallengesList
+          variant="short"
+          challenges={completedChallenges().slice(0, 1)}
+          completed={true}
+        />
 
         <ChallengeIcons
           challenges={completedChallenges().slice(1, -1)}
@@ -119,9 +120,8 @@ export function Challenges(props: {
 
 function ChallengeItem(props: {
   completed: boolean;
-  challenge: Challenge;
-  iconOnly?: boolean;
-  unlocked?: number;
+  challenge: ChallengeUnlock;
+  variant: "iconOnly" | "short" | "full";
 }) {
   const icon = (): FaSolidIcon => {
     switch (props.challenge.category) {
@@ -144,25 +144,22 @@ function ChallengeItem(props: {
   };
 
   const unlocked = createMemo(() =>
-    props.unlocked !== undefined
-      ? `\n\nunlocked: ${dateFormat(props.unlocked, "dd MMM yyyy HH:mm")}`
+    props.challenge.addedAt !== undefined
+      ? `\n\nunlocked: ${dateFormat(props.challenge.addedAt, "dd MMM yyyy HH:mm")}`
       : "",
   );
 
   return (
     <Balloon
       text={
-        props.iconOnly
+        props.variant === "iconOnly"
           ? `${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`
           : ""
       }
       break
-      position={props.iconOnly ? "right" : "down"}
+      position={props.variant === "iconOnly" ? "right" : "down"}
       length="xlarge"
-      class={cn(
-        "flex flex-row items-center gap-4 rounded",
-        props.completed ? "text-text" : "text-sub",
-      )}
+      class={cn("flex flex-row items-center gap-4 rounded")}
     >
       <div
         class={cn(
@@ -174,10 +171,45 @@ function ChallengeItem(props: {
       >
         <Fa icon={icon()} size={1.25} />
       </div>
-      <Show when={!props.iconOnly}>
+      <Show when={props.variant !== "iconOnly"}>
         <div>
-          <h4 class="text-md mb-1 font-bold">{props.challenge.display}</h4>
-          <p class="text-xs">{props.challenge.description}</p>
+          <h4
+            class={cn(
+              "text-md mb-1 font-bold",
+              props.completed ? "text-text" : "text-sub",
+            )}
+          >
+            {props.challenge.display}
+            <Show
+              when={!props.completed && props.challenge.settings !== undefined}
+            >
+              <Button
+                variant="text"
+                fa={{ icon: "fa-award" }}
+                text="try challenge"
+                class="text-xs opacity-0 group-hover:opacity-100"
+                // oxlint-disable-next-line solid/reactivity
+                onClick={async () => {
+                  await navigate("/");
+                  await setup(props.challenge.name);
+                  restart({ nosave: true });
+                }}
+              />
+            </Show>
+          </h4>
+          <p class="text-xs text-sub">
+            {props.challenge.description}
+            <Show
+              when={
+                props.variant === "short" &&
+                props.challenge.addedAt !== undefined
+              }
+            >
+              <br />
+              Unlocked{" "}
+              {dateFormat(props.challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
+            </Show>
+          </p>
         </div>
       </Show>
     </Balloon>
@@ -196,7 +228,7 @@ function ChallengeIcons(props: {
           <ChallengeItem
             completed={props.completed}
             challenge={challenge}
-            iconOnly
+            variant="iconOnly"
           />
         )}
       </For>
@@ -210,7 +242,7 @@ function ChallengeIcons(props: {
 }
 
 function ChallengesModal(props: {
-  completed: Challenge[];
+  completed: ({ addedAt?: number } & Challenge)[];
   incompleted: Challenge[];
   percentage: number;
 }) {
@@ -223,21 +255,47 @@ function ChallengesModal(props: {
 
       <Bar bg="bg" fill="main" percent={props.percentage} />
 
-      <ChallengesList challenges={props.completed} completed={true} />
+      <ChallengesList
+        variant="full"
+        challenges={props.completed}
+        completed={true}
+      />
+
+      <p class="-mb-2 text-sub">Locked Challenges</p>
+      <ChallengesList
+        variant="full"
+        challenges={props.incompleted}
+        completed={false}
+      />
     </AnimatedModal>
   );
 }
 
 function ChallengesList(props: {
-  challenges: Challenge[];
+  challenges: ({ addedAt?: number } & Challenge)[];
   completed: boolean;
+  variant: "short" | "full";
 }) {
   return (
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
       <For each={props.challenges}>
         {(challenge) => (
-          <div class="rounded bg-sub-alt p-4">
-            <ChallengeItem completed={props.completed} challenge={challenge} />
+          <div class="group flex gap-4 rounded bg-sub-alt p-2">
+            <div class="flex-1">
+              <ChallengeItem
+                completed={props.completed}
+                challenge={challenge}
+                variant={props.variant}
+              />
+            </div>
+            <Show when={props.variant === "full" && props.completed}>
+              <div class="self-end text-right text-xs text-sub">
+                <Show when={challenge.addedAt}>
+                  Unlocked{" "}
+                  {dateFormat(challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
+                </Show>
+              </div>
+            </Show>
           </div>
         )}
       </For>

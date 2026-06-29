@@ -582,7 +582,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 4,
     category: "script",
     description:
-      "Type out the entire source code ofMonkeytype, as it was in February 2022.",
+      "Type out the entire source code of monkeytype, as it was in February 2022.",
     settings: {
       autoRole: true,
       type: "script",

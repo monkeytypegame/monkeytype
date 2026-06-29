@@ -1726,7 +1726,10 @@ describe("user controller test", () => {
         uid,
         "existingDiscordId",
         "discordUserAvatar",
-        { "250hours": { addedAt: Date.now() } }, //only newly added
+        {
+          "100hours": { addedAt: 1 }, //existing
+          "250hours": { addedAt: Date.now() }, //newly added
+        },
       );
       expect(isDiscordIdAvailableMock).not.toHaveBeenCalled();
       expect(blocklistContainsMock).not.toHaveBeenCalled();

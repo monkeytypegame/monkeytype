@@ -181,15 +181,17 @@ qsa(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth",
 )?.on("click", () => {
   showLoaderBar();
-  void Ape.users.getDiscordOAuth().then((response) => {
-    if (response.status === 200) {
-      window.open(response.body.data.url, "_self");
-    } else {
-      showErrorNotification(
-        `Failed to get OAuth from discord: ${response.body.message}`,
-      );
-    }
-  });
+  void Ape.users
+    .getDiscordOAuth({ query: { includeRoles: true } })
+    .then((response) => {
+      if (response.status === 200) {
+        window.open(response.body.data.url, "_self");
+      } else {
+        showErrorNotification(
+          `Failed to get OAuth from discord: ${response.body.message}`,
+        );
+      }
+    });
 });
 
 qs(".page.pageAccountSettings #setStreakHourOffset")?.on("click", () => {

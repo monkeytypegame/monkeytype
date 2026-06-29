@@ -476,8 +476,8 @@ function TypingStats(props: {
           <div class="hidden md:flex md:flex-col">
             <div class="text-em-sm text-sub">challenges</div>
             <div class="text-em-2xl leading-8">
-              {props.completedChallenges}{" "}
-              <span class="text-sub">/ {getRegularChallenges().length}</span>
+              {props.completedChallenges}
+              <span class="text-sub">/{getRegularChallenges().length}</span>
             </div>
           </div>
         </Show>

@@ -687,8 +687,10 @@ export async function linkDiscord(
     roles
       .map((roleId) => challengeNameByRoleId[roleId])
       .filter((it) => it !== undefined)
-      .filter((it) => userInfo.challenges?.[it] === undefined)
-      .map((it) => [it, { addedAt: Date.now() }]),
+      .map((it) => [
+        it,
+        { addedAt: userInfo.challenges?.[it]?.addedAt ?? Date.now() },
+      ]),
   );
 
   if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
