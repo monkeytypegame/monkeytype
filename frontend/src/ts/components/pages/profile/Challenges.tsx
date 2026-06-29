@@ -18,7 +18,6 @@ import { Balloon } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { H2 } from "../../common/Headers";
 
 export function Challenges(props: {
   isAccountPage?: true;
@@ -70,7 +69,11 @@ export function Challenges(props: {
 
   return (
     <Show when={props.challenges !== undefined}>
-      <ChallengesModal completed={completedChallenges()} />
+      <ChallengesModal
+        completed={completedChallenges()}
+        incompleted={incompleteChallenges()}
+        percentage={unlockPercentage()}
+      />
       <div class="flex w-full min-w-0 flex-col gap-4 rounded bg-sub-alt p-4">
         <h3>Challenges</h3>
         <div class="text-sub">
@@ -173,19 +176,11 @@ function ChallengeItem(props: {
       </div>
       <Show when={!props.iconOnly}>
         <div>
-          <h4 class="text-md">{props.challenge.display}</h4>
+          <h4 class="text-md mb-1 font-bold">{props.challenge.display}</h4>
           <p class="text-xs">{props.challenge.description}</p>
         </div>
       </Show>
     </Balloon>
-  );
-}
-
-function ChallengesModal(_props: { completed: Challenge[] }) {
-  return (
-    <AnimatedModal id="AllChallengesModal">
-      <H2 text="Challenges" />
-    </AnimatedModal>
   );
 }
 
@@ -210,6 +205,42 @@ function ChallengeIcons(props: {
           + {props.challenges.length - props.max}
         </div>
       </Show>
+    </div>
+  );
+}
+
+function ChallengesModal(props: {
+  completed: Challenge[];
+  incompleted: Challenge[];
+  percentage: number;
+}) {
+  return (
+    <AnimatedModal id="AllChallengesModal" modalClass="max-w-[1200px]">
+      <div class="text-sub">
+        You&apos;ve unlocked {props.completed.length}/
+        {getRegularChallenges().length} ({Math.round(props.percentage)}%)
+      </div>
+
+      <Bar bg="bg" fill="main" percent={props.percentage} />
+
+      <ChallengesList challenges={props.completed} completed={true} />
+    </AnimatedModal>
+  );
+}
+
+function ChallengesList(props: {
+  challenges: Challenge[];
+  completed: boolean;
+}) {
+  return (
+    <div class="flex flex-col gap-4">
+      <For each={props.challenges}>
+        {(challenge) => (
+          <div class="rounded bg-sub-alt p-4">
+            <ChallengeItem completed={props.completed} challenge={challenge} />
+          </div>
+        )}
+      </For>
     </div>
   );
 }
