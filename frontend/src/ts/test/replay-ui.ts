@@ -41,7 +41,10 @@ const replayEl = qsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
-  return TestWords.words.list.slice();
+  return TestWords.words
+    .get()
+    .slice()
+    .map((word) => word.text);
 }
 
 function deriveReplayActions(): Replay[] {
@@ -59,7 +62,7 @@ function deriveReplayActions(): Replay[] {
         const target =
           Config.mode === "zen"
             ? typed
-            : TestWords.words.getText(prevWordIndex);
+            : TestWords.words.get(prevWordIndex)?.text;
         const correct = typed === target;
         actions.push({
           action: correct ? "submitCorrectWord" : "submitErrorWord",

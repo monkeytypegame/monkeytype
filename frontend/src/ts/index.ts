@@ -96,12 +96,8 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => {
-    console.log(lastEventLog);
-  },
-  currentEventLog: () => {
-    console.log(buildEventLog());
-  },
+  lastEventLog: () => lastEventLog,
+  currentEventLog: buildEventLog,
 });
 
 mountComponents();

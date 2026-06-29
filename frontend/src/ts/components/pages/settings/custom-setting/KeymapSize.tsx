@@ -3,8 +3,8 @@ import { JSXElement } from "solid-js";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
+import { Setting } from "../../../common/Setting";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
 
 export function KeymapSize(): JSXElement {
   return (

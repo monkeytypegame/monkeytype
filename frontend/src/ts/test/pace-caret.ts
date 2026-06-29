@@ -181,7 +181,7 @@ function incrementLetterIndex(): void {
     if (
       settings.currentLetterIndex >=
       // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-      TestWords.words.getText(settings.currentWordIndex)!.length + 1
+      TestWords.words.get(settings.currentWordIndex)!.display.length + 1
     ) {
       //go to the next word
       settings.currentLetterIndex = 0;
@@ -195,8 +195,8 @@ function incrementLetterIndex(): void {
             //go to the previous word
             settings.currentLetterIndex =
               // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-              TestWords.words.getText(settings.currentWordIndex - 1)!.length -
-              1;
+              TestWords.words.get(settings.currentWordIndex - 1)!.display
+                .length - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -207,7 +207,7 @@ function incrementLetterIndex(): void {
           if (
             settings.currentLetterIndex >=
             // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-            TestWords.words.getText(settings.currentWordIndex)!.length
+            TestWords.words.get(settings.currentWordIndex)!.display.length
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
