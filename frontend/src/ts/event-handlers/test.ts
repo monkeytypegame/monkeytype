@@ -7,7 +7,7 @@ import {
 } from "../states/notifications";
 import { showQuoteRateModal } from "../states/quote-rate";
 import { showQuoteReportModal } from "../states/quote-report";
-import * as PractiseWordsModal from "../modals/practise-words";
+import { showModal } from "../states/modals";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import { qs } from "../utils/dom";
@@ -52,7 +52,7 @@ testPage?.onChild("click", "#practiseWordsButton", () => {
     showNoticeNotification("Practice words is unsupported in zen mode");
     return;
   }
-  PractiseWordsModal.show();
+  showModal("PractiseWords");
 });
 
 qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {

@@ -81,39 +81,6 @@ body.darkMode {
   }
 }
 
-#practiseWordsModal {
-  .modal {
-    max-width: 400px;
-
-    .group {
-      width: 100%;
-      display: grid;
-      .title {
-        color: var(--sub-color);
-        text-transform: lowercase;
-      }
-      .sub {
-        color: var(--text-color);
-        margin-top: 0.25rem;
-        margin-bottom: 0.5rem;
-      }
-      .buttonGroup {
-        display: flex;
-        gap: 0.5rem;
-        width: 100%;
-        button {
-          flex-grow: 1;
-        }
-      }
-    }
-
-    .text {
-      font-size: 1rem;
-      color: var(--text-color);
-    }
-  }
-}
-
 #googleSignUpModal {
   .modal {
     max-width: 425px;
