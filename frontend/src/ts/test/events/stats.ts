@@ -824,6 +824,18 @@ export function getAfkDuration(eventLog: EventLog): number {
   return counts.reduce((total, c) => total + (c === 0 ? 1 : 0), 0);
 }
 
+// Engaged typing time for an abandoned (restarted) test: real duration minus
+// AFK, matching how a finished test is measured (finish path, today-tracker).
+// The event log MUST be terminated (contain a timer "end" event) — otherwise
+// getAfkDuration has no boundaries and returns 0, letting the full wall-clock
+// lifetime (incl. unbounded idle) leak into incompleteTestSeconds.
+export function getIncompleteTestSeconds(eventLog: EventLog): number {
+  const seconds = roundTo2(
+    getTestDurationMs(eventLog) / 1000 - getAfkDuration(eventLog),
+  );
+  return seconds < 0 ? 0 : seconds;
+}
+
 export function getKeypressDurations(eventLog: EventLog): number[] {
   const { events } = eventLog;
 
