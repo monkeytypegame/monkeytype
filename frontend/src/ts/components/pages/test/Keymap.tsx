@@ -1,5 +1,5 @@
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { createMemo, For, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { showCommandLineForConfig } from "../../../states/core";
@@ -15,7 +15,7 @@ import {
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
-import { isMacLike } from "../../../utils/misc";
+import { applyReducedMotion, isMacLike } from "../../../utils/misc";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { convertLayoutToKeymap } from "./keymapConverter";
@@ -160,6 +160,69 @@ function Key(
       props.legends?.some((legend) => legend === getKeymapHighlightKey()),
   );
 
+  const fadeDuration = applyReducedMotion(250);
+
+  // Fade when leaving "next" mode
+  const [isFading, setIsFading] = createSignal(false);
+  let prevKeymapMode = getConfig.keymapMode;
+  let prevKeyWasHighlighted = false;
+  createEffect(() => {
+    const mode = getConfig.keymapMode;
+    const isStenoMode = isSteno();
+    const keyMatchesHighlight = props.legends?.some(
+      (legend) => legend === getKeymapHighlightKey(),
+    );
+    const keyWasHighlighted = keyMatchesHighlight && !isStenoMode;
+
+    if (prevKeymapMode === "next" && mode !== "next" && prevKeyWasHighlighted) {
+      setIsFading(true);
+      setTimeout(() => setIsFading(false), fadeDuration);
+    }
+    prevKeymapMode = mode;
+    prevKeyWasHighlighted = keyWasHighlighted;
+  });
+
+  const baseKeyBgColor = () => {
+    if (isFading()) {
+      return getTheme().main;
+    }
+    return isNext() ? getTheme().main : getTheme().subAlt;
+  };
+
+  const baseKeyColor = () => {
+    if (isFading()) {
+      return getTheme().bg;
+    }
+    return isNext() ? getTheme().bg : getTheme().sub;
+  };
+
+  const animKeyBgColor = createMemo(() => {
+    if (isFading()) {
+      return [getTheme().main, getTheme().subAlt];
+    }
+    if (flashInfo().tick === 0) {
+      return [isNext() ? getTheme().main : getTheme().subAlt];
+    }
+    return [
+      flashInfo().correct ? getTheme().main : getTheme().error,
+      isNext() ? getTheme().main : getTheme().subAlt,
+    ];
+  });
+
+  const animKeyColor = createMemo(() => {
+    if (isFading()) {
+      return [getTheme().bg, getTheme().sub];
+    }
+    if (flashInfo().tick === 0) {
+      return [isNext() ? getTheme().bg : getTheme().sub];
+    }
+    return [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub];
+  });
+
+  const animDuration = createMemo(() =>
+    isFading() ? fadeDuration : flashInfo().tick === 0 ? 0 : fadeDuration,
+  );
+
   return (
     <Anime
       class={cn(
@@ -171,8 +234,8 @@ function Key(
         },
       )}
       style={{
-        "--keybgcolor": isNext() ? getTheme().main : getTheme().subAlt,
-        "--keycolor": isNext() ? getTheme().bg : getTheme().sub,
+        "--keybgcolor": baseKeyBgColor(),
+        "--keycolor": baseKeyColor(),
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 2}rem`,
@@ -183,18 +246,9 @@ function Key(
         color: "var(--keycolor)",
       }}
       animation={{
-        "--keybgcolor":
-          flashInfo().tick === 0
-            ? [isNext() ? getTheme().main : getTheme().subAlt]
-            : [
-                flashInfo().correct ? getTheme().main : getTheme().error,
-                isNext() ? getTheme().main : getTheme().subAlt,
-              ],
-        "--keycolor":
-          flashInfo().tick === 0
-            ? [isNext() ? getTheme().bg : getTheme().sub]
-            : [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub],
-        duration: isNext() ? 0 : 250,
+        "--keybgcolor": animKeyBgColor(),
+        "--keycolor": animKeyColor(),
+        duration: animDuration(),
         onComplete: () =>
           props.legends.forEach((l) => setKeymapFlashState(l, undefined)),
       }}
