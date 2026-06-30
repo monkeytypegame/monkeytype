@@ -1651,6 +1651,10 @@ describe("user controller test", () => {
         data: {
           discordId: "discordUserId",
           discordAvatar: "discordUserAvatar",
+          challenges: {
+            "100hours": { addedAt: Date.now() },
+            "250hours": { addedAt: Date.now() },
+          },
         },
       });
       expect(isStateValidForUserMock).toHaveBeenCalledWith(
@@ -1720,6 +1724,10 @@ describe("user controller test", () => {
         data: {
           discordId: "discordUserId",
           discordAvatar: "discordUserAvatar",
+          challenges: {
+            "100hours": { addedAt: 1 }, //existing
+            "250hours": { addedAt: Date.now() }, //newly added
+          },
         },
       });
       expect(userLinkDiscordMock).toHaveBeenCalledWith(

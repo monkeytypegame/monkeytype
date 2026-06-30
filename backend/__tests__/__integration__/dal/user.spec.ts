@@ -755,6 +755,8 @@ describe("UserDal", () => {
     const uid = new ObjectId().toHexString();
     await UserDAL.addUser("test name", "test email", uid);
 
+    await UserDAL.updateChallenge(uid, "69");
+
     await UserDAL.updateProfile(
       uid,
       {
@@ -793,6 +795,7 @@ describe("UserDal", () => {
       lastResultTimestamp: 0,
       maxLength: 0,
     });
+    expect(resetUser.challenges).toStrictEqual({});
   });
 
   it("getInbox should return the user's inbox", async () => {

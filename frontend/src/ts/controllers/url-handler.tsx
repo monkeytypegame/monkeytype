@@ -69,12 +69,15 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const { discordId, discordAvatar } = response.body.data;
+    const { discordId, discordAvatar, challenges } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
     }
     if (discordAvatar !== undefined) {
       snapshot.discordAvatar = discordAvatar;
+    }
+    if (challenges !== undefined) {
+      snapshot.challenges = challenges;
     }
 
     DB.setSnapshot(snapshot);

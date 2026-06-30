@@ -151,6 +151,7 @@ export async function resetUser(uid: string): Promise<void> {
           maxLength: 0,
         },
         testActivity: {},
+        challenges: {},
       },
       $unset: {
         discordAvatar: "",

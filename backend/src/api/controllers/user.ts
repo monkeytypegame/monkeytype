@@ -703,6 +703,7 @@ export async function linkDiscord(
     return new MonkeyResponse("Discord avatar updated", {
       discordId,
       discordAvatar,
+      challenges,
     });
   }
 
@@ -734,6 +735,7 @@ export async function linkDiscord(
   return new MonkeyResponse("Discord account linked", {
     discordId,
     discordAvatar,
+    challenges,
   });
 }
 

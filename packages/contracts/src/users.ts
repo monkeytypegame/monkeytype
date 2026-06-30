@@ -203,7 +203,7 @@ export const LinkDiscordRequestSchema = z.object({
 export type LinkDiscordRequest = z.infer<typeof LinkDiscordRequestSchema>;
 
 export const LinkDiscordResponseSchema = responseWithData(
-  UserSchema.pick({ discordId: true, discordAvatar: true }),
+  UserSchema.pick({ discordId: true, discordAvatar: true, challenges: true }),
 );
 export type LinkDiscordResponse = z.infer<typeof LinkDiscordResponseSchema>;
 
