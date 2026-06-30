@@ -1,6 +1,7 @@
 import {
   GithubProfileSchema,
   TwitterProfileSchema,
+  UserProfileDetails,
   UserProfileDetailsSchema,
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
@@ -40,13 +41,13 @@ export function EditProfile() {
       twitter: snapshot.details?.socialProfiles?.twitter ?? "",
       website: snapshot.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        snapshot.details?.showActivityOnPublicProfile ?? true,
+        snapshot.details?.showActivityOnPublicProfile ?? false,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
       showChallengesOnPublicProfile:
-        snapshot.details?.showChallengesOnPublicProfile ?? true,
+        snapshot.details?.showChallengesOnPublicProfile ?? false,
     },
     onSubmit: async ({ value }) => {
-      const updates = {
+      const updates: UserProfileDetails = {
         bio: value.bio,
         keyboard: value.keyboard,
         socialProfiles: {
@@ -55,6 +56,7 @@ export function EditProfile() {
           website: value.website || undefined,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
+        showChallengesOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
       const response = await Ape.users.updateProfile({

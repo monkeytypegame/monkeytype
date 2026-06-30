@@ -81,12 +81,13 @@ export function Challenges(props: {
       />
       <div class="flex w-full min-w-0 flex-col gap-4 rounded bg-sub-alt p-4">
         <h3>Challenges</h3>
-        <div class="text-sub">
-          You&apos;ve unlocked {Object.keys(props.challenges ?? {}).length}/
-          {getRegularChallenges().length} ({Math.round(unlockPercentage())}%)
-        </div>
-
-        <Bar bg="bg" fill="main" percent={unlockPercentage()} />
+        <Show when={props.isAccountPage}>
+          <div class="text-sm text-sub">
+            You&apos;ve unlocked {Object.keys(props.challenges ?? {}).length}/
+            {getRegularChallenges().length} ({Math.round(unlockPercentage())}%)
+          </div>
+          <Bar bg="bg" fill="main" percent={unlockPercentage()} />
+        </Show>
 
         <ChallengesList
           variant="short"
@@ -96,23 +97,25 @@ export function Challenges(props: {
 
         <ChallengeIcons
           challenges={completedChallenges().slice(1, -1)}
-          max={maxIcons()}
+          max={props.isAccountPage ? maxIcons() : 9999}
           completed={true}
         />
 
-        <p class="-mb-2 text-sub">Locked Challenges</p>
-        <ChallengeIcons
-          challenges={incompleteChallenges()}
-          max={maxIcons()}
-          completed={false}
-        />
+        <Show when={props.isAccountPage}>
+          <p class="-mb-2 text-sub">locked challenges</p>
+          <ChallengeIcons
+            challenges={incompleteChallenges()}
+            max={maxIcons()}
+            completed={false}
+          />
 
-        <Button
-          variant="text"
-          text="View Challenges"
-          class="ml-auto shrink-0"
-          onClick={() => showModal("AllChallengesModal")}
-        />
+          <Button
+            variant="text"
+            text="View all challenges"
+            class="ml-auto shrink-0"
+            onClick={() => showModal("AllChallengesModal")}
+          />
+        </Show>
       </div>
     </Show>
   );
@@ -222,7 +225,7 @@ function ChallengeIcons(props: {
   completed: boolean;
 }) {
   return (
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       <For each={props.challenges.slice(0, props.max)}>
         {(challenge) => (
           <ChallengeItem
@@ -280,7 +283,12 @@ function ChallengesList(props: {
     <div class="flex flex-col gap-2">
       <For each={props.challenges}>
         {(challenge) => (
-          <div class="group flex gap-4 rounded bg-sub-alt p-2">
+          <div
+            class={cn(
+              "group flex gap-4 rounded bg-sub-alt",
+              props.variant === "full" && "p-2",
+            )}
+          >
             <div class="flex-1">
               <ChallengeItem
                 completed={props.completed}
