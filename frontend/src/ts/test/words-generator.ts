@@ -624,6 +624,7 @@ export async function generateWords(
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
+  const rawWordList: string[] = [];
   const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
@@ -689,9 +690,10 @@ export async function generateWords(
     const nextWord = await getNextWord(
       i,
       limit,
-      Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -1) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -2) ?? "",
     );
+    rawWordList.push(nextWord.wordRaw);
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
@@ -739,6 +741,7 @@ let previousGetNextWordReturns: GetNextWordReturn[] = [];
 
 type GetNextWordReturn = {
   word: string;
+  wordRaw: string;
   sectionIndex: number;
 };
 
@@ -971,10 +974,9 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  randomWord = appendCommitCharacter(randomWord);
-
   const ret = {
-    word: randomWord,
+    word: appendCommitCharacter(randomWord),
+    wordRaw: randomWord,
     sectionIndex: sectionIndex,
   };
 
