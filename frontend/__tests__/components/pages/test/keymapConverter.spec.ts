@@ -7,8 +7,13 @@ import qwertzLayout from "../../../../static/layouts/qwertz.json";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import {
   Alt,
+  BackspaceShort,
   Ctrl,
+  EnterShort,
+  Hyper,
+  HyperShort,
   Meta,
+  Shift,
 } from "../../../../src/ts/components/pages/test/keymapLayouts";
 
 function expectLegend(...legends: string[]): { legends: string[] } {
@@ -135,11 +140,11 @@ describe("keymap converter", () => {
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          ...expectLegend("Shift"),
+          ...expectLegend(Shift),
           width: 2.25,
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          ...expectLegend("Shift"),
+          ...expectLegend(Shift),
           width: 2.75,
         });
 
@@ -172,7 +177,7 @@ describe("keymap converter", () => {
             width: 1.25,
           },
           {
-            ...expectLegend("Monke"),
+            ...expectLegend(Hyper),
             width: 1.25,
           },
           {
@@ -292,6 +297,7 @@ describe("keymap converter", () => {
           ...expectLegend("Enter"),
           height: 2,
           width: 1.5,
+          align: "top",
         });
 
         // Row3: Caps added at start
@@ -302,11 +308,11 @@ describe("keymap converter", () => {
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          ...expectLegend("Shift"),
+          ...expectLegend(Shift),
           width: 1.25,
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          ...expectLegend("Shift"),
+          ...expectLegend(Shift),
           width: 2.75,
         });
 
@@ -339,7 +345,7 @@ describe("keymap converter", () => {
             width: 1.25,
           },
           {
-            ...expectLegend("Monke"),
+            ...expectLegend(Hyper),
             width: 1.25,
           },
           {
@@ -590,7 +596,7 @@ describe("keymap converter", () => {
 
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          ...expectLegend("BS"),
+          ...expectLegend(BackspaceShort),
         });
 
         // Row2: Tab added at start
@@ -615,10 +621,10 @@ describe("keymap converter", () => {
 
         // Row4: Shift added at start and end
         expect(row4?.[0], "row4 first").toEqual({
-          ...expectLegend("Shift"),
+          ...expectLegend(Shift),
         });
         expect(row4?.[row4.length - 1], "row4 last").toEqual({
-          ...expectLegend("Enter"),
+          ...expectLegend(EnterShort),
         });
 
         // Row5: Ctrl, Monke, Alt at start; Alt,  Meta, Ctrl at end
@@ -642,7 +648,7 @@ describe("keymap converter", () => {
             ...expectLegend(Alt),
           },
           {
-            ...expectLegend("Monke"),
+            ...expectLegend(HyperShort),
           },
           {
             ...expectLegend(Ctrl),

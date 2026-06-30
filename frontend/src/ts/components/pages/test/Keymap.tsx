@@ -153,15 +153,22 @@ function Key(
     return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
   });
 
-  const isNext = () =>
-    !isSteno() &&
-    props.legends?.some((legend) => legend === getKeymapHighlightKey());
+  const isNext = createMemo(
+    () =>
+      getConfig.keymapMode === "next" &&
+      !isSteno() &&
+      props.legends?.some((legend) => legend === getKeymapHighlightKey()),
+  );
 
   return (
     <Anime
       class={cn(
-        "relative flex items-center justify-center rounded border-2 border-bg bg-sub-alt",
+        "relative flex justify-center rounded border-2 border-bg bg-sub-alt",
         (props.label ?? "").length >= 2 && "text-em-xs",
+        {
+          "items-center": props.align !== "top",
+          "items-start pt-1.5": props.align === "top",
+        },
       )}
       style={{
         "--keybgcolor": isNext() ? getTheme().main : getTheme().subAlt,

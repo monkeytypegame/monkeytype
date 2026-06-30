@@ -72,6 +72,7 @@ function convert(options: {
             ? { isLayoutIndicator: true }
             : {}),
           ...(final.isHoming === true ? { isHoming: true } : {}),
+          ...(final.align !== undefined ? { align: final.align } : {}),
         } satisfies KeyDefinition;
       })
       //filter skipped keys

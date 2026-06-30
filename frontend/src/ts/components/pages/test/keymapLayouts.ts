@@ -1,13 +1,22 @@
 import { KeymapStyle } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { formatForDisplay } from "@tanstack/solid-hotkeys";
+import {
+  FormatDisplayOptions,
+  formatForDisplay,
+} from "@tanstack/solid-hotkeys";
 import { OneOf } from "../../../utils/types";
 
-export const Ctrl = formatForDisplay("Mod");
-export const Shift = formatForDisplay("Shift");
-export const Alt = formatForDisplay("Alt");
+const options: FormatDisplayOptions = {};
+export const Ctrl = formatForDisplay("Ctrl", options);
+export const Shift = formatForDisplay("Shift", { platform: "mac" });
+export const Alt = formatForDisplay("Alt", options);
 export const Hyper = "Monke";
-export const Meta = formatForDisplay("meta");
+export const HyperShort = "";
+export const Backspace = "Backspace";
+export const BackspaceShort = formatForDisplay("Backspace", options);
+export const Meta = formatForDisplay("Meta", options);
+export const Enter = "Enter";
+export const EnterShort = formatForDisplay("Enter", { platform: "mac" });
 
 export type KeyDefinition = {
   legends: string[];
@@ -21,9 +30,9 @@ export type KeyDefinition = {
   y?: number;
   /** rotation in degrees  */
   rotation?: number;
-
   isLayoutIndicator?: boolean;
   isHoming?: boolean;
+  align?: "top";
 };
 export type KeyboardDefinition = KeyDefinition[][];
 
@@ -83,7 +92,7 @@ const staggeredAnsi: KeymapLayout = [
     { layoutPosition: { col: 8 } },
     { layoutPosition: { col: 9 } },
     { layoutPosition: { col: 10 } },
-    { legend: "Enter", width: 2.25, isExtraKey: true },
+    { legend: Enter, width: 2.25, isExtraKey: true },
   ]),
   buildRow("row4", [
     { legend: Shift, width: 2.25, isExtraKey: true },
@@ -104,7 +113,7 @@ const staggeredIso: KeymapLayout = [
     { legend: "Tab", width: 1.5, isExtraKey: true },
     { layoutPosition: { col: 0 }, x: 0.5, extraKeysOverride: { x: 0 } },
     ...addLayoutKeys(11, { start: 1 }),
-    { legend: "Enter", width: 1.5, height: 2, isExtraKey: true },
+    { legend: Enter, width: 1.5, height: 2, isExtraKey: true, align: "top" },
   ]),
   buildRow("row3", [
     { legend: "Caps", width: 1.75, isExtraKey: true },
@@ -235,7 +244,7 @@ const matrixBottomRow: LayoutKey[] = [
     extraKeysOverride: { width: 6, x: 0 },
   },
   { legend: Alt, isExtraKey: true },
-  { legend: Hyper, isExtraKey: true },
+  { legend: HyperShort, isExtraKey: true },
   { legend: Ctrl, isExtraKey: true },
 ];
 
@@ -243,7 +252,7 @@ const matrix: KeymapLayout = [
   buildRow("row1", [
     { layoutPosition: { col: 0 }, isExtraKey: true },
     ...addLayoutKeys(10, { start: 1 }),
-    { legend: "BS", isExtraKey: true },
+    { legend: BackspaceShort, isExtraKey: true },
   ]),
   buildRow("row2", [
     { legend: "Tab", isExtraKey: true },
@@ -263,7 +272,7 @@ const matrix: KeymapLayout = [
   buildRow("row4", [
     { legend: Shift, isExtraKey: true },
     ...addLayoutKeys(10),
-    { legend: "Enter", isExtraKey: true },
+    { legend: EnterShort, isExtraKey: true },
   ]),
   matrixBottomRow,
 ];
@@ -361,7 +370,7 @@ const alice: KeymapLayout = [
     { layoutPosition: { col: 8 }, rotation: -10, y: 0.1 },
     { layoutPosition: { col: 9 } },
     { layoutPosition: { col: 10 } },
-    { legend: "Enter", width: 2.25, isExtraKey: true },
+    { legend: Enter, width: 2.25, isExtraKey: true },
   ]),
   buildRow("row4", [
     { legend: Shift, width: 2.25, isExtraKey: true, x: 1 },
