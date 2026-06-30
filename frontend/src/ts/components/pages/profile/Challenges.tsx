@@ -16,6 +16,7 @@ import { showModal } from "../../../states/modals";
 import { restart } from "../../../test/test-logic";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
+import { Formatting } from "../../../utils/format";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import { Balloon } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -24,6 +25,13 @@ import { Fa } from "../../common/Fa";
 
 type ChallengeUnlock = Challenge & { addedAt?: number };
 
+const percentageFormat = (percentage: number) => {
+  const format = new Formatting({
+    alwaysShowDecimalPlaces: true,
+    typingSpeedUnit: "wpm",
+  });
+  return format.percentage(percentage);
+};
 export function Challenges(props: {
   isAccountPage?: true;
   challenges: UserChallenges | undefined;
@@ -84,7 +92,8 @@ export function Challenges(props: {
         <Show when={props.isAccountPage}>
           <div class="text-sm text-sub">
             You&apos;ve unlocked {Object.keys(props.challenges ?? {}).length}/
-            {getRegularChallenges().length} ({Math.round(unlockPercentage())}%)
+            {getRegularChallenges().length} (
+            {percentageFormat(unlockPercentage())})
           </div>
           <Bar bg="bg" fill="main" percent={unlockPercentage()} />
         </Show>
@@ -152,11 +161,16 @@ function ChallengeItem(props: {
       : "",
   );
 
+  const isRare = () => getChallengeUnlockPercentage(props.challenge) < 0.5;
+
   return (
     <Balloon
       text={
         props.variant === "iconOnly"
-          ? `${props.challenge.display}\n\n${props.challenge.description}${unlocked()}`
+          ? `${props.challenge.display}\n\n
+              ${props.challenge.description}\n
+              ${printChallengeUnlockPercentage(props.challenge)}
+              ${unlocked()}`
           : ""
       }
       break
@@ -166,8 +180,11 @@ function ChallengeItem(props: {
     >
       <div
         class={cn(
-          props.completed ? "bg-main" : "bg-bg",
+          props.completed ? "bg-text" : "bg-bg",
           props.completed ? "text-bg" : "text-sub",
+          props.completed && isRare()
+            ? "bg-text shadow ring shadow-main ring-main"
+            : "",
           "flex aspect-square items-center justify-center rounded",
           "h-10",
         )}
@@ -200,19 +217,28 @@ function ChallengeItem(props: {
               />
             </Show>
           </h4>
-          <p class="text-xs text-sub">
+          <div
+            class={cn(
+              "flex flex-col text-xs text-sub",
+              props.variant === "short" ? "gap-0.5" : "gap-2",
+            )}
+          >
             {props.challenge.description}
+            <p classList={{ "text-main": props.completed && isRare() }}>
+              {printChallengeUnlockPercentage(props.challenge)}
+            </p>
             <Show
               when={
                 props.variant === "short" &&
                 props.challenge.addedAt !== undefined
               }
             >
-              <br />
-              Unlocked{" "}
-              {dateFormat(props.challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
+              <p>
+                Unlocked{" "}
+                {dateFormat(props.challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
+              </p>
             </Show>
-          </p>
+          </div>
         </div>
       </Show>
     </Balloon>
@@ -236,44 +262,16 @@ function ChallengeIcons(props: {
         )}
       </For>
       <Show when={props.challenges.length > props.max}>
-        <div class="flex h-full items-center px-4 text-right">
-          + {props.challenges.length - props.max}
-        </div>
+        <Button
+          class="flex h-full items-center px-4 text-right"
+          variant="text"
+          text={`+${props.challenges.length - props.max}`}
+          onClick={() => showModal("AllChallengesModal")}
+        />
       </Show>
     </div>
   );
 }
-
-function ChallengesModal(props: {
-  completed: ({ addedAt?: number } & Challenge)[];
-  incompleted: Challenge[];
-  percentage: number;
-}) {
-  return (
-    <AnimatedModal id="AllChallengesModal" modalClass="max-w-[1200px]">
-      <div class="text-sub">
-        You&apos;ve unlocked {props.completed.length}/
-        {getRegularChallenges().length} ({Math.round(props.percentage)}%)
-      </div>
-
-      <Bar bg="bg" fill="main" percent={props.percentage} />
-
-      <ChallengesList
-        variant="full"
-        challenges={props.completed}
-        completed={true}
-      />
-
-      <p class="-mb-2 text-sub">Locked Challenges</p>
-      <ChallengesList
-        variant="full"
-        challenges={props.incompleted}
-        completed={false}
-      />
-    </AnimatedModal>
-  );
-}
-
 function ChallengesList(props: {
   challenges: ({ addedAt?: number } & Challenge)[];
   completed: boolean;
@@ -308,5 +306,43 @@ function ChallengesList(props: {
         )}
       </For>
     </div>
+  );
+}
+
+function getChallengeUnlockPercentage(challenge: Challenge): number {
+  return (challenge.initialCount / 20_000) * 100;
+}
+function printChallengeUnlockPercentage(challenge: Challenge): string {
+  return `${percentageFormat(getChallengeUnlockPercentage(challenge))} of players have completed this challenge`;
+}
+
+function ChallengesModal(props: {
+  completed: ({ addedAt?: number } & Challenge)[];
+  incompleted: Challenge[];
+  percentage: number;
+}) {
+  return (
+    <AnimatedModal id="AllChallengesModal" modalClass="max-w-[1200px]">
+      <div class="text-sub">
+        {" "}
+        You&apos;ve unlocked {props.completed.length}/
+        {getRegularChallenges().length} ({percentageFormat(props.percentage)})
+      </div>
+
+      <Bar bg="bg" fill="main" percent={props.percentage} />
+
+      <ChallengesList
+        variant="full"
+        challenges={props.completed}
+        completed={true}
+      />
+
+      <p class="-mb-2 text-sub">Locked Challenges</p>
+      <ChallengesList
+        variant="full"
+        challenges={props.incompleted}
+        completed={false}
+      />
+    </AnimatedModal>
   );
 }
