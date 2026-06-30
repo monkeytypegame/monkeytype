@@ -723,6 +723,50 @@ describe("result controller test", () => {
       expect(userUpdateChallengeMock).toHaveBeenCalledWith(uid, "69");
       expect(georgeAwardChallengeMock).toHaveBeenCalledWith("discordId", "69");
     });
+
+    it("should not add challenge if not auto-role", async () => {
+      //GIVEN
+      userGetMock.mockClear();
+      userGetMock.mockResolvedValue({
+        uid,
+        name: "bob",
+        discordId: "discordId",
+      } as any);
+
+      const completedEvent = buildCompletedEvent({
+        challenge: "roleAddict",
+      });
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+    it("should dd challenge without discord connected", async () => {
+      const completedEvent = buildCompletedEvent({
+        challenge: "69",
+      });
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(userUpdateChallengeMock).toHaveBeenCalledWith(uid, "69");
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+
     it("should fail if result saving is disabled", async () => {
       //GIVEN
       await enableResultsSaving(false);
