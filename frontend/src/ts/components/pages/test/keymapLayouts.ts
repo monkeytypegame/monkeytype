@@ -390,6 +390,78 @@ const alice: KeymapLayout = [
   ]),
   aliceBottomRow,
 ];
+
+const aliceIso: KeymapLayout = [
+  buildRow("row1", [
+    { legend: "Esc", isExtraKey: true, x: 0.4 },
+    { layoutPosition: { col: 0 }, isExtraKey: true, x: 0.15 },
+    { layoutPosition: { col: 1 } },
+    { layoutPosition: { col: 2 }, y: -0.1 },
+    { layoutPosition: { col: 3 }, rotation: 10, y: 0.1 },
+    { layoutPosition: { col: 4 }, rotation: 10, y: 0.3 },
+    { layoutPosition: { col: 5 }, rotation: 10, y: 0.5 },
+    { layoutPosition: { col: 6 }, rotation: 10, y: 0.7 },
+    { layoutPosition: { col: 7 }, rotation: -10, y: 0.6, x: 0.15 },
+    { layoutPosition: { col: 8 }, rotation: -10, y: 0.4 },
+    { layoutPosition: { col: 9 }, rotation: -10, y: 0.2 },
+    { layoutPosition: { col: 10 }, rotation: -10 },
+    { layoutPosition: { col: 11 }, y: -0.1 },
+    { layoutPosition: { col: 12 } },
+    { legend: "Backspace", width: 2, isExtraKey: true },
+  ]),
+  buildRow("row2", [
+    { legend: "PgUp", isExtraKey: true, x: 0.2 },
+    { legend: "Tab", width: 1.5, isExtraKey: true, x: 0.15 },
+    { layoutPosition: { col: 0 }, x: 0.15, extraKeysOverride: { x: 0 } },
+    { layoutPosition: { col: 1 }, rotation: 10 },
+    { layoutPosition: { col: 2 }, rotation: 10, y: 0.2 },
+    { layoutPosition: { col: 3 }, rotation: 10, y: 0.4 },
+    { layoutPosition: { col: 4 }, rotation: 10, y: 0.6 },
+    { layoutPosition: { col: 5 }, rotation: -10, y: 0.7, x: 0.75 },
+    { layoutPosition: { col: 6 }, rotation: -10, y: 0.5 },
+    { layoutPosition: { col: 7 }, rotation: -10, y: 0.3 },
+    { layoutPosition: { col: 8 }, rotation: -10, y: 0.1 },
+    { layoutPosition: { col: 9 }, y: -0.1 },
+    { layoutPosition: { col: 10 } },
+    { layoutPosition: { col: 11 } },
+    { legend: Enter, width: 1.5, height: 2, isExtraKey: true, align: "top" },
+  ]),
+  buildRow("row3", [
+    { legend: "PgDn", isExtraKey: true },
+    { legend: "Caps", width: 1.75, isExtraKey: true, x: 0.15 },
+    { layoutPosition: { col: 0 }, x: 0.3, extraKeysOverride: { x: 0 } },
+    { layoutPosition: { col: 1 }, rotation: 10, y: 0.1 },
+    { layoutPosition: { col: 2 }, rotation: 10, y: 0.3 },
+    { layoutPosition: { col: 3 }, rotation: 10, y: 0.5, isHoming: true },
+    { layoutPosition: { col: 4 }, rotation: 10, y: 0.7 },
+    { layoutPosition: { col: 5 }, rotation: -10, y: 0.7, x: 1.15 },
+    { layoutPosition: { col: 6 }, rotation: -10, y: 0.5, isHoming: true },
+    { layoutPosition: { col: 7 }, rotation: -10, y: 0.3 },
+    { layoutPosition: { col: 8 }, rotation: -10, y: 0.1 },
+    { layoutPosition: { col: 9 } },
+    { layoutPosition: { col: 10 } },
+    { layoutPosition: { col: 11 } },
+  ]),
+  buildRow("row4", [
+    { legend: Shift, width: 1.25, isExtraKey: true, x: 1 },
+    { layoutPosition: { col: 0 }, isExtraKey: true },
+    { layoutPosition: { col: 1 }, x: 0.45, extraKeysOverride: { x: 0 } },
+    { layoutPosition: { col: 2 }, rotation: 10, y: 0.25 },
+    { layoutPosition: { col: 3 }, rotation: 10, y: 0.45 },
+    { layoutPosition: { col: 4 }, rotation: 10, y: 0.65 },
+    { layoutPosition: { col: 5 }, rotation: 10, y: 0.85 },
+    { layoutPosition: { col: 5 }, rotation: -10, y: 0.8, x: 0.7 },
+    { layoutPosition: { col: 6 }, rotation: -10, y: 0.6 },
+    { layoutPosition: { col: 7 }, rotation: -10, y: 0.4 },
+    { layoutPosition: { col: 8 }, rotation: -10, y: 0.2 },
+    { layoutPosition: { col: 9 } },
+    { layoutPosition: { col: 10 } },
+
+    { legend: Shift, width: 1.75, isExtraKey: true },
+    { legend: "fn", isExtraKey: true },
+  ]),
+  aliceBottomRow,
+];
 export const keymapLayouts: Partial<
   Record<KeymapStyle, Partial<Record<LayoutObject["type"], KeymapLayout>>>
 > = {
@@ -402,7 +474,7 @@ export const keymapLayouts: Partial<
   matrix: { iso: matrix, ansi: matrix },
   split_matrix: { iso: splitMatrix, ansi: splitMatrix },
 
-  alice: { iso: alice, ansi: alice },
+  alice: { iso: aliceIso, ansi: alice },
 };
 
 function buildRow(

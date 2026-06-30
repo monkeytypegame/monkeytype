@@ -797,5 +797,331 @@ describe("keymap converter", () => {
         expect(row5, "row5").toBeUndefined();
       });
     });
+
+    describe("alice", () => {
+      it("converts qwerty alice", () => {
+        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+          qwertyLayout as LayoutObject,
+          {
+            keymapStyle: "alice",
+            showAllKeys: false,
+          },
+        );
+
+        expect(row1, "row1").toEqual([
+          { ...expectLegend("1", "!") },
+          { ...expectLegend("2", "@"), y: -0.1 },
+          { ...expectLegend("3", "#"), y: 0.1, rotation: 10 },
+          { ...expectLegend("4", "$"), y: 0.3, rotation: 10 },
+          { ...expectLegend("5", "%"), y: 0.5, rotation: 10 },
+          { ...expectLegend("6", "^"), y: 0.7, rotation: 10 },
+          { ...expectLegend("7", "&"), x: 0.15, y: 0.6, rotation: -10 },
+          { ...expectLegend("8", "*"), y: 0.4, rotation: -10 },
+          { ...expectLegend("9", "("), y: 0.2, rotation: -10 },
+          { ...expectLegend("0", ")"), rotation: -10 },
+          { ...expectLegend("-", "_"), y: -0.1 },
+          { ...expectLegend("=", "+") },
+        ]);
+
+        expect(row2, "row2").toEqual([
+          { ...expectLegend("q", "Q"), x: 0.15 },
+          { ...expectLegend("w", "W"), rotation: 10 },
+          { ...expectLegend("e", "E"), y: 0.2, rotation: 10 },
+          { ...expectLegend("r", "R"), y: 0.4, rotation: 10 },
+          { ...expectLegend("t", "T"), y: 0.6, rotation: 10 },
+          { ...expectLegend("y", "Y"), x: 0.75, y: 0.7, rotation: -10 },
+          { ...expectLegend("u", "U"), y: 0.5, rotation: -10 },
+          { ...expectLegend("i", "I"), y: 0.3, rotation: -10 },
+          { ...expectLegend("o", "O"), y: 0.1, rotation: -10 },
+          { ...expectLegend("p", "P"), y: -0.1 },
+          { ...expectLegend("[", "{") },
+          { ...expectLegend("]", "}") },
+        ]);
+
+        expect(row3, "row3").toEqual([
+          { ...expectLegend("a", "A"), x: 0.3 },
+          { ...expectLegend("s", "S"), y: 0.1, rotation: 10 },
+          { ...expectLegend("d", "D"), y: 0.3, rotation: 10 },
+          { ...expectLegend("f", "F"), y: 0.5, rotation: 10, isHoming: true },
+          { ...expectLegend("g", "G"), y: 0.7, rotation: 10 },
+          { ...expectLegend("h", "H"), x: 1.15, y: 0.7, rotation: -10 },
+          { ...expectLegend("j", "J"), y: 0.5, rotation: -10, isHoming: true },
+          { ...expectLegend("k", "K"), y: 0.3, rotation: -10 },
+          { ...expectLegend("l", "L"), y: 0.1, rotation: -10 },
+          { ...expectLegend(";", ":") },
+          { ...expectLegend("'", '"') },
+        ]);
+
+        expect(row4, "row4").toEqual([
+          { ...expectLegend("z", "Z"), x: 0.45 },
+          { ...expectLegend("x", "X"), y: 0.25, rotation: 10 },
+          { ...expectLegend("c", "C"), y: 0.45, rotation: 10 },
+          { ...expectLegend("v", "V"), y: 0.65, rotation: 10 },
+          { ...expectLegend("b", "B"), y: 0.85, rotation: 10 },
+          { ...expectLegend("b", "B"), x: 0.7, y: 0.8, rotation: -10 },
+          { ...expectLegend("n", "N"), y: 0.6, rotation: -10 },
+          { ...expectLegend("m", "M"), y: 0.4, rotation: -10 },
+          { ...expectLegend(",", "<"), y: 0.2, rotation: -10 },
+          { ...expectLegend(".", ">") },
+          { ...expectLegend("/", "?") },
+        ]);
+
+        expect(row5, "row5").toEqual([
+          {
+            ...expectLegend(" "),
+            width: 3,
+            x: 2.3,
+            y: 0.7,
+            rotation: 10,
+          },
+          {
+            ...expectLegend(" "),
+            width: 3,
+            x: 1,
+            y: 0.7,
+            rotation: -10,
+            isLayoutIndicator: true,
+          },
+        ]);
+      });
+
+      it("converts qwerty alice all keys", () => {
+        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+          qwertyLayout as LayoutObject,
+          {
+            keymapStyle: "alice",
+            showAllKeys: true,
+          },
+        );
+
+        // Row1: Esc, ` added at start, BS added at end
+        expect(row1?.[0], "row1 first").toEqual({
+          ...expectLegend("Esc"),
+          x: 0.4,
+        });
+        expect(row1?.[1], "row1 second").toEqual({
+          ...expectLegend("`", "~"),
+          x: 0.15,
+        });
+        expect(row1?.[row1.length - 1], "row1 last").toEqual({
+          ...expectLegend("Backspace"),
+          width: 2,
+        });
+
+        // Row2: PgUp added at start, \ added at end
+        expect(row2?.[0], "row2 first").toEqual({
+          ...expectLegend("PgUp"),
+          x: 0.2,
+        });
+        expect(row2?.[row2.length - 1], "row2 last").toEqual({
+          ...expectLegend("\\", "|"),
+          width: 1.5,
+        });
+
+        // Row3: PgDn added at start, Enter added at end
+        expect(row3?.[0], "row3 first").toEqual({
+          ...expectLegend("PgDn"),
+        });
+        expect(row3?.[row3?.length - 1], "row3 last").toEqual({
+          ...expectLegend("Enter"),
+          width: 2.25,
+        });
+
+        // Row4: left Shift (with x:1), right Shift (width 1.75), fn added at end
+        expect(row4?.[0], "row4 first").toEqual({
+          ...expectLegend(Shift),
+          width: 2.25,
+          x: 1,
+        });
+        expect(row4?.[row4.length - 2], "row4 second to last").toEqual({
+          ...expectLegend(Shift),
+          width: 1.75,
+        });
+        expect(row4?.[row4.length - 1], "row4 last").toEqual({
+          ...expectLegend("fn"),
+        });
+
+        // Row5: Ctrl, Alt, space, Meta, space, Alt, Ctrl (with rotations)
+        expect(row5, "row5").toEqual([
+          {
+            ...expectLegend(Ctrl),
+            width: 1.5,
+            x: 1,
+          },
+          {
+            ...expectLegend(Alt),
+            width: 1.5,
+            x: 1,
+            y: 0.25,
+            rotation: 10,
+          },
+          {
+            ...expectLegend(" "),
+            width: 2,
+            x: 0,
+            y: 0.6,
+            rotation: 10,
+          },
+          {
+            ...expectLegend(Meta),
+            width: 1.5,
+            y: 0.9,
+            rotation: 10,
+          },
+          {
+            ...expectLegend(" "),
+            width: 2.75,
+            x: 0.65,
+            y: 0.7,
+            rotation: -10,
+            isLayoutIndicator: true,
+          },
+          {
+            ...expectLegend(Alt),
+            width: 1.5,
+            y: 0.3,
+            rotation: -10,
+          },
+          {
+            ...expectLegend(Ctrl),
+            width: 1.5,
+            x: 2.25,
+          },
+        ]);
+
+        // Also verify total counts are as expected with extra keys
+        expect(row1?.length, "row1 length").toBe(15);
+        expect(row2?.length, "row2 length").toBe(15);
+        expect(row3?.length, "row3 length").toBe(14);
+        expect(row4?.length, "row4 length").toBe(14);
+      });
+
+      it("converts qwertz alice", () => {
+        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+          qwertzLayout as LayoutObject,
+          {
+            keymapStyle: "alice",
+            showAllKeys: false,
+          },
+        );
+
+        expect(row1, "row1").toEqual([
+          { ...expectLegend("1", "!") },
+          { ...expectLegend("2", `"`), y: -0.1 },
+          { ...expectLegend("3", "§"), y: 0.1, rotation: 10 },
+          { ...expectLegend("4", "$"), y: 0.3, rotation: 10 },
+          { ...expectLegend("5", "%"), y: 0.5, rotation: 10 },
+          { ...expectLegend("6", "&"), y: 0.7, rotation: 10 },
+          { ...expectLegend("7", "/"), x: 0.15, y: 0.6, rotation: -10 },
+          { ...expectLegend("8", "("), y: 0.4, rotation: -10 },
+          { ...expectLegend("9", ")"), y: 0.2, rotation: -10 },
+          { ...expectLegend("0", "="), rotation: -10 },
+          { ...expectLegend("ß", "?"), y: -0.1 },
+          { ...expectLegend("´", "`") },
+        ]);
+
+        expect(row2, "row2").toEqual([
+          { ...expectLegend("q", "Q"), x: 0.15 },
+          { ...expectLegend("w", "W"), rotation: 10 },
+          { ...expectLegend("e", "E"), y: 0.2, rotation: 10 },
+          { ...expectLegend("r", "R"), y: 0.4, rotation: 10 },
+          { ...expectLegend("t", "T"), y: 0.6, rotation: 10 },
+          { ...expectLegend("z", "Z"), x: 0.75, y: 0.7, rotation: -10 },
+          { ...expectLegend("u", "U"), y: 0.5, rotation: -10 },
+          { ...expectLegend("i", "I"), y: 0.3, rotation: -10 },
+          { ...expectLegend("o", "O"), y: 0.1, rotation: -10 },
+          { ...expectLegend("p", "P"), y: -0.1 },
+          { ...expectLegend("ü", "Ü") },
+          { ...expectLegend("+", "*") },
+        ]);
+
+        expect(row3, "row3").toEqual([
+          { ...expectLegend("a", "A"), x: 0.3 },
+          { ...expectLegend("s", "S"), y: 0.1, rotation: 10 },
+          { ...expectLegend("d", "D"), y: 0.3, rotation: 10 },
+          { ...expectLegend("f", "F"), y: 0.5, rotation: 10, isHoming: true },
+          { ...expectLegend("g", "G"), y: 0.7, rotation: 10 },
+          { ...expectLegend("h", "H"), x: 1.15, y: 0.7, rotation: -10 },
+          { ...expectLegend("j", "J"), y: 0.5, rotation: -10, isHoming: true },
+          { ...expectLegend("k", "K"), y: 0.3, rotation: -10 },
+          { ...expectLegend("l", "L"), y: 0.1, rotation: -10 },
+          { ...expectLegend("ö", "Ö") },
+          { ...expectLegend("ä", "Ä") },
+          { ...expectLegend("#", "'") },
+        ]);
+
+        expect(row4, "row4").toEqual([
+          { ...expectLegend("y", "Y"), x: 0.45 },
+          { ...expectLegend("x", "X"), y: 0.25, rotation: 10 },
+          { ...expectLegend("c", "C"), y: 0.45, rotation: 10 },
+          { ...expectLegend("v", "V"), y: 0.65, rotation: 10 },
+          { ...expectLegend("b", "B"), y: 0.85, rotation: 10 },
+          { ...expectLegend("b", "B"), x: 0.7, y: 0.8, rotation: -10 },
+          { ...expectLegend("n", "N"), y: 0.6, rotation: -10 },
+          { ...expectLegend("m", "M"), y: 0.4, rotation: -10 },
+          { ...expectLegend(",", ";"), y: 0.2, rotation: -10 },
+          { ...expectLegend(".", ":") },
+          { ...expectLegend("-", "_") },
+        ]);
+
+        expect(row5, "row5").toEqual([
+          {
+            ...expectLegend(" "),
+            width: 3,
+            x: 2.3,
+            y: 0.7,
+            rotation: 10,
+          },
+          {
+            ...expectLegend(" "),
+            width: 3,
+            x: 1,
+            y: 0.7,
+            rotation: -10,
+            isLayoutIndicator: true,
+          },
+        ]);
+      });
+
+      it("converts qwertz alice all keys", () => {
+        const [row1, row2, row3, row4] = convertLayoutToKeymap(
+          qwertzLayout as LayoutObject,
+          {
+            keymapStyle: "alice",
+            showAllKeys: true,
+          },
+        );
+
+        expect(row2?.[row2.length - 1], "row2 last").toEqual({
+          ...expectLegend("Enter"),
+          height: 2,
+          width: 1.5,
+          align: "top",
+        });
+
+        // Row4: Shift added at start and end
+        expect(row4?.[0], "row4 first").toEqual({
+          ...expectLegend(Shift),
+          width: 1.25,
+          x: 1,
+        });
+
+        expect(row4?.[row4.length - 2], "row4 second last").toEqual({
+          ...expectLegend(Shift),
+          width: 1.75,
+        });
+
+        //fn key
+        expect(row4?.[row4.length - 1], "row4 second last").toEqual({
+          ...expectLegend("fn"),
+        });
+
+        // Also verify total counts are as expected with extra keys
+        expect(row1?.length, "row1 length").toBe(15);
+        expect(row2?.length, "row2 length").toBe(15);
+        expect(row3?.length, "row3 length").toBe(14);
+        expect(row4?.length, "row4 length").toBe(15);
+      });
+    });
   });
 });
