@@ -2322,6 +2322,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  ayu_dark: {
+    bg: "#10141c",
+    caret: "#39bae6",
+    main: "#59c2ff",
+    sub: "#ffb454",
+    subAlt: "#10141c",
+    text: "#aad94c",
+    error: "#f07171",
+    errorExtra: "#f07171",
+    colorfulError: "#f07171",
+    colorfulErrorExtra: "#f07171",
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
