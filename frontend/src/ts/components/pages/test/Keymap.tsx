@@ -170,15 +170,13 @@ function Key(
   const [isFading, setIsFading] = createSignal(false);
   let prevKeymapMode = getConfig.keymapMode;
   let prevKeyWasHighlighted = false;
-  createEffect((onCleanup: unknown) => {
+  createEffect(() => {
     const mode = getConfig.keymapMode;
     const isStenoMode = isSteno();
     const keyWasHighlighted = keyMatchesHighlight() && !isStenoMode;
 
     if (prevKeymapMode === "next" && mode !== "next" && prevKeyWasHighlighted) {
       setIsFading(true);
-      const id = setTimeout(() => setIsFading(false), fadeDuration);
-      (onCleanup as (fn: () => void) => void)(() => clearTimeout(id));
     }
     prevKeymapMode = mode;
     prevKeyWasHighlighted = keyWasHighlighted;
@@ -253,8 +251,12 @@ function Key(
         "--keybgcolor": animKeyBgColor(),
         "--keycolor": animKeyColor(),
         duration: animDuration(),
-        onComplete: () =>
-          props.legends.forEach((l) => setKeymapFlashState(l, undefined)),
+        onComplete: () => {
+          props.legends.forEach((l) => setKeymapFlashState(l, undefined));
+          if (isFading()) {
+            setIsFading(false);
+          }
+        },
       }}
     >
       <Show
