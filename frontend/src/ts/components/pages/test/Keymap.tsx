@@ -162,21 +162,23 @@ function Key(
 
   const fadeDuration = applyReducedMotion(250);
 
+  const keyMatchesHighlight = createMemo(() =>
+    props.legends?.some((legend) => legend === getKeymapHighlightKey()),
+  );
+
   // Fade when leaving "next" mode
   const [isFading, setIsFading] = createSignal(false);
   let prevKeymapMode = getConfig.keymapMode;
   let prevKeyWasHighlighted = false;
-  createEffect(() => {
+  createEffect((onCleanup: unknown) => {
     const mode = getConfig.keymapMode;
     const isStenoMode = isSteno();
-    const keyMatchesHighlight = props.legends?.some(
-      (legend) => legend === getKeymapHighlightKey(),
-    );
-    const keyWasHighlighted = keyMatchesHighlight && !isStenoMode;
+    const keyWasHighlighted = keyMatchesHighlight() && !isStenoMode;
 
     if (prevKeymapMode === "next" && mode !== "next" && prevKeyWasHighlighted) {
       setIsFading(true);
-      setTimeout(() => setIsFading(false), fadeDuration);
+      const id = setTimeout(() => setIsFading(false), fadeDuration);
+      (onCleanup as (fn: () => void) => void)(() => clearTimeout(id));
     }
     prevKeymapMode = mode;
     prevKeyWasHighlighted = keyWasHighlighted;
@@ -219,9 +221,11 @@ function Key(
     return [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub];
   });
 
-  const animDuration = createMemo(() =>
-    isFading() ? fadeDuration : flashInfo().tick === 0 ? 0 : fadeDuration,
-  );
+  const animDuration = createMemo(() => {
+    if (isFading()) return fadeDuration;
+    if (flashInfo().tick === 0) return 0;
+    return fadeDuration;
+  });
 
   return (
     <Anime
