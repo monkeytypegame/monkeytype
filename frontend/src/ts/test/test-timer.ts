@@ -33,7 +33,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
-import { isTestActive } from "../states/test";
+import { isTestActive, setCurrentLiveStats } from "../states/test";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -317,6 +317,7 @@ function timerStep(now: number, catchingUp: boolean): void {
     // already using raf
     TimerProgress.update();
     LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+    setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning();

@@ -4,13 +4,14 @@ import { configEvent } from "../events/config";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";
 import { Keycode } from "../constants/keys";
-import { JSAnimation } from "animejs";
 import { isTestActive } from "../states/test";
+
+//TODO revert to 130, 180
+const MIN_WPM = 30;
+const MAX_WPM = 80;
 
 const monkeyEl = qs("#monkey");
 const monkeyFastEl = qs("#monkey .fast");
-
-let monkeyFastOpacityAnimation: JSAnimation | undefined;
 
 configEvent.subscribe(({ key }) => {
   if (key === "monkey" && isTestActive()) {
@@ -53,12 +54,12 @@ function update(): void {
 
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
-  const opacity = mapRange(num, 130, 180, 0, 1);
-  monkeyFastOpacityAnimation = monkeyFastEl?.animate({
+  const opacity = mapRange(num, MIN_WPM, MAX_WPM, 0, 1);
+  monkeyFastEl?.animate({
     opacity: opacity,
     duration: 1000,
   });
-  let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
+  let animDuration = mapRange(num, MIN_WPM, MAX_WPM, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
   monkeyEl?.setStyle({ animationDuration: `${animDuration}s` });
 }
