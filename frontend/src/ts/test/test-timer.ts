@@ -33,6 +33,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
+import { isTestActive } from "../states/test";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -402,7 +403,7 @@ async function _startOld(now: number): Promise<void> {
     const drift = roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      if (!TestState.isActive) {
+      if (!isTestActive()) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

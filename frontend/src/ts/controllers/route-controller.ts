@@ -7,6 +7,7 @@ import * as TestState from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
 import { authEvent } from "../events/auth";
+import { isTestActive } from "../states/test";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -176,7 +177,7 @@ export async function navigate(
   }
 
   const noQuit = isFunboxActive("no_quit");
-  if (TestState.isActive && noQuit) {
+  if (isTestActive() && noQuit) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {

@@ -17,6 +17,7 @@ import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
+import { isTestActive } from "./states/test";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -94,7 +95,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestState.isActive) {
+    if (isTestActive()) {
       event.preventDefault();
       // Included for legacy support, e.g. Chrome/Edge < 119
       // oxlint-disable-next-line no-deprecated

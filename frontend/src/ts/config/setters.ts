@@ -1,19 +1,19 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configMetadata, ConfigMetadataObject } from "./metadata";
-import { isConfigValueValid } from "./validation";
 import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
+import { isTestActive } from "../states/test";
+import { escapeHTML, triggerResize } from "../utils/misc";
+import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./funbox-validation";
-import * as TestState from "../test/test-state";
-import { triggerResize, escapeHTML } from "../utils/misc";
-import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
+import { configMetadata, ConfigMetadataObject } from "./metadata";
 import { Config, setConfigStore } from "./store";
-import { FunboxName } from "@monkeytype/schemas/configs";
+import { isConfigValueValid } from "./validation";
 import { typedKeys } from "@monkeytype/util/objects";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
@@ -41,7 +41,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   if (
     metadata.changeRequiresRestart &&
-    TestState.isActive &&
+    isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {
     showNoticeNotification(
@@ -154,7 +154,7 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (TestState.isActive && Config.funbox.includes("no_quit")) {
+  if (isTestActive() && Config.funbox.includes("no_quit")) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {
