@@ -11,10 +11,7 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import {
-  areCharactersVisuallyEqual,
-  removeLanguageSize,
-} from "../../utils/strings";
+import { removeLanguageSize } from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
@@ -32,7 +29,7 @@ import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
-import { getCommitCharacterType } from "../helpers/util";
+import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
 const charOverrides = new Map<string, string>([
@@ -300,16 +297,12 @@ function normalizeDataAndUpdateInputIfNeeded(
   testInput: string,
   currentWord: string,
 ): string | null {
-  let normalizedData: string | null = null;
-  const targetChar = currentWord[testInput.length];
-  if (
-    targetChar !== undefined &&
-    areCharactersVisuallyEqual(data, targetChar, Config.language)
-  ) {
-    replaceInputElementLastValueChar(targetChar);
-    normalizedData = targetChar;
+  const normalized = normalizeData(data, testInput, currentWord);
+  if (normalized !== data) {
+    replaceInputElementLastValueChar(normalized);
+    return normalized;
   }
-  return normalizedData;
+  return null;
 }
 
 export async function emulateInsertText(
