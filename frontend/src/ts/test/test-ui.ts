@@ -1268,9 +1268,10 @@ function buildWordLettersHTML(
   let out = "";
   const inputChars = Strings.splitIntoCharacters(input);
   const targetChars = Strings.splitIntoCharacters(targetWord);
+  const correctedChars = Strings.splitIntoCharacters(corrected);
   for (
     let c = 0;
-    c < Math.max(targetWord.length, input.length, corrected.length);
+    c < Math.max(targetChars.length, inputChars.length, correctedChars.length);
     c++
   ) {
     let inputChar = inputChars[c];
@@ -1280,7 +1281,7 @@ function buildWordLettersHTML(
       continue;
     }
 
-    let correctedChar = Strings.splitIntoCharacters(corrected)[c];
+    let correctedChar = correctedChars[c];
     let extraCorrected = "";
     const historyWord: string = !TestState.koreanStatus
       ? corrected
