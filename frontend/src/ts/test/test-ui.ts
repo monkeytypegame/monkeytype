@@ -1266,13 +1266,15 @@ function buildWordLettersHTML(
   targetWord: string,
 ): string {
   let out = "";
+  const inputChars = Strings.splitIntoCharacters(input);
+  const targetChars = Strings.splitIntoCharacters(targetWord);
   for (
     let c = 0;
     c < Math.max(targetWord.length, input.length, corrected.length);
     c++
   ) {
-    let inputChar = Strings.splitIntoCharacters(input)[c];
-    let targetChar = Strings.splitIntoCharacters(targetWord)[c];
+    let inputChar = inputChars[c];
+    let targetChar = targetChars[c];
 
     if (targetChar === " " || targetChar === "\n") {
       continue;
