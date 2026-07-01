@@ -71,6 +71,7 @@ import {
   getKeypressOverlap,
   getErrorCountHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
@@ -700,6 +701,51 @@ describe("stats.ts", () => {
       logTestEvent("timer", 3000, timer("end", 2));
 
       expect(getAfkDuration(buildEventLog())).toBe(0);
+    });
+  });
+
+  describe("getIncompleteTestSeconds", () => {
+    // Guards the abandoned-test (restart) measurement: it must exclude idle
+    // time so a tab left open for hours doesn't leak into incompleteTestSeconds.
+    it("excludes idle time — only the typed span counts", () => {
+      // 60s elapsed, but typing only in the first 3 seconds, then idle
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("timer", 61000, timer("end", 60));
+
+      // duration 60s − 57 idle seconds = 3
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(3);
+    });
+
+    it("keeps the full duration when typing is continuous", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("input", 4200, input({ charIndex: 3 })); // second 4
+      logTestEvent("input", 5200, input({ charIndex: 4 })); // second 5
+      logTestEvent("timer", 6000, timer("end", 5));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(5);
+    });
+
+    it("returns 0 for an unterminated log (no timer end event)", () => {
+      // documents why the restart path must log a timer "end" first: with no
+      // boundaries getTestDurationMs is 0, so nothing leaks through
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input());
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
+    });
+
+    it("never goes negative", () => {
+      // pure-idle test: 0 typed seconds, all intervals AFK
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
     });
   });
 
