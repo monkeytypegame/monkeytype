@@ -64,6 +64,8 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   acc?: number;
   raw?: number;
 }>({});
+export const resetCurrentLiveStats = (): void =>
+  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
 
 createEffect(() => {
   getActivePage(); // depend on active page

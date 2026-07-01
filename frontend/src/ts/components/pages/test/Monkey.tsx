@@ -59,7 +59,10 @@ export function Monkey() {
           }
         />
 
-        <div class="fixed" style={{ opacity: fastOpacity() }}>
+        <div
+          class="fixed transition-all duration-1000"
+          style={{ opacity: fastOpacity() }}
+        >
           <img
             src="/images/monkey/m1_fast.png"
             class={
