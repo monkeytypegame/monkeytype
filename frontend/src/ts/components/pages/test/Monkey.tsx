@@ -20,81 +20,48 @@ export function Monkey() {
     return duration === 0.25 ? 0 : duration;
   };
 
+  const state = () => {
+    const { left, right } = getMonkeyState();
+    if (left && !right) return "left" as const;
+    if (right && !left) return "right" as const;
+    if (!left && !right) return "none" as const;
+    return "both" as const;
+  };
+
+  const monkeyImages = (suffix?: string) => {
+    const cur = state();
+    return [
+      <img
+        src={`/images/monkey/m1${suffix ?? ""}.png`}
+        class={cur === "left" ? "visible" : "hidden"}
+      />,
+      <img
+        src={`/images/monkey/m2${suffix ?? ""}.png`}
+        class={cur === "right" ? "visible" : "hidden"}
+      />,
+      <img
+        src={`/images/monkey/m3${suffix ?? ""}.png`}
+        class={cur === "none" ? "visible" : "hidden"}
+      />,
+      <img
+        src={`/images/monkey/m4${suffix ?? ""}.png`}
+        class={cur === "both" ? "visible" : "hidden"}
+      />,
+    ];
+  };
+
   return (
     <Show when={getConfig.monkey && isTestActive()}>
       <div
         class="animate-shake flex w-full justify-center"
         style={{ "animation-duration": `${animDuration()}s` }}
       >
-        <img
-          src="/images/monkey/m1.png"
-          class={
-            getMonkeyState().left && !getMonkeyState().right
-              ? "visible"
-              : "hidden"
-          }
-        />
-        <img
-          src="/images/monkey/m2.png"
-          class={
-            getMonkeyState().right && !getMonkeyState().left
-              ? "visible"
-              : "hidden"
-          }
-        />
-        <img
-          src="/images/monkey/m3.png"
-          class={
-            !getMonkeyState().left && !getMonkeyState().right
-              ? "visible"
-              : "hidden"
-          }
-        />
-        <img
-          src="/images/monkey/m4.png"
-          class={
-            getMonkeyState().left && getMonkeyState().right
-              ? "visible"
-              : "hidden"
-          }
-        />
-
+        {monkeyImages()}
         <div
           class="fixed transition-all duration-1000"
           style={{ opacity: fastOpacity() }}
         >
-          <img
-            src="/images/monkey/m1_fast.png"
-            class={
-              getMonkeyState().left && !getMonkeyState().right
-                ? "visible"
-                : "hidden"
-            }
-          />
-          <img
-            src="/images/monkey/m2_fast.png"
-            class={
-              getMonkeyState().right && !getMonkeyState().left
-                ? "visible"
-                : "hidden"
-            }
-          />
-          <img
-            src="/images/monkey/m3_fast.png"
-            class={
-              !getMonkeyState().left && !getMonkeyState().right
-                ? "visible"
-                : "hidden"
-            }
-          />
-          <img
-            src="/images/monkey/m4_fast.png"
-            class={
-              getMonkeyState().left && getMonkeyState().right
-                ? "visible"
-                : "hidden"
-            }
-          />
+          {monkeyImages("_fast")}
         </div>
       </div>
     </Show>
