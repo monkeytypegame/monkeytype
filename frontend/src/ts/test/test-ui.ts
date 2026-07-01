@@ -1266,6 +1266,17 @@ function buildWordLettersHTML(
   targetWord: string,
 ): string {
   let out = "";
+  // the trailing commit separator (space/newline) is structural, not a letter;
+  // strip it from all three so it never renders and over-typed extras / untyped
+  // tails line up correctly
+  if (input.endsWith(" ") || input.endsWith("\n")) input = input.slice(0, -1);
+  if (corrected.endsWith(" ") || corrected.endsWith("\n")) {
+    corrected = corrected.slice(0, -1);
+  }
+  if (targetWord.endsWith(" ") || targetWord.endsWith("\n")) {
+    targetWord = targetWord.slice(0, -1);
+  }
+
   const inputChars = Strings.splitIntoCharacters(input);
   const targetChars = Strings.splitIntoCharacters(targetWord);
   const correctedChars = Strings.splitIntoCharacters(corrected);
@@ -1276,10 +1287,6 @@ function buildWordLettersHTML(
   ) {
     let inputChar = inputChars[c];
     let targetChar = targetChars[c];
-
-    if (targetChar === " " || targetChar === "\n") {
-      continue;
-    }
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
