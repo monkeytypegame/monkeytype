@@ -1261,47 +1261,44 @@ export function setJoiningClass(isEnabled: boolean): void {
 }
 
 function buildWordLettersHTML(
-  input: string,
-  corrected: string,
-  targetWord: string,
+  input: string | undefined,
+  corrected: string | undefined,
+  targetWord: string | undefined,
 ): string {
   let out = "";
   // the trailing commit separator (space/newline) is structural, not a letter;
   // strip it from all three so it never renders and over-typed extras / untyped
   // tails line up correctly
-  if (input.endsWith(" ") || input.endsWith("\n")) input = input.slice(0, -1);
-  if (corrected.endsWith(" ") || corrected.endsWith("\n")) {
+  if (input?.endsWith(" ") || input?.endsWith("\n")) input = input.slice(0, -1);
+  if (corrected?.endsWith(" ") || corrected?.endsWith("\n")) {
     corrected = corrected.slice(0, -1);
   }
-  if (targetWord.endsWith(" ") || targetWord.endsWith("\n")) {
+  if (targetWord?.endsWith(" ") || targetWord?.endsWith("\n")) {
     targetWord = targetWord.slice(0, -1);
   }
 
-  const inputChars = Strings.splitIntoCharacters(input);
-  const targetChars = Strings.splitIntoCharacters(targetWord);
-  const correctedChars = Strings.splitIntoCharacters(corrected);
-  for (
-    let c = 0;
-    c < Math.max(targetChars.length, inputChars.length, correctedChars.length);
-    c++
-  ) {
+  const inputChars = Strings.splitIntoCharacters(input ?? "");
+  const targetChars = Strings.splitIntoCharacters(targetWord ?? "");
+  const correctedChars = Strings.splitIntoCharacters(corrected ?? "");
+  for (let c = 0; c < Math.max(targetChars.length, inputChars.length); c++) {
     let inputChar = inputChars[c];
     let targetChar = targetChars[c];
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
     const historyWord: string = !TestState.koreanStatus
-      ? corrected
-      : Hangul.assemble(corrected.split(""));
+      ? (corrected ?? "")
+      : Hangul.assemble((corrected ?? "").split(""));
     if (
-      c + 1 === Math.max(input.length, corrected.length) &&
+      c >= targetChars.length - 1 &&
+      c + 1 === inputChars.length &&
       historyWord !== undefined &&
-      historyWord.length > input.length
+      historyWord.length > inputChars.length
     ) {
       extraCorrected = "extraCorrected";
     }
 
-    let displayLetter = inputChar;
+    let displayLetter = inputChar ?? targetChar;
     if (displayLetter === " ") {
       displayLetter = "_";
     }
@@ -1362,64 +1359,45 @@ async function loadWordsHistory(): Promise<boolean> {
       wordEl.classList.add("nocursor");
     }
 
-    try {
-      if (input === undefined || input === "") {
-        throw new Error("empty input word");
-      }
+    const isIncorrectWord = input !== target;
+    const isLastWord = i === inputHistoryLength - 1;
+    const isTimedTest =
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+    const isPartiallyCorrect = target.startsWith(input ?? "");
 
-      const isIncorrectWord = input !== target;
-      const isLastWord = i === inputHistoryLength - 1;
-      const isTimedTest =
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-      const isPartiallyCorrect = target.startsWith(input);
+    const shouldShowError =
+      Config.mode !== "zen" &&
+      !(isLastWord && isTimedTest && isPartiallyCorrect) &&
+      input !== undefined &&
+      input !== "";
 
-      const shouldShowError =
-        Config.mode !== "zen" &&
-        !(isLastWord && isTimedTest && isPartiallyCorrect);
-
-      if (isIncorrectWord && shouldShowError) {
-        wordEl.classList.add("error");
-      }
-
-      const burstValue = burstHistory[i];
-      if (burstValue !== undefined) {
-        wordEl.setAttribute("burst", String(burstValue));
-      }
-
-      let inputAttribute = input;
-
-      if (corrected !== undefined && corrected !== "") {
-        inputAttribute = corrected;
-      }
-
-      if (
-        inputAttribute.length >= target.length &&
-        (inputAttribute.endsWith(" ") || inputAttribute.endsWith("\n"))
-      ) {
-        inputAttribute = inputAttribute.slice(0, -1);
-      }
-
-      wordEl.setAttribute("input", inputAttribute);
-
-      if (corrected === undefined) throw new Error("empty corrected word");
-
-      wordEl.innerHTML = buildWordLettersHTML(input, corrected, target);
-    } catch (e) {
-      try {
-        for (let char of target) {
-          if (char === " ") {
-            char = "_";
-          }
-          const letterEl = document.createElement("letter");
-          letterEl.textContent = char;
-          wordEl.appendChild(letterEl);
-        }
-      } catch {
-        // wordEl is already created, just leave it empty or with partial content
-      }
+    if (isIncorrectWord && shouldShowError) {
+      wordEl.classList.add("error");
     }
+
+    const burstValue = burstHistory[i];
+    if (burstValue !== undefined) {
+      wordEl.setAttribute("burst", String(burstValue));
+    }
+
+    let inputAttribute = input ?? "";
+
+    if (corrected !== undefined && corrected !== "") {
+      inputAttribute = corrected;
+    }
+
+    if (
+      inputAttribute.length >= target.length &&
+      (inputAttribute.endsWith(" ") || inputAttribute.endsWith("\n"))
+    ) {
+      inputAttribute = inputAttribute.slice(0, -1);
+    }
+
+    wordEl.setAttribute("input", inputAttribute);
+
+    wordEl.innerHTML = buildWordLettersHTML(input, corrected, target);
 
     wordEl.addEventListener("mouseenter", (e) => {
       // if (noHover) return;
