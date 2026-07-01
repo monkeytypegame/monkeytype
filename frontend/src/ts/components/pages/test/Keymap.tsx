@@ -23,7 +23,7 @@ import { KeyboardDefinition, KeyDefinition } from "./keymapLayouts";
 
 export function Keymap() {
   return (
-    <Show when={keymapLayoutObject()}>
+    <Show when={getConfig.keymapMode !== "off" && keymapLayoutObject()}>
       <Keyboard
         displayName={getKeymapLayout().layoutNameDisplayString}
         layoutData={keymapLayoutObject() as LayoutObject}
