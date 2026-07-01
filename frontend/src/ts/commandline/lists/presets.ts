@@ -1,4 +1,3 @@
-import * as ModesNotice from "../../elements/modes-notice";
 import * as PresetController from "../../controllers/preset-controller";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
@@ -36,7 +35,6 @@ function update(): void {
       display: preset.name,
       exec: async (): Promise<void> => {
         await PresetController.apply(preset._id);
-        void ModesNotice.update();
       },
     });
   });

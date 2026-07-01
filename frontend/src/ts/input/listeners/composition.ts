@@ -2,7 +2,6 @@ import { getInputElement } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import * as TestInput from "../../test/test-input";
 import { setLastInsertCompositionTextData } from "../state";
 import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
@@ -25,12 +24,10 @@ inputEl.addEventListener("compositionstart", (event) => {
   if (!TestState.isActive) {
     TestLogic.startTest(now);
   }
-  if (TestInput.input.current.length === 0) {
-    TestInput.setBurstStart(now);
-  }
 
   logTestEvent("composition", now, {
     event: "start",
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -49,6 +46,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
   logTestEvent("composition", now, {
     event: "update",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -74,5 +72,6 @@ inputEl.addEventListener("compositionend", async (event) => {
   logTestEvent("composition", now, {
     event: "end",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });

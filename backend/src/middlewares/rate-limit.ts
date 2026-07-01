@@ -2,6 +2,7 @@ import MonkeyError from "../utils/error";
 import type { Response, NextFunction, Request } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import {
+  ipKeyGenerator,
   rateLimit,
   RateLimitRequestHandler,
   type Options,
@@ -40,12 +41,13 @@ export const customHandler = (
 };
 
 const getKey = (req: Request, _res: Response): string => {
-  return (
+  const ip =
     (req.headers["cf-connecting-ip"] as string) ||
     (req.headers["x-forwarded-for"] as string) ||
     (req.ip as string) ||
-    "255.255.255.255"
-  );
+    "255.255.255.255";
+  const key = ipKeyGenerator(ip);
+  return key;
 };
 
 const getKeyWithUid = (

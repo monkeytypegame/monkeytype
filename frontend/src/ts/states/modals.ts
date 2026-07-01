@@ -7,6 +7,7 @@ export type ModalId =
   | "Commandline"
   | "DevOptions"
   | "DevInboxPicker"
+  | "EventLogViewer"
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
@@ -28,7 +29,8 @@ export type ModalId =
   | "Cookies"
   | "AddPresetModal"
   | "EditPresetModal"
-  | "EditProfile";
+  | "EditProfile"
+  | "ViewApeKey";
 
 export type ModalVisibility = {
   visible: boolean;

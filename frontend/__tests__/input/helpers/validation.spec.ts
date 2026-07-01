@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import {
   isCharCorrect,
+  isWordCorrect,
   shouldInsertSpaceCharacter,
 } from "../../../src/ts/input/helpers/validation";
 import { __testing } from "../../../src/ts/config/testing";
@@ -35,9 +36,11 @@ describe("isCharCorrect", () => {
       difficulty: "normal",
       strictSpace: false,
     });
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
       null,
     );
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
   });
 
@@ -74,14 +77,6 @@ describe("isCharCorrect", () => {
 
   describe("Space Handling", () => {
     it.each([
-      ["returns true at the end of a correct word", " ", "word", "word", true],
-      [
-        "returns false at the end of an incorrect word",
-        " ",
-        "worx",
-        "word",
-        false,
-      ],
       ["returns false in the middle of a word", " ", "wor", "word", false],
       ["returns false at the start of a word", " ", "", "word", false],
       [
@@ -94,6 +89,42 @@ describe("isCharCorrect", () => {
     ])("%s", (_desc, char, input, word, expected) => {
       expect(
         isCharCorrect({
+          data: char,
+          inputValue: input,
+          targetWord: word,
+          correctShiftUsed: true,
+        }),
+      ).toBe(expected);
+    });
+  });
+
+  describe("Space Handling at the end of a word", () => {
+    it.each([
+      ["returns true at the end of a correct word", " ", "word", "word", true],
+      [
+        "returns false at the end of an incorrect word",
+        " ",
+        "worx",
+        "word",
+        false,
+      ],
+      [
+        "returns true when committing a word with a newline",
+        "\n",
+        "word",
+        "word\n",
+        true,
+      ],
+      [
+        "returns false when committing an incorrect word with a newline",
+        "\n",
+        "xord",
+        "word\n",
+        false,
+      ],
+    ])("%s", (_desc, char, input, word, expected) => {
+      expect(
+        isWordCorrect({
           data: char,
           inputValue: input,
           targetWord: word,
@@ -121,17 +152,6 @@ describe("isCharCorrect", () => {
         ).toBe(expected);
       },
     );
-  });
-
-  it("throws error if data is undefined", () => {
-    expect(() =>
-      isCharCorrect({
-        data: undefined as any,
-        inputValue: "val",
-        targetWord: "word",
-        correctShiftUsed: true,
-      }),
-    ).toThrow();
   });
 });
 

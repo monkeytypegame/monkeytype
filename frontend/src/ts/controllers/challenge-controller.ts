@@ -318,9 +318,6 @@ export async function setup(challengeName: string): Promise<boolean> {
         nosave: true,
       });
     } else if (challenge.type === "funbox") {
-      setConfig("funbox", challenge.parameters[0] as FunboxName[], {
-        nosave: true,
-      });
       setConfig("difficulty", "normal", {
         nosave: true,
       });
@@ -340,6 +337,14 @@ export async function setup(challengeName: string): Promise<boolean> {
         setConfig("difficulty", challenge.parameters[3] as Difficulty, {
           nosave: true,
         });
+      }
+
+      if (
+        !setConfig("funbox", challenge.parameters[0] as FunboxName[], {
+          nosave: true,
+        })
+      ) {
+        throw new Error("Can't load challenge with current config");
       }
     } else if (challenge.type === "other") {
       if (challenge.name === "semimak") {

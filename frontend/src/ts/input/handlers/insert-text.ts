@@ -1,6 +1,5 @@
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
-import * as TestInput from "../../test/test-input";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -12,14 +11,14 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
+import {
+  areCharactersVisuallyEqual,
+  isSpace,
+  removeLanguageSize,
+} from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import {
-  findSingleActiveFunboxWithFunction,
-  isFunboxActiveWithProperty,
-} from "../../test/funbox/list";
-import * as Replay from "../../test/replay";
+import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
@@ -35,14 +34,19 @@ import { goToNextWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import {
   isCharCorrect,
+  isWordCorrect,
   shouldInsertSpaceCharacter,
 } from "../helpers/validation";
-import { logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/events/data";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
   // ["œ", "oe"],
   // ["æ", "ae"],
+]);
+
+const languageCharOverrides = new Map<string, [string, string][]>([
+  ["dutch", [["ĳ", "ij"]]],
 ]);
 
 type OnInsertTextParams = {
@@ -66,10 +70,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   if (options.data.length > 1) {
     // remove the entire data from the input value
-    // make sure to not call TestInput.input.syncWithInputElement in here
-    // it will be updated later in the body of onInsertText
     setInputElementValue(inputValue.slice(0, -options.data.length));
-    TestInput.input.syncWithInputElement();
     for (let i = 0; i < options.data.length; i++) {
       const char = options.data[i] as string;
 
@@ -86,7 +87,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const charOverride = charOverrides.get(options.data);
   if (
     charOverride !== undefined &&
-    TestWords.words.getCurrentText()[TestInput.input.current.length] !==
+    TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length] !==
       options.data
   ) {
     // replace the data with the override
@@ -100,9 +101,33 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     return;
   }
 
+  const languageOverrides = languageCharOverrides.get(
+    removeLanguageSize(Config.language),
+  );
+  if (languageOverrides !== undefined) {
+    for (const [targetChar, overrideChar] of languageOverrides) {
+      if (
+        options.data === targetChar &&
+        TestWords.words.getCurrent()?.textWithCommit[
+          getCurrentInput().length
+        ] !== options.data
+      ) {
+        // replace the data with the override
+        setInputElementValue(
+          inputValue.slice(0, -options.data.length) + overrideChar,
+        );
+        await onInsertText({
+          ...options,
+          data: overrideChar,
+        });
+        return;
+      }
+    }
+  }
+
   // input and target word
-  const testInput = TestInput.input.current;
-  const currentWord = TestWords.words.getCurrentText();
+  const testInput = getCurrentInput();
+  const currentWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
@@ -134,53 +159,32 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
 
   // is char correct
-  const funboxCorrect = findSingleActiveFunboxWithFunction(
-    "isCharCorrect",
-  )?.functions.isCharCorrect(
+  const charCorrect = isCharCorrect({
     data,
-    currentWord[(testInput + data).length - 1] ?? "",
-  );
-  const correct =
-    funboxCorrect ??
-    isCharCorrect({
-      data,
-      inputValue: testInput,
-      targetWord: currentWord,
-      correctShiftUsed,
-    });
+    inputValue: testInput,
+    targetWord: currentWord,
+    correctShiftUsed,
+  });
 
   // word navigation check
   const noSpaceForce =
     isFunboxActiveWithProperty("nospace") &&
-    (testInput + data).length === TestWords.words.getCurrentText().length;
-  const shouldGoToNextWord =
+    (testInput + data).length ===
+      TestWords.words.getCurrent()?.textWithCommit.length;
+  // does this input try to move to the next word (before removeLastChar can block it)
+  const goingToNextWord =
     ((charIsSpace || charIsNewline) && !shouldInsertSpace) || noSpaceForce;
 
-  // update test input state
-  if (!charIsSpace || shouldInsertSpace) {
-    TestInput.input.syncWithInputElement();
-  }
-
-  // general per keypress updates
-  TestInput.setCurrentNotAfk();
-  Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
-  TestInput.incrementAccuracy(correct);
-  WeakSpot.updateScore(data, correct);
-  TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(wordIndex);
-  if (!correct) {
-    TestInput.incrementKeypressErrors();
-    TestInput.pushMissedWord(TestWords.words.getCurrentText());
-  }
-  if (Config.keymapMode === "react") {
-    flash(data, correct);
-  }
-  if (testInput.length === 0 && !isCompositionEnding) {
-    TestInput.setBurstStart(now);
-  }
-  if (!shouldGoToNextWord) {
-    TestInput.corrected.update(data, correct);
-  }
+  // when moving to the next word, correctness is word-level (a correct word-completing
+  // space has charCorrect === false, so charCorrect can't be used below)
+  const correct = goingToNextWord
+    ? isWordCorrect({
+        data,
+        inputValue: testInput,
+        targetWord: currentWord,
+        correctShiftUsed,
+      })
+    : charCorrect;
 
   // handing cases where last char needs to be removed
   // this is here and not in beforeInsertText because we want to penalize for incorrect spaces
@@ -194,7 +198,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     removeLastChar = true;
   }
 
-  if (!isSpace(data) && correctShiftUsed === false) {
+  if (!charIsSpace && correctShiftUsed === false) {
     removeLastChar = true;
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
@@ -208,33 +212,58 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     resetIncorrectShiftsInARow();
   }
 
+  // stop-on-error and opposite shift mode can block navigation, so this is derived after removeLastChar
+  const shouldGoToNextWord = goingToNextWord && !removeLastChar;
+
+  if (Config.keymapMode === "react") {
+    flash(data, correct);
+  }
+
   if (removeLastChar) {
     replaceInputElementLastValueChar("");
-    TestInput.input.syncWithInputElement();
   }
 
-  // going to next word
-  let increasedWordIndex: null | boolean = null;
-  let lastBurst: null | number = null;
-  if (shouldGoToNextWord) {
-    const result = await goToNextWord({
-      correctInsert: correct,
-      isCompositionEnding: isCompositionEnding === true,
-      zenNewline: charIsNewline && Config.mode === "zen",
-    });
-    lastBurst = result.lastBurst;
-    increasedWordIndex = result.increasedWordIndex;
-  }
+  // capture DOM before goToNextWord clears it for the new word
+  const inputValueAfterEvent = getInputElementValue().inputValue;
 
+  // Log the event BEFORE goToNextWord so readers inside the navigation
+  // (e.g. beforeTestWordChange's updateWordLetters, getWordBurst) see the
+  // completed event in derivation. Otherwise the just-typed trigger char
+  // (space/newline) is missing — visible as missing \n element in zen mode.
   logTestEvent("input", now, {
     inputType: "insertText",
     data,
     correct,
     wordIndex,
     charIndex: testInput.length,
-    isCompositionEnding: isCompositionEnding === true,
-    inputStopped: removeLastChar,
+    isCompositionEnding: isCompositionEnding ? true : undefined,
+    inputStopped: removeLastChar ? true : undefined,
+    // inputValue is captured from the input element after this event (before goToNextWord clears it).
+    inputValue: inputValueAfterEvent,
+    commitsWord: shouldGoToNextWord ? true : undefined,
+    lastWord: wordIndex === TestWords.words.length - 1 ? true : undefined,
   });
+
+  // this needs to be called after event logging
+  WeakSpot.updateScore(data, correct);
+
+  const commitCorrect = noSpaceForce
+    ? testInput + data === currentWord
+    : correct;
+
+  // going to next word
+  let increasedWordIndex: null | boolean = null;
+  let lastBurst: null | number = null;
+  if (shouldGoToNextWord) {
+    const result = await goToNextWord({
+      correctInsert: commitCorrect,
+      isCompositionEnding: isCompositionEnding === true,
+      zenNewline: charIsNewline && Config.mode === "zen",
+      now,
+    });
+    lastBurst = result.lastBurst;
+    increasedWordIndex = result.increasedWordIndex;
+  }
 
   /*
   Probably a good place to explain what the heck is going on with all these space related variables:
@@ -247,9 +276,9 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   */
 
   //this COULD be the next word because we are awaiting goToNextWord
-  const nextWord = TestWords.words.getCurrentText();
+  const nextWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
   const doesNextWordHaveTab = /^\t+/.test(nextWord);
-  const isCurrentCharTab = nextWord[TestInput.input.current.length] === "\t";
+  const isCurrentCharTab = nextWord[getCurrentInput().length] === "\t";
 
   //code mode - auto insert tabs
   if (
@@ -326,8 +355,6 @@ export async function emulateInsertText(
   }
 
   // default is prevented so we need to manually update the input value.
-  // remember to not call TestInput.input.syncWithInputElement in here
-  // it will be called later be updated in onInsertText
   appendToInputElementValue(options.data);
 
   await onInsertText(options);

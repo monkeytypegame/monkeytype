@@ -36,7 +36,9 @@ describe("checkIfFailedDueToMinBurst", () => {
       mode: "time",
       minBurstCustomSpeed: 100,
     });
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (Misc.whorf as any).mockReturnValue(0);
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(true);
   });
 
@@ -86,6 +88,7 @@ describe("checkIfFailedDueToMinBurst", () => {
   ])("$desc", ({ config, lastBurst, whorfRet, expected }) => {
     replaceConfig(config as any);
     if (whorfRet !== undefined) {
+      // oxlint-disable-next-line typescript/no-unsafe-call
       (Misc.whorf as any).mockReturnValue(whorfRet);
     }
 
@@ -265,7 +268,9 @@ describe("checkIfFinished", () => {
       quickEnd: false,
       stopOnError: "off",
     });
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.isSpace as any).mockReturnValue(false);
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (TestLogic.areAllTestWordsGenerated as any).mockReturnValue(true);
   });
 

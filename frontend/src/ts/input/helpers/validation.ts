@@ -5,7 +5,7 @@ import { isSpace } from "../../utils/strings";
  * Check if the input data is correct
  * @param options - Options object
  * @param options.data - Input data
- * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
  */
@@ -18,16 +18,7 @@ export function isCharCorrect(options: {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
   if (Config.mode === "zen") return true;
-
   if (correctShiftUsed === false) return false;
-
-  if (data === undefined) {
-    throw new Error("Failed to check if char is correct - data is undefined");
-  }
-
-  if (isSpace(data)) {
-    return inputValue === targetWord;
-  }
 
   const targetChar = targetWord[inputValue.length];
 
@@ -35,11 +26,29 @@ export function isCharCorrect(options: {
     return false;
   }
 
-  if (data === targetChar) {
-    return true;
-  }
+  return data === targetChar;
+}
 
-  return false;
+/**
+ * Check if the input data is correct
+ * @param options - Options object
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
+ * @param options.targetWord - Target word
+ * @param options.correctShiftUsed - Whether the correct shift state was used. Null means disabled
+ */
+export function isWordCorrect(options: {
+  data: string;
+  inputValue: string;
+  targetWord: string;
+  correctShiftUsed: boolean | null; //null means disabled
+}): boolean {
+  const { data, inputValue, targetWord, correctShiftUsed } = options;
+
+  if (Config.mode === "zen") return true;
+  if (correctShiftUsed === false) return false;
+
+  const finalInputValue = inputValue + (isSpace(data) ? "" : data);
+  return finalInputValue === targetWord;
 }
 
 /**
@@ -47,7 +56,7 @@ export function isCharCorrect(options: {
  * as a "control character" (moving to the next word)
  * @param options - Options object
  * @param options.data - Input data
- * @param options.inputValue - Current input value (use TestInput.input.current, not input element value)
+ * @param options.inputValue - Current input value (use getCurrentInput(), not input element value)
  * @param options.targetWord - Target word
  * @returns Boolean if data is space, null if not
  */

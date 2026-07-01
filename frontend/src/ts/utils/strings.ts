@@ -43,11 +43,8 @@ export function wordsToCamelCase(str: string): string {
  * @returns The last character of the input string, or an empty string if the input is empty.
  */
 export function getLastChar(word: string): string {
-  try {
-    return word.charAt(word.length - 1);
-  } catch {
-    return "";
-  }
+  if (word === undefined) return "";
+  return word.charAt(word.length - 1);
 }
 
 /**
@@ -411,8 +408,7 @@ export type CharCounts = {
 export function countChars(
   inputWord: string,
   targetWord: string,
-  lastWord: boolean,
-  shouldLastPartialWordCount: boolean,
+  creditPartial: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -428,29 +424,24 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
-      // do not count correct space characters if the word is not correct
-      if (targetChar === " ") {
-        if (wordCorrect) {
-          allCorrect += 1;
-        } else {
-          incorrect += 1;
-        }
+      if (targetChar === " " && !wordCorrect) {
+        extra += 1;
       } else {
         allCorrect += 1;
       }
-      if (
-        wordCorrect ||
-        (lastWord && shouldLastPartialWordCount && wordPartiallyCorrect)
-      ) {
+      if (wordCorrect || (creditPartial && wordPartiallyCorrect)) {
         correctWord += 1;
       }
     } else if (inputChar === undefined) {
       //missed char
-      if (!(lastWord && shouldLastPartialWordCount)) {
+      if (!creditPartial) {
         missed += 1;
       }
-    } else if (targetChar === undefined) {
-      //extra char
+    } else if (
+      targetChar === undefined ||
+      (targetChar === " " && inputChar !== " " && !inputWord.includes(" "))
+    ) {
+      //extra char (past target, or typed in place of word-ending space)
       extra += 1;
     } else {
       //incorrect char

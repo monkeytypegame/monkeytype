@@ -635,6 +635,7 @@ describe("user controller test", () => {
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
     const connectionsDeletebyUidMock = vi.spyOn(ConnectionsDal, "deleteByUid");
     const logsDeleteUserMock = vi.spyOn(LogDal, "deleteUserLogs");
+    const georgeUnlinkDiscordMock = vi.spyOn(GeorgeQueue, "unlinkDiscord");
 
     beforeEach(() => {
       [
@@ -648,6 +649,7 @@ describe("user controller test", () => {
         purgeUserFromXpLeaderboardsMock,
         connectionsDeletebyUidMock,
         logsDeleteUserMock,
+        georgeUnlinkDiscordMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
       deleteAllResultMock.mockResolvedValue({} as any);
@@ -667,10 +669,11 @@ describe("user controller test", () => {
         purgeUserFromXpLeaderboardsMock,
         connectionsDeletebyUidMock,
         logsDeleteUserMock,
+        georgeUnlinkDiscordMock,
       ].forEach((it) => it.mockClear());
     });
 
-    it("should add user to blocklist if banned", async () => {
+    it("should delete user", async () => {
       //GIVEN
       const user = {
         uid,
@@ -679,7 +682,7 @@ describe("user controller test", () => {
         discordId: "discordId",
         banned: true,
       } as Partial<UserDal.DBUser> as UserDal.DBUser;
-      await getUserMock.mockResolvedValue(user);
+      getUserMock.mockResolvedValue(user);
 
       //WHEN
       await mockApp
@@ -706,7 +709,9 @@ describe("user controller test", () => {
         (await configuration).leaderboards.weeklyXp,
       );
       expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(georgeUnlinkDiscordMock).toHaveBeenCalledWith(user.discordId, uid);
     });
+
     it("should delete user without adding to blocklist if not banned", async () => {
       //GIVEN
       const user = {
@@ -725,23 +730,6 @@ describe("user controller test", () => {
 
       //THEN
       expect(blocklistAddMock).not.toHaveBeenCalled();
-
-      expect(deleteUserMock).toHaveBeenCalledWith(uid);
-      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
-      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
-      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
-      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
-      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
-      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
-      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
-        uid,
-        (await configuration).dailyLeaderboards,
-      );
-      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
-        uid,
-        (await configuration).leaderboards.weeklyXp,
-      );
-      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
 
     it("should not fail if userInfo cannot be found", async () => {
@@ -884,6 +872,24 @@ describe("user controller test", () => {
         uid,
         (await configuration).leaderboards.weeklyXp,
       );
+    });
+    it("should not unlink user without discordId", async () => {
+      //GIVEN
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(georgeUnlinkDiscordMock).not.toHaveBeenCalled();
     });
   });
   describe("resetUser", () => {
@@ -1544,8 +1550,8 @@ describe("user controller test", () => {
   describe("get oauth link", () => {
     const getOauthLinkMock = vi.spyOn(DiscordUtils, "getOauthLink");
     const url = "http://example.com:1234?test";
-    beforeEach(() => {
-      enableDiscordIntegration(true);
+    beforeEach(async () => {
+      await enableDiscordIntegration(true);
       getOauthLinkMock.mockClear().mockResolvedValue(url);
     });
 
@@ -1565,7 +1571,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
-      enableDiscordIntegration(false);
+      await enableDiscordIntegration(false);
 
       //WHEN
       const { body } = await mockApp
@@ -2066,7 +2072,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
       //WHEN
       const { body } = await mockApp
         .post("/users/resultFilterPresets")
@@ -2086,8 +2092,8 @@ describe("user controller test", () => {
       "removeResultFilterPreset",
     );
 
-    beforeEach(() => {
-      enableResultFilterPresets(true);
+    beforeEach(async () => {
+      await enableResultFilterPresets(true);
       removeResultFilterPresetMock.mockClear().mockResolvedValue();
     });
 
@@ -2107,7 +2113,7 @@ describe("user controller test", () => {
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
-      enableResultFilterPresets(false);
+      await enableResultFilterPresets(false);
 
       //WHEN
       const { body } = await mockApp
@@ -3900,14 +3906,14 @@ describe("user controller test", () => {
   describe("get friends", () => {
     const getFriendsMock = vi.spyOn(UserDal, "getFriends");
 
-    beforeEach(() => {
-      enableConnectionsEndpoints(true);
+    beforeEach(async () => {
+      await enableConnectionsEndpoints(true);
       getFriendsMock.mockClear();
     });
 
     it("gets with premium enabled", async () => {
       //GIVEN
-      enablePremiumFeatures(true);
+      await enablePremiumFeatures(true);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,
@@ -3926,7 +3932,7 @@ describe("user controller test", () => {
 
     it("gets with premium disabled", async () => {
       //GIVEN
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
       const friend: UserDal.DBFriend = {
         name: "Bob",
         isPremium: true,

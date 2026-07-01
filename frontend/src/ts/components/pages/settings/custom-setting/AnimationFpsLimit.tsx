@@ -5,9 +5,9 @@ import { fpsLimitSchema, getfpsLimit, setfpsLimit } from "../../../../anim";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -16,7 +16,7 @@ export function AnimationFpsLimit(): JSXElement {
       fpsLimit: "",
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.fpsLimit));
+      const val = parseFloat(String(value.fpsLimit));
       if (val === getfpsLimit()) return;
       setfpsLimit(val);
       savedIndicator.flash();
@@ -54,7 +54,7 @@ export function AnimationFpsLimit(): JSXElement {
               name="fpsLimit"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -72,6 +72,7 @@ export function AnimationFpsLimit(): JSXElement {
                     field={field}
                     placeholder={"custom limit"}
                     type="number"
+                    schema={fpsLimitSchema}
                     resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />

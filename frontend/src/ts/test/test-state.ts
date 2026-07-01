@@ -1,7 +1,6 @@
 import { promiseWithResolvers } from "../utils/misc";
+import { EventLog } from "./events/types";
 
-export let isRepeated = false;
-export let isPaceRepeat = false;
 export let isActive = false;
 export let bailedOut = false;
 export let selectedQuoteId =
@@ -13,13 +12,20 @@ export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
 export let resultCalculating = false;
+export let koreanStatus = false;
+export let lastEventLog: EventLog | null = null;
+export let wordsHaveNumbers = false;
 
-export function setRepeated(tf: boolean): void {
-  isRepeated = tf;
+export function setWordsHaveNumbers(val: boolean): void {
+  wordsHaveNumbers = val;
 }
 
-export function setPaceRepeat(tf: boolean): void {
-  isPaceRepeat = tf;
+export function setLastEventLog(log: EventLog): void {
+  lastEventLog = log;
+}
+
+export function setKoreanStatus(val: boolean): void {
+  koreanStatus = val;
 }
 
 export function setActive(tf: boolean): void {

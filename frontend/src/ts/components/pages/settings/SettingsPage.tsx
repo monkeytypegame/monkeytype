@@ -25,6 +25,7 @@ import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { Page } from "../../common/Page";
+import { Setting } from "../../common/Setting";
 import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
@@ -51,7 +52,6 @@ import { SoundVolume } from "./custom-setting/SoundVolume";
 import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
-import { Setting } from "./Setting";
 
 export function SettingsPage(): JSXElement {
   const [hasLocalBg] = createResource(
@@ -324,7 +324,7 @@ function AutoSetting<T extends keyof Config>(props: {
       [props.key]: getConfig[props.key],
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value[props.key]));
+      const val = parseFloat(String(value[props.key]));
       if (val === getConfig[props.key]) return;
       savedIndicator.flash();
       setConfig(props.key, val as Config[T]);
@@ -350,7 +350,7 @@ function AutoSetting<T extends keyof Config>(props: {
               name={props.key}
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -368,6 +368,7 @@ function AutoSetting<T extends keyof Config>(props: {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={ConfigSchema.shape[props.key]}
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key
                     }

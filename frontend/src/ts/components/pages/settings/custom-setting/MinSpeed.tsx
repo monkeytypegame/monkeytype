@@ -8,9 +8,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function MinSpeed(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -20,7 +20,7 @@ export function MinSpeed(): JSXElement {
       minWpmCustomSpeed: getConfig.minWpmCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minWpmCustomSpeed));
+      const val = parseFloat(String(value.minWpmCustomSpeed));
       if (val === getConfig.minWpmCustomSpeed) return;
       if (getConfig.minWpm === "custom") {
         //
@@ -51,7 +51,7 @@ export function MinSpeed(): JSXElement {
               name="minWpmCustomSpeed"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -65,6 +65,7 @@ export function MinSpeed(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={MinWpmCustomSpeedSchema}
                     placeholder={
                       configMetadata.minWpm.displayString ?? "min speed"
                     }

@@ -9,7 +9,7 @@ import {
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export function ImportExport(): JSXElement {
   return (

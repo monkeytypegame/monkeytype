@@ -24,12 +24,11 @@ import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
 import {
   showErrorNotification,
-  showSuccessNotification,
   clearAllNotifications,
+  showSuccessNotification,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as TestStats from "../test/test-stats";
-import { Command, CommandsSubgroup } from "./types";
+import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
 import { isAuthAvailable, signOut } from "../firebase";
@@ -40,6 +39,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
+import { lastEventLog } from "../test/test-state";
 
 const challengesPromise = JSONData.getChallengeList();
 challengesPromise
@@ -290,12 +290,16 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "copyResultStats",
-      display: "Copy result stats",
+      display: "Copy last event log (result data)",
+      alias: "stats events",
       icon: "fa-cog",
       visible: false,
+      available: (): boolean => {
+        return lastEventLog !== null;
+      },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(JSON.stringify(TestStats.getStats()))
+          .writeText(JSON.stringify(lastEventLog))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })
@@ -376,7 +380,7 @@ export const commands: CommandsSubgroup = {
   ],
 };
 
-const lists = {
+const lists: Record<CommandlineListKey, CommandsSubgroup | undefined> = {
   themes: ThemesCommands[0]?.subgroup,
   loadChallenge: LoadChallengeCommands[0]?.subgroup,
   minBurst: MinBurstCommands[0]?.subgroup,
@@ -396,11 +400,11 @@ export function doesListExist(listName: string): boolean {
     return true;
   }
 
-  return lists[listName as ListsObjectKeys] !== undefined;
+  return lists[listName as CommandlineListKey] !== undefined;
 }
 
 export async function getList(
-  listName: ListsObjectKeys | ConfigKey,
+  listName: CommandlineListKey | ConfigKey,
 ): Promise<CommandsSubgroup> {
   await Promise.allSettled([challengesPromise]);
 
@@ -409,7 +413,7 @@ export async function getList(
     return subGroup;
   }
 
-  const list = lists[listName as ListsObjectKeys];
+  const list = lists[listName as CommandlineListKey];
   if (!list) {
     showErrorNotification(`List not found: ${listName}`);
     throw new Error(`List ${listName} not found`);
@@ -424,8 +428,6 @@ stack = [commands];
 export function getStackLength(): number {
   return stack.length;
 }
-
-export type ListsObjectKeys = keyof typeof lists;
 
 export function setStackToDefault(): void {
   setStack([commands]);

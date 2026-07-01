@@ -2,13 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(brown) {
-  .page404 {
-    .content {
-      grid-template-columns: 1fr;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #result .wrapper {
       grid-template-columns: 1fr;
@@ -37,26 +30,5 @@
   }
   .testActivity {
     display: none;
-  }
-  .pageFriends {
-    .content .friends table {
-      td:nth-child(3) {
-        display: none;
-      }
-    }
-    .content .pendingRequests table {
-      td:nth-child(2) {
-        display: none;
-      }
-    }
-  }
-
-  .pageAccountSettings [data-tab="blockedUsers"] {
-    table {
-      font-size: 0.75rem;
-      td:nth-child(2) {
-        display: none;
-      }
-    }
   }
 }

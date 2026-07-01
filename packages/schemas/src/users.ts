@@ -394,7 +394,7 @@ export const FriendSchema = UserSchema.pick({
     top60: PersonalBestSchema.optional(),
     badgeId: z.number().int().optional(),
     isPremium: z.boolean().optional(),
-    streak: UserStreakSchema.pick({ length: true, maxLength: true }),
+    streak: UserStreakSchema.pick({ length: true, maxLength: true }).optional(),
   })
   .merge(ConnectionSchema.pick({ lastModified: true }).partial());
 

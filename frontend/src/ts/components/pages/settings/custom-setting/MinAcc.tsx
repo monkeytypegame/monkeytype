@@ -8,9 +8,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function MinAcc(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -20,7 +20,7 @@ export function MinAcc(): JSXElement {
       minAccCustom: getConfig.minAccCustom,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minAccCustom));
+      const val = parseFloat(String(value.minAccCustom));
       if (val === getConfig.minAccCustom) return;
       if (getConfig.minAcc === "custom") {
         //
@@ -51,7 +51,7 @@ export function MinAcc(): JSXElement {
               name="minAccCustom"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -67,6 +67,7 @@ export function MinAcc(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={MinimumAccuracyCustomSchema}
                     placeholder={
                       configMetadata.minAcc.displayString ?? "min accuracy"
                     }

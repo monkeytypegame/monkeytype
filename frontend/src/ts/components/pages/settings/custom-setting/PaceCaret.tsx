@@ -11,9 +11,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function PaceCaret(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -23,7 +23,7 @@ export function PaceCaret(): JSXElement {
       paceCaretCustomSpeed: getConfig.paceCaretCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.paceCaretCustomSpeed));
+      const val = parseFloat(String(value.paceCaretCustomSpeed));
       if (val === getConfig.paceCaretCustomSpeed) return;
       if (getConfig.paceCaret !== "off") {
         //
@@ -54,7 +54,7 @@ export function PaceCaret(): JSXElement {
               name="paceCaretCustomSpeed"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -70,6 +70,7 @@ export function PaceCaret(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={PaceCaretCustomSpeedSchema}
                     placeholder={"pace caret speed"}
                     type="number"
                     resetToDefaultIfEmptyOnBlur
