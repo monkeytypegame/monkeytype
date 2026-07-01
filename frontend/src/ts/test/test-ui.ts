@@ -1387,8 +1387,11 @@ async function loadWordsHistory(): Promise<boolean> {
         inputAttribute = corrected;
       }
 
-      if (inputAttribute.length >= target.length) {
-        inputAttribute = inputAttribute.trimEnd();
+      if (
+        inputAttribute.length >= target.length &&
+        (inputAttribute.endsWith(" ") || inputAttribute.endsWith("\n"))
+      ) {
+        inputAttribute = inputAttribute.slice(0, -1);
       }
 
       wordEl.setAttribute("input", inputAttribute);
