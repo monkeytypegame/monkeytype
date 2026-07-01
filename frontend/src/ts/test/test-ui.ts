@@ -1274,10 +1274,7 @@ function buildWordLettersHTML(
     let inputChar = Strings.splitIntoCharacters(input)[c];
     let targetChar = Strings.splitIntoCharacters(targetWord)[c];
 
-    if (
-      (targetChar === " " || targetChar === "\n") &&
-      inputChar !== undefined
-    ) {
+    if (targetChar === " " || targetChar === "\n") {
       continue;
     }
 
