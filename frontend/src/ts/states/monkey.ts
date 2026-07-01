@@ -4,10 +4,12 @@ import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
 
-export const [getMonkeyState, setMonkeyState] = createSignal<{
+const [getMonkeyState, setMonkeyState] = createSignal<{
   left: boolean;
   right: boolean;
 }>({ left: false, right: false });
+
+export { getMonkeyState };
 
 const listeners: Array<{ remove: () => void }> = [];
 
