@@ -27,12 +27,7 @@ import {
   CountByYearAndDay,
   Friend,
 } from "@monkeytype/schemas/users";
-import {
-  Mode,
-  Mode2,
-  PersonalBest,
-  PersonalBests,
-} from "@monkeytype/schemas/shared";
+import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/schemas/results";
 import { Configuration } from "@monkeytype/schemas/configuration";
@@ -67,6 +62,7 @@ export type DBUser = Omit<
   testActivity?: CountByYearAndDay;
   suspicious?: boolean;
   note?: string;
+  lastResultHashes?: string[];
 };
 
 const SECONDS_PER_HOUR = 3600;
@@ -586,7 +582,10 @@ export async function updateLastHashes(
     { uid },
     {
       $set: {
-        lastReultHashes: lastHashes, //TODO fix typo
+        lastResultHashes: lastHashes,
+      },
+      $unset: {
+        lastReultHashes: "", // remove Legacy property
       },
     },
   );
@@ -1368,7 +1367,7 @@ export async function getFriends(uid: string): Promise<DBFriend[]> {
   );
 }
 
-function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
+function migrateUser<T extends DBUser>(user: T): T {
   user.personalBests ??= {
     time: {},
     words: {},
@@ -1376,6 +1375,11 @@ function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
     zen: {},
     custom: {},
   };
+
+  if ("lastReultHashes" in user) {
+    user.lastResultHashes = user["lastReultHashes"] as string[];
+    delete user["lastReultHashes"];
+  }
 
   return user;
 }
