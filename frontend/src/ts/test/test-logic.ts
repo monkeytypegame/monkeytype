@@ -42,6 +42,7 @@ import {
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
+  setLastSignedOutResult,
   setResultVisible,
   setWordsHaveNewline,
   setWordsHaveTab,
@@ -124,59 +125,6 @@ import { EventLog } from "./events/types";
 import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
-
-export async function syncNotSignedInLastResult(uid: string): Promise<void> {
-  if (notSignedInLastResult === null) return;
-  setNotSignedInUidAndHash(uid);
-
-  const response = await Ape.results.add({
-    body: { result: notSignedInLastResult },
-  });
-  if (response.status !== 200) {
-    showErrorNotification(`Failed to save last result`, {
-      response,
-    });
-    return;
-  }
-
-  //TODO - this type cast was not needed before because we were using JSON cloning
-  // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
-  const result = structuredClone(
-    notSignedInLastResult,
-  ) as unknown as SnapshotResult<Mode>;
-
-  const dataToSave: DB.SaveLocalResultData = {
-    xp: response.body.data.xp,
-    streak: response.body.data.streak,
-    result,
-    isPb: response.body.data.isPb,
-  };
-
-  result._id = response.body.data.insertedId;
-  if (response.body.data.isPb) {
-    result.isPb = true;
-  }
-  DB.saveLocalResult(dataToSave);
-  clearNotSignedInResult();
-  showSuccessNotification(
-    `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
-  );
-}
-
-export let notSignedInLastResult: CompletedEvent | null = null;
-
-export function clearNotSignedInResult(): void {
-  notSignedInLastResult = null;
-}
-
-export function setNotSignedInUidAndHash(uid: string): void {
-  if (notSignedInLastResult === null) return;
-  notSignedInLastResult.uid = uid;
-  //@ts-expect-error really need to delete this
-  delete notSignedInLastResult.hash;
-  notSignedInLastResult.hash = objectHash(notSignedInLastResult);
-}
 
 export function startTest(now: number): boolean {
   if (PageTransition.get()) {
@@ -1142,7 +1090,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) {
       // if its valid save it for later
-      notSignedInLastResult = completedEvent;
+      setLastSignedOutResult(completedEvent);
     }
     dontSave = true;
   }
