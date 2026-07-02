@@ -54,8 +54,6 @@ For types, we use the following:
 
 ### Adding Themes
 
-<!-- TODO: add screenshots to provide examples for dos and don'ts -->
-
 If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)
 
 ### Adding Languages
