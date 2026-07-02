@@ -93,3 +93,5 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 - your theme is unique and isn't visually similar to any we already have.
 - the text color is either black or white (or very close to these colors)
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+
+<!-- TODO: add screenshots to provide examples for dos and don'ts -->
