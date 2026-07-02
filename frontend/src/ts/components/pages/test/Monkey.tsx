@@ -5,9 +5,8 @@ import { getConfig } from "../../../config/store";
 import { getMonkeyState } from "../../../states/monkey";
 import { currentLiveStats, isTestActive } from "../../../states/test";
 
-//TODO revert to 130, 180
-const MIN_WPM = 30;
-const MAX_WPM = 80;
+const MIN_WPM = 130;
+const MAX_WPM = 180;
 
 export function Monkey() {
   const speed = () =>
