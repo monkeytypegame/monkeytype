@@ -20,6 +20,7 @@ type Grecaptcha = {
 export function Captcha(props: {
   field: Accessor<AnyFieldApi>;
   class?: string;
+  onSuccess?: (responseToken: string) => void;
 }) {
   const [captchaRef, captchaEl] = useRefWithUtils<HTMLDivElement>();
 
@@ -33,7 +34,10 @@ export function Captcha(props: {
     }
     getGrecaptcha()?.render(el.native, {
       sitekey: envConfig.recaptchaSiteKey,
-      callback: (token) => props.field().setValue(token),
+      callback: (token) => {
+        props.field().setValue(token);
+        props.onSuccess?.(token);
+      },
     });
   });
   return <div ref={captchaRef} class={props.class}></div>;
