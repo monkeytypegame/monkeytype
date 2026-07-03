@@ -30,7 +30,8 @@ export type ModalId =
   | "AddPresetModal"
   | "EditPresetModal"
   | "EditProfile"
-  | "ViewApeKey";
+  | "ViewApeKey"
+  | "GoogleSignupModal";
 
 export type ModalVisibility = {
   visible: boolean;

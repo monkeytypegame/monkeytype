@@ -3,10 +3,10 @@ import { JSXElement, ParentProps, Show, onCleanup } from "solid-js";
 import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import {
-  hideModal as storeHideModal,
   ModalId,
-  isModalOpen,
   isModalChained,
+  isModalOpen,
+  hideModal as storeHideModal,
 } from "../../states/modals";
 import { cn } from "../../utils/cn";
 import { applyReducedMotion } from "../../utils/misc";
@@ -328,19 +328,21 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
-      <div
-        class={cn(
-          "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
-          props.modalClass,
-        )}
-        ref={modalRef}
-        onScroll={(e) => props.onScroll?.(e)}
-      >
-        <Show when={props.title !== undefined && props.title !== ""}>
-          <div class="text-2xl text-sub">{props.title}</div>
-        </Show>
-        {props.children}
-      </div>
+      <Show when={isModalOpen(props.id)}>
+        <div
+          class={cn(
+            "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            props.modalClass,
+          )}
+          ref={modalRef}
+          onScroll={(e) => props.onScroll?.(e)}
+        >
+          <Show when={props.title !== undefined && props.title !== ""}>
+            <div class="text-2xl text-sub">{props.title}</div>
+          </Show>
+          {props.children}
+        </div>
+      </Show>
     </dialog>
   );
 }

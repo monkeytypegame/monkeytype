@@ -114,54 +114,6 @@ body.darkMode {
   }
 }
 
-#googleSignUpModal {
-  .modal {
-    max-width: 425px;
-    overflow: unset;
-    .captcha {
-      display: flex;
-      justify-content: center;
-    }
-    // .inputAndIndicator {
-    //   input {
-    //     width: 100%;
-    //   }
-    //   position: relative;
-    //   .checkStatus {
-    //     width: 2.25rem;
-    //     height: 2.25rem;
-    //     position: absolute;
-    //     right: 0;
-    //     top: 0;
-    //     /* background: red; */
-    //     display: grid;
-    //     grid-template-columns: 2.25rem;
-    //     grid-template-rows: 2.25rem;
-    //     place-items: center center;
-    //     cursor: pointer;
-
-    //     .checking,
-    //     .available,
-    //     .unavailable,
-    //     .taken {
-    //       grid-column: 1/2;
-    //       grid-row: 1/2;
-    //     }
-    //     .checking {
-    //       color: var(--sub-color);
-    //     }
-    //     .available {
-    //       color: var(--main-color);
-    //     }
-    //     .unavailable,
-    //     .taken {
-    //       color: var(--error-color);
-    //     }
-    //   }
-    // }
-  }
-}
-
 #lastSignedOutResult {
   .modal {
     max-width: 600px;

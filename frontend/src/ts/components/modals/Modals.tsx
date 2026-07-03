@@ -6,6 +6,7 @@ import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
+import { GoogleSignupModal } from "./GoogleSignUpModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
 import { EditPresetModal } from "./preset/EditPresetModal";
@@ -38,6 +39,7 @@ export function Modals(): JSXElement {
       <AddPresetModal />
       <EditPresetModal />
       <ViewApeKeyModal />
+      <GoogleSignupModal />
     </>
   );
 }
