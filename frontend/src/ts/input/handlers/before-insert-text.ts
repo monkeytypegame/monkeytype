@@ -57,7 +57,7 @@ export function onBeforeInsertText(data: string): boolean {
   //prevent separator from being inserted if input is empty
   //allow if strict space is enabled
   if (
-    commitCharacterType === "separator" &&
+    isSpace(data) &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
