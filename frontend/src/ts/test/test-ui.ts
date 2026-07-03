@@ -724,6 +724,17 @@ export function addWord(
 // make sure the currently typed word will not overflow to the next line
 export let pendingWordData: Map<number, string> = new Map();
 
+const TAB_ICON = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
+const NEWLINE_ICON = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
+
+// visible form of a typed character: space -> "_", tab/newline -> their icons
+function displayTypedChar(char: string | undefined): string {
+  if (char === " ") return "_";
+  if (char === "\t") return TAB_ICON;
+  if (char === "\n") return NEWLINE_ICON;
+  return char ?? "";
+}
+
 export async function updateWordLetters({
   wordIndex,
   input,
@@ -792,15 +803,7 @@ export async function updateWordLetters({
           if (charCorrect) {
             ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
           } else if (currentLetter === undefined) {
-            let letter = inputChars[i];
-            if (letter === " ") {
-              letter = "_";
-            } else if (letter === "\t") {
-              letter = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
-            } else if (letter === "\n") {
-              letter =
-                "<i class='fas fa-level-down-alt fa-rotate-90 fa-fw'></i>";
-            }
+            const letter = displayTypedChar(inputChars[i]);
             ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
           } else {
             let charString = currentLetter;
@@ -809,15 +812,7 @@ export async function updateWordLetters({
               Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
             ) {
-              charString = inputChars[i] ?? currentLetter;
-
-              if (charString === " ") {
-                charString = "_";
-              } else if (charString === "\t") {
-                charString = "_";
-              } else if (charString === "\n") {
-                charString = "";
-              }
+              charString = displayTypedChar(inputChars[i] ?? currentLetter);
             }
 
             ret += `<letter class="incorrect ${tabChar}${nlChar}">${charString}</letter>`;
