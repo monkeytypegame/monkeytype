@@ -36,6 +36,18 @@ export function LastSignedOutResultModal() {
       }),
   );
 
+  const handleDiscard = () => {
+    showNoticeNotification("Last test result discarded");
+    hideModal(modalId);
+    setTimeout(() => {
+      setLastSignedOutResult(null);
+    }, 125);
+  };
+
+  const handleSave = () => {
+    void syncLastSignedOutResult();
+  };
+
   return (
     <AnimatedModal
       id={modalId}
@@ -77,23 +89,17 @@ export function LastSignedOutResultModal() {
           value={formatTestType(getLastSignedOutResult())}
         />
       </div>
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <Button
-          text="save"
-          class="sm:col-start-2 sm:row-start-1"
-          onClick={() => {
-            void syncLastSignedOutResult();
-          }}
-        />
-        <Button
-          text="discard"
-          class="sm:col-start-1 sm:row-start-1"
-          onClick={() => {
-            setLastSignedOutResult(null);
-            showNoticeNotification("Last test result discarded");
-            hideModal(modalId);
-          }}
-        />
+      {/*
+      need two sets of buttons here because on wide screens tab focuses save first
+      but on small screens tab focuses discard first
+      */}
+      <div class="grid grid-cols-1 gap-2 sm:hidden">
+        <Button text="save" onClick={handleSave} />
+        <Button text="discard" onClick={handleDiscard} />
+      </div>
+      <div class="hidden grid-cols-2 gap-2 sm:grid">
+        <Button text="discard" onClick={handleDiscard} />
+        <Button text="save" onClick={handleSave} />
       </div>
     </AnimatedModal>
   );
