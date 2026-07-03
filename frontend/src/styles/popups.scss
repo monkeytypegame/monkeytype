@@ -250,33 +250,6 @@ body.darkMode {
   }
 }
 
-#userReportModal {
-  .modal {
-    max-width: 800px;
-
-    label {
-      color: var(--sub-color);
-      margin-bottom: -0.5rem;
-    }
-
-    // .text {
-    //   // color: var(--sub-color);
-    // }
-
-    .user {
-      font-size: 1.5rem;
-    }
-
-    textarea {
-      resize: vertical;
-      width: 100%;
-      padding: 10px;
-      line-height: 1.2rem;
-      min-height: 5rem;
-    }
-  }
-}
-
 #editResultTagsModal {
   .modal {
     max-width: 600px;

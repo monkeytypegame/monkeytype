@@ -32,7 +32,8 @@ export type ModalId =
   | "EditProfile"
   | "ViewApeKey"
   | "GoogleSignupModal"
-  | "ForgotPasswordModal";
+  | "ForgotPasswordModal"
+  | "UserReportModal";
 
 export type ModalVisibility = {
   visible: boolean;

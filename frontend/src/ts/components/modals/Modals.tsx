@@ -18,6 +18,7 @@ import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
 import { SupportModal } from "./SupportModal";
+import { UserReportModal } from "./UserReportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
 export function Modals(): JSXElement {
@@ -42,6 +43,7 @@ export function Modals(): JSXElement {
       <ViewApeKeyModal />
       <GoogleSignupModal />
       <ForgotPasswordModal />
+      <UserReportModal />
     </>
   );
 }

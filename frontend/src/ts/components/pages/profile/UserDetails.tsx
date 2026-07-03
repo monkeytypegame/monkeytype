@@ -16,12 +16,12 @@ import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
 import { Snapshot } from "../../../constants/default-snapshot";
-import * as UserReportModal from "../../../modals/user-report";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { getLastResult } from "../../../states/snapshot";
+import { setUserToReport } from "../../../states/user-report";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -136,13 +136,10 @@ function ActionButtons(props: {
                 },
               )}
               fa={{ icon: "fa-flag", fixedWidth: true }}
-              onClick={() =>
-                void UserReportModal.show({
-                  uid: props.profile.uid as string,
-                  name: props.profile.name,
-                  lbOptOut: props.profile.lbOptOut ?? false,
-                })
-              }
+              onClick={() => {
+                setUserToReport(props.profile);
+                showModal("UserReportModal");
+              }}
             />
           </Show>
           <Show when={showFriendsButton()}>

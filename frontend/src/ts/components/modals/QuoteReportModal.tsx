@@ -19,6 +19,7 @@ import { Separator } from "../common/Separator";
 import { Captcha } from "../ui/form/Captcha";
 import { LabeledField } from "../ui/form/LabeledField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
 import { allFieldsMandatory, fieldMandatory } from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
@@ -161,13 +162,11 @@ export function QuoteReportModal(): JSXElement {
           children={(field) => (
             <LabeledField label="comment">
               <div class="relative">
-                <textarea
+                <TextareaField
+                  field={field}
                   class="bg-bg-secondary min-h-50 w-full rounded p-2 text-text"
-                  value={field().state.value}
-                  onInput={(e) => field().handleChange(e.currentTarget.value)}
-                  onBlur={() => field().handleBlur()}
                   autocomplete="off"
-                ></textarea>
+                />
                 <div
                   class={`absolute right-2 bottom-2 text-xs ${250 - field().state.value.length < 0 ? "text-error" : "text-sub"}`}
                 >
