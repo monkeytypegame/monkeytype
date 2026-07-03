@@ -1390,7 +1390,7 @@ async function loadWordsHistory(): Promise<boolean> {
       inputAttribute = inputAttribute.slice(0, -1);
     }
 
-    wordEl.setAttribute("input", inputAttribute);
+    wordEl.setAttribute("input", inputAttribute.replace(/ /g, "_"));
 
     wordEl.innerHTML = buildWordLettersHTML(input, corrected, target);
 
