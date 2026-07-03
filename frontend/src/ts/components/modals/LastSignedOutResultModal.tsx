@@ -103,7 +103,7 @@ function Value(props: {
 }) {
   return (
     <div class={cn("flex flex-col text-sm", props.class)}>
-      <span class="text-[0.75em] text-sub">{props.label}</span>
+      <span class="text-em-xs text-sub">{props.label}</span>
       <span>{props.value}</span>
     </div>
   );
