@@ -109,15 +109,13 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
   getDateBasedTestDurationMs,
   getInputHistory,
   getKeypressesPerSecond,
   getKeypressSpacing,
 } from "./events/stats";
-import {
-  getLiveCachedAccuracy,
-  getLiveCachedTestDurationMs,
-} from "./events/live-cache";
+import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
@@ -283,11 +281,13 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving) {
+      // Finalize the abandoned test before measuring it: logging the timer
+      // "end" event gives getAfkDuration its interval boundaries, so idle time
+      // is actually subtracted. Without it AFK is always 0 and the full
+      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+      TestTimer.clear(true);
       const liveEventLog = buildEventLog();
-      const testSeconds = getLiveCachedTestDurationMs(performance.now()) / 1000;
-      const afkseconds = getAfkDuration(liveEventLog);
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
+      const tt = getIncompleteTestSeconds(liveEventLog);
       const acc = Numbers.roundTo2(getLiveCachedAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
@@ -1054,12 +1054,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
-      const testSeconds = completedEvent.testDuration;
-      const afkseconds = completedEvent.afkDuration;
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
-      const acc = completedEvent.acc;
-      pushIncompleteTest({ acc, seconds: tt });
+      pushIncompleteTest({
+        acc: completedEvent.acc,
+        seconds: getIncompleteTestSeconds(eventLog),
+      });
     }
   }
 
