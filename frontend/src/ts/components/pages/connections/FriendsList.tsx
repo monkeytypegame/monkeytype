@@ -179,17 +179,29 @@ function getColumns({
     defineColumn("completedTests", {
       enableSorting: true,
       header: "tests",
-      cell: (info) => `${info.getValue()}/${info.row.original.startedTests}`,
+      cell: (info) => {
+        const completedTests = info.getValue<number | undefined>();
+        const startedTests = info.row.original.startedTests;
+    
+        return completedTests === undefined || startedTests === undefined
+          ? "-"
+          : `${completedTests}/${startedTests}`;
+      },
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => {
+          const completedTests = row.completedTests;
+          const startedTests = row.startedTests;
+    
+          if (completedTests === undefined || startedTests === undefined) {
+            return {};
+          }
+    
           const testStats = formatTypingStatsRatio(row);
-
+    
           return {
             "data-balloon-pos": "up",
-            "aria-label": `${testStats.completedPercentage}% (${
-              testStats.restartRatio
-            } restarts per completed test)`,
+            "aria-label": `${testStats.completedPercentage}% (${testStats.restartRatio} restarts per completed test)`,
           };
         },
       },
