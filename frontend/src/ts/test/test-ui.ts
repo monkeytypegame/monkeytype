@@ -1444,10 +1444,10 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
   ResultWordHighlight.updateToggleWordsHistoryTime();
 
   if (resultWordsHistoryEl.isHidden()) {
-    // if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
-    resultWordsHistoryEl.qsa(".words .word")?.remove();
-    await loadWordsHistory();
-    // }
+    if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+      resultWordsHistoryEl.qsa(".words .word")?.remove();
+      await loadWordsHistory();
+    }
     void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
     void applyBurstHeatmap();
   } else {
