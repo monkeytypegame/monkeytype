@@ -1292,7 +1292,6 @@ function buildWordLettersHTML(
     if (
       c >= targetChars.length - 1 &&
       c + 1 === inputChars.length &&
-      historyWord !== undefined &&
       historyWord.length > inputChars.length
     ) {
       extraCorrected = "extraCorrected";
@@ -1313,11 +1312,7 @@ function buildWordLettersHTML(
           }</letter>`;
         }
       } else {
-        if (inputChar === getCurrentInput()) {
-          out += `<letter class='correct ${extraCorrected}'>${
-            targetChar
-          }</letter>`;
-        } else if (inputChar === undefined) {
+        if (inputChar === undefined) {
           out += `<letter>${targetChar}</letter>`;
         } else {
           out += `<letter class="incorrect ${extraCorrected}">${
