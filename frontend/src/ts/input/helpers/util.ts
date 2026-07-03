@@ -50,5 +50,8 @@ export function normalizeData(
   ) {
     return targetChar;
   }
+  if (isSpace(data)) {
+    return " ";
+  }
   return data;
 }
