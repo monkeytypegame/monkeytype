@@ -395,12 +395,13 @@ export class Caret {
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
     const letters = options.word?.qsa("letter");
-    let letter;
-    if (!letters?.length || !(letter = letters[options.letterIndex])) {
-      // maybe we should return null here instead of throwing
-      throw new Error(
-        "Caret getTargetPositionAndWidth: no letters found in word",
-      );
+    let letter = letters?.[options.letterIndex] ?? letters?.at(-1);
+    if (letter === undefined) {
+      return {
+        left: options.word.getOffsetLeft(),
+        top: options.word.getOffsetTop(),
+        width: getTotalInlineMargin(options.word.native),
+      };
     }
 
     if (caretDebug) {
