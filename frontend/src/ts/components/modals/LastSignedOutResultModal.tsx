@@ -45,14 +45,14 @@ export function LastSignedOutResultModal() {
       <p class="">Would you like to save it?</p>
       <Separator />
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-2">
         <Value
-          class="text-xl"
+          class="text-2xl"
           label={format().typingSpeedUnit}
           value={format().typingSpeed(getLastSignedOutResult()?.wpm ?? 0)}
         />
         <Value
-          class="text-xl"
+          class="text-2xl"
           label="accuracy"
           value={format().accuracy(getLastSignedOutResult()?.acc ?? 0)}
         />
