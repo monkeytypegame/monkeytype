@@ -71,7 +71,7 @@ export function ActivityCalendar(props: {
     ];
     for (let year = currentYear; year >= startYear; year--) {
       if (
-        years.length < 2 ||
+        year === currentYear ||
         (getSeverConfiguration()?.users.premium.enabled &&
           getSnapshot()?.isPremium)
       ) {
