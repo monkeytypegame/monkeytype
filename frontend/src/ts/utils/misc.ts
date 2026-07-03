@@ -726,10 +726,13 @@ export function formatTypingStatsRatio(stats: {
     completedPercentage: Math.floor(
       (stats.completedTests / stats.startedTests) * 100,
     ).toString(),
-    restartRatio: (
-      (stats.startedTests - stats.completedTests) /
-      stats.completedTests
-    ).toFixed(1),
+    restartRatio:
+      stats.completedTests === 0
+        ? "-"
+        : (
+            (stats.startedTests - stats.completedTests) /
+            stats.completedTests
+          ).toFixed(1),
   };
 }
 

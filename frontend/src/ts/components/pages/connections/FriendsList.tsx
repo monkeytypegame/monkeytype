@@ -182,7 +182,7 @@ function getColumns({
       cell: (info) => {
         const completedTests = info.getValue<number | undefined>();
         const startedTests = info.row.original.startedTests;
-    
+
         return completedTests === undefined || startedTests === undefined
           ? "-"
           : `${completedTests}/${startedTests}`;
@@ -190,15 +190,12 @@ function getColumns({
       meta: {
         breakpoint: "lg",
         cellMeta: ({ row }) => {
-          const completedTests = row.completedTests;
-          const startedTests = row.startedTests;
-    
-          if (completedTests === undefined || startedTests === undefined) {
+          const testStats = formatTypingStatsRatio(row);
+
+          if (testStats.completedPercentage === "") {
             return {};
           }
-    
-          const testStats = formatTypingStatsRatio(row);
-    
+
           return {
             "data-balloon-pos": "up",
             "aria-label": `${testStats.completedPercentage}% (${testStats.restartRatio} restarts per completed test)`,
