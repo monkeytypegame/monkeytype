@@ -23,6 +23,7 @@ import { cn } from "../../utils/cn";
 import { Formatting } from "../../utils/format";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Separator } from "../common/Separator";
 
 const modalId = "LastSignedOutResult";
 
@@ -42,6 +43,7 @@ export function LastSignedOutResultModal() {
       modalClass="max-w-2xl"
     >
       <p class="">Would you like to save it?</p>
+      <Separator />
 
       <div class="grid grid-cols-2 gap-4">
         <Value
