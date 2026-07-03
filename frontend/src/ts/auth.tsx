@@ -1,4 +1,4 @@
-import { PasswordSchema } from "@monkeytype/schemas/users";
+import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { FirebaseError } from "firebase/app";
 import {
@@ -578,8 +578,20 @@ export function isUsingAuthenticationReactive(authMethod: AuthMethod): boolean {
   return authenticationMemos[authMethod]?.()?.isInUse ?? false;
 }
 
-export function getPasswordSchema(): ZodString {
-  return isDevEnvironment() ? z.string().min(6) : PasswordSchema;
+/**
+ * Returns the Zod schema for password validation.
+ *
+ * Set `isNew: true` for registration/creation flows (strict rules).
+ * Omit it for re-authentication flows (lenient: just non-empty).
+ *
+ * @param options - Set `isNew: true` for password creation/registration.
+ * @returns A Zod string schema.
+ */
+export function getPasswordSchema(options?: { isNew: boolean }): ZodString {
+  if (options?.isNew) {
+    return isDevEnvironment() ? z.string().min(6) : NewPasswordSchema;
+  }
+  return PasswordSchema;
 }
 
 export function isUsingPasswordAuthentication(): boolean {
