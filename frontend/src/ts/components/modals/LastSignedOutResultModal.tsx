@@ -76,19 +76,22 @@ export function LastSignedOutResultModal() {
           class="col-span-2"
           value={formatTestType(getLastSignedOutResult())}
         />
-
+      </div>
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button
+          text="save"
+          class="sm:col-start-2 sm:row-start-1"
+          onClick={() => {
+            void syncLastSignedOutResult();
+          }}
+        />
         <Button
           text="discard"
+          class="sm:col-start-1 sm:row-start-1"
           onClick={() => {
             setLastSignedOutResult(null);
             showNoticeNotification("Last test result discarded");
             hideModal(modalId);
-          }}
-        />
-        <Button
-          text="save"
-          onClick={() => {
-            void syncLastSignedOutResult();
           }}
         />
       </div>
