@@ -4,44 +4,41 @@ import { JSXElement, createSignal } from "solid-js";
 
 import Ape from "../../ape";
 import { Config } from "../../config/store";
-import * as CaptchaController from "../../controllers/captcha-controller";
 import QuotesController from "../../controllers/quotes-controller";
-import { useRef } from "../../hooks/useRef";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../../states/notifications";
 import { quoteId } from "../../states/quote-report";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
+import { Captcha } from "../ui/form/Captcha";
 import { LabeledField } from "../ui/form/LabeledField";
-import { fieldMandatory } from "../ui/form/utils";
+import { SubmitButton } from "../ui/form/SubmitButton";
+import { allFieldsMandatory, fieldMandatory } from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
 export function QuoteReportModal(): JSXElement {
-  const [captchaRef, captchaEl] = useRef<HTMLDivElement>();
   const [quoteText, setQuoteText] = createSignal("");
-  const [captchaComplete, setCaptchaComplete] = createSignal(false);
 
   const form = createForm(() => ({
     defaultValues: {
       reason: "Grammatical error" as QuoteReportReason,
       comment: "",
+      captcha: "",
     },
     onSubmit: async ({ value }) => {
-      const captchaResponse = CaptchaController.getResponse("quoteReportModal");
-      if (!captchaResponse) {
+      const id = quoteId().toString();
+      const quoteLanguage = removeLanguageSize(Config.language);
+
+      if (value.captcha === "") {
         showNoticeNotification("Please complete the captcha");
         return;
       }
-
-      const id = quoteId().toString();
-      const quoteLanguage = removeLanguageSize(Config.language);
 
       if (id === "" || id === "0") {
         showNoticeNotification("Please select a quote");
@@ -63,7 +60,7 @@ export function QuoteReportModal(): JSXElement {
           quoteLanguage,
           reason: value.reason,
           comment: value.comment,
-          captcha: captchaResponse,
+          captcha: value.captcha,
         },
       });
       hideLoaderBar();
@@ -79,15 +76,18 @@ export function QuoteReportModal(): JSXElement {
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
     },
+    validators: {
+      onChange: allFieldsMandatory(),
+    },
   }));
 
   const handleBeforeShow = async (): Promise<void> => {
-    setCaptchaComplete(false);
     form.update({
       ...form.options,
       defaultValues: {
         reason: "Grammatical error" as QuoteReportReason,
         comment: "",
+        captcha: "",
       },
     });
     form.reset();
@@ -99,18 +99,6 @@ export function QuoteReportModal(): JSXElement {
     setQuoteText(quote?.text ?? "");
   };
 
-  const handleAfterShow = (): void => {
-    const el = captchaEl();
-    if (el === undefined) return;
-    CaptchaController.render(el, "quoteReportModal", () => {
-      setCaptchaComplete(true);
-    });
-  };
-
-  const handleAfterHide = (): void => {
-    CaptchaController.reset("quoteReportModal");
-  };
-
   return (
     <AnimatedModal
       modalClass="w-full max-w-[750px]"
@@ -118,8 +106,6 @@ export function QuoteReportModal(): JSXElement {
       mode="dialog"
       title="Report a quote"
       beforeShow={handleBeforeShow}
-      afterShow={handleAfterShow}
-      afterHide={handleAfterHide}
     >
       <form
         class="grid gap-4"
@@ -191,8 +177,11 @@ export function QuoteReportModal(): JSXElement {
             </LabeledField>
           )}
         />
-        <div ref={captchaRef}></div>
-        <Button type="submit" text="report" disabled={!captchaComplete()} />
+        <form.Field
+          name="captcha"
+          children={(field) => <Captcha field={field} />}
+        />
+        <SubmitButton form={form} text="report" />
       </form>
     </AnimatedModal>
   );

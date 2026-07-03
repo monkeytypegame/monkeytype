@@ -142,15 +142,6 @@ export function Nav(): JSXElement {
         }}
         router-link
       />
-      <Button
-        variant="text"
-        fa={{
-          icon: "fa-bug",
-          fixedWidth: true,
-        }}
-        class={buttonClass()}
-        onClick={() => showModal("GoogleSignupModal")}
-      />
       <div class="grow"></div>
       <Button
         variant="text"
