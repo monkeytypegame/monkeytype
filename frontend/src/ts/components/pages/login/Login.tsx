@@ -153,7 +153,7 @@ export function Login(): JSXElement {
         text="forgot password?"
         variant="text"
         class="text justify-end text-xs"
-        onClick={() => showModal("ForgotPasswordModal")}
+        onClick={() => showModal("ForgotPassword")}
         disabled={!getLoginPageInputsEnabled()}
       />
     </div>

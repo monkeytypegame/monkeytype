@@ -144,7 +144,7 @@ function ActionButtons(props: {
                   return;
                 }
                 setUserToReport(props.profile);
-                showModal("UserReportModal");
+                showModal("UserReport");
               }}
             />
           </Show>

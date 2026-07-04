@@ -34,7 +34,7 @@ export function ForgotPasswordModal() {
   }));
 
   return (
-    <AnimatedModal id="ForgotPasswordModal" title="Forgot password">
+    <AnimatedModal id="ForgotPassword" title="Forgot password">
       <form
         class="flex flex-col justify-center gap-4"
         onSubmit={(e) => {
@@ -92,5 +92,5 @@ async function apply(options: {
 
   showSuccessNotification(result.body.message, { durationMs: 5000 });
 
-  hideModal("ForgotPasswordModal");
+  hideModal("ForgotPassword");
 }

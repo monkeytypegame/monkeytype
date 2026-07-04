@@ -41,7 +41,7 @@ export function UserReportModal() {
   return (
     <AnimatedModal
       modalClass="max-w-3xl"
-      id="UserReportModal"
+      id="UserReport"
       title={`Report user ${getUserToReport()?.name}`}
     >
       <p>
@@ -143,5 +143,5 @@ async function apply(options: {
 
   showSuccessNotification("Report submitted. Thank you!");
   setUserToReport(null);
-  hideModal("UserReportModal");
+  hideModal("UserReport");
 }

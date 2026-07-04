@@ -26,7 +26,7 @@ import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
 
-const modalId: ModalId = "GoogleSignupModal";
+const modalId: ModalId = "GoogleSignup";
 let signedInUser: UserCredential | undefined = undefined;
 
 export function GoogleSignupModal() {
