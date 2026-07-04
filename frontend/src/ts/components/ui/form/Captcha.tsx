@@ -4,6 +4,7 @@ import { envConfig } from "virtual:env-config";
 
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { showErrorNotification } from "../../../states/notifications";
+import { ElementWithUtils } from "../../../utils/dom";
 
 const errorText =
   "Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.";
@@ -25,8 +26,7 @@ export function Captcha(props: {
   const [captchaRef, captchaEl] = useRefWithUtils<HTMLDivElement>();
 
   onMount(() => {
-    const el = captchaEl();
-    if (el === undefined) throw new Error("cannot find captcha element");
+    const el = captchaEl() as ElementWithUtils<HTMLDivElement>;
 
     const grecaptcha = getGrecaptcha();
     if (grecaptcha === undefined) {

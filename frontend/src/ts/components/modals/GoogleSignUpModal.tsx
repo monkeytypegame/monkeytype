@@ -130,19 +130,17 @@ async function apply(options: {
       throw new Error(`Failed to create user: ${response.body.message}`);
     }
 
-    if (response.status === 200) {
-      setUserState(signedInUser.user);
-      await updateProfile(signedInUser.user, { displayName: name });
-      await sendEmailVerification(signedInUser.user);
-      showSuccessNotification("Account created");
-      await loadUser(signedInUser.user);
+    setUserState(signedInUser.user);
+    await updateProfile(signedInUser.user, { displayName: name });
+    await sendEmailVerification(signedInUser.user);
+    showSuccessNotification("Account created");
+    await loadUser(signedInUser.user);
 
-      authEvent.dispatch({
-        type: "authStateChanged",
-        data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
-      });
-      signedInUser = undefined;
-    }
+    authEvent.dispatch({
+      type: "authStateChanged",
+      data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
+    });
+    signedInUser = undefined;
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
