@@ -31,6 +31,7 @@ export type ModalId =
   | "EditPresetModal"
   | "EditProfile"
   | "ViewApeKey"
+  | "LastSignedOutResult"
   | "GoogleSignupModal"
   | "ForgotPasswordModal"
   | "UserReportModal";
