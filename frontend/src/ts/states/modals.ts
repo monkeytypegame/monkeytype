@@ -31,7 +31,8 @@ export type ModalId =
   | "EditPresetModal"
   | "EditProfile"
   | "ViewApeKey"
-  | "LastSignedOutResult";
+  | "LastSignedOutResult"
+  | "EditResultTags";
 
 export type ModalVisibility = {
   visible: boolean;

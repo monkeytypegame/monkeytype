@@ -6,6 +6,7 @@ import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
+import { EditResultTagsModal } from "./EditResultTagsModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
@@ -40,6 +41,7 @@ export function Modals(): JSXElement {
       <EditPresetModal />
       <ViewApeKeyModal />
       <LastSignedOutResultModal />
+      <EditResultTagsModal />
     </>
   );
 }
