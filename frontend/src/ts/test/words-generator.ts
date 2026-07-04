@@ -638,7 +638,7 @@ export async function generateWords(
 
   let wordList = language.words;
   if (Config.mode === "custom") {
-    wordList = CustomText.getText();
+    wordList = CustomText.getEffectiveText(language.words);
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
   } else if (Config.mode === "zen") {

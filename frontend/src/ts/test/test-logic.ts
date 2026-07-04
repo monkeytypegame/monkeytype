@@ -536,7 +536,7 @@ async function init(): Promise<boolean> {
     },
     customText: {
       ...CustomText.getData(),
-      text: `${CustomText.getText().length} words`,
+      text: `${CustomText.getStoredText().length} words`,
     },
     mode: Config.mode,
     mode2: Misc.getMode2(Config, null),

@@ -27,12 +27,30 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
+const userEditedSettingsText = new LocalStorageWithSchema({
+  key: "customTextSettingsUserEdited",
+  schema: z.boolean(),
+  fallback: false,
+});
+
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
+const defaultCustomText = [
+  "The",
+  "quick",
+  "brown",
+  "fox",
+  "jumps",
+  "over",
+  "the",
+  "lazy",
+  "dog",
+];
+
 const defaultCustomTextSettings: CustomTextSettings = {
-  text: ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"],
+  text: defaultCustomText,
   mode: "repeat",
-  limit: { value: 9, mode: "word" },
+  limit: { value: defaultCustomText.length, mode: "word" },
   pipeDelimiter: false,
 };
 
@@ -57,12 +75,28 @@ const customTextSettings = new LocalStorageWithSchema({
   },
 });
 
-export function getText(): string[] {
+function isDefaultCustomText(text: string[]): boolean {
+  return (
+    text.length === defaultCustomText.length &&
+    text.every((word, index) => word === defaultCustomText[index])
+  );
+}
+
+export function getStoredText(): string[] {
   return customTextSettings.get().text;
+}
+
+export function getEffectiveText(languageWords: string[]): string[] {
+  const text = customTextSettings.get().text;
+  if (!userEditedSettingsText.get() && isDefaultCustomText(text)) {
+    return languageWords.slice(0, text.length);
+  }
+  return text;
 }
 
 export function setText(txt: string[]): void {
   const currentSettings = customTextSettings.get();
+  userEditedSettingsText.set(true);
   customTextSettings.set({
     ...currentSettings,
     text: txt,
