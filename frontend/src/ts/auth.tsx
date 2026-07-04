@@ -588,10 +588,9 @@ export function isUsingAuthenticationReactive(authMethod: AuthMethod): boolean {
  * @returns A Zod string schema.
  */
 export function getPasswordSchema(options?: { isNew: boolean }): ZodString {
-  if (options?.isNew) {
-    return isDevEnvironment() ? z.string().min(6) : NewPasswordSchema;
-  }
-  return PasswordSchema;
+  if (!options?.isNew) return PasswordSchema;
+  if (isDevEnvironment()) return z.string().min(6);
+  return NewPasswordSchema;
 }
 
 export function isUsingPasswordAuthentication(): boolean {
