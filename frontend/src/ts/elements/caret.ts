@@ -395,13 +395,19 @@ export class Caret {
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
     const letters = options.word?.qsa("letter");
-    let letter = letters?.[options.letterIndex] ?? letters?.at(-1);
-    if (letter === undefined) {
-      return {
-        left: options.word.getOffsetLeft(),
-        top: options.word.getOffsetTop(),
-        width: getTotalInlineMargin(options.word.native),
-      };
+
+    if (letters.length === 0) {
+      throw new Error(
+        "Caret getTargetPositionAndWidth: no letters found in word",
+      );
+    }
+
+    let letter = letters[options.letterIndex] ?? letters[letters.length - 1];
+
+    if (!letter) {
+      throw new Error(
+        `Caret getTargetPositionAndWidth: letter not found for index ${options.letterIndex}`,
+      );
     }
 
     if (caretDebug) {
