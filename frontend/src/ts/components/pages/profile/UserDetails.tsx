@@ -137,6 +137,12 @@ function ActionButtons(props: {
               )}
               fa={{ icon: "fa-flag", fixedWidth: true }}
               onClick={() => {
+                if (!isAuthenticated()) {
+                  showNoticeNotification(
+                    "You must be logged in to submit a report",
+                  );
+                  return;
+                }
                 setUserToReport(props.profile);
                 showModal("UserReportModal");
               }}
