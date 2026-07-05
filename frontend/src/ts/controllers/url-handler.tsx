@@ -1,4 +1,4 @@
-import { ChallengeNameSchema } from "@monkeytype/schemas/challenges";
+import { getChallenges } from "@monkeytype/challenges";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -310,20 +310,25 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 }
 
+const challengeNameLookup = Object.fromEntries(
+  getChallenges().map((it) => [it.name.toLowerCase(), it.name]),
+);
+
 export async function loadChallengeFromUrl(
   getOverride?: string,
 ): Promise<void> {
-  const getValue = Misc.findGetParameter("challenge", getOverride) ?? "";
+  const getValue =
+    Misc.findGetParameter("challenge", getOverride)?.toLowerCase() ?? "";
   if (getValue === "") return;
 
-  const parsedName = ChallengeNameSchema.safeParse(getValue);
+  const challengeName = challengeNameLookup[getValue];
 
-  if (!parsedName.success) {
+  if (challengeName === undefined) {
     showErrorNotification(`Failed to load challenge: invalid name ${getValue}`);
     return;
   }
 
-  ChallengeController.setup(parsedName.data)
+  ChallengeController.setup(challengeName)
     .then((result) => {
       if (result) {
         restartTest({
