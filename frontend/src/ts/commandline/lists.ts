@@ -101,6 +101,15 @@ export const commands: CommandsSubgroup = {
         showModal("ShareTestSettings");
       },
     },
+    {
+      id: "fingerTraining",
+      display: "Finger training...",
+      icon: "fa-hand-paper",
+      exec: (): void => {
+        showModal("FingerTraining");
+      },
+      shouldFocusTestUI: false,
+    },
 
     //account
     ...TagsCommands,

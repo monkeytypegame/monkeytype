@@ -92,6 +92,24 @@ export function SettingsPage(): JSXElement {
             <Funbox />
             <CustomLayoutfluid />
             <CustomPolyglot />
+            <Setting
+              key="fingerTraining"
+              title="finger training"
+              description="Practice with words that disproportionately exercise the fingers you pick. Your usual test settings come back when you stop training."
+              fa={{
+                icon: "fa-hand-paper",
+              }}
+              inputs={
+                <Button
+                  class="w-full"
+                  onClick={() => {
+                    showModal("FingerTraining");
+                  }}
+                >
+                  open
+                </Button>
+              }
+            />
           </Section>
           <Section title="input">
             <AutoSetting key="freedomMode" />

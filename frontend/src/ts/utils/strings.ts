@@ -398,6 +398,15 @@ export function isSpace(char: string): boolean {
   return SPACE_CODE_POINTS.has(codePoint);
 }
 
+/**
+ * Checks if a character is a letter in any script.
+ * @param char The character to check.
+ * @returns True if the character is a unicode letter, false otherwise.
+ */
+export function isLetter(char: string): boolean {
+  return /\p{L}/u.test(char);
+}
+
 export function replaceUnderscoresWithSpaces(text: string): string {
   return text.replace(/_/g, " ");
 }

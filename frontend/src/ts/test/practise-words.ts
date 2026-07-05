@@ -13,6 +13,7 @@ import {
   getWordBurstHistory,
 } from "./events/stats";
 import { setCustomTextIndicator } from "../states/core";
+import { consumeTrainingSession } from "../states/finger-training";
 import { lastEventLog } from "./test-state";
 
 type Before = {
@@ -149,12 +150,18 @@ export function init(
     }
   });
 
-  const mode = before.mode ?? Config.mode;
+  // a finger training session may be active - absorb its original settings
+  // so this practise session reverts to those instead of the training state
+  const trainingSettings = consumeTrainingSession();
+
+  const mode = trainingSettings?.mode ?? before.mode ?? Config.mode;
   const punctuation = before.punctuation ?? Config.punctuation;
   const numbers = before.numbers ?? Config.numbers;
 
   let customText = null;
-  if (Config.mode === "custom") {
+  if (trainingSettings !== null) {
+    customText = trainingSettings.customText;
+  } else if (Config.mode === "custom") {
     customText = CustomText.getData();
   }
 
