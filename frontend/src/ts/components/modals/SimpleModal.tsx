@@ -1,3 +1,4 @@
+import { typedEntries } from "@monkeytype/util/objects";
 import { AnyFieldApi, createForm } from "@tanstack/solid-form";
 import {
   Accessor,
@@ -25,7 +26,6 @@ import {
   SimpleModalInput,
 } from "../../states/simple-modal";
 import { cn } from "../../utils/cn";
-import { typedEntries } from "../../utils/misc";
 import { getZodType, unwrapSchema } from "../../utils/zod";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
