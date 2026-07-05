@@ -21,6 +21,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
@@ -28,6 +29,7 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import * as TestWords from "./test-words";
 
 //pin implementation
 const random = Math.random;
@@ -622,6 +624,7 @@ export async function generateWords(
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
+  const rawWordList: string[] = [];
   const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
@@ -687,9 +690,10 @@ export async function generateWords(
     const nextWord = await getNextWord(
       i,
       limit,
-      Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -1) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -2) ?? "",
     );
+    rawWordList.push(nextWord.wordRaw);
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
@@ -737,6 +741,7 @@ let previousGetNextWordReturns: GetNextWordReturn[] = [];
 
 type GetNextWordReturn = {
   word: string;
+  wordRaw: string;
   sectionIndex: number;
 };
 
@@ -970,11 +975,44 @@ export async function getNextWord(
   console.debug("Word:", randomWord);
 
   const ret = {
-    word: randomWord,
+    word: appendCommitCharacter(randomWord),
+    wordRaw: randomWord,
     sectionIndex: sectionIndex,
   };
 
   previousGetNextWordReturns.push(ret);
 
   return ret;
+}
+
+/**
+ * Appends the inter-word commit separator the way the generator does: a trailing
+ * space, unless the word already ends with a newline or the nospace funbox is
+ * active. Callers that push words outside of getNextWord (e.g. section funbox
+ * pulls) must use this so the separator is part of the target word.
+ */
+export function appendCommitCharacter(word: string): string {
+  if (word.endsWith("\n") || isFunboxActiveWithProperty("nospace")) {
+    return word;
+  }
+  return `${word} `;
+}
+
+export function areAllWordsGenerated(): boolean {
+  return (
+    (Config.mode === "words" &&
+      TestWords.words.length >= Config.words &&
+      Config.words > 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
+    (Config.mode === "quote" &&
+      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      sectionIndex >= CustomText.getLimitValue() &&
+      currentSection.length === 0 &&
+      CustomText.getLimitValue() !== 0)
+  );
 }

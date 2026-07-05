@@ -557,6 +557,10 @@ async function init(): Promise<boolean> {
     );
   }
 
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
+  }
+
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     highlight(
       nthElementFromArray(
@@ -577,31 +581,12 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", generatedWords);
+  console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
   return true;
-}
-
-export function areAllTestWordsGenerated(): boolean {
-  return (
-    (Config.mode === "words" &&
-      TestWords.words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      TestWords.words.length >= CustomText.getLimitValue() &&
-      CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
-      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
-      WordsGenerator.currentSection.length === 0 &&
-      CustomText.getLimitValue() !== 0)
-  );
 }
 
 //add word during the test
@@ -625,7 +610,7 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, enough words already");
     return;
   }
-  if (areAllTestWordsGenerated()) {
+  if (WordsGenerator.areAllWordsGenerated()) {
     console.debug("Not adding word, all words generated");
     return;
   }
@@ -654,8 +639,11 @@ export async function addWord(): Promise<void> {
           break;
         }
         wordCount++;
-        TestWords.words.push(word, i);
-        TestUI.addWord(word);
+        const newWord = TestWords.words.push(
+          WordsGenerator.appendCommitCharacter(word),
+          i,
+        );
+        TestUI.addWord(newWord.display);
       }
     }
   }
@@ -668,8 +656,11 @@ export async function addWord(): Promise<void> {
       TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
-    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-    TestUI.addWord(randomWord.word);
+    const newWord = TestWords.words.push(
+      randomWord.word,
+      randomWord.sectionIndex,
+    );
+    TestUI.addWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -679,6 +670,12 @@ export async function addWord(): Promise<void> {
         important: true,
       },
     );
+  }
+
+  // strip the trailing commit separator once the final word has been generated
+  // (covers the section and lazy paths)
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 }
 
@@ -1025,8 +1022,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
+      // compare against display.length (not textWithCommit.length): the input
+      // history holds the typed letters, not the committing space separator, so
+      // a space word is "complete" at text.length. display includes a newline
+      // commit, which is a required typed char.
       if (
-        lastWordInputLength < (TestWords.words.get(wordIndex)?.text.length ?? 0)
+        lastWordInputLength <
+        (TestWords.words.get(wordIndex)?.display.length ?? 0)
       ) {
         historyLength--;
       }

@@ -1,8 +1,8 @@
 import { Show } from "solid-js";
 
 import Ape from "../../../ape";
-import * as StreakHourOffsetModal from "../../../modals/streak-hour-offset";
 import { showLoaderBar } from "../../../states/loader-bar";
+import { showModal } from "../../../states/modals";
 import { showErrorNotification } from "../../../states/notifications";
 import { getSnapshot } from "../../../states/snapshot";
 import { Button } from "../../common/Button";
@@ -126,7 +126,7 @@ function UpdateStreakOffset() {
       </>
       button={{
         text: "update hour offset",
-        onClick: () => StreakHourOffsetModal.show(),
+        onClick: () => showModal("StreakHourOffset"),
       }}
       disabled={getSnapshot()?.streakHourOffset !== undefined}
       disabledDescription=<>

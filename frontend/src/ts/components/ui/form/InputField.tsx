@@ -27,6 +27,7 @@ export function InputField(props: {
   min?: number;
   max?: number;
   step?: string | number;
+  alwaysShowFieldIndicator?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -105,7 +106,10 @@ export function InputField(props: {
         step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
-        <FieldIndicator field={props.field()} />
+        <FieldIndicator
+          field={props.field()}
+          alwaysShow={props.alwaysShowFieldIndicator}
+        />
       </Show>
     </div>
   );
