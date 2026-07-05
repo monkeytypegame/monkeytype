@@ -1,4 +1,5 @@
 import { ConfigSchema } from "@monkeytype/schemas/configs";
+import { FontNameSchema } from "@monkeytype/schemas/fonts";
 import { createResource, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
@@ -172,7 +173,7 @@ export function FontFamily(): JSXElement {
                   text: "Make sure you have the font installed on your computer before applying",
                   buttonText: "apply",
                   schema: z.object({
-                    fontName: z.string(),
+                    fontName: FontNameSchema,
                   }),
                   inputs: {
                     fontName: {

@@ -16,6 +16,7 @@ import { QuoteSearchModal } from "./QuoteSearchModal";
 import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
+import { StreakHourOffsetModal } from "./StreakHourOffsetModal";
 import { SupportModal } from "./SupportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
@@ -40,6 +41,7 @@ export function Modals(): JSXElement {
       <EditPresetModal />
       <ViewApeKeyModal />
       <LastSignedOutResultModal />
+      <StreakHourOffsetModal />
     </>
   );
 }
