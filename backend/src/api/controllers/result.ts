@@ -24,7 +24,6 @@ import {
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
-import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -64,6 +63,7 @@ import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
+import { getChallenges } from "@monkeytype/challenges";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -456,10 +456,14 @@ export async function addResult(
     }
   }
 
+  const autoRoleChallengeNames = getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name);
+
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    AutoRoleList.includes(completedEvent.challenge) &&
+    autoRoleChallengeNames.includes(completedEvent.challenge) &&
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {
