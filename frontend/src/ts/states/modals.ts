@@ -32,7 +32,8 @@ export type ModalId =
   | "EditProfile"
   | "ViewApeKey"
   | "LastSignedOutResult"
-  | "StreakHourOffset";
+  | "StreakHourOffset"
+  | "AllChallenges";
 
 export type ModalVisibility = {
   visible: boolean;

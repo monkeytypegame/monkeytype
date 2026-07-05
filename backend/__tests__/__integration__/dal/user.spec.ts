@@ -755,6 +755,8 @@ describe("UserDal", () => {
     const uid = new ObjectId().toHexString();
     await UserDAL.addUser("test name", "test email", uid);
 
+    await UserDAL.updateChallenge(uid, "69");
+
     await UserDAL.updateProfile(
       uid,
       {
@@ -793,6 +795,7 @@ describe("UserDal", () => {
       lastResultTimestamp: 0,
       maxLength: 0,
     });
+    expect(resetUser.challenges).toStrictEqual({});
   });
 
   it("getInbox should return the user's inbox", async () => {
@@ -1271,7 +1274,7 @@ describe("UserDal", () => {
   describe("linkDiscord", () => {
     it("throws for nonexisting user", async () => {
       await expect(async () =>
-        UserDAL.linkDiscord("unknown", "", ""),
+        UserDAL.linkDiscord("unknown", "", "", {}),
       ).rejects.toThrow("User not found\nStack: link discord");
     });
     it("should update", async () => {
@@ -1279,14 +1282,18 @@ describe("UserDal", () => {
       const { uid } = await UserTestData.createUser({
         discordId: "discordId",
         discordAvatar: "discordAvatar",
+        challenges: {
+          "100hours": {},
+        },
       });
       //when
-      await UserDAL.linkDiscord(uid, "newId", "newAvatar");
+      await UserDAL.linkDiscord(uid, "newId", "newAvatar", { "250hours": {} });
 
       //then
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toEqual("newId");
       expect(read.discordAvatar).toEqual("newAvatar");
+      expect(read.challenges).toEqual({ "250hours": {} });
     });
     it("should update without avatar", async () => {
       //given
@@ -1312,9 +1319,13 @@ describe("UserDal", () => {
     });
     it("should update", async () => {
       //given
-      const { uid } = await UserTestData.createUser({
+      const { uid, challenges } = await UserTestData.createUser({
         discordId: "discordId",
         discordAvatar: "discordAvatar",
+        challenges: {
+          "100hours": {},
+          "250hours": { addedAt: Date.now() },
+        },
       });
 
       //when
@@ -1324,6 +1335,36 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toBeUndefined();
       expect(read.discordAvatar).toBeUndefined();
+      expect(read.challenges).toEqual(challenges);
+    });
+  });
+
+  describe("updateChallenge", () => {
+    it("throws for nonexisting user", async () => {
+      await expect(async () =>
+        UserDAL.updateChallenge("unknown", "69"),
+      ).rejects.toThrow("User not found\nStack: update challenge");
+    });
+    it("should update", async () => {
+      //given
+      vi.useFakeTimers();
+      const { uid } = await UserTestData.createUser({
+        challenges: {
+          "100hours": {},
+          "250hours": { addedAt: 1 },
+        },
+      });
+
+      //when
+      await UserDAL.updateChallenge(uid, "69");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.challenges).toEqual({
+        "100hours": {},
+        "250hours": { addedAt: 1 },
+        "69": { addedAt: Date.now() },
+      });
     });
   });
   describe("updateInbox", () => {

@@ -465,11 +465,12 @@ export async function addResult(
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    autoRoleChallengeNames.has(completedEvent.challenge) &&
-    user.discordId !== undefined &&
-    user.discordId !== ""
+    autoRoleChallengeNames.has(completedEvent.challenge)
   ) {
-    void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    await UserDAL.updateChallenge(uid, completedEvent.challenge);
+    if (user.discordId !== undefined && user.discordId !== "") {
+      void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    }
   } else {
     delete completedEvent.challenge;
   }

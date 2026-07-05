@@ -37,6 +37,7 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as ConnectionsDal from "../../../src/dal/connections";
 import { pb } from "../../__testData__/users";
 import Test from "supertest/lib/test";
+import { getChallenge } from "@monkeytype/challenges";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -730,6 +731,23 @@ describe("user controller test", () => {
 
       //THEN
       expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(connectionsDeletebyUidMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards,
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp,
+      );
+      expect(logsDeleteUserMock).toHaveBeenCalledWith(uid);
     });
 
     it("should not fail if userInfo cannot be found", async () => {
@@ -1558,7 +1576,7 @@ describe("user controller test", () => {
     it("should get oauth link", async () => {
       //WHEN
       const { body } = await mockApp
-        .get("/users/discord/oauth")
+        .get("/users/discord/oauth?includeRoles=true")
         .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
@@ -1567,7 +1585,9 @@ describe("user controller test", () => {
         message: "Discord oauth link generated",
         data: { url },
       });
-      expect(getOauthLinkMock).toHaveBeenCalledWith(uid);
+      expect(getOauthLinkMock).toHaveBeenCalledWith(uid, {
+        includeRoles: true,
+      });
     });
     it("should fail if feature is not enabled", async () => {
       //GIVEN
@@ -1593,18 +1613,24 @@ describe("user controller test", () => {
       "iStateValidForUser",
     );
     const getDiscordUserMock = vi.spyOn(DiscordUtils, "getDiscordUser");
+    const getDiscordRoleIdsMock = vi.spyOn(DiscordUtils, "getDiscordRoleIds");
     const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const userLinkDiscordMock = vi.spyOn(UserDal, "linkDiscord");
     const georgeLinkDiscordMock = vi.spyOn(GeorgeQueue, "linkDiscord");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
 
     beforeEach(async () => {
+      vi.useFakeTimers();
       isStateValidForUserMock.mockResolvedValue(true);
       getUserMock.mockResolvedValue({} as any);
       getDiscordUserMock.mockResolvedValue({
         id: "discordUserId",
         avatar: "discordUserAvatar",
       });
+      getDiscordRoleIdsMock.mockResolvedValue([
+        getChallenge("100hours").discordRoleId,
+        getChallenge("250hours").discordRoleId,
+      ]);
       isDiscordIdAvailableMock.mockResolvedValue(true);
       blocklistContainsMock.mockResolvedValue(false);
       userLinkDiscordMock.mockResolvedValue();
@@ -1616,15 +1642,18 @@ describe("user controller test", () => {
         isStateValidForUserMock,
         isDiscordIdAvailableMock,
         getDiscordUserMock,
+        getDiscordRoleIdsMock,
         blocklistContainsMock,
         userLinkDiscordMock,
         georgeLinkDiscordMock,
         addImportantLogMock,
       ].forEach((it) => it.mockClear());
+      vi.useRealTimers();
     });
 
     it("should link discord", async () => {
       //GIVEN
+
       getUserMock.mockResolvedValue({} as any);
 
       //WHEN
@@ -1635,6 +1664,7 @@ describe("user controller test", () => {
           tokenType: "tokenType",
           accessToken: "accessToken",
           state: "statestatestatestate",
+          scope: ["scopeOne", "scopeTwo"],
         })
         .expect(200);
 
@@ -1644,6 +1674,10 @@ describe("user controller test", () => {
         data: {
           discordId: "discordUserId",
           discordAvatar: "discordUserAvatar",
+          challenges: {
+            "100hours": { addedAt: Date.now() },
+            "250hours": { addedAt: Date.now() },
+          },
         },
       });
       expect(isStateValidForUserMock).toHaveBeenCalledWith(
@@ -1659,6 +1693,11 @@ describe("user controller test", () => {
         "tokenType",
         "accessToken",
       );
+      expect(getDiscordRoleIdsMock).toHaveBeenCalledWith(
+        "tokenType",
+        "accessToken",
+        ["scopeOne", "scopeTwo"],
+      );
       expect(isDiscordIdAvailableMock).toHaveBeenCalledWith("discordUserId");
       expect(blocklistContainsMock).toHaveBeenCalledWith({
         discordId: "discordUserId",
@@ -1667,6 +1706,10 @@ describe("user controller test", () => {
         uid,
         "discordUserId",
         "discordUserAvatar",
+        {
+          "100hours": { addedAt: Date.now() },
+          "250hours": { addedAt: Date.now() },
+        },
       );
       expect(georgeLinkDiscordMock).toHaveBeenCalledWith(
         "discordUserId",
@@ -1682,7 +1725,10 @@ describe("user controller test", () => {
 
     it("should update existing discord avatar", async () => {
       //GIVEN
-      getUserMock.mockResolvedValue({ discordId: "existingDiscordId" } as any);
+      getUserMock.mockResolvedValue({
+        discordId: "existingDiscordId",
+        challenges: { "100hours": { addedAt: 1 } },
+      } as any);
 
       //WHEN
       const { body } = await mockApp
@@ -1701,12 +1747,20 @@ describe("user controller test", () => {
         data: {
           discordId: "discordUserId",
           discordAvatar: "discordUserAvatar",
+          challenges: {
+            "100hours": { addedAt: 1 }, //existing
+            "250hours": { addedAt: Date.now() }, //newly added
+          },
         },
       });
       expect(userLinkDiscordMock).toHaveBeenCalledWith(
         uid,
         "existingDiscordId",
         "discordUserAvatar",
+        {
+          "100hours": { addedAt: 1 }, //existing
+          "250hours": { addedAt: Date.now() }, //newly added
+        },
       );
       expect(isDiscordIdAvailableMock).not.toHaveBeenCalled();
       expect(blocklistContainsMock).not.toHaveBeenCalled();
@@ -2968,6 +3022,9 @@ describe("user controller test", () => {
       testActivity: {
         "2024": fillYearWithDay(94),
       },
+      challenges: {
+        "100hours": { addedAt: 1 },
+      },
     };
 
     beforeEach(async () => {
@@ -3039,12 +3096,15 @@ describe("user controller test", () => {
       expect(getUserByNameMock).toHaveBeenCalledWith("bob", "get user profile");
       expect(getUserMock).not.toHaveBeenCalled();
     });
-    it("should get testActivity if enabled", async () => {
+    it("should get testActivity/challenges if enabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: { showActivityOnPublicProfile: true },
+        profileDetails: {
+          showActivityOnPublicProfile: true,
+          showChallengesOnPublicProfile: true,
+        },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3060,13 +3120,18 @@ describe("user controller test", () => {
           testsByDays: expect.arrayContaining([]),
         }),
       );
+
+      expect(body.data.challenges).toEqual({ "100hours": { addedAt: 1 } });
     });
     it("should not get testActivity if disabled", async () => {
       //GIVEN
       vi.useFakeTimers().setSystemTime(1712102400000);
       getUserByNameMock.mockResolvedValue({
         ...foundUser,
-        profileDetails: { showActivityOnPublicProfile: false },
+        profileDetails: {
+          showActivityOnPublicProfile: false,
+          showChallengesOnPublicProfile: false,
+        },
       } as any);
       const rank = { rank: 24 } as LeaderboardDal.DBLeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
@@ -3077,6 +3142,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.data.testActivity).toBeUndefined();
+      expect(body.data.challenges).toBeUndefined();
     });
 
     it("should get base profile for banned user", async () => {
@@ -3194,6 +3260,7 @@ describe("user controller test", () => {
           website: "https://monkeytype.com",
         },
         showActivityOnPublicProfile: false,
+        showChallengesOnPublicProfile: false,
       };
 
       //WHEN
@@ -3222,6 +3289,7 @@ describe("user controller test", () => {
             website: "https://monkeytype.com",
           },
           showActivityOnPublicProfile: false,
+          showChallengesOnPublicProfile: false,
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],

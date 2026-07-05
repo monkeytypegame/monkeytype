@@ -26,6 +26,7 @@ import {
   User,
   CountByYearAndDay,
   Friend,
+  UserChallenges,
 } from "@monkeytype/schemas/users";
 import {
   Mode,
@@ -39,6 +40,7 @@ import { Configuration } from "@monkeytype/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 import GeorgeQueue from "../queues/george-queue";
 import { aggregateWithAcceptedConnections } from "./connections";
+import { ChallengeName } from "@monkeytype/schemas/challenges";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
@@ -149,6 +151,7 @@ export async function resetUser(uid: string): Promise<void> {
           maxLength: 0,
         },
         testActivity: {},
+        challenges: {},
       },
       $unset: {
         discordAvatar: "",
@@ -613,10 +616,14 @@ export async function linkDiscord(
   uid: string,
   discordId: string,
   discordAvatar?: string,
+  challenges?: UserChallenges,
 ): Promise<void> {
   const updates: Partial<DBUser> = { discordId };
   if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
+  }
+  if (challenges !== undefined) {
+    updates.challenges = challenges;
   }
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
@@ -627,6 +634,17 @@ export async function unlinkDiscord(uid: string): Promise<void> {
     { uid },
     { $unset: { discordId: "", discordAvatar: "" } },
     { stack: "unlink discord" },
+  );
+}
+
+export async function updateChallenge(
+  uid: string,
+  challengeName: ChallengeName,
+): Promise<void> {
+  await updateUser(
+    { uid },
+    { $set: { [`challenges.${challengeName}`]: { addedAt: Date.now() } } },
+    { stack: "update challenge" },
   );
 }
 
