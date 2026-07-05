@@ -27,10 +27,14 @@ export type Challenge = {
   settings?: ChallengeSettings;
 };
 
+type CommonParameter = {
+  config?: "fromRequirements" | Config;
+};
+
 type ChallengeParameter =
   | {
       type: "customTime";
-      parameters: { time: number };
+      parameters: { time: number } & CommonParameter;
     }
   | { type: "customWords"; parameters: { words: number } }
   | {
@@ -48,19 +52,20 @@ type ChallengeParameter =
       parameters: {
         script: string;
         theme?: ThemeName;
-        funboxes?: FunboxName[];
-      };
+        funboxes?: "fromRequirements" | FunboxName[];
+      } & CommonParameter;
     }
   | { type: "accuracy" }
   | {
       type: "funbox";
       parameters: {
-        funbox: FunboxName;
+        funboxes: "fromRequirements" | FunboxName[];
         difficulty?: Difficulty;
       } & (
         | { mode: "time" | "words"; mode2: number }
         | { mode: Exclude<Mode, "time" | "words"> }
-      );
+      ) &
+        CommonParameter;
     }
   | { type: "other" };
 
@@ -327,7 +332,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: { time: 300 },
+      parameters: { time: 300, config: "fromRequirements" },
       requirements: {
         wpm: { exact: 60 },
         config: { liveSpeedStyle: "off", paceCaret: "off" },
@@ -454,8 +459,15 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 4 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: { script: "episode4.txt", funboxes: ["space_balls"] },
-      requirements: { config: { tapeMode: "off" } },
+      parameters: {
+        script: "episode4.txt",
+        funboxes: "fromRequirements",
+        config: "fromRequirements",
+      },
+      requirements: {
+        config: { tapeMode: "off" },
+        funbox: { exact: ["space_balls"] },
+      },
     },
   },
   beepBoop: {
@@ -468,7 +480,10 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       type: "script",
       message: "Minimum 45 WPM and 100% accuracy required.",
-      parameters: { script: "beepboop.txt", funboxes: ["nospace"] },
+      parameters: {
+        script: "beepboop.txt",
+        funboxes: "fromRequirements",
+      },
       requirements: {
         wpm: { min: 45 },
         acc: { min: 100 },
@@ -485,8 +500,15 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 5 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: { script: "episode5.txt", funboxes: ["space_balls"] },
-      requirements: { config: { tapeMode: "off" } },
+      parameters: {
+        script: "episode5.txt",
+        funboxes: "fromRequirements",
+        config: "fromRequirements",
+      },
+      requirements: {
+        config: { tapeMode: "off" },
+        funbox: { exact: ["space_balls"] },
+      },
     },
   },
   itsATrap: {
@@ -498,8 +520,15 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type out the entire Star Wars Episode 6 script with punctuation while watching the movie simultaneously.",
     settings: {
       type: "script",
-      parameters: { script: "episode6.txt", funboxes: ["space_balls"] },
-      requirements: { config: { tapeMode: "off" } },
+      parameters: {
+        script: "episode6.txt",
+        funboxes: "fromRequirements",
+        config: "fromRequirements",
+      },
+      requirements: {
+        config: { tapeMode: "off" },
+        funbox: { exact: ["space_balls"] },
+      },
     },
   },
   jolly: {
@@ -617,7 +646,8 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       type: "funbox",
       message: "Remember: You need to achieve at least 50 wpm in each layout.",
-      parameters: { funbox: "layoutfluid", mode: "time", mode2: 60 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 60 },
+      requirements: { funbox: { exact: ["layoutfluid"] }, wpm: { min: 50 } },
     },
   },
   rollercoaster: {
@@ -630,7 +660,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "round_round_baby", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: {
         time: { min: 3600 },
         funbox: { exact: ["round_round_baby"] },
@@ -646,7 +676,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "mirror", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["mirror"] } },
     },
   },
@@ -659,7 +689,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "choo_choo", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["choo_choo"] } },
     },
   },
@@ -673,12 +703,16 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       type: "funbox",
       parameters: {
-        funbox: "memory",
+        funboxes: "fromRequirements",
         mode: "words",
         mode2: 25,
         difficulty: "master",
+        config: "fromRequirements",
       },
-      requirements: { config: { tapeMode: "off" } },
+      requirements: {
+        config: { tapeMode: "off" },
+        funbox: { exact: ["memory"] },
+      },
     },
   },
   earfquake: {
@@ -691,7 +725,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "earthquake", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["earthquake"] } },
     },
   },
@@ -705,7 +739,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "simon_says", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["simon_says"] } },
     },
   },
@@ -719,7 +753,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "58008", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 3600 }, funbox: { exact: ["58008"] } },
     },
   },
@@ -733,7 +767,12 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "read_ahead", mode: "time", mode2: 60 },
+      parameters: {
+        funboxes: "fromRequirements",
+        mode: "time",
+        mode2: 60,
+        config: "fromRequirements",
+      },
       requirements: {
         wpm: { min: 100 },
         time: { min: 60 },
@@ -752,7 +791,12 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "read_ahead_hard", mode: "time", mode2: 60 },
+      parameters: {
+        funboxes: "fromRequirements",
+        mode: "time",
+        mode2: 60,
+        config: "fromRequirements",
+      },
       requirements: {
         wpm: { min: 100 },
         time: { min: 60 },
@@ -771,7 +815,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "gibberish", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["gibberish"] } },
     },
   },
@@ -785,7 +829,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "specials", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["specials"] } },
     },
   },
@@ -798,7 +842,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "tts", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["tts"] } },
     },
   },
@@ -812,7 +856,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "ascii", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["ascii"] } },
     },
   },
@@ -826,7 +870,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "sPoNgEcAsE", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["sPoNgEcAsE"] } },
     },
   },
@@ -840,7 +884,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "funbox",
-      parameters: { funbox: "nausea", mode: "time", mode2: 3600 },
+      parameters: { funboxes: "fromRequirements", mode: "time", mode2: 3600 },
       requirements: { time: { min: 60 }, funbox: { exact: ["nausea"] } },
     },
   },
@@ -897,7 +941,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     settings: {
       autoRole: true,
       type: "customTime",
-      parameters: { time: 3600 },
+      parameters: { time: 3600, config: "fromRequirements" },
       requirements: {
         time: { min: 3600 },
         config: { language: "english_10k", punctuation: true, numbers: true },
@@ -1147,7 +1191,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Achieve 100% accuracy in a 2-minute test under specified settings.",
     settings: {
       type: "customTime",
-      parameters: { time: 2 * 60 },
+      parameters: { time: 2 * 60, config: "fromRequirements" },
       requirements: {
         config: {
           difficulty: "normal",
@@ -1177,7 +1221,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description: "Complete a one-hour test using tape mode and letter mode.",
     settings: {
       type: "customTime",
-      parameters: { time: 1 * 60 },
+      parameters: { time: 1 * 60, config: "fromRequirements" },
       requirements: { config: { tapeMode: "letter" } },
     },
   },

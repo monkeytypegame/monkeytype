@@ -13,6 +13,7 @@ import * as TestState from "../test/test-state";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { ConfigValue } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
@@ -221,6 +222,17 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       }, 250);
       return false;
     }
+    if ("parameters" in settings && "config" in settings.parameters) {
+      const config =
+        (settings.parameters.config === "fromRequirements"
+          ? settings.requirements?.config
+          : settings.parameters.config) ?? {};
+
+      for (const configKey of typedKeys(config)) {
+        const configValue = config[configKey] as ConfigValue;
+        setConfig(configKey, configValue, { nosave: true });
+      }
+    }
     if (settings.type === "customTime") {
       setConfig("time", settings.parameters.time, {
         nosave: true,
@@ -293,7 +305,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         setConfig("theme", settings.parameters.theme);
       }
       if (settings.parameters.funboxes !== undefined) {
-        void Funbox.activate(settings.parameters.funboxes);
+        const funboxes =
+          settings.parameters.funboxes === "fromRequirements"
+            ? (settings.requirements?.funbox?.exact ?? [])
+            : settings.parameters.funboxes;
+        void Funbox.activate(funboxes);
       }
     } else if (settings.type === "accuracy") {
       setConfig("time", 0, {
@@ -327,13 +343,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         });
       }
 
-      if (
-        !setConfig("funbox", [settings.parameters.funbox], {
-          nosave: true,
-        })
-      ) {
-        throw new Error("Can't load challenge with current config");
-      }
+      const funboxes =
+        settings.parameters.funboxes === "fromRequirements"
+          ? (settings.requirements?.funbox?.exact ?? [])
+          : settings.parameters.funboxes;
+      void Funbox.activate(funboxes);
     } else if (settings.type === "other") {
       if (challengeName === "wingdings") {
         // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap
