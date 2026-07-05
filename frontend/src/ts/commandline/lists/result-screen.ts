@@ -151,8 +151,8 @@ const commands: Command[] = [
           : TestWords.words
               .get()
               .slice(0, inputHistory.length)
-              .map((word) => word.text)
-              .join(" ");
+              .map((word) => word.textWithCommit)
+              .join("");
 
       navigator.clipboard.writeText(words).then(
         () => {

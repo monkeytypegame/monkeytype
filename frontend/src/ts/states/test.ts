@@ -1,25 +1,25 @@
-import { Challenge } from "@monkeytype/schemas/challenges";
 import {
+  createSignal,
   createEffect,
   createMemo,
   createResource,
-  createSignal,
 } from "solid-js";
-import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
 
-import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
-import { keymapEvent } from "../events/keymap";
-import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { canQuickRestart } from "../utils/quick-restart";
 import { getData as getCustomTextData } from "../test/custom-text";
+import { getActivePage, getCustomTextIndicator } from "./core";
 import { QuoteWithTextSplit } from "../types/quotes";
+import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { Challenge } from "@monkeytype/challenges";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
-import { canQuickRestart } from "../utils/quick-restart";
+import { createStore } from "solid-js/store";
+import { keymapEvent } from "../events/keymap";
 import { promiseWithResolvers } from "../utils/misc";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getActivePage, getCustomTextIndicator } from "./core";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -54,6 +54,9 @@ export const [getPaceCaretWpm, setPaceCaretWpm] = createSignal<
 >(undefined);
 export const [getCurrentQuote, setCurrentQuote] =
   createSignal<QuoteWithTextSplit | null>(null);
+
+export const [getLastSignedOutResult, setLastSignedOutResult] =
+  createSignal<CompletedEvent | null>(null);
 
 createEffect(() => {
   getActivePage(); // depend on active page

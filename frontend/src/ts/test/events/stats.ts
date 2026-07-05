@@ -345,35 +345,8 @@ export function getDateBasedTestDurationMs(eventLog: EventLog): number {
 function getTargetWord(
   eventLog: EventLog,
   wordIndex: number,
-  simulatedInput: string,
-  lastWord: boolean,
-): string {
-  if (eventLog.context.mode === "zen") {
-    return simulatedInput;
-  } else {
-    const word = eventLog.context.targetWords[wordIndex];
-
-    if (word === undefined) {
-      return "";
-    }
-
-    if (word.endsWith("\n")) {
-      // for multiline, dont add space
-      return word;
-    }
-
-    let wordEnd = "";
-
-    if (!lastWord) {
-      wordEnd = " ";
-    }
-
-    if (eventLog.context.isFunboxWithNospacePropertyActive) {
-      wordEnd = "";
-    }
-
-    return word + wordEnd;
-  }
+): string | undefined {
+  return eventLog.context.targetWords[wordIndex];
 }
 
 function computeBurst(events: TestEventNoMs[], now?: number): number {
@@ -463,7 +436,7 @@ function countCharsForWordIndex(
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
-  let targetWord = getTargetWord(eventLog, wordIndex, simulatedInput, lastWord);
+  let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
   if (eventLog.context.koreanStatus) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
@@ -909,7 +882,11 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      missedWords[word] = (missedWords[word] ?? 0) + 1;
+      // targetWords store the trailing separator (commit char); strip exactly
+      // that one separator (space/newline) to key by the bare word — not
+      // trimEnd(), which would also eat a meaningful trailing tab (code mode)
+      const bareWord = word.replace(/[ \n]$/, "");
+      missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }
 
@@ -931,10 +908,7 @@ export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
         event.data.inputType === "insertText" ||
         event.data.inputType === "insertCompositionText"
       ) {
-        if (
-          event.data.inputStopped ||
-          (event.data.data === " " && event.data.commitsWord)
-        ) {
+        if (event.data.inputStopped) {
           continue;
         }
         currentChars[cursorPos] = event.data.data;

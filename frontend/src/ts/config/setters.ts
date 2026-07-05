@@ -10,10 +10,11 @@ import {
   canSetFunboxWithConfig,
 } from "./funbox-validation";
 import * as TestState from "../test/test-state";
-import { typedKeys, triggerResize, escapeHTML } from "../utils/misc";
+import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import { Config, setConfigStore } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,

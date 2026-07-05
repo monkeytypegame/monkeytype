@@ -4,11 +4,11 @@ import type {
   PartialConfig,
   FunboxName,
 } from "@monkeytype/schemas/configs";
-import { typedKeys } from "../utils/misc";
 import { sanitize } from "../utils/sanitize";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";
+import { typedKeys } from "@monkeytype/util/objects";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
