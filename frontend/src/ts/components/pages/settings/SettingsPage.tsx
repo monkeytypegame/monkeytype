@@ -69,20 +69,22 @@ export function SettingsPage(): JSXElement {
     <Page id="settings">
       <div class="grid gap-8">
         <SettingsSearch />
-        {/* while filtering, show only the matching settings (hide everything else) */}
-        <Show when={!isSettingsSearchActive()}>
-          <QuickNav />
-        </Show>
-        <Show when={getConfig.showKeyTips && !isSettingsSearchActive()}>
-          <div class="text-center text-sub">
+        {/* while filtering, only the matching settings stay visible; everything
+            else is hidden with css so nothing unmounts while typing */}
+        <QuickNav class={cn(isSettingsSearchActive() && "hidden")} />
+        <Show when={getConfig.showKeyTips}>
+          <div
+            class={cn(
+              "text-center text-sub",
+              isSettingsSearchActive() && "hidden",
+            )}
+          >
             tip: You can also change all these settings quickly using the
             command line
             <br />( <CommandlineHotkey /> )
           </div>
         </Show>
-        <Show when={!isSettingsSearchActive()}>
-          <AccountSettingsNotice />
-        </Show>
+        <AccountSettingsNotice />
         {/* while filtering, lay the matching sections out with a uniform gap */}
         <div class={cn(isSettingsSearchActive() && "grid gap-8")}>
           <Section title="behavior">
@@ -261,9 +263,7 @@ export function SettingsPage(): JSXElement {
           </Section>
         </div>
 
-        <Show when={!isSettingsSearchActive()}>
-          <AccountSettingsNotice />
-        </Show>
+        <AccountSettingsNotice />
       </div>
     </Page>
   );
@@ -277,7 +277,12 @@ function AccountSettingsNotice(): JSXElement {
   });
   return (
     <Show when={!dismissed()}>
-      <div class="grid grid-cols-[auto_1fr] items-center gap-4 rounded px-4 py-4 ring-4 ring-sub-alt md:grid-cols-[auto_1fr_auto] md:gap-8">
+      <div
+        class={cn(
+          "grid grid-cols-[auto_1fr] items-center gap-4 rounded px-4 py-4 ring-4 ring-sub-alt md:grid-cols-[auto_1fr_auto] md:gap-8",
+          isSettingsSearchActive() && "hidden",
+        )}
+      >
         <Fa icon="fa-user-cog" class="text-4xl text-sub" />
         <div>
           Account settings have moved. You can now access them by hovering over
@@ -305,36 +310,36 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
     <div
       id={`group_${wordsToCamelCase(props.title)}`}
       class={cn(
-        // when filtering, drop sections that have no matching setting
-        isSettingsSearchActive() && "not-has-[[data-setting-key]]:hidden",
+        // when filtering, drop sections where every setting is hidden
+        isSettingsSearchActive() &&
+          "not-has-[[data-setting-key]:not(.hidden)]:hidden",
       )}
     >
-      <Show when={!isSettingsSearchActive()}>
-        <Button
-          variant="text"
-          class="mb-8 w-max gap-4 p-0 text-4xl"
-          onClick={() => setIsOpen((prev) => !prev)}
+      <Button
+        variant="text"
+        class={cn(
+          "mb-8 w-max gap-4 p-0 text-4xl",
+          isSettingsSearchActive() && "hidden",
+        )}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <Anime
+          animation={{
+            rotate: isOpen() ? 0 : -90,
+            duration: 125,
+          }}
         >
-          <Anime
-            animation={{
-              rotate: isOpen() ? 0 : -90,
-              duration: 125,
-            }}
-          >
-            <Fa icon="fa-chevron-down" />
-          </Anime>
-          {props.title}
-        </Button>
-      </Show>
+          <Fa icon="fa-chevron-down" />
+        </Anime>
+        {props.title}
+      </Button>
       <AnimeShow
         when={isOpen() || isSettingsSearchActive()}
         slide
         class="grid gap-8"
       >
         {props.children}
-        <Show when={!isSettingsSearchActive()}>
-          <div class="h-16"></div>
-        </Show>
+        <div class={cn("h-16", isSettingsSearchActive() && "hidden")}></div>
       </AnimeShow>
     </div>
   );
