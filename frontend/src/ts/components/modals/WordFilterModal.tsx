@@ -3,10 +3,17 @@ import type { LayoutObject } from "@monkeytype/schemas/layouts";
 
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement, Setter } from "solid-js";
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  JSXElement,
+  Setter,
+} from "solid-js";
 
 import { LanguageList } from "../../constants/languages";
 import { LayoutsList } from "../../constants/layouts";
+import { createDebouncedSignal } from "../../hooks/createDebouncedSignal";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
 import {
@@ -104,6 +111,74 @@ const presetOptions = Object.entries(presets).map(([id, preset]) => ({
   text: preset.display,
 }));
 
+type FilterFormValues = {
+  include: string;
+  exclude: string;
+  minLength: string;
+  maxLength: string;
+  regex: string;
+  exactMatch: boolean;
+};
+
+type FilterResult = { words: string[] } | { error: string };
+
+function filterWordList(
+  value: FilterFormValues,
+  words: string[],
+): FilterResult {
+  const exactMatchOnly = value.exactMatch;
+
+  // Source - https://stackoverflow.com/a/874742
+  // Retrieved 2026-06-23, License - CC BY-SA 3.0
+  // Separates string into regex expression
+  let reglit = new RegExp("");
+  try {
+    const flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
+    const pattern = value.regex.replace(new RegExp(`^/(.*?)/${flags}$`), "$1");
+    reglit = new RegExp(pattern, flags);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return { error: "Invaid Regex Expression" };
+    }
+    return { error: String(error) };
+  }
+
+  let filterin = Misc.escapeRegExp(value.include.trim());
+  filterin = filterin.replace(/\s+/gi, "|");
+
+  if (exactMatchOnly && filterin === "") {
+    return { error: "Include field is required for exact match" };
+  }
+  const regincl = exactMatchOnly
+    ? new RegExp(`^[${filterin}]+$`, "i")
+    : new RegExp(filterin, "i");
+
+  let filterout = Misc.escapeRegExp(value.exclude.trim());
+  filterout = filterout.replace(/\s+/gi, "|");
+  const regexcl = new RegExp(filterout, "i");
+
+  const max = value.maxLength === "" ? 999 : parseInt(value.maxLength);
+  const min = value.minLength === "" ? 1 : parseInt(value.minLength);
+
+  const filteredWords: string[] = [];
+  for (const word of words) {
+    const testincl = regincl.test(word);
+    const testexcl =
+      exactMatchOnly || filterout === "" ? false : regexcl.test(word);
+    const testlit = exactMatchOnly ? true : reglit.test(word);
+    if (
+      testincl &&
+      !testexcl &&
+      testlit &&
+      word.length <= max &&
+      word.length >= min
+    ) {
+      filteredWords.push(word);
+    }
+  }
+  return { words: filteredWords };
+}
+
 export function WordFilterModal(props: {
   setChainedData: Setter<CustomTextIncomingData>;
 }): JSXElement {
@@ -127,46 +202,6 @@ export function WordFilterModal(props: {
       setLoading(true);
       showLoaderBar();
       try {
-        const exactMatchOnly = value.exactMatch;
-
-        // Source - https://stackoverflow.com/a/874742
-        // Retrieved 2026-06-23, License - CC BY-SA 3.0
-        // Separates string into regex expression
-
-        let reglit = new RegExp("");
-
-        try {
-          let flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
-          let pattern = value.regex.replace(
-            new RegExp(`^/(.*?)/${flags}$`),
-            "$1",
-          );
-          reglit = new RegExp(pattern, flags);
-        } catch (error) {
-          if (error instanceof SyntaxError) {
-            showNoticeNotification("Invaid Regex Expression");
-            return;
-          } else {
-            showNoticeNotification(String(error));
-            return;
-          }
-        }
-
-        let filterin = Misc.escapeRegExp(value.include.trim());
-        filterin = filterin.replace(/\s+/gi, "|");
-
-        if (exactMatchOnly && filterin === "") {
-          showNoticeNotification("Include field is required for exact match");
-          return;
-        }
-        const regincl = exactMatchOnly
-          ? new RegExp(`^[${filterin}]+$`, "i")
-          : new RegExp(filterin, "i");
-
-        let filterout = Misc.escapeRegExp(value.exclude.trim());
-        filterout = filterout.replace(/\s+/gi, "|");
-        const regexcl = new RegExp(filterout, "i");
-
         const { data: languageWordList, error } = await tryCatch(
           JSONData.getLanguage(language() as Language),
         );
@@ -176,32 +211,18 @@ export function WordFilterModal(props: {
           return;
         }
 
-        const max = value.maxLength === "" ? 999 : parseInt(value.maxLength);
-        const min = value.minLength === "" ? 1 : parseInt(value.minLength);
-
-        const filteredWords: string[] = [];
-        for (const word of languageWordList.words) {
-          const testincl = regincl.test(word);
-          const testexcl =
-            exactMatchOnly || filterout === "" ? false : regexcl.test(word);
-          const testlit = exactMatchOnly ? true : reglit.test(word);
-          if (
-            testincl &&
-            !testexcl &&
-            testlit &&
-            word.length <= max &&
-            word.length >= min
-          ) {
-            filteredWords.push(word);
-          }
+        const result = filterWordList(value, languageWordList.words);
+        if ("error" in result) {
+          showNoticeNotification(result.error);
+          return;
         }
 
-        if (filteredWords.length === 0) {
+        if (result.words.length === 0) {
           showNoticeNotification("No words found");
           return;
         }
         props.setChainedData({
-          splitText: filteredWords,
+          splitText: result.words,
           set: submitAction === "set",
         });
         hideModal("WordFilter");
@@ -213,6 +234,22 @@ export function WordFilterModal(props: {
   }));
 
   const isExactMatch = form.useStore((s) => s.values.exactMatch);
+
+  const [languageWords] = createResource(language, async (lang) => {
+    const { data } = await tryCatch(JSONData.getLanguage(lang as Language));
+    return data?.words ?? null;
+  });
+
+  const formValues = form.useStore((s) => s.values);
+
+  // debounce the preview so it doesn't refilter the whole word list on every keystroke
+  const debouncedValues = createDebouncedSignal(formValues, 250);
+
+  const matchResult = createMemo<FilterResult | null>(() => {
+    const words = languageWords();
+    if (words === null || words === undefined) return null;
+    return filterWordList(debouncedValues(), words);
+  });
 
   const applyPreset = async () => {
     const presetToApply = presets[preset()];
@@ -360,7 +397,14 @@ export function WordFilterModal(props: {
               />
             </div>
           </div>
-
+          <div class="text-center text-xs text-sub">
+            {(() => {
+              const result = matchResult();
+              if (result === null) return "loading words...";
+              if ("error" in result) return result.error;
+              return `${result.words.length} words found`;
+            })()}
+          </div>
           <div class="text-xs text-sub">
             {
               '"Set" replaces the current custom word list with the filter result, "Add" appends the filter result to the current custom word list.'
