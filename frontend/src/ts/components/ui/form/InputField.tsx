@@ -27,7 +27,6 @@ export function InputField(props: {
   min?: number;
   max?: number;
   step?: string | number;
-  hideIndicator?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -62,9 +61,7 @@ export function InputField(props: {
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
           "autofill-fix",
-          props.field().options.validators && !props.hideIndicator
-            ? "pr-[1.85em]"
-            : "",
+          props.field().options.validators ? "pr-[1.85em]" : "",
           props.class,
         )}
         type={props.type ?? "text"}
@@ -107,7 +104,7 @@ export function InputField(props: {
         max={props.max}
         step={props.step?.toString()}
       />
-      <Show when={props.field().options.validators && !props.hideIndicator}>
+      <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />
       </Show>
     </div>

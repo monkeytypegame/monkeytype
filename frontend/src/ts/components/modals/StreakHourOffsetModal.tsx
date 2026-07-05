@@ -106,7 +106,6 @@ export function StreakHourOffsetModal() {
                 />
                 <InputField
                   field={field}
-                  hideIndicator
                   type="number"
                   class="text-center"
                   min={-11}
