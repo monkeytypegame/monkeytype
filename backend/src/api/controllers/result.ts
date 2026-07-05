@@ -81,6 +81,12 @@ try {
   }
 }
 
+const autoRoleChallengeNames = new Set(
+  getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name),
+);
+
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,
 ): Promise<GetResultsResponse> {
@@ -456,14 +462,10 @@ export async function addResult(
     }
   }
 
-  const autoRoleChallengeNames = getChallenges()
-    .filter((it) => it.settings?.autoRole)
-    .map((it) => it.name);
-
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    autoRoleChallengeNames.includes(completedEvent.challenge) &&
+    autoRoleChallengeNames.has(completedEvent.challenge) &&
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {

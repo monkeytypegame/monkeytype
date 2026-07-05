@@ -355,11 +355,12 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       showSuccessNotification(`Challenge loaded. ${notitext}`);
     }
     setLoadedChallenge(challenge);
-    challengeLoading = false;
     return true;
   } catch (e) {
     showErrorNotification("Failed to load challenge", { error: e });
     return false;
+  } finally {
+    challengeLoading = false;
   }
 }
 

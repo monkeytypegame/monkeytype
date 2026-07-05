@@ -1,6 +1,5 @@
-import { PasswordSchema } from "@monkeytype/schemas/users";
-import { typedKeys } from "@monkeytype/util/objects";
 import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
+import { typedKeys } from "@monkeytype/util/objects";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { FirebaseError } from "firebase/app";
 import {

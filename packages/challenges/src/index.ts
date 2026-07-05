@@ -425,7 +425,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       "Type the beepboop script with 100% accuracy and at least 45 WPM.",
     settings: {
       type: "script",
-      message: "Mininum 45 WPM and 100% accuracy required.",
+      message: "Minimum 45 WPM and 100% accuracy required.",
       parameters: { script: "beepboop.txt", funboxes: ["nospace"] },
       requirements: {
         wpm: { min: 45 },
@@ -547,7 +547,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "937358772635074600",
     category: "script",
     description:
-      "Type out the entire source code ofMonkeytype, as it was in February 2022.",
+      "Type out the entire source code of Monkeytype, as it was in February 2022.",
     settings: {
       autoRole: true,
       type: "script",
