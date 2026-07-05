@@ -30,6 +30,7 @@ import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { Page } from "../../common/Page";
+import { Setting } from "../../common/Setting";
 import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
 import { InputField } from "../../ui/form/InputField";
 import { fromSchema } from "../../ui/form/utils";
@@ -56,7 +57,6 @@ import { SoundVolume } from "./custom-setting/SoundVolume";
 import { Tags } from "./custom-setting/Tags";
 import { Theme } from "./custom-setting/Theme";
 import { QuickNav } from "./QuickNav";
-import { Setting } from "./Setting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
@@ -375,7 +375,8 @@ function AutoSetting<T extends keyof Config>(props: {
             }}
           >
             <form.Field
-              //@ts-expect-error what
+              // oxlint-disable-next-line ban-ts-comment
+              // @ts-ignore tsc considers this fine but oxlint's type-check reports TS2589
               name={props.key}
               validators={{
                 onChange: ({ value }) => {

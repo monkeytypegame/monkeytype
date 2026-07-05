@@ -13,8 +13,8 @@ import {
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
+import { Setting } from "../../../common/Setting";
 import { showAddTagModal } from "../../../modals/AddTagModal";
-import { Setting } from "../Setting";
 
 export function Tags(): JSXElement {
   const tags = useTagsLiveQuery();

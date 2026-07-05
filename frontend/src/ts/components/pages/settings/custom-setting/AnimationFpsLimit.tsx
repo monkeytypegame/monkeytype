@@ -5,9 +5,9 @@ import { fpsLimitSchema, getfpsLimit, setfpsLimit } from "../../../../anim";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();

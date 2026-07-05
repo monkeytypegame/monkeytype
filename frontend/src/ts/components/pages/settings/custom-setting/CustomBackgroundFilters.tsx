@@ -4,8 +4,8 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { applyCustomBackgroundFilters } from "../../../../controllers/theme-controller";
+import { Setting } from "../../../common/Setting";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
 
 export function CustomBackgroundFilters(): JSXElement {
   let refBlur: HTMLInputElement | undefined = undefined;

@@ -18,8 +18,8 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   const beforeDeleteOnlyTabs = /^\t*$/.test(inputBeforeDelete);
   const allTabsCorrect = TestWords.words
-    .getCurrentText()
-    .startsWith(inputAfterDelete);
+    .getCurrent()
+    ?.textWithCommit.startsWith(inputAfterDelete);
 
   //special check for code languages
   if (
@@ -38,7 +38,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     });
 
     setInputElementValue("");
-    goToPreviousWord(inputType, true);
+    goToPreviousWord(inputType);
 
     // Record the resulting state of the previous word (newline removed)
     const postNavInputValue = getInputElementValue().inputValue;
@@ -57,7 +57,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
   if (realInputValue === "") {
     // if the input is NOT empty, that means the ctrl backspace deleted more than just the fake space (THANKS FIREFOX)
     // which means we need to force update the current word element when we move back
-    goToPreviousWord(inputType, inputBeforeDelete !== "");
+    goToPreviousWord(inputType);
 
     // Record the resulting state of the destination word
     const postNavInputValue = getInputElementValue().inputValue;

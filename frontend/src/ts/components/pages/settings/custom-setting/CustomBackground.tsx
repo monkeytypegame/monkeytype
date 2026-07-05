@@ -17,9 +17,9 @@ import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function CustomBackground(): JSXElement {
   const savedIndicator = useSavedIndicator();

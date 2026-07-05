@@ -542,6 +542,15 @@ describe("string utils", () => {
       expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
     });
 
+    it("should treat any Unicode space as equivalent to a regular space", () => {
+      // IME-produced spaces must match the U+0020 stored as the word separator
+      expect(Strings.areCharactersVisuallyEqual("　", " ")).toBe(true); // ideographic
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // nbsp
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // en space
+      expect(Strings.areCharactersVisuallyEqual(" ", "a")).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual(" ", "\n")).toBe(false);
+    });
+
     describe("should check russian specific equivalences", () => {
       it.each([
         {
