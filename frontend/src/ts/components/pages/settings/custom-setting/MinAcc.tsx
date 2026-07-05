@@ -20,7 +20,7 @@ export function MinAcc(): JSXElement {
       minAccCustom: getConfig.minAccCustom,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.minAccCustom));
+      const val = value.minAccCustom;
       if (val === getConfig.minAccCustom) return;
       if (getConfig.minAcc === "custom") {
         //
@@ -50,15 +50,7 @@ export function MinAcc(): JSXElement {
             <form.Field
               name="minAccCustom"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MinimumAccuracyCustomSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(MinimumAccuracyCustomSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },

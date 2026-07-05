@@ -23,7 +23,7 @@ export function PaceCaret(): JSXElement {
       paceCaretCustomSpeed: getConfig.paceCaretCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.paceCaretCustomSpeed));
+      const val = value.paceCaretCustomSpeed;
       if (val === getConfig.paceCaretCustomSpeed) return;
       if (getConfig.paceCaret !== "off") {
         //
@@ -53,15 +53,7 @@ export function PaceCaret(): JSXElement {
             <form.Field
               name="paceCaretCustomSpeed"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(PaceCaretCustomSpeedSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(PaceCaretCustomSpeedSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },

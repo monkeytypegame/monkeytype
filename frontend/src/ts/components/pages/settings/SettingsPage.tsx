@@ -324,7 +324,7 @@ function AutoSetting<T extends keyof Config>(props: {
       [props.key]: getConfig[props.key],
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value[props.key]));
+      const val = value[props.key];
       if (val === getConfig[props.key]) return;
       savedIndicator.flash();
       setConfig(props.key, val as Config[T]);
@@ -349,17 +349,9 @@ function AutoSetting<T extends keyof Config>(props: {
               //@ts-expect-error what
               name={props.key}
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(
-                    ConfigSchema.shape[props.key] as z.ZodNumber,
-                  )({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(
+                  ConfigSchema.shape[props.key] as z.ZodNumber,
+                ),
                 onBlur: () => {
                   void form.handleSubmit();
                 },
