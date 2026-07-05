@@ -328,6 +328,10 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       onKeyDown={handleKeyDown}
       onMouseDown={handleBackdropClick}
     >
+      {/*
+      Don't show the modal content on non-visible modals.
+      If the modal contains data from e.g. a collection the collection would init on page load instead of when it is needed.
+      */}
       <Show when={isModalOpen(props.id)}>
         <div
           class={cn(
