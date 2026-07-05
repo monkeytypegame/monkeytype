@@ -1,4 +1,5 @@
 import { ConfigSchema } from "@monkeytype/schemas/configs";
+import { FontNameSchema } from "@monkeytype/schemas/fonts";
 import { createResource, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
@@ -13,7 +14,7 @@ import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../Setting";
+import { Setting } from "../../../common/Setting";
 
 export function FontFamily(): JSXElement {
   const [hasLocalFont, { refetch }] = createResource(async () =>
@@ -170,7 +171,7 @@ export function FontFamily(): JSXElement {
                   text: "Make sure you have the font installed on your computer before applying",
                   buttonText: "apply",
                   schema: z.object({
-                    fontName: z.string(),
+                    fontName: FontNameSchema,
                   }),
                   inputs: {
                     fontName: {

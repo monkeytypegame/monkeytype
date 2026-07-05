@@ -6,7 +6,7 @@ import {
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as TestWords from "./test-words";
-import { getCurrentInput, getCurrentInputForDisplay } from "./events/data";
+import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
@@ -23,10 +23,7 @@ import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
 import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import {
-  findSingleActiveFunboxWithFunction,
-  isFunboxActiveWithProperty,
-} from "./funbox/list";
+import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import {
@@ -227,8 +224,11 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
+  const currentWord = TestWords.words.getCurrent();
+  if (currentWord === undefined) return;
+
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    TestWords.words.getCurrentText(),
+    currentWord.text,
     TestState.isLanguageRightToLeft,
     TestState.isDirectionReversed,
   );
@@ -501,9 +501,9 @@ function showWords(): void {
   } else {
     let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
-      const word = TestWords.words.getText(i);
+      const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      wordsHTML += buildWordHTML(word, i);
+      wordsHTML += buildWordHTML(word.display, i);
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -724,6 +724,17 @@ export function addWord(
 // make sure the currently typed word will not overflow to the next line
 export let pendingWordData: Map<number, string> = new Map();
 
+const TAB_ICON = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
+const NEWLINE_ICON = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
+
+// visible form of a typed character: space -> "_", tab/newline -> their icons
+function displayTypedChar(char: string | undefined): string {
+  if (char === " ") return "_";
+  if (char === "\t") return TAB_ICON;
+  if (char === "\n") return NEWLINE_ICON;
+  return char ?? "";
+}
+
 export async function updateWordLetters({
   wordIndex,
   input,
@@ -738,7 +749,7 @@ export async function updateWordLetters({
     `test-ui.updateWordLetters.${wordIndex}`,
     async () => {
       pendingWordData.delete(wordIndex);
-      const currentWord = TestWords.words.getText(wordIndex);
+      const currentWord = TestWords.words.get(wordIndex)?.display;
       if (currentWord === undefined && Config.mode !== "zen") return;
       let ret = "";
       const wordAtIndex = getWordElement(wordIndex);
@@ -792,25 +803,19 @@ export async function updateWordLetters({
           if (charCorrect) {
             ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
           } else if (currentLetter === undefined) {
-            let letter = inputChars[i];
-            if (letter === " ") {
-              letter = "_";
-            } else if (letter === "\t") {
-              letter = "<i class='fas fa-long-arrow-alt-right fa-fw'></i>";
-            } else if (letter === "\n") {
-              letter =
-                "<i class='fas fa-level-down-alt fa-rotate-90 fa-fw'></i>";
-            }
+            const letter = displayTypedChar(inputChars[i]);
             ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
           } else {
-            ret += `<letter class="incorrect ${tabChar}${nlChar}">${
+            let charString = currentLetter;
+
+            if (
               Config.indicateTypos === "replace" ||
               Config.indicateTypos === "both"
-                ? inputChars[i] === " " || inputChars[i] === "\t"
-                  ? "_"
-                  : inputChars[i]
-                : currentLetter
-            }</letter>`;
+            ) {
+              charString = displayTypedChar(inputChars[i] ?? currentLetter);
+            }
+
+            ret += `<letter class="incorrect ${tabChar}${nlChar}">${charString}</letter>`;
             if (
               Config.indicateTypos === "below" ||
               Config.indicateTypos === "both"
@@ -1251,47 +1256,50 @@ export function setJoiningClass(isEnabled: boolean): void {
 }
 
 function buildWordLettersHTML(
-  charCount: number,
-  input: string,
-  corrected: string,
-  inputCharacters: string[],
-  wordCharacters: string[],
-  correctedCharacters: string[],
-  containsKorean: boolean,
+  input: string | undefined,
+  corrected: string | undefined,
+  targetWord: string | undefined,
 ): string {
   let out = "";
-  for (let c = 0; c < charCount; c++) {
-    let correctedChar;
-    try {
-      correctedChar = !containsKorean
-        ? correctedCharacters[c]
-        : Hangul.assemble(corrected.split(""))[c];
-    } catch (e) {
-      correctedChar = undefined;
-    }
+  // the trailing commit separator (space/newline) is structural, not a letter;
+  // strip it from all three so it never renders and over-typed extras / untyped
+  // tails line up correctly
+  if (input?.endsWith(" ") || input?.endsWith("\n")) input = input.slice(0, -1);
+  if (corrected?.endsWith(" ") || corrected?.endsWith("\n")) {
+    corrected = corrected.slice(0, -1);
+  }
+  if (targetWord?.endsWith(" ") || targetWord?.endsWith("\n")) {
+    targetWord = targetWord.slice(0, -1);
+  }
+
+  const inputChars = Strings.splitIntoCharacters(input ?? "");
+  const targetChars = Strings.splitIntoCharacters(targetWord ?? "");
+  const correctedChars = Strings.splitIntoCharacters(corrected ?? "");
+  for (let c = 0; c < Math.max(targetChars.length, inputChars.length); c++) {
+    let inputChar = inputChars[c];
+    let targetChar = targetChars[c];
+
+    let correctedChar = correctedChars[c];
     let extraCorrected = "";
-    const historyWord: string = !containsKorean
-      ? corrected
-      : Hangul.assemble(corrected.split(""));
+    const historyWord: string = !TestState.koreanStatus
+      ? (corrected ?? "")
+      : Hangul.assemble((corrected ?? "").split(""));
     if (
-      c + 1 === charCount &&
-      historyWord !== undefined &&
-      historyWord.length > input.length
+      c >= targetChars.length - 1 &&
+      c + 1 === inputChars.length &&
+      historyWord.length > inputChars.length
     ) {
       extraCorrected = "extraCorrected";
     }
 
-    let displayLetter = inputCharacters[c];
+    let displayLetter = inputChar ?? targetChar;
     if (displayLetter === " ") {
       displayLetter = "_";
     }
 
-    if (Config.mode === "zen" || wordCharacters[c] !== undefined) {
-      if (Config.mode === "zen" || inputCharacters[c] === wordCharacters[c]) {
-        if (
-          correctedChar === inputCharacters[c] ||
-          correctedChar === undefined
-        ) {
+    if (Config.mode === "zen" || targetChar !== undefined) {
+      if (Config.mode === "zen" || inputChar === targetChar) {
+        if (correctedChar === inputChar || correctedChar === undefined) {
           out += `<letter class="correct ${extraCorrected}">${displayLetter}</letter>`;
         } else {
           out += `<letter class="corrected ${extraCorrected}">${
@@ -1299,15 +1307,11 @@ function buildWordLettersHTML(
           }</letter>`;
         }
       } else {
-        if (inputCharacters[c] === getCurrentInput()) {
-          out += `<letter class='correct ${extraCorrected}'>${
-            wordCharacters[c]
-          }</letter>`;
-        } else if (inputCharacters[c] === undefined) {
-          out += `<letter>${wordCharacters[c]}</letter>`;
+        if (inputChar === undefined) {
+          out += `<letter>${targetChar}</letter>`;
         } else {
           out += `<letter class="incorrect ${extraCorrected}">${
-            wordCharacters[c]
+            targetChar
           }</letter>`;
         }
       }
@@ -1326,20 +1330,17 @@ async function loadWordsHistory(): Promise<boolean> {
     return false;
   }
 
-  const inputHistory = getInputHistory(TestState.lastEventLog).map((i) =>
-    i.trimEnd(),
-  );
+  const inputHistory = getInputHistory(TestState.lastEventLog);
   const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+
   const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
-    const corrected = correctedHistory[i];
-    const word = TestWords.words.getText(i) ?? "";
-    const koreanRegex =
-      /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/;
-    const containsKorean =
-      koreanRegex.test(input ?? "") || koreanRegex.test(word);
+    const target = TestWords.words.get(i)?.textWithCommit ?? "";
+    const corrected = TestState.koreanStatus
+      ? Hangul.assemble((correctedHistory[i] ?? "").split(""))
+      : correctedHistory[i];
 
     const wordEl = document.createElement("div");
     wordEl.className = "word";
@@ -1348,79 +1349,45 @@ async function loadWordsHistory(): Promise<boolean> {
       wordEl.classList.add("nocursor");
     }
 
-    try {
-      if (input === undefined || input === "") {
-        throw new Error("empty input word");
-      }
+    const isIncorrectWord = input !== target;
+    const isLastWord = i === inputHistoryLength - 1;
+    const isTimedTest =
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+    const isPartiallyCorrect = target.startsWith(input ?? "");
 
-      const isIncorrectWord = input !== word;
-      const isLastWord = i === inputHistoryLength - 1;
-      const isTimedTest =
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-      const isPartiallyCorrect = word.startsWith(input);
+    const shouldShowError =
+      Config.mode !== "zen" &&
+      !(isLastWord && isTimedTest && isPartiallyCorrect) &&
+      input !== undefined &&
+      input !== "";
 
-      const shouldShowError =
-        Config.mode !== "zen" &&
-        !(isLastWord && isTimedTest && isPartiallyCorrect);
-
-      if (isIncorrectWord && shouldShowError) {
-        wordEl.classList.add("error");
-      }
-
-      const burstValue = burstHistory[i];
-      if (burstValue !== undefined) {
-        wordEl.setAttribute("burst", String(burstValue));
-      }
-
-      if (corrected !== undefined && corrected !== "") {
-        const correctedChar = !containsKorean
-          ? corrected
-          : Hangul.assemble(corrected.split(""));
-        wordEl.setAttribute("input", correctedChar.replace(/ /g, "_"));
-      } else {
-        wordEl.setAttribute("input", input.replace(/ /g, "_"));
-      }
-
-      const inputCharacters = Strings.splitIntoCharacters(input);
-      const wordCharacters = Strings.splitIntoCharacters(word);
-      const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
-
-      let loop;
-      if (Config.mode === "zen" || input.length > word.length) {
-        //input is longer - extra characters possible (loop over input)
-        loop = inputCharacters.length;
-      } else {
-        //input is shorter or equal (loop over word list)
-        loop = wordCharacters.length;
-      }
-
-      if (corrected === undefined) throw new Error("empty corrected word");
-
-      wordEl.innerHTML = buildWordLettersHTML(
-        loop,
-        input,
-        corrected,
-        inputCharacters,
-        wordCharacters,
-        correctedCharacters,
-        containsKorean,
-      );
-    } catch (e) {
-      try {
-        for (let char of word) {
-          if (char === " ") {
-            char = "_";
-          }
-          const letterEl = document.createElement("letter");
-          letterEl.textContent = char;
-          wordEl.appendChild(letterEl);
-        }
-      } catch {
-        // wordEl is already created, just leave it empty or with partial content
-      }
+    if (isIncorrectWord && shouldShowError) {
+      wordEl.classList.add("error");
     }
+
+    const burstValue = burstHistory[i];
+    if (burstValue !== undefined) {
+      wordEl.setAttribute("burst", String(burstValue));
+    }
+
+    let inputAttribute = input ?? "";
+
+    if (corrected !== undefined && corrected !== "") {
+      inputAttribute = corrected;
+    }
+
+    if (
+      inputAttribute.length >= target.length &&
+      (inputAttribute.endsWith(" ") || inputAttribute.endsWith("\n"))
+    ) {
+      inputAttribute = inputAttribute.slice(0, -1);
+    }
+
+    wordEl.setAttribute("input", inputAttribute.replace(/ /g, "_"));
+
+    wordEl.innerHTML = buildWordLettersHTML(input, corrected, target);
 
     wordEl.addEventListener("mouseenter", (e) => {
       // if (noHover) return;
@@ -1468,6 +1435,7 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 
   if (resultWordsHistoryEl.isHidden()) {
     if (resultWordsHistoryEl.qsa(".words .word").length === 0) {
+      resultWordsHistoryEl.qsa(".words .word")?.remove();
       await loadWordsHistory();
     }
     void resultWordsHistoryEl.slideDown(noAnimation ? 0 : 250);
@@ -1770,7 +1738,7 @@ function afterAnyTestInput(
 
   if (Config.keymapMode === "next") {
     highlight(
-      TestWords.words.getCurrentText().charAt(getCurrentInput().length),
+      TestWords.words.getCurrent()?.text.charAt(getCurrentInput().length) ?? "",
     );
   }
 
@@ -1781,28 +1749,28 @@ function afterAnyTestInput(
 
 export function afterTestTextInput(
   correct: boolean,
-  increasedWordIndex: boolean | null,
   inputOverride?: string,
+  goingToNextWord = false,
 ): void {
-  //nospace cant be handled here becauseword index
-  // is already increased at this point
-
   void MonkeyPower.addPower(correct);
 
-  if (!increasedWordIndex) {
-    void updateWordLetters({
-      input: inputOverride ?? getCurrentInputForDisplay(),
-      wordIndex: TestState.activeWordIndex,
-      compositionData: CompositionState.getData(),
-    });
+  let input = inputOverride ?? getCurrentInput();
+  if (goingToNextWord) {
+    input = input.replace(/ $/, "");
   }
+
+  void updateWordLetters({
+    input,
+    wordIndex: TestState.activeWordIndex,
+    compositionData: CompositionState.getData(),
+  });
 
   afterAnyTestInput("textInput", correct);
 }
 
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
-    input: getCurrentInputForDisplay(),
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1812,7 +1780,7 @@ export function afterTestCompositionUpdate(): void {
 
 export function afterTestDelete(): void {
   void updateWordLetters({
-    input: getCurrentInputForDisplay(),
+    input: getCurrentInput(),
     wordIndex: TestState.activeWordIndex,
     compositionData: CompositionState.getData(),
   });
@@ -1822,26 +1790,15 @@ export function afterTestDelete(): void {
 export function beforeTestWordChange(
   direction: "forward",
   correct: boolean,
-  forceUpdateActiveWordLetters: boolean,
 ): void;
-export function beforeTestWordChange(
-  direction: "back",
-  correct: null,
-  forceUpdateActiveWordLetters: boolean,
-): void;
+export function beforeTestWordChange(direction: "back", correct: null): void;
 export function beforeTestWordChange(
   direction: "forward" | "back",
   correct: boolean | null,
-  forceUpdateActiveWordLetters: boolean,
 ): void {
-  const nospaceEnabled = isFunboxActiveWithProperty("nospace");
-  if (
-    (Config.stopOnError === "letter" && (correct || correct === null)) ||
-    nospaceEnabled ||
-    forceUpdateActiveWordLetters
-  ) {
+  if (direction === "back") {
     void updateWordLetters({
-      input: getCurrentInputForDisplay(),
+      input: getCurrentInput(),
       wordIndex: TestState.activeWordIndex,
       compositionData: CompositionState.getData(),
     });
@@ -1966,9 +1923,10 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
     words = getInputHistory(TestState.lastEventLog).join("");
   } else {
     words = TestWords.words
-      .getText()
+      .get()
       .slice(0, getInputHistory(TestState.lastEventLog).length)
-      .join(" ");
+      .map((w) => w.textWithCommit)
+      .join("");
   }
   await copyToClipboard(words);
 });
@@ -2080,7 +2038,7 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
-        input: getCurrentInputForDisplay(),
+        input: getCurrentInput(),
         wordIndex: TestState.activeWordIndex,
         compositionData: CompositionState.getData(),
       });

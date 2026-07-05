@@ -42,6 +42,9 @@ export const [getPaceCaretWpm, setPaceCaretWpm] = createSignal<
 export const [getCurrentQuote, setCurrentQuote] =
   createSignal<QuoteWithTextSplit | null>(null);
 
+export const [getLastSignedOutResult, setLastSignedOutResult] =
+  createSignal<CompletedEvent | null>(null);
+
 createEffect(() => {
   getActivePage(); // depend on active page
   setIsLongTest(

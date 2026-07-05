@@ -8,9 +8,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
+import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
 
 export function MinSpeed(): JSXElement {
   const savedIndicator = useSavedIndicator();
