@@ -4,7 +4,10 @@ import { describe, it, expect, vi } from "vitest";
 
 import { InputField } from "../../../../src/ts/components/ui/form/InputField";
 
-function makeField(name: string, value = ""): AnyFieldApi {
+function makeField(
+  name: string,
+  value?: string | number | boolean,
+): AnyFieldApi {
   return {
     name,
     state: {
@@ -17,7 +20,7 @@ function makeField(name: string, value = ""): AnyFieldApi {
         errors: [],
       },
     },
-    options: {},
+    options: { default: value },
     handleBlur: vi.fn(),
     handleChange: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
@@ -59,6 +62,16 @@ describe("InputField", () => {
       target: { value: "test" },
     });
     expect(field.handleChange).toHaveBeenCalledWith("test");
+  });
+
+  it("calls handleChange on input for number", async () => {
+    const field = makeField("name", 2.5);
+    render(() => <InputField field={() => field} type="number" />);
+
+    fireEvent.input(screen.getByRole("spinbutton"), {
+      target: { value: "1.25" },
+    });
+    expect(field.handleChange).toHaveBeenCalledWith(1.25);
   });
 
   it("calls handleBlur on blur", async () => {

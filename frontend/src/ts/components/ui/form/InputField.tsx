@@ -11,7 +11,16 @@ export function InputField(props: {
   field: Accessor<AnyFieldApi>;
   placeholder?: string;
   autocomplete?: string;
-  type?: string;
+  type?:
+    | "text"
+    | "textarea"
+    | "password"
+    | "email"
+    | "number"
+    | "range"
+    | "date"
+    | "datetime-local"
+    | "checkbox";
   disabled?: boolean;
   readOnly?: boolean;
   clickToSelect?: boolean;
@@ -68,7 +77,7 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={(props.field().state.value as string) ?? ""}
+        value={convertValueToString(props.field().state.value)}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
@@ -83,7 +92,11 @@ export function InputField(props: {
           props.field().handleBlur();
         }}
         onInput={(e) => {
-          props.field().handleChange(e.target.value);
+          const value: unknown = convertStringToValue(
+            props.field().state.value,
+            e.target.value,
+          );
+          props.field().handleChange(value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -146,4 +159,24 @@ function getDateOptions(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
+}
+
+function convertValueToString(input: unknown | undefined): string {
+  if (input === undefined || input === null) return "";
+  if (typeof input === "boolean") return input ? "true" : "false";
+  if (typeof input === "number") return input.toString();
+  return input as string;
+}
+
+function convertStringToValue<T extends unknown | undefined>(
+  defaultValue: T,
+  newValue: string,
+): T {
+  if (defaultValue === undefined || defaultValue === null) return newValue as T;
+  if (typeof defaultValue === "boolean") {
+    return (newValue === "true" || newValue === "1") as T;
+  }
+  if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
+
+  return newValue as T;
 }

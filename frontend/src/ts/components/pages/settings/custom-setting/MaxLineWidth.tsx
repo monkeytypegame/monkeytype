@@ -7,7 +7,6 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Setting } from "../../../common/Setting";
-// import { showSuccessNotification } from "../../../../states/notifications";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
 
@@ -19,7 +18,8 @@ export function MaxLineWidth(): JSXElement {
       maxLineWidth: getConfig.maxLineWidth,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.maxLineWidth));
+      const val = value.maxLineWidth;
+
       if (val === getConfig.maxLineWidth) return;
       flash();
       setConfig("maxLineWidth", val);
@@ -44,15 +44,7 @@ export function MaxLineWidth(): JSXElement {
             <form.Field
               name="maxLineWidth"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MaxLineWidthSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(MaxLineWidthSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },
