@@ -83,10 +83,15 @@ function verifyRequirement(
     }
   } else if (requirementType === "time" && requirements.time) {
     const requirementValue = requirements.time;
-    if (requirementValue.min) {
+    if ("min" in requirementValue) {
       if (Math.round(result.testDuration) < requirementValue.min) {
         requirementsMet = false;
         failReasons.push(`Test time below ${requirementValue.min}`);
+      }
+    } else if ("max" in requirementValue) {
+      if (Math.round(result.testDuration) > requirementValue.max) {
+        requirementsMet = false;
+        failReasons.push(`Test time above ${requirementValue.max}`);
       }
     }
   } else if (requirementType === "funbox" && requirements.funbox) {
@@ -248,7 +253,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         nosave: true,
       });
     } else if (settings.type === "customText") {
-      CustomText.setText(settings.parameters.text.split(" "));
+      CustomText.setText(
+        settings.parameters.text.split(
+          settings.parameters.isPipeDelimiter ? "|" : " ",
+        ),
+      );
       CustomText.setMode(settings.parameters.mode);
       CustomText.setLimitValue(settings.parameters.limit);
       CustomText.setLimitMode(settings.parameters.limitMode);

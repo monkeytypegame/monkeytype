@@ -73,7 +73,7 @@ export type ChallengeSettings = {
     raw?: { exact: number };
     con?: { exact: number };
     afk?: { max: number };
-    time?: { min: number };
+    time?: { min: number } | { max: number };
     funbox?: { exact: FunboxName[] };
     config?: Partial<Config>;
   };
@@ -387,7 +387,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
         wpm: { min: 60 },
         acc: { exact: 100 },
         afk: { max: 5 },
-        time: { min: 600 },
+        time: { min: 10 * 60 },
       },
     },
   },
@@ -405,7 +405,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
         wpm: { min: 60 },
         acc: { exact: 100 },
         afk: { max: 5 },
-        time: { min: 1200 },
+        time: { min: 20 * 60 },
       },
     },
   },
@@ -423,7 +423,25 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
         wpm: { min: 60 },
         acc: { exact: 100 },
         afk: { max: 5 },
-        time: { min: 1800 },
+        time: { min: 30 * 60 },
+      },
+    },
+  },
+  goldenHands: {
+    display: "Golden Hands",
+    discordRoleId: "851096860969795684",
+    initialCount: 2,
+    category: "accuracy",
+    description: "Complete a 1-hour Master mode test.",
+    settings: {
+      autoRole: false,
+      type: "accuracy",
+      message: "Minimum 60wpm and 100% accuracy required.",
+      requirements: {
+        wpm: { min: 60 },
+        acc: { exact: 100 },
+        afk: { max: 5 },
+        time: { min: 60 * 60 },
       },
     },
   },
@@ -1008,6 +1026,20 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "speed",
     description:
       "Type a b c d e f g h i j k l m n o p q r s t u v w x y z in LESS than 3.37 seconds.",
+    settings: {
+      type: "customText",
+      parameters: {
+        text: "a b c d e f g h i j k l m n o p q r s t u v w x y z",
+        mode: "repeat",
+        limitMode: "word",
+        limit: 26,
+        isPipeDelimiter: false,
+      },
+      requirements: {
+        time: { max: 3.36 },
+        acc: { exact: 100 },
+      },
+    },
   },
   blazeIt: {
     display: "Blaze It",
@@ -1015,6 +1047,16 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 110,
     category: "speed",
     description: "Achieve 420 WPM (can be rounded) by typing weed.",
+    settings: {
+      type: "customText",
+      parameters: {
+        text: "weed",
+        mode: "random",
+        limit: 1,
+        limitMode: "word",
+        isPipeDelimiter: false,
+      },
+    },
   },
   burstMaster: {
     display: "Burst Master",
@@ -1022,6 +1064,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 791,
     category: "speed",
     description: "Achieve 200+ WPM on the words 10 mode.",
+    settings: {
+      type: "customWords",
+      parameters: { words: 10 },
+      requirements: { wpm: { min: 200 } },
+    },
   },
   burstGod: {
     display: "Burst God",
@@ -1029,6 +1076,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 186,
     category: "speed",
     description: "Achieve 250+ WPM on the words 10 mode.",
+    settings: {
+      type: "customWords",
+      parameters: { words: 10 },
+      requirements: { wpm: { min: 250 } },
+    },
   },
   shotgun: {
     display: "Shotgun",
@@ -1036,6 +1088,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 39,
     category: "speed",
     description: "Achieve 300+ WPM on the words 10 mode.",
+    settings: {
+      type: "customWords",
+      parameters: { words: 10 },
+      requirements: { wpm: { min: 300 } },
+    },
   },
   nuke: {
     display: "Nuke",
@@ -1043,6 +1100,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 11,
     category: "speed",
     description: "Achieve 350+ WPM on the words 10 mode.",
+    settings: {
+      type: "customWords",
+      parameters: { words: 10 },
+      requirements: { wpm: { min: 350 } },
+    },
   },
   orbitalCannon: {
     display: "Orbital Cannon",
@@ -1050,6 +1112,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 2,
     category: "speed",
     description: "Achieve 400+ WPM on the words 10 mode.",
+    settings: {
+      type: "customWords",
+      parameters: { words: 10 },
+      requirements: { wpm: { min: 400 } },
+    },
   },
   marathonSprinter: {
     display: "Marathon Sprinter",
@@ -1057,6 +1124,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 5,
     category: "speed",
     description: "Achieve 200+ WPM on a one-hour test.",
+    settings: {
+      type: "customTime",
+      parameters: { time: 60 * 60 },
+      requirements: { wpm: { min: 200 } },
+    },
   },
   flawless: {
     display: "Flawless",
@@ -1073,14 +1145,22 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "accuracy",
     description:
       "Achieve 100% accuracy in a 2-minute test under specified settings.",
+    settings: {
+      type: "customTime",
+      parameters: { time: 2 * 60 },
+      requirements: {
+        config: {
+          difficulty: "normal",
+          blindMode: true,
+          caretStyle: "off",
+          highlightMode: "off",
+          tapeMode: "off",
+          minAcc: "off",
+        },
+      },
+    },
   },
-  goldenHands: {
-    display: "Golden Hands",
-    discordRoleId: "851096860969795684",
-    initialCount: 2,
-    category: "accuracy",
-    description: "Complete a 1-hour Master mode test.",
-  },
+
   fingerBlaster: {
     display: "Finger Blaster",
     discordRoleId: "787509606992969728",
@@ -1095,6 +1175,11 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     initialCount: 41,
     category: "other",
     description: "Complete a one-hour test using tape mode and letter mode.",
+    settings: {
+      type: "customTime",
+      parameters: { time: 1 * 60 },
+      requirements: { config: { tapeMode: "letter" } },
+    },
   },
   stickman: {
     display: "stickman",
