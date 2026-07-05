@@ -6,7 +6,6 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { getSettingsSearch } from "../../states/settings-search";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -19,8 +18,7 @@ export type SettingProps = {
   inputs?: JSXElement;
   fullWidthInputs?: JSXElement;
   breakpoints?: "none" | "normal" | "narrow";
-  // extra text (e.g. option labels) the search filter also matches against
-  searchTerms?: string;
+  class?: string;
 } & ParentProps &
   (
     | {
@@ -48,27 +46,13 @@ export type SettingProps = {
 
 export function Setting(props: SettingProps): JSXElement {
   const breakpoints = () => props.breakpoints ?? "normal";
-  const matchesSearch = (): boolean => {
-    const query = getSettingsSearch().trim().toLowerCase();
-    if (query === "") return true;
-    const haystack = [
-      props.title,
-      typeof props.description === "string" ? props.description : "",
-      props.searchTerms ?? "",
-    ]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(query);
-  };
   return (
     <div
       class={cn(
         "group grid gap-2",
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
-        // hide instead of unmounting so typing in the search doesn't
-        // remount every setting on each keypress
-        !matchesSearch() && "hidden",
+        props.class,
       )}
       {...("key" in props && props.key !== undefined
         ? { "data-setting-key": props.key }

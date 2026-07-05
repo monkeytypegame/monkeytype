@@ -41,7 +41,7 @@ import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../../../common/Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
   const b1 = hexToHSL(a.bg);
@@ -254,7 +254,7 @@ export function Theme(): JSXElement {
   );
 
   return (
-    <Setting
+    <SearchableSetting
       key="theme"
       title={configMetadata.theme.displayString ?? "theme"}
       fa={configMetadata.theme.fa}
