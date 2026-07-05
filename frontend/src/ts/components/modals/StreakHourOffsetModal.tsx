@@ -111,6 +111,7 @@ export function StreakHourOffsetModal() {
                   min={-11}
                   max={12}
                   step={0.5}
+                  alwaysShowFieldIndicator={true}
                 />
                 <Button
                   fa={{ icon: "fa-chevron-right" }}
