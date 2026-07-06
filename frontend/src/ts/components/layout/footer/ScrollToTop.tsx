@@ -5,12 +5,25 @@ import { Fa } from "../../common/Fa";
 
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
+  const [scrolling, setScrolling] = createSignal(false);
 
   const handleScroll = (): void => {
-    if (getActivePage() === "test") return;
-
+    if (getActivePage() === "test" || scrolling()) return;
     const scroll = window.scrollY;
     setVisible(scroll > 100);
+  };
+
+  const scrollUp = async (): Promise<void> => {
+    const scrollEnded = new Promise<void>((resolve) => {
+      setTimeout(resolve, 1000);
+      if (window.scrollY === 0) {
+        resolve();
+        return;
+      }
+      window.addEventListener("scrollend", () => resolve(), { once: true });
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    await scrollEnded;
   };
 
   onMount(() => {
@@ -35,12 +48,11 @@ export function ScrollToTop(): JSXElement {
           "opacity-0": getActivePage() === "test" || !visible(),
           "pointer-events-none": getActivePage() === "test" || !visible(),
         }}
-        onClick={() => {
+        onClick={async () => {
           setVisible(false);
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
+          setScrolling(true);
+          await scrollUp();
+          setScrolling(false);
         }}
       >
         <Fa icon="fa-angle-double-up" />
