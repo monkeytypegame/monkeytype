@@ -1,0 +1,52 @@
+[data-nav-item="test"] {
+  color: #5ef1ff;
+  &:hover {
+    color: color-mix(in srgb, #5ef1ff 75%, white 25%);
+  }
+}
+
+[data-nav-item="leaderboards"] {
+  color: #f1ff5e;
+  &:hover {
+    color: color-mix(in srgb, #f1ff5e 75%, white 25%);
+  }
+}
+
+[data-nav-item="about"] {
+  color: #5eff6c;
+  &:hover {
+    color: color-mix(in srgb, #5eff6c 75%, white 25%);
+  }
+}
+
+[data-nav-item="settings"] {
+  color: #bd5eff;
+  &:hover {
+    color: color-mix(in srgb, #bd5eff 75%, white 25%);
+  }
+}
+
+[data-nav-item="account"] {
+  --themable-button-text: #5ea1ff;
+  &:hover {
+    --themable-button-text: color-mix(
+      in srgb,
+      var(--themable-button-text),
+      white 25%
+    );
+  }
+}
+
+[data-nav-item="alerts"] {
+  color: #ffbd5e;
+  &:hover {
+    color: color-mix(in srgb, #ffbd5e 75%, white 25%);
+  }
+}
+
+[data-nav-item="login"] {
+  color: #ff5ea0;
+  &:hover {
+    color: color-mix(in srgb, #ff5ea0 75%, white 25%);
+  }
+}
