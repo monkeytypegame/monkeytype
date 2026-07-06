@@ -96,10 +96,11 @@ export function SettingsPage(): JSXElement {
             <Funbox />
             <CustomLayoutfluid />
             <CustomPolyglot />
-            <Setting
+            <SearchableSetting
               key="fingerTraining"
               title="finger training"
               description="Practice with words that disproportionately exercise the fingers you pick. Your usual test settings come back when you stop training."
+              extraSearchKeywords="touch typing practice drill pinky"
               fa={{
                 icon: "fa-hand-paper",
               }}
