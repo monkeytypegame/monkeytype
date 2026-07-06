@@ -11,6 +11,7 @@
   - [Prerequisites](#prerequisites)
   - [Quickstart](#quickstart)
     - [Hosting over the network (HTTPS)](#hosting-over-the-network-https)
+  - [Security](#security)
   - [Account System](#account-system)
     - [Setup Firebase](#setup-firebase)
     - [Update backend configuration](#update-backend-configuration)
