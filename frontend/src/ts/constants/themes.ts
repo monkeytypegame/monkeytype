@@ -2335,6 +2335,19 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulErrorExtra: "#ff5ef1",
     hasCss: true,
   },
+  cyberdream_light: {
+    bg: "#ffffff",
+    caret: "#008c99",
+    main: "#008c99",
+    sub: "#7b8496",
+    subAlt: "#eaeaea",
+    text: "#16181a",
+    error: "#d11500",
+    errorExtra: "#920f00",
+    colorfulError: "#f40064",
+    colorfulErrorExtra: "#d100bf",
+    hasCss: true,
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
