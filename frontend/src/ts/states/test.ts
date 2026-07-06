@@ -1,5 +1,4 @@
 import { createSignal, createEffect, createMemo } from "solid-js";
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { getConfig } from "../config/store";
 
 import { canQuickRestart } from "../utils/quick-restart";
@@ -8,6 +7,7 @@ import { getActivePage, getCustomTextIndicator } from "./core";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { Challenge } from "@monkeytype/challenges";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
