@@ -7,11 +7,11 @@ import { toggleFunbox } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function Funbox(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="funbox"
       title="funbox"
       description={configMetadata.funbox.description}
