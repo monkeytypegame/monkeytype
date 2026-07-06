@@ -183,9 +183,7 @@ function getColumns({
         const completedTests = info.getValue<number | undefined>();
         const startedTests = info.row.original.startedTests;
 
-        return completedTests === undefined || startedTests === undefined
-          ? "-"
-          : `${completedTests}/${startedTests}`;
+        return `${completedTests ?? 0}/${startedTests ?? 0}`;
       },
       meta: {
         breakpoint: "lg",
