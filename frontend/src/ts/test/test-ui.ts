@@ -2069,4 +2069,19 @@ configEvent.subscribe(({ key, newValue }) => {
   if (["tapeMode", "tapeMargin"].includes(key)) {
     updateLiveStatsMargin();
   }
+if (key === "language") {
+    if (newValue === "sindhi") {
+      // Apply Sindhi-specific CSS
+      qs("#words .word")?.setStyle({
+        letterSpacing: "normal",
+        fontFamily: "'Noto Sans Arabic', 'Lateef', 'Segoe UI', sans-serif",
+      });
+    } else {
+      // Reset styles for other languages
+      qs("#words .word")?.setStyle({
+        letterSpacing: "",
+        fontFamily: "",
+      });
+    }
+  }
 });
