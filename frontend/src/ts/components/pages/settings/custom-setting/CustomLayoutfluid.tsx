@@ -6,12 +6,12 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
-import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomLayoutfluid(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="customLayoutfluid"
       title="custom layoutfluid"
       description={configMetadata.customLayoutfluid.description}
