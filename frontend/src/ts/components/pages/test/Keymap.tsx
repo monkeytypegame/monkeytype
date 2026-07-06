@@ -60,17 +60,16 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const showFirstRow = createMemo(
     () =>
       (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
-      getConfig.keymapLayoutStyle === "full" ||
-      getConfig.keymapLayoutStyle === "minimal_numrow" ||
-      (getConfig.keymapLayoutStyle === "minimal_layout" &&
-        props.layoutData.keymapShowTopRow),
+      getConfig.keymapKeys === "full" ||
+      getConfig.keymapKeys === "minimal_numrow" ||
+      (getConfig.keymapKeys === "minimal" && props.layoutData.keymapShowTopRow),
   );
 
   const keyboardDef = createMemo(() =>
     convertLayoutToKeymap(props.layoutData, {
       keymapStyle: getConfig.keymapStyle,
       showAllKeys:
-        getConfig.keymapLayoutStyle === "full" ||
+        getConfig.keymapKeys === "full" ||
         props.layoutData.matrixShowRightColumn === true,
     }),
   );

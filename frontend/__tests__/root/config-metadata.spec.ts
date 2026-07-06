@@ -347,7 +347,7 @@ describe("ConfigMeta", () => {
           expected: { keymapMode: "static" },
         },
       ],
-      keymapLayoutStyle: [
+      keymapKeys: [
         {
           value: "minimal_numrow",
           given: { keymapMode: "react" },

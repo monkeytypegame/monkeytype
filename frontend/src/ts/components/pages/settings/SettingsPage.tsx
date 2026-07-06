@@ -169,7 +169,7 @@ export function SettingsPage(): JSXElement {
               <KeymapLayout />
               <SearchableAutoSetting key="keymapStyle" wide />
               <SearchableAutoSetting key="keymapLegendStyle" wide />
-              <SearchableAutoSetting key="keymapLayoutStyle" wide />
+              <SearchableAutoSetting key="keymapKeys" wide />
               <KeymapSize />
             </Show>
           </Section>

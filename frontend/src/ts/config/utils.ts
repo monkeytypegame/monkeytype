@@ -222,13 +222,13 @@ function replaceLegacyValues(
   if ("keymapShowTopRow" in configObj) {
     switch (configObj.keymapShowTopRow) {
       case "never":
-        configObj.keymapLayoutStyle = "minimal";
+        configObj.keymapKeys = "minimal";
         break;
       case "always":
-        configObj.keymapLayoutStyle = "minimal_numrow";
+        configObj.keymapKeys = "minimal_numrow";
         break;
       case "layout":
-        configObj.keymapLayoutStyle = "minimal_layout";
+        configObj.keymapKeys = "minimal";
         break;
     }
     delete configObj.keymapShowTopRow;

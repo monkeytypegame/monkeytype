@@ -669,7 +669,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       afterExec: () => TestLogic.restart(),
     },
   },
-  keymapLayoutStyle: {
+  keymapKeys: {
     subgroup: {
       options: "fromSchema",
       display: replaceUnderscoresWithSpaces,

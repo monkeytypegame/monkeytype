@@ -166,7 +166,7 @@ export const commands: CommandsSubgroup = {
       "keymapLegendStyle",
       "keymapSize",
       "keymapLayout",
-      "keymapLayoutStyle",
+      "keymapKeys",
     ),
 
     //theme
