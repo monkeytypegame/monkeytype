@@ -1,14 +1,14 @@
 import type {
   Config as ConfigSchema,
   ConfigValue,
-  PartialConfig,
   FunboxName,
+  PartialConfig,
 } from "@monkeytype/schemas/configs";
-import { sanitize } from "../utils/sanitize";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { getDefaultConfig } from "../constants/default-config";
-import { Config } from "./store";
 import { typedKeys } from "@monkeytype/util/objects";
+import { getDefaultConfig } from "../constants/default-config";
+import { sanitize } from "../utils/sanitize";
+import { Config } from "./store";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
@@ -219,7 +219,7 @@ function replaceLegacyValues(
     }
   }
 
-  if ("keymapShowTopRow" in configObj) {
+  if ("keymapShowTopRow" in configObj && configObj.keymapKeys === undefined) {
     switch (configObj.keymapShowTopRow) {
       case "never":
         configObj.keymapKeys = "minimal";
