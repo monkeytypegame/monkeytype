@@ -688,6 +688,12 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
     block: elementHeight < windowHeight ? "center" : "start",
   });
 }
+export function scrollToTop(): void {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
 
 export function formatTopPercentage(lbRank?: RankAndCount): string {
   if (lbRank === undefined) return "";
