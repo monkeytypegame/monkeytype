@@ -1,3 +1,4 @@
+import { QuoteTextSchema } from "@monkeytype/contracts/quotes";
 import { Language } from "@monkeytype/schemas/languages";
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
@@ -5,26 +6,28 @@ import { JSXElement } from "solid-js";
 import Ape from "../../ape";
 import { Config } from "../../config/store";
 import { LanguageGroupNames } from "../../constants/languages";
-import * as CaptchaController from "../../controllers/captcha-controller";
-import { useRef } from "../../hooks/useRef";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../../states/notifications";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Button } from "../common/Button";
+import { Captcha } from "../ui/form/Captcha";
 import { InputField } from "../ui/form/InputField";
 import { LabeledField } from "../ui/form/LabeledField";
-import { fieldMandatory } from "../ui/form/utils";
+import { SubmitButton } from "../ui/form/SubmitButton";
+import { TextareaField } from "../ui/form/TextareaField";
+import {
+  allFieldsMandatory,
+  fieldMandatory,
+  fromSchema,
+} from "../ui/form/utils";
 import SlimSelect from "../ui/SlimSelect";
 
 export function QuoteSubmitModal(): JSXElement {
-  const [captchaRef, captchaEl] = useRef<HTMLDivElement>();
-
   const languageOptions = LanguageGroupNames.filter(
     (g) => g !== "swiss_german",
   ).map((g) => ({
@@ -37,17 +40,16 @@ export function QuoteSubmitModal(): JSXElement {
       text: "",
       source: "",
       language: removeLanguageSize(Config.language) as string,
+      captcha: "",
     },
     onSubmit: async ({ value }) => {
-      const captcha = CaptchaController.getResponse("submitQuote");
-
       showLoaderBar();
       const response = await Ape.quotes.add({
         body: {
           text: value.text,
           source: value.source,
           language: value.language as Language,
-          captcha,
+          captcha: value.captcha,
         },
       });
       hideLoaderBar();
@@ -58,31 +60,27 @@ export function QuoteSubmitModal(): JSXElement {
       }
 
       showSuccessNotification("Quote submitted.");
-      CaptchaController.reset("submitQuote");
       hideModalAndClearChain("QuoteSubmit");
     },
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
     },
+    validators: {
+      onChange: allFieldsMandatory(),
+    },
   }));
 
   const handleAfterShow = (): void => {
-    const el = captchaEl();
-    if (el === undefined) return;
-    CaptchaController.render(el, "submitQuote");
     form.update({
       ...form.options,
       defaultValues: {
         text: "",
         source: "",
         language: removeLanguageSize(Config.language) as string,
+        captcha: "",
       },
     });
     form.reset();
-  };
-
-  const handleAfterHide = (): void => {
-    CaptchaController.reset("submitQuote");
   };
 
   return (
@@ -92,7 +90,6 @@ export function QuoteSubmitModal(): JSXElement {
       title="Submit a quote"
       focusFirstInput={true}
       afterShow={handleAfterShow}
-      afterHide={handleAfterHide}
     >
       <form
         class="grid gap-4"
@@ -122,18 +119,15 @@ export function QuoteSubmitModal(): JSXElement {
         </ul>
         <form.Field
           name="text"
-          validators={{ onChange: fieldMandatory<string>() }}
+          validators={{ onChange: fromSchema(QuoteTextSchema) }}
           children={(field) => (
             <LabeledField label="quote">
               <div class="relative">
-                <textarea
+                <TextareaField
+                  field={field}
                   class="bg-bg-secondary w-full rounded p-2 text-text"
-                  value={field().state.value}
-                  onInput={(e) => field().handleChange(e.currentTarget.value)}
-                  onBlur={() => field().handleBlur()}
                   autocomplete="off"
-                  dir="auto"
-                ></textarea>
+                />
                 <div
                   class={`absolute right-2 bottom-2 text-xs ${250 - field().state.value.length < 0 ? "text-error" : "text-sub"}`}
                 >
@@ -170,8 +164,11 @@ export function QuoteSubmitModal(): JSXElement {
             </LabeledField>
           )}
         />
-        <div ref={captchaRef}></div>
-        <Button type="submit" text="submit" />
+        <form.Field
+          name="captcha"
+          children={(field) => <Captcha field={field} />}
+        />
+        <SubmitButton form={form} text="submit" />
       </form>
     </AnimatedModal>
   );
