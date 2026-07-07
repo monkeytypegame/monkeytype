@@ -1,5 +1,6 @@
-import preview from "#.storybook/preview";
 import { Component, createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import {
   DataTable,
