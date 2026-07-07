@@ -71,6 +71,7 @@ import {
   getKeypressOverlap,
   getErrorCountHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
@@ -79,6 +80,7 @@ import {
   __testing as statsTesting,
   getCorrectedWordsHistory,
   getKeypressSpacing,
+  getMissedWords,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -90,9 +92,19 @@ import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
+import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
 
+// mirror the generator: each word carries a trailing space separator unless it
+// already ends with a newline, the nospace funbox is active, or it's the last
+// word (the final separator is stripped once all words are generated)
 function pushWords(...words: string[]): void {
-  words.forEach((word, i) => TestWords.push(word, i));
+  const nospace = isFunboxActiveWithProperty("nospace");
+  words.forEach((word, i) => {
+    const isLast = i === words.length - 1;
+    const withSeparator =
+      isLast || nospace || word.endsWith("\n") ? word : `${word} `;
+    TestWords.push(withSeparator, i);
+  });
 }
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
@@ -703,6 +715,51 @@ describe("stats.ts", () => {
     });
   });
 
+  describe("getIncompleteTestSeconds", () => {
+    // Guards the abandoned-test (restart) measurement: it must exclude idle
+    // time so a tab left open for hours doesn't leak into incompleteTestSeconds.
+    it("excludes idle time — only the typed span counts", () => {
+      // 60s elapsed, but typing only in the first 3 seconds, then idle
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("timer", 61000, timer("end", 60));
+
+      // duration 60s − 57 idle seconds = 3
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(3);
+    });
+
+    it("keeps the full duration when typing is continuous", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("input", 4200, input({ charIndex: 3 })); // second 4
+      logTestEvent("input", 5200, input({ charIndex: 4 })); // second 5
+      logTestEvent("timer", 6000, timer("end", 5));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(5);
+    });
+
+    it("returns 0 for an unterminated log (no timer end event)", () => {
+      // documents why the restart path must log a timer "end" first: with no
+      // boundaries getTestDurationMs is 0, so nothing leaks through
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input());
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
+    });
+
+    it("never goes negative", () => {
+      // pure-idle test: 0 typed seconds, all intervals AFK
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
+    });
+  });
+
   describe("getInputHistory", () => {
     it("treats abandoned word as empty when Firefox Ctrl+Backspace ate the sentinel", () => {
       // Firefox groups whitespace + non-word punctuation as one delete run.
@@ -1022,48 +1079,42 @@ describe("stats.ts", () => {
   });
 
   describe("getTargetWord", () => {
-    it("returns simulatedInput in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "anything", false),
-      ).toBe("anything");
-    });
-
-    it("returns word without trailing space when it ends with newline", () => {
-      pushWords("hello\n");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello\n");
-    });
-
-    it("appends trailing space for non-last word", () => {
+    it("returns word", () => {
       pushWords("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello ");
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe("hello");
+    });
+    it("returns for out-of-range", () => {
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe(undefined);
+    });
+  });
+
+  describe("getMissedWords", () => {
+    it("strips the commit separator but keeps a trailing tab", () => {
+      // word 0 is a code-mode-style word ending in a tab; pushWords appends the
+      // " " separator, so targetWords[0] is "foo\t " — the key must be "foo\t"
+      pushWords("foo\t", "bar");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
+
+      expect(getMissedWords(buildEventLog())).toEqual({ "foo\t": 1 });
     });
 
-    it("does not append trailing space for last word", () => {
-      pushWords("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
-      ).toBe("hello");
-    });
+    it("strips a trailing space separator", () => {
+      pushWords("hello", "world");
 
-    it("does not append trailing space when nospace funbox is active", () => {
-      pushWords("hello");
-      (Config as { funbox: string[] }).funbox = ["nospace"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
-    });
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
 
-    it("does not append trailing space when underscore_spaces funbox is active", () => {
-      pushWords("hello");
-      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
+      expect(getMissedWords(buildEventLog())).toEqual({ hello: 1 });
     });
   });
 
@@ -1776,7 +1827,7 @@ describe("stats.ts", () => {
       expect(result[1]).toEqual("xy");
     });
 
-    it("ignores the space that commits a word", () => {
+    it("keeps the space that commits a word", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
         "input",
@@ -1798,7 +1849,7 @@ describe("stats.ts", () => {
         1250,
         input({ charIndex: 3, wordIndex: 0, data: "t" }),
       );
-      // committing space — must not appear in the corrected word
+      // committing space — kept as the trailing separator of the corrected word
       logTestEvent(
         "input",
         1300,
@@ -1810,7 +1861,7 @@ describe("stats.ts", () => {
         }),
       );
 
-      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test "]);
     });
   });
 });

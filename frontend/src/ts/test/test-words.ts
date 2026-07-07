@@ -36,9 +36,9 @@ class Words {
         return {
           text,
           textWithCommit: text + word.commit,
+          commit: word.commit,
           display:
             text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
-          commit: word.commit,
           sectionIndex: word.sectionIndex,
         };
       } else {
@@ -49,7 +49,7 @@ class Words {
   getCurrent(): Word | undefined {
     return this.list[TestState.activeWordIndex];
   }
-  push(word: string, sectionIndex: number): void {
+  push(word: string, sectionIndex: number): Word {
     let commit: CommitChar = "";
     if (word.endsWith(" ")) {
       commit = " ";
@@ -58,19 +58,33 @@ class Words {
       commit = "\n";
       word = word.slice(0, -1);
     }
-    this.list.push({
+    const wordObj = {
       text: word,
       textWithCommit: word + commit,
       commit,
       display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
       sectionIndex,
-    });
+    };
+    this.list.push(wordObj);
     this.length = this.list.length;
+
+    return wordObj;
   }
 
   reset(): void {
     this.list = [];
     this.length = 0;
+  }
+
+  removeCommitCharacterFromLastWord(): void {
+    if (this.length === 0) return;
+    const lastWord = this.list[this.length - 1];
+    if (lastWord === undefined) return;
+    if (lastWord.commit === " " || lastWord.commit === "\n") {
+      lastWord.commit = "";
+      lastWord.textWithCommit = lastWord.text;
+      lastWord.display = lastWord.text;
+    }
   }
 }
 

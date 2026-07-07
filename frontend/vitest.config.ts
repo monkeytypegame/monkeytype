@@ -29,6 +29,7 @@ export const projects: UserWorkspaceConfig[] = [
         "__tests__/__harness__/mock-dom.ts",
         "__tests__/__harness__/mock-firebase.ts",
         "__tests__/__harness__/mock-env-config.ts",
+        "__tests__/__harness__/mock-static.ts",
       ],
     },
     plugins,

@@ -30,7 +30,12 @@ export type ModalId =
   | "AddPresetModal"
   | "EditPresetModal"
   | "EditProfile"
-  | "ViewApeKey";
+  | "ViewApeKey"
+  | "LastSignedOutResult"
+  | "StreakHourOffset"
+  | "GoogleSignup"
+  | "ForgotPassword"
+  | "UserReport";
 
 export type ModalVisibility = {
   visible: boolean;

@@ -1,4 +1,5 @@
-import { Command } from "../types";
+import { FontNameSchema } from "@monkeytype/schemas/fonts";
+import { Command, withValidation } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 
@@ -6,6 +7,7 @@ import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
 import { applyFontFamily } from "../../ui";
+
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
 if (fromMeta.subgroup) {
@@ -17,12 +19,15 @@ if (fromMeta.subgroup) {
     subgroup: {
       title: "Custom font...",
       list: [
-        {
+        withValidation({
           id: "customFontName",
           display: "Custom name...",
           icon: "fa-font",
           alias: "custom font name",
           input: true,
+          validation: {
+            schema: FontNameSchema,
+          },
           defaultValue: (): string => {
             return Config.fontFamily.replace(/_/g, " ");
           },
@@ -31,7 +36,7 @@ if (fromMeta.subgroup) {
             const fontName = input.replaceAll(/ /g, "_");
             setConfig("fontFamily", fontName);
           },
-        },
+        }),
         {
           id: "customLocalFont",
           display: "Local font...",

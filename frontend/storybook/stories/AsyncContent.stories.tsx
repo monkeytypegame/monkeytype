@@ -1,9 +1,10 @@
-import preview from "#.storybook/preview";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/solid-query";
+
+import preview from "#.storybook/preview";
 
 import AsyncContent from "../../src/ts/components/common/AsyncContent";
 

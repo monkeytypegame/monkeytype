@@ -11,8 +11,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
@@ -42,8 +40,10 @@ import {
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
+  setLastSignedOutResult,
   setResultVisible,
   setWordsHaveNewline,
+  setWordsHaveNumbers,
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
@@ -109,74 +109,20 @@ import {
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
   getDateBasedTestDurationMs,
   getInputHistory,
   getKeypressesPerSecond,
   getKeypressSpacing,
 } from "./events/stats";
-import {
-  getLiveCachedAccuracy,
-  getLiveCachedTestDurationMs,
-} from "./events/live-cache";
+import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
-
-export async function syncNotSignedInLastResult(uid: string): Promise<void> {
-  if (notSignedInLastResult === null) return;
-  setNotSignedInUidAndHash(uid);
-
-  const response = await Ape.results.add({
-    body: { result: notSignedInLastResult },
-  });
-  if (response.status !== 200) {
-    showErrorNotification(`Failed to save last result`, {
-      response,
-    });
-    return;
-  }
-
-  //TODO - this type cast was not needed before because we were using JSON cloning
-  // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
-  const result = structuredClone(
-    notSignedInLastResult,
-  ) as unknown as SnapshotResult<Mode>;
-
-  const dataToSave: DB.SaveLocalResultData = {
-    xp: response.body.data.xp,
-    streak: response.body.data.streak,
-    result,
-    isPb: response.body.data.isPb,
-  };
-
-  result._id = response.body.data.insertedId;
-  if (response.body.data.isPb) {
-    result.isPb = true;
-  }
-  DB.saveLocalResult(dataToSave);
-  clearNotSignedInResult();
-  showSuccessNotification(
-    `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
-  );
-}
-
-export let notSignedInLastResult: CompletedEvent | null = null;
-
-export function clearNotSignedInResult(): void {
-  notSignedInLastResult = null;
-}
-
-export function setNotSignedInUidAndHash(uid: string): void {
-  if (notSignedInLastResult === null) return;
-  notSignedInLastResult.uid = uid;
-  //@ts-expect-error really need to delete this
-  delete notSignedInLastResult.hash;
-  notSignedInLastResult.hash = objectHash(notSignedInLastResult);
-}
 
 export function startTest(now: number): boolean {
   if (PageTransition.get()) {
@@ -283,11 +229,13 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving) {
+      // Finalize the abandoned test before measuring it: logging the timer
+      // "end" event gives getAfkDuration its interval boundaries, so idle time
+      // is actually subtracted. Without it AFK is always 0 and the full
+      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+      TestTimer.clear(true);
       const liveEventLog = buildEventLog();
-      const testSeconds = getLiveCachedTestDurationMs(performance.now()) / 1000;
-      const afkseconds = getAfkDuration(liveEventLog);
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
+      const tt = getIncompleteTestSeconds(liveEventLog);
       const acc = Numbers.roundTo2(getLiveCachedAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
@@ -333,8 +281,7 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  ShiftTracker.reset();
-  AltTracker.reset();
+  resetModifierState();
   Caret.hide();
   TestState.setActive(false);
   Replay.pauseReplay();
@@ -587,7 +534,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestState.setWordsHaveNumbers(hasNumbers);
+  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -607,6 +554,10 @@ async function init(): Promise<boolean> {
       generatedWords[i] as string,
       generatedSectionIndexes[i] as number,
     );
+  }
+
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -629,31 +580,12 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", generatedWords);
+  console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
   return true;
-}
-
-export function areAllTestWordsGenerated(): boolean {
-  return (
-    (Config.mode === "words" &&
-      TestWords.words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      TestWords.words.length >= CustomText.getLimitValue() &&
-      CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
-      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
-      WordsGenerator.currentSection.length === 0 &&
-      CustomText.getLimitValue() !== 0)
-  );
 }
 
 //add word during the test
@@ -677,7 +609,7 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, enough words already");
     return;
   }
-  if (areAllTestWordsGenerated()) {
+  if (WordsGenerator.areAllWordsGenerated()) {
     console.debug("Not adding word, all words generated");
     return;
   }
@@ -706,8 +638,11 @@ export async function addWord(): Promise<void> {
           break;
         }
         wordCount++;
-        TestWords.words.push(word, i);
-        TestUI.addWord(word);
+        const newWord = TestWords.words.push(
+          WordsGenerator.appendCommitCharacter(word),
+          i,
+        );
+        TestUI.addWord(newWord.display);
       }
     }
   }
@@ -720,8 +655,11 @@ export async function addWord(): Promise<void> {
       TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
-    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-    TestUI.addWord(randomWord.word);
+    const newWord = TestWords.words.push(
+      randomWord.word,
+      randomWord.sectionIndex,
+    );
+    TestUI.addWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -731,6 +669,12 @@ export async function addWord(): Promise<void> {
         important: true,
       },
     );
+  }
+
+  // strip the trailing commit separator once the final word has been generated
+  // (covers the section and lazy paths)
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 }
 
@@ -1054,12 +998,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
-      const testSeconds = completedEvent.testDuration;
-      const afkseconds = completedEvent.afkDuration;
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
-      const acc = completedEvent.acc;
-      pushIncompleteTest({ acc, seconds: tt });
+      pushIncompleteTest({
+        acc: completedEvent.acc,
+        seconds: getIncompleteTestSeconds(eventLog),
+      });
     }
   }
 
@@ -1079,8 +1021,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
+      // compare against display.length (not textWithCommit.length): the input
+      // history holds the typed letters, not the committing space separator, so
+      // a space word is "complete" at text.length. display includes a newline
+      // commit, which is a required typed char.
       if (
-        lastWordInputLength < (TestWords.words.get(wordIndex)?.text.length ?? 0)
+        lastWordInputLength <
+        (TestWords.words.get(wordIndex)?.display.length ?? 0)
       ) {
         historyLength--;
       }
@@ -1142,7 +1089,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) {
       // if its valid save it for later
-      notSignedInLastResult = completedEvent;
+      setLastSignedOutResult(completedEvent);
     }
     dontSave = true;
   }
