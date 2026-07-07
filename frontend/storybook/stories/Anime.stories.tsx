@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { AnimationParams } from "animejs";
 import { Component, createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { Anime } from "../../src/ts/components/common/anime/Anime";
 

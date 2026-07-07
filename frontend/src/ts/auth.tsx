@@ -1,4 +1,5 @@
 import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
+import { typedKeys } from "@monkeytype/util/objects";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { FirebaseError } from "firebase/app";
 import {
@@ -47,7 +48,6 @@ import {
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { typedKeys } from "./utils/misc";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
 

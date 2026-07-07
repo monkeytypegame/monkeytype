@@ -60,12 +60,13 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import * as Arrays from "../utils/arrays";
 import { blendTwoHexColors } from "../utils/colors";
-import { typedKeys } from "../utils/misc";
+
 import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
 import { lastEventLog } from "../test/test-state";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
