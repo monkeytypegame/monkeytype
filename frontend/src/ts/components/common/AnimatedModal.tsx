@@ -334,6 +334,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           props.modalClass,
         )}
         ref={modalRef}
+        tabIndex={-1}
         onScroll={(e) => props.onScroll?.(e)}
       >
         <Show when={props.title !== undefined && props.title !== ""}>
