@@ -8,7 +8,9 @@ import {
   getFormatting,
   showCommandLineForConfig,
 } from "../../../../states/core";
+import { getTrainingFingers } from "../../../../states/finger-training";
 import { hotkeys } from "../../../../states/hotkeys";
+import { showModal } from "../../../../states/modals";
 import {
   getFocus,
   getLoadedChallenge,
@@ -20,6 +22,7 @@ import {
 } from "../../../../states/test";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
+import { FingerFullNames } from "../../../../utils/fingers";
 import {
   getLanguageDisplayString,
   replaceUnderscoresWithSpaces,
@@ -56,6 +59,7 @@ export function TestModesNotice() {
       <MinAcc />
       <MinBurst />
       <Funbox />
+      <FingerTrainingNotice />
       <ConfidenceMode />
       <StopOnError />
       <Layout />
@@ -317,6 +321,23 @@ function Funbox() {
       icon="fa-gamepad"
       openCommandline="funbox"
       text={funboxes()}
+    />
+  );
+}
+
+function FingerTrainingNotice() {
+  const fingers = createMemo(() => {
+    const active = getTrainingFingers();
+    if (active.length === 0) return undefined;
+    return active.map((finger) => FingerFullNames[finger]).join(", ");
+  });
+
+  return (
+    <Notice
+      when={fingers() !== undefined}
+      icon="fa-hand-paper"
+      onClick={() => showModal("FingerTraining")}
+      text={`training: ${fingers()}`}
     />
   );
 }

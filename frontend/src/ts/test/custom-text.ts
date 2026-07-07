@@ -131,6 +131,10 @@ export function getData(): CustomTextSettings {
   return customTextSettings.get();
 }
 
+export function setData(settings: CustomTextSettings): void {
+  customTextSettings.set(settings);
+}
+
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
     const customTextLong = getLocalStorageLong();

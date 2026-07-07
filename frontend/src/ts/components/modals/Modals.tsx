@@ -6,6 +6,7 @@ import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
+import { FingerTrainingModal } from "./FingerTrainingModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
@@ -42,6 +43,7 @@ export function Modals(): JSXElement {
       <ViewApeKeyModal />
       <LastSignedOutResultModal />
       <StreakHourOffsetModal />
+      <FingerTrainingModal />
     </>
   );
 }
