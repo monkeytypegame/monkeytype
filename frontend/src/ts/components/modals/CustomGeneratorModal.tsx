@@ -116,9 +116,9 @@ export function CustomGeneratorModal(props: {
       }
 
       const characters = input.split(/\s+/);
-      const minLength = value.minLength || 2;
-      const maxLength = value.maxLength || 5;
-      const wordCount = value.wordCount || 100;
+      const minLength = value.minLength ?? 2;
+      const maxLength = value.maxLength ?? 5;
+      const wordCount = value.wordCount ?? 100;
       const generatedWords: string[] = [];
 
       for (let i = 0; i < wordCount; i++) {

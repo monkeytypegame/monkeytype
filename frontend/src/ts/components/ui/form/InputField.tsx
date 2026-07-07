@@ -73,7 +73,8 @@ export function InputField(props: {
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === undefined
+            (props.field().state.value === undefined ||
+              props.field().state.value === "")
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -158,7 +159,6 @@ function getDateOptions(
 
 function convertValueToString(input: unknown | undefined): string {
   if (input === undefined || input === null) return "";
-  if (typeof input === "boolean") return input ? "true" : "false";
   if (typeof input === "number") {
     if (isFinite(input)) return input.toString();
     else return "";
@@ -171,9 +171,6 @@ function convertStringToValue<T extends unknown | undefined>(
   newValue: string,
 ): T | undefined {
   if (defaultValue === undefined || defaultValue === null) return newValue as T;
-  if (typeof defaultValue === "boolean") {
-    return (newValue === "true" || newValue === "1") as T;
-  }
   if (newValue === "") return undefined;
   if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
 
