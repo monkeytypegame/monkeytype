@@ -78,9 +78,6 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     <div
       data-ui-element="keymap"
       class="flex w-full flex-col items-center py-8 text-sm text-sub"
-      style={{
-        zoom: getConfig.keymapSize,
-      }}
     >
       <Show when={keyboardDef()} fallback={<div>Loading...</div>}>
         <KeyboardDefinitionRenderer
@@ -101,7 +98,18 @@ function KeyboardDefinitionRenderer(props: {
   flashState: Record<string, FlashEntry | undefined>;
 }) {
   return (
-    <div class="w-fit">
+    <div
+      class="w-fit xxs:zoom-(--kb-zoom-xxs) xs:zoom-(--kb-zoom-xs) sm:zoom-(--kb-zoom-sm) md:zoom-(--kb-zoom-md) lg:zoom-(--kb-zoom-lg) xl:zoom-(--kb-zoom-xl) 2xl:zoom-(--kb-zoom-2xl)"
+      style={{
+        "--kb-zoom-xxs": Math.min(getConfig.keymapSize, 0.5),
+        "--kb-zoom-xs": Math.min(getConfig.keymapSize, 0.7),
+        "--kb-zoom-sm": Math.min(getConfig.keymapSize, 1),
+        "--kb-zoom-md": Math.min(getConfig.keymapSize, 1.3),
+        "--kb-zoom-lg": Math.min(getConfig.keymapSize, 1.7),
+        "--kb-zoom-xl": Math.min(getConfig.keymapSize, 2.2),
+        "--kb-zoom-2xl": Math.min(getConfig.keymapSize, 2.9),
+      }}
+    >
       <For each={props.keyboardDef}>
         {(keys, rowNum) => (
           <Show when={rowNum() !== 0 || props.showFirstRow}>
