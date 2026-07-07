@@ -11,16 +11,7 @@ export function InputField(props: {
   field: Accessor<AnyFieldApi>;
   placeholder?: string;
   autocomplete?: string;
-  type?:
-    | "text"
-    | "textarea"
-    | "password"
-    | "email"
-    | "number"
-    | "range"
-    | "date"
-    | "datetime-local"
-    | "checkbox";
+  type?: string;
   disabled?: boolean;
   readOnly?: boolean;
   clickToSelect?: boolean;
@@ -81,7 +72,7 @@ export function InputField(props: {
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === ""
+            props.field().state.value === undefined
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -164,18 +155,22 @@ function getDateOptions(
 function convertValueToString(input: unknown | undefined): string {
   if (input === undefined || input === null) return "";
   if (typeof input === "boolean") return input ? "true" : "false";
-  if (typeof input === "number") return input.toString();
+  if (typeof input === "number") {
+    if (isFinite(input)) return input.toString();
+    else return "";
+  }
   return input as string;
 }
 
 function convertStringToValue<T extends unknown | undefined>(
   defaultValue: T,
   newValue: string,
-): T {
+): T | undefined {
   if (defaultValue === undefined || defaultValue === null) return newValue as T;
   if (typeof defaultValue === "boolean") {
     return (newValue === "true" || newValue === "1") as T;
   }
+  if (newValue === "") return undefined;
   if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
 
   return newValue as T;
