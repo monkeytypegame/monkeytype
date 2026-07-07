@@ -1,5 +1,6 @@
-import preview from "#.storybook/preview";
 import { Component } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { Balloon } from "../../src/ts/components/common/Balloon";
 

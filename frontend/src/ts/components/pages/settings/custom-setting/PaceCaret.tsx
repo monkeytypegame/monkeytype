@@ -5,15 +5,18 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement } from "solid-js";
 
-import { configMetadata } from "../../../../config/metadata";
+import {
+  configMetadata,
+  getOptionSearchKeywords,
+} from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function PaceCaret(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -36,10 +39,11 @@ export function PaceCaret(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="paceCaret"
       title={configMetadata.paceCaret.displayString ?? "pace caret"}
       fa={configMetadata.paceCaret.fa}
+      extraSearchKeywords={getOptionSearchKeywords("paceCaret")}
       description={configMetadata.paceCaret.description}
       inputs={
         <div class="grid w-full gap-2">

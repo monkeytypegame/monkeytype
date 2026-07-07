@@ -1,7 +1,6 @@
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import { randomElementFromArray } from "../utils/arrays";
-import { leftState, rightState } from "../test/shift-tracker";
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
 
@@ -18,6 +17,7 @@ import {
   SupportedOscillatorTypes,
   ValidNotes,
 } from "../constants/sounds";
+import { getModifierState } from "../states/modifiers";
 
 let howlerModulePromise: Promise<typeof import("howler")> | null = null;
 async function getHowlerModule(): Promise<typeof import("howler")> {
@@ -335,8 +335,8 @@ function playNote(options: {
   }
 
   const baseOctave = 3;
-  const octave =
-    baseOctave + (leftState || rightState || isCapsLockOn() ? 1 : 0);
+  const { shift } = getModifierState();
+  const octave = baseOctave + (shift || isCapsLockOn() ? 1 : 0);
   const currentFrequency = codeToNote[currentCode]?.(octave);
 
   const oscillatorNode = audioCtx.createOscillator();

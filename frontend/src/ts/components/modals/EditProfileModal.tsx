@@ -51,9 +51,9 @@ export function EditProfile() {
         bio: value.bio,
         keyboard: value.keyboard,
         socialProfiles: {
-          twitter: value.twitter || undefined,
-          github: value.github || undefined,
-          website: value.website || undefined,
+          twitter: value.twitter,
+          github: value.github,
+          website: value.website,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
         showChallengesOnPublicProfile: value.showActivityOnPublicProfile,

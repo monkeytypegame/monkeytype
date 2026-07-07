@@ -18,6 +18,7 @@ export type SettingProps = {
   inputs?: JSXElement;
   fullWidthInputs?: JSXElement;
   breakpoints?: "none" | "normal" | "narrow";
+  class?: string;
 } & ParentProps &
   (
     | {
@@ -51,6 +52,7 @@ export function Setting(props: SettingProps): JSXElement {
         "group grid gap-2",
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
+        props.class,
       )}
       {...("key" in props && props.key !== undefined
         ? { "data-setting-key": props.key }

@@ -11,8 +11,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
@@ -45,6 +43,7 @@ import {
   setLastSignedOutResult,
   setResultVisible,
   setWordsHaveNewline,
+  setWordsHaveNumbers,
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
@@ -120,6 +119,7 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
@@ -281,8 +281,7 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  ShiftTracker.reset();
-  AltTracker.reset();
+  resetModifierState();
   Caret.hide();
   TestState.setActive(false);
   Replay.pauseReplay();
@@ -535,7 +534,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestState.setWordsHaveNumbers(hasNumbers);
+  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
