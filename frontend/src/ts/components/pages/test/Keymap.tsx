@@ -99,7 +99,7 @@ function KeyboardDefinitionRenderer(props: {
 }) {
   return (
     <div
-      class="xxs:zoom-(--kb-zoom-xxs) xs:zoom-(--kb-zoom-xs) sm:zoom-(--kb-zoom-sm) md:zoom-(--kb-zoom-md) lg:zoom-(--kb-zoom-lg) xl:zoom-(--kb-zoom-xl) 2xl:zoom-(--kb-zoom-2xl) w-fit"
+      class="w-fit xxs:zoom-(--kb-zoom-xxs) xs:zoom-(--kb-zoom-xs) sm:zoom-(--kb-zoom-sm) md:zoom-(--kb-zoom-md) lg:zoom-(--kb-zoom-lg) xl:zoom-(--kb-zoom-xl) 2xl:zoom-(--kb-zoom-2xl)"
       style={{
         "--kb-zoom-xxs": Math.min(getConfig.keymapSize, 0.5),
         "--kb-zoom-xs": Math.min(getConfig.keymapSize, 0.7),
