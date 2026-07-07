@@ -472,7 +472,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();

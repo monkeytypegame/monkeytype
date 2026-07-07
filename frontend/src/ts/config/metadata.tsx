@@ -995,10 +995,10 @@ export const configMetadata: ConfigMetadataObject = {
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
-  keymapShowTopRow: {
-    key: "keymapShowTopRow",
+  keymapKeys: {
+    key: "keymapKeys",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap show top row",
+    displayString: "keymap keys",
     changeRequiresRestart: false,
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>

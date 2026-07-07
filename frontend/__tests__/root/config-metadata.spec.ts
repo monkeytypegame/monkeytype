@@ -347,14 +347,14 @@ describe("ConfigMeta", () => {
           expected: { keymapMode: "static" },
         },
       ],
-      keymapShowTopRow: [
+      keymapKeys: [
         {
-          value: "always",
+          value: "minimal_numrow",
           given: { keymapMode: "react" },
           expected: { keymapMode: "react" },
         },
         {
-          value: "always",
+          value: "minimal_numrow",
           given: { keymapMode: "off" },
           expected: { keymapMode: "static" },
         },
