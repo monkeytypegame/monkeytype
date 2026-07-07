@@ -6,9 +6,9 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MaxLineWidth(): JSXElement {
   const { component: SavedIndicator, flash } = useSavedIndicator();
@@ -27,7 +27,7 @@ export function MaxLineWidth(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="maxLineWidth"
       title={configMetadata.maxLineWidth.displayString ?? "max line width"}
       fa={configMetadata.maxLineWidth.fa}

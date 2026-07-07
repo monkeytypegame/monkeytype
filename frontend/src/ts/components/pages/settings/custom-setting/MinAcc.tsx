@@ -8,9 +8,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MinAcc(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -33,7 +33,7 @@ export function MinAcc(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="minAcc"
       title={configMetadata.minAcc.displayString ?? "min accuracy"}
       fa={configMetadata.minAcc.fa}

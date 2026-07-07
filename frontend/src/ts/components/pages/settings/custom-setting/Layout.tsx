@@ -5,12 +5,12 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
-import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function Layout(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="layout"
       title="layout"
       description={configMetadata.layout.description}

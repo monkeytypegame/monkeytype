@@ -3,12 +3,12 @@ import { JSXElement } from "solid-js";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import { Setting } from "../../../common/Setting";
 import { Slider } from "../../../common/Slider";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function KeymapSize(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="keymapSize"
       title="keymap size"
       description={configMetadata.keymapSize.description}
