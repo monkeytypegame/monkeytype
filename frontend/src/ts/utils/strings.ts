@@ -320,6 +320,13 @@ export function areCharactersVisuallyEqual(
     return true;
   }
 
+  // Treat any Unicode space as equivalent to the regular U+0020 separator.
+  // This lets IME-produced spaces (e.g. U+3000) match stored word separators.
+  // The U+0020 guard short-circuits the common non-space case before calling isSpace.
+  if ((char1 === " " || char2 === " ") && isSpace(char1) && isSpace(char2)) {
+    return true;
+  }
+
   // Check each equivalence map
   for (const map of CHAR_EQUIVALENCE_SETS) {
     if (map.has(char1) && map.has(char2)) {
@@ -357,6 +364,25 @@ export function toHex(buffer: ArrayBuffer): string {
   return hashHex;
 }
 
+// hoisted to module scope so isSpace doesn't allocate a Set on every call
+// (it runs per keystroke via areCharactersVisuallyEqual)
+const SPACE_CODE_POINTS = new Set([
+  0x0020, // Regular space (spacebar)
+  0x2002, // En space (Option+Space on Mac)
+  0x2003, // Em space (Option+Shift+Space on Mac)
+  0x2009, // Thin space (various input methods)
+  0x3000, // Ideographic space (CJK input methods)
+  0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
+  0x1680, // Ogham space mark (rare, but included for completeness)
+  0x202f, // Narrow no-break space (various input methods)
+  0xfeff, // Zero width no-break space (various input methods)
+  0x2007, // Figure space (various input methods)
+  0x2008, // Punctuation space (various input methods)
+  0x2004, // Three-per-em space (various input methods)
+  0x200a, // Hair space (various input methods)
+  0x200b, // Zero width space (various input methods)
+]);
+
 /**
  * Checks if a character is a directly typable space character on a standard keyboard.
  * These are space characters that can be typed without special input methods or copy-pasting.
@@ -369,24 +395,7 @@ export function isSpace(char: string): boolean {
   const codePoint = char.codePointAt(0);
   if (codePoint === undefined) return false;
 
-  const spaces = new Set([
-    0x0020, // Regular space (spacebar)
-    0x2002, // En space (Option+Space on Mac)
-    0x2003, // Em space (Option+Shift+Space on Mac)
-    0x2009, // Thin space (various input methods)
-    0x3000, // Ideographic space (CJK input methods)
-    0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
-    0x1680, // Ogham space mark (rare, but included for completeness)
-    0x202f, // Narrow no-break space (various input methods)
-    0xfeff, // Zero width no-break space (various input methods)
-    0x2007, // Figure space (various input methods)
-    0x2008, // Punctuation space (various input methods)
-    0x2004, // Three-per-em space (various input methods)
-    0x200a, // Hair space (various input methods)
-    0x200b, // Zero width space (various input methods)
-  ]);
-
-  return spaces.has(codePoint);
+  return SPACE_CODE_POINTS.has(codePoint);
 }
 
 export function replaceUnderscoresWithSpaces(text: string): string {
