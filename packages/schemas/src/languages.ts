@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KnownFontNameSchema } from "./fonts";
 import { customEnumErrorHandler } from "./util";
 
 export const LanguageSchema = z.enum(
@@ -469,6 +470,7 @@ export const LanguageObjectSchema = z
       .array(z.tuple([z.string().min(1), z.string().min(1)]))
       .optional(),
     bcp47: z.string().optional(),
+    fallbackFont: KnownFontNameSchema.optional(),
     originalPunctuation: z.boolean().optional(),
   })
   .strict();

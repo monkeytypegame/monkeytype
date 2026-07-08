@@ -17,6 +17,7 @@ import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
+import { getLanguage } from "./utils/json-data";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -48,10 +49,17 @@ export async function applyFontFamily(): Promise<void> {
       }`);
   }
 
-  document.documentElement.style.setProperty(
-    "--font",
-    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
-  );
+  const fallbackFont = (await getLanguage(Config.language))?.fallbackFont;
+
+  const fonts = [
+    font,
+    fallbackFont !== undefined ? `"${fallbackFont}"` : undefined,
+    '"Roboto Mono"',
+    '"Vazirharf"',
+    "monospace",
+  ].filter((it) => it !== undefined);
+
+  document.documentElement.style.setProperty("--font", fonts.join(","));
 }
 
 export function clearFontPreview(): void {
@@ -135,7 +143,7 @@ createEffect(() => {
 });
 
 configEvent.subscribe(async ({ key }) => {
-  if (key === "fontFamily") {
+  if (key === "fontFamily" || key === "language") {
     await applyFontFamily();
   }
 });
