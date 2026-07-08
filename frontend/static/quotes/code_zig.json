@@ -16,7 +16,7 @@
      {
       "text": "pub fn isLeapYear(year: u32) bool {\n\treturn year % 4 == 0 and (year % 100 != 0 or year % 400 == 0);\n}",
       "source": "https://exercism.org/tracks/zig/exercises/leap",
-      "length": 102,
+      "length": 101,
       "id": 2
     },
     {
@@ -28,7 +28,7 @@
      {
       "text": "const std = @import(\"std\");\n\ntest \"expect this to fail\" {\n\ttry std.testing.expect(false);\n}\n\ntest \"expect this to succeed\" {\n\ttry std.testing.expect(true);\n}\n\ntest \"expect this to be skipped\" {\n\treturn error.SkipZigTest;\n}",
       "source": "https://ziglang.org/documentation/master/#Zig-Test",
-      "length": 213,
+      "length": 222,
       "id": 4
     },
      {
