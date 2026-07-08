@@ -161,7 +161,7 @@ async function waitForInputLayoutReady(): Promise<void> {
   if (inputLayoutObject.state === "ready") return;
 
   if (inputLayoutObject.state === "errored") {
-    throw new Error("Failed to load keymap layout");
+    throw new Error("Failed to load input layout");
   }
 }
 
@@ -172,7 +172,7 @@ createEffect(() => {
     layoutPromise.resolve();
   }
   if (state === "errored") {
-    layoutPromise.reject("failed to fetch input layout");
+    layoutPromise.reject(new Error("failed to fetch input layout"));
   }
 });
 
@@ -184,7 +184,7 @@ export const __nonReactive = {
     await waitForInputLayoutReady();
     const result = inputLayoutObject();
     if (result === undefined) {
-      throw new Error("Failed to load keymap layout");
+      throw new Error("Failed to load input layout");
     }
     return result;
   },
