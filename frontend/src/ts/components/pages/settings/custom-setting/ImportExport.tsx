@@ -9,11 +9,11 @@ import {
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function ImportExport(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="importExport"
       title="import/export settings"
       description="Import or export the settings as JSON."

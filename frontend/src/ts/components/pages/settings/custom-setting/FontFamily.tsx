@@ -3,7 +3,10 @@ import { FontNameSchema } from "@monkeytype/schemas/fonts";
 import { createResource, For, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
-import { configMetadata } from "../../../../config/metadata";
+import {
+  configMetadata,
+  getOptionSearchKeywords,
+} from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
@@ -14,7 +17,7 @@ import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
-import { Setting } from "../../../common/Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function FontFamily(): JSXElement {
   const [hasLocalFont, { refetch }] = createResource(async () =>
@@ -35,10 +38,11 @@ export function FontFamily(): JSXElement {
   };
 
   return (
-    <Setting
+    <SearchableSetting
       key="fontFamily"
       title={configMetadata.fontFamily.displayString ?? "font family"}
       fa={configMetadata.fontFamily.fa}
+      extraSearchKeywords={getOptionSearchKeywords("fontFamily")}
       description={
         <>
           {configMetadata.fontFamily.description}

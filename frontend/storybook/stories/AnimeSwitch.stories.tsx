@@ -1,5 +1,6 @@
-import preview from "#.storybook/preview";
 import { Component, createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { AnimeMatch } from "../../src/ts/components/common/anime/AnimeMatch";
 import { AnimeSwitch } from "../../src/ts/components/common/anime/AnimeSwitch";
