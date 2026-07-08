@@ -17,7 +17,7 @@
       "text": "pub fn isLeapYear(year: u32) bool {\n\treturn year % 4 == 0 and (year % 100 != 0 or year % 400 == 0);\n}",
       "source": "https://exercism.org/tracks/zig/exercises/leap",
       "length": 102,
-      "id": ,
+      "id": 2,
     },
      {
       "text": "const print = @import(\"std\").debug.print;\n\npub fn main() void {\n\tvar x: u32 = undefined;\n\tvar y: u32 = undefined;\n\tvar z: u32 = undefined;\n\n\tconst tuple = .{ 1, 2, 3 };\n\n\tx, y, z = tuple;\n\n\tprint(\"tuple: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n\n\tconst array = [_]u32{ 4, 5, 6 };\n\n\tx, y, z = array;\n\n\tprint(\"array: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n\n\tconst vector: @Vector(3, u32) = .{ 7, 8, 9 };\n\n\tx, y, z = vector;\n\n\tprint(\"vector: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n}",
