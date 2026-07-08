@@ -7,13 +7,13 @@
     [601, 9999]
   ],
   "quotes": [
-     {
+    {
       "text": "const std = @import(\"std\");\n\npub fn main() !void {\n\tstd.debug.print(\"Hello, World!\\n\", .{});\n}",
       "source": "https://zig.guide/getting-started/hello-world",
       "length": 94,
       "id": 1
     },
-     {
+    {
       "text": "pub fn isLeapYear(year: u32) bool {\n\treturn year % 4 == 0 and (year % 100 != 0 or year % 400 == 0);\n}",
       "source": "https://exercism.org/tracks/zig/exercises/leap",
       "length": 101,
@@ -25,13 +25,13 @@
       "length": 480,
       "id": 3
     },
-     {
+    {
       "text": "const std = @import(\"std\");\n\ntest \"expect this to fail\" {\n\ttry std.testing.expect(false);\n}\n\ntest \"expect this to succeed\" {\n\ttry std.testing.expect(true);\n}\n\ntest \"expect this to be skipped\" {\n\treturn error.SkipZigTest;\n}",
       "source": "https://ziglang.org/documentation/master/#Zig-Test",
       "length": 222,
       "id": 4
     },
-     {
+    {
       "text": "pub const ComputationError = error{IllegalArgument};\n\npub fn steps(number: usize) anyerror!usize {\n\tif (number <= 0) {\n\t\treturn error.IllegalArgument;\n\t}\n\n\tif (number == 1) {\n\t\treturn 0;\n\t}\n\n\treturn try steps(switch (number % 2) {\n\t\t0 => number / 2,\n\t\t1 => number * 3 + 1,\n\t\telse => unreachable,\n\t}) + 1;\n}",
       "source": "https://exercism.org/tracks/zig/exercises/collatz-conjecture",
       "length": 306,
