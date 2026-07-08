@@ -106,27 +106,6 @@ export const [keymapLayoutObject] = createResource(
   },
 );
 
-const getInputLayout = createMemo<{
-  layout: string;
-  isMirrored: boolean;
-}>(() => {
-  return {
-    layout: resolveLayoutName(getConfig.layout),
-    isMirrored: hasFunboxMirrored(getConfig.funbox),
-  };
-});
-
-export const [inputLayoutObject] = createResource(
-  getInputLayout,
-  async (layout) => {
-    const result = await getLayout(layout.layout);
-    if (layout.isMirrored) {
-      return mirrorLayoutKeys(result);
-    }
-    return result;
-  },
-);
-
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
   string | undefined
 >(undefined);
@@ -155,6 +134,23 @@ keymapEvent.useListener(({ mode, key, correct }) => {
 });
 
 let layoutPromise = promiseWithResolvers();
+const getInputLayout = createMemo<{
+  layout: string;
+  isMirrored: boolean;
+}>(() => {
+  return {
+    layout: resolveLayoutName(getConfig.layout),
+    isMirrored: hasFunboxMirrored(getConfig.funbox),
+  };
+});
+
+const [inputLayoutObject] = createResource(getInputLayout, async (layout) => {
+  const result = await getLayout(layout.layout);
+  if (layout.isMirrored) {
+    return mirrorLayoutKeys(result);
+  }
+  return result;
+});
 
 async function waitForInputLayoutReady(): Promise<void> {
   await layoutPromise.promise;
