@@ -7,5 +7,35 @@
     [601, 9999]
   ],
   "quotes": [
+     {
+      "text": "const std = @import(\"std\");\n\npub fn main() !void {\n\tstd.debug.print(\"Hello, World!\\n\", .{});\n}",
+      "source": "https://zig.guide/getting-started/hello-world",
+      "length": 94,
+      "id": 1
+    },
+     {
+      "text": "pub fn isLeapYear(year: u32) bool {\n\treturn year % 4 == 0 and (year % 100 != 0 or year % 400 == 0);\n}",
+      "source": "https://exercism.org/tracks/zig/exercises/leap",
+      "length": 102,
+      "id": ,
+    },
+     {
+      "text": "const print = @import(\"std\").debug.print;\n\npub fn main() void {\n\tvar x: u32 = undefined;\n\tvar y: u32 = undefined;\n\tvar z: u32 = undefined;\n\n\tconst tuple = .{ 1, 2, 3 };\n\n\tx, y, z = tuple;\n\n\tprint(\"tuple: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n\n\tconst array = [_]u32{ 4, 5, 6 };\n\n\tx, y, z = array;\n\n\tprint(\"array: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n\n\tconst vector: @Vector(3, u32) = .{ 7, 8, 9 };\n\n\tx, y, z = vector;\n\n\tprint(\"vector: x = {}, y = {}, z = {}\\n\", .{x, y, z});\n}",
+      "source": "https://ziglang.org/documentation/master/#Destructuring",
+      "length": 480,
+      "id": 3
+    },
+     {
+      "text": "const std = @import(\"std\");\n\ntest \"expect this to fail\" {\n\ttry std.testing.expect(false);\n}\n\ntest \"expect this to succeed\" {\n\ttry std.testing.expect(true);\n}\n\ntest \"expect this to be skipped\" {\n\treturn error.SkipZigTest;\n}",
+      "source": "https://ziglang.org/documentation/master/#Zig-Test",
+      "length": 213,
+      "id": 4
+    },
+     {
+      "text": "pub const ComputationError = error{IllegalArgument};\n\npub fn steps(number: usize) anyerror!usize {\n\tif (number <= 0) {\n\t\treturn error.IllegalArgument;\n\t}\n\n\tif (number == 1) {\n\t\treturn 0;\n\t}\n\n\treturn try steps(switch (number % 2) {\n\t\t0 => number / 2,\n\t\t1 => number * 3 + 1,\n\t\telse => unreachable,\n\t}) + 1;\n}",
+      "source": "https://exercism.org/tracks/zig/exercises/collatz-conjecture",
+      "length": 306,
+      "id": 5
+    }
   ]
 }
