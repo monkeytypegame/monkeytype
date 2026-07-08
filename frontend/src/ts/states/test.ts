@@ -133,7 +133,7 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-let layoutPromise = promiseWithResolvers();
+let inputLayoutPromise = promiseWithResolvers();
 const getInputLayout = createMemo<{
   layout: string;
   isMirrored: boolean;
@@ -153,7 +153,7 @@ const [inputLayoutObject] = createResource(getInputLayout, async (layout) => {
 });
 
 async function waitForInputLayoutReady(): Promise<void> {
-  await layoutPromise.promise;
+  await inputLayoutPromise.promise;
   if (inputLayoutObject.state === "ready") return;
 
   if (inputLayoutObject.state === "errored") {
@@ -163,12 +163,12 @@ async function waitForInputLayoutReady(): Promise<void> {
 
 createEffect(() => {
   const state = inputLayoutObject.state;
-  layoutPromise.reset();
+  inputLayoutPromise.reset();
   if (state === "ready") {
-    layoutPromise.resolve();
+    inputLayoutPromise.resolve();
   }
   if (state === "errored") {
-    layoutPromise.reject(new Error("failed to fetch input layout"));
+    inputLayoutPromise.reject(new Error("failed to fetch input layout"));
   }
 });
 
