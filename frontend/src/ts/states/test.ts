@@ -20,7 +20,6 @@ import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { promiseWithResolvers } from "../utils/misc";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { FunboxName } from "@monkeytype/schemas/configs";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -72,14 +71,6 @@ createEffect(() => {
   );
 });
 
-function resolveLayoutName(layout: string): string {
-  return layout === "default" ? "qwerty" : layout;
-}
-
-function hasFunboxMirrored(funboxes: FunboxName[]): boolean {
-  return funboxes.includes("layout_mirror");
-}
-
 export const getKeymapLayout = createMemo<{
   layout: string;
   layoutNameDisplayString: string;
@@ -88,9 +79,9 @@ export const getKeymapLayout = createMemo<{
   const isOverride = getConfig.keymapLayout === "overrideSync";
   const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
 
-  const layout = resolveLayoutName(raw);
+  const layout = raw === "default" ? "qwerty" : raw;
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
-  const isMirrored = hasFunboxMirrored(getConfig.funbox);
+  const isMirrored = getConfig.funbox.includes("layout_mirror");
 
   return { layout: layout, layoutNameDisplayString, isMirrored };
 });
@@ -139,8 +130,8 @@ const getInputLayout = createMemo<{
   isMirrored: boolean;
 }>(() => {
   return {
-    layout: resolveLayoutName(getConfig.layout),
-    isMirrored: hasFunboxMirrored(getConfig.funbox),
+    layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
+    isMirrored: getConfig.funbox.includes("layout_mirror"),
   };
 });
 
