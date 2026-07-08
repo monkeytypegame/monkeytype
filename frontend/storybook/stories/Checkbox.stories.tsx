@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { Accessor, Component, createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { Checkbox } from "../../src/ts/components/ui/form/Checkbox";
 

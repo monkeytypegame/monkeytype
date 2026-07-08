@@ -5,13 +5,8 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as Settings from "../pages/settings";
-import * as Account from "../pages/account";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
-import * as Friends from "../pages/friends";
-import * as Page404 from "../pages/404";
-import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
@@ -27,9 +22,21 @@ import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 import {
   LeaderboardUrlParamsSchema,
-  readGetParameters,
+  readLeaderboardGetParameters,
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
+import { getSnapshot } from "../db";
+import * as TodayTracker from "../test/today-tracker";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
+import {
+  invalidateConnections,
+  isConnectionsReady,
+  waitForConnectionsReady,
+} from "../collections/connections";
+import {
+  AccountSettingsUrlParamsSchema,
+  readAccountSettingsGetParameters,
+} from "../states/account-settings";
 
 type ChangeOptions = {
   force?: boolean;
@@ -41,9 +48,61 @@ type ChangeOptions = {
 const pages = {
   loading: PageLoading.page,
   test: PageTest.page,
-  settings: Settings.page,
+  settings: solidPage("settings", {
+    beforeShow: async () => {
+      // clear any previous highlight
+      const prev = document.querySelector<HTMLElement>(
+        '[data-component="settingspage"] .settings-highlight',
+      );
+      if (prev !== null) {
+        prev.classList.remove("settings-highlight");
+      }
+
+      const highlight = new URLSearchParams(window.location.search).get(
+        "highlight",
+      );
+      if (highlight === null) return;
+
+      const element = document.querySelector<HTMLElement>(
+        `[data-component="settingspage"] [data-setting-key="${CSS.escape(highlight)}"]`,
+      );
+      if (element === null) return;
+
+      setTimeout(() => {
+        element.scrollIntoView({ block: "center", behavior: "auto" });
+        element.classList.add("settings-highlight");
+      }, 250);
+    },
+  }),
   about: solidPage("about"),
-  account: Account.page,
+  account: solidPage("account", {
+    loadingOptions: {
+      loadingMode: () => {
+        if (isResultsReady()) {
+          return "none";
+        } else {
+          return "sync";
+        }
+      },
+      loadingPromise: async () => {
+        if (getSnapshot() === null || getSnapshot() === undefined) {
+          throw new Error(
+            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+          );
+        }
+        await waitForResultsReady();
+        TodayTracker.addAllFromToday();
+      },
+      style: "bar",
+      keyframes: [
+        {
+          percentage: 90,
+          durationMs: 2000,
+          text: "Downloading results...",
+        },
+      ],
+    },
+  }),
   login: solidPage("login"),
   profile: solidPage("profile", {
     beforeShow: async (options) => {
@@ -51,9 +110,36 @@ const pages = {
     },
   }),
   profileSearch: solidPage("profileSearch"),
-  friends: Friends.page,
-  404: Page404.page,
-  accountSettings: PageAccountSettings.page,
+  404: solidPage("404"),
+  friends: solidPage("friends", {
+    beforeShow: async () => {
+      await invalidateConnections();
+    },
+    loadingOptions: {
+      loadingMode: () => (isConnectionsReady() ? "none" : "sync"),
+      loadingPromise: async () => {
+        await Promise.all([
+          serverConfigurationPromise,
+          waitForConnectionsReady(),
+        ]);
+      },
+      style: "bar",
+      keyframes: [
+        { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
+        {
+          percentage: 50,
+          durationMs: 1500,
+          text: "Downloading friend requests...",
+        },
+      ],
+    },
+  }),
+  accountSettings: solidPage("accountSettings", {
+    urlParamsSchema: AccountSettingsUrlParamsSchema,
+    beforeShow: async (options) => {
+      readAccountSettingsGetParameters(options.urlParams);
+    },
+  }),
   leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {
@@ -64,7 +150,7 @@ const pages = {
       },
     },
     beforeShow: async (options) => {
-      readGetParameters(options.urlParams);
+      readLeaderboardGetParameters(options.urlParams);
     },
   }),
 };

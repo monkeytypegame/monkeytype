@@ -5,13 +5,16 @@ import { Mode } from "@monkeytype/schemas/shared";
 
 export type MiniSnapshot = Omit<
   Snapshot,
-  "results" | "tags" | "presets" | "filterPresets"
+  "results" | "presets" | "filterPresets"
 >;
 const [snapshot, updateSnapshot] = createStore<{
   value: MiniSnapshot | undefined;
 }>({ value: undefined });
 
-export function setSnapshot(newValue: MiniSnapshot | undefined): void {
+/**
+ * This does not update the DB.snapshot. Use DB.setSnapshot for now.
+ */
+export function _setSnapshot(newValue: MiniSnapshot | undefined): void {
   if (newValue === undefined) {
     updateSnapshot("value", undefined);
   } else {

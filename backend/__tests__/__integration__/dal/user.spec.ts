@@ -128,8 +128,8 @@ describe("UserDal", () => {
 
   it("isNameAvailable should correctly check if a username is available", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const { uid: user1 } = await UserTestData.createUser({ name: name1 });
     await UserTestData.createUser({ name: name2 });
 
@@ -160,8 +160,8 @@ describe("UserDal", () => {
 
   it("updatename should not allow unavailable usernames", async () => {
     // given
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
     const _decoy = await UserTestData.createUser();
@@ -173,8 +173,8 @@ describe("UserDal", () => {
   });
 
   it("same usernames (different casing) should be available only for the same user", async () => {
-    const name1 = "user" + new ObjectId().toHexString();
-    const name2 = "user" + new ObjectId().toHexString();
+    const name1 = `user${new ObjectId().toHexString()}`;
+    const name2 = `user${new ObjectId().toHexString()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
 
@@ -192,8 +192,8 @@ describe("UserDal", () => {
 
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
-    const name = "user" + new ObjectId().toHexString();
-    const renamed = "renamed" + new ObjectId().toHexString();
+    const name = `user${new ObjectId().toHexString()}`;
+    const renamed = `renamed${new ObjectId().toHexString()}`;
     const testUser = await UserTestData.createUser({ name: name });
 
     // when
@@ -1079,9 +1079,9 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"] as any;
+      const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
       //fill previous days with null
       expect(year2024.slice(0, 93)).toEqual(new Array(93).fill(null));
@@ -1097,9 +1097,9 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"] as any;
+      const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
 
       expect(year2024[0]).toBeNull();
@@ -1117,7 +1117,7 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       const year2024 = read["2024"] as any;
       expect(year2024[93]).toEqual(2);
     });
@@ -1581,7 +1581,7 @@ describe("UserDal", () => {
       const count = 100;
       const calls = new Array(count)
         .fill(0)
-        .map(() =>
+        .map(async () =>
           UserDAL.updateInbox(
             user.uid,
             [rewardOne.id, rewardTwo.id, rewardThree.id],
@@ -1696,7 +1696,7 @@ describe("UserDal", () => {
 
     it("increments bananas", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const { uid } = await UserTestData.createUser({
         name,
         bananas: 1,
@@ -2084,10 +2084,9 @@ describe("UserDal", () => {
     it("should clear streak hour offset", async () => {
       // given
       const { uid } = await UserTestData.createUser({
-        //@ts-expect-error
         streak: {
           hourOffset: 1,
-        },
+        } as any,
       });
 
       // when

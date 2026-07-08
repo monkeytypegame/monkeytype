@@ -6,7 +6,6 @@ import QuotesController, {
   Quote,
   QuoteWithTextSplit,
 } from "../controllers/quotes-controller";
-import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -22,12 +21,15 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
+import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import * as TestWords from "./test-words";
 
 //pin implementation
 const random = Math.random;
@@ -38,7 +40,7 @@ function shouldCapitalize(lastChar: string): boolean {
 
 let spanishSentenceTracker = "";
 export async function punctuateWord(
-  previousWord: string,
+  previousWord: string | undefined,
   currentWord: string,
   index: number,
   maxindex: number,
@@ -47,7 +49,8 @@ export async function punctuateWord(
 
   const currentLanguage = Config.language.split("_")[0];
 
-  const lastChar = Strings.getLastChar(previousWord);
+  const lastChar =
+    previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
 
   const funbox = findSingleActiveFunboxWithFunction("punctuateWord");
   if (funbox) {
@@ -56,7 +59,7 @@ export async function punctuateWord(
   if (
     currentLanguage !== "code" &&
     currentLanguage !== "georgian" &&
-    (index === 0 || shouldCapitalize(lastChar))
+    (index === 0 || (lastChar !== undefined && shouldCapitalize(lastChar)))
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
@@ -69,10 +72,10 @@ export async function punctuateWord(
     if (currentLanguage === "spanish") {
       const rand = random();
       if (rand > 0.9) {
-        word = "¿" + word;
+        word = `¿${word}`;
         spanishSentenceTracker = "?";
       } else if (rand > 0.8) {
-        word = "¡" + word;
+        word = `¡${word}`;
         spanishSentenceTracker = "!";
       }
     }
@@ -371,14 +374,15 @@ function applyFunboxesToWord(
 
 async function applyBritishEnglishToWord(
   word: string,
-  previousWord: string,
+  previousWord: string | undefined,
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
+  const currentQuote = getCurrentQuote();
   if (
     Config.mode === "quote" &&
-    TestWords.currentQuote?.britishText !== undefined &&
-    TestWords.currentQuote?.britishText !== ""
+    currentQuote?.britishText !== undefined &&
+    currentQuote?.britishText !== ""
   ) {
     return word;
   }
@@ -424,7 +428,7 @@ export function getLimit(): number {
 
   let limit = 100;
 
-  const currentQuote = TestWords.currentQuote;
+  const currentQuote = getCurrentQuote();
 
   if (Config.mode === "quote" && currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -498,12 +502,12 @@ async function getQuoteWordList(
   language: LanguageObject,
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
-  if (TestState.isRepeated) {
+  if (isRepeated()) {
     if (currentWordset === null) {
       throw new WordGenError("Current wordset is null");
     }
 
-    TestWords.setCurrentQuote(previousRandomQuote);
+    setCurrentQuote(previousRandomQuote);
 
     // need to re-reverse the words if the test is repeated
     // because it will be reversed again in the generateWords function
@@ -579,17 +583,18 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
+  setCurrentQuote(rq as QuoteWithTextSplit);
 
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     throw new WordGenError("Random quote is null");
   }
 
-  if (TestWords.currentQuote.textSplit === undefined) {
+  if (currentQuote.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");
   }
 
-  return TestWords.currentQuote.textSplit;
+  return currentQuote.textSplit;
 }
 
 let currentWordset: Wordset | null = null;
@@ -602,7 +607,7 @@ type GenerateWordsReturn = {
   hasTab: boolean;
   hasNewline: boolean;
   allRightToLeft?: boolean;
-  allLigatures?: boolean;
+  allJoiningScript?: boolean;
 };
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
@@ -610,22 +615,23 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
-  if (!TestState.isRepeated) {
+  if (!isRepeated()) {
     previousGetNextWordReturns = [];
   }
-  previousRandomQuote = TestWords.currentQuote;
-  TestWords.setCurrentQuote(null);
+  previousRandomQuote = getCurrentQuote();
+  setCurrentQuote(null);
   currentSection = [];
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
+  const rawWordList: string[] = [];
   const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
     allRightToLeft: language.rightToLeft,
-    allLigatures: language.ligatures ?? false,
+    allJoiningScript: language.joiningScript ?? false,
   };
 
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
@@ -661,10 +667,10 @@ export async function generateWords(
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
       currentWordset = polyglotResult;
-      // set allLigatures if any language in languageProperties has ligatures true
-      ret.allLigatures = Array.from(
+      // set allJoiningScript if any language in languageProperties has joiningScript: true
+      ret.allJoiningScript = Array.from(
         polyglotResult.languageProperties.values(),
-      ).some((props) => !!props.ligatures);
+      ).some((props) => !!props.joiningScript);
     } else {
       currentWordset = result;
     }
@@ -684,9 +690,10 @@ export async function generateWords(
     const nextWord = await getNextWord(
       i,
       limit,
-      Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -1) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -2) ?? "",
     );
+    rawWordList.push(nextWord.wordRaw);
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
@@ -705,7 +712,7 @@ export async function generateWords(
     i++;
   }
 
-  const quote = TestWords.currentQuote;
+  const quote = getCurrentQuote();
 
   if (Config.mode === "quote" && quote === null) {
     throw new WordGenError("Random quote is null");
@@ -734,6 +741,7 @@ let previousGetNextWordReturns: GetNextWordReturn[] = [];
 
 type GetNextWordReturn = {
   word: string;
+  wordRaw: string;
   sectionIndex: number;
 };
 
@@ -741,11 +749,11 @@ type GetNextWordReturn = {
 export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
-  previousWord: string,
+  previousWord: string | undefined,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
-    isRepeated: TestState.isRepeated,
+    isRepeated: isRepeated(),
     currentWordset,
     wordIndex,
     language: currentLanguage,
@@ -765,7 +773,7 @@ export async function getNextWord(
   //because quote test can be repeated in the middle of a test
   //we cant rely on data inside previousGetNextWordReturns
   //because it might not include the full quote
-  if (TestState.isRepeated && Config.mode !== "quote") {
+  if (isRepeated() && Config.mode !== "quote") {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
@@ -805,7 +813,9 @@ export async function getNextWord(
 
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
   let randomWord = currentWordset.randomWord(funboxFrequency);
-  const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
+  const previousWordRaw = previousWord
+    ?.replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
   const previousWord2Raw = previousWord2
     ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
@@ -965,11 +975,44 @@ export async function getNextWord(
   console.debug("Word:", randomWord);
 
   const ret = {
-    word: randomWord,
+    word: appendCommitCharacter(randomWord),
+    wordRaw: randomWord,
     sectionIndex: sectionIndex,
   };
 
   previousGetNextWordReturns.push(ret);
 
   return ret;
+}
+
+/**
+ * Appends the inter-word commit separator the way the generator does: a trailing
+ * space, unless the word already ends with a newline or the nospace funbox is
+ * active. Callers that push words outside of getNextWord (e.g. section funbox
+ * pulls) must use this so the separator is part of the target word.
+ */
+export function appendCommitCharacter(word: string): string {
+  if (word.endsWith("\n") || isFunboxActiveWithProperty("nospace")) {
+    return word;
+  }
+  return `${word} `;
+}
+
+export function areAllWordsGenerated(): boolean {
+  return (
+    (Config.mode === "words" &&
+      TestWords.words.length >= Config.words &&
+      Config.words > 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
+    (Config.mode === "quote" &&
+      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      sectionIndex >= CustomText.getLimitValue() &&
+      currentSection.length === 0 &&
+      CustomText.getLimitValue() !== 0)
+  );
 }

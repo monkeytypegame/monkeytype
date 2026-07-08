@@ -76,8 +76,9 @@ export async function init(): Promise<void> {
 
     if (!result) {
       throw new Error(
-        `Could not verify email client configuration: ` +
-          JSON.stringify(result),
+        `Could not verify email client configuration: ${JSON.stringify(
+          result,
+        )}`,
       );
     }
 

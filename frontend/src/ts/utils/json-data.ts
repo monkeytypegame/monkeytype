@@ -1,9 +1,8 @@
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { toHex } from "./strings";
 import { languageHashes } from "virtual:language-hashes";
 import { isDevEnvironment } from "./env";
+import { toHex } from "./strings";
 
 //pin implementation
 const fetch = window.fetch;
@@ -28,7 +27,7 @@ async function fetchJson<T>(url: string): Promise<T> {
       throw new Error(`${res.status} ${res.statusText}`);
     }
   } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
+    console.error(`Error fetching JSON: ${url}`, e);
     throw e;
   }
 }
@@ -52,7 +51,7 @@ export function memoizeAsync<P, Args extends unknown[], R>(
     const key = getKey ? getKey(...args) : (args[0] as P);
 
     const cached = cache.get(key);
-    if (cached) {
+    if (cached !== undefined) {
       return cached;
     }
 
@@ -82,7 +81,7 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
 // used for polyglot wordset language-specific properties
 export type LanguageProperties = Pick<
   LanguageObject,
-  "noLazyMode" | "ligatures" | "rightToLeft" | "additionalAccents"
+  "noLazyMode" | "joiningScript" | "rightToLeft" | "additionalAccents"
 >;
 
 let currentLanguage: LanguageObject;
@@ -153,15 +152,6 @@ export class Section {
 }
 
 export type FunboxWordOrder = "normal" | "reverse";
-
-/**
- * Fetches the list of challenges from the server.
- * @returns A promise that resolves to the list of challenges.
- */
-export async function getChallengeList(): Promise<Challenge[]> {
-  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-  return data;
-}
 
 /**
  * Fetches the list of supporters from the server.

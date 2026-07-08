@@ -5,9 +5,12 @@ import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";
 import { Keycode } from "../constants/keys";
+import { JSAnimation } from "animejs";
 
 const monkeyEl = qs("#monkey");
 const monkeyFastEl = qs("#monkey .fast");
+
+let monkeyFastOpacityAnimation: JSAnimation | undefined;
 
 configEvent.subscribe(({ key }) => {
   if (key === "monkey" && TestState.isActive) {
@@ -51,13 +54,13 @@ function update(): void {
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
   const opacity = mapRange(num, 130, 180, 0, 1);
-  monkeyFastEl?.animate({
+  monkeyFastOpacityAnimation = monkeyFastEl?.animate({
     opacity: opacity,
     duration: 1000,
   });
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
   if (animDuration === 0.25) animDuration = 0;
-  monkeyEl?.setStyle({ animationDuration: animDuration + "s" });
+  monkeyEl?.setStyle({ animationDuration: `${animDuration}s` });
 }
 
 export function type(event: KeyboardEvent): void {
@@ -141,6 +144,7 @@ export function hide(): void {
     onComplete: () => {
       monkeyEl?.hide();
       monkeyEl?.setStyle({ animationDuration: "0s" });
+      monkeyFastOpacityAnimation?.cancel();
       monkeyFastEl?.setStyle({ opacity: "0" });
     },
   });
@@ -150,5 +154,6 @@ export function instantHide(): void {
   monkeyEl?.hide();
   monkeyEl?.setStyle({ opacity: "0" });
   monkeyEl?.setStyle({ animationDuration: "0s" });
+  monkeyFastOpacityAnimation?.cancel();
   monkeyFastEl?.setStyle({ opacity: "0" });
 }

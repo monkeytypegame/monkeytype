@@ -2,9 +2,11 @@ import { render } from "@solidjs/testing-library";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { AnimatedModal } from "../../../src/ts/components/common/AnimatedModal";
+import { hideModal, ModalId, showModal } from "../../../src/ts/states/modals";
 
 describe("AnimatedModal", () => {
   beforeEach(() => {
+    showModal("Support" as ModalId);
     vi.clearAllMocks();
 
     // Mock dialog methods that don't exist in jsdom
@@ -47,7 +49,6 @@ describe("AnimatedModal", () => {
     const { dialog } = renderModal({});
 
     expect(dialog).toHaveAttribute("id", "SupportModal");
-    expect(dialog).toHaveClass("hidden");
   });
 
   it("renders children inside modal div", () => {
@@ -56,6 +57,13 @@ describe("AnimatedModal", () => {
     expect(
       modalDiv.querySelector("[data-testid='modal-content']"),
     ).toHaveTextContent("Test Content");
+  });
+
+  it("doesnt render children if not open", () => {
+    hideModal("Support" as ModalId);
+    const { modalDiv } = renderModal({});
+
+    expect(modalDiv).not.toBeInTheDocument();
   });
 
   it("has escape handler attached", () => {

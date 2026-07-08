@@ -24,7 +24,6 @@ import {
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
-import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -64,6 +63,7 @@ import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
+import { getChallenges } from "@monkeytype/challenges";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -80,6 +80,12 @@ try {
     process.exit(1);
   }
 }
+
+const autoRoleChallengeNames = new Set(
+  getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name),
+);
 
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,
@@ -459,7 +465,7 @@ export async function addResult(
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    AutoRoleList.includes(completedEvent.challenge) &&
+    autoRoleChallengeNames.has(completedEvent.challenge) &&
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {
@@ -584,6 +590,18 @@ export async function addResult(
     streak,
   );
 
+  if (isNaN(xpGained.xp)) {
+    throw new MonkeyError(
+      500,
+      "Calculated XP is NaN",
+      JSON.stringify({
+        xpGained,
+        result: completedEvent,
+      }),
+      uid,
+    );
+  }
+
   if (xpGained.xp < 0) {
     throw new MonkeyError(
       500,
@@ -637,7 +655,7 @@ export async function addResult(
   if (isPb) {
     void addLog(
       "user_new_pb",
-      `${completedEvent.mode + " " + completedEvent.mode2} ${
+      `${`${completedEvent.mode} ${completedEvent.mode2}`} ${
         completedEvent.wpm
       } ${completedEvent.acc}% ${completedEvent.rawWpm} ${
         completedEvent.consistency
@@ -813,7 +831,7 @@ async function calculateXp(
   const totalXp =
     Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
 
-  if (gainMultiplier > 1) {
+  if (gainMultiplier !== 1) {
     // breakdown.push([
     //   "configMultiplier",
     //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),

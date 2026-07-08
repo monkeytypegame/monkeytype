@@ -1,9 +1,10 @@
-import preview from "#.storybook/preview";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/solid-query";
+
+import preview from "#.storybook/preview";
 
 import AsyncContent from "../../src/ts/components/common/AsyncContent";
 
@@ -35,7 +36,9 @@ function LoadingExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query}>{(data) => <div>{data}</div>}</AsyncContent>
+    <AsyncContent queries={{ query }}>
+      {({ queryData }) => <div>{queryData()}</div>}
+    </AsyncContent>
   );
 }
 
@@ -46,8 +49,10 @@ function SuccessExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query}>
-      {(data) => <div style={{ color: "var(--text-color)" }}>{data}</div>}
+    <AsyncContent queries={{ query }}>
+      {({ queryData }) => (
+        <div style={{ color: "var(--text-color)" }}>{queryData()}</div>
+      )}
     </AsyncContent>
   );
 }
@@ -61,7 +66,7 @@ function ErrorExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query} errorMessage="Could not load data">
+    <AsyncContent queries={{ query }} errorMessage="Could not load data">
       {() => <div>This won't render</div>}
     </AsyncContent>
   );

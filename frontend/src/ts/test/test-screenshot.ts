@@ -1,6 +1,5 @@
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import * as Replay from "./replay";
-import * as Misc from "../utils/misc";
+import * as Replay from "./replay-ui";
 import {
   getActivePage,
   isAuthenticated,
@@ -19,9 +18,9 @@ import { convertRemToPixels } from "../utils/numbers";
 import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { download as downloadFile } from "../utils/misc";
 
 let revealReplay = false;
-let revertCookie = false;
 
 function revert(): void {
   setIsScreenshotting(false);
@@ -36,7 +35,6 @@ function revert(): void {
   qs("#result")?.removeClass("noBalloons");
   qs(".wordInputHighlight")?.show();
   qsa(".highlightContainer")?.show();
-  if (revertCookie) qs("#cookiesModal")?.show();
   if (revealReplay) qs("#resultReplay")?.show();
   if (!isAuthenticated()) {
     qs(".pageTest .loginTip")?.show();
@@ -61,12 +59,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   if (!qs("#resultReplay")?.hasClass("hidden")) {
     revealReplay = true;
     Replay.pauseReplay();
-  }
-  if (
-    Misc.isElementVisible("#cookiesModal") ||
-    document.contains(document.querySelector("#cookiesModal"))
-  ) {
-    revertCookie = true;
   }
 
   // --- UI Preparation ---
@@ -98,7 +90,6 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs("#result")?.addClass("noBalloons");
   qs(".wordInputHighlight")?.hide();
   qsa(".highlightContainer")?.hide();
-  if (revertCookie) qs("#cookiesModal")?.hide();
 
   for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
     fb.functions.clearGlobal();
@@ -248,6 +239,7 @@ export async function copyToClipboard(): Promise<void> {
     }
     try {
       // Attempt to copy using ClipboardItem API
+      // oxlint-disable-next-line compat/compat
       const clipItem = new ClipboardItem(
         Object.defineProperty({}, blob.type, {
           value: blob,
@@ -319,26 +311,16 @@ async function getBlob(): Promise<Blob | null> {
 
 export async function download(): Promise<void> {
   try {
-    const blob = await getBlob();
+    const data = await getBlob();
 
-    if (!blob) {
+    if (!data) {
       showErrorNotification("Failed to generate screenshot data");
       return;
     }
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    link.download = `monkeytype-result-${timestamp}.png`;
+    const filename = `monkeytype-result-${timestamp}.png`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
+    downloadFile({ data, filename });
 
     showSuccessNotification("Screenshot download started");
   } catch (error) {

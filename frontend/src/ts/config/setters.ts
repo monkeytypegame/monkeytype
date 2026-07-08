@@ -10,10 +10,11 @@ import {
   canSetFunboxWithConfig,
 } from "./funbox-validation";
 import * as TestState from "../test/test-state";
-import { typedKeys, triggerResize, escapeHTML } from "../utils/misc";
+import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
 import { Config, setConfigStore } from "./store";
 import { FunboxName } from "@monkeytype/schemas/configs";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -185,8 +186,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   if (newConfig.includes(funbox)) {
     newConfig = newConfig.filter((it) => it !== funbox);
   } else {
-    newConfig.push(funbox);
-    newConfig.sort();
+    newConfig = [...newConfig, funbox].sort();
   }
 
   if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
@@ -201,6 +201,8 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     nosave,
     previousValue,
   });
+
+  setConfigStore("funbox", newConfig);
 
   return true;
 }

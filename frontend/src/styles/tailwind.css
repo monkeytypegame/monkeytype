@@ -42,6 +42,15 @@
       transform: translateX(100%) scaleX(0);
     }
   }
+
+  @keyframes ring-flash {
+    0% {
+      box-shadow: 0 0 0 var(--em-spacing) var(--main-color);
+    }
+    100% {
+      box-shadow: 0 0 0 var(--em-spacing) transparent;
+    }
+  }
 }
 
 @utility rounded-double {
@@ -99,6 +108,16 @@
     @apply border-none  font-(--font) caret-(--text-color) font-[inherit];
     outline: 0.15em solid var(--main-color);
     -webkit-text-fill-color: var(--text-color);
-    -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+    box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  }
+  .settings-highlight {
+    animation: ring-flash 4s ease-in forwards;
+  }
+
+  .darkMode {
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
   }
 }

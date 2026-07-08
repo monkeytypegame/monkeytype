@@ -210,8 +210,9 @@ export async function sendVerificationEmail(
       } else {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link: " +
-            error.errorInfo.message,
+          `Firebase failed to generate an email verification link: ${
+            error.errorInfo.message
+          }`,
           JSON.stringify(error),
         );
       }
@@ -231,7 +232,7 @@ export async function sendVerificationEmail(
         } else {
           throw new MonkeyError(
             500,
-            "Failed to generate an email verification link: " + message,
+            `Failed to generate an email verification link: ${message}`,
             error.stack,
           );
         }
@@ -281,7 +282,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   }
 
   //cleanup database
-  await Promise.all([
+  const tasks = [
     UserDAL.deleteUser(uid),
     deleteUserLogs(uid),
     deleteAllApeKeys(uid),
@@ -297,7 +298,13 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       req.ctx.configuration.leaderboards.weeklyXp,
     ),
     ConnectionsDal.deleteByUid(uid),
-  ]);
+  ];
+
+  if (userInfo?.discordId !== undefined) {
+    tasks.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+
+  await Promise.all(tasks);
 
   try {
     //delete user from firebase

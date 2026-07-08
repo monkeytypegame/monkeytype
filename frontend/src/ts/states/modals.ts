@@ -7,6 +7,7 @@ export type ModalId =
   | "Commandline"
   | "DevOptions"
   | "DevInboxPicker"
+  | "EventLogViewer"
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
@@ -23,7 +24,18 @@ export type ModalId =
   | "TestDuration"
   | "ShareTestSettings"
   | "CustomWordAmount"
-  | "MobileTestConfig";
+  | "MobileTestConfig"
+  | "MiniResultChartModal"
+  | "Cookies"
+  | "AddPresetModal"
+  | "EditPresetModal"
+  | "EditProfile"
+  | "ViewApeKey"
+  | "LastSignedOutResult"
+  | "StreakHourOffset"
+  | "GoogleSignup"
+  | "ForgotPassword"
+  | "UserReport";
 
 export type ModalVisibility = {
   visible: boolean;

@@ -2,13 +2,13 @@ import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
 import * as Time from "../legacy-states/time";
 import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
+import { getCurrentQuote } from "../states/test";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
@@ -106,17 +106,21 @@ export function instantHide(): void {
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
-    return (
-      (TestWords.words.sectionIndexList[TestState.activeWordIndex] as number) -
-      1
-    );
+    const currentSectionIndex = TestWords.words.get(
+      TestState.activeWordIndex,
+    )?.sectionIndex;
+
+    if (currentSectionIndex === undefined) {
+      return 0;
+    }
+    return currentSectionIndex - 1;
   } else {
-    return TestInput.input.getHistory().length;
+    return TestState.activeWordIndex;
   }
 }
 
 function setTimerHtmlToInputLength(el: HTMLElement, wrapInDiv: boolean): void {
-  let historyLength = `${TestInput.input.getHistory().length}`;
+  let historyLength = `${TestState.activeWordIndex}`;
 
   if (wrapInDiv) {
     historyLength = `<div>${historyLength}</div>`;
@@ -148,7 +152,7 @@ export function update(): void {
         const percent = 100 - ((time + 1) / maxtime) * 100;
 
         animate(barEl, {
-          width: percent + "vw",
+          width: `${percent}vw`,
           duration: 1000,
           ease: "linear",
         });
@@ -158,7 +162,7 @@ export function update(): void {
           displayTime = DateTime.secondsToString(time);
         }
         if (textEl !== null) {
-          textEl.innerHTML = "<div>" + displayTime + "</div>";
+          textEl.innerHTML = `<div>${displayTime}</div>`;
         }
       } else if (Config.timerStyle === "flash_mini") {
         let displayTime = DateTime.secondsToString(maxtime - time);
@@ -171,7 +175,7 @@ export function update(): void {
           } else {
             miniEl.style.opacity = "1";
           }
-          miniEl.innerHTML = "<div>" + displayTime + "</div>";
+          miniEl.innerHTML = `<div>${displayTime}</div>`;
         }
       } else if (Config.timerStyle === "flash_text") {
         let displayTime = DateTime.secondsToString(maxtime - time);
@@ -206,7 +210,7 @@ export function update(): void {
         outof = CustomText.getLimitValue();
       }
       if (Config.mode === "quote") {
-        outof = TestWords.currentQuote?.textSplit.length ?? 1;
+        outof = getCurrentQuote()?.textSplit.length ?? 1;
       }
       if (Config.timerStyle === "bar") {
         const percent = Math.floor(
@@ -214,7 +218,7 @@ export function update(): void {
         );
 
         animate(barEl, {
-          width: percent + "vw",
+          width: `${percent}vw`,
           duration: 250,
         });
       } else if (

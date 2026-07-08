@@ -56,57 +56,6 @@
       }
     }
   }
-  .pageAccount {
-    .accountVerificatinNotice {
-      button {
-        grid-column: -1 / 1;
-      }
-    }
-    .group.resultBatches {
-      gap: 1rem;
-      grid-template-areas: "bar" "button" "text";
-      grid-template-columns: 1fr;
-    }
-    .group.topFilters {
-      .buttons {
-        grid-template-columns: 1fr;
-        button[filter="all"] {
-          grid-column: span 1;
-        }
-      }
-    }
-    .group.chart .below {
-      .buttons {
-        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-      }
-    }
-    .triplegroup.stats {
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    }
-    .group.aboveHistory {
-      grid-template-columns: 1fr;
-      .exportCSV {
-        grid-column: span 1;
-      }
-    }
-    .group.history table thead td:nth-child(8),
-    .group.history table tbody td:nth-child(8),
-    .group.history table thead td:nth-child(9),
-    .group.history table tbody td:nth-child(9) {
-      display: none;
-    }
-  }
-
-  #keymap .row {
-    height: 1.25rem;
-  }
-  #keymap .keymapKey,
-  #keymap.split_matrix .keymapSplitSpacer {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 0.3rem;
-    font-size: 0.6rem;
-  }
 
   .popupWrapper .modal,
   .modalWrapper .modal {
@@ -132,20 +81,5 @@
   .popupWrapper .modal .inputs.withLabel,
   .modalWrapper .modal .inputs.withLabel {
     grid-template-columns: 1fr;
-  }
-
-  .pageFriends {
-    .content .friends table {
-      td:nth-child(5),
-      td:nth-child(6) {
-        display: none;
-      }
-    }
-  }
-
-  .pageAccountSettings [data-tab="blockedUsers"] {
-    table {
-      font-size: 0.75rem;
-    }
   }
 }

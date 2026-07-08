@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
+import { getCurrentInput, getInputForWord } from "../events/data";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -42,7 +42,6 @@ export type FunboxFunctions = {
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
   handleSpace?: () => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
   handleKeydown?: (event: KeyboardEvent) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
@@ -52,18 +51,26 @@ export type FunboxFunctions = {
 };
 
 async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
-  const wordCurrentChar = TestWords.words
-    .getCurrent()
-    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+  const currentInput = getCurrentInput();
+  const currentWord = TestWords.words.getCurrent();
+
+  if (!currentWord) {
+    return;
+  }
+
+  const inputCurrentChar = currentInput.slice(-1);
+  const wordCurrentChar = currentWord.display.slice(
+    currentInput.length - 1,
+    currentInput.length,
+  );
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
     event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current !== "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1) ||
+    (currentInput !== "" ||
+      getInputForWord(TestState.activeWordIndex - 1) !==
+        TestWords.words.get(TestState.activeWordIndex - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");
@@ -260,42 +267,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
       return null;
     },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === "a" ||
-          char === "ArrowLeft" ||
-          char === "j" ||
-          char === "←") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === "s" ||
-          char === "ArrowDown" ||
-          char === "k" ||
-          char === "↓") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === "d" ||
-          char === "ArrowRight" ||
-          char === "l" ||
-          char === "→") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
-    },
     getWordHtml(char: string, letterTag?: boolean): string {
       let retval = "";
       if (char === "↑") {
@@ -425,7 +396,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
-          (TestInput.input.getHistory().length + 1) / wordsPerLayout,
+          (TestState.activeWordIndex + 1) / wordsPerLayout,
         );
         const mod =
           wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
@@ -452,7 +423,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+            TestWords.words
+              .getCurrent()
+              ?.text.charAt(getCurrentInput().length) ?? "",
           );
         }, 1);
       }
@@ -635,7 +608,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   underscore_spaces: {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
-      return word + "_";
+      return `${word}_`;
     },
   },
   crt: {
@@ -745,7 +718,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           lang.name,
           {
             noLazyMode: lang.noLazyMode,
-            ligatures: lang.ligatures,
+            joiningScript: lang.joiningScript,
             rightToLeft: lang.rightToLeft,
             additionalAccents: lang.additionalAccents,
           },

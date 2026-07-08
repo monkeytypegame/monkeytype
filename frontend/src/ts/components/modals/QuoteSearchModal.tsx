@@ -7,11 +7,11 @@ import {
   Show,
   on,
 } from "solid-js";
+import { z } from "zod";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
 import { createDebouncedEffectOn } from "../../hooks/effects";
@@ -350,19 +350,19 @@ export function QuoteSearchModal(): JSXElement {
       if (lengths.includes("4") && !hasCustomFilter()) {
         showSimpleModal({
           title: "Enter minimum and maximum number of words",
-          inputs: [
-            { type: "number", placeholder: "1" },
-            { type: "number", placeholder: "100" },
-          ],
           buttonText: "save",
-          execFn: async (min: string, max: string) => {
-            const minNum = parseInt(min, 10);
-            const maxNum = parseInt(max, 10);
-            if (isNaN(minNum) || isNaN(maxNum)) {
-              return { status: "notice", message: "Invalid min/max values" };
-            }
-            setCustomFilterMin(minNum);
-            setCustomFilterMax(maxNum);
+          schema: z.object({
+            min: z.number().int().safe().positive(),
+            max: z.number().int().safe().positive(),
+          }),
+          inputs: {
+            min: { type: "number", placeholder: "1" },
+            max: { type: "number", placeholder: "100" },
+          },
+
+          execFn: async ({ min, max }) => {
+            setCustomFilterMin(min);
+            setCustomFilterMax(max);
             setHasCustomFilter(true);
             return { status: "success", message: "Saved custom filter" };
           },
@@ -424,12 +424,6 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const handleSubmitClick = async (): Promise<void> => {
-    if (!isCaptchaAvailable()) {
-      showErrorNotification(
-        "Captcha is not available. Please refresh the page or contact support if this issue persists.",
-      );
-      return;
-    }
     showLoaderBar();
     const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
     const isEnabled =
@@ -497,6 +491,7 @@ export function QuoteSearchModal(): JSXElement {
           />
           <div class="grow">
             <SlimSelect
+              appendTo="container"
               multiple
               options={[
                 { value: "0", text: "short" },

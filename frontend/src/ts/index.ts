@@ -5,31 +5,21 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/settings";
-import "./event-handlers/account";
-import "./modals/google-sign-up";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
-import "./elements/settings/account-settings-notice";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
-import * as TestStats from "./test/test-stats";
-import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
 import "./test/caps-warning";
-import "./modals/simple-modals";
-import * as CookiesModal from "./modals/cookies";
 import "./input/listeners";
 import "./controllers/route-controller";
-import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
@@ -41,7 +31,6 @@ import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./controllers/url-handler";
-import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
@@ -50,6 +39,9 @@ import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
+import { showModal } from "./states/modals";
+import { lastEventLog } from "./test/test-state";
+import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -80,7 +72,7 @@ void fetchLatestVersion().then((data) => {
 Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
-  CookiesModal.show();
+  showModal("Cookies");
 }
 void init(onAuthStateChanged).then(() => {
   if (accepted !== null) {
@@ -91,10 +83,7 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  toggleFilterDebug: Account.toggleFilterDebug,
   glarsesMode: enable,
-  stats: TestStats.getStats,
-  replay: Replay.getReplayExport,
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst: Result.toggleSmoothedBurst,
@@ -104,6 +93,8 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
+  lastEventLog: () => lastEventLog,
+  currentEventLog: buildEventLog,
 });
 
 mountComponents();

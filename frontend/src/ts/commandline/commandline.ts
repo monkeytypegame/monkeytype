@@ -13,7 +13,12 @@ import {
   setCommandlineSubgroup,
 } from "../states/core";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
+import {
+  Command,
+  CommandlineSubgroupKey,
+  CommandsSubgroup,
+  CommandWithValidation,
+} from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
@@ -21,7 +26,6 @@ import { intersect } from "@monkeytype/util/arrays";
 import { createInputEventHandler } from "../elements/input-validation";
 import { isInputElementFocused } from "../input/input-element";
 import { qs } from "../utils/dom";
-import { ConfigKey } from "@monkeytype/schemas/configs";
 import { createEffect } from "solid-js";
 import {
   getModalVisibility,
@@ -82,10 +86,7 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?:
-    | CommandsSubgroup
-    | CommandlineLists.ListsObjectKeys
-    | ConfigKey;
+  subgroupOverride?: CommandsSubgroup | CommandlineSubgroupKey;
   commandOverride?: string;
   singleListOverride?: boolean;
 };
@@ -123,7 +124,7 @@ export function show(
           if (exists) {
             showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              overrideStringOrGroup as CommandlineLists.ListsObjectKeys,
+              overrideStringOrGroup as CommandlineSubgroupKey,
             );
             hideLoaderBar();
           } else {
@@ -255,6 +256,10 @@ async function goBackOrHide(): Promise<void> {
   }
 }
 
+function stripPunctuation(str: string): string {
+  return str.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+}
+
 async function filterSubgroup(): Promise<void> {
   const subgroup = await getSubgroup();
   subgroup.beforeList?.();
@@ -266,7 +271,9 @@ async function filterSubgroup(): Promise<void> {
     .trim();
 
   const inputSplit =
-    inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
+    inputNoQuickSingle.length === 0
+      ? []
+      : inputNoQuickSingle.split(" ").map(stripPunctuation).filter(Boolean);
 
   const matches: {
     matchCount: number;
@@ -298,8 +305,10 @@ async function filterSubgroup(): Promise<void> {
         : command.display
     )
       .toLowerCase()
-      .split(" ");
-    const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
+      .split(" ")
+      .map(stripPunctuation);
+    const aliasSplit =
+      command.alias?.toLowerCase().split(" ").map(stripPunctuation) ?? [];
 
     const displayAliasSplit = displaySplit.concat(aliasSplit);
     const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(
@@ -507,8 +516,9 @@ async function showCommands(): Promise<void> {
       if (command.configValue !== undefined || command.active !== undefined) {
         display = display.replace(
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
-          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
-            configIconHtml,
+          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
+            configIconHtml
+          }`,
         );
       }
     }
@@ -1029,11 +1039,6 @@ createEffect(() => {
           isAnimating = false;
           subgroupOverride = null;
           setCommandlineSubgroup(null);
-
-          // After animation completes, notify store to show pending modal
-          if (visibility?.chained) {
-            storeHideModal(MODAL_STORE_ID);
-          }
         },
       });
     }

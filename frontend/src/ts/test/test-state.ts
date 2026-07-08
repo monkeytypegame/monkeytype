@@ -1,23 +1,31 @@
 import { promiseWithResolvers } from "../utils/misc";
+import { EventLog } from "./events/types";
 
-export let isRepeated = false;
-export let isPaceRepeat = false;
 export let isActive = false;
 export let bailedOut = false;
-export let selectedQuoteId = 1;
+export let selectedQuoteId =
+  parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
 export let activeWordIndex = 0;
 export let testInitSuccess = true;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
+export let resultCalculating = false;
+export let koreanStatus = false;
+export let lastEventLog: EventLog | null = null;
+export let wordsHaveNumbers = false;
 
-export function setRepeated(tf: boolean): void {
-  isRepeated = tf;
+export function setWordsHaveNumbers(val: boolean): void {
+  wordsHaveNumbers = val;
 }
 
-export function setPaceRepeat(tf: boolean): void {
-  isPaceRepeat = tf;
+export function setLastEventLog(log: EventLog): void {
+  lastEventLog = log;
+}
+
+export function setKoreanStatus(val: boolean): void {
+  koreanStatus = val;
 }
 
 export function setActive(tf: boolean): void {
@@ -30,6 +38,7 @@ export function setBailedOut(tf: boolean): void {
 
 export function setSelectedQuoteId(id: number): void {
   selectedQuoteId = id;
+  localStorage.setItem("selectedQuoteId", id.toString());
 }
 
 export function setActiveWordIndex(index: number): void {
@@ -75,4 +84,8 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
+}
+
+export function setResultCalculating(val: boolean): void {
+  resultCalculating = val;
 }

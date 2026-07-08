@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 
-export function setupCommonMocks() {
+export function setupCommonMocks(): void {
   vi.mock("../src/utils/logger", () => ({
     __esModule: true,
     default: {
