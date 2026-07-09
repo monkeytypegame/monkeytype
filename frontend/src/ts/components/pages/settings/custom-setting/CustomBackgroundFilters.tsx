@@ -5,7 +5,7 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { applyCustomBackgroundFilters } from "../../../../controllers/theme-controller";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomBackgroundFilters(): JSXElement {
   let refBlur: HTMLInputElement | undefined = undefined;
@@ -26,7 +26,7 @@ export function CustomBackgroundFilters(): JSXElement {
   };
 
   return (
-    <Setting
+    <SearchableSetting
       key="customBackgroundFilter"
       title="custom background filters"
       description={configMetadata.customBackgroundFilter.description}

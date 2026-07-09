@@ -5,7 +5,10 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { createResource, JSXElement, For, Show } from "solid-js";
 
-import { configMetadata } from "../../../../config/metadata";
+import {
+  configMetadata,
+  getOptionSearchKeywords,
+} from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { applyCustomBackground } from "../../../../controllers/theme-controller";
@@ -18,7 +21,7 @@ import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomBackground(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -50,12 +53,13 @@ export function CustomBackground(): JSXElement {
   };
 
   return (
-    <Setting
+    <SearchableSetting
       key="customBackground"
       title={
         configMetadata.customBackground.displayString ?? "custom background"
       }
       fa={configMetadata.customBackground.fa}
+      extraSearchKeywords={getOptionSearchKeywords("customBackgroundSize")}
       description={
         <>
           {configMetadata.customBackground.description}

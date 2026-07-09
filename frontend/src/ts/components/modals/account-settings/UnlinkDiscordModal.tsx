@@ -2,9 +2,7 @@ import Ape from "../../../ape";
 import { getSnapshot, setSnapshot } from "../../../db";
 import { showSimpleModal } from "../../../states/simple-modal";
 
-export function showUnlinkDiscordModal(options: {
-  callback: () => void;
-}): void {
+export function showUnlinkDiscordModal(): void {
   showSimpleModal({
     title: "Unlink Discord",
     text: "Are you sure you want to unlink your Discord account?",
@@ -30,8 +28,6 @@ export function showUnlinkDiscordModal(options: {
       snap.discordAvatar = undefined;
       snap.discordId = undefined;
       setSnapshot(snap);
-
-      options.callback();
 
       return {
         status: "success",

@@ -13,7 +13,7 @@ import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { NotFoundPage } from "./pages/404Page";
 import { AboutPage } from "./pages/AboutPage";
-import { BlockedUsers } from "./pages/account-settings/BlockedUsers";
+import { AccountSettingsPage } from "./pages/account-settings/AccountSettingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { FriendsPage } from "./pages/connections/FriendsPage";
@@ -22,6 +22,7 @@ import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
+import { Keymap } from "./pages/test/Keymap";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
@@ -46,8 +47,9 @@ const components: Record<string, () => JSXElement> = {
   commandlinehotkey: () => <CommandlineHotkey />,
   testmodesnotice: () => <TestModesNotice />,
   friendspage: () => <FriendsPage />,
-  blockedusers: () => <BlockedUsers />,
   notfoundpage: () => <NotFoundPage />,
+  accountsettingspage: () => <AccountSettingsPage />,
+  keymap: () => <Keymap />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

@@ -17,16 +17,28 @@ vi.mock("../../../src/ts/config/store", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-words", () => {
-  const list: string[] = [];
+  type CommitChar = " " | "\n" | "";
+  type Word = { text: string; textWithCommit: string; commit: CommitChar };
+  const list: Word[] = [];
   return {
     words: {
       list,
-      getText(i?: number) {
-        if (i === undefined) return list;
-        return list[i];
+      get(): Word[] {
+        return [...list];
       },
-      getCurrentText() {
-        return list[list.length - 1] ?? "";
+      push(word: string) {
+        let commit: CommitChar = "";
+        if (word.endsWith(" ")) {
+          commit = " ";
+          word = word.slice(0, -1);
+        } else if (word.endsWith("\n")) {
+          commit = "\n";
+          word = word.slice(0, -1);
+        }
+        list.push({ text: word, textWithCommit: word + commit, commit });
+      },
+      reset() {
+        list.length = 0;
       },
     },
   };
@@ -56,16 +68,19 @@ import {
   getBurstHistory,
   getTestDurationMs,
   getAccuracy,
-  getKeypressSpacing,
   getKeypressOverlap,
   getErrorCountHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
   getKeypressDurations,
   getKeypressesPerSecond,
   getChars,
   getInputHistory,
   getWpmHistory,
   __testing as statsTesting,
+  getCorrectedWordsHistory,
+  getKeypressSpacing,
+  getMissedWords,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -77,6 +92,20 @@ import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
+import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
+
+// mirror the generator: each word carries a trailing space separator unless it
+// already ends with a newline, the nospace funbox is active, or it's the last
+// word (the final separator is stripped once all words are generated)
+function pushWords(...words: string[]): void {
+  const nospace = isFunboxActiveWithProperty("nospace");
+  words.forEach((word, i) => {
+    const isLast = i === words.length - 1;
+    const withSeparator =
+      isLast || nospace || word.endsWith("\n") ? word : `${word} `;
+    TestWords.push(withSeparator, i);
+  });
+}
 
 function keyDown(code: Keycode = "KeyA"): KeydownEventData {
   return { code };
@@ -137,7 +166,7 @@ function timer(
       ? { event, timer: timerVal, catchup: true }
       : { event, timer: timerVal, drift: 0 };
   }
-  return { event, timer: timerVal };
+  return { event, timer: timerVal, date: 0 };
 }
 
 // Helper: sets up a basic test with timer start, steps at 1s intervals,
@@ -169,7 +198,7 @@ describe("stats.ts", () => {
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     (TestState as { activeWordIndex: number }).activeWordIndex = 0;
-    TestWords.list.length = 0;
+    TestWords.reset();
     inputPerWord.clear();
   });
 
@@ -686,6 +715,51 @@ describe("stats.ts", () => {
     });
   });
 
+  describe("getIncompleteTestSeconds", () => {
+    // Guards the abandoned-test (restart) measurement: it must exclude idle
+    // time so a tab left open for hours doesn't leak into incompleteTestSeconds.
+    it("excludes idle time — only the typed span counts", () => {
+      // 60s elapsed, but typing only in the first 3 seconds, then idle
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("timer", 61000, timer("end", 60));
+
+      // duration 60s − 57 idle seconds = 3
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(3);
+    });
+
+    it("keeps the full duration when typing is continuous", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input()); // second 1
+      logTestEvent("input", 2200, input({ charIndex: 1 })); // second 2
+      logTestEvent("input", 3200, input({ charIndex: 2 })); // second 3
+      logTestEvent("input", 4200, input({ charIndex: 3 })); // second 4
+      logTestEvent("input", 5200, input({ charIndex: 4 })); // second 5
+      logTestEvent("timer", 6000, timer("end", 5));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(5);
+    });
+
+    it("returns 0 for an unterminated log (no timer end event)", () => {
+      // documents why the restart path must log a timer "end" first: with no
+      // boundaries getTestDurationMs is 0, so nothing leaks through
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1200, input());
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
+    });
+
+    it("never goes negative", () => {
+      // pure-idle test: 0 typed seconds, all intervals AFK
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("timer", 4000, timer("end", 3));
+
+      expect(getIncompleteTestSeconds(buildEventLog())).toBe(0);
+    });
+  });
+
   describe("getInputHistory", () => {
     it("treats abandoned word as empty when Firefox Ctrl+Backspace ate the sentinel", () => {
       // Firefox groups whitespace + non-word punctuation as one delete run.
@@ -694,7 +768,7 @@ describe("stats.ts", () => {
       // sentinel + "=" together, which monkeytype interprets as crossing the
       // word boundary → goToPreviousWord. Word 1 is abandoned with leftover
       // "=" residue in its event stream; its final state should still be "".
-      TestWords.list.push("hello", "leave");
+      pushWords("hello", "leave");
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1005,54 +1079,48 @@ describe("stats.ts", () => {
   });
 
   describe("getTargetWord", () => {
-    it("returns simulatedInput in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "anything", false),
-      ).toBe("anything");
+    it("returns word", () => {
+      pushWords("hello");
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe("hello");
+    });
+    it("returns for out-of-range", () => {
+      expect(statsTesting.getTargetWord(buildEventLog(), 0)).toBe(undefined);
+    });
+  });
+
+  describe("getMissedWords", () => {
+    it("strips the commit separator but keeps a trailing tab", () => {
+      // word 0 is a code-mode-style word ending in a tab; pushWords appends the
+      // " " separator, so targetWords[0] is "foo\t " — the key must be "foo\t"
+      pushWords("foo\t", "bar");
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
+
+      expect(getMissedWords(buildEventLog())).toEqual({ "foo\t": 1 });
     });
 
-    it("returns word without trailing space when it ends with newline", () => {
-      TestWords.list.push("hello\n");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello\n");
-    });
+    it("strips a trailing space separator", () => {
+      pushWords("hello", "world");
 
-    it("appends trailing space for non-last word", () => {
-      TestWords.list.push("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello ");
-    });
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false, charIndex: 0 }),
+      );
 
-    it("does not append trailing space for last word", () => {
-      TestWords.list.push("hello");
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", true),
-      ).toBe("hello");
-    });
-
-    it("does not append trailing space when nospace funbox is active", () => {
-      TestWords.list.push("hello");
-      (Config as { funbox: string[] }).funbox = ["nospace"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
-    });
-
-    it("does not append trailing space when underscore_spaces funbox is active", () => {
-      TestWords.list.push("hello");
-      (Config as { funbox: string[] }).funbox = ["underscore_spaces"];
-      expect(
-        statsTesting.getTargetWord(buildEventLog(), 0, "hello", false),
-      ).toBe("hello");
+      expect(getMissedWords(buildEventLog())).toEqual({ hello: 1 });
     });
   });
 
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
-      TestWords.list.push("hello");
+      pushWords("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1073,7 +1141,7 @@ describe("stats.ts", () => {
     });
 
     it("counts incorrect chars", () => {
-      TestWords.list.push("ab");
+      pushWords("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1094,7 +1162,7 @@ describe("stats.ts", () => {
     });
 
     it("counts extra chars", () => {
-      TestWords.list.push("ab");
+      pushWords("ab");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1119,7 +1187,7 @@ describe("stats.ts", () => {
     });
 
     it("counts missed chars for completed non-last words", () => {
-      TestWords.list.push("hello", "world");
+      pushWords("hello", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1161,11 +1229,51 @@ describe("stats.ts", () => {
       // word 1: "w" vs "world" → 1 correct, 4 missed (words mode counts partial last word missed)
       expect(chars.missed).toBe(6);
     });
+
+    it("credits a word committed with an IME full-width space", () => {
+      // Japanese IME commits words with the ideographic space U+3000, while the
+      // target word separator is a regular space — normalize so it still counts
+      pushWords("しり", "かこ");
+      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "し" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "り" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          charIndex: 2,
+          wordIndex: 0,
+          data: "　",
+          commitsWord: true,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "か" }),
+      );
+
+      const chars = getChars(buildEventLog());
+      // word 0 "しり " is fully correct (2 chars + separator)
+      expect(chars.correctWord).toBe(3);
+      expect(chars.incorrect).toBe(0);
+      expect(chars.extra).toBe(0);
+    });
   });
 
   describe("getWpmHistory", () => {
     it("returns wpm at each timer boundary", () => {
-      TestWords.list.push("hello");
+      pushWords("hello");
       (TestState as { activeWordIndex: number }).activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1186,7 +1294,7 @@ describe("stats.ts", () => {
     });
 
     it("returns cumulative wpm across boundaries", () => {
-      TestWords.list.push("ab", "cd");
+      pushWords("ab", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1231,7 +1339,7 @@ describe("stats.ts", () => {
 
     it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
       (Config as { funbox: string[] }).funbox = ["nospace"];
-      TestWords.list.push("ab", "cd");
+      pushWords("ab", "cd");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1265,7 +1373,7 @@ describe("stats.ts", () => {
     });
 
     it("counts multiline word as correct when target ends in newline", () => {
-      TestWords.list.push("hello\n", "world");
+      pushWords("hello\n", "world");
       (TestState as { activeWordIndex: number }).activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
@@ -1439,6 +1547,321 @@ describe("stats.ts", () => {
       const eventsPerWord = getEventsPerWord(getAllTestEvents());
       // word 1 has input "y" (no trailing space) → max is 1, no advance
       expect(statsTesting.inferActiveWordIndex(eventsPerWord)).toBe(1);
+    });
+  });
+
+  describe("getCorrectedWords", () => {
+    it("returns input as-is when no corrections made", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test"]);
+    });
+
+    it("returns last deleted char per position (xact -> fact)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xact"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1400, {
+        charIndex: 1,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1450, {
+        charIndex: 0,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "fact"
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 0, wordIndex: 0, data: "f" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 1, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1600,
+        input({ charIndex: 2, wordIndex: 0, data: "c" }),
+      );
+      logTestEvent(
+        "input",
+        1650,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["xact"]);
+    });
+
+    it("returns last deleted char per position across multiple corrections (xest -> west -> test)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "xest"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "west"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 0, data: "w" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1500,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1550,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete all
+      logTestEvent("input", 1600, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteWordBackward",
+      } as InputEventData);
+      // type "test"
+      logTestEvent(
+        "input",
+        1700,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1750,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1800,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1850,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["west"]);
+    });
+
+    it("handles partial correction (tset -> delete last 2 -> st)", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // type "tset"
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // delete last 2
+      logTestEvent("input", 1300, {
+        charIndex: 3,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 2,
+        wordIndex: 0,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      // type "st"
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+
+      // pos 0: "t" never deleted, pos 1: "s" never deleted, pos 2: "e" deleted, pos 3: "t" deleted
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["tset"]);
+    });
+
+    it("handles multiple words", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      // word 0: type "ab" correctly
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "b" }),
+      );
+      // word 1: type "xy", delete both, type "zw"
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 0, wordIndex: 1, data: "x" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 1, wordIndex: 1, data: "y" }),
+      );
+      logTestEvent("input", 1300, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent("input", 1350, {
+        charIndex: 1,
+        wordIndex: 1,
+        inputType: "deleteContentBackward",
+      } as InputEventData);
+      logTestEvent(
+        "input",
+        1400,
+        input({ charIndex: 0, wordIndex: 1, data: "z" }),
+      );
+      logTestEvent(
+        "input",
+        1450,
+        input({ charIndex: 1, wordIndex: 1, data: "w" }),
+      );
+
+      const result = getCorrectedWordsHistory(buildEventLog());
+      expect(result[0]).toEqual("ab");
+      expect(result[1]).toEqual("xy");
+    });
+
+    it("keeps the space that commits a word", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "t" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "e" }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({ charIndex: 2, wordIndex: 0, data: "s" }),
+      );
+      logTestEvent(
+        "input",
+        1250,
+        input({ charIndex: 3, wordIndex: 0, data: "t" }),
+      );
+      // committing space — kept as the trailing separator of the corrected word
+      logTestEvent(
+        "input",
+        1300,
+        input({
+          charIndex: 4,
+          wordIndex: 0,
+          data: " ",
+          commitsWord: true,
+        }),
+      );
+
+      expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test "]);
     });
   });
 });

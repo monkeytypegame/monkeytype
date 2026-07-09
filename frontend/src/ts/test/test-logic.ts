@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
-import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
@@ -11,16 +10,13 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
-import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
-import * as Replay from "./replay";
+import * as Replay from "./replay-ui";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
@@ -44,17 +40,13 @@ import {
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
+  setLastSignedOutResult,
   setResultVisible,
   setWordsHaveNewline,
+  setWordsHaveNumbers,
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
-import * as TestInput from "./test-input";
-import {
-  getCurrentInput,
-  resetCurrentInput,
-  getInputHistory,
-} from "./test-input";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
@@ -109,77 +101,28 @@ import {
   getKeypressDurations,
   getChars,
   getBurstHistory,
-  getRawHistory,
   getLastKeypressToEndMs,
   getStartToFirstKeypressMs,
   getTestDurationMs,
   getAccuracy,
-  getKeypressSpacing,
   getKeypressOverlap,
   getErrorCountHistory,
   getWpmHistory,
   getAfkDuration,
+  getIncompleteTestSeconds,
+  getDateBasedTestDurationMs,
+  getInputHistory,
   getKeypressesPerSecond,
-  getInputHistory as getEventsInputHistory,
+  getKeypressSpacing,
 } from "./events/stats";
+import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { resetModifierState } from "../states/modifiers";
+import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
-
-export async function syncNotSignedInLastResult(uid: string): Promise<void> {
-  if (notSignedInLastResult === null) return;
-  setNotSignedInUidAndHash(uid);
-
-  const response = await Ape.results.add({
-    body: { result: notSignedInLastResult },
-  });
-  if (response.status !== 200) {
-    showErrorNotification(`Failed to save last result hello ${failReason} hi`, {
-      response,
-    });
-    return;
-  }
-
-  //TODO - this type cast was not needed before because we were using JSON cloning
-  // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
-  const result = structuredClone(
-    notSignedInLastResult,
-  ) as unknown as SnapshotResult<Mode>;
-
-  const dataToSave: DB.SaveLocalResultData = {
-    xp: response.body.data.xp,
-    streak: response.body.data.streak,
-    result,
-    isPb: response.body.data.isPb,
-  };
-
-  result._id = response.body.data.insertedId;
-  if (response.body.data.isPb) {
-    result.isPb = true;
-  }
-  DB.saveLocalResult(dataToSave);
-  clearNotSignedInResult();
-  showSuccessNotification(
-    `Last test result saved ${response.body.data.isPb ? `(new pb!)` : ""}`,
-  );
-}
-
-export let notSignedInLastResult: CompletedEvent | null = null;
-
-export function clearNotSignedInResult(): void {
-  notSignedInLastResult = null;
-}
-
-export function setNotSignedInUidAndHash(uid: string): void {
-  if (notSignedInLastResult === null) return;
-  notSignedInLastResult.uid = uid;
-  //@ts-expect-error really need to delete this
-  delete notSignedInLastResult.hash;
-  notSignedInLastResult.hash = objectHash(notSignedInLastResult);
-}
 
 export function startTest(now: number): boolean {
   if (PageTransition.get()) {
@@ -193,9 +136,6 @@ export function startTest(now: number): boolean {
   }
 
   TestState.setActive(true);
-  Replay.startReplayRecording();
-  Replay.replayGetWordsList(TestWords.words.list);
-  TestInput.carryoverFirstKeypress();
   Time.set(0);
   TestTimer.clear();
 
@@ -209,7 +149,6 @@ export function startTest(now: number): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(now);
   void TestTimer.start(now);
   TestUI.onTestStart();
   return true;
@@ -290,14 +229,14 @@ export function restart(options = {} as RestartOptions): void {
     }
 
     if (Config.resultSaving) {
-      TestInput.pushKeypressesToHistory();
-      TestInput.pushErrorToHistory();
-      TestInput.pushAfkToHistory();
-      const testSeconds = TestStats.calculateTestSeconds(performance.now());
-      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
-      const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
+      // Finalize the abandoned test before measuring it: logging the timer
+      // "end" event gives getAfkDuration its interval boundaries, so idle time
+      // is actually subtracted. Without it AFK is always 0 and the full
+      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+      TestTimer.clear(true);
+      const liveEventLog = buildEventLog();
+      const tt = getIncompleteTestSeconds(liveEventLog);
+      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
       pushIncompleteTest({ acc, seconds: tt });
     }
   }
@@ -342,14 +281,9 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  TestStats.restart();
-  TestInput.restart();
-  TestInput.corrected.reset();
-  ShiftTracker.reset();
-  AltTracker.reset();
+  resetModifierState();
   Caret.hide();
   TestState.setActive(false);
-  Replay.stopReplayRecording();
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();
@@ -451,11 +385,8 @@ async function init(): Promise<boolean> {
     return false;
   }
 
-  Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestInput.input.resetHistory();
-  resetCurrentInput();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -603,7 +534,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestWords.setHasNumbers(hasNumbers);
+  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -625,18 +556,22 @@ async function init(): Promise<boolean> {
     );
   }
 
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
+  }
+
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     highlight(
-      Arrays.nthElementFromArray(
+      nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
-        [...TestWords.words.getCurrentText()],
+        [...(TestWords.words.getCurrent()?.text ?? "")],
         0,
       ) as string,
     );
   }
 
-  Funbox.toggleScript(TestWords.words.getCurrentText());
+  Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
@@ -645,31 +580,12 @@ async function init(): Promise<boolean> {
     isFunboxActiveWithProperty("reverseDirection"),
   );
 
-  console.debug("Test initialized with words", generatedWords);
+  console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
   return true;
-}
-
-export function areAllTestWordsGenerated(): boolean {
-  return (
-    (Config.mode === "words" &&
-      TestWords.words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      TestWords.words.length >= CustomText.getLimitValue() &&
-      CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
-      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
-      WordsGenerator.currentSection.length === 0 &&
-      CustomText.getLimitValue() !== 0)
-  );
 }
 
 //add word during the test
@@ -693,7 +609,7 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, enough words already");
     return;
   }
-  if (areAllTestWordsGenerated()) {
+  if (WordsGenerator.areAllWordsGenerated()) {
     console.debug("Not adding word, all words generated");
     return;
   }
@@ -722,8 +638,11 @@ export async function addWord(): Promise<void> {
           break;
         }
         wordCount++;
-        TestWords.words.push(word, i);
-        TestUI.addWord(word);
+        const newWord = TestWords.words.push(
+          WordsGenerator.appendCommitCharacter(word),
+          i,
+        );
+        TestUI.addWord(newWord.display);
       }
     }
   }
@@ -732,12 +651,15 @@ export async function addWord(): Promise<void> {
     const randomWord = await WordsGenerator.getNextWord(
       TestWords.words.length,
       bound,
-      TestWords.words.getText(TestWords.words.length - 1),
-      TestWords.words.getText(TestWords.words.length - 2),
+      TestWords.words.get(TestWords.words.length - 1)?.text ?? "",
+      TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
-    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-    TestUI.addWord(randomWord.word);
+    const newWord = TestWords.words.push(
+      randomWord.word,
+      randomWord.sectionIndex,
+    );
+    TestUI.addWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -747,6 +669,12 @@ export async function addWord(): Promise<void> {
         important: true,
       },
     );
+  }
+
+  // strip the trailing commit separator once the final word has been generated
+  // (covers the section and lazy paths)
+  if (WordsGenerator.areAllWordsGenerated()) {
+    TestWords.words.removeCommitCharacterFromLastWord();
   }
 }
 
@@ -788,668 +716,6 @@ export async function retrySavingResult(): Promise<void> {
 }
 
 function buildCompletedEvent(
-  stats: TestStats.Stats,
-  rawPerSecond: number[],
-): Omit<CompletedEvent, "hash" | "uid"> {
-  //build completed event object
-  let stfk = Numbers.roundTo2(
-    TestInput.keypressTimings.spacing.first - TestStats.start,
-  );
-  if (stfk < 0 || Config.mode === "zen") {
-    stfk = 0;
-  }
-
-  let lkte = Numbers.roundTo2(
-    TestStats.end - TestInput.keypressTimings.spacing.last,
-  );
-  if (lkte < 0 || Config.mode === "zen") {
-    lkte = 0;
-  }
-
-  //consistency
-  const stddev = Numbers.stdDev(rawPerSecond);
-  const avg = Numbers.mean(rawPerSecond);
-  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
-  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
-  if (keyConsistencyArray.length > 0) {
-    keyConsistencyArray = keyConsistencyArray.slice(
-      0,
-      keyConsistencyArray.length - 1,
-    );
-  }
-  let keyConsistency = Numbers.roundTo2(
-    Numbers.kogasa(
-      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray),
-    ),
-  );
-  if (!consistency || isNaN(consistency)) {
-    consistency = 0;
-  }
-  if (!keyConsistency || isNaN(keyConsistency)) {
-    keyConsistency = 0;
-  }
-
-  const chartErr = [];
-  for (const error of TestInput.errorHistory) {
-    chartErr.push(error.count ?? 0);
-  }
-
-  const chartData = {
-    wpm: TestInput.wpmHistory,
-    burst: rawPerSecond,
-    err: chartErr,
-  };
-
-  //wpm consistency
-  const stddev3 = Numbers.stdDev(chartData.wpm ?? []);
-  const avg3 = Numbers.mean(chartData.wpm ?? []);
-  const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
-  const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
-
-  let customText: CompletedEventCustomText | undefined = undefined;
-  if (Config.mode === "custom") {
-    const temp = CustomText.getData();
-    customText = {
-      textLen: temp.text.length,
-      mode: temp.mode,
-      pipeDelimiter: temp.pipeDelimiter,
-      limit: temp.limit,
-    };
-  }
-
-  //tags
-  const activeTagsIds: string[] = __nonReactive
-    .getActiveTags()
-    .map((tag) => tag._id);
-
-  const duration = parseFloat(stats.time.toString());
-  const afkDuration = TestStats.calculateAfkSeconds(duration);
-  let language = Config.language;
-  if (Config.mode === "quote") {
-    language = Strings.removeLanguageSize(Config.language);
-  }
-
-  const quoteLength = getCurrentQuote()?.group ?? -1;
-
-  const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
-    wpm: stats.wpm,
-    rawWpm: stats.wpmRaw,
-    charStats: [
-      stats.correctChars,
-      stats.incorrectChars,
-      stats.extraChars,
-      stats.missedChars,
-    ],
-    charTotal: stats.allChars,
-    acc: stats.acc,
-    mode: Config.mode,
-    mode2: Misc.getMode2(Config, getCurrentQuote()),
-    quoteLength: quoteLength,
-    punctuation: Config.punctuation,
-    numbers: Config.numbers,
-    lazyMode: Config.lazyMode,
-    timestamp: Date.now(),
-    language: language,
-    restartCount: getRestartCount(),
-    incompleteTests: getIncompleteTests(),
-    incompleteTestSeconds:
-      getIncompleteSeconds() < 0 ? 0 : Numbers.roundTo2(getIncompleteSeconds()),
-    difficulty: Config.difficulty,
-    blindMode: Config.blindMode,
-    tags: activeTagsIds,
-    keySpacing: TestInput.keypressTimings.spacing.array,
-    keyDuration: TestInput.keypressTimings.duration.array,
-    keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd: lkte,
-    startToFirstKey: stfk,
-    consistency: consistency,
-    wpmConsistency: wpmConsistency,
-    keyConsistency: keyConsistency,
-    funbox: Config.funbox,
-    bailedOut: TestState.bailedOut,
-    chartData: chartData,
-    customText: customText,
-    testDuration: duration,
-    afkDuration: afkDuration,
-    stopOnLetter: Config.stopOnError === "letter",
-  };
-
-  if (completedEvent.mode !== "custom") delete completedEvent.customText;
-  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
-
-  return completedEvent;
-}
-
-const ALWAYSREPORT = isDevEnvironment() || false;
-
-// window.ce2 = buildCompletedEvent2;
-
-function compareCompletedEvents(
-  ce: Omit<CompletedEvent, "hash" | "uid">,
-): void {
-  const start = performance.now();
-
-  const eventLog = buildEventLog();
-
-  const ce2 = buildCompletedEvent2(eventLog);
-  const end = performance.now();
-
-  console.debug(
-    `Built completed event 2 in ${Numbers.roundTo2(end - start)} ms`,
-  );
-
-  //compare ce and ce2, log differences
-  const notMatching: string[] = [];
-  const mismatchedKeys: string[] = [];
-  const ceKeys = Object.keys(ce) as (keyof typeof ce)[];
-  for (const key of ceKeys) {
-    if (
-      key === "timestamp" ||
-      key === "keyDuration" ||
-      key === "keySpacing" ||
-      key === "chartData" ||
-      key === "consistency" ||
-      key === "keyConsistency" ||
-      key === "keyOverlap"
-    ) {
-      continue;
-    }
-    // if (
-    //   key === "keyDuration" ||
-    //   key === "keySpacing" ||
-    //   key === "afkDuration" ||
-    //   key === "chartData"
-    // ) {
-    //   continue;
-    // }
-
-    let val1 = ce[key];
-    let val2 = ce2[key];
-
-    //@ts-expect-error temp
-    if (key === "keyDuration" || key === "keySpacing") {
-      const a = (val1 as number[]).map((v) => Numbers.roundTo2(v));
-      const b = (val2 as number[]).map((v) => Numbers.roundTo2(v));
-      const total = Math.max(a.length, b.length);
-      let mismatchCount = 0;
-      if (a.length !== b.length) {
-        mismatchCount = total;
-        console.error(
-          `Completed event length mismatch on key ${key}: ${a.length} vs ${b.length}`,
-        );
-      } else {
-        for (let i = 0; i < total; i++) {
-          if (a[i] !== b[i]) mismatchCount++;
-        }
-      }
-      if (mismatchCount > 0) {
-        console.error(
-          `Completed event mismatch on key ${key}: ${mismatchCount}/${total} elements differ`,
-          a,
-          b,
-        );
-        if (mismatchCount > 1) {
-          notMatching.push(
-            `${key} (${mismatchCount}/${total} elements differ)`,
-          );
-          mismatchedKeys.push(key);
-        }
-      } else {
-        console.debug(`Completed event match on key ${key}:`, a);
-      }
-      continue;
-    }
-
-    if (key === "charStats") {
-      const a = val1 as number[];
-      const b = val2 as number[];
-      const labels = ["correct", "incorrect", "extra", "missed"];
-      const diffs: string[] = [];
-      for (let i = 0; i < Math.max(a.length, b.length); i++) {
-        if (a[i] !== b[i]) {
-          const label = labels[i] ?? `[${i}]`;
-          diffs.push(`${label}: ${a[i]} vs ${b[i]}`);
-        }
-      }
-      if (diffs.length === 0) {
-        console.debug(`Completed event match on key charStats:`, a);
-      } else {
-        if (TestWords.words.list.length <= 25) {
-          notMatching.push(
-            `charStats (${diffs.join(", ")}) words '${TestWords.words.list.join("_")}' input '${getInputHistory().join("_")}'`,
-          );
-        } else {
-          notMatching.push(`charStats (${diffs.join(", ")})`);
-        }
-        mismatchedKeys.push("charStats");
-        console.error(`Completed event mismatch on key charStats:`, a, b);
-      }
-      continue;
-    }
-
-    ///@ts-expect-error temp
-    if (key === "keyOverlap") {
-      val1 = Numbers.roundTo2(val1 as number);
-      val2 = Numbers.roundTo2(val2 as number);
-    }
-
-    // if (key === "timestamp") {
-    //   continue;
-    // }
-
-    // if (key === "consistency") {
-    //   continue;
-    // }
-
-    // if (key === "keyConsistency") {
-    //   continue;
-    // }
-
-    if (key === "wpm" || key === "rawWpm") {
-      val1 = Numbers.roundTo2(val1 as number);
-      val2 = Numbers.roundTo2(val2 as number);
-      const diff = Numbers.roundTo2(Math.abs(val1 - val2));
-      if (diff <= 0.01) {
-        console.debug(`Completed event match on key ${key}:`, val1);
-      } else {
-        notMatching.push(`${key} (off by ${diff})`);
-        mismatchedKeys.push(key);
-        console.error(`Completed event mismatch on key ${key}:`, val1, val2);
-      }
-      continue;
-    }
-
-    // if (key === "chartData") {
-    //   val1 = {
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     wpm: (val1 as CompletedEvent["chartData"]).wpm.map((v) =>
-    //       // eslint-disable-next-line
-    //       Math.round(v),
-    //     ),
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     burst: (val1 as CompletedEvent["chartData"]).burst,
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     err: (val1 as CompletedEvent["chartData"]).err,
-    //   };
-    //   val2 = {
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     wpm: (val2 as CompletedEvent["chartData"]).wpm.map((v) =>
-    //       // eslint-disable-next-line
-    //       Math.round(v),
-    //     ),
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     burst: (val2 as CompletedEvent["chartData"]).burst,
-    //     //@ts-expect-error temp
-    //     // eslint-disable-next-line
-    //     err: (val2 as CompletedEvent["chartData"]).err,
-    //   };
-    // }
-
-    //@ts-expect-error temp
-    if (key === "chartData") {
-      const v1 = val1 as CompletedEvent["chartData"];
-      const v2 = val2 as CompletedEvent["chartData"];
-
-      if (v1 === "toolong" || v2 === "toolong") {
-        if (v1 === v2) {
-          console.debug(
-            `Completed event match on key chartData: both are "toolong"`,
-          );
-        } else {
-          notMatching.push("chartData (one is 'toolong' and the other is not)");
-          mismatchedKeys.push("chartData");
-          console.error(
-            `Completed event mismatch on key chartData: one is "toolong" and the other is not`,
-            v1,
-            v2,
-          );
-        }
-        continue;
-      }
-
-      for (const field of ["wpm", "err"] as const) {
-        const a = v1[field];
-        const b = v2[field];
-        const withinTolerance =
-          a.length === b.length &&
-          a.every((val, i) => {
-            if (val === 0 && b[i] === 0) return true;
-            const ref = Math.max(Math.abs(val), Math.abs(b[i] ?? 0));
-            return Math.abs(val - (b[i] ?? 0)) / ref <= 0.05;
-          });
-        if (withinTolerance) {
-          console.debug(`Completed event match on key chartData.${field}:`, a);
-        } else {
-          notMatching.push(`chartData.${field} (values differ)`);
-          mismatchedKeys.push(`chartData.${field}`);
-          console.error(
-            `Completed event mismatch on key chartData.${field}:`,
-            a,
-            b,
-          );
-        }
-      }
-    } else if (key === "wpmConsistency") {
-      const a = val1 as number;
-      const b = val2 as number;
-      const ref = Math.max(
-        Numbers.roundTo2(Math.abs(a)),
-        Numbers.roundTo2(Math.abs(b)),
-      );
-      const within = (a === 0 && b === 0) || Math.abs(a - b) / ref <= 0.05;
-      if (within) {
-        console.debug(`Completed event match on key ${key}:`, a);
-      } else {
-        const diff = Numbers.roundTo2(Math.abs(a - b));
-        const dir = a > b ? "ce1 larger" : "ce2 larger";
-        notMatching.push(`${key} (off by ${diff}, ${dir})`);
-        mismatchedKeys.push(key);
-        console.error(`Completed event mismatch on key ${key}:`, a, b);
-      }
-    } else if (typeof val1 === "number" && typeof val2 === "number") {
-      const a = Numbers.roundTo2(val1);
-      const b = Numbers.roundTo2(val2);
-      const diff = Numbers.roundTo2(Math.abs(a - b));
-      if (a !== b && diff >= 0.5) {
-        const dir = a > b ? "ce1 larger" : "ce2 larger";
-        notMatching.push(`${key} (off by ${diff}, ${dir}, ${a} vs ${b})`);
-        mismatchedKeys.push(key);
-        console.error(`Completed event mismatch on key ${key}:`, a, b);
-      } else {
-        console.debug(`Completed event match on key ${key}:`, a);
-      }
-    } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
-      notMatching.push(`${key} (values differ)`);
-      mismatchedKeys.push(key);
-      console.error(`Completed event mismatch on key ${key}:`, val1, val2);
-    } else {
-      console.debug(`Completed event match on key ${key}:`, val1);
-    }
-  }
-
-  {
-    const a = TestInput.keypressCountHistory;
-    const b = getKeypressesPerSecond(eventLog);
-    const aTotal = a.reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    const bTotal = b.reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    if (
-      a.length === b.length &&
-      (a.every((val, i) => val === b[i]) || aTotal === bTotal)
-    ) {
-      console.debug(`Completed event match on key keypressCountHistory:`, a);
-    } else {
-      if (a.length !== b.length) {
-        notMatching.push(
-          `keypressCountHistory (length differs ${a.length} vs ${b.length})`,
-        );
-        mismatchedKeys.push("keypressCountHistory_length");
-        console.error(
-          `Completed event length mismatch on key keypressCountHistory: ${a.length} vs ${b.length}`,
-        );
-      } else {
-        notMatching.push(
-          `keypressCountHistory (values differ) (total ${aTotal} vs ${bTotal})`,
-        );
-        mismatchedKeys.push("keypressCountHistory");
-        console.error(
-          `Completed event mismatch on key keypressCountHistory:`,
-          a,
-          b,
-        );
-      }
-    }
-  }
-
-  {
-    const a = TestInput.keypressCountHistory.reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    const b = getKeypressesPerSecond(eventLog).reduce((acc, val) => {
-      if (val === undefined) return acc;
-      return acc + val;
-    }, 0);
-    if (a === b) {
-      console.debug(`Completed event match on totalKeypressCountHistory:`, a);
-    } else {
-      notMatching.push(`totalKeypressCountHistory (${a} vs ${b})`);
-      mismatchedKeys.push("totalKeypressCountHistory");
-      console.error(
-        `Completed event mismatch on totalKeypressCountHistory:`,
-        a,
-        b,
-      );
-    }
-  }
-
-  {
-    const dur = (ce2.keyDuration === "toolong" ? [] : ce2.keyDuration).reduce(
-      (acc, val) => {
-        if (val === undefined) return acc;
-        return acc + val;
-      },
-      0,
-    );
-    const over = ce2.keyOverlap;
-    const sp = (ce2.keySpacing === "toolong" ? [] : ce2.keySpacing).reduce(
-      (acc, val) => {
-        if (val === undefined) return acc;
-        return acc + val;
-      },
-      0,
-    );
-    const space = ce2.startToFirstKey + ce2.lastKeyToEnd;
-    const total = Numbers.roundTo2((space + sp) / 1000);
-    const delta = Numbers.roundTo2(Math.abs(ce2.testDuration - total));
-    if (delta >= 0.1) {
-      notMatching.push(
-        `testDuration vs key timings (difference of ${delta} seconds)`,
-      );
-      mismatchedKeys.push("testDuration_keyTimings");
-      console.error(
-        `Completed event mismatch on testDuration vs key timings: testDuration ${ce2.testDuration} vs total key timings ${total}`,
-        {
-          testDuration: ce2.testDuration,
-          keyTimingsTotal: total,
-          keyDuration: dur,
-          keyOverlap: over,
-          keySpacing: sp,
-          startToFirstKey: ce2.startToFirstKey,
-          lastKeyToEnd: ce2.lastKeyToEnd,
-        },
-      );
-    }
-  }
-
-  {
-    const a = TestInput.rawHistory;
-    const b = getRawHistory(eventLog);
-    if (a.length === b.length && a.every((val, i) => val === b[i])) {
-      console.debug(`Completed event match on rawHistory:`, a);
-    } else {
-      const len = Math.min(a.length, b.length);
-      const diffs: number[] = [];
-      for (let i = 0; i < len; i++) {
-        const av = a[i] as number;
-        const bv = b[i] as number;
-        const denom = Math.abs(av);
-        if (denom === 0) {
-          if (bv !== 0) diffs.push(100);
-          continue;
-        }
-        diffs.push((Math.abs(av - bv) / denom) * 100);
-      }
-      const avg = diffs.length
-        ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
-        : 0;
-      const avgRounded = Numbers.roundTo2(avg);
-      notMatching.push(
-        `rawHistory (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
-      );
-      mismatchedKeys.push("rawHistory");
-      console.error(
-        `Completed event mismatch on rawHistory (avg ${avgRounded}% difference):`,
-        a,
-        b,
-      );
-    }
-  }
-
-  {
-    if (ce.chartData !== "toolong") {
-      const a = ce.chartData.wpm;
-      const b = getWpmHistory(eventLog);
-      if (a.length === b.length && a.every((val, i) => val === b[i])) {
-        console.debug(`Completed event match on chartData.wpm:`, a);
-      } else {
-        const len = Math.min(a.length, b.length);
-        const diffs: number[] = [];
-        for (let i = 0; i < len; i++) {
-          const av = a[i] as number;
-          const bv = b[i] as number;
-          const denom = Math.abs(av);
-          if (denom === 0) {
-            if (bv !== 0) diffs.push(100);
-            continue;
-          }
-          diffs.push((Math.abs(av - bv) / denom) * 100);
-        }
-        const avg = diffs.length
-          ? diffs.reduce((acc, v) => acc + v, 0) / diffs.length
-          : 0;
-        const avgRounded = Numbers.roundTo2(avg);
-        notMatching.push(
-          `chartData.wpm (avg ${avgRounded}% difference): ${JSON.stringify(a)} vs ${JSON.stringify(b)}`,
-        );
-        mismatchedKeys.push("chartData.wpm");
-        console.error(
-          `Completed event mismatch on chartData.wpm (avg ${avgRounded}% difference):`,
-          a,
-          b,
-        );
-      }
-    }
-  }
-
-  {
-    const a = getInputHistory().join(" ");
-    const noSpace = isFunboxActiveWithProperty("nospace");
-    if (!a.includes("\n") && !noSpace) {
-      const b = getEventsInputHistory(eventLog).join("");
-      if (a === b) {
-        console.debug(`Completed event match on input history:`, a);
-      } else {
-        notMatching.push(`input history (values differ)`);
-        mismatchedKeys.push("inputHistory");
-        console.error(
-          `Completed event mismatch on input history:`,
-          getInputHistory(),
-          getEventsInputHistory(eventLog),
-        );
-      }
-    }
-  }
-
-  if (notMatching.length === 0) {
-    if (ALWAYSREPORT) {
-      showSuccessNotification("Completed events match", { important: true });
-    }
-  } else {
-    let ignoreMismatch = false;
-    // if (
-    //   mismatchedKeys.includes("testDuration") &&
-    //   Math.abs(ce2.testDuration - ce.testDuration) <= 0.2
-    // ) {
-    //   ignoreMismatch = true;
-    //   console.warn("Ignoring completed event mismatch on testDuration", {
-    //     ceTestDuration: ce.testDuration,
-    //     ce2TestDuration: ce2.testDuration,
-    //   });
-    // }
-    // if (mismatchedKeys.includes("keyOverlap")) {
-    //   ignoreMismatch = true;
-    //   console.warn("Ignoring completed event mismatch on keyOverlap", {
-    //     ceKeyOverlap: ce.keyOverlap,
-    //     ce2KeyOverlap: ce2.keyOverlap,
-    //   });
-    // }
-    // if (
-    //   mismatchedKeys.includes("afkDuration") &&
-    //   Math.abs(ce2.afkDuration - ce.afkDuration) <= 1
-    // ) {
-    //   ignoreMismatch = true;
-    //   console.warn("Ignoring completed event mismatch on afkDuration", {
-    //     ceAfkDuration: ce.afkDuration,
-    //     ce2AfkDuration: ce2.afkDuration,
-    //   });
-    // }
-
-    // if (
-    //   mismatchedKeys.includes("chartData.wpm") &&
-    //   mismatchedKeys.length === 1
-    // ) {
-    //   ignoreMismatch = true;
-    // }
-
-    if (Config.mode !== "time" || (Config.time !== 15 && Config.time !== 60)) {
-      ignoreMismatch = true;
-    }
-
-    if (ALWAYSREPORT) {
-      if (ignoreMismatch) {
-        showNoticeNotification(
-          `Completed event ok with ignored mismatches: ${notMatching.join(", ")}`,
-          { important: true },
-        );
-      } else {
-        showErrorNotification(
-          `Completed event mismatch: ${notMatching.join(", ")}`,
-          { important: true },
-        );
-      }
-    }
-    if (!ignoreMismatch) {
-      mismatchedKeys.sort();
-      const groupKey = mismatchedKeys.join(",");
-      Ape.results
-        .reportCompletedEventMismatch({
-          body: {
-            notMatching,
-            mismatchedKeys,
-            groupKey,
-            language: ce.language,
-            mode: ce.mode,
-            mode2: ce.mode2,
-            difficulty: ce.difficulty,
-            duration: ce.testDuration,
-            funboxes: getActiveFunboxNames().join(","),
-            version: 29,
-            eventLog,
-            // ce: ce as Record<string, unknown>,
-            // ce2: ce2 as Record<string, unknown>,
-          },
-        })
-        .catch(() => {
-          //
-        });
-    }
-  }
-
-  console.debug("Completed event object2", ce2);
-}
-
-function buildCompletedEvent2(
   eventLog: EventLog,
 ): Omit<CompletedEvent, "hash" | "uid"> {
   const chars = getChars(eventLog);
@@ -1568,7 +834,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
-  TestStats.setEnd(now);
 
   // fade out the test and show loading
   // because the css animation has a delay,
@@ -1587,96 +852,21 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsRepeated(false);
   }
 
-  // in case the tests ends with a keypress (not a word submission)
-  // we need to push the current input to history
-  if (getCurrentInput().length !== 0) {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
-    Replay.replayGetWordsList(getInputHistory());
-  }
-
-  // in zen mode, ensure the replay words list reflects the typed input history
-  // even if the current input was empty at finish (e.g., after submitting a word).
-  if (Config.mode === "zen") {
-    Replay.replayGetWordsList(getInputHistory());
-  }
-
-  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
   forceReleaseAllKeys();
-
-  const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
-    TestStats.setEnd(TestInput.keypressTimings.spacing.last);
-  }
 
   setResultVisible(true);
   TestState.setResultVisible(true);
   TestState.setActive(false);
-  Replay.stopReplayRecording();
 
   cleanupData();
 
-  // logEventsDataToTheConsoleTable();
-
-  //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== getInputHistory()?.length) {
-    const burst = TestStats.calculateBurst(now);
-    TestInput.pushBurstToHistory(burst);
+  if (isDevEnvironment()) {
+    logEventsDataToTheConsoleTable();
   }
 
-  //remove afk from zen
-  if (Config.mode === "zen" || TestState.bailedOut) {
-    TestStats.removeAfkData();
-  }
-
-  // stats
-  const stats = TestStats.calculateFinalStats();
-  if (
-    stats.time % 1 !== 0 &&
-    !(
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time")
-    )
-  ) {
-    TestStats.setLastSecondNotRound();
-  }
-
-  PaceCaret.setLastTestWpm(stats.wpm);
-
-  // if the last second was not rounded, add another data point to the history
-  if (
-    TestStats.lastSecondNotRound &&
-    !difficultyFailed &&
-    Math.round(stats.time % 1) >= 0.5
-  ) {
-    const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-    TestInput.pushToRawHistory(wpmAndRaw.raw);
-    TestInput.pushKeypressesToHistory();
-    TestInput.pushErrorToHistory();
-    TestInput.pushAfkToHistory();
-  }
-
-  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60),
-  );
-
-  //adjust last second if last second is not round
-  // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    stats.time % 1 >= 0.5
-  ) {
-    const timescale = 1 / (stats.time % 1);
-
-    //multiply last element of rawBefore by scale, and round it
-    rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale,
-    );
-  }
-
-  const ce = buildCompletedEvent(stats, rawPerSecond);
+  const eventLog = buildEventLog();
+  const ce = buildCompletedEvent(eventLog);
+  PaceCaret.setLastTestWpm(ce.wpm);
 
   console.debug("Completed event object", ce);
 
@@ -1707,21 +897,22 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
+  TestState.setLastEventLog(eventLog);
   setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.length > 0 && kps.every((afk) => afk);
-
+  let afkDetected = getKeypressesPerSecond(eventLog)
+    .slice(-5)
+    .every((kps) => kps === 0);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
   let tooShort = false;
   //fail checks
-  const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
+  const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
     !TestState.bailedOut &&
@@ -1805,28 +996,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  if (ALWAYSREPORT) {
-    logEventsDataToTheConsoleTable();
-  }
-
-  if (
-    (getAuthenticatedUser() !== null &&
-      !dontSave &&
-      !difficultyFailed &&
-      Config.resultSaving) ||
-    ALWAYSREPORT
-  ) {
-    compareCompletedEvents(ce);
-  }
-
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
-      const testSeconds = completedEvent.testDuration;
-      const afkseconds = completedEvent.afkDuration;
-      let tt = Numbers.roundTo2(testSeconds - afkseconds);
-      if (tt < 0) tt = 0;
-      const acc = completedEvent.acc;
-      pushIncompleteTest({ acc, seconds: tt });
+      pushIncompleteTest({
+        acc: completedEvent.acc,
+        seconds: getIncompleteTestSeconds(eventLog),
+      });
     }
   }
 
@@ -1836,17 +1011,24 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      getInputHistory().length < TestWords.words.length
+      getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
 
-      const history = getInputHistory();
+      const history = getInputHistory(eventLog);
       let historyLength = history?.length;
       const wordIndex = historyLength - 1;
 
       const lastWordInputLength = history[wordIndex]?.length ?? 0;
 
-      if (lastWordInputLength < TestWords.words.getText(wordIndex).length) {
+      // compare against display.length (not textWithCommit.length): the input
+      // history holds the typed letters, not the committing space separator, so
+      // a space word is "complete" at text.length. display includes a newline
+      // commit, which is a required typed char.
+      if (
+        lastWordInputLength <
+        (TestWords.words.get(wordIndex)?.display.length ?? 0)
+      ) {
         historyLength--;
       }
 
@@ -1907,7 +1089,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) {
       // if its valid save it for later
-      notSignedInLastResult = completedEvent;
+      setLastSignedOutResult(completedEvent);
     }
     dontSave = true;
   }
@@ -1949,8 +1131,6 @@ async function saveResult(
   //@ts-expect-error just in case this is repeated and already has a hash
   delete result.hash;
   result.hash = objectHash(result);
-
-  console.trace();
 
   setAccountButtonSpinner(true);
 
@@ -2069,11 +1249,6 @@ async function saveResult(
 
 export function fail(reason: string): void {
   failReason = reason;
-  // input.pushHistory();
-  // corrected.pushHistory();
-  TestInput.pushKeypressesToHistory();
-  TestInput.pushErrorToHistory();
-  TestInput.pushAfkToHistory();
   void finish(true);
 }
 
@@ -2193,10 +1368,10 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
         highlight(
-          Arrays.nthElementFromArray(
+          nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
-            [...TestWords.words.getCurrentText()],
+            [...(TestWords.words.getCurrent()?.text ?? "")],
             0,
           ) as string,
         );

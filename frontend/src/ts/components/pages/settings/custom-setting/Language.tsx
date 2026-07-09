@@ -11,11 +11,11 @@ import {
 } from "../../../../constants/languages";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function Language(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="language"
       title="language"
       description={configMetadata.language.description}

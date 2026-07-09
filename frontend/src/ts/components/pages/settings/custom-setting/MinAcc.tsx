@@ -10,7 +10,7 @@ import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Button } from "../../../common/Button";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MinAcc(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -33,7 +33,7 @@ export function MinAcc(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="minAcc"
       title={configMetadata.minAcc.displayString ?? "min accuracy"}
       fa={configMetadata.minAcc.fa}

@@ -6,12 +6,8 @@ import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
-import * as TestStats from "./test-stats";
-import * as TestInput from "./test-input";
-import { getCurrentInput } from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Numbers from "@monkeytype/util/numbers";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -29,7 +25,14 @@ import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { logTestEvent } from "./events/data";
+import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
+import { roundTo2 } from "@monkeytype/util/numbers";
+import {
+  getLiveCachedAccuracy,
+  getLiveCachedTestDurationMs,
+} from "./events/live-cache";
+import { getChars } from "./events/stats";
+import { calculateWpm } from "../utils/numbers";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -41,7 +44,7 @@ const newTimer = createTimer({
     if (stopped) return;
     const now = performance.now();
     const expectedThisFireMs = timerStartMs + (Time.get() + 1) * 1000;
-    const drift = Numbers.roundTo2(now - expectedThisFireMs);
+    const drift = roundTo2(now - expectedThisFireMs);
 
     // animejs is rAF-quantized and can fire fractionally early — reschedule
     // the remainder; bounded by rAF granularity, can't tight-loop
@@ -128,6 +131,7 @@ export function clear(logEnd = false, now = performance.now()): void {
     logTestEvent("timer", now, {
       event: "end",
       timer: Time.get(),
+      date: new Date().getTime(),
     });
   }
 }
@@ -142,29 +146,11 @@ function premid(): void {
   if (timerDebug) console.timeEnd("premid");
 }
 
-function calculateWpmRaw(): { wpm: number; raw: number } {
-  if (timerDebug) console.time("calculate wpm and raw");
-  const wpmAndRaw = TestStats.calculateWpmAndRaw();
-  if (timerDebug) console.timeEnd("calculate wpm and raw");
-  if (timerDebug) console.time("push to history");
-  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
-  TestInput.pushToRawHistory(wpmAndRaw.raw);
-  if (timerDebug) console.timeEnd("push to history");
-  return wpmAndRaw;
-}
-
 function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
   if (timerDebug) console.time("update monkey");
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
   if (timerDebug) console.timeEnd("update monkey");
-}
-
-function calculateAcc(): number {
-  if (timerDebug) console.time("calculate acc");
-  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (timerDebug) console.timeEnd("calculate acc");
-  return acc;
 }
 
 function layoutfluid(): void {
@@ -202,7 +188,9 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
+            TestWords.words
+              .getCurrent()
+              ?.text.charAt(getCurrentInput().length) ?? "",
           );
         }, 1);
       }
@@ -216,9 +204,6 @@ function checkIfFailed(
   acc: number,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
-  TestInput.pushKeypressesToHistory();
-  TestInput.pushErrorToHistory();
-  TestInput.pushAfkToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
@@ -254,8 +239,6 @@ function checkIfTimeIsUp(): void {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     SlowTimer.clear();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "finish" });
@@ -293,7 +276,7 @@ export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
-function timerStep(_now: number, catchingUp: boolean): void {
+function timerStep(now: number, catchingUp: boolean): void {
   if (timerDebug) console.time("timer step -----------------------------");
 
   Time.increment();
@@ -306,8 +289,23 @@ function timerStep(_now: number, catchingUp: boolean): void {
     checkIfTimeIsUp();
   } else {
     //calc — only the final, real-time tick pays for these
-    const wpmAndRaw = calculateWpmRaw();
-    const acc = calculateAcc();
+    const eventLog = buildEventLog();
+
+    const chars = getChars(eventLog, true);
+
+    const currentTestDurationMs = getLiveCachedTestDurationMs(now);
+    const acc = getLiveCachedAccuracy();
+    const wpmAndRaw = {
+      wpm: Math.round(
+        calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
+      ),
+      raw: Math.round(
+        calculateWpm(
+          chars.allCorrect + chars.extra + chars.incorrect,
+          currentTestDurationMs / 1000,
+        ),
+      ),
+    };
 
     //ui updates
     requestDebouncedAnimationFrame("test-timer.timerStep", () => {
@@ -381,15 +379,17 @@ async function _startNew(now: number): Promise<void> {
   logTestEvent("timer", now, {
     event: "start",
     timer: Time.get(),
+    date: new Date().getTime(),
   });
 }
 
-async function _startOld(): Promise<void> {
+async function _startOld(now: number): Promise<void> {
   timerStats = [];
-  expected = TestStats.start + interval;
-  logTestEvent("timer", performance.now(), {
+  expected = now + interval;
+  logTestEvent("timer", now, {
     event: "start",
     timer: Time.get(),
+    date: new Date().getTime(),
   });
   (function loop(): void {
     const delay = expected - performance.now();
@@ -399,7 +399,7 @@ async function _startOld(): Promise<void> {
       expected: expected,
       nextDelay: delay,
     });
-    const drift = Numbers.roundTo2(Math.abs(interval - delay));
+    const drift = roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
       if (!TestState.isActive) {

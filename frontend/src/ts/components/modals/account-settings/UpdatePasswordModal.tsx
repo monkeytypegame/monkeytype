@@ -20,9 +20,9 @@ export function showUpdatePasswordModal(): void {
   showSimpleModal({
     title: "Update password",
     schema: z.object({
-      previousPass: z.string().min(1, "Current password is required"),
-      newPassword: getPasswordSchema(),
-      newPassConfirm: getPasswordSchema(),
+      previousPass: getPasswordSchema(),
+      newPassword: getPasswordSchema({ isNew: true }),
+      newPassConfirm: getPasswordSchema({ isNew: true }),
     }),
     inputs: {
       previousPass: {

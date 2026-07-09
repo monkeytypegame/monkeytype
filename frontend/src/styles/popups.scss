@@ -75,12 +75,6 @@ body.darkMode {
   }
 }
 
-#forgotPasswordModal {
-  .modal {
-    max-width: 400px;
-  }
-}
-
 #practiseWordsModal {
   .modal {
     max-width: 400px;
@@ -110,93 +104,6 @@ body.darkMode {
     .text {
       font-size: 1rem;
       color: var(--text-color);
-    }
-  }
-}
-
-#googleSignUpModal {
-  .modal {
-    max-width: 425px;
-    overflow: unset;
-    .captcha {
-      display: flex;
-      justify-content: center;
-    }
-    // .inputAndIndicator {
-    //   input {
-    //     width: 100%;
-    //   }
-    //   position: relative;
-    //   .checkStatus {
-    //     width: 2.25rem;
-    //     height: 2.25rem;
-    //     position: absolute;
-    //     right: 0;
-    //     top: 0;
-    //     /* background: red; */
-    //     display: grid;
-    //     grid-template-columns: 2.25rem;
-    //     grid-template-rows: 2.25rem;
-    //     place-items: center center;
-    //     cursor: pointer;
-
-    //     .checking,
-    //     .available,
-    //     .unavailable,
-    //     .taken {
-    //       grid-column: 1/2;
-    //       grid-row: 1/2;
-    //     }
-    //     .checking {
-    //       color: var(--sub-color);
-    //     }
-    //     .available {
-    //       color: var(--main-color);
-    //     }
-    //     .unavailable,
-    //     .taken {
-    //       color: var(--error-color);
-    //     }
-    //   }
-    // }
-  }
-}
-
-#lastSignedOutResult {
-  .modal {
-    max-width: 600px;
-
-    .buttons {
-      display: flex;
-      flex-direction: row-reverse;
-      gap: 0.5rem;
-      button {
-        flex-grow: 1;
-      }
-    }
-    .result {
-      display: grid;
-      gap: 0.5rem;
-      grid-template-columns: 1fr 1fr;
-    }
-    .divider {
-      background: var(--sub-alt-color);
-      width: 100%;
-      height: 0.25rem;
-      border-radius: var(--roundness);
-    }
-    .group {
-      .sub {
-        font-size: 0.75em;
-        color: var(--sub-color);
-      }
-      &.testType {
-        grid-column: 1;
-      }
-      &.wpm,
-      &.acc {
-        font-size: 2em;
-      }
     }
   }
 }
@@ -298,39 +205,6 @@ body.darkMode {
   }
 }
 
-#importExportSettingsModal {
-  .modal {
-    max-width: 900px;
-  }
-}
-
-#userReportModal {
-  .modal {
-    max-width: 800px;
-
-    label {
-      color: var(--sub-color);
-      margin-bottom: -0.5rem;
-    }
-
-    // .text {
-    //   // color: var(--sub-color);
-    // }
-
-    .user {
-      font-size: 1.5rem;
-    }
-
-    textarea {
-      resize: vertical;
-      width: 100%;
-      padding: 10px;
-      line-height: 1.2rem;
-      min-height: 5rem;
-    }
-  }
-}
-
 #editResultTagsModal {
   .modal {
     max-width: 600px;
@@ -338,44 +212,6 @@ body.darkMode {
       display: grid;
       gap: 0.5rem;
       grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    }
-  }
-}
-
-#streakHourOffsetModal {
-  .modal {
-    max-width: 500px;
-    .red {
-      color: var(--error-color);
-    }
-    .group {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.5rem;
-      justify-items: center;
-      align-items: center;
-      font-size: 2em;
-      button {
-        width: 100%;
-      }
-      input {
-        text-align: center;
-      }
-    }
-    .preview {
-      & > div:first-child {
-        margin-bottom: 1rem;
-      }
-      .row {
-        display: flex;
-        gap: 1rem;
-      }
-      div:first-child {
-        flex-grow: 1;
-      }
-      div:last-child {
-        align-self: center;
-      }
     }
   }
 }

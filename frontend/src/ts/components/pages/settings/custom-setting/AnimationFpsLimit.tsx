@@ -7,7 +7,7 @@ import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -24,7 +24,7 @@ export function AnimationFpsLimit(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="animationFpsLimit"
       title="animation fps limit"
       description={`Limit the maximum fps for animations. Setting this to "native" will run the animations as fast as possible (at your monitor's refresh rate). Setting this above your monitor's refresh rate will have no effect.`}
