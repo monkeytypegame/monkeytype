@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { ChartJs } from "../../src/ts/components/common/ChartJs";
 
 const meta = preview.meta({
   title: "Common/ChartJs",
-  component: ChartJs as Component,
+  component: ChartJs,
   parameters: {
     layout: "padded",
   },

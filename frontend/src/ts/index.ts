@@ -5,9 +5,7 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./modals/google-sign-up";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";

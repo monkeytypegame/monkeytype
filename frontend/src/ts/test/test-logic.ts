@@ -11,8 +11,6 @@ import {
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as AltTracker from "./alt-tracker";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
@@ -36,6 +34,7 @@ import {
   getRestartCount,
   isPaceRepeat,
   isRepeated,
+  isTestActive,
   pushIncompleteTest,
   resetIncompleteTests,
   setIsPaceRepeat,
@@ -44,7 +43,9 @@ import {
   setLastResult,
   setLastSignedOutResult,
   setResultVisible,
+  setTestActive,
   setWordsHaveNewline,
+  setWordsHaveNumbers,
   setWordsHaveTab,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
@@ -120,6 +121,7 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
+import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
@@ -135,7 +137,7 @@ export function startTest(now: number): boolean {
     void AnalyticsController.log("testStartedNoLogin");
   }
 
-  TestState.setActive(true);
+  setTestActive(true);
   Time.set(0);
   TestTimer.clear();
 
@@ -178,7 +180,7 @@ export function restart(options = {} as RestartOptions): void {
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   const noQuit = isFunboxActive("no_quit");
-  if (TestState.isActive && noQuit) {
+  if (isTestActive() && noQuit) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {
@@ -193,7 +195,7 @@ export function restart(options = {} as RestartOptions): void {
     options.event?.preventDefault();
     return;
   }
-  if (TestState.isActive) {
+  if (isTestActive()) {
     if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
@@ -247,7 +249,7 @@ export function restart(options = {} as RestartOptions): void {
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (TestState.isActive || failReason !== "")
+    (isTestActive() || failReason !== "")
   ) {
     options.withSameWordset = true;
   }
@@ -281,10 +283,9 @@ export function restart(options = {} as RestartOptions): void {
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
-  ShiftTracker.reset();
-  AltTracker.reset();
+  resetModifierState();
   Caret.hide();
-  TestState.setActive(false);
+  setTestActive(false);
   Replay.pauseReplay();
   TestState.setBailedOut(false);
   Caret.resetPosition();
@@ -535,7 +536,7 @@ async function init(): Promise<boolean> {
     }
   }
 
-  TestState.setWordsHaveNumbers(hasNumbers);
+  setWordsHaveNumbers(hasNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
@@ -822,7 +823,7 @@ function buildCompletedEvent(
     keySpacing: keypressSpacing,
     keyDuration: getKeypressDurations(eventLog),
     keyOverlap: getKeypressOverlap(eventLog),
-  } as Omit<CompletedEvent, "hash" | "uid">;
+  };
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
@@ -831,7 +832,7 @@ function buildCompletedEvent(
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   TestState.setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
@@ -857,7 +858,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   setResultVisible(true);
   TestState.setResultVisible(true);
-  TestState.setActive(false);
+  setTestActive(false);
 
   cleanupData();
 
@@ -1284,7 +1285,7 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   if (TestState.resultCalculating) return;
   if (
-    TestState.isActive &&
+    isTestActive() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
@@ -1319,7 +1320,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
 // little roadblock for basic cheating
 window.addEventListener("focus", () => {
   if (
-    !TestState.isActive &&
+    !isTestActive() &&
     !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
@@ -1333,7 +1334,7 @@ window.addEventListener("focus", () => {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
   if (
-    !TestState.isActive &&
+    !isTestActive() &&
     !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
