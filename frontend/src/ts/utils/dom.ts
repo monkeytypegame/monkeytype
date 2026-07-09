@@ -345,10 +345,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       | ((this: T, ev: Event) => void),
   ): this {
     // this type was some AI magic but if it works it works
-    this.native.addEventListener(
-      event,
-      handler as EventListenerOrEventListenerObject,
-    );
+    this.native.addEventListener(event, handler);
     return this;
   }
 

@@ -1,6 +1,5 @@
 import type {
   Config as ConfigSchema,
-  ConfigValue,
   FunboxName,
   PartialConfig,
 } from "@monkeytype/schemas/configs";
@@ -22,7 +21,7 @@ function mergeWithDefaultConfig(config: PartialConfig): ConfigSchema {
   const defaultConfig = getDefaultConfig();
   const mergedConfig = {} as ConfigSchema;
   for (const key of typedKeys(defaultConfig)) {
-    const newValue = config[key] ?? (defaultConfig[key] as ConfigValue);
+    const newValue = config[key] ?? defaultConfig[key];
     //@ts-expect-error cant be bothered to deal with this
     mergedConfig[key] = newValue;
   }
