@@ -29,38 +29,42 @@ export function Monkey() {
 
   const monkeyImages = (suffix?: string) => {
     const cur = state();
-    return [
-      <img
-        src={`/images/monkey/m1${suffix ?? ""}.png`}
-        class={cur === "left" ? "visible" : "hidden"}
-      />,
-      <img
-        src={`/images/monkey/m2${suffix ?? ""}.png`}
-        class={cur === "right" ? "visible" : "hidden"}
-      />,
-      <img
-        src={`/images/monkey/m3${suffix ?? ""}.png`}
-        class={cur === "none" ? "visible" : "hidden"}
-      />,
-      <img
-        src={`/images/monkey/m4${suffix ?? ""}.png`}
-        class={cur === "both" ? "visible" : "hidden"}
-      />,
-    ];
+    return (
+      <>
+        <img
+          src={`/images/monkey/m1${suffix ?? ""}.png`}
+          class={`absolute inset-0 ${cur === "left" ? "visible" : "hidden"}`}
+        />
+        <img
+          src={`/images/monkey/m2${suffix ?? ""}.png`}
+          class={`absolute inset-0 ${cur === "right" ? "visible" : "hidden"}`}
+        />
+        <img
+          src={`/images/monkey/m3${suffix ?? ""}.png`}
+          class={`absolute inset-0 ${cur === "none" ? "visible" : "hidden"}`}
+        />
+        <img
+          src={`/images/monkey/m4${suffix ?? ""}.png`}
+          class={`absolute inset-0 ${cur === "both" ? "visible" : "hidden"}`}
+        />
+      </>
+    );
   };
 
   return (
     <Show when={getConfig.monkey && isTestActive()}>
       <div
-        class="animate-shake flex w-full justify-center"
+        class="animate-shake mx-auto flex h-0 w-fit justify-center"
         style={{ "animation-duration": `${animDuration()}s` }}
       >
-        {monkeyImages()}
-        <div
-          class="fixed transition-all duration-1000"
-          style={{ opacity: fastOpacity() }}
-        >
-          {monkeyImages("_fast")}
+        <div class="absolute h-50 w-77">
+          {monkeyImages()}
+          <div
+            class="absolute inset-0 transition-all duration-1000"
+            style={{ opacity: fastOpacity() }}
+          >
+            {monkeyImages("_fast")}
+          </div>
         </div>
       </div>
     </Show>
