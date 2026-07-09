@@ -568,7 +568,7 @@ export function promiseWithResolvers<T = void>(): {
   return {
     resolve,
     reject,
-    promise: promiseLike as Promise<T>,
+    promise: promiseLike,
     reset,
   };
 }

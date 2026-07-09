@@ -24,7 +24,6 @@ import GeorgeQueue from "../../../src/queues/george-queue";
 import * as DiscordUtils from "../../../src/utils/discord";
 import * as Captcha from "../../../src/utils/captcha";
 import * as FirebaseAdmin from "../../../src/init/firebase-admin";
-import { FirebaseError } from "firebase-admin";
 import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
@@ -1439,7 +1438,7 @@ describe("user controller test", () => {
     });
     it("should fail for unknown error", async () => {
       //GIVEN
-      authUpdateEmailMock.mockRejectedValue({} as FirebaseError);
+      authUpdateEmailMock.mockRejectedValue({});
 
       //WHEN
       await mockApp

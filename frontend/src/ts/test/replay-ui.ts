@@ -222,7 +222,8 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     const replayWords = document.getElementById("replayWords");
 
     if (replayWords !== null) {
-      activeWord = replayWords.children[wordPos] as HTMLElement;
+      const fallback = replayWords.children[wordPos] as HTMLElement;
+      activeWord = fallback;
     }
 
     curPos = activeWord.children.length;
