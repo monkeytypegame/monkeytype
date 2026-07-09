@@ -1544,7 +1544,7 @@ export async function applyBurstHeatmap(): Promise<void> {
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             word.addClass("heatmapInherit");
-            word.setStyle({ color: colors[step.colorId] as string });
+            word.setStyle({ color: colors[step.colorId] });
           }
         });
       }
@@ -1553,7 +1553,7 @@ export async function applyBurstHeatmap(): Promise<void> {
     const boxes = qsa("#resultWordsHistory .heatmapLegend .boxes .box");
     for (let i = 0; i < boxes.length; i++) {
       (boxes[i] as ElementWithUtils).setStyle({
-        background: colors[i] as string,
+        background: colors[i],
       });
     }
   } else {

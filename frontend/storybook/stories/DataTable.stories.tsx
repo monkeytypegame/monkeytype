@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -48,7 +48,7 @@ const columns: DataTableColumnDef<Person>[] = [
 
 const meta = preview.meta({
   title: "UI/DataTable",
-  component: DataTable as Component,
+  component: DataTable,
   parameters: {
     layout: "padded",
   },

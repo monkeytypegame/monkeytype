@@ -1,5 +1,6 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { FunboxName } from "@monkeytype/schemas/configs";
+import { typedKeys } from "@monkeytype/util/objects";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
 import { configEvent } from "../events/config";
@@ -11,10 +12,9 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./funbox-validation";
-import { configMetadata, ConfigMetadataObject } from "./metadata";
+import { configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
-import { typedKeys } from "@monkeytype/util/objects";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -24,7 +24,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     partOfFullConfigChange?: boolean;
   },
 ): boolean {
-  const metadata = configMetadata[key] as ConfigMetadataObject[T];
+  const metadata = configMetadata[key];
   if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }
@@ -129,7 +129,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     key: key,
     newValue: value,
     nosave: options?.nosave ?? false,
-    previousValue: previousValue as ConfigSchemas.Config[T],
+    previousValue: previousValue,
   });
 
   if (!options?.partOfFullConfigChange) {

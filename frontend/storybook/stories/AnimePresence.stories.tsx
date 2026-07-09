@@ -1,5 +1,5 @@
 import { AnimationParams } from "animejs";
-import { Component, createSignal, For, Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -8,7 +8,7 @@ import { AnimePresence } from "../../src/ts/components/common/anime/AnimePresenc
 
 const meta = preview.meta({
   title: "Common/Anime/AnimePresence",
-  component: AnimePresence as Component,
+  component: AnimePresence,
   parameters: {
     layout: "centered",
   },

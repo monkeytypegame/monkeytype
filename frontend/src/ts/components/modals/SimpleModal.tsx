@@ -84,9 +84,9 @@ function getValidators(
     // oxlint-disable-next-line typescript/no-unsafe-argument
     validators.onChange = fromSchema(schema, {
       convert,
-    }) as SyncValidator;
+    });
   } else if (required) {
-    validators.onChange = fieldMandatory() as SyncValidator;
+    validators.onChange = fieldMandatory();
   }
 
   if (isValid !== undefined) {

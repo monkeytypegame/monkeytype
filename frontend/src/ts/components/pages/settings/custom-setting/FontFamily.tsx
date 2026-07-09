@@ -79,7 +79,7 @@ export function FontFamily(): JSXElement {
                 accept="font/woff,font/woff2,font/ttf,font/otf"
                 class="hidden"
                 onChange={async (e) => {
-                  const fileInput = e.target as HTMLInputElement;
+                  const fileInput = e.target;
                   const file = fileInput.files?.[0];
 
                   if (!file) {
@@ -126,10 +126,7 @@ export function FontFamily(): JSXElement {
           <div class="grid grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))] gap-2">
             <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
               {(option) => {
-                const optionsMeta = configMetadata.fontFamily
-                  .optionsMetadata as
-                  | Record<string, { displayString?: string }>
-                  | undefined;
+                const optionsMeta = configMetadata.fontFamily.optionsMetadata;
                 const match = optionsMeta?.[String(option)];
                 const displayString =
                   match?.displayString ?? String(option).replace(/_/g, " ");
