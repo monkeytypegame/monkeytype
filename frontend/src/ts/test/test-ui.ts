@@ -38,7 +38,6 @@ import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
 import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
-import * as Monkey from "./monkey";
 import {
   blurInputElement,
   focusInputElement,
@@ -65,6 +64,7 @@ import { skipBreakdownEvent } from "../states/header";
 import {
   getCurrentQuote,
   isTestActive,
+  resetCurrentLiveStats,
   wordsHaveNewline,
 } from "../states/test";
 import {
@@ -1853,7 +1853,6 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  Monkey.show();
   TimerProgress.show();
   LiveSpeed.show();
   LiveAcc.show();
@@ -1874,7 +1873,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   LiveAcc.reset();
   TimerProgress.instantHide();
   TimerProgress.reset();
-  Monkey.instantHide();
+  resetCurrentLiveStats();
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
@@ -1912,7 +1911,6 @@ export function onTestFinish(): void {
   LiveBurst.hide();
   TimerProgress.hide();
   OutOfFocus.hide();
-  Monkey.hide();
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
   }

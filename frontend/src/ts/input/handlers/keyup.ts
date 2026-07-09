@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import * as Monkey from "../../test/monkey";
 import { logTestEvent } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
@@ -25,8 +24,4 @@ export async function onKeyup(event: KeyboardEvent): Promise<void> {
     event.preventDefault();
     return;
   }
-
-  setTimeout(() => {
-    Monkey.stop(event);
-  }, 0);
 }

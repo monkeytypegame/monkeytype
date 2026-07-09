@@ -1,8 +1,6 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configMetadata } from "./metadata";
-import { isConfigValueValid } from "./validation";
 import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
@@ -11,7 +9,9 @@ import {
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
+import { configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
+import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
 import { isTestActive } from "../states/test";

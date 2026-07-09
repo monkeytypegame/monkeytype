@@ -53,6 +53,7 @@ describe("Config", () => {
       notificationAddMock,
       miscReloadAfterMock,
       miscTriggerResizeMock,
+      stateIsTestActiveMock,
     ];
 
     beforeEach(async () => {

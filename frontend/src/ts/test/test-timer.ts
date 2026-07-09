@@ -7,7 +7,6 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestWords from "./test-words";
-import * as Monkey from "./monkey";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -33,7 +32,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
-import { isTestActive } from "../states/test";
+import { isTestActive, setCurrentLiveStats } from "../states/test";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -145,13 +144,6 @@ function premid(): void {
     premidSecondsLeft.innerHTML = (Config.time - Time.get()).toString();
   }
   if (timerDebug) console.timeEnd("premid");
-}
-
-function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
-  if (timerDebug) console.time("update monkey");
-  const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
-  Monkey.updateFastOpacity(num);
-  if (timerDebug) console.timeEnd("update monkey");
 }
 
 function layoutfluid(): void {
@@ -311,12 +303,12 @@ function timerStep(now: number, catchingUp: boolean): void {
     //ui updates
     requestDebouncedAnimationFrame("test-timer.timerStep", () => {
       premid();
-      monkey(wpmAndRaw);
     });
 
     // already using raf
     TimerProgress.update();
     LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+    setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning();
