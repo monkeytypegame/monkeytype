@@ -58,6 +58,8 @@ export const [getCurrentQuote, setCurrentQuote] =
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
+export const [isTestActive, setTestActive] = createSignal(false);
+
 createEffect(() => {
   getActivePage(); // depend on active page
   setIsLongTest(

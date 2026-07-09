@@ -1,11 +1,11 @@
 import { mapRange } from "@monkeytype/util/numbers";
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
-import * as TestState from "../test/test-state";
 import * as KeyConverter from "../utils/key-converter";
 import { qs } from "../utils/dom";
 import { Keycode } from "../constants/keys";
 import { JSAnimation } from "animejs";
+import { isTestActive } from "../states/test";
 
 const monkeyEl = qs("#monkey");
 const monkeyFastEl = qs("#monkey .fast");
@@ -13,7 +13,7 @@ const monkeyFastEl = qs("#monkey .fast");
 let monkeyFastOpacityAnimation: JSAnimation | undefined;
 
 configEvent.subscribe(({ key }) => {
-  if (key === "monkey" && TestState.isActive) {
+  if (key === "monkey" && isTestActive()) {
     if (Config.monkey) {
       monkeyEl?.show();
     } else {

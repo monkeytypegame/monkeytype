@@ -15,6 +15,8 @@ import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
+import * as TestState from "../../src/ts/states/test";
+
 const { replaceConfig, getConfig } = __testing;
 
 describe("Config", () => {
@@ -41,6 +43,7 @@ describe("Config", () => {
     );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
+    const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
 
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,
@@ -56,13 +59,10 @@ describe("Config", () => {
       vi.useFakeTimers();
       mocks.forEach((it) => it.mockClear());
 
-      vi.mock("../../src/ts/test/test-state", () => ({
-        isActive: true,
-      }));
-
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       dbSaveConfigMock.mockResolvedValue();
+      stateIsTestActiveMock.mockReturnValue(true);
 
       replaceConfig({});
     });
