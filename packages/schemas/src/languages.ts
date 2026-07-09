@@ -470,7 +470,7 @@ export const LanguageObjectSchema = z
       .array(z.tuple([z.string().min(1), z.string().min(1)]))
       .optional(),
     bcp47: z.string().optional(),
-    fallbackFont: KnownFontNameSchema.optional(),
+    preferredFont: KnownFontNameSchema.optional(),
     originalPunctuation: z.boolean().optional(),
   })
   .strict();

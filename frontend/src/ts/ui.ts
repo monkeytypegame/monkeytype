@@ -50,12 +50,12 @@ export async function applyFontFamily(): Promise<void> {
       }`);
   }
 
-  const fallbackFont = (await getLanguage(Config.language))?.fallbackFont;
+  const preferredFont = (await getLanguage(Config.language))?.preferredFont;
 
   const fonts = [
     font,
-    fallbackFont !== undefined
-      ? `"${replaceUnderscoresWithSpaces(fallbackFont)}"`
+    preferredFont !== undefined
+      ? `"${replaceUnderscoresWithSpaces(preferredFont)}"`
       : undefined,
     '"Roboto Mono"',
     '"Vazirharf"',

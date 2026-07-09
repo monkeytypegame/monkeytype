@@ -4,7 +4,7 @@
   "joiningScript": true,
   "orderedByFrequency": false,
   "bcp47": "sd",
-  "fallbackFont": "Noto_Naskh_Arabic",
+  "preferredFont": "Noto_Naskh_Arabic",
   "words": [
     "جي",
     "۾",
