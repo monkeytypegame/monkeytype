@@ -1,5 +1,4 @@
 import { Config } from "../config/store";
-import * as EditResultTagsModal from "../modals/edit-result-tags";
 import { __nonReactive } from "../collections/tags";
 import {
   showNoticeNotification,
@@ -12,6 +11,7 @@ import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getCurrentQuote } from "../states/test";
+import { showEditResultTagsModal } from "../states/edit-result-tags";
 
 const testPage = qs(".pageTest");
 
@@ -25,7 +25,7 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
         "data-active-tag-ids",
       ) ?? "";
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
-    EditResultTagsModal.show(resultid, tags, "resultPage");
+    showEditResultTagsModal({ _id: resultid, tags, source: "resultPage" });
   }
 });
 
