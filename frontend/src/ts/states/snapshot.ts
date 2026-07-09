@@ -5,7 +5,7 @@ import { Mode } from "@monkeytype/schemas/shared";
 
 export type MiniSnapshot = Omit<
   Snapshot,
-  "testActivity" | "testActivityByYear"
+  "testActivity" | "testActivityByYear" | "isMiniSnapshot"
 > & { isMiniSnapshot: boolean };
 const [snapshot, updateSnapshot] = createStore<{
   value: MiniSnapshot | undefined;

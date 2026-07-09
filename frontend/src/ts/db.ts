@@ -45,7 +45,7 @@ export function getSnapshot(): Snapshot | undefined {
 }
 
 export function setSnapshot(
-  newSnapshot: (Snapshot & { isMiniSnapshot?: never }) | undefined,
+  newSnapshot: Snapshot | undefined,
   options?: { dispatchEvent?: boolean },
 ): void {
   const originalBanned = dbSnapshot?.banned;
