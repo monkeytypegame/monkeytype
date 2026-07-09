@@ -669,9 +669,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       afterExec: () => TestLogic.restart(),
     },
   },
-  keymapShowTopRow: {
+  keymapKeys: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "keyboard",
   },

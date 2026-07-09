@@ -114,8 +114,12 @@ export const KeymapLegendStyleSchema = z.enum([
 ]);
 export type KeymapLegendStyle = z.infer<typeof KeymapLegendStyleSchema>;
 
-export const KeymapShowTopRowSchema = z.enum(["always", "layout", "never"]);
-export type KeymapShowTopRow = z.infer<typeof KeymapShowTopRowSchema>;
+export const KeymapKeysSchema = z.enum([
+  "minimal", //showTopRow=layout or showTopRow=never
+  "minimal_numrow", //showTopRow=always
+  "full", //include extra keys
+]);
+export type KeymapKeys = z.infer<typeof KeymapKeysSchema>;
 
 export const KeymapSizeSchema = z.number().min(0.5).max(3.5).step(0.1);
 export type KeymapSize = z.infer<typeof KeymapSizeSchema>;
@@ -470,7 +474,7 @@ export const ConfigSchema = z
     keymapLayout: KeymapLayoutSchema,
     keymapStyle: KeymapStyleSchema,
     keymapLegendStyle: KeymapLegendStyleSchema,
-    keymapShowTopRow: KeymapShowTopRowSchema,
+    keymapKeys: KeymapKeysSchema,
     keymapSize: KeymapSizeSchema,
 
     // theme

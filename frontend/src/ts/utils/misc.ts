@@ -472,7 +472,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
@@ -686,6 +685,12 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
 
   el.scrollIntoView({
     block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+export function scrollToTop(): void {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
   });
 }
 

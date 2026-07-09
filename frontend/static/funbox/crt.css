@@ -131,16 +131,9 @@ body.crtmode .scrollToTopButton:hover {
     0 0 3px;
 }
 
-body.crtmode #keymap .keymapKey {
+body.crtmode [data-ui-element="keymap"] > div > div > div {
   box-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow),
-    0 0 3px;
-}
-
-body.crtmode #keymap .keymapKey.activeKey {
-  box-shadow:
-    3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow),
-    0 0 3px;
+    3px 0 1px var(--crt-sub-alt-color-glow),
+    -3px 0 var(--crt-sub-alt-color-glow),
+    0 0 3px var(--crt-sub-alt-color-glow);
 }
