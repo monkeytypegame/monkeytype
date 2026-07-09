@@ -225,11 +225,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // this needs to be called after event logging
   WeakSpot.updateScore(data, correct);
 
-  if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
-  }
-
-  // going to next word
+  // going to next word (increases activeWordIndex inside)
   let increasedWordIndex: null | boolean = null;
   let lastBurst: null | number = null;
   if (goingToNextWord) {
@@ -290,6 +286,11 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     ) {
       void TestLogic.finish();
     }
+  }
+
+  // update display and highlight after index is increased (goToNextWord)
+  if (lastInMultiOrSingle) {
+    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
   }
 }
 
