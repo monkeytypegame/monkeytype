@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 import { getActivePage } from "./core";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
@@ -11,14 +11,7 @@ const [getMonkeyState, setMonkeyState] = createSignal<{
 
 export { getMonkeyState };
 
-const listeners: Array<{ remove: () => void }> = [];
-
 createEffect(() => {
-  for (const listener of listeners) {
-    listener.remove();
-  }
-  listeners.length = 0;
-
   setMonkeyState({ left: false, right: false });
 
   if (getActivePage() === "test" && getConfig.monkey) {
@@ -28,17 +21,16 @@ createEffect(() => {
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
 
-    listeners.push(
-      {
-        remove: (): void => document.removeEventListener("keydown", onKeyDown),
-      },
-      { remove: (): void => document.removeEventListener("keyup", onKeyUp) },
-    );
+    onCleanup(() => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
+    });
   }
 });
 
 const middleKeysState = { left: false, right: false, last: "right" };
 function handleKey(event: KeyboardEvent, isKeyDown: boolean): void {
+  console.log("handleKey", event.code, isKeyDown, getMonkeyState());
   const { leftSide, rightSide } = keycodeToKeyboardSide(event.code as Keycode);
   let { left, right } = getMonkeyState();
 
