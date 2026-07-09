@@ -59,6 +59,7 @@ describe("Config", () => {
     beforeEach(async () => {
       vi.useFakeTimers();
       mocks.forEach((it) => it.mockClear());
+
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       dbSaveConfigMock.mockResolvedValue();

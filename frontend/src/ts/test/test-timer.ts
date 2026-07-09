@@ -40,7 +40,7 @@ const newTimer = createTimer({
   duration: 1000,
   autoplay: false,
   onComplete: () => {
-    // sync guard — finish() is async and TestState.isActive flips behind an await
+    // sync guard — finish() is async and isTestActive() flips behind an await
     if (stopped) return;
     const now = performance.now();
     const expectedThisFireMs = timerStartMs + (Time.get() + 1) * 1000;
