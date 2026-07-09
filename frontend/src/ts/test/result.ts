@@ -1,4 +1,3 @@
-//TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
 
 import { Config } from "../config/store";
@@ -290,9 +289,10 @@ export async function updateChartPBLine(): Promise<void> {
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Numbers.roundTo2(
+  const chartlpb = Format.decimals(
     typingSpeedUnit.fromWpm(localPbWpm),
-  ).toFixed(2);
+    { showDecimalPlaces: true },
+  );
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -345,18 +345,18 @@ function updateWpmAndAcc(): void {
       if (Config.typingSpeedUnit !== "wpm") {
         qs("#result .stats .wpm .bottom")?.setAttribute(
           "aria-label",
-          `${result.wpm.toFixed(2)} wpm`,
+          `${Format.decimals(result.wpm, { showDecimalPlaces: true, suffix: " wpm" })}`,
         );
         qs("#result .stats .raw .bottom")?.setAttribute(
           "aria-label",
-          `${result.rawWpm.toFixed(2)} wpm`,
+          `${Format.decimals(result.rawWpm, { showDecimalPlaces: true, suffix: " wpm" })}`,
         );
       } else {
         qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
         qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
       }
 
-      let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
+      let time = `${Format.decimals(result.testDuration, { showDecimalPlaces: true, suffix: "s" })}`;
       if (result.testDuration > 61) {
         time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
       }
@@ -377,8 +377,8 @@ function updateWpmAndAcc(): void {
       let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
       if (Config.typingSpeedUnit !== "wpm") {
-        wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
-        rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
+        wpmHover += ` (${Format.decimals(result.wpm, { showDecimalPlaces: true, suffix: " wpm" })})`;
+        rawWpmHover += ` (${Format.decimals(result.rawWpm, { showDecimalPlaces: true, suffix: " wpm" })})`;
       }
 
       qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
@@ -437,7 +437,7 @@ function updateTime(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
+    let time = `${Format.decimals(result.testDuration, { showDecimalPlaces: true, suffix: "s" })}`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
@@ -743,9 +743,10 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             display: true,
-            content: `${tag.name} PB: ${Numbers.roundTo2(
+            content: `${tag.name} PB: ${Format.decimals(
               typingSpeedUnit.fromWpm(tpb),
-            ).toFixed(2)}`,
+              { showDecimalPlaces: true },
+            )}`,
           },
         });
         if (annotationSide === "start") {
