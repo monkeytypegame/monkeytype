@@ -18,6 +18,7 @@ import { createEffect } from "solid-js";
 import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
+import { replaceUnderscoresWithSpaces } from "./utils/strings";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -30,7 +31,7 @@ export function previewFontFamily(font: FontName): void {
 }
 
 export async function applyFontFamily(): Promise<void> {
-  let font = Config.fontFamily.replace(/_/g, " ");
+  let font = replaceUnderscoresWithSpaces(Config.fontFamily);
 
   const localFont = await fileStorage.getFile("LocalFontFamilyFile");
   if (localFont === undefined) {
@@ -53,7 +54,9 @@ export async function applyFontFamily(): Promise<void> {
 
   const fonts = [
     font,
-    fallbackFont !== undefined ? `"${fallbackFont}"` : undefined,
+    fallbackFont !== undefined
+      ? `"${replaceUnderscoresWithSpaces(fallbackFont)}"`
+      : undefined,
     '"Roboto Mono"',
     '"Vazirharf"',
     "monospace",
