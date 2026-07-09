@@ -30,7 +30,7 @@ createEffect(() => {
 
 const middleKeysState = { left: false, right: false, last: "right" };
 function handleKey(event: KeyboardEvent, isKeyDown: boolean): void {
-  console.log("handleKey", event.code, isKeyDown, getMonkeyState());
+  if (isKeyDown && event.repeat) return;
   const { leftSide, rightSide } = keycodeToKeyboardSide(event.code as Keycode);
   let { left, right } = getMonkeyState();
 
