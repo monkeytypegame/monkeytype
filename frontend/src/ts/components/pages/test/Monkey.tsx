@@ -1,9 +1,9 @@
 import { mapRange } from "@monkeytype/util/numbers";
-import { Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { getMonkeyState } from "../../../states/monkey";
 import { currentLiveStats, isTestActive } from "../../../states/test";
+import { AnimeShow } from "../../common/anime";
 
 const MIN_WPM = 130;
 const MAX_WPM = 180;
@@ -52,7 +52,7 @@ export function Monkey() {
   };
 
   return (
-    <Show when={getConfig.monkey && isTestActive()}>
+    <AnimeShow when={getConfig.monkey && isTestActive()}>
       <div
         class="animate-shake mx-auto flex h-0 w-fit justify-center"
         style={{ "animation-duration": `${animDuration()}s` }}
@@ -67,6 +67,6 @@ export function Monkey() {
           </div>
         </div>
       </div>
-    </Show>
+    </AnimeShow>
   );
 }
