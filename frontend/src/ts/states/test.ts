@@ -133,22 +133,42 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-let layoutPromise = promiseWithResolvers();
+let inputLayoutPromise = promiseWithResolvers();
+const getInputLayout = createMemo<{
+  layout: string;
+  isMirrored: boolean;
+}>(() => {
+  return {
+    layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
+    isMirrored: getConfig.funbox.includes("layout_mirror"),
+  };
+});
 
-async function waitForLayoutReady(): Promise<void> {
-  await layoutPromise.promise;
-  if (keymapLayoutObject.state === "ready") return;
+const [inputLayoutObject] = createResource(getInputLayout, async (layout) => {
+  const result = await getLayout(layout.layout);
+  if (layout.isMirrored) {
+    return mirrorLayoutKeys(result);
+  }
+  return result;
+});
 
-  if (keymapLayoutObject.state === "errored") {
-    throw new Error("Failed to load keymap layout");
+async function waitForInputLayoutReady(): Promise<void> {
+  await inputLayoutPromise.promise;
+  if (inputLayoutObject.state === "ready") return;
+
+  if (inputLayoutObject.state === "errored") {
+    throw new Error("Failed to load input layout");
   }
 }
 
 createEffect(() => {
-  const state = keymapLayoutObject.state;
-  if (state === "ready" || state === "errored") {
-    layoutPromise.resolve();
-    layoutPromise.reset();
+  const state = inputLayoutObject.state;
+  inputLayoutPromise.reset();
+  if (state === "ready") {
+    inputLayoutPromise.resolve();
+  }
+  if (state === "errored") {
+    inputLayoutPromise.reject(new Error("failed to fetch input layout"));
   }
 });
 
@@ -156,11 +176,11 @@ createEffect(() => {
  * Used for non reactive access. Do not use in Solid components.
  */
 export const __nonReactive = {
-  getKeymapLayout: async (): Promise<LayoutObject> => {
-    await waitForLayoutReady();
-    const result = keymapLayoutObject();
+  getInputLayout: async (): Promise<LayoutObject> => {
+    await waitForInputLayoutReady();
+    const result = inputLayoutObject();
     if (result === undefined) {
-      throw new Error("Failed to load keymap layout");
+      throw new Error("Failed to load input layout");
     }
     return result;
   },

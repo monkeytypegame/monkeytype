@@ -41,8 +41,9 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   const { inputValue } = getInputElementValue();
-  const currentWordTextWithCommit =
-    TestWords.words.getCurrent()?.textWithCommit ?? "";
+  const currentWordObj = TestWords.words.getCurrent();
+  const currentWordTextWithCommit = currentWordObj?.textWithCommit ?? "";
+  const currentWordTextDisplay = currentWordObj?.display ?? "";
 
   //normalize visually-equivalent chars (e.g. IME U+3000 space) to the target
   //char, matching onInsertText, so commit classification is consistent
@@ -85,7 +86,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    getCurrentInput().length >= currentWordTextWithCommit.length;
+    getCurrentInput().length >= currentWordTextDisplay.length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active

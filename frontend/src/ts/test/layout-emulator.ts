@@ -31,7 +31,7 @@ export async function getCharFromEvent(
 
   let layout;
   try {
-    layout = await __nonReactive.getKeymapLayout();
+    layout = await __nonReactive.getInputLayout();
   } catch (e) {
     showErrorNotification("Failed to emulate event", { error: e });
     return null;
