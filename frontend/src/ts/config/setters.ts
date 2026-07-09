@@ -1,7 +1,7 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configMetadata, ConfigMetadataObject } from "./metadata";
+import { configMetadata } from "./metadata";
 import { isConfigValueValid } from "./validation";
 import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
@@ -24,7 +24,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     partOfFullConfigChange?: boolean;
   },
 ): boolean {
-  const metadata = configMetadata[key] as ConfigMetadataObject[T];
+  const metadata = configMetadata[key];
   if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }
@@ -129,7 +129,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     key: key,
     newValue: value,
     nosave: options?.nosave ?? false,
-    previousValue: previousValue as ConfigSchemas.Config[T],
+    previousValue: previousValue,
   });
 
   if (!options?.partOfFullConfigChange) {

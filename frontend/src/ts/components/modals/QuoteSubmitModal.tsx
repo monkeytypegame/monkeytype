@@ -35,11 +35,13 @@ export function QuoteSubmitModal(): JSXElement {
     text: g.replace(/_/g, " "),
   }));
 
+  const language = removeLanguageSize(Config.language) as string;
+
   const form = createForm(() => ({
     defaultValues: {
       text: "",
       source: "",
-      language: removeLanguageSize(Config.language) as string,
+      language,
       captcha: "",
     },
     onSubmit: async ({ value }) => {
@@ -76,7 +78,7 @@ export function QuoteSubmitModal(): JSXElement {
       defaultValues: {
         text: "",
         source: "",
-        language: removeLanguageSize(Config.language) as string,
+        language: removeLanguageSize(Config.language),
         captcha: "",
       },
     });

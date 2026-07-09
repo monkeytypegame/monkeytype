@@ -419,7 +419,7 @@ function extractScaleSounds(
           {
             preview: createPreviewScale(config.validNotes),
             meta: { ...defaultScaleData },
-          } as ScaleMeta,
+          },
         ];
       }),
   );

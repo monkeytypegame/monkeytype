@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { UserBadge } from "../../src/ts/components/common/UserBadge";
 
 const meta = preview.meta({
   title: "Common/UserBadge",
-  component: UserBadge as Component,
+  component: UserBadge,
   parameters: {
     layout: "centered",
   },
