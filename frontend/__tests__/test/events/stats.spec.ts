@@ -844,7 +844,7 @@ describe("stats.ts", () => {
         charIndex: 3,
         inputType: "deleteWordBackward",
         inputValue: "=",
-      } as InputEventData);
+      });
 
       // second Ctrl+Backspace: Firefox ate sentinel + "=" → goToPreviousWord;
       // clearedNextWord marks word 1 (= wordIndex + 1) as abandoned
@@ -854,7 +854,7 @@ describe("stats.ts", () => {
         inputType: "deleteWordBackward",
         inputValue: "",
         clearedNextWord: true,
-      } as InputEventData);
+      });
 
       logTestEvent("timer", 5000, timer("end", 4));
 

@@ -1,20 +1,20 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configMetadata, ConfigMetadataObject } from "./metadata";
-import { isConfigValueValid } from "./validation";
 import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./funbox-validation";
-import * as TestState from "../test/test-state";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
+import { configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
+import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
+import { isTestActive } from "../states/test";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -24,7 +24,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     partOfFullConfigChange?: boolean;
   },
 ): boolean {
-  const metadata = configMetadata[key] as ConfigMetadataObject[T];
+  const metadata = configMetadata[key];
   if (metadata === undefined) {
     throw new Error(`Config metadata for key "${key}" is not defined.`);
   }
@@ -41,7 +41,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   if (
     metadata.changeRequiresRestart &&
-    TestState.isActive &&
+    isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {
     showNoticeNotification(
@@ -129,7 +129,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     key: key,
     newValue: value,
     nosave: options?.nosave ?? false,
-    previousValue: previousValue as ConfigSchemas.Config[T],
+    previousValue: previousValue,
   });
 
   if (!options?.partOfFullConfigChange) {
@@ -154,7 +154,7 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (TestState.isActive && Config.funbox.includes("no_quit")) {
+  if (isTestActive() && Config.funbox.includes("no_quit")) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {

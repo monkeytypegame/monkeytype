@@ -6,6 +6,7 @@ import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
+import { EditResultTagsModal } from "./EditResultTagsModal";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
 import { GoogleSignupModal } from "./GoogleSignUpModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
@@ -48,6 +49,7 @@ export function Modals(): JSXElement {
       <GoogleSignupModal />
       <ForgotPasswordModal />
       <UserReportModal />
+      <EditResultTagsModal />
     </>
   );
 }

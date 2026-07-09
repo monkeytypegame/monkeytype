@@ -58,6 +58,15 @@ export const [getCurrentQuote, setCurrentQuote] =
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
+export const [isTestActive, setTestActive] = createSignal(false);
+export const [currentLiveStats, setCurrentLiveStats] = createStore<{
+  wpm?: number;
+  acc?: number;
+  raw?: number;
+}>({});
+export const resetCurrentLiveStats = (): void =>
+  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
+
 createEffect(() => {
   getActivePage(); // depend on active page
   setIsLongTest(

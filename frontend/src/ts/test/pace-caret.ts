@@ -12,7 +12,12 @@ import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import {
+  getCurrentQuote,
+  isPaceRepeat,
+  isTestActive,
+  setPaceCaretWpm,
+} from "../states/test";
 
 type Settings = {
   wpm: number;
@@ -116,11 +121,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (
-    currentSettings === null ||
-    !TestState.isActive ||
-    TestState.resultVisible
-  ) {
+  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
     return;
   }
 
