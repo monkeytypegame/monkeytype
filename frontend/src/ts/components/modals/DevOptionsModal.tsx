@@ -1,5 +1,7 @@
+import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
+import { z } from "zod";
 
 import Ape from "../../ape";
 import { signIn } from "../../auth";
@@ -7,18 +9,20 @@ import { refetchInboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { toggleCaretDebug } from "../../elements/caret";
 import { getInputElement } from "../../input/input-element";
-import { showPopup } from "../../modals/simple-modals";
-import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
+import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal, showModal } from "../../states/modals";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import { showSimpleModal } from "../../states/simple-modal";
 import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
+import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
+import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -35,7 +39,7 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-database",
       label: () => "Generate Data",
-      onClick: () => showPopup("devGenerateData"),
+      onClick: () => showGenerateDataModal(),
     },
     {
       icon: "fa-bell",
@@ -163,6 +167,20 @@ export function DevOptionsModal(): JSXElement {
       label: () => "Disable Slow Timer Fail",
       onClick: disableSlowTimerFail,
     },
+    {
+      icon: "fa-vials",
+      label: () => "Event Log Viewer",
+      onClick: () => showModal("EventLogViewer"),
+    },
+    {
+      icon: "fa-stopwatch",
+      label: () => `Profiler Mode (${isProfilerMode() ? "ON" : "OFF"})`,
+      onClick: () => {
+        setProfilerMode(!isProfilerMode());
+        showNoticeNotification("Profiler mode toggled, reloading...");
+        setTimeout(() => location.reload(), 500);
+      },
+    },
   ];
 
   const addDebugInboxItem = (rewardType: "xp" | "badge" | "none"): void => {
@@ -221,4 +239,88 @@ export function DevOptionsModal(): JSXElement {
       </AnimatedModal>
     </>
   );
+}
+
+function showGenerateDataModal(): void {
+  showSimpleModal({
+    title: "Generate data",
+    text: `if create user is checked, user will be created with <name>@example.com and password: password`,
+    class: "max-w-2xl",
+    schema: z.object({
+      username: UserNameSchema,
+      createUser: z.boolean(),
+      firstTestTimestamp: z.date().max(new Date()).optional(),
+      lastTestTimestamp: z.date().max(new Date()).optional(),
+      minTestsPerDay: z.number().safe().int().min(0).max(200),
+      maxTestsPerDay: z.number().safe().int().min(0).max(200),
+    }),
+    inputs: {
+      createUser: {
+        type: "checkbox",
+        label: "create user",
+        initVal: false,
+        description:
+          "if checked, user will be created with {username}@example.com and password: password",
+      },
+      username: {
+        type: "text",
+        label: "username",
+        placeholder: "username",
+        validation: {
+          isValid: remoteValidation(
+            async (name: string) =>
+              Ape.users.getNameAvailability({ params: { name } }),
+            { check: (data) => !data.available || "Unknown user" },
+          ),
+          debounceDelay: 1000,
+        },
+      },
+      firstTestTimestamp: {
+        type: "date",
+        label: "first test",
+      },
+      lastTestTimestamp: {
+        type: "date",
+        label: "last test",
+      },
+      minTestsPerDay: {
+        type: "range",
+        label: "min tests per day",
+        initVal: 0,
+        step: 10,
+      },
+      maxTestsPerDay: {
+        type: "range",
+        label: "max tests per day",
+        initVal: 50,
+
+        step: 10,
+      },
+    },
+    buttonText: "generate (might take a while)",
+    execFn: async ({
+      username,
+      createUser,
+      firstTestTimestamp,
+      lastTestTimestamp,
+      minTestsPerDay,
+      maxTestsPerDay,
+    }) => {
+      const result = await Ape.dev.generateData({
+        body: {
+          username,
+          createUser,
+          firstTestTimestamp: firstTestTimestamp?.getTime(),
+          lastTestTimestamp: lastTestTimestamp?.getTime(),
+          minTestsPerDay,
+          maxTestsPerDay,
+        },
+      });
+
+      return {
+        status: result.status === 200 ? "success" : "error",
+        message: result.body.message,
+      };
+    },
+  });
 }

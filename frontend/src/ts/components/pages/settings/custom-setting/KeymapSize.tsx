@@ -4,11 +4,11 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function KeymapSize(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="keymapSize"
       title="keymap size"
       description={configMetadata.keymapSize.description}

@@ -40,7 +40,28 @@ export async function mockAuthenticateWithApeKey(
   return base64UrlEncode(`${apeKeyId}.${apiKey}`);
 }
 
-export function mockBearerAuthentication(uid: string) {
+export type BearerAuthenticationMock = {
+  /**
+   * Reset the mock and return a default token. Call this method in the `beforeEach` of all tests.
+   */
+  beforeEach: () => void;
+  /**
+   * Reset the mock results in the authentication to fail.
+   */
+  noAuth: () => void;
+  /**
+   * verify the authentication has been called
+   */
+  expectToHaveBeenCalled: () => void;
+  /**
+   * modify the token returned by the mock. This can be used to e.g. return a stale token.
+   * @param customize
+   */
+  modifyToken: (customize: Partial<DecodedIdToken>) => void;
+};
+export function mockBearerAuthentication(
+  uid: string,
+): BearerAuthenticationMock {
   const mockDecodedToken = {
     uid,
     email: "newuser@mail.com",
@@ -49,29 +70,19 @@ export function mockBearerAuthentication(uid: string) {
   const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
 
   return {
-    /**
-     * Reset the mock and return a default token. Call this method in the `beforeEach` of all tests.
-     */
     beforeEach: (): void => {
       verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
     },
-    /**
-     * Reset the mock results in the authentication to fail.
-     */
+
     noAuth: (): void => {
       verifyIdTokenMock.mockClear();
     },
-    /**
-     * verify the authentication has been called
-     */
+
     expectToHaveBeenCalled: (): void => {
       expect(verifyIdTokenMock).toHaveBeenCalled();
     },
-    /**
-     * modify the token returned by the mock. This can be used to e.g. return a stale token.
-     * @param customize
-     */
+
     modifyToken: (customize: Partial<DecodedIdToken>): void => {
       verifyIdTokenMock.mockClear();
       verifyIdTokenMock.mockResolvedValue({

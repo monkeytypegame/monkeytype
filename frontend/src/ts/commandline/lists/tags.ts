@@ -1,4 +1,3 @@
-import * as ModesNotice from "../../elements/modes-notice";
 import {
   clearActiveTags,
   toggleTagActive,
@@ -49,7 +48,6 @@ function update(): void {
         ) {
           await PaceCaret.init();
         }
-        void ModesNotice.update();
       },
     });
 
@@ -71,7 +69,6 @@ function update(): void {
           ) {
             await PaceCaret.init();
           }
-          void ModesNotice.update();
         },
       });
     }

@@ -16,13 +16,13 @@ export function showIfNotClosedBefore(): void {
       icon: "fas fa-fw fa-shopping-bag",
       customContent: (
         <>
-          New merch store now open, including a limited edition metal keycap!{" "}
+          Check out our merch store!{" "}
           <a target="_blank" rel="noopener" href="https://mktp.co/merch">
             monkeytype.store
           </a>
         </>
       ),
-      imagePath: "/images/merch3.png",
+      imagePath: "/images/merch2.png",
       onClose: () => {
         closed.set(true);
       },

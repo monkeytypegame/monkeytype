@@ -21,7 +21,7 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor } from "solid-js";
+import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
@@ -34,8 +34,13 @@ import {
   getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
+  useActiveTagsLiveQuery,
 } from "./tags";
 import { applyIdWorkaround } from "./utils/misc";
+import { getConfig } from "../config/store";
+import { getMode2 } from "../utils/misc";
+import { getCurrentQuote } from "../states/test";
+import { removeLanguageSize } from "../utils/strings";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -85,6 +90,7 @@ export function useResultStatsLiveQuery(
   options?: { lastTen?: true } | { groupByDay?: true },
 ) {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     const state = queryState();
     if (state === undefined) return undefined;
 
@@ -160,6 +166,7 @@ export function useResultsLiveQuery(options: {
   limit: Accessor<number>;
 }) {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     const state = options.queryState();
     const sorting = options.sorting();
     const limit = options.limit();
@@ -212,11 +219,11 @@ function normalizeResult(
 const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
+    enabled: isAuthenticated,
     queryFn: async () => {
-      if (!isAuthenticated()) return [];
       const tagIds = await getTagsOnce();
-
       const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
@@ -238,13 +245,6 @@ const resultsCollection = createCollection(
         );
         setLastResult(lastResult);
       }
-
-      if (_keepAlive === null) {
-        _keepAlive = useLiveQuery((q) =>
-          q.from({ results: resultsCollection }),
-        );
-      }
-
       return results;
     },
     queryClient,
@@ -587,12 +587,49 @@ export type CurrentSettingsFilter = {
   lazyMode: boolean;
 };
 
-export async function getUserAverage10(
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export function useUserAverage10LiveQuery(options: {
+  isEnabled: Accessor<boolean>;
+}) {
+  const settingsFilter = createMemo(() => {
+    const language =
+      getConfig.mode === "quote"
+        ? removeLanguageSize(getConfig.language)
+        : getConfig.language;
+
+    return {
+      ...getConfig,
+      mode2: getMode2(getConfig, getCurrentQuote()),
+      language,
+    };
+  });
+
+  const activeTagsQuery = useActiveTagsLiveQuery();
+
+  return useLiveQuery((q) => {
+    //disable query
+    if (!isAuthenticated()) return undefined;
+    if (!options.isEnabled()) return undefined;
+
+    return q
+      .from({
+        //we use sub-query to filter first and then aggregate
+        last10: buildSettingsResultsQuery(settingsFilter(), {
+          tagIds: activeTagsQuery().map((it) => it._id),
+        })
+          .orderBy(({ r }) => r.timestamp, "desc")
+          .limit(10),
+      })
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
+      .findOne();
+  });
+}
+
+export async function getUserAverage10Once(
   options: CurrentSettingsFilter,
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-
   const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
 
   const result = await queryOnce((q) =>
@@ -603,15 +640,14 @@ export async function getUserAverage10(
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
-      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) })),
+      .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
+      .findOne(),
   );
 
-  return result.length === 1 && result[0] !== undefined
-    ? result[0]
-    : { wpm: 0, acc: 0 };
+  return result ?? { wpm: 0, acc: 0 };
 }
 
-export async function getUserDailyBest(
+export async function getUserDailyBestOnce(
   options: CurrentSettingsFilter,
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
@@ -667,10 +703,6 @@ export async function waitForResultsReady(): Promise<void> {
   await resultsCollection.stateWhenReady();
 }
 
-export function getResultsSize(): number {
-  return resultsCollection.size;
-}
-
 /**
  *
  */
@@ -689,10 +721,3 @@ function getResults(): SnapshotResult<Mode>[] {
 export const __nonReactive = {
   getResults,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-// oxlint-disable-next-line typescript/no-explicit-any
-let _keepAlive: any = null;

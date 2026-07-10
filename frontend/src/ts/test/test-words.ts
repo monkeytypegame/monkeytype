@@ -1,69 +1,104 @@
-import { QuoteWithTextSplit } from "../controllers/quotes-controller";
 import * as TestState from "./test-state";
 
+type CommitChar = " " | "\n" | "";
+
+type Word = {
+  text: string;
+  textWithCommit: string;
+  commit: CommitChar;
+  display: string;
+  sectionIndex: number;
+};
+
+type WordMinimal = Omit<Word, "textWithCommit" | "display">;
+
+const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
+
 class Words {
-  public list: string[];
-  public sectionIndexList: number[];
+  private list: Word[];
   public length: number;
 
   constructor() {
     this.list = [];
-    this.sectionIndexList = [];
     this.length = 0;
   }
 
-  getText(i?: undefined, raw?: boolean): string[];
-  getText(i: number, raw?: boolean): string;
-  getText(i?: number, raw = false): string | string[] | undefined {
+  private createFullWord(minimalWord: WordMinimal): Word {
+    return {
+      ...minimalWord,
+      textWithCommit: minimalWord.text + minimalWord.commit,
+      display:
+        minimalWord.text +
+        (commitCharsToDisplay.has(minimalWord.commit)
+          ? minimalWord.commit
+          : ""),
+    };
+  }
+
+  get(i?: undefined, raw?: boolean): Word[];
+  get(i: number, raw?: boolean): Word | undefined;
+  get(i?: number, raw = false): Word | Word[] | undefined {
     if (i === undefined) {
-      return this.list;
+      return [...this.list];
     } else {
+      const word = this.list[i];
+      if (!word) {
+        return undefined;
+      }
       if (raw) {
-        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+        const text = word.text.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+        return this.createFullWord({ ...word, text });
       } else {
-        return this.list[i];
+        return word;
       }
     }
   }
-  getCurrentText(): string {
-    return this.list[TestState.activeWordIndex] ?? "";
+
+  getCurrent(): Word | undefined {
+    return this.list[TestState.activeWordIndex];
   }
-  getLast(): string {
-    return this.list[this.list.length - 1] as string;
+
+  changeText(newText: string, wordIndex?: number): Word | null {
+    let word = this.list[wordIndex ?? TestState.activeWordIndex];
+    if (word === undefined) return null;
+
+    word = this.createFullWord({ ...word, text: newText });
+    this.list[wordIndex ?? TestState.activeWordIndex] = word;
+    return word;
   }
-  push(word: string, sectionIndex: number): void {
-    this.list.push(word);
-    this.sectionIndexList.push(sectionIndex);
+
+  push(word: string, sectionIndex: number): Word {
+    let commit: CommitChar = "";
+    if (word.endsWith(" ")) {
+      commit = " ";
+      word = word.slice(0, -1);
+    } else if (word.endsWith("\n")) {
+      commit = "\n";
+      word = word.slice(0, -1);
+    }
+
+    const wordObj = this.createFullWord({ text: word, commit, sectionIndex });
+    this.list.push(wordObj);
     this.length = this.list.length;
+
+    return wordObj;
   }
 
   reset(): void {
     this.list = [];
-    this.sectionIndexList = [];
-    this.length = this.list.length;
+    this.length = 0;
   }
-  clean(): void {
-    for (const s of this.list) {
-      if (/ +/.test(s)) {
-        const id = this.list.indexOf(s);
-        const tempList = s.split(" ");
-        this.list.splice(id, 1);
-        for (let i = 0; i < tempList.length; i++) {
-          this.list.splice(id + i, 0, tempList[i] as string);
-        }
-      }
+
+  removeCommitCharacterFromLastWord(): void {
+    if (this.length === 0) return;
+    const lastWord = this.list[this.length - 1];
+    if (lastWord === undefined) return;
+    if (lastWord.commit === " " || lastWord.commit === "\n") {
+      lastWord.commit = "";
+      lastWord.textWithCommit = lastWord.text;
+      lastWord.display = lastWord.text;
     }
   }
 }
 
 export const words = new Words();
-export let hasNumbers = false;
-export let currentQuote = null as QuoteWithTextSplit | null;
-
-export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
-  currentQuote = rq;
-}
-
-export function setHasNumbers(tf: boolean): void {
-  hasNumbers = tf;
-}

@@ -7,6 +7,7 @@ import {
   SupportsFlags,
   UserFlagOptions,
 } from "../../controllers/user-flag-controller";
+import { BreakpointKey } from "../../states/breakpoints";
 import { cn } from "../../utils/cn";
 import { Anime } from "./anime";
 import { AnimePresence } from "./anime/AnimePresence";
@@ -33,6 +34,7 @@ type Props = {
   showSpinner?: boolean;
   showNotificationBubble?: boolean;
   fontClass?: "text-em-xs" | "text-em-sm" | "text-em-md" | "text-em-lg";
+  hideBadgeTextOnWidth?: BreakpointKey;
 } & UserFlagOptions;
 
 export function User(props: Props): JSXElement {
@@ -158,7 +160,10 @@ export function User(props: Props): JSXElement {
         </div>
       </Show>
       <Show when={props.user.badgeId !== undefined}>
-        <UserBadge id={props.user.badgeId} />
+        <UserBadge
+          id={props.user.badgeId}
+          hideTextOnWidth={props.hideBadgeTextOnWidth}
+        />
       </Show>
       <Show when={props.level !== undefined}>
         <Anime
