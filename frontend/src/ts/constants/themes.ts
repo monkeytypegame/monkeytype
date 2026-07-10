@@ -2322,6 +2322,19 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  sakura: {
+    bg: "#FDE8E9",
+    caret: "#D8A15D",
+    main: "#6D2136",
+    sub: "#9D7E88",
+    subAlt: "#F8C9D3",
+    text: "#40232C",
+    error: "#C85A72",
+    errorExtra: "#8A3448",
+    colorfulError: "#C85A72",
+    colorfulErrorExtra: "#8A3448",
+    hasCss: true,
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
