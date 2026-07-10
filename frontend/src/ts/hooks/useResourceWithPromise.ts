@@ -4,7 +4,6 @@ import { promiseWithResolvers } from "../utils/misc";
 export function useResourceWithPromise<TSource, TData>(
   source: Accessor<TSource>,
   loader: (source: TSource) => Promise<TData>,
-  // oxlint-disable-next-line typescript/no-unnecessary-type-arguments
 ): [() => TData | undefined, { promise: Promise<void>; reset: () => void }] {
   const [resource] = createResource(source, loader);
   const { promise, reset, resolve, reject } = promiseWithResolvers();
