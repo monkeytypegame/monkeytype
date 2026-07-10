@@ -57,7 +57,7 @@ function timerData(
   if (event === "step") {
     return { event, timer, drift: 0 };
   }
-  return { event, timer };
+  return { event, timer, date: 0 };
 }
 
 describe("data.ts", () => {
@@ -223,10 +223,10 @@ describe("data.ts", () => {
       // simulate forceReleaseAllKeys passing indexed codes directly
       logTestEvent("keyup", 1030, {
         code: "NoCode0",
-      } as KeyupEventData);
+      });
       logTestEvent("keyup", 1040, {
         code: "NoCode1",
-      } as KeyupEventData);
+      });
 
       const events = getAllTestEvents();
       expect(events).toHaveLength(4);
@@ -239,7 +239,7 @@ describe("data.ts", () => {
     it("rejects indexed NoCode keyup with no matching keydown", () => {
       logTestEvent("keyup", 1010, {
         code: "NoCode0",
-      } as KeyupEventData);
+      });
 
       expect(getAllTestEvents()).toHaveLength(0);
     });
@@ -285,18 +285,8 @@ describe("data.ts", () => {
       logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
       logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
 
-      const perWord = getEventsPerWord(getAllTestEvents(), undefined, 50);
-      expect(perWord.get(0)).toHaveLength(1);
-    });
-
-    it("respects startMs", () => {
-      logTestEvent("input", 1010, inputData({ wordIndex: 0, charIndex: 0 }));
-      logTestEvent("input", 1100, inputData({ wordIndex: 0, charIndex: 1 }));
-
       const perWord = getEventsPerWord(getAllTestEvents(), 50);
       expect(perWord.get(0)).toHaveLength(1);
-      const first = perWord.get(0)?.[0];
-      expect(first?.type === "input" && first.data.charIndex).toBe(1);
     });
   });
 

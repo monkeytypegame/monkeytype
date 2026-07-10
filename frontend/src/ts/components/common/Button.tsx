@@ -18,6 +18,7 @@ type BaseProps = {
   onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
+  tabIndex?: number;
 };
 
 export type ButtonProps = BaseProps & {
@@ -98,6 +99,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
+          tabIndex={props.tabIndex ?? 0}
           {...props.dataset}
         >
           {content}

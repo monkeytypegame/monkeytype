@@ -71,6 +71,7 @@ export type Snapshot = Omit<
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
+  isMiniSnapshot?: never;
 };
 
 const defaultSnap = {
