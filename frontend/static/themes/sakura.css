@@ -1,7 +1,6 @@
 /* frontend/static/themes/sakura.css */
 [data-nav-item] {
   border-radius: 10rem !important;
-  --themable-button-bg: var(--text-color);
   --themable-button-text: var(--main-color);
   --themable-button-hover-bg: var(--text-color);
   --themable-button-hover-text: var(--bg-color);
