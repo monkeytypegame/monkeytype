@@ -133,7 +133,6 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-let inputLayoutPromise = promiseWithResolvers();
 const getInputLayout = createMemo<{
   layout: string;
   isMirrored: boolean;
@@ -152,6 +151,28 @@ const [inputLayoutObject] = createResource(getInputLayout, async (layout) => {
   return result;
 });
 
+let keymapLayoutPromise = promiseWithResolvers();
+async function waitForKeymapLayoutReady(): Promise<void> {
+  await keymapLayoutPromise.promise;
+  if (keymapLayoutObject.state === "ready") return;
+
+  if (keymapLayoutObject.state === "errored") {
+    throw new Error("Failed to load keymap layout");
+  }
+}
+
+createEffect(() => {
+  const state = keymapLayoutObject.state;
+  keymapLayoutPromise.reset();
+  if (state === "ready") {
+    keymapLayoutPromise.resolve();
+  }
+  if (state === "errored") {
+    keymapLayoutPromise.reject(new Error("failed to fetch keymap layout"));
+  }
+});
+
+let inputLayoutPromise = promiseWithResolvers();
 async function waitForInputLayoutReady(): Promise<void> {
   await inputLayoutPromise.promise;
   if (inputLayoutObject.state === "ready") return;
@@ -176,6 +197,14 @@ createEffect(() => {
  * Used for non reactive access. Do not use in Solid components.
  */
 export const __nonReactive = {
+  getKeymapLayout: async (): Promise<LayoutObject> => {
+    await waitForKeymapLayoutReady();
+    const result = keymapLayoutObject();
+    if (result === undefined) {
+      throw new Error("Failed to load keymap layout");
+    }
+    return result;
+  },
   getInputLayout: async (): Promise<LayoutObject> => {
     await waitForInputLayoutReady();
     const result = inputLayoutObject();
