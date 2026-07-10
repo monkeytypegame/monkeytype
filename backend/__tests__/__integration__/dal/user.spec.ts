@@ -1079,9 +1079,9 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"] as any;
+      const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
       //fill previous days with null
       expect(year2024.slice(0, 93)).toEqual(new Array(93).fill(null));
@@ -1097,9 +1097,9 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"] as any;
+      const year2024 = read["2024"] as number[];
       expect(year2024).toHaveLength(94);
 
       expect(year2024[0]).toBeNull();
@@ -1117,7 +1117,7 @@ describe("UserDal", () => {
       await UserDAL.incrementTestActivity(user, 1712102400000);
 
       //then
-      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity ?? {};
       const year2024 = read["2024"] as any;
       expect(year2024[93]).toEqual(2);
     });
@@ -1581,7 +1581,7 @@ describe("UserDal", () => {
       const count = 100;
       const calls = new Array(count)
         .fill(0)
-        .map(() =>
+        .map(async () =>
           UserDAL.updateInbox(
             user.uid,
             [rewardOne.id, rewardTwo.id, rewardThree.id],
@@ -2084,10 +2084,9 @@ describe("UserDal", () => {
     it("should clear streak hour offset", async () => {
       // given
       const { uid } = await UserTestData.createUser({
-        //@ts-expect-error
         streak: {
           hourOffset: 1,
-        },
+        } as any,
       });
 
       // when
@@ -2138,7 +2137,7 @@ describe("UserDal", () => {
           maxLength: 50,
           lastResultTimestamp: 0,
           hourOffset: -1,
-        } as any,
+        },
         xp: 42,
         inventory: {
           badges: [{ id: 23 }, { id: 5 }],

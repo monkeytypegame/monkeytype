@@ -5,7 +5,10 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement } from "solid-js";
 
-import { configMetadata } from "../../../../config/metadata";
+import {
+  configMetadata,
+  getOptionSearchKeywords,
+} from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
@@ -13,7 +16,7 @@ import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function PaceCaret(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -23,7 +26,7 @@ export function PaceCaret(): JSXElement {
       paceCaretCustomSpeed: getConfig.paceCaretCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.paceCaretCustomSpeed));
+      const val = value.paceCaretCustomSpeed;
       if (val === getConfig.paceCaretCustomSpeed) return;
       if (getConfig.paceCaret !== "off") {
         //
@@ -36,10 +39,11 @@ export function PaceCaret(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="paceCaret"
       title={configMetadata.paceCaret.displayString ?? "pace caret"}
       fa={configMetadata.paceCaret.fa}
+      extraSearchKeywords={getOptionSearchKeywords("paceCaret")}
       description={configMetadata.paceCaret.description}
       inputs={
         <div class="grid w-full gap-2">
@@ -53,15 +57,7 @@ export function PaceCaret(): JSXElement {
             <form.Field
               name="paceCaretCustomSpeed"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseInt(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(PaceCaretCustomSpeedSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(PaceCaretCustomSpeedSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },
@@ -70,6 +66,7 @@ export function PaceCaret(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={PaceCaretCustomSpeedSchema}
                     placeholder={"pace caret speed"}
                     type="number"
                     resetToDefaultIfEmptyOnBlur

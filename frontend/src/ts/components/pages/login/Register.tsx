@@ -1,14 +1,9 @@
-import {
-  PasswordSchema,
-  UserEmailSchema,
-  UserNameSchema,
-} from "@monkeytype/schemas/users";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
-import { z } from "zod";
 
 import Ape from "../../../ape";
-import { signUp } from "../../../auth";
+import { getPasswordSchema, signUp } from "../../../auth";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
@@ -19,7 +14,6 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../states/notifications";
-import { isDevEnvironment } from "../../../utils/env";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import { H3 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
@@ -219,9 +213,7 @@ export function Register(): JSXElement {
         <form.Field
           name="password"
           validators={{
-            onChange: fromSchema(
-              isDevEnvironment() ? z.string().min(6) : PasswordSchema,
-            ),
+            onChange: fromSchema(getPasswordSchema({ isNew: true })),
           }}
           children={(field) => (
             <InputField

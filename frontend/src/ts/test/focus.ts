@@ -39,6 +39,7 @@ function initializeCache(): void {
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
+  if (value === getFocus()) return;
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
     cache.cursor = qsa("body, button, a");

@@ -1,8 +1,5 @@
-import * as Commandline from "../commandline/commandline";
 import { Config } from "../config/store";
-import * as EditResultTagsModal from "../modals/edit-result-tags";
 import { __nonReactive } from "../collections/tags";
-import * as TestWords from "../test/test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -12,25 +9,11 @@ import { showQuoteReportModal } from "../states/quote-report";
 import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
-import { ConfigKey } from "@monkeytype/schemas/configs";
-import { ListsObjectKeys } from "../commandline/lists";
 import { qs } from "../utils/dom";
+import { getCurrentQuote } from "../states/test";
+import { showEditResultTagsModal } from "../states/edit-result-tags";
 
 const testPage = qs(".pageTest");
-
-testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
-  const target = event.childTarget as HTMLElement;
-  const attr = target?.getAttribute("commands");
-  if (attr === null) return;
-  Commandline.show({ subgroupOverride: attr as ConfigKey | ListsObjectKeys });
-});
-
-testPage?.onChild("click", "#testModesNotice .textButton", async (event) => {
-  const target = event.childTarget as HTMLElement;
-  const attr = target?.getAttribute("commandId");
-  if (attr === null) return;
-  Commandline.show({ commandOverride: attr });
-});
 
 testPage?.onChild("click", ".tags .editTagsButton", () => {
   if (__nonReactive.getTags().length > 0) {
@@ -42,24 +25,26 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
         "data-active-tag-ids",
       ) ?? "";
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
-    EditResultTagsModal.show(resultid, tags, "resultPage");
+    showEditResultTagsModal({ _id: resultid, tags, source: "resultPage" });
   }
 });
 
 qs(".pageTest #rateQuoteButton")?.on("click", async () => {
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     showErrorNotification("Failed to show quote rating popup: no quote");
     return;
   }
-  showQuoteRateModal(TestWords.currentQuote);
+  showQuoteRateModal(currentQuote);
 });
 
 qs(".pageTest #reportQuoteButton")?.on("click", async () => {
-  if (TestWords.currentQuote === null) {
+  const currentQuote = getCurrentQuote();
+  if (currentQuote === null) {
     showErrorNotification("Failed to show quote report popup: no quote");
     return;
   }
-  showQuoteReportModal(TestWords.currentQuote?.id);
+  showQuoteReportModal(currentQuote?.id);
 });
 
 testPage?.onChild("click", "#practiseWordsButton", () => {

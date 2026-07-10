@@ -1,5 +1,5 @@
 import { Config } from "../config/store";
-import * as TestInput from "./test-input";
+import { getCurrentInput } from "./events/data";
 import * as TestState from "../test/test-state";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
@@ -48,7 +48,7 @@ export function init(): void {
 
 export function updatePosition(noAnim = false): void {
   const inputWord = splitIntoCharacters(
-    TestInput.input.current + CompositionState.getData(),
+    getCurrentInput() + CompositionState.getData(),
   );
   const inputWordLength = inputWord.length;
 

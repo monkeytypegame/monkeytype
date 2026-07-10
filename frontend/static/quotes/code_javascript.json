@@ -276,6 +276,18 @@
       "source": "Monkeytype Sourcecode",
       "length": 159,
       "id": 45
+    },
+    {
+      "text": "(function () {\n\t\"use strict\";\n\t/* Start of your code */\n\tfunction greetMe(yourName) {\n\t\talert(`Hello ${yourName}`);\n\t}\n\n\tgreetMe(\"World\");\n\t/* End of your code */\n})();",
+      "source": "MDN",
+      "length": 168,
+      "id": 46
+    },
+    {
+      "text": "function die(msg) { process.stderr.write(msg + '\n'); process.exit(2); }",
+      "source": "Julius Brussee - Caveman",
+      "length": 71,
+      "id": 47
     }
   ]
 }

@@ -697,6 +697,7 @@
   // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
   // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
   text-wrap-mode: nowrap;
+  contain: strict;
 }
 
 #capsWarning {
@@ -1383,6 +1384,10 @@
     opacity: 0;
   }
   .outOfFocusWarning {
+    display: flex;
+    place-content: center;
+    align-items: center;
+    gap: 0.5em;
     text-align: center;
     height: 100%;
     align-content: center;
@@ -1394,29 +1399,6 @@
     pointer-events: none;
   }
 
-  #testModesNotice {
-    font-size: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    color: var(--sub-color);
-    text-align: center;
-    margin-bottom: 0.5rem;
-    transition: opacity 0.125s;
-    justify-content: center;
-    user-select: none;
-
-    .textButton {
-      padding: 0.5em 1em;
-      align-items: center;
-      &.noInteraction {
-        pointer-events: none;
-      }
-    }
-
-    .fas {
-      margin-right: 0.5rem;
-    }
-  }
   #liveStatsMini {
     width: 0;
     justify-content: start;
@@ -1485,9 +1467,6 @@
 }
 
 main.focus .pageTest {
-  #testModesNotice {
-    opacity: 0 !important;
-  }
   #restartTestButton {
     opacity: 0 !important;
     &:focus-visible {

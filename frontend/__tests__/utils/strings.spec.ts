@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import * as Strings from "../../src/ts/utils/strings";
 
 describe("string utils", () => {
@@ -342,17 +342,12 @@ describe("string utils", () => {
     });
 
     describe("caching", () => {
-      let mapGetSpy: ReturnType<typeof vi.spyOn>;
-      let mapSetSpy: ReturnType<typeof vi.spyOn>;
-
-      beforeEach(() => {
-        mapGetSpy = vi.spyOn(Map.prototype, "get");
-        mapSetSpy = vi.spyOn(Map.prototype, "set");
-      });
+      const mapGetSpy = vi.spyOn(Map.prototype, "get");
+      const mapSetSpy = vi.spyOn(Map.prototype, "set");
 
       afterEach(() => {
-        mapGetSpy.mockRestore();
-        mapSetSpy.mockRestore();
+        mapGetSpy.mockReset();
+        mapSetSpy.mockReset();
       });
 
       it("should use cache for repeated calls", () => {
@@ -491,6 +486,15 @@ describe("string utils", () => {
       expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
     });
 
+    it("should treat any Unicode space as equivalent to a regular space", () => {
+      // IME-produced spaces must match the U+0020 stored as the word separator
+      expect(Strings.areCharactersVisuallyEqual("　", " ")).toBe(true); // ideographic
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // nbsp
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // en space
+      expect(Strings.areCharactersVisuallyEqual(" ", "a")).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual(" ", "\n")).toBe(false);
+    });
+
     describe("should check russian specific equivalences", () => {
       it.each([
         {
@@ -535,28 +539,11 @@ describe("string utils", () => {
     describe("it should count characters correctly", () => {
       const testCases = [
         {
-          description: "correct, partial, not last",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 3,
-          },
-        },
-        {
           description: "correct, partial, last, shouldnt count",
           input: {
             inputWord: "hel",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
           },
           expected: {
             allCorrect: 3,
@@ -571,8 +558,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 3,
@@ -583,28 +569,11 @@ describe("string utils", () => {
           },
         },
         {
-          description: "correct",
-          input: {
-            inputWord: "hello ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 6,
-            correctWord: 6,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
           description: "correct last",
           input: {
             inputWord: "hello ",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 6,
@@ -619,8 +588,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hello",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 5,
@@ -631,125 +599,11 @@ describe("string utils", () => {
           },
         },
         {
-          description: "correct with extra characters",
-          input: {
-            inputWord: "helloxxx ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 3,
-            missed: 0,
-          },
-        },
-        {
-          description:
-            "correct, partial, not last, should count (should count last partial)",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 3,
-          },
-        },
-        {
-          description: "early space",
-          input: {
-            inputWord: "hel ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
-          description: "all incorrect, early space",
-          input: {
-            inputWord: "xxx ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 4,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
-          description: "all incorrect, extra",
-          input: {
-            inputWord: "xxxxxx ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 6,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "some correct, extra",
-          input: {
-            inputWord: "xexlxx ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 4,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "some correct, early space",
-          input: {
-            inputWord: "xexl ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 3,
-            extra: 0,
-            missed: 1,
-          },
-        },
-        {
           description: "incorrect, last word, quick end",
           input: {
             inputWord: "xello",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
           },
           expected: {
             allCorrect: 4,
@@ -757,6 +611,21 @@ describe("string utils", () => {
             incorrect: 1,
             extra: 0,
             missed: 0,
+          },
+        },
+        {
+          description: "incorrect, last word, early literal space",
+          input: {
+            inputWord: "he ",
+            targetWord: "hello",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 2,
           },
         },
         {
@@ -764,8 +633,7 @@ describe("string utils", () => {
           input: {
             inputWord: "xello ",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
           },
           expected: {
             allCorrect: 4,
@@ -776,67 +644,34 @@ describe("string utils", () => {
           },
         },
         {
-          description: "correct space, incorrect word",
+          description: "correct space, incorrect word (literal space)",
           input: {
             inputWord: "helol ",
             targetWord: "hello ",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
           },
           expected: {
             allCorrect: 3,
             correctWord: 0,
-            incorrect: 3,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "single incorrect char",
-          input: {
-            inputWord: "hxllo ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 4,
-            correctWord: 0,
             incorrect: 2,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "one extra char",
-          input: {
-            inputWord: "helloo ",
-            targetWord: "hello ",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 1,
             extra: 1,
             missed: 0,
           },
         },
         {
-          description: "missed chars, no trailing space on target",
+          description:
+            "single incorrect char (literal space — stopOnError=word)",
           input: {
-            inputWord: "hel",
-            targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            inputWord: "hxllo ",
+            targetWord: "hello ",
+            creditPartial: false,
           },
           expected: {
-            allCorrect: 3,
+            allCorrect: 4,
             correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 2,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
           },
         },
         {
@@ -845,8 +680,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 3,
@@ -861,8 +695,7 @@ describe("string utils", () => {
           input: {
             inputWord: "xxx",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: true,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 0,
@@ -877,8 +710,7 @@ describe("string utils", () => {
           input: {
             inputWord: "hel",
             targetWord: "hello",
-            lastWord: true,
-            shouldLastPartialWordCount: false,
+            creditPartial: false,
           },
           expected: {
             allCorrect: 3,
@@ -889,51 +721,173 @@ describe("string utils", () => {
           },
         },
         {
-          description: "non-last word ignores shouldLastPartialWordCount",
+          description: "partial correct, with space (literal)",
           input: {
-            inputWord: "hel",
-            targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: true,
+            inputWord: "helxx ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "count extra chars as extra",
+          input: {
+            inputWord: "abcx",
+            targetWord: "abc ",
+            creditPartial: true,
           },
           expected: {
             allCorrect: 3,
             correctWord: 0,
             incorrect: 0,
-            extra: 0,
-            missed: 2,
+            extra: 1,
+            missed: 0,
           },
         },
         {
-          description: "empty input counts all as missed",
+          description: "count extra chars as extra (with space)",
+          input: {
+            inputWord: "abcx ",
+            targetWord: "abc ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 3,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect last word, trailing literal space, timed (stopOnError=word)",
+          input: {
+            inputWord: "jhow ",
+            targetWord: "how",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 3,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "trailing literal space past target — counts as extra (stopOnError=word)",
+          input: {
+            inputWord: "xow ",
+            targetWord: "how",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 2,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "multiple literal trailing spaces on wrong word — all count as extra",
+          input: {
+            inputWord: "xonl  ",
+            targetWord: "only ",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 4,
+            extra: 2,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "early literal space at non-space slot with creditPartial — counts as incorrect",
+          input: {
+            inputWord: "x ",
+            targetWord: "get",
+            creditPartial: true,
+          },
+          expected: {
+            allCorrect: 0,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description:
+            "incorrect word with literal trailing space — uncommitted (stopOnError=word)",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 1,
+            missed: 0,
+          },
+        },
+        {
+          description: "empty input with creditPartial",
           input: {
             inputWord: "",
             targetWord: "hello",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            creditPartial: true,
           },
           expected: {
             allCorrect: 0,
             correctWord: 0,
             incorrect: 0,
             extra: 0,
-            missed: 5,
+            missed: 0,
           },
         },
         {
-          description: "empty target counts all as extra",
+          description: "correct last word, no trailing space anywhere",
           input: {
             inputWord: "hello",
-            targetWord: "",
-            lastWord: false,
-            shouldLastPartialWordCount: false,
+            targetWord: "hello",
+            creditPartial: false,
           },
           expected: {
-            allCorrect: 0,
-            correctWord: 0,
+            allCorrect: 5,
+            correctWord: 5,
             incorrect: 0,
-            extra: 5,
+            extra: 0,
             missed: 0,
+          },
+        },
+        {
+          description: "mid-word literal space followed by more input",
+          input: {
+            inputWord: "hel o",
+            targetWord: "hello ",
+            creditPartial: false,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 1,
+            extra: 0,
+            missed: 1,
           },
         },
       ];
@@ -943,16 +897,10 @@ describe("string utils", () => {
           Strings.countChars(
             input.inputWord,
             input.targetWord,
-            input.lastWord,
-            input.shouldLastPartialWordCount,
+            input.creditPartial,
           ),
         ).toEqual(expected);
       });
-    });
-
-    it("space counts as incorrect when word is wrong", () => {
-      const result = Strings.countChars("hell ", "hello ", false, false);
-      expect(result.incorrect).toBe(1);
     });
   });
 });

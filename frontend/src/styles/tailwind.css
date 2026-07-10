@@ -113,4 +113,15 @@
   .settings-highlight {
     animation: ring-flash 4s ease-in forwards;
   }
+
+  .darkMode {
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.1s ease-in-out infinite;
+  }
 }

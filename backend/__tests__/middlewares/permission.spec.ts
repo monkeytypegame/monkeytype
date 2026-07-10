@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { Response } from "express";
-import { verifyPermissions } from "../../src/middlewares/permission";
 import { EndpointMetadata } from "@monkeytype/contracts/util/api";
-import * as Misc from "../../src/utils/misc";
+import { Response } from "express";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { TsRestRequestWithContext } from "../../src/api/types";
 import * as AdminUids from "../../src/dal/admin-uids";
 import * as UserDal from "../../src/dal/user";
-import MonkeyError from "../../src/utils/error";
 import { DecodedToken } from "../../src/middlewares/auth";
-import { TsRestRequest } from "../../src/api/types";
+import { verifyPermissions } from "../../src/middlewares/permission";
+import MonkeyError from "../../src/utils/error";
+import * as Misc from "../../src/utils/misc";
 import { enableMonkeyErrorExpects } from "../__testData__/monkey-error";
 
 enableMonkeyErrorExpects();
@@ -333,6 +333,9 @@ describe("permission middleware", () => {
 function givenRequest(
   metadata: EndpointMetadata,
   decodedToken?: Partial<DecodedToken>,
-): TsRestRequest {
-  return { tsRestRoute: { metadata }, ctx: { decodedToken } } as any;
+): TsRestRequestWithContext {
+  return {
+    tsRestRoute: { metadata },
+    ctx: { decodedToken },
+  } as TsRestRequestWithContext;
 }

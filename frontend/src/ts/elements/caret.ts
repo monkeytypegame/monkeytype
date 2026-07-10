@@ -1,11 +1,11 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
-import * as TestWords from "../test/test-words";
 import { getTotalInlineMargin } from "../utils/misc";
 import { splitIntoCharacters, type Direction } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils, qsr } from "../utils/dom";
+import * as TestWords from "../test/test-words";
 
 const wordsCache = qsr("#words");
 const wordsWrapperCache = qsr("#wordsWrapper");
@@ -288,7 +288,7 @@ export class Caret {
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
       const word = TestWords.words.get(options.wordIndex);
-      const wordLength = splitIntoCharacters(word?.text ?? "").length;
+      const wordLength = splitIntoCharacters(word?.display ?? "").length;
 
       // caret can be either on the left side of the target letter or the right
       // we stick to the left side unless we are on the last letter or beyond
@@ -398,11 +398,18 @@ export class Caret {
     wordDirection: Direction;
   }): { left: number; top: number; width: number } {
     const letters = options.wordEl?.qsa("letter");
-    let letter;
-    if (!letters?.length || !(letter = letters[options.letterIndex])) {
-      // maybe we should return null here instead of throwing
+
+    if (letters.length === 0) {
       throw new Error(
         "Caret getTargetPositionAndWidth: no letters found in word",
+      );
+    }
+
+    let letter = letters[options.letterIndex] ?? letters[letters.length - 1];
+
+    if (!letter) {
+      throw new Error(
+        `Caret getTargetPositionAndWidth: letter not found for index ${options.letterIndex}`,
       );
     }
 
