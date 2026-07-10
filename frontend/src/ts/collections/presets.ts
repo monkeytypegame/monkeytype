@@ -22,6 +22,7 @@ const queryKeys = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function usePresetsLiveQuery() {
   return useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
     return q
       .from({ preset: presetsCollection })
       .orderBy(({ preset }) => preset.name, "asc");
@@ -31,12 +32,12 @@ export function usePresetsLiveQuery() {
 const presetsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
-      if (!isAuthenticated()) return [];
-
       const response = await Ape.presets.get();
 
       if (response.status !== 200) {
@@ -204,9 +205,3 @@ export const __nonReactive = {
   getPresets,
   getPreset,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-const _keepAlive = usePresetsLiveQuery();
