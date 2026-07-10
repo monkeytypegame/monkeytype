@@ -1740,9 +1740,11 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    highlight(
-      TestWords.words.getCurrent()?.text.charAt(getCurrentInput().length) ?? "",
-    );
+    const keyToHighlight =
+      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
+    if (keyToHighlight !== undefined) {
+      highlight(keyToHighlight);
+    }
   }
 
   Focus.set(true);
@@ -1828,6 +1830,15 @@ export async function afterTestWordChange(
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }
+
+  if (Config.keymapMode === "next") {
+    const keyToHighlight =
+      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
+    if (keyToHighlight !== undefined) {
+      highlight(keyToHighlight);
+    }
+  }
+
   if (direction === "forward") {
     //
   } else if (direction === "back") {
