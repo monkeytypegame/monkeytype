@@ -1,7 +1,6 @@
 import { promiseWithResolvers } from "../utils/misc";
 import { EventLog } from "./events/types";
 
-export let isActive = false;
 export let bailedOut = false;
 export let selectedQuoteId =
   parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
@@ -26,10 +25,6 @@ export function setLastEventLog(log: EventLog): void {
 
 export function setKoreanStatus(val: boolean): void {
   koreanStatus = val;
-}
-
-export function setActive(tf: boolean): void {
-  isActive = tf;
 }
 
 export function setBailedOut(tf: boolean): void {

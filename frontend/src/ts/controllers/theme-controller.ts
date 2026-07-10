@@ -215,9 +215,7 @@ export async function randomizeTheme(): Promise<void> {
   let colorsOverride: CustomThemeColors | undefined;
 
   if (Config.randomTheme === "custom") {
-    const theme = CustomThemes.__nonReactive.getCustomTheme(
-      randomTheme as string,
-    );
+    const theme = CustomThemes.__nonReactive.getCustomTheme(randomTheme);
     colorsOverride = theme?.colors;
     randomTheme = "custom";
   }
@@ -231,8 +229,7 @@ export async function randomizeTheme(): Promise<void> {
     let name = randomTheme.replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
-        CustomThemes.__nonReactive.getCustomTheme(randomTheme as string)
-          ?.name ?? "custom"
+        CustomThemes.__nonReactive.getCustomTheme(randomTheme)?.name ?? "custom"
       ).replace(/_/g, " ");
     }
     showNoticeNotification(name);

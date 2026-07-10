@@ -1,9 +1,9 @@
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "../states/notifications";
 import { connectionEvent } from "../events/connection";
-import * as TestState from "../test/test-state";
 import { onDOMReady } from "../utils/dom";
 import { addBanner, removeBanner } from "../states/banners";
+import { isTestActive } from "../states/test";
 
 let state = navigator.onLine;
 
@@ -38,7 +38,7 @@ const throttledHandleState = debounce(5000, () => {
       noInternetBannerId = undefined;
     }
     bannerAlreadyClosed = false;
-  } else if (!TestState.isActive) {
+  } else if (!isTestActive()) {
     showOfflineBanner();
   }
 });

@@ -38,7 +38,6 @@ import * as Focus from "../test/focus";
 import * as TimerProgress from "../test/timer-progress";
 import * as LiveBurst from "./live-burst";
 import * as LiveSpeed from "./live-speed";
-import * as Monkey from "./monkey";
 import {
   blurInputElement,
   focusInputElement,
@@ -62,7 +61,12 @@ import {
 } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
-import { getCurrentQuote, wordsHaveNewline } from "../states/test";
+import {
+  getCurrentQuote,
+  isTestActive,
+  resetCurrentLiveStats,
+  wordsHaveNewline,
+} from "../states/test";
 import {
   getCorrectedWordsHistory,
   getInputHistory,
@@ -90,7 +94,7 @@ export function focusWords(force = false): void {
     blurInputElement();
   }
   focusInputElement(true);
-  if (TestState.isActive) {
+  if (isTestActive()) {
     keepWordsInputInTheCenter(true);
   } else {
     const typingTest = document.querySelector<HTMLElement>("#typingTest");
@@ -1540,7 +1544,7 @@ export async function applyBurstHeatmap(): Promise<void> {
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             word.addClass("heatmapInherit");
-            word.setStyle({ color: colors[step.colorId] as string });
+            word.setStyle({ color: colors[step.colorId] });
           }
         });
       }
@@ -1549,7 +1553,7 @@ export async function applyBurstHeatmap(): Promise<void> {
     const boxes = qsa("#resultWordsHistory .heatmapLegend .boxes .box");
     for (let i = 0; i < boxes.length; i++) {
       (boxes[i] as ElementWithUtils).setStyle({
-        background: colors[i] as string,
+        background: colors[i],
       });
     }
   } else {
@@ -1736,9 +1740,11 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    highlight(
-      TestWords.words.getCurrent()?.text.charAt(getCurrentInput().length) ?? "",
-    );
+    const keyToHighlight =
+      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
+    if (keyToHighlight !== undefined) {
+      highlight(keyToHighlight);
+    }
   }
 
   Focus.set(true);
@@ -1824,6 +1830,15 @@ export async function afterTestWordChange(
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     void LiveBurst.update(Math.round(lastBurst));
   }
+
+  if (Config.keymapMode === "next") {
+    const keyToHighlight =
+      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
+    if (keyToHighlight !== undefined) {
+      highlight(keyToHighlight);
+    }
+  }
+
   if (direction === "forward") {
     //
   } else if (direction === "back") {
@@ -1849,7 +1864,6 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  Monkey.show();
   TimerProgress.show();
   LiveSpeed.show();
   LiveAcc.show();
@@ -1870,7 +1884,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   LiveAcc.reset();
   TimerProgress.instantHide();
   TimerProgress.reset();
-  Monkey.instantHide();
+  resetCurrentLiveStats();
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
@@ -1908,7 +1922,6 @@ export function onTestFinish(): void {
   LiveBurst.hide();
   TimerProgress.hide();
   OutOfFocus.hide();
-  Monkey.hide();
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
   }

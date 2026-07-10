@@ -31,6 +31,7 @@ import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
+import { isTestActive } from "../../states/test";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -132,7 +133,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const data = normalizedData ?? options.data;
 
   // start if needed
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     TestLogic.startTest(now);
   }
 

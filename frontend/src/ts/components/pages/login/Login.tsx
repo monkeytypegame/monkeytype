@@ -7,12 +7,12 @@ import {
   signIn,
   signInWithProvider,
 } from "../../../auth";
-import * as ForgotPasswordModal from "../../../modals/forgot-password";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
 } from "../../../states/login";
+import { showModal } from "../../../states/modals";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -153,7 +153,7 @@ export function Login(): JSXElement {
         text="forgot password?"
         variant="text"
         class="text justify-end text-xs"
-        onClick={() => ForgotPasswordModal.show()}
+        onClick={() => showModal("ForgotPassword")}
         disabled={!getLoginPageInputsEnabled()}
       />
     </div>

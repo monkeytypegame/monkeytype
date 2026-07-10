@@ -547,7 +547,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "ips",
     "testActivity",
     "suspicious",
-  ]) as RelevantUserInfo;
+  ]);
 }
 
 export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {

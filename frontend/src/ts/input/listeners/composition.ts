@@ -6,6 +6,7 @@ import { setLastInsertCompositionTextData } from "../state";
 import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
+import { isTestActive } from "../../states/test";
 
 const inputEl = getInputElement();
 
@@ -21,7 +22,7 @@ inputEl.addEventListener("compositionstart", (event) => {
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     TestLogic.startTest(now);
   }
 

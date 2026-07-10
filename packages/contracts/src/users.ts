@@ -299,15 +299,17 @@ export type UpdateUserInboxRequest = z.infer<
   typeof UpdateUserInboxRequestSchema
 >;
 
+export const ReportUserCommentSchema = z
+  .string()
+  .regex(/^([.]|[^/<>])+$/)
+  .max(250)
+  .optional()
+  .or(z.string().length(0));
+
 export const ReportUserRequestSchema = z.object({
   uid: z.string(),
   reason: ReportUserReasonSchema,
-  comment: z
-    .string()
-    .regex(/^([.]|[^/<>])+$/)
-    .max(250)
-    .optional()
-    .or(z.string().length(0)),
+  comment: ReportUserCommentSchema,
   captcha: z.string(), //we don't generate the captcha so there should be no validation
 });
 export type ReportUserRequest = z.infer<typeof ReportUserRequestSchema>;
