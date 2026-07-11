@@ -182,9 +182,9 @@ function ChallengeItem(props: {
         class={cn(
           props.completed ? "bg-text" : "bg-bg",
           props.completed ? "text-bg" : "text-sub",
-          props.completed && isRare()
-            ? "bg-text shadow ring shadow-main ring-main"
-            : "",
+          props.completed &&
+            isRare() &&
+            "bg-text shadow ring-1 shadow-main ring-main",
           "flex aspect-square items-center justify-center rounded",
           "h-10",
         )}
@@ -192,7 +192,7 @@ function ChallengeItem(props: {
         <Fa icon={icon()} size={1.25} />
       </div>
       <Show when={props.variant !== "iconOnly"}>
-        <div>
+        <div class="w-full">
           <h4
             class={cn(
               "text-md mb-1 font-bold",
@@ -224,20 +224,7 @@ function ChallengeItem(props: {
             )}
           >
             {props.challenge.description}
-            <p classList={{ "text-main": props.completed && isRare() }}>
-              {printChallengeUnlockPercentage(props.challenge)}
-            </p>
-            <Show
-              when={
-                props.variant === "short" &&
-                props.challenge.addedAt !== undefined
-              }
-            >
-              <p>
-                Unlocked{" "}
-                {dateFormat(props.challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
-              </p>
-            </Show>
+
             <Show
               when={
                 !props.completed &&
@@ -256,6 +243,36 @@ function ChallengeItem(props: {
                 for details.
               </p>
             </Show>
+
+            <div
+              class={cn(
+                "flex flex-col gap-2",
+                props.variant === "full" && "md:flex-row",
+              )}
+            >
+              <p classList={{ "text-main": props.completed && isRare() }}>
+                {printChallengeUnlockPercentage(props.challenge)}
+              </p>
+              <Show
+                when={
+                  (props.variant === "short" || props.variant === "full") &&
+                  props.challenge.addedAt !== undefined
+                }
+              >
+                <div
+                  class={cn(
+                    "text-xs text-sub",
+                    props.variant === "full" && "md:ml-auto",
+                  )}
+                >
+                  Unlocked{" "}
+                  {dateFormat(
+                    props.challenge.addedAt ?? 0,
+                    "dd MMM yyyy HH:mm",
+                  )}
+                </div>
+              </Show>
+            </div>
           </div>
         </div>
       </Show>
@@ -301,7 +318,7 @@ function ChallengesList(props: {
         {(challenge) => (
           <div
             class={cn(
-              "group flex gap-4 rounded bg-sub-alt",
+              "group rounded bg-sub-alt",
               props.variant === "full" && "p-2",
             )}
           >
@@ -312,14 +329,6 @@ function ChallengesList(props: {
                 variant={props.variant}
               />
             </div>
-            <Show when={props.variant === "full" && props.completed}>
-              <div class="self-end text-right text-xs text-sub">
-                <Show when={challenge.addedAt}>
-                  Unlocked{" "}
-                  {dateFormat(challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
-                </Show>
-              </div>
-            </Show>
           </div>
         )}
       </For>
