@@ -35,7 +35,8 @@ export type ModalId =
   | "StreakHourOffset"
   | "GoogleSignup"
   | "ForgotPassword"
-  | "UserReport";
+  | "UserReport"
+  | "EditResultTags";
 
 export type ModalVisibility = {
   visible: boolean;

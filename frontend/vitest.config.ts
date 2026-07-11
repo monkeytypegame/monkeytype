@@ -66,7 +66,7 @@ export const projects: UserWorkspaceConfig[] = [
 ];
 export default defineConfig({
   test: {
-    projects: projects as never,
+    projects: projects,
     coverage: {
       include: ["**/*.ts", "**/*.tsx"],
     },

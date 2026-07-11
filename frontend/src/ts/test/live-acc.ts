@@ -1,9 +1,9 @@
 import { Config } from "../config/store";
-import * as TestState from "../test/test-state";
 import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs } from "../utils/dom";
+import { isTestActive } from "../states/test";
 
 const textEl = qs("#liveStatsTextBottom .liveAcc");
 const miniEl = qs("#liveStatsMini .acc");
@@ -30,7 +30,7 @@ let state = false;
 
 export function show(): void {
   if (Config.liveAccStyle === "off") return;
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   if (state) return;
   requestDebouncedAnimationFrame("live-acc.show", () => {
     if (Config.liveAccStyle === "mini") {

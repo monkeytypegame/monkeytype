@@ -126,7 +126,7 @@ export function findSingleActiveFunboxWithFunction<
 >(functionName: F): FunboxWithFunction<F> | undefined {
   const matching = getActiveFunboxesWithFunction(functionName);
   if (matching.length === 0) return undefined;
-  if (matching.length === 1) return matching[0] as FunboxWithFunction<F>;
+  if (matching.length === 1) return matching[0];
   throw new Error(
     `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`,
   );

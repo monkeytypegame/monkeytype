@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { DiscordAvatar } from "../../src/ts/components/common/DiscordAvatar";
 
 const meta = preview.meta({
   title: "Common/DiscordAvatar",
-  component: DiscordAvatar as Component,
+  component: DiscordAvatar,
   parameters: {
     layout: "centered",
   },

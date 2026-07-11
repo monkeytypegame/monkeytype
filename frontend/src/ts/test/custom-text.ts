@@ -88,7 +88,7 @@ export function setMode(val: CustomTextMode): void {
 }
 
 export function getLimit(): CustomTextLimit {
-  return customTextSettings.get().limit as CustomTextLimit;
+  return customTextSettings.get().limit;
 }
 
 export function getLimitValue(): number {

@@ -24,6 +24,7 @@ import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
 import { Keymap } from "./pages/test/Keymap";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
+import { Monkey } from "./pages/test/Monkey";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
@@ -50,6 +51,7 @@ const components: Record<string, () => JSXElement> = {
   notfoundpage: () => <NotFoundPage />,
   accountsettingspage: () => <AccountSettingsPage />,
   keymap: () => <Keymap />,
+  monkey: () => <Monkey />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
