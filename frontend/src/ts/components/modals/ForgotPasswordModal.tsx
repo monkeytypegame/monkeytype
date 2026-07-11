@@ -34,7 +34,7 @@ export function ForgotPasswordModal() {
   }));
 
   return (
-    <AnimatedModal id="ForgotPassword" title="Forgot password">
+    <AnimatedModal id="ForgotPassword" title="Forgot password" mode="dialog">
       <form
         class="flex flex-col justify-center gap-4"
         onSubmit={(e) => {
