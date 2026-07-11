@@ -5,6 +5,7 @@
   "orderedByFrequency": false,
   "bcp47": "sd",
   "preferredFont": "Noto_Naskh_Arabic",
+  "originalPunctuation": true,
   "words": [
     "جي",
     "۾",
@@ -331,7 +332,6 @@
     "گهوڙو",
     "ڳئون",
     "ٻڪر",
-    "اٺ",
     "ٻانگو",
     "ڪڪڙ",
     "ڪبوتر",
