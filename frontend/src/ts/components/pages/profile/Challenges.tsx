@@ -238,6 +238,24 @@ function ChallengeItem(props: {
                 {dateFormat(props.challenge.addedAt ?? 0, "dd MMM yyyy HH:mm")}
               </p>
             </Show>
+            <Show
+              when={
+                !props.completed &&
+                props.variant === "full" &&
+                props.challenge.settings?.autoRole !== true
+              }
+            >
+              <p>
+                Note: this challenge has special requirements. Check our{" "}
+                <Button
+                  variant="text"
+                  fa={{ variant: "brand", icon: "fa-discord" }}
+                  href="https://discord.com/channels/713194177403420752/754458264896405554"
+                  text="Discord"
+                />{" "}
+                for details.
+              </p>
+            </Show>
           </div>
         </div>
       </Show>
