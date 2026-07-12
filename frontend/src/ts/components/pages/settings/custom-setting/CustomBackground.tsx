@@ -97,7 +97,7 @@ export function CustomBackground(): JSXElement {
                 accept="image/*"
                 class="hidden"
                 onChange={async (e) => {
-                  const fileInput = e.target as HTMLInputElement;
+                  const fileInput = e.target;
                   const file = fileInput.files?.[0];
 
                   if (!file) {

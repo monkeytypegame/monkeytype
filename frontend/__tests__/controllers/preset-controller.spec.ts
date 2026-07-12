@@ -164,7 +164,7 @@ describe("PresetController", () => {
         ...partialPreset,
       } as any;
       dbGetSnapshotMock.mockReturnValue({} as any);
-      getPresetMock.mockReturnValue(preset as any);
+      getPresetMock.mockReturnValue(preset);
       return preset;
     };
   });

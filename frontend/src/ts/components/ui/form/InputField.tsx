@@ -69,11 +69,12 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={(props.field().state.value as string) ?? ""}
+        value={convertValueToString(props.field().state.value)}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === ""
+            (props.field().state.value === undefined ||
+              props.field().state.value === "")
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -84,7 +85,11 @@ export function InputField(props: {
           props.field().handleBlur();
         }}
         onInput={(e) => {
-          props.field().handleChange(e.target.value);
+          const value: unknown = convertStringToValue(
+            props.field().state.value,
+            e.target.value,
+          );
+          props.field().handleChange(value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -150,4 +155,24 @@ function getDateOptions(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
+}
+
+function convertValueToString(input: unknown | undefined): string {
+  if (input === undefined || input === null) return "";
+  if (typeof input === "number") {
+    if (isFinite(input)) return input.toString();
+    else return "";
+  }
+  return input as string;
+}
+
+function convertStringToValue<T extends unknown | undefined>(
+  defaultValue: T,
+  newValue: string,
+): T | undefined {
+  if (defaultValue === undefined || defaultValue === null) return newValue as T;
+  if (newValue === "") return undefined;
+  if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
+
+  return newValue as T;
 }

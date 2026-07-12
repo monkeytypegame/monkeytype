@@ -1,7 +1,6 @@
 import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
-import * as Monkey from "../../test/monkey";
 import { emulateInsertText } from "./insert-text";
 import * as TestState from "../../test/test-state";
 import {
@@ -79,7 +78,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.keymapLayout !== "overrideSync"
   ) {
     let keymapLayout = await __nonReactive
-      .getInputLayout()
+      .getKeymapLayout()
       .catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");
@@ -153,14 +152,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   if (prevent) {
     event.preventDefault();
     return;
-  }
-
-  if (!event.repeat) {
-    //delaying because type() is called before show()
-    // meaning the first keypress of the test is not animated
-    setTimeout(() => {
-      Monkey.type(event);
-    }, 0);
   }
 
   if (Config.layout !== "default") {

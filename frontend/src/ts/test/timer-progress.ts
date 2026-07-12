@@ -8,7 +8,7 @@ import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
-import { getCurrentQuote } from "../states/test";
+import { getCurrentQuote, isTestActive } from "../states/test";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
@@ -30,7 +30,7 @@ function showElement(el: HTMLElement): void {
 }
 
 export function show(): void {
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   requestDebouncedAnimationFrame("timer-progress.show", () => {
     if (Config.mode !== "zen" && Config.timerStyle === "bar") {
       showElement(barOpacityEl);
@@ -246,7 +246,7 @@ export function update(): void {
 }
 
 export function updateStyle(): void {
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   hide();
   update();
   if (Config.timerStyle === "off") return;

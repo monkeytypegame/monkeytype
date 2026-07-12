@@ -20,7 +20,7 @@ export function MinSpeed(): JSXElement {
       minWpmCustomSpeed: getConfig.minWpmCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.minWpmCustomSpeed));
+      const val = value.minWpmCustomSpeed;
       if (val === getConfig.minWpmCustomSpeed) return;
       if (getConfig.minWpm === "custom") {
         //
@@ -50,13 +50,7 @@ export function MinSpeed(): JSXElement {
             <form.Field
               name="minWpmCustomSpeed"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MinWpmCustomSpeedSchema)({ value: val });
-                },
+                onChange: fromSchema(MinWpmCustomSpeedSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },

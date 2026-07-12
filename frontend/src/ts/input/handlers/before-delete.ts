@@ -5,9 +5,10 @@ import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
+import { isTestActive } from "../../states/test";
 
 export function onBeforeDelete(event: InputEvent): void {
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     event.preventDefault();
     return;
   }
