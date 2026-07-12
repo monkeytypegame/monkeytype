@@ -1,25 +1,20 @@
-import {
-  createSignal,
-  createEffect,
-  createMemo,
-  createResource,
-} from "solid-js";
+import { createEffect, createMemo, createSignal } from "solid-js";
 import { getConfig } from "../config/store";
 
-import { canQuickRestart } from "../utils/quick-restart";
-import { getData as getCustomTextData } from "../test/custom-text";
-import { getActivePage, getCustomTextIndicator } from "./core";
-import { QuoteWithTextSplit } from "../types/quotes";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
-import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { Challenge } from "@monkeytype/challenges";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getLayout } from "../utils/json-data";
-import { mirrorLayoutKeys } from "../utils/key-converter";
+import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
-import { promiseWithResolvers } from "../utils/misc";
-import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { getData as getCustomTextData } from "../test/custom-text";
+import { QuoteWithTextSplit } from "../types/quotes";
+import { getLayout } from "../utils/json-data";
+import { mirrorLayoutKeys } from "../utils/key-converter";
+import { canQuickRestart } from "../utils/quick-restart";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
+import { getActivePage, getCustomTextIndicator } from "./core";
+import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -95,17 +90,6 @@ export const getKeymapLayout = createMemo<{
   return { layout: layout, layoutNameDisplayString, isMirrored };
 });
 
-export const [keymapLayoutObject] = createResource(
-  getKeymapLayout,
-  async (layout) => {
-    const result = await getLayout(layout.layout);
-    if (layout.isMirrored) {
-      return mirrorLayoutKeys(result);
-    }
-    return result;
-  },
-);
-
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
   string | undefined
 >(undefined);
@@ -133,7 +117,6 @@ keymapEvent.useListener(({ mode, key, correct }) => {
   }
 });
 
-let inputLayoutPromise = promiseWithResolvers();
 const getInputLayout = createMemo<{
   layout: string;
   isMirrored: boolean;
@@ -144,40 +127,43 @@ const getInputLayout = createMemo<{
   };
 });
 
-const [inputLayoutObject] = createResource(getInputLayout, async (layout) => {
-  const result = await getLayout(layout.layout);
-  if (layout.isMirrored) {
-    return mirrorLayoutKeys(result);
-  }
-  return result;
-});
+const [inputLayoutObject, inputLayoutPromise] = useResourceWithPromise(
+  getInputLayout,
+  async (layout) => {
+    const result = await getLayout(layout.layout);
+    if (layout.isMirrored) {
+      return mirrorLayoutKeys(result);
+    }
+    return result;
+  },
+);
 
-async function waitForInputLayoutReady(): Promise<void> {
-  await inputLayoutPromise.promise;
-  if (inputLayoutObject.state === "ready") return;
-
-  if (inputLayoutObject.state === "errored") {
-    throw new Error("Failed to load input layout");
-  }
-}
-
-createEffect(() => {
-  const state = inputLayoutObject.state;
-  inputLayoutPromise.reset();
-  if (state === "ready") {
-    inputLayoutPromise.resolve();
-  }
-  if (state === "errored") {
-    inputLayoutPromise.reject(new Error("failed to fetch input layout"));
-  }
-});
+const [keymapLayoutObject, keymapLayoutPromise] = useResourceWithPromise(
+  getKeymapLayout,
+  async (layout) => {
+    const result = await getLayout(layout.layout);
+    if (layout.isMirrored) {
+      return mirrorLayoutKeys(result);
+    }
+    return result;
+  },
+);
+export { keymapLayoutObject };
 
 /**
  * Used for non reactive access. Do not use in Solid components.
  */
 export const __nonReactive = {
+  getKeymapLayout: async (): Promise<LayoutObject> => {
+    await keymapLayoutPromise.promise;
+    const result = keymapLayoutObject();
+    if (result === undefined) {
+      throw new Error("Failed to load keymap layout");
+    }
+    return result;
+  },
   getInputLayout: async (): Promise<LayoutObject> => {
-    await waitForInputLayoutReady();
+    await inputLayoutPromise.promise;
     const result = inputLayoutObject();
     if (result === undefined) {
       throw new Error("Failed to load input layout");
