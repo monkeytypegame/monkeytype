@@ -179,7 +179,6 @@ export const LayoutNameSchema = z.enum(
     "graphite_angle",
     "graphite_angle_vc",
     "graphite_angle_kp",
-    "graphite_iso_angle",
     "graphite_matrix",
     "macedonian",
     "UGJRMV",
@@ -243,6 +242,7 @@ export const LayoutNameSchema = z.enum(
     "nokwts",
     "vylet_v4",
     "armenian_hm_qwerty",
+    "graphite_iso_angle",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
