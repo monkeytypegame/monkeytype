@@ -179,6 +179,7 @@ export const LayoutNameSchema = z.enum(
     "graphite_angle",
     "graphite_angle_vc",
     "graphite_angle_kp",
+    "graphite_iso_angle",
     "graphite_matrix",
     "macedonian",
     "UGJRMV",
