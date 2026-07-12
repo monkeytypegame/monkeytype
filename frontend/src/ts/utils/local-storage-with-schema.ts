@@ -31,7 +31,7 @@ export class LocalStorageWithSchema<T> {
 
   public get(): T {
     if (this.cache !== undefined) {
-      console.debug(`LS ${this.key} Got cached value:`, this.cache);
+      //console.debug(`LS ${this.key} Got cached value:`, this.cache);
       return structuredClone(this.cache);
     }
 

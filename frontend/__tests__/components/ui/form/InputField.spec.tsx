@@ -4,22 +4,32 @@ import { describe, it, expect, vi } from "vitest";
 
 import { InputField } from "../../../../src/ts/components/ui/form/InputField";
 
-function makeField(name: string, value = ""): AnyFieldApi {
+function makeField(
+  name: string,
+  value?: string | number | boolean,
+): AnyFieldApi {
+  let current = value;
+  const meta = {
+    isValidating: false,
+    isTouched: false,
+    isValid: true,
+    isDefaultValue: true,
+    errors: [] as string[],
+  };
   return {
     name,
-    state: {
-      value,
-      meta: {
-        isValidating: false,
-        isTouched: false,
-        isValid: true,
-        isDefaultValue: true,
-        errors: [],
-      },
+    get state() {
+      return {
+        value: current,
+        meta,
+      };
     },
-    options: {},
+    options: { default: value },
     handleBlur: vi.fn(),
-    handleChange: vi.fn(),
+    handleChange: vi.fn((v: unknown) => {
+      current = v as typeof value;
+    }),
+    setValue: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
   } as unknown as AnyFieldApi;
 }
@@ -61,6 +71,16 @@ describe("InputField", () => {
     expect(field.handleChange).toHaveBeenCalledWith("test");
   });
 
+  it("calls handleChange on input for number", async () => {
+    const field = makeField("name", 2.5);
+    render(() => <InputField field={() => field} type="number" />);
+
+    fireEvent.input(screen.getByRole("spinbutton"), {
+      target: { value: "1.25" },
+    });
+    expect(field.handleChange).toHaveBeenCalledWith(1.25);
+  });
+
   it("calls handleBlur on blur", async () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} />);
@@ -99,5 +119,44 @@ describe("InputField", () => {
     const { container } = render(() => <InputField field={() => field} />);
 
     expect(container.querySelector(".fa-circle-notch")).not.toBeInTheDocument();
+  });
+
+  it("resets to default value on blur when empty for type number", async () => {
+    const field = makeField("age", 25);
+    field.form = { options: { defaultValues: { age: 25 } } } as any;
+    render(() => (
+      <InputField
+        field={() => field}
+        type="number"
+        resetToDefaultIfEmptyOnBlur
+      />
+    ));
+
+    fireEvent.input(screen.getByRole("spinbutton"), {
+      target: { value: "" },
+    });
+    fireEvent.blur(screen.getByRole("spinbutton"));
+    expect(field.setValue).toHaveBeenCalledWith(25);
+  });
+
+  it("resets to default value on blur when empty for type string", async () => {
+    const field = makeField("name", "Alice");
+    field.form = { options: { defaultValues: { name: "Alice" } } } as any;
+    render(() => (
+      <InputField field={() => field} resetToDefaultIfEmptyOnBlur />
+    ));
+
+    fireEvent.input(screen.getByRole("textbox"), {
+      target: { value: "" },
+    });
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(field.setValue).toHaveBeenCalledWith("Alice");
+  });
+
+  it("renders NaN as empty string for type number", async () => {
+    const field = makeField("value", NaN);
+    render(() => <InputField field={() => field} type="number" />);
+
+    expect(screen.getByRole("spinbutton").getAttribute("value")).toBeNull();
   });
 });

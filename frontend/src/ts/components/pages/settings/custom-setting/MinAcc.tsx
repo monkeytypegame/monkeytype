@@ -8,9 +8,9 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MinAcc(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -20,7 +20,7 @@ export function MinAcc(): JSXElement {
       minAccCustom: getConfig.minAccCustom,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.minAccCustom));
+      const val = value.minAccCustom;
       if (val === getConfig.minAccCustom) return;
       if (getConfig.minAcc === "custom") {
         //
@@ -33,7 +33,7 @@ export function MinAcc(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="minAcc"
       title={configMetadata.minAcc.displayString ?? "min accuracy"}
       fa={configMetadata.minAcc.fa}
@@ -50,15 +50,7 @@ export function MinAcc(): JSXElement {
             <form.Field
               name="minAccCustom"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MinimumAccuracyCustomSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(MinimumAccuracyCustomSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },

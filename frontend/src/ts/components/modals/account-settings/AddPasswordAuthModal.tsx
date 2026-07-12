@@ -11,8 +11,8 @@ export function showAddPasswordAuthModal(): void {
     schema: z.object({
       email: UserEmailSchema,
       emailConfirm: UserEmailSchema,
-      password: getPasswordSchema(),
-      passConfirm: getPasswordSchema(),
+      password: getPasswordSchema({ isNew: true }),
+      passConfirm: getPasswordSchema({ isNew: true }),
     }),
     inputs: {
       email: {
