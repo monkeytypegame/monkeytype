@@ -48,6 +48,7 @@ export function GoogleSignupModal() {
     <AnimatedModal
       id={modalId}
       title="Account name"
+      mode="dialog"
       afterHide={() => void afterHide()}
     >
       <p>Please enter a username before continuing</p>
