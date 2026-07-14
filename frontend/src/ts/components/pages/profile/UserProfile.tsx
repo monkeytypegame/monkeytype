@@ -52,7 +52,9 @@ export function UserProfile(props: {
       </Show>
 
       <ActivityCalendar
-        testActivity={props.profile.testActivity}
+        testActivity={
+          props.isAccountPage ? undefined : props.profile.testActivity
+        }
         isAccountPage={props.isAccountPage}
       />
     </div>
