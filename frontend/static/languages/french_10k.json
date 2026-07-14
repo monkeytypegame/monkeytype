@@ -1,5 +1,9 @@
 {
   "name": "french_10k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "bcp47": "fr-FR",
   "words": [
     "a",

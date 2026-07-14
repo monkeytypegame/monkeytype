@@ -1,5 +1,9 @@
 {
   "name": "mongolian",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["„", "“"]
+  },
   "noLazyMode": true,
   "words": [
     "аавын",

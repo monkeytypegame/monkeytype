@@ -1,5 +1,9 @@
 {
   "name": "arabic_egypt",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "rightToLeft": true,
   "joiningScript": true,
   "bcp47": "ar-EG",

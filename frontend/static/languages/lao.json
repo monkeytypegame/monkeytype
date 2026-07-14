@@ -1,5 +1,9 @@
 {
   "name": "lao",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["", ""]
+  },
   "rightToLeft": false,
   "joiningScript": false,
   "orderedByFrequency": false,

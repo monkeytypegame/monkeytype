@@ -1,5 +1,9 @@
 {
   "name": "slovenian_5k",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‚", "‘"]
+  },
   "bcp47": "sl-SI",
   "orderedByFrequency": true,
   "words": [

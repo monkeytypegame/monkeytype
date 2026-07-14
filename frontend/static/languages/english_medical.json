@@ -1,5 +1,9 @@
 {
   "name": "english_medical",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "rightToLeft": false,
   "noLazyMode": true,
   "orderedByFrequency": false,

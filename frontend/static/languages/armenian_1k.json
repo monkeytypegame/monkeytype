@@ -1,5 +1,9 @@
 {
   "name": "armenian_1k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "orderedByFrequency": false,
   "words": [

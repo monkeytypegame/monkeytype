@@ -1,5 +1,9 @@
 {
   "name": "turkish_1k",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "bcp47": "tr-TR",
   "words": [
     "bir",

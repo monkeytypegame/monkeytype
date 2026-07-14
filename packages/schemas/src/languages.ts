@@ -461,6 +461,13 @@ export type Language = z.infer<typeof LanguageSchema>;
 export const LanguageObjectSchema = z
   .object({
     name: LanguageSchema,
+    quotationMarks: z
+      .object({
+        primary: z.tuple([z.string(), z.string()]),
+        secondary: z.tuple([z.string(), z.string()]),
+      })
+      .strict()
+      .optional(),
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),
     joiningScript: z.boolean().optional(),

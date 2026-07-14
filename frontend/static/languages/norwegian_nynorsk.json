@@ -1,5 +1,9 @@
 {
   "name": "norwegian_nynorsk",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["‘", "’"]
+  },
   "orderedByFrequency": true,
   "bcp47": "nn-NO",
   "words": [

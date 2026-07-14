@@ -1,5 +1,9 @@
 {
   "name": "hebrew",
+  "quotationMarks": {
+    "primary": ["”", "„"],
+    "secondary": ["’", "‚"]
+  },
   "rightToLeft": true,
   "joiningScript": true,
   "noLazyMode": true,

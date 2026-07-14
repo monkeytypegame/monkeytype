@@ -1,5 +1,9 @@
 {
   "name": "english_legal",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "words": [
     "abandonment",
     "abet",

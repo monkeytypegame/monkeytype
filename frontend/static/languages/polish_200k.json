@@ -1,5 +1,9 @@
 {
   "name": "polish_200k",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["»", "«"]
+  },
   "bcp47": "pl-PL",
   "words": [
     "A",

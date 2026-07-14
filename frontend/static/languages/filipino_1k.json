@@ -1,5 +1,9 @@
 {
   "name": "filipino_1k",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "words": [
     "salita",

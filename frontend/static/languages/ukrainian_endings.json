@@ -1,5 +1,9 @@
 {
   "name": "ukrainian_endings",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "words": [
     "я",

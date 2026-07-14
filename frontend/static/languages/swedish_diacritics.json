@@ -1,5 +1,9 @@
 {
   "name": "swedish_diacritics",
+  "quotationMarks": {
+    "primary": ["”", "”"],
+    "secondary": ["’", "’"]
+  },
   "bcp47": "sv-SE",
   "words": [
     "blåbär",

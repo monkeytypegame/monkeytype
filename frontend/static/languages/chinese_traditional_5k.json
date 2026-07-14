@@ -1,5 +1,9 @@
 {
   "name": "chinese_traditional_5k",
+  "quotationMarks": {
+    "primary": ["「", "」"],
+    "secondary": ["『", "』"]
+  },
   "noLazyMode": true,
   "rightToLeft": false,
   "orderedByFrequency": true,

@@ -1,5 +1,9 @@
 {
   "name": "norwegian_bokmal_150k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["‘", "’"]
+  },
   "_comment": "Sourced from Norsk ordbank – bokmål 2005, Språkbanken Nasjonalbiblioteket https://www.nb.no/sprakbanken/ressurskatalog/oai-nb-no-sbr-5/ the 13/05/2023, Licensed from Creative_Commons-BY (CC-BY 4.0) - modified",
   "bcp47": "nb-NO",
   "words": [

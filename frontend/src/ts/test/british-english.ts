@@ -7,9 +7,16 @@ export async function replace(
   previousWord: string | undefined,
 ): Promise<string> {
   // Convert American-style double quotes to British-style single quotes
-  if (word.includes('"')) {
-    word = word.replace(/"/g, "'");
-  }
+  const us2ukQuotes = {
+    "“": "‘",
+    "”": "’",
+    "‘": "“",
+    "’": "”",
+  };
+  word = word.replace(
+    /[“”‘’]/g,
+    (char) => us2ukQuotes[char as keyof typeof us2ukQuotes],
+  );
 
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure

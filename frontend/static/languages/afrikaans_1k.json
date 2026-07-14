@@ -1,5 +1,9 @@
 {
   "name": "afrikaans_1k",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "words": [
     "sterker",

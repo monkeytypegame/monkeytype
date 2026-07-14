@@ -44,10 +44,11 @@ export async function punctuateWord(
   currentWord: string,
   index: number,
   maxindex: number,
+  language: LanguageObject,
 ): Promise<string> {
   let word = currentWord;
 
-  const currentLanguage = Config.language.split("_")[0];
+  const currentLanguage = language.name.split("_")[0];
 
   const lastChar =
     previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
@@ -143,22 +144,18 @@ export async function punctuateWord(
         }
       }
     }
-  } else if (
-    random() < 0.01 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    currentLanguage !== "russian"
-  ) {
-    word = `"${word}"`;
-  } else if (
-    random() < 0.011 &&
-    lastChar !== "," &&
-    lastChar !== "." &&
-    currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian" &&
-    currentLanguage !== "slovak"
-  ) {
-    word = `'${word}'`;
+  } else if (random() < 0.01 && lastChar !== "," && lastChar !== ".") {
+    if (language?.quotationMarks !== undefined) {
+      word = `${language.quotationMarks.primary[0]}${word}${language.quotationMarks.primary[1]}`;
+    } else {
+      word = `"${word}"`;
+    }
+  } else if (random() < 0.011 && lastChar !== "," && lastChar !== ".") {
+    if (language?.quotationMarks !== undefined) {
+      word = `${language.quotationMarks.secondary[0]}${word}${language.quotationMarks.secondary[1]}`;
+    } else {
+      word = `'${word}'`;
+    }
   } else if (random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
       const r = random();
@@ -949,6 +946,7 @@ export async function getNextWord(
       randomWord,
       wordIndex,
       wordsBound,
+      currentLanguage,
     );
   }
 

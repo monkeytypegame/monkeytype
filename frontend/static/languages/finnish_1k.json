@@ -1,5 +1,9 @@
 {
   "name": "finnish_1k",
+  "quotationMarks": {
+    "primary": ["”", "”"],
+    "secondary": ["’", "’"]
+  },
   "bcp47": "fi-FI",
   "words": [
     "aamu",

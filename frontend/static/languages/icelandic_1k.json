@@ -1,5 +1,9 @@
 {
   "name": "icelandic_1k",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["", ""]
+  },
   "words": [
     "og",
     "að",

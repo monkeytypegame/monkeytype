@@ -1,5 +1,9 @@
 {
   "name": "czech_1k",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["‚", "‘"]
+  },
   "bcp47": "cs-CZ",
   "words": [
     "a",

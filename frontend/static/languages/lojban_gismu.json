@@ -1,5 +1,9 @@
 {
   "name": "lojban_gismu",
+  "quotationMarks": {
+    "primary": ["lu ", " li'u"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "words": [
     "bacru",

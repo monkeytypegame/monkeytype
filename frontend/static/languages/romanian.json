@@ -1,5 +1,9 @@
 {
   "name": "romanian",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["«", "»"]
+  },
   "bcp47": "ro-RO",
   "words": [
     "acasă",

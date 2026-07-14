@@ -1,5 +1,9 @@
 {
   "name": "korean",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "joiningScript": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",

@@ -1,5 +1,9 @@
 {
   "name": "lojban_cmavo",
+  "quotationMarks": {
+    "primary": ["lu ", " li'u"],
+    "secondary": ["", ""]
+  },
   "noLazyMode": true,
   "words": [
     "a",

@@ -1,5 +1,9 @@
 {
   "name": "estonian_10k",
+  "quotationMarks": {
+    "primary": ["„", "”"],
+    "secondary": ["", ""]
+  },
   "bcp47": "et-EE",
   "words": [
     "aa",

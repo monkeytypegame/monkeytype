@@ -1,5 +1,9 @@
 {
   "name": "italian_60k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["“", "”"]
+  },
   "bcp47": "it-IT",
   "words": [
     "abate",

@@ -1,5 +1,9 @@
 {
   "name": "russian_10k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["„", "“"]
+  },
   "bcp47": "ru-RU",
   "words": [
     "абажур",

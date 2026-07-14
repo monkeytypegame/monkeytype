@@ -1,5 +1,9 @@
 {
   "name": "italian",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["“", "”"]
+  },
   "bcp47": "it-IT",
   "words": [
     "come",

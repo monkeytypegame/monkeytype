@@ -1,5 +1,9 @@
 {
   "name": "chinese_traditional",
+  "quotationMarks": {
+    "primary": ["「", "」"],
+    "secondary": ["『", "』"]
+  },
   "noLazyMode": true,
   "bcp47": "zh-Hant",
   "words": [

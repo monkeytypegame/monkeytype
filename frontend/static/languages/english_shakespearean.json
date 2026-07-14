@@ -1,5 +1,9 @@
 {
   "name": "english_shakespearean",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "noLazyMode": true,
   "words": [
     "hark",

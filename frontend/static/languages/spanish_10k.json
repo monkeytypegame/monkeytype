@@ -1,5 +1,9 @@
 {
   "name": "spanish_10k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["“", "”"]
+  },
   "_comment": "Source from corpus.rae.es/lfrecuencias.html",
   "bcp47": "es-ES",
   "words": [

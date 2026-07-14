@@ -1,5 +1,9 @@
 {
   "name": "russian_50k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["„", "“"]
+  },
   "bcp47": "ru-RU",
   "words": [
     "а",

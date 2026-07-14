@@ -1,5 +1,9 @@
 {
   "name": "english_old",
+  "quotationMarks": {
+    "primary": ["“", "”"],
+    "secondary": ["‘", "’"]
+  },
   "words": [
     "abutan",
     "ac",

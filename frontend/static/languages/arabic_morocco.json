@@ -1,5 +1,9 @@
 {
   "name": "arabic_morocco",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["", ""]
+  },
   "rightToLeft": true,
   "joiningScript": true,
   "orderedByFrequency": false,

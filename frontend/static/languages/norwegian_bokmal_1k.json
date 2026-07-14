@@ -1,5 +1,9 @@
 {
   "name": "norwegian_bokmal_1k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["‘", "’"]
+  },
   "orderedByFrequency": true,
   "bcp47": "nb-NO",
   "words": [

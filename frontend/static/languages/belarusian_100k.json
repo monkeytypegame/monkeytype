@@ -1,5 +1,9 @@
 {
   "name": "belarusian_100k",
+  "quotationMarks": {
+    "primary": ["«", "»"],
+    "secondary": ["„", "“"]
+  },
   "bcp47": "be-BY",
   "words": [
     "а",
