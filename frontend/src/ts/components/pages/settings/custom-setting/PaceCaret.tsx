@@ -7,8 +7,13 @@ import { For, JSXElement } from "solid-js";
 
 import {
   configMetadata,
+  getOptionLabel,
   getOptionSearchKeywords,
 } from "../../../../config/metadata";
+import {
+  getPaceCaretContext,
+  isPaceCaretModeAvailable,
+} from "../../../../config/pace-caret-options";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
@@ -77,15 +82,13 @@ export function PaceCaret(): JSXElement {
             />
           </form>
           <div class="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-2">
-            <For each={getOptions(ConfigSchema.shape.paceCaret)}>
+            <For
+              each={getOptions(ConfigSchema.shape.paceCaret)?.filter((option) =>
+                isPaceCaretModeAvailable(option, getPaceCaretContext()),
+              )}
+            >
               {(option) => {
-                const optionMeta = configMetadata.paceCaret
-                  .optionsMetadata as Record<
-                  string,
-                  { displayString?: string }
-                >;
-                const displayString =
-                  optionMeta?.[String(option)]?.displayString ?? String(option);
+                const displayString = getOptionLabel("paceCaret", option);
                 return (
                   <Button
                     active={getConfig.paceCaret === option}

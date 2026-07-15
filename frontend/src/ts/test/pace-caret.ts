@@ -8,6 +8,12 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
+import { getNextPaceCaretWpm } from "../queries/leaderboards";
+import { configurationPromise } from "../ape/server-configuration";
+import {
+  isPaceCaretModeAvailable,
+  PaceCaretContext,
+} from "../config/pace-caret-options";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -63,9 +69,52 @@ export function resetCaretPosition(): void {
 
 export async function init(): Promise<void> {
   caret.hide();
+  const paceCaret = Config.paceCaret;
   const mode2 = Misc.getMode2(Config, getCurrentQuote());
+  const remoteMode = paceCaret === "next" || paceCaret === "nextDaily";
+  if (remoteMode) {
+    settings = null;
+    setPaceCaretWpm(undefined);
+  }
+
+  const paceCaretContext: PaceCaretContext = {
+    language: Config.language,
+    mode: Config.mode,
+    mode2,
+  };
   let wpm = 0;
-  if (Config.paceCaret === "pb") {
+  if (remoteMode) {
+    if (paceCaret === "nextDaily") {
+      try {
+        await configurationPromise;
+      } catch {
+        return;
+      }
+    }
+
+    if (!isPaceCaretModeAvailable(paceCaret, paceCaretContext)) {
+      return;
+    }
+
+    try {
+      wpm =
+        (await getNextPaceCaretWpm(paceCaret === "next" ? "allTime" : "daily", {
+          language: Config.language,
+          mode: Config.mode,
+          mode2,
+        })) ?? 0;
+      if (
+        Config.paceCaret !== paceCaret ||
+        Config.language !== paceCaretContext.language ||
+        Config.mode !== paceCaretContext.mode ||
+        Misc.getMode2(Config, getCurrentQuote()) !== paceCaretContext.mode2
+      ) {
+        return;
+      }
+    } catch {
+      return;
+    }
+  } else if (Config.paceCaret === "pb") {
     wpm =
       DB.getLocalPB(
         Config.mode,

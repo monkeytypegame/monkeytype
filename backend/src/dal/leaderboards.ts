@@ -172,6 +172,32 @@ export async function getRank(
   }
 }
 
+export async function getNextWpm(
+  mode: string,
+  mode2: string,
+  language: string,
+  uid: string,
+): Promise<number | null | false> {
+  try {
+    const currentEntry = await getRank(mode, mode2, language, uid);
+    if (currentEntry === false) return false;
+    if (currentEntry === null) return null;
+
+    const nextEntry = await getCollection({ language, mode, mode2 }).findOne(
+      { wpm: { $gt: currentEntry.wpm } },
+      { sort: { wpm: 1 }, projection: { wpm: 1 } },
+    );
+
+    return nextEntry?.wpm ?? null;
+  } catch (e) {
+    // oxlint-disable-next-line no-unsafe-member-access
+    if (e.error === 175) {
+      return false;
+    }
+    throw e;
+  }
+}
+
 export async function update(
   mode: string,
   mode2: string,

@@ -14,6 +14,7 @@ import {
   GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
   GetLeaderboardResponse,
+  NextLeaderboardWpmResponse,
   GetWeeklyXpLeaderboardQuery,
   GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
@@ -105,6 +106,35 @@ export async function getRankFromLeaderboard(
   return new MonkeyResponse("Rank retrieved", omit(data, ["_id"]));
 }
 
+export async function getNextLeaderboardWpm(
+  req: MonkeyRequest<GetLeaderboardRankQuery>,
+): Promise<NextLeaderboardWpmResponse> {
+  const { language, mode, mode2 } = req.query;
+  let nextWpm: number | null | false = null;
+
+  if (
+    language === "english" &&
+    mode === "time" &&
+    ["15", "60"].includes(mode2)
+  ) {
+    try {
+      nextWpm = await LeaderboardsDAL.getNextWpm(
+        mode,
+        mode2,
+        language,
+        req.ctx.decodedToken.uid,
+      );
+    } catch {
+      nextWpm = null;
+    }
+  }
+
+  return new MonkeyResponse(
+    "Next leaderboard WPM retrieved",
+    nextWpm === false ? null : nextWpm,
+  );
+}
+
 function getDailyLeaderboardWithError(
   { language, mode, mode2, daysBefore }: DailyLeaderboardQuery,
   config: Configuration["dailyLeaderboards"],
@@ -187,6 +217,31 @@ export async function getDailyLeaderboardRank(
   );
 
   return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
+}
+
+export async function getNextDailyLeaderboardWpm(
+  req: MonkeyRequest<GetLeaderboardRankQuery>,
+): Promise<NextLeaderboardWpmResponse> {
+  const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
+    req.query.language,
+    req.query.mode,
+    req.query.mode2,
+    req.ctx.configuration.dailyLeaderboards,
+  );
+
+  if (dailyLeaderboard === null) {
+    return new MonkeyResponse("Next daily leaderboard WPM retrieved", null);
+  }
+
+  try {
+    const nextWpm = await dailyLeaderboard.getNextWpm(
+      req.ctx.decodedToken.uid,
+      req.ctx.configuration.dailyLeaderboards,
+    );
+    return new MonkeyResponse("Next daily leaderboard WPM retrieved", nextWpm);
+  } catch {
+    return new MonkeyResponse("Next daily leaderboard WPM retrieved", null);
+  }
 }
 
 function getWeeklyXpLeaderboardWithError(

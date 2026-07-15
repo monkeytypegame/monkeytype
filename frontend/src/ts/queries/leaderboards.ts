@@ -4,6 +4,7 @@ import {
 } from "@monkeytype/contracts/leaderboards";
 import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
+import { queryClient } from ".";
 import { pageSize, Selection, setPage } from "../states/leaderboard-selection";
 
 const queryKeys = {
@@ -28,7 +29,43 @@ const queryKeys = {
   ],
   rank: (options: Selection) =>
     queryKeys.root({ ...options, userSpecific: true }), //rank is always user specific
+  next: (type: "allTime" | "daily", options: GetLeaderboardRankQuery) => [
+    "user",
+    "paceCaret",
+    type,
+    options,
+  ],
 };
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export const getNextPaceCaretWpmQueryOptions = (
+  type: "allTime" | "daily",
+  options: GetLeaderboardRankQuery,
+  // oxlint-disable-next-line typescript/explicit-function-return-type
+) =>
+  queryOptions({
+    queryKey: queryKeys.next(type, options),
+    queryFn: async () => {
+      const response =
+        type === "allTime"
+          ? await Ape.leaderboards.getNext({ query: options })
+          : await Ape.leaderboards.getDailyNext({ query: options });
+
+      if (response.status !== 200) return null;
+      return response.body.data;
+    },
+    staleTime: type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
+    gcTime: Infinity,
+  });
+
+export async function getNextPaceCaretWpm(
+  type: "allTime" | "daily",
+  options: GetLeaderboardRankQuery,
+): Promise<number | null> {
+  return await queryClient.fetchQuery(
+    getNextPaceCaretWpmQueryOptions(type, options),
+  );
+}
 
 export const getLeaderboardQueryOptions = (
   options: Selection & {

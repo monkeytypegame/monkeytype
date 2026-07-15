@@ -239,6 +239,39 @@ export class DailyLeaderboard {
       );
     }
   }
+
+  public async getNextWpm(
+    uid: string,
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
+  ): Promise<number | null> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return null;
+    }
+
+    const currentEntry = await this.getRank(uid, dailyLeaderboardsConfig);
+    if (currentEntry === null || currentEntry.rank <= 1) {
+      return null;
+    }
+
+    const results = await this.getResults(
+      0,
+      currentEntry.rank - 1,
+      dailyLeaderboardsConfig,
+      true,
+    );
+    let nextWpm: number | null = null;
+    for (const entry of results?.entries ?? []) {
+      if (
+        entry.wpm > currentEntry.wpm &&
+        (nextWpm === null || entry.wpm < nextWpm)
+      ) {
+        nextWpm = entry.wpm;
+      }
+    }
+
+    return nextWpm;
+  }
 }
 
 export async function purgeUserFromDailyLeaderboards(

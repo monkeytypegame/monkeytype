@@ -218,6 +218,7 @@ function PaceCaretNotice() {
     let type: string = getConfig.paceCaret;
     if (type === "off") type = "custom";
     else if (type === "tagPb") type = "tag pb";
+    else if (type === "nextDaily") type = "daily next";
 
     const format = getFormatting();
     const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
@@ -231,7 +232,9 @@ function PaceCaretNotice() {
   return (
     <Notice
       when={
-        getConfig.paceCaret !== "off" ||
+        (getConfig.paceCaret !== "off" &&
+          (!(["next", "nextDaily"] as string[]).includes(getConfig.paceCaret) ||
+            getPaceCaretWpm() !== undefined)) ||
         (getConfig.repeatedPace && isPaceRepeat())
       }
       icon="fa-tachometer-alt"
