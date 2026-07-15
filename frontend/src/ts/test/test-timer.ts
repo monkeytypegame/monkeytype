@@ -7,7 +7,6 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveSpeed from "./live-speed";
 import * as TestWords from "./test-words";
-import * as Monkey from "./monkey";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -31,8 +30,9 @@ import {
   getLiveCachedAccuracy,
   getLiveCachedTestDurationMs,
 } from "./events/live-cache";
-import { getChars } from "./events/stats";
+import { getChars, getKeypressesPerSecond } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
+import { isTestActive, setCurrentLiveStats } from "../states/test";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -40,7 +40,7 @@ const newTimer = createTimer({
   duration: 1000,
   autoplay: false,
   onComplete: () => {
-    // sync guard — finish() is async and TestState.isActive flips behind an await
+    // sync guard — finish() is async and isTestActive() flips behind an await
     if (stopped) return;
     const now = performance.now();
     const expectedThisFireMs = timerStartMs + (Time.get() + 1) * 1000;
@@ -146,13 +146,6 @@ function premid(): void {
   if (timerDebug) console.timeEnd("premid");
 }
 
-function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
-  if (timerDebug) console.time("update monkey");
-  const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
-  Monkey.updateFastOpacity(num);
-  if (timerDebug) console.timeEnd("update monkey");
-}
-
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
   if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
@@ -188,7 +181,9 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words.getCurrentText().charAt(getCurrentInput().length),
+            TestWords.words
+              .getCurrent()
+              ?.text.charAt(getCurrentInput().length) ?? "",
           );
         }, 1);
       }
@@ -308,26 +303,25 @@ function timerStep(now: number, catchingUp: boolean): void {
     //ui updates
     requestDebouncedAnimationFrame("test-timer.timerStep", () => {
       premid();
-      monkey(wpmAndRaw);
     });
 
     // already using raf
     TimerProgress.update();
     LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+    setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning();
     layoutfluid();
     const failed = checkIfFailed(wpmAndRaw, acc);
     if (!failed) checkIfTimeIsUp();
-  }
 
-  if (
-    Time.get() >= 3 &&
-    TestInput.input.getHistory().length === 0 &&
-    TestInput.input.current === ""
-  ) {
-    if (TestInput.afkHistory.every((afk) => afk)) {
+    //todo: live cache this?
+    const keypresses = getKeypressesPerSecond(eventLog);
+
+    const totalKeypresses = keypresses.reduce((acc, val) => acc + val, 0);
+
+    if (Time.get() >= 3 && totalKeypresses === 0) {
       timerEvent.dispatch({ key: "finish" });
     }
   }
@@ -411,7 +405,7 @@ async function _startOld(now: number): Promise<void> {
     const drift = roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      if (!TestState.isActive) {
+      if (!isTestActive()) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

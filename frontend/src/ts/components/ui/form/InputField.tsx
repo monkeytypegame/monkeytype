@@ -27,6 +27,7 @@ export function InputField(props: {
   min?: number;
   max?: number;
   step?: string | number;
+  alwaysShowFieldIndicator?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -68,11 +69,12 @@ export function InputField(props: {
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={(props.field().state.value as string) ?? ""}
+        value={convertValueToString(props.field().state.value)}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === ""
+            (props.field().state.value === undefined ||
+              props.field().state.value === "")
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -83,7 +85,11 @@ export function InputField(props: {
           props.field().handleBlur();
         }}
         onInput={(e) => {
-          props.field().handleChange(e.target.value);
+          const value: unknown = convertStringToValue(
+            props.field(),
+            e.target.value,
+          );
+          props.field().handleChange(value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -105,7 +111,10 @@ export function InputField(props: {
         step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
-        <FieldIndicator field={props.field()} />
+        <FieldIndicator
+          field={props.field()}
+          alwaysShow={props.alwaysShowFieldIndicator}
+        />
       </Show>
     </div>
   );
@@ -146,4 +155,27 @@ function getDateOptions(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
+}
+
+function convertValueToString(input: unknown | undefined): string {
+  if (input === undefined || input === null) return "";
+  if (typeof input === "number") {
+    if (isFinite(input)) return input.toString();
+    else return "";
+  }
+  return input as string;
+}
+
+function convertStringToValue<T extends unknown | undefined>(
+  field: AnyFieldApi,
+  newValue: string,
+): T | undefined {
+  const defaultValue: unknown =
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    field.form.options.defaultValues?.[field.name];
+  if (defaultValue === undefined || defaultValue === null) return newValue as T;
+  if (newValue === "") return undefined;
+  if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
+
+  return newValue as T;
 }

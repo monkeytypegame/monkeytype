@@ -1,3 +1,4 @@
+import { typedEntries } from "@monkeytype/util/objects";
 import { AnyFieldApi, createForm } from "@tanstack/solid-form";
 import {
   Accessor,
@@ -25,7 +26,6 @@ import {
   SimpleModalInput,
 } from "../../states/simple-modal";
 import { cn } from "../../utils/cn";
-import { typedEntries } from "../../utils/misc";
 import { getZodType, unwrapSchema } from "../../utils/zod";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Checkbox } from "../ui/form/Checkbox";
@@ -84,9 +84,9 @@ function getValidators(
     // oxlint-disable-next-line typescript/no-unsafe-argument
     validators.onChange = fromSchema(schema, {
       convert,
-    }) as SyncValidator;
+    });
   } else if (required) {
-    validators.onChange = fieldMandatory() as SyncValidator;
+    validators.onChange = fieldMandatory();
   }
 
   if (isValid !== undefined) {

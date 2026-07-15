@@ -130,6 +130,10 @@ main {
   scrollbar-color: var(--sub-color) transparent;
 }
 
+.modal {
+  overscroll-behavior-y: none;
+}
+
 html {
   @extend .ffscroll;
   overflow-y: scroll;

@@ -465,19 +465,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-
-export function typedKeys<T extends object>(
-  obj: T,
-): T extends T ? (keyof T)[] : never {
-  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
-}
-
-export function typedEntries<T extends object>(
-  obj: T,
-): { [K in keyof T]: [K, T[K]] }[keyof T][] {
-  return Object.entries(obj) as { [K in keyof T]: [K, T[K]] }[keyof T][];
-}
-
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
@@ -574,7 +561,7 @@ export function promiseWithResolvers<T = void>(): {
   return {
     resolve,
     reject,
-    promise: promiseLike as Promise<T>,
+    promise: promiseLike,
     reset,
   };
 }
@@ -691,6 +678,12 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
 
   el.scrollIntoView({
     block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+export function scrollToTop(): void {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
   });
 }
 

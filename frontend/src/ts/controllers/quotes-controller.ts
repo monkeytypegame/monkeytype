@@ -262,7 +262,7 @@ const quoteController = new QuotesController();
 
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "quoteLength") {
-    quoteController.updateQuoteQueue(newValue as number[]);
+    quoteController.updateQuoteQueue(newValue);
   }
 });
 

@@ -8,7 +8,19 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { implemented as anticheatImplemented } from "../../anticheat/index";
+import { isTestTooShort } from "../../utils/validation";
+import {
+  implemented as anticheatImplemented,
+  validateResult,
+  validateKeys,
+} from "../../anticheat/index";
+import MonkeyStatusCodes from "../../constants/monkey-status-codes";
+import {
+  incrementResult,
+  incrementDailyLeaderboard,
+} from "../../utils/prometheus";
+import GeorgeQueue from "../../queues/george-queue";
+import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import * as UserDAL from "../../dal/user";
 import { addLog } from "../../dal/logs";
 import {
@@ -23,6 +35,7 @@ import {
   UpdateResultTagsResponse,
 } from "@monkeytype/contracts/results";
 import { MonkeyRequest } from "../types";
+import { getChallenges } from "@monkeytype/challenges";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -39,6 +52,12 @@ try {
     process.exit(1);
   }
 }
+
+const autoRoleChallengeNames = new Set(
+  getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name),
+);
 
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,
@@ -428,7 +447,7 @@ export async function addResult(
   //   if (
   //     completedEvent.challenge !== null &&
   //     completedEvent.challenge !== undefined &&
-  //     AutoRoleList.includes(completedEvent.challenge) &&
+  //     autoRoleChallengeNames.has(completedEvent.challenge) &&
   //     user.discordId !== undefined &&
   //     user.discordId !== ""
   //   ) {

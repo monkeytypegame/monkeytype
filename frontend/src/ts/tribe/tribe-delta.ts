@@ -1,9 +1,9 @@
 import * as TribeState from "./tribe-state";
 import { Config } from "../config/store";
-import * as TestState from "../test/test-state";
 import { mapRange } from "@monkeytype/util/numbers";
 import { qs } from "../utils/dom";
 import { configEvent } from "../events/config";
+import { isTestActive } from "../states/test";
 // import { isConfigInfinite } from "./tribe-config";
 
 const textEl = qs(".pageTest #liveStatsMini .tribeDelta");
@@ -145,7 +145,7 @@ export function reset(): void {
 }
 
 export function show(): void {
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   if (!TribeState.isInARoom()) return;
   if (Config.tribeDelta !== "text") return;
 

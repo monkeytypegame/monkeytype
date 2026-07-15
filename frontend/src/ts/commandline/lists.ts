@@ -12,14 +12,10 @@ import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
-import LoadChallengeCommands, {
-  update as updateLoadChallengeCommands,
-} from "./lists/load-challenge";
+import LoadChallengeCommands from "./lists/load-challenge";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as getErrorMessage from "../utils/error";
-import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
 import {
@@ -40,20 +36,6 @@ import {
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
 import { lastEventLog } from "../test/test-state";
-
-const challengesPromise = JSONData.getChallengeList();
-challengesPromise
-  .then((challenges) => {
-    updateLoadChallengeCommands(challenges);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      getErrorMessage.createErrorMessage(
-        e,
-        "Failed to update challenges commands",
-      ),
-    );
-  });
 
 const adsCommands = buildCommands("ads");
 const modeCommand = buildCommandForConfigKey("mode");
@@ -192,7 +174,7 @@ export const commands: CommandsSubgroup = {
       "keymapLegendStyle",
       "keymapSize",
       "keymapLayout",
-      "keymapShowTopRow",
+      "keymapKeys",
     ),
 
     //theme
@@ -420,8 +402,6 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: CommandlineListKey | ConfigKey,
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([challengesPromise]);
-
   const subGroup = subgroupByConfigKey[listName];
   if (subGroup !== undefined) {
     return subGroup;
@@ -465,7 +445,6 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);

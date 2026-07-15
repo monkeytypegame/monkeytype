@@ -488,7 +488,7 @@ async function showCommands(): Promise<void> {
         }
       }
 
-      return { ...command, isActive } as CommandWithIsActive;
+      return { ...command, isActive };
     });
 
   if (

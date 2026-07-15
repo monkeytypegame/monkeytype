@@ -5,7 +5,6 @@ import tribeSocket from "./tribe-socket";
 import { blendTwoHexColors } from "../utils/colors";
 import { smoothWithValueWindow } from "../utils/arrays";
 import { Config } from "../config/store";
-import * as TestStats from "../test/test-stats";
 import { qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { showErrorNotification } from "../states/notifications";
@@ -308,11 +307,8 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   const valueWindow = Math.max(...burstToShow) * 0.25;
   const smoothedBurst = smoothWithValueWindow(burstToShow, 1, valueWindow);
 
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    result.testDuration % 1 < 0.5
-  ) {
+  //todo this might not be needed
+  if (Config.mode !== "time" && result.testDuration % 1 < 0.5) {
     labels.pop();
     wpmToShow.pop();
     errToShow.pop();

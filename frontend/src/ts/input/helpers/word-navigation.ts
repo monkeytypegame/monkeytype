@@ -18,9 +18,6 @@ import { buildEventLog, getInputForWord } from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
-  // this is used to tell test ui to update the word before moving to the next word (in case of a composition that ends with a space)
-  isCompositionEnding: boolean;
-  zenNewline?: boolean;
   now: number;
 };
 
@@ -31,8 +28,6 @@ type GoToNextWordReturn = {
 
 export async function goToNextWord({
   correctInsert,
-  isCompositionEnding,
-  zenNewline,
   now,
 }: GoToNextWordParams): Promise<GoToNextWordReturn> {
   const ret: GoToNextWordReturn = {
@@ -40,11 +35,7 @@ export async function goToNextWord({
     lastBurst: null,
   };
 
-  TestUI.beforeTestWordChange(
-    "forward",
-    correctInsert,
-    isCompositionEnding || zenNewline === true,
-  );
+  TestUI.beforeTestWordChange("forward", correctInsert);
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
@@ -55,9 +46,13 @@ export async function goToNextWord({
     ret.lastBurst = burst;
   }
 
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrentText());
+  PaceCaret.handleSpace(
+    correctInsert,
+    TestWords.words.getCurrent()?.textWithCommit ?? "",
+  );
 
-  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex + 1));
+  const nextWord = TestWords.words.get(TestState.activeWordIndex + 1)?.text;
+  if (nextWord !== undefined) Funbox.toggleScript(nextWord);
 
   const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
   if (lastWord) {
@@ -84,20 +79,18 @@ export async function goToNextWord({
   return ret;
 }
 
-export function goToPreviousWord(
-  inputType: DeleteInputType,
-  forceUpdateActiveWordLetters = false,
-): void {
+export function goToPreviousWord(inputType: DeleteInputType): void {
   if (TestState.activeWordIndex === 0) {
     setInputElementValue("");
     return;
   }
 
-  TestUI.beforeTestWordChange("back", null, forceUpdateActiveWordLetters);
+  TestUI.beforeTestWordChange("back", null);
 
   TestState.decreaseActiveWordIndex();
 
-  Funbox.toggleScript(TestWords.words.getText(TestState.activeWordIndex));
+  const word = TestWords.words.get(TestState.activeWordIndex)?.text;
+  if (word !== undefined) Funbox.toggleScript(word);
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
 
@@ -106,8 +99,11 @@ export function goToPreviousWord(
   } else if (inputType === "deleteContentBackward") {
     const word = getInputForWord(TestState.activeWordIndex);
     if (nospaceEnabled) {
+      // nospace has no separator, so the prior word's commit was its last
+      // letter; a single backspace deletes that letter (same as non-nospace
+      // deletes the separator below)
       setInputElementValue(word.slice(0, -1));
-    } else if (word.endsWith("\n")) {
+    } else if (word.endsWith("\n") || word.endsWith(" ")) {
       setInputElementValue(word.slice(0, -1));
     } else {
       setInputElementValue(word);

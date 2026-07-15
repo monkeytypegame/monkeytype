@@ -2137,7 +2137,7 @@ describe("UserDal", () => {
           maxLength: 50,
           lastResultTimestamp: 0,
           hourOffset: -1,
-        } as any,
+        },
         xp: 42,
         inventory: {
           badges: [{ id: 23 }, { id: 5 }],

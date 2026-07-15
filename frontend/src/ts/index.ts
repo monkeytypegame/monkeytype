@@ -5,11 +5,8 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/tribe";
-
-import "./modals/google-sign-up";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
@@ -42,7 +39,6 @@ import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./controllers/url-handler";
-import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";
@@ -106,6 +102,8 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
+  lastEventLog: () => lastEventLog,
+  currentEventLog: buildEventLog,
   createTribeRoom: TribeSocket.default.out.room.create,
   ...(isDevEnvironment()
     ? {
@@ -115,12 +113,6 @@ addToGlobal({
         tribeSocket: TribeSocket.default,
       }
     : {}),
-  lastEventLog: () => {
-    console.log(lastEventLog);
-  },
-  currentEventLog: () => {
-    console.log(buildEventLog());
-  },
 });
 
 mountComponents();

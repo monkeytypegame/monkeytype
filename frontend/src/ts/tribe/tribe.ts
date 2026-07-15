@@ -20,8 +20,6 @@ import * as TribeState from "./tribe-state";
 import { escapeRegExp, escapeHTML } from "../utils/misc";
 import { getTribeMode } from "../utils/tribe";
 import * as TestWords from "../test/test-words";
-import * as TestStats from "../test/test-stats";
-import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
 import * as TribeTypes from "./types";
 import * as TribeAutoJoin from "./tribe-auto-join";
@@ -44,6 +42,14 @@ import { timerEvent } from "../events/timer";
 import { Config } from "../config/store";
 import { showSimpleModal } from "../states/simple-modal";
 import { z } from "zod";
+import { isTestActive } from "../states/test";
+import { buildEventLog, getCurrentInput } from "../test/events/data";
+import { getChars, getKeypressesPerSecond } from "../test/events/stats";
+import {
+  getLiveCachedAccuracy,
+  getLiveCachedTestDurationMs,
+} from "../test/events/live-cache";
+import { calculateWpm } from "../utils/numbers";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -105,7 +111,7 @@ function updateRoomState(state: TribeTypes.RoomState): void {
       }
     }
   } else if (state === TribeTypes.ROOM_STATE.RACE_ONE_FINISHED) {
-    if (TestState.isActive) {
+    if (isTestActive()) {
       TribeCountdown.update("");
       TribeCountdown.show(true);
     }
@@ -629,7 +635,7 @@ TribeSocket.in.room.raceStarted(() => {
   TribeSound.play("cd_go");
   TribeCountdown.hide2();
   setTimeout(() => {
-    if (!TestState.isActive) {
+    if (!isTestActive()) {
       timerEvent.dispatch({ key: "start" });
     }
   }, 500);
@@ -639,20 +645,41 @@ TribeSocket.in.room.raceStarted(() => {
 TribeSocket.in.room.progressUpdate((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
+
+  const now = performance.now();
+
   room.maxWpm = data.roomMaxWpm;
   room.maxRaw = data.roomMaxRaw;
   room.minWpm = data.roomMinWpm;
   room.minRaw = data.roomMinRaw;
 
-  if (TribeState.isRaceActive() && TestState.isActive) {
-    const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    const acc = Math.floor(TestStats.calculateAccuracy());
+  if (TribeState.isRaceActive() && isTestActive()) {
+    const eventLog = buildEventLog();
+
+    const chars = getChars(eventLog, true);
+
+    const currentTestDurationMs = getLiveCachedTestDurationMs(now);
+    const acc = getLiveCachedAccuracy();
+    const wpmAndRaw = {
+      wpm: Math.round(
+        calculateWpm(chars.correctWord, currentTestDurationMs / 1000),
+      ),
+      raw: Math.round(
+        calculateWpm(
+          chars.allCorrect + chars.extra + chars.incorrect,
+          currentTestDurationMs / 1000,
+        ),
+      ),
+    };
+
     let progress = 0;
-    const inputLen = TestInput.input.current.length;
+    // const inputLen = TestInput.input.current.length;
+    const inputLen = getCurrentInput().length;
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
     } else {
-      const currentWordLen = TestWords.words.getCurrentText().length;
+      const currentWordLen =
+        TestWords.words.getCurrent()?.textWithCommit.length ?? 0;
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
 
       const globalWordProgress = Math.round(
@@ -675,6 +702,10 @@ TribeSocket.in.room.progressUpdate((data) => {
       progress = 0;
     }
 
+    const keypresses = getKeypressesPerSecond(eventLog);
+
+    const lastKeypressesCountIs0 = keypresses[keypresses.length - 1] === 0;
+
     TribeSocket.out.room.progressUpdate({
       wpm: wpmAndRaw.wpm,
       raw: wpmAndRaw.raw,
@@ -682,7 +713,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       progress,
       wordIndex: TestState.activeWordIndex,
       letterIndex: inputLen,
-      afk: TestInput.afkHistory[TestInput.afkHistory.length - 1] ?? false,
+      afk: lastKeypressesCountIs0,
     });
   }
 
@@ -749,7 +780,7 @@ TribeSocket.in.room.userResult((data) => {
       TribeResults.updateBar("result", data.userId, 100);
     }
   }
-  if (!TestState.isActive && TestState.resultVisible) {
+  if (!isTestActive() && TestState.resultVisible) {
     TribeCarets.destroyAll();
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");
@@ -770,7 +801,7 @@ TribeSocket.in.room.userResult((data) => {
 });
 
 TribeSocket.in.room.finishTimerCountdown((data) => {
-  if (TestState.isActive) {
+  if (isTestActive()) {
     TribeCountdown.update(data.time.toString());
   } else {
     TribeResults.updateTimer(data.time.toString());
@@ -778,13 +809,13 @@ TribeSocket.in.room.finishTimerCountdown((data) => {
 });
 
 TribeSocket.in.room.raceForceFinish((data) => {
-  if (TestState.isActive) {
+  if (isTestActive()) {
     timerEvent.dispatch({ key: "fail", value: data.reason });
   }
 });
 
 TribeSocket.in.room.readyTimerCountdown((data) => {
-  if (TestState.isActive) {
+  if (isTestActive()) {
     TribeCountdown.update(data.time.toString());
   } else {
     TribeResults.updateTimer(data.time.toString());

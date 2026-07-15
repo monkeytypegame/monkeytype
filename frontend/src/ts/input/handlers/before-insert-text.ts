@@ -1,15 +1,16 @@
 import { Config } from "../../config/store";
-import { getCurrentInput } from "../../test/events/data";
 import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
-import { isSpace } from "../../utils/strings";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { shouldInsertSpaceCharacter } from "../helpers/validation";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import { wordsHaveNewline } from "../../states/test";
+import { shouldGoToNextWord } from "../helpers/validation";
+import { getCommitCharacterType, normalizeData } from "../helpers/util";
+import { getCurrentInput } from "../../test/events/data";
+import { isSpace } from "../../utils/strings";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -29,18 +30,35 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
+  //only allow newlines if the test has newlines or in zen mode
+  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
+    return true;
+  }
+
+  //prevent space in nospace funbox
+  if (isSpace(data) && isFunboxActiveWithProperty("nospace")) {
+    return true;
+  }
+
   const { inputValue } = getInputElementValue();
-  const dataIsSpace = isSpace(data);
-  const shouldInsertSpaceAsCharacter = shouldInsertSpaceCharacter({
+  const currentWordObj = TestWords.words.getCurrent();
+  const currentWordTextWithCommit = currentWordObj?.textWithCommit ?? "";
+  const currentWordTextDisplay = currentWordObj?.display ?? "";
+
+  //normalize visually-equivalent chars (e.g. IME U+3000 space) to the target
+  //char, matching onInsertText, so commit classification is consistent
+  data = normalizeData(data, inputValue, currentWordTextWithCommit);
+
+  const commitCharacterType = getCommitCharacterType({
     data,
     inputValue,
-    targetWord: TestWords.words.getCurrentText(),
+    targetWord: currentWordTextWithCommit,
   });
 
-  //prevent space from being inserted if input is empty
+  //prevent separator from being inserted if input is empty
   //allow if strict space is enabled
   if (
-    dataIsSpace &&
+    isSpace(data) &&
     inputValue === "" &&
     Config.difficulty === "normal" &&
     !Config.strictSpace
@@ -48,21 +66,18 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  //prevent space in nospace funbox
-  if (dataIsSpace && isFunboxActiveWithProperty("nospace")) {
-    return true;
-  }
-
-  //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
-    return true;
-  }
-
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrentText().length + 20;
-  const overLimit = getCurrentInput().length >= inputLimit;
-  if (overLimit && (shouldInsertSpaceAsCharacter === true || !dataIsSpace)) {
+    Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
+  const overLimit = inputValue.length >= inputLimit;
+  const goingToNextWord = shouldGoToNextWord({
+    data,
+    inputValue,
+    targetWord: currentWordTextWithCommit,
+    commitCharacterType,
+  });
+
+  if (overLimit && !goingToNextWord) {
     console.error("Hitting word limit");
     return true;
   }
@@ -71,7 +86,7 @@ export function onBeforeInsertText(data: string): boolean {
   // this will not work for the first word of each line, but that has a low chance of happening
   const dataIsNotFalsy = data !== null && data !== "";
   const inputIsLongerThanOrEqualToWord =
-    getCurrentInput().length >= TestWords.words.getCurrentText().length;
+    getCurrentInput().length >= currentWordTextDisplay.length;
 
   if (
     !SlowTimer.get() && // don't do this check if slow timer is active
@@ -79,7 +94,7 @@ export function onBeforeInsertText(data: string): boolean {
     !Config.blindMode &&
     !Config.hideExtraLetters &&
     inputIsLongerThanOrEqualToWord &&
-    (shouldInsertSpaceAsCharacter === true || !dataIsSpace) &&
+    !goingToNextWord &&
     Config.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
@@ -91,7 +106,7 @@ export function onBeforeInsertText(data: string): boolean {
     );
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? getCurrentInput()) + data,
+        (pendingWordData ?? inputValue) + data,
       );
     if (topAfterAppend > TestUI.activeWordTop) {
       //word jumped to next line

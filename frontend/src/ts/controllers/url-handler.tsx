@@ -1,3 +1,4 @@
+import { getChallenges } from "@monkeytype/challenges";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -5,8 +6,8 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
-  FunboxSchema,
   FunboxName,
+  FunboxSchema,
 } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { CustomTextSettingsSchema } from "@monkeytype/schemas/results";
@@ -25,10 +26,10 @@ import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
 import * as DB from "../db";
 import { authEvent } from "../events/auth";
-import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
-  showNoticeNotification,
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
@@ -310,15 +311,25 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 }
 
+const challengeNameLookup = Object.fromEntries(
+  getChallenges().map((it) => [it.name.toLowerCase(), it.name]),
+);
+
 export async function loadChallengeFromUrl(
   getOverride?: string,
 ): Promise<void> {
-  const getValue = (
-    Misc.findGetParameter("challenge", getOverride) ?? ""
-  ).toLowerCase();
+  const getValue =
+    Misc.findGetParameter("challenge", getOverride)?.toLowerCase() ?? "";
   if (getValue === "") return;
 
-  ChallengeController.setup(getValue)
+  const challengeName = challengeNameLookup[getValue];
+
+  if (challengeName === undefined) {
+    showErrorNotification(`Failed to load challenge: invalid name ${getValue}`);
+    return;
+  }
+
+  ChallengeController.setup(challengeName)
     .then((result) => {
       if (result) {
         restartTest({

@@ -12,6 +12,7 @@ import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getTribeMode } from "../utils/tribe";
+import { getOptions } from "../utils/zod";
 import { canSetFunboxWithConfig } from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
@@ -1043,10 +1044,10 @@ export const configMetadata = {
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
   },
-  keymapShowTopRow: {
-    key: "keymapShowTopRow",
+  keymapKeys: {
+    key: "keymapKeys",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap show top row",
+    displayString: "keymap keys",
     changeRequiresRestart: false,
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
@@ -1350,3 +1351,47 @@ export const configMetadata = {
     },
   },
 } as const satisfies ConfigMetadataObject;
+
+// typed accessor for a single option's metadata, avoiding per-callsite casts
+export function getOptionMetadata<K extends keyof ConfigSchemas.Config>(
+  key: K,
+  option: ConfigSchemas.Config[K],
+): OptionMetadata | undefined {
+  return (
+    configMetadata[key] as {
+      optionsMetadata?: Record<string, OptionMetadata> | undefined;
+    }
+  ).optionsMetadata?.[String(option)];
+}
+
+// the selectable options for a config key, excluding those marked visible:false
+export function getVisibleOptions<K extends keyof ConfigSchemas.Config>(
+  key: K,
+): ConfigSchemas.Config[K][] | undefined {
+  return getOptions(ConfigSchemas.ConfigSchema.shape[key])?.filter(
+    (option) =>
+      getOptionMetadata(key, option as ConfigSchemas.Config[K])?.visible !==
+      false,
+  ) as ConfigSchemas.Config[K][] | undefined;
+}
+
+// the label shown for a single option (and used to match it while searching)
+export function getOptionLabel<K extends keyof ConfigSchemas.Config>(
+  key: K,
+  option: ConfigSchemas.Config[K],
+): string {
+  const optionMeta = getOptionMetadata(key, option);
+  if (optionMeta?.displayString !== undefined) return optionMeta.displayString;
+  if (option === true) return "on";
+  if (option === false) return "off";
+  return String(option).replace(/_/g, " ");
+}
+
+// all of a setting's visible option labels joined, so search can match on them
+export function getOptionSearchKeywords<K extends keyof ConfigSchemas.Config>(
+  key: K,
+): string {
+  return (getVisibleOptions(key) ?? [])
+    .map((option) => getOptionLabel(key, option))
+    .join(" ");
+}

@@ -1,10 +1,10 @@
 import { Config } from "../config/store";
-import * as TestState from "../test/test-state";
 import { configEvent } from "../events/config";
 import Format from "../singletons/format";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs } from "../utils/dom";
+import { isTestActive } from "../states/test";
 
 const textEl = qs("#liveStatsTextBottom .liveBurst");
 const miniEl = qs("#liveStatsMini .burst");
@@ -28,7 +28,7 @@ let state = false;
 
 export function show(): void {
   if (Config.liveBurstStyle === "off") return;
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   if (state) return;
   requestDebouncedAnimationFrame("live-burst.show", () => {
     if (Config.liveBurstStyle === "mini") {

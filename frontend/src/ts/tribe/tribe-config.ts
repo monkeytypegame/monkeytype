@@ -5,11 +5,11 @@ import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 import { debounce } from "throttle-debounce";
 import * as CustomText from "../test/custom-text";
-import { typedKeys } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { Config } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
 import { configMetadata } from "../config/metadata";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export function getConfigString(config: TribeTypes.RoomConfig): string {
   const ret: string[] = [];
