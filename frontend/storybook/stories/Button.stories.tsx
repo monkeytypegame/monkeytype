@@ -11,45 +11,10 @@ const meta = preview.meta({
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {
-    active: {
-      control: "boolean",
-    },
-    disabled: {
-      control: "boolean",
-    },
-    text: {
-      control: "text",
-    },
-    fa: {
-      control: "object",
-    },
-    balloon: {
-      control: "object",
-    },
-    class: {
-      control: "text",
-    },
-    "router-link": {
-      control: "boolean",
-    },
-    href: {
-      control: "text",
-    },
-    sameTarget: {
-      control: "boolean",
-    },
-  },
-  args: {
-    onClick: fn(),
-  },
 });
 
 export const Default = meta.story({
-  args: {
-    text: "Button",
-    type: "button",
-  },
+  render: () => <Button text="Button" type="button" onClick={fn()} />,
 });
 
 export const AllVariants = meta.story({

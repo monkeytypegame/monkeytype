@@ -32,6 +32,7 @@ export function usePresetsLiveQuery() {
 const presetsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     queryClient,
     enabled: isAuthenticated,
@@ -204,9 +205,3 @@ export const __nonReactive = {
   getPresets,
   getPreset,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-const _keepAlive = usePresetsLiveQuery();

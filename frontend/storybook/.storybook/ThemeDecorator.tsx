@@ -16,8 +16,8 @@ export function ThemeDecorator(
   context: StoryContext,
 ): JSXElement {
   const themeName = (context.globals.theme ?? "serika_dark") as ThemeName;
-  const theme =
-    themeMap.get(themeName) ?? (themeMap.get("serika_dark") as ThemeWithName);
+  const fallback = themeMap.get("serika_dark") as ThemeWithName;
+  const theme = themeMap.get(themeName) ?? fallback;
 
   const root = document.documentElement;
   root.style.setProperty("--bg-color", theme.bg);

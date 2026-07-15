@@ -7,6 +7,7 @@ import {
   Show,
 } from "solid-js";
 
+import { usePendingConnectionsQuery } from "../../../collections/connections";
 import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
@@ -39,6 +40,8 @@ export function Nav(): JSXElement {
   const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
   const [accountMenuRef, accountMenuEl] = useRefWithUtils<HTMLDivElement>();
 
+  const pendingConnections = usePendingConnectionsQuery();
+
   const handleClickOutside = (e: MouseEvent) => {
     const el = accountMenuEl();
     if (getAccountMenuOpen() && el && !el.native.contains(e.target as Node)) {
@@ -62,17 +65,7 @@ export function Nav(): JSXElement {
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
-    const friends = getSnapshot()?.connections;
-
-    if (friends !== undefined) {
-      const pendingFriendRequests = Object.values(friends).filter(
-        (it) => it === "incoming",
-      ).length;
-      if (pendingFriendRequests > 0) {
-        return true;
-      }
-    }
-    return false;
+    return pendingConnections().length > 0;
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {

@@ -39,7 +39,7 @@ async function createDummyData(
         charStats: [0, 0, 0, 0],
         acc: 0,
         mode: "time",
-        mode2: "10" as never,
+        mode2: "10",
         quoteLength: 1,
         timestamp,
         restartCount: 0,

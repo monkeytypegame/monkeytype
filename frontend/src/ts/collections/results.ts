@@ -41,6 +41,7 @@ import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { getCurrentQuote } from "../states/test";
+import { removeLanguageSize } from "../utils/strings";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -219,6 +220,7 @@ function normalizeResult(
 const resultsCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
@@ -244,13 +246,6 @@ const resultsCollection = createCollection(
         );
         setLastResult(lastResult);
       }
-
-      if (_keepAlive === null) {
-        _keepAlive = useLiveQuery((q) =>
-          q.from({ results: resultsCollection }),
-        );
-      }
-
       return results;
     },
     queryClient,
@@ -592,10 +587,18 @@ export type CurrentSettingsFilter = {
 export function useUserAverage10LiveQuery(options: {
   isEnabled: Accessor<boolean>;
 }) {
-  const settingsFilter = createMemo(() => ({
-    ...getConfig,
-    mode2: getMode2(getConfig, getCurrentQuote()),
-  }));
+  const settingsFilter = createMemo(() => {
+    const language =
+      getConfig.mode === "quote"
+        ? removeLanguageSize(getConfig.language)
+        : getConfig.language;
+
+    return {
+      ...getConfig,
+      mode2: getMode2(getConfig, getCurrentQuote()),
+      language,
+    };
+  });
 
   const activeTagsQuery = useActiveTagsLiveQuery();
 
@@ -714,10 +717,3 @@ function getResults(): SnapshotResult<Mode>[] {
 export const __nonReactive = {
   getResults,
 };
-
-/**
- * The collection gets cleaned up after a while.
- * Keeping a query active fixes that. Remove when removing __nonReactive
- */
-// oxlint-disable-next-line typescript/no-explicit-any
-let _keepAlive: any = null;

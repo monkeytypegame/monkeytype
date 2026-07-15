@@ -12,7 +12,6 @@ import { z } from "zod";
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
 import { createDebouncedEffectOn } from "../../hooks/effects";
@@ -418,12 +417,6 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const handleSubmitClick = async (): Promise<void> => {
-    if (!isCaptchaAvailable()) {
-      showErrorNotification(
-        "Captcha is not available. Please refresh the page or contact support if this issue persists.",
-      );
-      return;
-    }
     showLoaderBar();
     const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
     const isEnabled =

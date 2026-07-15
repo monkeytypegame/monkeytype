@@ -45,12 +45,18 @@
         data-gramm="false"
         data-gramm_editor="false"
         data-enable-grammarly="false"
+        data-bwignore
+        data-1p-ignore
+        data-lpignore="true"
+        data-form-type="other"
         list="autocompleteOff"
         spellcheck="false"
       ></textarea>
       <div class="outOfFocusWarning hidden">
-        <i class="fas fa-fw fa-mouse-pointer"></i>
-        Click here or press any key to focus
+        <div>
+          <i class="fas fa-fw fa-mouse-pointer"></i>
+        </div>
+        <div class="text">Click here or press any key to focus</div>
       </div>
       <div id="paceCaret" class="full-width default hidden"></div>
       <div id="caret" class="full-width default"></div>
@@ -58,8 +64,8 @@
     </div>
 
     <div id="compositionDisplay"></div>
-
-    <div id="keymap" class="hidden"></div>
+    <mount data-component="keymap"></mount>
+    <mount data-component="monkey"></mount>
 
     <button
       id="restartTestButton"
@@ -74,18 +80,6 @@
         <div class="liveSpeed hidden">123</div>
         <div class="liveAcc hidden">100%%</div>
         <div class="liveBurst hidden">1</div>
-      </div>
-    </div>
-    <div id="monkey" class="hidden">
-      <div class="up"></div>
-      <div class="left hidden"></div>
-      <div class="right hidden"></div>
-      <div class="both hidden"></div>
-      <div class="fast">
-        <div class="up"></div>
-        <div class="left hidden"></div>
-        <div class="right hidden"></div>
-        <div class="both hidden"></div>
       </div>
     </div>
     <div id="premidTestMode" class="hidden"></div>

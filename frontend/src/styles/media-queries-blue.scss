@@ -4,13 +4,6 @@
   .content-grid {
     --content-max-width: 640px;
   }
-  .page404 {
-    .content {
-      grid-template-columns: 300px;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
@@ -33,29 +26,6 @@
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
       }
-    }
-  }
-
-  .pageAccountSettings {
-    .main {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      .tabs {
-        padding: 0;
-        display: grid;
-        grid-auto-flow: row;
-        button {
-          justify-content: center;
-          padding: 1em 0.5em;
-        }
-      }
-    }
-  }
-
-  .pageFriends {
-    .content .friends table,
-    .content .pendingRequests table {
-      font-size: 0.75rem;
     }
   }
 }

@@ -7,13 +7,13 @@ import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
-      fpsLimit: "",
+      fpsLimit: getfpsLimit() === 1000 ? "" : String(getfpsLimit()),
     },
     onSubmit: ({ value }) => {
       const val = parseFloat(String(value.fpsLimit));
@@ -24,7 +24,7 @@ export function AnimationFpsLimit(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="animationFpsLimit"
       title="animation fps limit"
       description={`Limit the maximum fps for animations. Setting this to "native" will run the animations as fast as possible (at your monitor's refresh rate). Setting this above your monitor's refresh rate will have no effect.`}
@@ -54,6 +54,9 @@ export function AnimationFpsLimit(): JSXElement {
               name="fpsLimit"
               validators={{
                 onChange: ({ value }) => {
+                  if (value === "") {
+                    return;
+                  }
                   const val = parseFloat(String(value));
                   if (isNaN(val)) {
                     return "Must be a number";

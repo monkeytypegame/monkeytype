@@ -1,10 +1,10 @@
 import { Config } from "../config/store";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import Format from "../singletons/format";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs } from "../utils/dom";
+import { isTestActive } from "../states/test";
 
 const textElement = qs("#liveStatsTextBottom .liveSpeed");
 const miniElement = qs("#liveStatsMini .speed");
@@ -32,7 +32,7 @@ let state = false;
 
 export function show(): void {
   if (Config.liveSpeedStyle === "off") return;
-  if (!TestState.isActive) return;
+  if (!isTestActive()) return;
   if (state) return;
   requestDebouncedAnimationFrame("live-speed.show", () => {
     if (Config.liveSpeedStyle === "mini") {

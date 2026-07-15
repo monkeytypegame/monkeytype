@@ -9,12 +9,12 @@ import {
 import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import { activeWordIndex } from "../../test/test-state";
-import { areAllTestWordsGenerated } from "../../test/test-logic";
+import { getCurrentInput } from "../../test/events/data";
+import { areAllWordsGenerated } from "../../test/words-generator";
 
 const inputEl = getInputElement();
 
@@ -127,16 +127,16 @@ inputEl.addEventListener("input", async (event) => {
   ) {
     const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
     const inputPlusComposition =
-      TestInput.input.current + (CompositionState.getData() ?? "");
+      getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =
-      TestWords.words.getCurrentText() === inputPlusComposition;
+      TestWords.words.getCurrent()?.textWithCommit === inputPlusComposition;
 
     // composition quick end
     // if the user typed the entire word correctly but is still in composition
     // dont wait for them to end the composition manually, just end the test
     // by dispatching a compositionend which will trigger onInsertText
     if (
-      areAllTestWordsGenerated() &&
+      areAllWordsGenerated() &&
       allWordsTyped &&
       inputPlusCompositionIsCorrect
     ) {

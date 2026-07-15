@@ -14,13 +14,13 @@ import { showSimpleModal } from "../../../../states/simple-modal";
 import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
 import { showAddTagModal } from "../../../modals/AddTagModal";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function Tags(): JSXElement {
   const tags = useTagsLiveQuery();
 
   return (
-    <Setting
+    <SearchableSetting
       key="tags"
       title="tags"
       description="With tags, you can compare how fast you're typing in different situations. You can see your active tags above the test words. They will remain active until you deactivate them, or refresh the page."

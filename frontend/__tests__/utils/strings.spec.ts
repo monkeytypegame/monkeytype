@@ -542,6 +542,15 @@ describe("string utils", () => {
       expect(Strings.areCharactersVisuallyEqual(",", '"')).toBe(false);
     });
 
+    it("should treat any Unicode space as equivalent to a regular space", () => {
+      // IME-produced spaces must match the U+0020 stored as the word separator
+      expect(Strings.areCharactersVisuallyEqual("　", " ")).toBe(true); // ideographic
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // nbsp
+      expect(Strings.areCharactersVisuallyEqual(" ", " ")).toBe(true); // en space
+      expect(Strings.areCharactersVisuallyEqual(" ", "a")).toBe(false);
+      expect(Strings.areCharactersVisuallyEqual(" ", "\n")).toBe(false);
+    });
+
     describe("should check russian specific equivalences", () => {
       it.each([
         {
@@ -586,28 +595,11 @@ describe("string utils", () => {
     describe("it should count characters correctly", () => {
       const testCases = [
         {
-          description: "correct, partial, not last",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 3,
-          },
-        },
-        {
           description: "correct, partial, last, shouldnt count",
           input: {
             inputWord: "hel",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -623,27 +615,10 @@ describe("string utils", () => {
             inputWord: "hel",
             targetWord: "hello ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
             correctWord: 3,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "correct",
-          input: {
-            inputWord: "hello ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 6,
-            correctWord: 6,
             incorrect: 0,
             extra: 0,
             missed: 0,
@@ -655,7 +630,6 @@ describe("string utils", () => {
             inputWord: "hello ",
             targetWord: "hello ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 6,
@@ -671,173 +645,10 @@ describe("string utils", () => {
             inputWord: "hello",
             targetWord: "hello ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 5,
             correctWord: 5,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "correct with extra characters",
-          input: {
-            inputWord: "helloxxx ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 3,
-            missed: 0,
-          },
-        },
-        {
-          description: "early space",
-          input: {
-            inputWord: "hel ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
-          description: "all incorrect, early space",
-          input: {
-            inputWord: "xxx ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 4,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
-          description: "all incorrect, extra",
-          input: {
-            inputWord: "xxxxxx ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 6,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "some correct, extra",
-          input: {
-            inputWord: "xexlxx ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 4,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "some correct, early space",
-          input: {
-            inputWord: "xexl ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 3,
-            extra: 0,
-            missed: 1,
-          },
-        },
-        {
-          description:
-            "last word, early commit space, input length == target length",
-          input: {
-            inputWord: "no ",
-            targetWord: "nom",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 1,
-          },
-        },
-        {
-          description: "last word correctly typed + commit space (past target)",
-          input: {
-            inputWord: "hello ",
-            targetWord: "hello",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "last word with extra char + commit space (past target)",
-          input: {
-            inputWord: "hellox ",
-            targetWord: "hello",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description:
-            "last word, early commit space, equal length, creditPartial (trailing space breaks prefix match)",
-          input: {
-            inputWord: "no ",
-            targetWord: "nom",
-            creditPartial: true,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
             incorrect: 0,
             extra: 0,
             missed: 0,
@@ -849,7 +660,6 @@ describe("string utils", () => {
             inputWord: "xello",
             targetWord: "hello",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -865,7 +675,6 @@ describe("string utils", () => {
             inputWord: "he ",
             targetWord: "hello",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 2,
@@ -881,7 +690,6 @@ describe("string utils", () => {
             inputWord: "xello ",
             targetWord: "hello",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -892,50 +700,17 @@ describe("string utils", () => {
           },
         },
         {
-          description: "correct space, incorrect word (commit space)",
-          input: {
-            inputWord: "helol ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 3,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
           description: "correct space, incorrect word (literal space)",
           input: {
             inputWord: "helol ",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
             correctWord: 0,
             incorrect: 2,
             extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "single incorrect char (commit space)",
-          input: {
-            inputWord: "hxllo ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 4,
-            correctWord: 0,
-            incorrect: 2,
-            extra: 0,
             missed: 0,
           },
         },
@@ -946,7 +721,6 @@ describe("string utils", () => {
             inputWord: "hxllo ",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -957,45 +731,12 @@ describe("string utils", () => {
           },
         },
         {
-          description: "one extra char",
-          input: {
-            inputWord: "helloo ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 1,
-            missed: 0,
-          },
-        },
-        {
-          description: "missed chars, no trailing space on target",
-          input: {
-            inputWord: "hel",
-            targetWord: "hello",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 2,
-          },
-        },
-        {
           description:
             "last partial match counts correctWord, no trailing space on target",
           input: {
             inputWord: "hel",
             targetWord: "hello",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1011,7 +752,6 @@ describe("string utils", () => {
             inputWord: "xxx",
             targetWord: "hello",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1027,7 +767,6 @@ describe("string utils", () => {
             inputWord: "hel",
             targetWord: "hello",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1038,76 +777,11 @@ describe("string utils", () => {
           },
         },
         {
-          description: "empty input counts all as missed",
-          input: {
-            inputWord: "",
-            targetWord: "hello",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 5,
-          },
-        },
-        {
-          description: "empty target counts all as extra",
-          input: {
-            inputWord: "hello",
-            targetWord: "",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 5,
-            missed: 0,
-          },
-        },
-        {
-          description: "correctly count incorrect newlines",
-          input: {
-            inputWord: "hello ",
-            targetWord: "hello\n",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "partial correct, with space (commit)",
-          input: {
-            inputWord: "helxx ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 3,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
           description: "partial correct, with space (literal)",
           input: {
             inputWord: "helxx ",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1118,28 +792,11 @@ describe("string utils", () => {
           },
         },
         {
-          description: "newlines",
-          input: {
-            inputWord: "hello\n",
-            targetWord: "hello\n",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 6,
-            correctWord: 6,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
           description: "count extra chars as extra",
           input: {
             inputWord: "abcx",
             targetWord: "abc ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1155,7 +812,6 @@ describe("string utils", () => {
             inputWord: "abcx ",
             targetWord: "abc ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 3,
@@ -1172,7 +828,6 @@ describe("string utils", () => {
             inputWord: "jhow ",
             targetWord: "how",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1189,7 +844,6 @@ describe("string utils", () => {
             inputWord: "xow ",
             targetWord: "how",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 2,
@@ -1206,7 +860,6 @@ describe("string utils", () => {
             inputWord: "xonl  ",
             targetWord: "only ",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1223,44 +876,9 @@ describe("string utils", () => {
             inputWord: "x ",
             targetWord: "get",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
-            correctWord: 0,
-            incorrect: 2,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description:
-            "trailing commit-space append past target — not counted (correct last word + commit)",
-          input: {
-            inputWord: "how ",
-            targetWord: "how",
-            creditPartial: true,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 3,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description:
-            "incorrect word with commit space — wrong word advanced (stopOnError=off)",
-          input: {
-            inputWord: "xello ",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 4,
             correctWord: 0,
             incorrect: 2,
             extra: 0,
@@ -1274,7 +892,6 @@ describe("string utils", () => {
             inputWord: "xello ",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -1285,76 +902,11 @@ describe("string utils", () => {
           },
         },
         {
-          description: "early space on last word",
-          input: {
-            inputWord: "h ",
-            targetWord: "hello",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 1,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 4,
-          },
-        },
-        {
-          description: "early space on last word with creditPartial",
-          input: {
-            inputWord: "h ",
-            targetWord: "hello",
-            creditPartial: true,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 1,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "wrong word, trailing commit-space past target",
-          input: {
-            inputWord: "xow ",
-            targetWord: "how",
-            creditPartial: true,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 2,
-            correctWord: 0,
-            incorrect: 1,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
-          description: "both empty",
-          input: {
-            inputWord: "",
-            targetWord: "",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 0,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 0,
-            missed: 0,
-          },
-        },
-        {
           description: "empty input with creditPartial",
           input: {
             inputWord: "",
             targetWord: "hello",
             creditPartial: true,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 0,
@@ -1370,7 +922,6 @@ describe("string utils", () => {
             inputWord: "hello",
             targetWord: "hello",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 5,
@@ -1386,7 +937,6 @@ describe("string utils", () => {
             inputWord: "hel o",
             targetWord: "hello ",
             creditPartial: false,
-            endsWithCommitSpace: false,
           },
           expected: {
             allCorrect: 4,
@@ -1394,22 +944,6 @@ describe("string utils", () => {
             incorrect: 1,
             extra: 0,
             missed: 1,
-          },
-        },
-        {
-          description: "newline typed in place of target's trailing space",
-          input: {
-            inputWord: "hello\n",
-            targetWord: "hello ",
-            creditPartial: false,
-            endsWithCommitSpace: true,
-          },
-          expected: {
-            allCorrect: 5,
-            correctWord: 0,
-            incorrect: 0,
-            extra: 1,
-            missed: 0,
           },
         },
       ];
@@ -1420,16 +954,9 @@ describe("string utils", () => {
             input.inputWord,
             input.targetWord,
             input.creditPartial,
-            input.endsWithCommitSpace,
           ),
         ).toEqual(expected);
       });
-    });
-
-    it("early space (typed before reaching target's space) counts as incorrect", () => {
-      // non-last word: space commits the (wrong) word, so endsWithCommitSpace=true
-      const result = Strings.countChars("hell ", "hello ", false, true);
-      expect(result.incorrect).toBe(1);
     });
   });
 });

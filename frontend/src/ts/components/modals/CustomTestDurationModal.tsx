@@ -57,6 +57,7 @@ export function CustomTestDurationModal(): JSXElement {
     <AnimatedModal
       id="TestDuration"
       title="Test Duration"
+      focusFirstInput="focusAndSelect"
       beforeShow={() => {
         form.reset({ duration: getConfig.time.toString() });
       }}
