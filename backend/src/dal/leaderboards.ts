@@ -179,16 +179,37 @@ export async function getNextWpm(
   uid: string,
 ): Promise<number | null | false> {
   try {
-    const currentEntry = await getRank(mode, mode2, language, uid);
-    if (currentEntry === false) return false;
-    if (currentEntry === null) return null;
+    const collectionName = getCollectionName({ language, mode, mode2 });
+    const [result] = await getCollection({ language, mode, mode2 })
+      .aggregate<{ nextWpm?: number }>([
+        { $match: { uid } },
+        {
+          $lookup: {
+            from: collectionName,
+            let: { currentWpm: "$wpm" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $gt: ["$wpm", "$$currentWpm"] },
+                },
+              },
+              { $sort: { wpm: 1 } },
+              { $limit: 1 },
+              { $project: { _id: 0, wpm: 1 } },
+            ],
+            as: "nextEntry",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            nextWpm: { $arrayElemAt: ["$nextEntry.wpm", 0] },
+          },
+        },
+      ])
+      .toArray();
 
-    const nextEntry = await getCollection({ language, mode, mode2 }).findOne(
-      { wpm: { $gt: currentEntry.wpm } },
-      { sort: { wpm: 1 }, projection: { wpm: 1 } },
-    );
-
-    return nextEntry?.wpm ?? null;
+    return result?.nextWpm ?? null;
   } catch (e) {
     // oxlint-disable-next-line no-unsafe-member-access
     if (e.error === 175) {
