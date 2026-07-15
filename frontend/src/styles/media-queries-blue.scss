@@ -4,16 +4,6 @@
   .content-grid {
     --content-max-width: 640px;
   }
-  #testModesNotice {
-    font-size: 0.8rem;
-  }
-  .page404 {
-    .content {
-      grid-template-columns: 300px;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
@@ -36,13 +26,6 @@
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
       }
-    }
-  }
-
-  .pageFriends {
-    .content .friends table,
-    .content .pendingRequests table {
-      font-size: 0.75rem;
     }
   }
 }

@@ -1,10 +1,15 @@
 import { JSXElement } from "solid-js";
 
+import { ViewApeKeyModal } from "./account-settings/ViewApeKeyModal";
 import { ContactModal } from "./ContactModal";
 import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
 import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
+import { EditResultTagsModal } from "./EditResultTagsModal";
+import { ForgotPasswordModal } from "./ForgotPasswordModal";
+import { GoogleSignupModal } from "./GoogleSignUpModal";
+import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { PbTablesModal } from "./PbTablesModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
@@ -15,7 +20,9 @@ import { QuoteSearchModal } from "./QuoteSearchModal";
 import { RegisterCaptchaModal } from "./RegisterCaptchaModal";
 import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
+import { StreakHourOffsetModal } from "./StreakHourOffsetModal";
 import { SupportModal } from "./SupportModal";
+import { UserReportModal } from "./UserReportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
 export function Modals(): JSXElement {
@@ -38,6 +45,13 @@ export function Modals(): JSXElement {
       <CookiesModal />
       <AddPresetModal />
       <EditPresetModal />
+      <ViewApeKeyModal />
+      <LastSignedOutResultModal />
+      <StreakHourOffsetModal />
+      <GoogleSignupModal />
+      <ForgotPasswordModal />
+      <UserReportModal />
+      <EditResultTagsModal />
     </>
   );
 }

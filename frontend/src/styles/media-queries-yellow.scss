@@ -5,13 +5,6 @@
     --content-max-width: 1024px;
   }
 
-  .pageAccountSettings .main {
-    gap: 2rem;
-    .right .tab .section {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
@@ -34,17 +27,6 @@
     }
     .daysFull {
       display: none;
-    }
-  }
-
-  .pageFriends {
-    .content .friends table,
-    .content .pendingRequests table {
-      font-size: 0.9rem;
-
-      .badge .text {
-        display: none;
-      }
     }
   }
 }

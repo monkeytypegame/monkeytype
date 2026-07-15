@@ -184,7 +184,6 @@ export async function activate(
   for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
     fb.functions.applyConfig();
   }
-  // ModesNotice.update();
   return true;
 }
 

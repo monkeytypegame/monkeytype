@@ -8,7 +8,16 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { qsr } from "../utils/dom";
-import { getUserAverage10, getUserDailyBest } from "../collections/results";
+import {
+  getUserAverage10Once,
+  getUserDailyBestOnce,
+} from "../collections/results";
+import {
+  getCurrentQuote,
+  isPaceRepeat,
+  isTestActive,
+  setPaceCaretWpm,
+} from "../states/test";
 
 type Settings = {
   wpm: number;
@@ -23,23 +32,20 @@ type Settings = {
 
 let startTimestamp = 0;
 
-export let settings: Settings | null = null;
+let settings: Settings | null = null;
 
 export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
 
 let lastTestWpm = 0;
 
 export function setLastTestWpm(wpm: number): void {
-  if (
-    !TestState.isPaceRepeat ||
-    (TestState.isPaceRepeat && wpm > lastTestWpm)
-  ) {
+  if (!isPaceRepeat() || (isPaceRepeat() && wpm > lastTestWpm)) {
     lastTestWpm = wpm;
   }
 }
 
 export function resetCaretPosition(): void {
-  if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
+  if (Config.paceCaret === "off" && !isPaceRepeat()) return;
   if (Config.mode === "zen") return;
 
   caret.hide();
@@ -57,21 +63,19 @@ export function resetCaretPosition(): void {
 
 export async function init(): Promise<void> {
   caret.hide();
-  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =
-      (
-        await DB.getLocalPB(
-          Config.mode,
-          mode2,
-          Config.punctuation,
-          Config.numbers,
-          Config.language,
-          Config.difficulty,
-          Config.lazyMode,
-          getActiveFunboxes(),
-        )
+      DB.getLocalPB(
+        Config.mode,
+        mode2,
+        Config.punctuation,
+        Config.numbers,
+        Config.language,
+        Config.difficulty,
+        Config.lazyMode,
+        getActiveFunboxes(),
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
     wpm = getActiveTagsPB(
@@ -84,16 +88,17 @@ export async function init(): Promise<void> {
       Config.lazyMode,
     );
   } else if (Config.paceCaret === "average") {
-    wpm = Math.round((await getUserAverage10({ ...Config, mode2 })).wpm);
+    wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "daily") {
-    wpm = Math.round((await getUserDailyBest({ ...Config, mode2 })).wpm);
+    wpm = Math.round((await getUserDailyBestOnce({ ...Config, mode2 })).wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat) {
+  } else if (Config.paceCaret === "last" || isPaceRepeat()) {
     wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
     settings = null;
+    setPaceCaretWpm(undefined);
     return;
   }
 
@@ -111,15 +116,12 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
+  setPaceCaretWpm(wpm);
 }
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (
-    currentSettings === null ||
-    !TestState.isActive ||
-    TestState.resultVisible
-  ) {
+  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
     return;
   }
 
@@ -176,23 +178,26 @@ function incrementLetterIndex(): void {
   if (settings === null) return;
 
   try {
-    settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
+      // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+      TestWords.words.get(settings.currentWordIndex)!.text.length
     ) {
       //go to the next word
-      settings.currentLetterIndex = 0;
+      settings.currentLetterIndex = -1;
       settings.currentWordIndex++;
     }
+    settings.currentLetterIndex++;
+
     if (!Config.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
+          if (settings.currentLetterIndex <= -1) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
+              // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+              TestWords.words.get(settings.currentWordIndex - 1)!.text.length;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -202,7 +207,8 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
+            // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+            TestWords.words.get(settings.currentWordIndex)!.text.length + 1
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -229,7 +235,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -= currentWord.length + 1;
+      settings.correction -= currentWord.length;
     }
   } else {
     if (
@@ -238,7 +244,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = true;
-      settings.correction += currentWord.length + 1;
+      settings.correction += currentWord.length;
     }
   }
 }

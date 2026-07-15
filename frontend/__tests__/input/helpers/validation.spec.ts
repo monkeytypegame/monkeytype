@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import {
   isCharCorrect,
-  shouldInsertSpaceCharacter,
+  shouldGoToNextWord,
 } from "../../../src/ts/input/helpers/validation";
 import { __testing } from "../../../src/ts/config/testing";
 import * as FunboxList from "../../../src/ts/test/funbox/list";
@@ -35,9 +35,11 @@ describe("isCharCorrect", () => {
       difficulty: "normal",
       strictSpace: false,
     });
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (FunboxList.findSingleActiveFunboxWithFunction as any).mockReturnValue(
       null,
     );
+    // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.areCharactersVisuallyEqual as any).mockReturnValue(false);
   });
 
@@ -74,14 +76,6 @@ describe("isCharCorrect", () => {
 
   describe("Space Handling", () => {
     it.each([
-      ["returns true at the end of a correct word", " ", "word", "word", true],
-      [
-        "returns false at the end of an incorrect word",
-        " ",
-        "worx",
-        "word",
-        false,
-      ],
       ["returns false in the middle of a word", " ", "wor", "word", false],
       ["returns false at the start of a word", " ", "", "word", false],
       [
@@ -90,6 +84,46 @@ describe("isCharCorrect", () => {
         "wordwordword",
         "word",
         false,
+      ],
+    ])("%s", (_desc, char, input, word, expected) => {
+      expect(
+        isCharCorrect({
+          data: char,
+          inputValue: input,
+          targetWord: word,
+          correctShiftUsed: true,
+        }),
+      ).toBe(expected);
+    });
+  });
+
+  describe("Separator at the end of a word", () => {
+    // target words store their separator as a trailing space/newline; typing
+    // that separator at the separator position is a correct char regardless of
+    // whether the preceding letters were correct (word-level correctness is
+    // derived from the per-letter events elsewhere)
+    it.each([
+      ["space separator at the correct position", " ", "word", "word ", true],
+      [
+        "space separator is correct even after a wrong letter",
+        " ",
+        "worx",
+        "word ",
+        true,
+      ],
+      [
+        "newline separator at the correct position",
+        "\n",
+        "word",
+        "word\n",
+        true,
+      ],
+      [
+        "newline separator is correct even after a wrong letter",
+        "\n",
+        "xord",
+        "word\n",
+        true,
       ],
     ])("%s", (_desc, char, input, word, expected) => {
       expect(
@@ -122,20 +156,10 @@ describe("isCharCorrect", () => {
       },
     );
   });
-
-  it("throws error if data is undefined", () => {
-    expect(() =>
-      isCharCorrect({
-        data: undefined as any,
-        inputValue: "val",
-        targetWord: "word",
-        correctShiftUsed: true,
-      }),
-    ).toThrow();
-  });
 });
 
-describe("shouldInsertSpaceCharacter", () => {
+describe("shouldGoToNextWord", () => {
+  // target words store their separator as a trailing space
   beforeEach(() => {
     replaceConfig({
       mode: "time",
@@ -149,127 +173,161 @@ describe("shouldInsertSpaceCharacter", () => {
     replaceConfig({});
   });
 
-  it("returns null if data is not a space", () => {
+  it("returns false when the input is not a commit character", () => {
     expect(
-      shouldInsertSpaceCharacter({
+      shouldGoToNextWord({
         data: "a",
         inputValue: "test",
-        targetWord: "test",
-      }),
-    ).toBe(null);
-  });
-
-  it("returns false in zen mode", () => {
-    replaceConfig({ mode: "zen" });
-    expect(
-      shouldInsertSpaceCharacter({
-        data: " ",
-        inputValue: "test",
-        targetWord: "test",
+        targetWord: "test ",
+        commitCharacterType: false,
       }),
     ).toBe(false);
   });
+
+  it("returns true in zen mode", () => {
+    replaceConfig({ mode: "zen" });
+    expect(
+      shouldGoToNextWord({
+        data: " ",
+        inputValue: "test",
+        targetWord: "test ",
+        commitCharacterType: "separator",
+      }),
+    ).toBe(true);
+  });
+
+  it("returns true when committing a word with a newline", () => {
+    expect(
+      shouldGoToNextWord({
+        data: "\n",
+        inputValue: "word",
+        targetWord: "word\n",
+        commitCharacterType: "separator",
+      }),
+    ).toBe(true);
+  });
+
+  // the empty-input guard must not block a nospace commit on a 1-letter word,
+  // otherwise such words can never be advanced
+  it.each([
+    { desc: "strictSpace on", strictSpace: true, difficulty: "normal" },
+    { desc: "difficulty expert", strictSpace: false, difficulty: "expert" },
+  ])(
+    "commits a nospace 1-letter word on empty input ($desc)",
+    ({ strictSpace, difficulty }) => {
+      replaceConfig({ strictSpace, difficulty } as any);
+      expect(
+        shouldGoToNextWord({
+          data: "a",
+          inputValue: "",
+          targetWord: "a",
+          commitCharacterType: "nospace",
+        }),
+      ).toBe(true);
+    },
+  );
 
   describe("Logic Checks", () => {
     it.each([
       // Standard behavior (submit word)
       {
-        desc: "submit correct word",
+        desc: "go to next word on correct word",
         inputValue: "hello",
-        targetWord: "hello",
+        targetWord: "hello ",
         config: {
           stopOnError: "off",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      {
-        desc: "submit incorrect word (stopOnError off)",
-        inputValue: "hel",
-        targetWord: "hello",
-        config: {
-          stopOnError: "off",
-          strictSpace: false,
-          difficulty: "normal",
-        },
-        expected: false,
-      },
-      // Stop on error
-      {
-        desc: "insert space if incorrect (stopOnError letter)",
-        inputValue: "hel",
-        targetWord: "hello",
-        config: {
-          stopOnError: "letter",
           strictSpace: false,
           difficulty: "normal",
         },
         expected: true,
       },
       {
-        desc: "insert space if incorrect (stopOnError word)",
+        desc: "go to next word on incorrect word (stopOnError off)",
         inputValue: "hel",
-        targetWord: "hello",
+        targetWord: "hello ",
+        config: {
+          stopOnError: "off",
+          strictSpace: false,
+          difficulty: "normal",
+        },
+        expected: true,
+      },
+      // Stop on error
+      {
+        desc: "stay on incorrect word (stopOnError letter)",
+        inputValue: "hel",
+        targetWord: "hello ",
+        config: {
+          stopOnError: "letter",
+          strictSpace: false,
+          difficulty: "normal",
+        },
+        expected: false,
+      },
+      {
+        desc: "stay on incorrect word (stopOnError word)",
+        inputValue: "hel",
+        targetWord: "hello ",
         config: {
           stopOnError: "word",
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: true,
+        expected: false,
       },
       {
-        desc: "submit if correct (stopOnError letter)",
+        desc: "go to next word on correct word (stopOnError letter)",
         inputValue: "hello",
-        targetWord: "hello",
+        targetWord: "hello ",
         config: {
           stopOnError: "letter",
           strictSpace: false,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
       // Strict space / Difficulty
       {
-        desc: "insert space if empty input (strictSpace on)",
+        desc: "stay on empty input (strictSpace on)",
         inputValue: "",
-        targetWord: "hello",
+        targetWord: "hello ",
         config: {
           stopOnError: "off",
           strictSpace: true,
           difficulty: "normal",
         },
-        expected: true,
+        expected: false,
       },
       {
-        desc: "insert space if empty input (difficulty not normal - expert or master)",
+        desc: "stay on empty input (difficulty not normal - expert or master)",
         inputValue: "",
-        targetWord: "hello",
+        targetWord: "hello ",
         config: {
           stopOnError: "off",
           strictSpace: false,
           difficulty: "expert",
         },
-        expected: true,
+        expected: false,
       },
       {
-        desc: "submit if not empty input (strictSpace on)",
+        desc: "go to next word on non-empty input (strictSpace on)",
         inputValue: "h",
-        targetWord: "hello",
+        targetWord: "hello ",
         config: {
           stopOnError: "off",
           strictSpace: true,
           difficulty: "normal",
         },
-        expected: false,
+        expected: true,
       },
     ])("$desc", ({ inputValue, targetWord, config, expected }) => {
       replaceConfig(config as any);
       expect(
-        shouldInsertSpaceCharacter({
+        shouldGoToNextWord({
           data: " ",
           inputValue,
           targetWord,
+          commitCharacterType: "separator",
         }),
       ).toBe(expected);
     });

@@ -11,21 +11,27 @@ import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
+import { NotFoundPage } from "./pages/404Page";
 import { AboutPage } from "./pages/AboutPage";
+import { AccountSettingsPage } from "./pages/account-settings/AccountSettingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
+import { FriendsPage } from "./pages/connections/FriendsPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
-import { Settings } from "./pages/settings/Settings";
+import { SettingsPage } from "./pages/settings/SettingsPage";
+import { Keymap } from "./pages/test/Keymap";
+import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
+import { Monkey } from "./pages/test/Monkey";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
-  settingspage: () => <Settings />,
+  settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
@@ -40,7 +46,12 @@ const components: Record<string, () => JSXElement> = {
   devtools: () => <DevTools />,
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
-  solidSettings: () => <Settings />,
+  testmodesnotice: () => <TestModesNotice />,
+  friendspage: () => <FriendsPage />,
+  notfoundpage: () => <NotFoundPage />,
+  accountsettingspage: () => <AccountSettingsPage />,
+  keymap: () => <Keymap />,
+  monkey: () => <Monkey />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

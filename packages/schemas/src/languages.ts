@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KnownFontNameSchema } from "./fonts";
 import { customEnumErrorHandler } from "./util";
 
 export const LanguageSchema = z.enum(
@@ -447,6 +448,8 @@ export const LanguageSchema = z.enum(
     "code_vhdl",
     "lao",
     "code_6502_assembly",
+    "english_legal",
+    "sindhi",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
@@ -467,6 +470,7 @@ export const LanguageObjectSchema = z
       .array(z.tuple([z.string().min(1), z.string().min(1)]))
       .optional(),
     bcp47: z.string().optional(),
+    preferredFont: KnownFontNameSchema.optional(),
     originalPunctuation: z.boolean().optional(),
   })
   .strict();

@@ -317,16 +317,20 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
     .join("\n");
 
   const blob = new Blob([csvString], { type: "text/csv" });
+  download({ filename: "results.csv", data: blob });
+}
 
-  const href = window.URL.createObjectURL(blob);
-
+export function download(options: { filename: string; data: Blob }): void {
+  const url = URL.createObjectURL(options.data);
   const link = document.createElement("a");
-  link.setAttribute("href", href);
-  link.setAttribute("download", "results.csv");
-  document.body.appendChild(link); // Required for FF
+  link.href = url;
+  link.download = options.filename;
 
+  document.body.appendChild(link);
   link.click();
-  link.remove();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
 }
 
 export function isElementVisible(query: string): boolean {
@@ -468,13 +472,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-
-export function typedKeys<T extends object>(
-  obj: T,
-): T extends T ? (keyof T)[] : never {
-  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
-}
-
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
@@ -571,7 +568,7 @@ export function promiseWithResolvers<T = void>(): {
   return {
     resolve,
     reject,
-    promise: promiseLike as Promise<T>,
+    promise: promiseLike,
     reset,
   };
 }
@@ -688,6 +685,12 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
 
   el.scrollIntoView({
     block: elementHeight < windowHeight ? "center" : "start",
+  });
+}
+export function scrollToTop(): void {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
   });
 }
 

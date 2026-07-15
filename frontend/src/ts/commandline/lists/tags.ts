@@ -1,4 +1,3 @@
-import * as ModesNotice from "../../elements/modes-notice";
 import {
   clearActiveTags,
   toggleTagActive,
@@ -41,7 +40,7 @@ function update(): void {
       icon: "fa-times",
       sticky: true,
       exec: async (): Promise<void> => {
-        clearActiveTags();
+        await clearActiveTags();
         if (
           Config.paceCaret === "average" ||
           Config.paceCaret === "tagPb" ||
@@ -49,7 +48,6 @@ function update(): void {
         ) {
           await PaceCaret.init();
         }
-        void ModesNotice.update();
       },
     });
 
@@ -62,7 +60,7 @@ function update(): void {
           return __nonReactive.getTag(tag._id)?.active ?? false;
         },
         exec: async (): Promise<void> => {
-          toggleTagActive(tag._id);
+          await toggleTagActive({ tagId: tag._id });
 
           if (
             Config.paceCaret === "average" ||
@@ -71,7 +69,6 @@ function update(): void {
           ) {
             await PaceCaret.init();
           }
-          void ModesNotice.update();
         },
       });
     }

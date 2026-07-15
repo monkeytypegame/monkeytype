@@ -14,12 +14,12 @@ type QuoteStats = {
   language?: Language;
 };
 
-const [currentQuote, setCurrentQuote] = createSignal<Quote | null>(null);
+const [selectedQuote, setSelectedQuote] = createSignal<Quote | null>(null);
 const [quoteStats, setQuoteStats] = createSignal<
   QuoteStats | null | Record<string, never>
 >(null);
 
-export { currentQuote, quoteStats };
+export { selectedQuote, quoteStats };
 
 export function clearQuoteStats(): void {
   setQuoteStats(null);
@@ -42,7 +42,7 @@ export async function getQuoteStats(
 ): Promise<QuoteStats | undefined> {
   if (!quote) return;
 
-  setCurrentQuote(quote);
+  setSelectedQuote(quote);
   const response = await Ape.quotes.getRating({
     query: { quoteId: quote.id, language: quote.language },
   });
@@ -54,7 +54,7 @@ export async function getQuoteStats(
 
   if (response.body.data === null) {
     setQuoteStats({});
-    return {} as QuoteStats;
+    return {};
   }
 
   const stats = response.body.data as QuoteStats;
@@ -71,6 +71,6 @@ export function updateQuoteStats(stats: QuoteStats): void {
 }
 
 export function showQuoteRateModal(quote: Quote): void {
-  setCurrentQuote(quote);
+  setSelectedQuote(quote);
   showModal("QuoteRate");
 }

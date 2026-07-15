@@ -4,6 +4,7 @@ import {
   badges,
   UserBadge as UserBadgeType,
 } from "../../controllers/badge-controller";
+import { BreakpointKey } from "../../states/breakpoints";
 import { cn } from "../../utils/cn";
 import { Balloon, BalloonProps } from "./Balloon";
 import { Fa } from "./Fa";
@@ -13,16 +14,27 @@ export function UserBadge(props: {
   iconOnly?: true;
   class?: string;
   balloon?: Omit<BalloonProps, "text">;
-  hideTextOnSmallScreens?: boolean;
+  hideTextOnWidth?: BreakpointKey | false;
   hideDescription?: boolean;
 }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
     props.id !== undefined ? badges[props.id] : undefined;
+
+  const hideClasses: Record<BreakpointKey, string> = {
+    xxs: "hidden xs:inline",
+    xs: "hidden sm:inline",
+    sm: "hidden md:inline",
+    md: "hidden lg:inline",
+    lg: "hidden xl:inline",
+    xl: "hidden 2xl:inline",
+    xxl: "hidden 3xl:inline",
+  };
+
   return (
     <Show when={badge() !== undefined}>
       <Balloon
         class={cn(
-          "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs",
+          "rounded-[0.5em] px-[0.5em] py-[0.25em] text-em-xs whitespace-nowrap",
           props.class,
         )}
         text={props.hideDescription ? "" : (badge()?.description ?? "")}
@@ -42,7 +54,9 @@ export function UserBadge(props: {
             <span
               class={cn(
                 "pl-[0.75em]",
-                (props.hideTextOnSmallScreens ?? true) && "hidden md:inline",
+                props.hideTextOnWidth !== false
+                  ? hideClasses[props.hideTextOnWidth ?? "md"]
+                  : "",
               )}
             >
               {badge()?.name}

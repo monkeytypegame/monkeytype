@@ -9,7 +9,6 @@ import {
   saveActiveToLocalStorage,
 } from "../collections/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import * as ModesNotice from "../elements/modes-notice";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
@@ -34,15 +33,14 @@ export async function apply(_id: string): Promise<void> {
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
   ) {
-    clearActiveTags(true);
+    await clearActiveTags({ noSave: true });
     if (presetToApply.config.tags) {
       for (const tagId of presetToApply.config.tags) {
-        setTagActive(tagId, true, false);
+        await setTagActive({ tagId, active: true });
       }
       saveActiveToLocalStorage();
     }
   }
-  void ModesNotice.update();
   TestLogic.restart();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
