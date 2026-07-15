@@ -86,7 +86,7 @@ export function InputField(props: {
         }}
         onInput={(e) => {
           const value: unknown = convertStringToValue(
-            props.field().state.value,
+            props.field(),
             e.target.value,
           );
           props.field().handleChange(value);
@@ -167,9 +167,12 @@ function convertValueToString(input: unknown | undefined): string {
 }
 
 function convertStringToValue<T extends unknown | undefined>(
-  defaultValue: T,
+  field: AnyFieldApi,
   newValue: string,
 ): T | undefined {
+  const defaultValue: unknown =
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    field.form.options.defaultValues?.[field.name];
   if (defaultValue === undefined || defaultValue === null) return newValue as T;
   if (newValue === "") return undefined;
   if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
