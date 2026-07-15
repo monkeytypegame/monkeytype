@@ -18,6 +18,7 @@ import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
+const nextWpmPageSize = 100;
 
 export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
@@ -254,19 +255,28 @@ export class DailyLeaderboard {
       return null;
     }
 
-    const results = await this.getResults(
-      0,
-      currentEntry.rank - 1,
-      dailyLeaderboardsConfig,
-      true,
-    );
     let nextWpm: number | null = null;
-    for (const entry of results?.entries ?? []) {
-      if (
-        entry.wpm > currentEntry.wpm &&
-        (nextWpm === null || entry.wpm < nextWpm)
-      ) {
-        nextWpm = entry.wpm;
+    const pageSize = Math.min(nextWpmPageSize, currentEntry.rank - 1);
+    const lastPage = Math.floor((currentEntry.rank - 2) / pageSize);
+
+    // All entries above the current rank must be checked because the score is
+    // also affected by accuracy and timestamp, so WPM is not strictly sorted.
+    for (let page = lastPage; page >= 0; page--) {
+      const results = await this.getResults(
+        page,
+        pageSize,
+        dailyLeaderboardsConfig,
+        true,
+      );
+
+      for (const entry of results?.entries ?? []) {
+        if (
+          entry.rank < currentEntry.rank &&
+          entry.wpm > currentEntry.wpm &&
+          (nextWpm === null || entry.wpm < nextWpm)
+        ) {
+          nextWpm = entry.wpm;
+        }
       }
     }
 
