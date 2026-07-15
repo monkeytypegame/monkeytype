@@ -1,5 +1,8 @@
 import { PaceCaret } from "@monkeytype/schemas/configs";
-import { ValidModeRule } from "@monkeytype/schemas/configuration";
+import {
+  Configuration,
+  ValidModeRule,
+} from "@monkeytype/schemas/configuration";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { isAuthenticated } from "../states/core";
@@ -17,8 +20,11 @@ function matchesRule(value: string, rule: string): boolean {
   return new RegExp(`^${rule}$`).test(value);
 }
 
-function hasDailyLeaderboard(context: PaceCaretContext): boolean {
-  const daily = getServerConfiguration()?.dailyLeaderboards;
+function hasDailyLeaderboard(
+  context: PaceCaretContext,
+  serverConfiguration = getServerConfiguration(),
+): boolean {
+  const daily = serverConfiguration?.dailyLeaderboards;
   if (daily === undefined || !daily.enabled) return false;
 
   return daily.validModeRules.some(
@@ -32,6 +38,7 @@ function hasDailyLeaderboard(context: PaceCaretContext): boolean {
 export function isPaceCaretModeAvailable(
   mode: PaceCaret,
   context: PaceCaretContext,
+  serverConfiguration?: Configuration,
 ): boolean {
   if (mode !== "next" && mode !== "nextDaily") return true;
   if (!isAuthenticated()) return false;
@@ -44,7 +51,7 @@ export function isPaceCaretModeAvailable(
     );
   }
 
-  return hasDailyLeaderboard(context);
+  return hasDailyLeaderboard(context, serverConfiguration);
 }
 
 export function getPaceCaretContext(): PaceCaretContext {
