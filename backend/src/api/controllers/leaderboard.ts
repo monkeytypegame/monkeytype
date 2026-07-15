@@ -131,7 +131,7 @@ export async function getNextLeaderboardWpm(
 
   return new MonkeyResponse(
     "Next leaderboard WPM retrieved",
-    nextWpm === false ? null : nextWpm,
+    nextWpm === false || nextWpm === null ? null : { next: nextWpm },
   );
 }
 
@@ -238,7 +238,10 @@ export async function getNextDailyLeaderboardWpm(
       req.ctx.decodedToken.uid,
       req.ctx.configuration.dailyLeaderboards,
     );
-    return new MonkeyResponse("Next daily leaderboard WPM retrieved", nextWpm);
+    return new MonkeyResponse(
+      "Next daily leaderboard WPM retrieved",
+      nextWpm === null ? null : { next: nextWpm },
+    );
   } catch {
     return new MonkeyResponse("Next daily leaderboard WPM retrieved", null);
   }

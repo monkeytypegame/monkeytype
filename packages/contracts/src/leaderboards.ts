@@ -73,7 +73,9 @@ export type GetLeaderboardRankResponse = z.infer<
 >;
 
 const NextLeaderboardWpmResponseSchema = responseWithNullableData(
-  z.number().nonnegative(),
+  z.object({
+    next: z.number().safe().nonnegative(),
+  }),
 );
 export type NextLeaderboardWpmResponse = z.infer<
   typeof NextLeaderboardWpmResponseSchema

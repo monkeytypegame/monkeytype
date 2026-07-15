@@ -517,7 +517,7 @@ describe("Loaderboard Controller", () => {
         .query({ language: "english", mode: "time", mode2: "60" })
         .expect(200);
 
-      expect(body.data).toBe(105.25);
+      expect(body.data).toEqual({ next: 105.25 });
       expect(getNextWpmMock).toHaveBeenCalledWith("time", "60", "english", uid);
     });
 
@@ -1135,7 +1135,7 @@ describe("Loaderboard Controller", () => {
         .query({ language: "english", mode: "time", mode2: "60" })
         .expect(200);
 
-      expect(body.data).toBe(99.5);
+      expect(body.data).toEqual({ next: 99.5 });
       expect(getNextWpmMock).toHaveBeenCalledWith(
         uid,
         (await configuration).dailyLeaderboards,
