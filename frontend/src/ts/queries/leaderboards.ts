@@ -52,7 +52,7 @@ export const getNextPaceCaretWpmQueryOptions = (
           : await Ape.leaderboards.getDailyNext({ query: options });
 
       if (response.status !== 200) return null;
-      return response.body.data;
+      return response.body.data?.next ?? null;
     },
     staleTime: type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
     gcTime: Infinity,
