@@ -23,6 +23,7 @@ import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
 import { CapsWarning } from "./pages/test/CapsWarning";
+import { CompositionDisplay } from "./pages/test/CompositionDisplay";
 import { Keymap } from "./pages/test/Keymap";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { Monkey } from "./pages/test/Monkey";
@@ -49,6 +50,7 @@ const components: Record<string, () => JSXElement> = {
   commandlinehotkey: () => <CommandlineHotkey />,
   testmodesnotice: () => <TestModesNotice />,
   capswarning: () => <CapsWarning />,
+  compositiondisplay: () => <CompositionDisplay />,
   friendspage: () => <FriendsPage />,
   notfoundpage: () => <NotFoundPage />,
   accountsettingspage: () => <AccountSettingsPage />,

@@ -1299,23 +1299,6 @@
   padding: 1em 2em;
 }
 
-#compositionDisplay {
-  font-size: 0.5em;
-  display: flex;
-  margin: 1rem auto 0px;
-  padding: 1rem 2rem;
-  height: 1.25em;
-  box-sizing: content-box;
-  user-select: none;
-  cursor: default;
-  color: var(--sub-color);
-
-  &.blurred {
-    opacity: 0.25;
-    filter: blur(4px);
-  }
-}
-
 .pageTest {
   height: 100%;
   display: grid;

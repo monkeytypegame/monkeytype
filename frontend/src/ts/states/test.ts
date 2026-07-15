@@ -24,6 +24,11 @@ export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
+// #words is still vanilla so it's blurred imperatively (see test/out-of-focus);
+// the Solid-owned composition display reads this signal instead.
+export const [isOutOfFocus, setOutOfFocus] = createSignal(false);
+// live IME composition text, pushed from the compositionupdate/end events.
+export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
 export const [getLastResult, setLastResult] = createSignal<Omit<
