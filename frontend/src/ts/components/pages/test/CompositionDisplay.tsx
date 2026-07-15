@@ -17,7 +17,6 @@ export function CompositionDisplay() {
           transition: isOutOfFocus() ? "0.25s" : "none",
         }}
       >
-        ㅁㄴㅇㄹ
         {getCompositionText()}
       </div>
     </Show>
