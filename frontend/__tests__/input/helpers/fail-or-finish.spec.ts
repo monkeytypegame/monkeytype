@@ -19,9 +19,15 @@ vi.mock("../../../src/ts/utils/misc", async (importOriginal) => {
   };
 });
 
-vi.mock("../../../src/ts/utils/strings", () => ({
-  isSpace: vi.fn(),
-}));
+vi.mock("../../../src/ts/utils/strings", async () => {
+  const actual = await vi.importActual<typeof Strings>(
+    "../../../src/ts/utils/strings",
+  );
+  return {
+    ...actual,
+    isSpace: vi.fn(),
+  };
+});
 
 describe("checkIfFailedDueToMinBurst", () => {
   beforeEach(() => {
