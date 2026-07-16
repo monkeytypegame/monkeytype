@@ -11,6 +11,7 @@ import { ForgotPasswordModal } from "./ForgotPasswordModal";
 import { GoogleSignupModal } from "./GoogleSignUpModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
+import { PbTablesModal } from "./PbTablesModal";
 import { AddPresetModal } from "./preset/AddPresetModal";
 import { EditPresetModal } from "./preset/EditPresetModal";
 import { QuoteRateModal } from "./QuoteRateModal";
@@ -38,6 +39,7 @@ export function Modals(): JSXElement {
       <QuoteSearchModal />
       <CustomTestDurationModal />
       <CustomWordAmountModal />
+      <PbTablesModal />
       <ShareTestSettings />
       <MobileTestConfigModal />
       <CookiesModal />

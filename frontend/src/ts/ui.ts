@@ -54,7 +54,7 @@ export async function applyFontFamily(): Promise<void> {
   const preferredFont = (await getLanguage(Config.language))?.preferredFont;
 
   const fonts = [
-    font,
+    `"${font}"`,
     preferredFont !== undefined
       ? `"${replaceUnderscoresWithSpaces(preferredFont)}"`
       : undefined,

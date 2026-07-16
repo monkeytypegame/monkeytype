@@ -694,28 +694,6 @@
   contain: strict;
 }
 
-#capsWarning {
-  font-size: 1rem;
-  background: var(--main-color);
-  color: var(--bg-color);
-  display: table;
-  position: absolute;
-  left: 50%;
-  // top: 66vh;
-  transform: translateX(-50%) translateY(-50%);
-  padding: 1rem;
-  border-radius: var(--roundness);
-  /* margin-top: 1rem; */
-  transition: 0.125s;
-  z-index: 999;
-  pointer-events: none;
-  top: -2.5rem;
-
-  i {
-    margin-right: 0.5rem;
-  }
-}
-
 .pageTest > .loading {
   text-align: center;
   & > i {
@@ -1319,23 +1297,6 @@
   margin: 1rem auto 0 auto;
   display: flex;
   padding: 1em 2em;
-}
-
-#compositionDisplay {
-  font-size: 0.5em;
-  display: flex;
-  margin: 1rem auto 0px;
-  padding: 1rem 2rem;
-  height: 1.25em;
-  box-sizing: content-box;
-  user-select: none;
-  cursor: default;
-  color: var(--sub-color);
-
-  &.blurred {
-    opacity: 0.25;
-    filter: blur(4px);
-  }
 }
 
 .pageTest {

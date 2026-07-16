@@ -46,7 +46,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -65,6 +64,7 @@ import {
   getCurrentQuote,
   isTestActive,
   resetCurrentLiveStats,
+  setCompositionText,
   wordsHaveNewline,
 } from "../states/test";
 import {
@@ -450,9 +450,9 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("colorfulMode");
   }
 
-  qsa(
-    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).setStyle({ fontSize: `${Config.fontSize}rem` });
+  qsa("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").setStyle({
+    fontSize: `${Config.fontSize}rem`,
+  });
 
   if (TestState.isLanguageRightToLeft) {
     wordsEl.addClass("rightToLeftTest");
@@ -1905,10 +1905,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
   AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
-    CompositionDisplay.update(" ");
-    CompositionDisplay.show();
-  } else {
-    CompositionDisplay.hide();
+    setCompositionText(" ");
   }
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
@@ -2028,13 +2025,8 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "showOutOfFocusWarning" && !newValue) {
     OutOfFocus.hide();
   }
-  if (key === "compositionDisplay") {
-    if (newValue === "below") {
-      CompositionDisplay.update(" ");
-      CompositionDisplay.show();
-    } else {
-      CompositionDisplay.hide();
-    }
+  if (key === "compositionDisplay" && newValue === "below") {
+    setCompositionText(" ");
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
