@@ -15,6 +15,7 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage, getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
+import { clearTimeouts } from "../utils/misc";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -24,9 +25,35 @@ export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// #words is still vanilla so it's blurred imperatively (see test/out-of-focus);
-// the Solid-owned composition display reads this signal instead.
-export const [isOutOfFocus, setOutOfFocus] = createSignal(false);
+// #words is still vanilla so it's blurred imperatively (see test/test-ui);
+// the Solid-owned composition display + OutOfFocusWarning read this signal.
+const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
+export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
+export const [testFocusState, { setTestFocusState }] =
+  createSignalWithSetters<TestFocusState>("focused")({
+    setTestFocusState: (set, val: TestFocusState) => {
+      if (val === "focused") {
+        clearTimeouts(outOfFocusTimeouts);
+        set(val);
+      } else {
+        outOfFocusTimeouts.push(
+          setTimeout(() => {
+            set(val);
+          }, 1000),
+        );
+      }
+    },
+  });
+
+export const showOutOfFocusWarning = createMemo(
+  () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
+);
+
+// max-height of the warning, kept in sync with the words wrapper by test-ui.
+export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
+  number | undefined
+>(undefined);
+
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
