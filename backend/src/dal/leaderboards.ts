@@ -183,6 +183,8 @@ export async function getNextWpm(
     const [result] = await getCollection({ language, mode, mode2 })
       .aggregate<{ nextWpm?: number }>([
         { $match: { uid } },
+        { $sort: { rank: 1, _id: 1 } },
+        { $limit: 1 },
         {
           $lookup: {
             from: collectionName,

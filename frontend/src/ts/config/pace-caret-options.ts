@@ -17,7 +17,11 @@ export type PaceCaretContext = {
 };
 
 function matchesRule(value: string, rule: string): boolean {
-  return new RegExp(`^${rule}$`).test(value);
+  try {
+    return new RegExp(`^${rule}$`).test(value);
+  } catch {
+    return false;
+  }
 }
 
 function hasDailyLeaderboard(

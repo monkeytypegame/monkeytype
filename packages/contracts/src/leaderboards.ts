@@ -247,6 +247,10 @@ export const leaderboardsContract = c.router(
       },
       metadata: meta({
         authenticationOptions: {},
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
       }),
     },
     getWeeklyXp: {

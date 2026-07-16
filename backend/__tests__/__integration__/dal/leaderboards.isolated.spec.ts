@@ -446,6 +446,41 @@ describe("LeaderboardsDal", () => {
         ),
       ).toBeNull();
     });
+
+    it("uses the highest-ranked entry when duplicate entries exist", async () => {
+      //GIVEN
+      await createUser(lbBests(undefined, pb(105)), { name: "One" });
+      await createUser(lbBests(undefined, pb(100)), { name: "Two" });
+      const me = await createUser(lbBests(undefined, pb(95)), { name: "Me" });
+      await createUser(lbBests(undefined, pb(90)), { name: "Three" });
+      await LeaderboardsDal.update("time", "60", "english");
+
+      const currentEntry = await LeaderboardsDal.getRank(
+        "time",
+        "60",
+        "english",
+        me.uid,
+      );
+      if (currentEntry === null || currentEntry === false) {
+        throw new Error("Expected current leaderboard entry");
+      }
+
+      await LeaderboardsDal.getCollection({
+        language: "english",
+        mode: "time",
+        mode2: "60",
+      }).insertOne({
+        ...currentEntry,
+        _id: new ObjectId(),
+        rank: currentEntry.rank + 1,
+        wpm: currentEntry.wpm - 5,
+      });
+
+      //WHEN / THEN
+      expect(
+        await LeaderboardsDal.getNextWpm("time", "60", "english", me.uid),
+      ).toBe(100);
+    });
     it("should get for friends only", async () => {
       //GIVEN
       const friendOne = await createUser(lbBests(undefined, pb(105)));

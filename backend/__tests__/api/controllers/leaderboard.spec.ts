@@ -1150,6 +1150,16 @@ describe("Loaderboard Controller", () => {
 
       expect(unavailable.body.data).toBeNull();
     });
+
+    it("is unavailable when daily leaderboards are disabled", async () => {
+      await dailyLeaderboardEnabled(false);
+
+      await mockApp
+        .get("/leaderboards/daily/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(503);
+    });
   });
 
   describe("get xp weekly leaderboard", () => {
