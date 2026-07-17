@@ -5,9 +5,7 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./modals/google-sign-up";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
@@ -19,7 +17,6 @@ import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
-import "./test/caps-warning";
 import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
@@ -33,7 +30,6 @@ import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
 import "./controllers/url-handler";
-import "./modals/last-signed-out-result";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { mountComponents } from "./components/mount";

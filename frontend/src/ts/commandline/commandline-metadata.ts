@@ -13,8 +13,8 @@ import { getActivePage, isAuthenticated } from "../states/core";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
-import { typedKeys } from "../utils/misc";
 import { Validation } from "../types/validation";
+import { typedKeys } from "@monkeytype/util/objects";
 
 //TODO: remove display property and instead use optionsMetadata from configMetadata
 // eventually this file should be fully merged into config metadata, probably under the 'commandline' property
@@ -669,9 +669,10 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       afterExec: () => TestLogic.restart(),
     },
   },
-  keymapShowTopRow: {
+  keymapKeys: {
     subgroup: {
       options: "fromSchema",
+      display: replaceUnderscoresWithSpaces,
     },
     alias: "keyboard",
   },

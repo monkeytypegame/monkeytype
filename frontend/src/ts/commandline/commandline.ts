@@ -6,7 +6,6 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showNoticeNotification } from "../states/notifications";
-import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
   getCommandlineSubgroup,
@@ -34,6 +33,7 @@ import {
   isModalOpen,
 } from "../states/modals";
 import { ValidationResult } from "../types/validation";
+import { setTestFocusState } from "../states/test";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -74,14 +74,14 @@ let lastState:
 function removeCommandlineBackground(): void {
   qs("#commandLine")?.addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
 }
 
 function addCommandlineBackground(): void {
   qs("#commandLine")?.removeClass("noBackground");
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
 }
 
@@ -475,7 +475,7 @@ async function showCommands(): Promise<void> {
         }
       }
 
-      return { ...command, isActive } as CommandWithIsActive;
+      return { ...command, isActive };
     });
 
   if (

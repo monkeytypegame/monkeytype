@@ -56,9 +56,12 @@ export function getTimerBoundaries(eventLog: EventLog): number[] {
     if (event.type !== "timer") continue;
     if (event.data.event === "end") {
       endMs = event.testMs;
-      // end event's `timer` field is Time.get() at finish — the canonical
-      // tick count, immune to step-event drift/early-fire artifacts
-      tickCount = event.data.timer;
+      // Derive tick count from wall-clock (testMs) rather than the end event's
+      // Time.get(). The rAF-driven timer freezes on a suspended/backgrounded
+      // tab, so Time.get() can undercount real elapsed seconds (it stays 0 for
+      // a fully-frozen tab) — testMs, from performance.now(), always reflects
+      // true wall-clock. For healthy/mildly-stalled tests the two agree.
+      tickCount = Math.floor(endMs / 1000);
     }
   }
   if (endMs === undefined) return [];
@@ -345,35 +348,8 @@ export function getDateBasedTestDurationMs(eventLog: EventLog): number {
 function getTargetWord(
   eventLog: EventLog,
   wordIndex: number,
-  simulatedInput: string,
-  lastWord: boolean,
-): string {
-  if (eventLog.context.mode === "zen") {
-    return simulatedInput;
-  } else {
-    const word = eventLog.context.targetWords[wordIndex];
-
-    if (word === undefined) {
-      return "";
-    }
-
-    if (word.endsWith("\n")) {
-      // for multiline, dont add space
-      return word;
-    }
-
-    let wordEnd = "";
-
-    if (!lastWord) {
-      wordEnd = " ";
-    }
-
-    if (eventLog.context.isFunboxWithNospacePropertyActive) {
-      wordEnd = "";
-    }
-
-    return word + wordEnd;
-  }
+): string | undefined {
+  return eventLog.context.targetWords[wordIndex];
 }
 
 function computeBurst(events: TestEventNoMs[], now?: number): number {
@@ -463,7 +439,7 @@ function countCharsForWordIndex(
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
-  let targetWord = getTargetWord(eventLog, wordIndex, simulatedInput, lastWord);
+  let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
   if (eventLog.context.koreanStatus) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
@@ -909,7 +885,11 @@ export function getMissedWords(eventLog: EventLog): Record<string, number> {
     ) {
       const word = eventLog.context.targetWords[event.data.wordIndex];
       if (word === undefined) continue;
-      missedWords[word] = (missedWords[word] ?? 0) + 1;
+      // targetWords store the trailing separator (commit char); strip exactly
+      // that one separator (space/newline) to key by the bare word — not
+      // trimEnd(), which would also eat a meaningful trailing tab (code mode)
+      const bareWord = word.replace(/[ \n]$/, "");
+      missedWords[bareWord] = (missedWords[bareWord] ?? 0) + 1;
     }
   }
 
@@ -931,10 +911,7 @@ export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
         event.data.inputType === "insertText" ||
         event.data.inputType === "insertCompositionText"
       ) {
-        if (
-          event.data.inputStopped ||
-          (event.data.data === " " && event.data.commitsWord)
-        ) {
+        if (event.data.inputStopped) {
           continue;
         }
         currentChars[cursorPos] = event.data.data;

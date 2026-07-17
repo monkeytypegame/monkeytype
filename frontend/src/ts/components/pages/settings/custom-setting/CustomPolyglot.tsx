@@ -11,12 +11,12 @@ import {
 } from "../../../../constants/languages";
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import { getLanguageDisplayString } from "../../../../utils/strings";
-import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomPolyglot(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="customPolyglot"
       title="polyglot languages"
       description={configMetadata.customPolyglot.description}

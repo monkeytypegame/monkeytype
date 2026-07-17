@@ -2,7 +2,6 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
 import Page from "./page";
 import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
-import * as Keymap from "../elements/keymap";
 import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
 import { resetIncompleteTests } from "../states/test";
@@ -27,6 +26,5 @@ export const page = new Page({
     TestLogic.restart({
       noAnim: true,
     });
-    void Keymap.refresh();
   },
 });

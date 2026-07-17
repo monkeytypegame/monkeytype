@@ -220,30 +220,8 @@ export function getCurrentInput(): string {
   return getInputFromDom(getEventsForWord(getAllTestEvents(), activeWordIndex));
 }
 
-// Like getCurrentInput, but strips the trailing space when the last input
-// event committed the word (advanced to the next word) rather than inserting
-// a literal space. The committing space is a word separator, not part of the
-// word's input, so the UI must not render it. Newline commits are kept
-// since the newline is visible content.
-export function getCurrentInputForDisplay(): string {
-  const input = getCurrentInput();
-  const last = inputEvents[inputEvents.length - 1];
-  if (
-    last !== undefined &&
-    last.data.wordIndex === activeWordIndex &&
-    "commitsWord" in last.data &&
-    last.data.commitsWord === true &&
-    last.data.data === " "
-  ) {
-    return input.slice(0, -1);
-  }
-  return input;
-}
-
 export function getInputForWord(wordIndex: number): string {
-  return getInputFromDom(
-    getEventsForWord(getAllTestEvents(), wordIndex),
-  ).trimEnd();
+  return getInputFromDom(getEventsForWord(getAllTestEvents(), wordIndex));
 }
 
 export function cleanupData(): void {

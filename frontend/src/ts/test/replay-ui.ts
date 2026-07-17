@@ -44,7 +44,7 @@ function getWordsList(): string[] {
   return TestWords.words
     .get()
     .slice()
-    .map((word) => word.text);
+    .map((word) => word.textWithCommit);
 }
 
 function deriveReplayActions(): Replay[] {
@@ -62,7 +62,7 @@ function deriveReplayActions(): Replay[] {
         const target =
           Config.mode === "zen"
             ? typed
-            : TestWords.words.get(prevWordIndex)?.text;
+            : TestWords.words.get(prevWordIndex)?.textWithCommit;
         const correct = typed === target;
         actions.push({
           action: correct ? "submitCorrectWord" : "submitErrorWord",
@@ -222,7 +222,8 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     const replayWords = document.getElementById("replayWords");
 
     if (replayWords !== null) {
-      activeWord = replayWords.children[wordPos] as HTMLElement;
+      const fallback = replayWords.children[wordPos] as HTMLElement;
+      activeWord = fallback;
     }
 
     curPos = activeWord.children.length;

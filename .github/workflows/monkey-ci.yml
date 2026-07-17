@@ -45,10 +45,10 @@ jobs:
               - 'frontend/static/**/*'
               - '**/*.{scss,css}'
             be-src:
-              - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/**/*'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss,html}'
+              - 'frontend/**/*.{ts,tsx,js,scss,html}'
               - 'frontend/**/package.json'
             pkg-src:
               - 'packages/**/*'

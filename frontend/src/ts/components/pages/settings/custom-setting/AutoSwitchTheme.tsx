@@ -7,12 +7,12 @@ import { getConfig } from "../../../../config/store";
 import { ThemesList } from "../../../../constants/themes";
 import { cn } from "../../../../utils/cn";
 import { Button } from "../../../common/Button";
-import { Setting } from "../../../common/Setting";
 import SlimSelect from "../../../ui/SlimSelect";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function AutoSwitchTheme(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="autoSwitchTheme"
       title={
         configMetadata.autoSwitchTheme.displayString ?? "auto switch theme"

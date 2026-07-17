@@ -160,7 +160,7 @@ describe("QuotesController", () => {
 
     beforeEach(() => {
       addQuoteMock.mockClear();
-      addQuoteMock.mockResolvedValue({} as any);
+      addQuoteMock.mockResolvedValue({});
 
       verifyCaptchaMock.mockClear();
       verifyCaptchaMock.mockResolvedValue(true);

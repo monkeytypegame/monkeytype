@@ -22,7 +22,12 @@ import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
+import { CapsWarning } from "./pages/test/CapsWarning";
+import { CompositionDisplay } from "./pages/test/CompositionDisplay";
+import { Keymap } from "./pages/test/Keymap";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
+import { Monkey } from "./pages/test/Monkey";
+import { OutOfFocusWarning } from "./pages/test/OutOfFocusWarning";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
@@ -45,9 +50,14 @@ const components: Record<string, () => JSXElement> = {
   testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
   testmodesnotice: () => <TestModesNotice />,
+  capswarning: () => <CapsWarning />,
+  compositiondisplay: () => <CompositionDisplay />,
   friendspage: () => <FriendsPage />,
   notfoundpage: () => <NotFoundPage />,
   accountsettingspage: () => <AccountSettingsPage />,
+  keymap: () => <Keymap />,
+  monkey: () => <Monkey />,
+  outoffocuswarning: () => <OutOfFocusWarning />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
