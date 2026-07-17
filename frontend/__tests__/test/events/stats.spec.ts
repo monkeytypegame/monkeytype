@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 
 vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
@@ -26,16 +26,8 @@ vi.mock("../../../src/ts/test/test-words", () => {
       get(): Word[] {
         return [...list];
       },
-      push(word: string) {
-        let commit: CommitChar = "";
-        if (word.endsWith(" ")) {
-          commit = " ";
-          word = word.slice(0, -1);
-        } else if (word.endsWith("\n")) {
-          commit = "\n";
-          word = word.slice(0, -1);
-        }
-        list.push({ text: word, textWithCommit: word + commit, commit });
+      push(word: { text: string; commit: CommitChar }) {
+        list.push({ ...word, textWithCommit: word.text + word.commit });
       },
       reset() {
         list.length = 0;
@@ -91,8 +83,14 @@ import type {
 import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
 import * as TestState from "../../../src/ts/test/test-state";
-import { words as TestWords } from "../../../src/ts/test/test-words";
+import {
+  words as TestWords,
+  type CommitChar,
+} from "../../../src/ts/test/test-words";
 import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
+
+// tell TypeScript this is a mock
+const mockedTestWordsPush = TestWords.push as Mock;
 
 // mirror the generator: each word carries a trailing space separator unless it
 // already ends with a newline, the nospace funbox is active, or it's the last
@@ -101,9 +99,10 @@ function pushWords(...words: string[]): void {
   const nospace = isFunboxActiveWithProperty("nospace");
   words.forEach((word, i) => {
     const isLast = i === words.length - 1;
-    const withSeparator =
-      isLast || nospace || word.endsWith("\n") ? word : `${word} `;
-    TestWords.push(withSeparator, i);
+    const match = /(.*?)( |\n|)$/.exec(word) as RegExpExecArray;
+    let commit = match[2] as CommitChar;
+    if (commit === "" && !isLast && !nospace) commit = " ";
+    mockedTestWordsPush({ text: match[1] as string, commit });
   });
 }
 

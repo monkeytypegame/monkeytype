@@ -597,15 +597,19 @@ async function getQuoteWordList(
   return currentQuote.textSplit;
 }
 
+const koreanRegex =
+  /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/;
+
 let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
-  words: string[];
-  sectionIndexes: number[];
+  words: TestWords.WordMinimal[];
   hasTab: boolean;
   hasNewline: boolean;
+  hasNumbers: boolean;
+  koreanStatus: boolean;
   allRightToLeft?: boolean;
   allJoiningScript?: boolean;
 };
@@ -627,9 +631,10 @@ export async function generateWords(
   const rawWordList: string[] = [];
   const ret: GenerateWordsReturn = {
     words: [],
-    sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
+    hasNumbers: false,
+    koreanStatus: false,
     allRightToLeft: language.rightToLeft,
     allJoiningScript: language.joiningScript ?? false,
   };
@@ -680,6 +685,14 @@ export async function generateWords(
 
   console.debug("Wordset", currentWordset);
 
+  // set direction varaibles here in order to use them in getNextWord()
+  // and before returning because of limit === 0 (for zen mode)
+  const isLanguageRTL = ret.allRightToLeft ?? language.rightToLeft ?? false;
+  TestState.setIsLanguageRightToLeft(isLanguageRTL);
+  TestState.setIsDirectionReversed(
+    isFunboxActiveWithProperty("reverseDirection"),
+  );
+
   if (limit === 0) {
     return ret;
   }
@@ -694,19 +707,19 @@ export async function generateWords(
       Arrays.nthElementFromArray(rawWordList, -2) ?? "",
     );
     rawWordList.push(nextWord.wordRaw);
-    ret.words.push(nextWord.word);
-    ret.sectionIndexes.push(nextWord.sectionIndex);
+    ret.words.push(nextWord);
 
+    const generatedWordsLength = ret.words.length;
     if (customAndUsingPipeDelimiter) {
       //generate a given number of sections, make sure to not cut a section off
       const sectionFinishedAndOverLimit =
         currentSection.length === 0 && sectionIndex >= limit;
       //make sure we dont go over a hard limit, in cases where the sections are very large
-      const upperWordLimit = ret.words.length >= 100;
-      if (sectionFinishedAndOverLimit || upperWordLimit) {
+      const upperWordLimitReached = generatedWordsLength >= 100;
+      if (sectionFinishedAndOverLimit || upperWordLimitReached) {
         stop = true;
       }
-    } else if (ret.words.length >= limit) {
+    } else if (generatedWordsLength >= limit) {
       stop = true;
     }
     i++;
@@ -718,16 +731,20 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
+  // we need to test both because ret.words has only first 100 words
+  // and currentWordset.words may be changed inside getNextWord() by funboxes
   ret.hasTab =
-    ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
+    ret.words.some((w) => w.text.includes("\t")) ||
+    currentWordset.words.some((w) => w.includes("\t"));
   ret.hasNewline =
-    ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+    ret.words.some((w) => w.text.includes("\n")) ||
+    currentWordset.words.some((w) => w.includes("\n"));
+  ret.hasNumbers =
+    ret.words.some((w) => /\d/g.test(w.text)) ||
+    currentWordset.words.some((w) => /\d/g.test(w));
+  ret.koreanStatus =
+    ret.words.some((w) => koreanRegex.test(w.text.normalize())) ||
+    currentWordset.words.some((w) => koreanRegex.test(w.normalize()));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
@@ -739,10 +756,8 @@ let sectionHistory: string[] = [];
 
 let previousGetNextWordReturns: GetNextWordReturn[] = [];
 
-type GetNextWordReturn = {
-  word: string;
+type GetNextWordReturn = TestWords.WordMinimal & {
   wordRaw: string;
-  sectionIndex: number;
 };
 
 //generate next word
@@ -974,10 +989,20 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
+  let direction = Strings.getWordDirection(
+    randomWord,
+    TestState.isLanguageRightToLeft ? "rtl" : "ltr",
+  );
+  if (TestState.isDirectionReversed) {
+    direction = Strings.reverseDirection(direction);
+  }
+  const textWithCommit = getTextWithCommitChar(randomWord);
   const ret = {
-    word: appendCommitCharacter(randomWord),
     wordRaw: randomWord,
-    sectionIndex: sectionIndex,
+    text: textWithCommit.text,
+    commit: textWithCommit.commit,
+    direction,
+    sectionIndex,
   };
 
   previousGetNextWordReturns.push(ret);
@@ -986,16 +1011,21 @@ export async function getNextWord(
 }
 
 /**
- * Appends the inter-word commit separator the way the generator does: a trailing
+ * get the inter-word commit separator the way the generator does: a trailing
  * space, unless the word already ends with a newline or the nospace funbox is
  * active. Callers that push words outside of getNextWord (e.g. section funbox
  * pulls) must use this so the separator is part of the target word.
  */
-export function appendCommitCharacter(word: string): string {
-  if (word.endsWith("\n") || isFunboxActiveWithProperty("nospace")) {
-    return word;
+export function getTextWithCommitChar(word: string): {
+  text: string;
+  commit: TestWords.CommitChar;
+} {
+  const match = /(.*?)( |\n|)$/.exec(word) as RegExpExecArray;
+  let commit = match[2] as TestWords.CommitChar;
+  if (commit === "" && !isFunboxActiveWithProperty("nospace")) {
+    commit = " ";
   }
-  return `${word} `;
+  return { text: match[1] as string, commit };
 }
 
 export function areAllWordsGenerated(): boolean {

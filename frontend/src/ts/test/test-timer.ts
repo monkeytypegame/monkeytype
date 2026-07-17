@@ -33,6 +33,7 @@ import {
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isTestActive, setCurrentLiveStats } from "../states/test";
+import { splitIntoCharacters } from "../utils/strings";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -181,9 +182,9 @@ function layoutfluid(): void {
       if (Config.keymapMode === "next") {
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
+            splitIntoCharacters(TestWords.words.getCurrent()?.text ?? "")[
+              getCurrentInput().length
+            ] ?? "",
           );
         }, 1);
       }

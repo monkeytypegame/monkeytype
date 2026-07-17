@@ -1,24 +1,48 @@
 import * as TestState from "./test-state";
+import type { Direction } from "../utils/strings";
 
-type CommitChar = " " | "\n" | "";
+export type CommitChar = " " | "\n" | "";
 
 type Word = {
   text: string;
   textWithCommit: string;
   commit: CommitChar;
   display: string;
+  direction: Direction;
   sectionIndex: number;
 };
+
+export type WordMinimal = Omit<Word, "textWithCommit" | "display">;
 
 const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
 
 class Words {
   private list: Word[];
   public length: number;
+  public haveNumbers: boolean;
+  public haveNewlines: boolean;
+  public haveTabs: boolean;
+  public koreanStatus: boolean;
 
   constructor() {
     this.list = [];
+    this.haveNumbers = false;
+    this.haveNewlines = false;
+    this.haveTabs = false;
+    this.koreanStatus = false;
     this.length = 0;
+  }
+
+  private createFullWord(minimalWord: WordMinimal): Word {
+    return {
+      ...minimalWord,
+      textWithCommit: minimalWord.text + minimalWord.commit,
+      display:
+        minimalWord.text +
+        (commitCharsToDisplay.has(minimalWord.commit)
+          ? minimalWord.commit
+          : ""),
+    };
   }
 
   get(i?: undefined, raw?: boolean): Word[];
@@ -33,38 +57,19 @@ class Words {
       }
       if (raw) {
         const text = word.text.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-        return {
-          text,
-          textWithCommit: text + word.commit,
-          commit: word.commit,
-          display:
-            text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
-          sectionIndex: word.sectionIndex,
-        };
+        return this.createFullWord({ ...word, text });
       } else {
         return word;
       }
     }
   }
+
   getCurrent(): Word | undefined {
     return this.list[TestState.activeWordIndex];
   }
-  push(word: string, sectionIndex: number): Word {
-    let commit: CommitChar = "";
-    if (word.endsWith(" ")) {
-      commit = " ";
-      word = word.slice(0, -1);
-    } else if (word.endsWith("\n")) {
-      commit = "\n";
-      word = word.slice(0, -1);
-    }
-    const wordObj = {
-      text: word,
-      textWithCommit: word + commit,
-      commit,
-      display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
-      sectionIndex,
-    };
+
+  push(word: WordMinimal): Word {
+    const wordObj = this.createFullWord({ ...word });
     this.list.push(wordObj);
     this.length = this.list.length;
 
@@ -74,6 +79,10 @@ class Words {
   reset(): void {
     this.list = [];
     this.length = 0;
+    this.haveNumbers = false;
+    this.haveNewlines = false;
+    this.haveTabs = false;
+    this.koreanStatus = false;
   }
 
   removeCommitCharacterFromLastWord(): void {

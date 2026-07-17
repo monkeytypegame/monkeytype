@@ -73,7 +73,6 @@ import {
   getActiveFunboxesWithFunction,
   getActiveFunboxNames,
   isFunboxActive,
-  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import * as CompositionState from "../legacy-states/composition";
@@ -122,7 +121,6 @@ import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
-import { nthElementFromArray } from "../utils/arrays";
 
 let failReason = "";
 
@@ -175,7 +173,6 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
-  Strings.clearWordDirectionCache();
 
   const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
@@ -288,7 +285,6 @@ export function restart(options = {} as RestartOptions): void {
   setTestActive(false);
   Replay.pauseReplay();
   TestState.setBailedOut(false);
-  Caret.resetPosition();
   PaceCaret.reset();
   TestState.setKoreanStatus(false);
   clearQuoteStats();
@@ -344,6 +340,7 @@ export function restart(options = {} as RestartOptions): void {
         return;
       }
 
+      Caret.init();
       await PaceCaret.init();
 
       for (const fb of getActiveFunboxesWithFunction("restart")) {
@@ -493,19 +490,21 @@ async function init(): Promise<boolean> {
     currentQuote: getCurrentQuote(),
   });
 
+  let wordsHaveNumbers = false;
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
-  let allRightToLeft: boolean | undefined = undefined;
+  let wordsKoreanStatus = false;
   let allJoiningScript: boolean | undefined = undefined;
-  let generatedWords: string[] = [];
-  let generatedSectionIndexes: number[] = [];
+  let generatedWords: TestWords.WordMinimal[] = [];
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
-    generatedSectionIndexes = gen.sectionIndexes;
+    wordsHaveNumbers = gen.hasNumbers;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
-    ({ allRightToLeft, allJoiningScript } = gen);
+    wordsKoreanStatus = gen.koreanStatus;
+
+    ({ allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -528,65 +527,31 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  setWordsHaveNumbers(hasNumbers);
+  TestWords.words.haveNumbers = wordsHaveNumbers;
+  TestWords.words.haveNewlines = wordsHaveNewline;
+  TestWords.words.haveTabs = wordsHaveTab;
+  TestWords.words.koreanStatus = wordsKoreanStatus;
+  setWordsHaveNumbers(wordsHaveNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
 
-  if (
-    generatedWords
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    TestState.setKoreanStatus(true);
-  }
-
-  for (let i = 0; i < generatedWords.length; i++) {
-    TestWords.words.push(
-      generatedWords[i] as string,
-      generatedSectionIndexes[i] as number,
-    );
-  }
+  for (const word of generatedWords) TestWords.words.push(word);
 
   if (WordsGenerator.areAllWordsGenerated()) {
     TestWords.words.removeCommitCharacterFromLastWord();
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    highlight(
-      nthElementFromArray(
-        // ignoring for now but this might need a different approach
-        // oxlint-disable-next-line no-misused-spread
-        [...(TestWords.words.getCurrent()?.text ?? "")],
-        0,
-      ) as string,
-    );
+    const keyToHighlight = Strings.splitIntoCharacters(
+      TestWords.words.getCurrent()?.textWithCommit ?? "",
+    )[0];
+    if (keyToHighlight !== undefined) highlight(keyToHighlight);
   }
 
   Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
-  const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  TestState.setIsLanguageRightToLeft(isLanguageRTL);
-  TestState.setIsDirectionReversed(
-    isFunboxActiveWithProperty("reverseDirection"),
-  );
-
   console.debug("Test initialized with words", TestWords.words.get());
-  console.debug(
-    "Test initialized with section indexes",
-    generatedSectionIndexes,
-  );
   return true;
 }
 
@@ -635,16 +600,26 @@ export async function addWord(): Promise<void> {
 
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i] as string;
+        const wordText = section.words[i] as string;
         if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
         wordCount++;
-        const newWord = TestWords.words.push(
-          WordsGenerator.appendCommitCharacter(word),
-          i,
+        let direction = Strings.getWordDirection(
+          wordText,
+          TestState.isLanguageRightToLeft ? "rtl" : "ltr",
         );
-        TestUI.addWord(newWord.display);
+        if (TestState.isDirectionReversed) {
+          direction = Strings.reverseDirection(direction);
+        }
+        const textWithCommit = WordsGenerator.getTextWithCommitChar(wordText);
+        const newWord = TestWords.words.push({
+          text: textWithCommit.text,
+          commit: textWithCommit.commit,
+          direction,
+          sectionIndex: i,
+        });
+        TestUI.addWord({ text: newWord.display, direction });
       }
     }
   }
@@ -657,11 +632,8 @@ export async function addWord(): Promise<void> {
       TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
-    const newWord = TestWords.words.push(
-      randomWord.word,
-      randomWord.sectionIndex,
-    );
-    TestUI.addWord(newWord.display);
+    const newWord = TestWords.words.push(randomWord);
+    TestUI.addWord({ text: newWord.display, direction: newWord.direction });
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -1369,14 +1341,10 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
-        highlight(
-          nthElementFromArray(
-            // ignoring for now but this might need a different approach
-            // oxlint-disable-next-line no-misused-spread
-            [...(TestWords.words.getCurrent()?.text ?? "")],
-            0,
-          ) as string,
-        );
+        const keyToHighlight = Strings.splitIntoCharacters(
+          TestWords.words.getCurrent()?.textWithCommit ?? "",
+        )[0];
+        if (keyToHighlight !== undefined) highlight(keyToHighlight);
       }, 0);
     }
     if (

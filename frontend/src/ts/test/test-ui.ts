@@ -240,14 +240,8 @@ async function joinOverlappingHints(
   activeWordLetters: ElementsWithUtils,
   hintElements: HTMLCollection,
 ): Promise<void> {
-  const currentWord = TestWords.words.getCurrent();
-  if (currentWord === undefined) return;
-
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    currentWord.text,
-    TestState.isLanguageRightToLeft,
-    TestState.isDirectionReversed,
-  );
+  let wordDirection = TestWords.words.getCurrent()?.direction;
+  if (!wordDirection) return;
 
   let previousBlocksAdjacent = false;
   let currentHintBlock = 0;
@@ -284,8 +278,8 @@ async function joinOverlappingHints(
     const sameTop =
       block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
 
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
+    const leftBlock = wordDirection === "ltr" ? hintBlock1 : hintBlock2;
+    const rightBlock = wordDirection === "ltr" ? hintBlock2 : hintBlock1;
 
     // block edge is offset half its width because of transform: translate(-50%)
     const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
@@ -300,7 +294,7 @@ async function joinOverlappingHints(
 
       const block1Letter1Pos =
         block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
+        (wordDirection === "ltr" ? 0 : block1Letter1.getOffsetWidth());
       const bothBlocksLettersWidthHalved =
         hintBlock2.offsetLeft - hintBlock1.offsetLeft;
       hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
@@ -389,12 +383,14 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
-function buildWordHTML(word: string, wordIndex: number): string {
+type WordTextWithDirection = Pick<TestWords.WordMinimal, "text" | "direction">;
+
+function buildWordHTML(word: WordTextWithDirection, wordIndex: number): string {
   let newlineafter = false;
-  let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
+  let retval = `<div class='word ${word.direction}' data-wordindex='${wordIndex}'>`;
 
   const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  const chars = Strings.splitIntoCharacters(word);
+  const chars = Strings.splitIntoCharacters(word.text);
   for (const char of chars) {
     if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
@@ -519,7 +515,10 @@ function showWords(): void {
     for (let i = 0; i < TestWords.words.length; i++) {
       const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      wordsHTML += buildWordHTML(word.display, i);
+      wordsHTML += buildWordHTML(
+        { text: word.display, direction: word.direction },
+        i,
+      );
     }
     wordsEl.setHtml(wordsHTML);
   }
@@ -528,7 +527,8 @@ function showWords(): void {
     initial: true,
   });
   updateWordWrapperClasses();
-  PaceCaret.resetCaretPosition();
+  Caret.resetPosition();
+  PaceCaret.resetPosition();
 }
 
 export function appendEmptyWordElement(index: number): void {
@@ -698,7 +698,7 @@ function updateWordsMargin(): void {
 }
 
 export function addWord(
-  word: string,
+  word: WordTextWithDirection,
   wordIndex = TestWords.words.length - 1,
 ): void {
   // if the current active word is the last word, we need to NOT use raf
@@ -1294,13 +1294,11 @@ function buildWordLettersHTML(
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
-    const historyWord: string = !TestState.koreanStatus
-      ? (corrected ?? "")
-      : Hangul.assemble((corrected ?? "").split(""));
+
     if (
       c >= targetChars.length - 1 &&
       c + 1 === inputChars.length &&
-      historyWord.length > inputChars.length
+      correctedChars.length > inputChars.length
     ) {
       extraCorrected = "extraCorrected";
     }
@@ -1750,8 +1748,9 @@ function afterAnyTestInput(
   }
 
   if (Config.keymapMode === "next") {
-    const keyToHighlight =
-      TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
+    const keyToHighlight = Strings.splitIntoCharacters(
+      TestWords.words.getCurrent()?.textWithCommit ?? "",
+    )[getCurrentInput().length];
     if (keyToHighlight !== undefined) {
       highlight(keyToHighlight);
     }

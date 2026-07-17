@@ -5,7 +5,3 @@
 #words.rightToLeftTest {
   direction: ltr;
 }
-
-#words.joiningScript .word {
-  unicode-bidi: bidi-override;
-}

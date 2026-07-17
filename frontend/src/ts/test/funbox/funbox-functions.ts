@@ -423,9 +423,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlight(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
+            Strings.splitIntoCharacters(
+              TestWords.words.getCurrent()?.text ?? "",
+            )[getCurrentInput().length] as string,
           );
         }, 1);
       }

@@ -315,10 +315,6 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
-
-    .wordRtl {
-      unicode-bidi: bidi-override;
-    }
   }
   &.joiningScript {
     .word {
@@ -635,6 +631,16 @@
     }
   }
 
+  &.ltr {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+  }
+
+  &.rtl {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+  }
+
   &.nocursor {
     cursor: none;
   }
@@ -848,10 +854,6 @@
         &.rightToLeftTest {
           //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
           direction: rtl;
-
-          .wordRtl {
-            unicode-bidi: bidi-override;
-          }
         }
         &.joiningScript {
           .word {
