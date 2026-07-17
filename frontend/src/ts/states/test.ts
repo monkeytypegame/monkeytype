@@ -7,7 +7,7 @@ import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { getData as getCustomTextData } from "../test/custom-text";
+import * as CustomText from "../test/custom-text";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
@@ -86,13 +86,23 @@ export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
+
+/**
+ * Live test stats, rendered by the Solid live stat displays (the mini and text
+ * variants and the progress bar). The test engine is still vanilla, so it pushes
+ * plain numbers in here as it goes; everything shown on screen is derived below.
+ * `undefined` means "no data yet" and is what the displays fall back to defaults on.
+ */
 export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   wpm?: number;
   acc?: number;
   raw?: number;
+  burst?: number;
+  seconds?: number;
+  wordIndex?: number;
+  wordCount?: number;
+  wordsTotal?: number;
 }>({});
-export const resetCurrentLiveStats = (): void =>
-  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
 
 createEffect(() => {
   getActivePage(); // depend on active page
@@ -101,7 +111,7 @@ createEffect(() => {
       getConfig.mode,
       getConfig.words,
       getConfig.time,
-      getCustomTextData(),
+      CustomText.getData(),
       getCustomTextIndicator()?.isLong ?? false,
     ),
   );

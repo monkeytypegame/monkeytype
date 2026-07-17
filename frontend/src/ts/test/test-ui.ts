@@ -20,7 +20,6 @@ import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
-import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
@@ -32,11 +31,7 @@ import {
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import { highlight } from "../events/keymap";
-import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
-import * as TimerProgress from "../test/timer-progress";
-import * as LiveBurst from "./live-burst";
-import * as LiveSpeed from "./live-speed";
 import {
   blurInputElement,
   focusInputElement,
@@ -62,8 +57,8 @@ import { skipBreakdownEvent } from "../states/header";
 import {
   getCurrentQuote,
   isTestActive,
-  resetCurrentLiveStats,
   setCompositionText,
+  setCurrentLiveStats,
   setOutOfFocusMaxHeight,
   wordsHaveNewline,
   setTestFocusState,
@@ -76,6 +71,10 @@ import {
   getMissedWords,
   getWordBurstHistory,
 } from "./events/stats";
+import {
+  resetCurrentLiveStats,
+  updateLiveProgress,
+} from "../components/pages/test/live-stats/util";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -463,7 +462,7 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("colorfulMode");
   }
 
-  qsa("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").setStyle({
+  qsa("#caret, #paceCaret, #typingTest, #wordsInput").setStyle({
     fontSize: `${Config.fontSize}rem`,
   });
 
@@ -1627,63 +1626,6 @@ function updateWordsWidth(): void {
   }
 }
 
-function updateLiveStatsMargin(): void {
-  if (Config.tapeMode === "off") {
-    qs("#liveStatsMini")?.setStyle({
-      justifyContent: "start",
-      marginLeft: "0.25em",
-    });
-  } else {
-    qs("#liveStatsMini")?.setStyle({
-      justifyContent: "center",
-      marginLeft: `${Config.tapeMargin}%`,
-    });
-  }
-}
-
-function updateLiveStatsOpacity(value: TimerOpacity): void {
-  qs("#barTimerProgress")?.setStyle({ opacity: value });
-  qs("#liveStatsTextTop")?.setStyle({ opacity: value });
-  qs("#liveStatsTextBottom")?.setStyle({
-    opacity: value,
-  });
-  qs("#liveStatsMini")?.setStyle({ opacity: value });
-}
-
-function updateLiveStatsColor(value: TimerColor): void {
-  qs("#barTimerProgress")?.removeClass("timerSub");
-  qs("#barTimerProgress")?.removeClass("timerText");
-  qs("#barTimerProgress")?.removeClass("timerMain");
-
-  qs("#liveStatsTextTop")?.removeClass("timerSub");
-  qs("#liveStatsTextTop")?.removeClass("timerText");
-  qs("#liveStatsTextTop")?.removeClass("timerMain");
-  qs("#liveStatsTextBottom")?.removeClass("timerSub");
-  qs("#liveStatsTextBottom")?.removeClass("timerText");
-  qs("#liveStatsTextBottom")?.removeClass("timerMain");
-
-  qs("#liveStatsMini")?.removeClass("timerSub");
-  qs("#liveStatsMini")?.removeClass("timerText");
-  qs("#liveStatsMini")?.removeClass("timerMain");
-
-  if (value === "main") {
-    qs("#barTimerProgress")?.addClass("timerMain");
-    qs("#liveStatsTextTop")?.addClass("timerMain");
-    qs("#liveStatsTextBottom")?.addClass("timerMain");
-    qs("#liveStatsMini")?.addClass("timerMain");
-  } else if (value === "sub") {
-    qs("#barTimerProgress")?.addClass("timerSub");
-    qs("#liveStatsTextTop")?.addClass("timerSub");
-    qs("#liveStatsTextBottom")?.addClass("timerSub");
-    qs("#liveStatsMini")?.addClass("timerSub");
-  } else if (value === "text") {
-    qs("#barTimerProgress")?.addClass("timerText");
-    qs("#liveStatsTextTop")?.addClass("timerText");
-    qs("#liveStatsTextBottom")?.addClass("timerText");
-    qs("#liveStatsMini")?.addClass("timerText");
-  }
-}
-
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
     qs(".pageTest #restartTestButton")?.show();
@@ -1742,11 +1684,11 @@ function afterAnyTestInput(
 
   const acc = Numbers.roundTo2(getLiveCachedAccuracy());
   if (!isNaN(acc)) {
-    LiveAcc.update(acc);
+    setCurrentLiveStats({ acc });
   }
 
   if (Config.mode !== "time") {
-    TimerProgress.update();
+    updateLiveProgress();
   }
 
   if (Config.keymapMode === "next") {
@@ -1838,7 +1780,7 @@ export async function afterTestWordChange(
   Caret.updatePosition();
 
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
-    void LiveBurst.update(Math.round(lastBurst));
+    setCurrentLiveStats({ burst: Math.round(lastBurst) });
   }
 
   if (Config.keymapMode === "next") {
@@ -1874,11 +1816,7 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
+  updateLiveProgress();
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
@@ -1886,14 +1824,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   Focus.set(false);
-  LiveSpeed.instantHide();
-  LiveSpeed.reset();
-  LiveBurst.instantHide();
-  LiveBurst.reset();
-  LiveAcc.instantHide();
-  LiveAcc.reset();
-  TimerProgress.instantHide();
-  TimerProgress.reset();
   resetCurrentLiveStats();
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
@@ -1924,10 +1854,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 export function onTestFinish(): void {
   Caret.hide();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  TimerProgress.hide();
   setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
@@ -2026,12 +1952,6 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
   }
-  if (key === "timerOpacity") {
-    updateLiveStatsOpacity(newValue);
-  }
-  if (key === "timerColor") {
-    updateLiveStatsColor(newValue);
-  }
   if (key === "showOutOfFocusWarning" && !newValue) {
     setTestFocusState("focused");
   }
@@ -2078,8 +1998,5 @@ configEvent.subscribe(({ key, newValue }) => {
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Joining.update(key, wordsEl);
     }
-  }
-  if (["tapeMode", "tapeMargin"].includes(key)) {
-    updateLiveStatsMargin();
   }
 });

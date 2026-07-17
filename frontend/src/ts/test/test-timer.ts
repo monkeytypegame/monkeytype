@@ -4,8 +4,6 @@
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
-import * as TimerProgress from "./timer-progress";
-import * as LiveSpeed from "./live-speed";
 import * as TestWords from "./test-words";
 import {
   showNoticeNotification,
@@ -33,6 +31,7 @@ import {
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import { isTestActive, setCurrentLiveStats } from "../states/test";
+import { updateLiveProgress } from "../components/pages/test/live-stats/util";
 
 let timerStartMs = 0;
 let stopped = true;
@@ -305,10 +304,8 @@ function timerStep(now: number, catchingUp: boolean): void {
       premid();
     });
 
-    // already using raf
-    TimerProgress.update();
-    LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
     setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
+    updateLiveProgress();
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning();
