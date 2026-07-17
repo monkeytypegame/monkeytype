@@ -3,10 +3,9 @@ import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
-import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
-import { isTestActive } from "../../states/test";
+import { isTestActive, setCompositionText } from "../../states/test";
 
 const inputEl = getInputElement();
 
@@ -40,7 +39,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
 
   if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setData(event.data);
-  CompositionDisplay.update(event.data);
+  setCompositionText(event.data);
 
   const now = performance.now();
 
@@ -57,7 +56,7 @@ inputEl.addEventListener("compositionend", async (event) => {
   if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  CompositionDisplay.update("");
+  setCompositionText("");
   setLastInsertCompositionTextData("");
 
   const now = performance.now();

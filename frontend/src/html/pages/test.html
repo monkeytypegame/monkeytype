@@ -15,10 +15,7 @@
     </div>
   </div>
   <div id="typingTest" class="content-grid full-width-padding">
-    <div id="capsWarning" class="hidden">
-      <i class="fas fa-lock"></i>
-      Caps Lock
-    </div>
+    <mount data-component="capswarning"></mount>
     <div id="memoryTimer">Time left to memorise all words: 0s</div>
     <div id="layoutfluidTimer">Time left to memorise all words: 0s</div>
     <mount data-component="testmodesnotice"></mount>
@@ -52,18 +49,13 @@
         list="autocompleteOff"
         spellcheck="false"
       ></textarea>
-      <div class="outOfFocusWarning hidden">
-        <div>
-          <i class="fas fa-fw fa-mouse-pointer"></i>
-        </div>
-        <div class="text">Click here or press any key to focus</div>
-      </div>
+      <mount data-component="outoffocuswarning" class="contents"></mount>
       <div id="paceCaret" class="full-width default hidden"></div>
       <div id="caret" class="full-width default"></div>
       <div id="words" class="full-width"></div>
     </div>
 
-    <div id="compositionDisplay"></div>
+    <mount data-component="compositiondisplay"></mount>
     <mount data-component="keymap"></mount>
     <mount data-component="monkey"></mount>
 

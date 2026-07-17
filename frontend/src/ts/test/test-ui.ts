@@ -10,7 +10,6 @@ import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
-import * as OutOfFocus from "./out-of-focus";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
@@ -46,7 +45,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -65,8 +63,13 @@ import {
   getCurrentQuote,
   isTestActive,
   resetCurrentLiveStats,
+  setCompositionText,
+  setOutOfFocusMaxHeight,
   wordsHaveNewline,
+  setTestFocusState,
+  showOutOfFocusWarning,
 } from "../states/test";
+import { createEffect } from "solid-js";
 import {
   getCorrectedWordsHistory,
   getInputHistory,
@@ -87,6 +90,16 @@ export let activeWordTop = 0;
 export let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
 let lineTransition = false;
+
+// #words is still vanilla; the warning itself is Solid (OutOfFocusWarning.tsx).
+// show/hideOutOfFocus live in states/test so commandline needn't import test-ui.
+createEffect(() => {
+  if (showOutOfFocusWarning()) {
+    wordsEl.setStyle({ transition: "0.25s" })?.addClass("blurred");
+  } else {
+    wordsEl.setStyle({ transition: "none" })?.removeClass("blurred");
+  }
+});
 let currentTestLine = 0;
 
 export function focusWords(force = false): void {
@@ -404,7 +417,7 @@ function buildWordHTML(word: string, wordIndex: number): string {
 
 function updateWordWrapperClasses(): void {
   // outoffocus applies transition, need to remove it
-  OutOfFocus.hide();
+  setTestFocusState("focused");
 
   if (Config.tapeMode !== "off") {
     wordsEl.addClass("tape");
@@ -450,9 +463,9 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("colorfulMode");
   }
 
-  qsa(
-    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).setStyle({ fontSize: `${Config.fontSize}rem` });
+  qsa("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").setStyle({
+    fontSize: `${Config.fontSize}rem`,
+  });
 
   if (TestState.isLanguageRightToLeft) {
     wordsEl.addClass("rightToLeftTest");
@@ -492,7 +505,7 @@ function updateWordWrapperClasses(): void {
   Caret.updatePosition();
 
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
 }
 
@@ -607,9 +620,6 @@ export async function centerActiveLine(): Promise<void> {
 export function updateWordsWrapperHeight(force = false): void {
   if (getActivePage() !== "test" || TestState.resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  const outOfFocusEl = document.querySelector(
-    ".outOfFocusWarning",
-  ) as HTMLElement;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
@@ -669,7 +679,7 @@ export function updateWordsWrapperHeight(force = false): void {
     }
   }
 
-  outOfFocusEl.style.maxHeight = `${wordHeight * 3}px`;
+  setOutOfFocusMaxHeight(wordHeight * 3);
 }
 
 function updateWordsMargin(): void {
@@ -1905,10 +1915,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
   AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
-    CompositionDisplay.update(" ");
-    CompositionDisplay.show();
-  } else {
-    CompositionDisplay.hide();
+    setCompositionText(" ");
   }
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
@@ -1921,7 +1928,7 @@ export function onTestFinish(): void {
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
-  OutOfFocus.hide();
+  setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
   }
@@ -1985,14 +1992,14 @@ addEventListener("resize", () => {
 qs("#wordsInput")?.on("focus", (e) => {
   if (!isInputElementFocused()) return;
   if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
   Caret.show(true);
 });
 
 qs("#wordsInput")?.on("focusout", () => {
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
   Caret.hide();
 });
@@ -2006,13 +2013,13 @@ qs("#wordsWrapper")?.on("click", () => {
 });
 
 window.addEventListener("blur", () => {
-  OutOfFocus.show("window");
+  setTestFocusState("unfocusedWindow");
 });
 
 // little roadblock for basic cheating
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "hidden") return;
-  OutOfFocus.show("window");
+  setTestFocusState("unfocusedWindow");
 });
 
 configEvent.subscribe(({ key, newValue }) => {
@@ -2026,15 +2033,10 @@ configEvent.subscribe(({ key, newValue }) => {
     updateLiveStatsColor(newValue);
   }
   if (key === "showOutOfFocusWarning" && !newValue) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
-  if (key === "compositionDisplay") {
-    if (newValue === "below") {
-      CompositionDisplay.update(" ");
-      CompositionDisplay.show();
-    } else {
-      CompositionDisplay.hide();
-    }
+  if (key === "compositionDisplay" && newValue === "below") {
+    setCompositionText(" ");
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(

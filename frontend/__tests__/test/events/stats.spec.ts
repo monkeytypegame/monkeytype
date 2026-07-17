@@ -450,6 +450,21 @@ describe("stats.ts", () => {
       ]);
     });
 
+    it("derives boundaries from wall-clock when a suspended tab froze the timer", () => {
+      // A backgrounded tab freezes the rAF-driven timer, so no step events fire
+      // and Time.get() stays 0 — but ~10s of real wall-clock elapsed. testMs
+      // (performance.now-based) still reflects it, so we get 10 boundaries.
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("keydown", 1050, keyDown());
+      logTestEvent("keyup", 1150, keyUp());
+      logTestEvent("timer", 11000, timer("end", 0));
+
+      const eventLog = buildEventLog();
+      expect(statsTesting.getTimerBoundaries(eventLog)).toEqual([
+        1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+      ]);
+    });
+
     it("appends fractional tail for non-timed test with .5s+ remainder", () => {
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("timer", 4500, timer("end", 3));
@@ -699,6 +714,22 @@ describe("stats.ts", () => {
       logTestEvent("timer", 4000, timer("end", 3));
 
       expect(getAfkDuration(buildEventLog())).toBe(1);
+    });
+
+    it("counts frozen-tab seconds as AFK when the end event's timer stalled at 0", () => {
+      // Regression: a suspended tab freezes the timer (Time.get() stuck at 0),
+      // so the end event reports timer:0 despite ~10s of real elapsed time.
+      // Deriving buckets from testMs means the idle seconds are still counted
+      // as AFK instead of collapsing to 0 (which leaked into typed-time/XP).
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("keydown", 1050, keyDown());
+      logTestEvent("input", 1100, input());
+      logTestEvent("keyup", 1150, keyUp());
+      // frozen for the rest of the test; end reports the stalled timer:0
+      logTestEvent("timer", 11000, timer("end", 0));
+
+      // 10 buckets, only the first has activity → 9 idle seconds
+      expect(getAfkDuration(buildEventLog())).toBe(9);
     });
 
     it("returns 0 when all intervals have keydowns", () => {

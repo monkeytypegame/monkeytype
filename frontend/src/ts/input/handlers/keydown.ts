@@ -78,7 +78,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.keymapLayout !== "overrideSync"
   ) {
     let keymapLayout = await __nonReactive
-      .getInputLayout()
+      .getKeymapLayout()
       .catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");

@@ -17,7 +17,6 @@ import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
-import "./test/caps-warning";
 import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
