@@ -2,13 +2,13 @@ import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
-import * as Time from "../legacy-states/time";
 import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
 import { getCurrentQuote, isTestActive } from "../states/test";
+import { getLiveCachedTestSeconds } from "./events/live-cache";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
 const barOpacityEl = document.querySelector(
@@ -139,7 +139,7 @@ function updateTimer(el: HTMLElement, outof: number, wrapInDiv: boolean): void {
 
 export function update(): void {
   requestDebouncedAnimationFrame("timer-progress.update", () => {
-    const time = Time.get();
+    const time = getLiveCachedTestSeconds(performance.now());
     if (
       Config.mode === "time" ||
       (Config.mode === "custom" && CustomText.getLimitMode() === "time")

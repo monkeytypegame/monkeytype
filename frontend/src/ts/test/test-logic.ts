@@ -87,7 +87,6 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
@@ -138,7 +137,6 @@ export function startTest(now: number): boolean {
   }
 
   setTestActive(true);
-  Time.set(0);
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
