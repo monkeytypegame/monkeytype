@@ -134,11 +134,10 @@ export function clear(logEnd = false, now = performance.now()): void {
   clearLowFpsMode();
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
-  const testTime = getLiveCachedTestSeconds(now);
   if (logEnd) {
     logTestEvent("timer", now, {
       event: "end",
-      timer: testTime,
+      timer: getLiveCachedTestSeconds(now),
       date: new Date().getTime(),
     });
   }
