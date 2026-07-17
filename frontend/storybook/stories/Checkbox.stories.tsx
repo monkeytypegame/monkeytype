@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { Accessor, Component, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { Checkbox } from "../../src/ts/components/ui/form/Checkbox";
 
@@ -20,11 +21,7 @@ function createFieldMock(options: { name?: string; value?: boolean }) {
 
 const meta = preview.meta({
   title: "UI/Form/Checkbox",
-  component: Checkbox as Component<{
-    field: Accessor<AnyFieldApi>;
-    label?: string;
-    disabled?: boolean;
-  }>,
+  component: Checkbox,
   parameters: {
     layout: "centered",
   },

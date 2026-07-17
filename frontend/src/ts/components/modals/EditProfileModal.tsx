@@ -8,14 +8,13 @@ import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
 import Ape from "../../ape";
-import { setSnapshot } from "../../db";
+import { getSnapshot, setSnapshot } from "../../db";
 import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { getSnapshot } from "../../states/snapshot";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -48,9 +47,9 @@ export function EditProfile() {
         bio: value.bio,
         keyboard: value.keyboard,
         socialProfiles: {
-          twitter: value.twitter || undefined,
-          github: value.github || undefined,
-          website: value.website || undefined,
+          twitter: value.twitter,
+          github: value.github,
+          website: value.website,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
       };

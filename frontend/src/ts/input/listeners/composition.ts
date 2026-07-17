@@ -2,12 +2,10 @@ import { getInputElement } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
-import * as TestInput from "../../test/test-input";
-import { getCurrentInput } from "../../test/test-input";
 import { setLastInsertCompositionTextData } from "../state";
-import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
+import { isTestActive, setCompositionText } from "../../states/test";
 
 const inputEl = getInputElement();
 
@@ -23,15 +21,13 @@ inputEl.addEventListener("compositionstart", (event) => {
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     TestLogic.startTest(now);
-  }
-  if (getCurrentInput().length === 0) {
-    TestInput.setBurstStart(now);
   }
 
   logTestEvent("composition", now, {
     event: "start",
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -43,13 +39,14 @@ inputEl.addEventListener("compositionupdate", (event) => {
 
   if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setData(event.data);
-  CompositionDisplay.update(event.data);
+  setCompositionText(event.data);
 
   const now = performance.now();
 
   logTestEvent("composition", now, {
     event: "update",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });
 
@@ -59,7 +56,7 @@ inputEl.addEventListener("compositionend", async (event) => {
   if (TestState.testRestarting || TestState.resultCalculating) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  CompositionDisplay.update("");
+  setCompositionText("");
   setLastInsertCompositionTextData("");
 
   const now = performance.now();
@@ -75,5 +72,6 @@ inputEl.addEventListener("compositionend", async (event) => {
   logTestEvent("composition", now, {
     event: "end",
     data: event.data,
+    wordIndex: TestState.activeWordIndex,
   });
 });

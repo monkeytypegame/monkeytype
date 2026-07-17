@@ -6,8 +6,8 @@ import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { SnapshotResult } from "../../../constants/default-snapshot";
-import * as EditResultTagsModal from "../../../modals/edit-result-tags";
 import { getFormatting } from "../../../states/core";
+import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
@@ -261,11 +261,11 @@ function getColumns<M extends Mode>({
                 );
                 return;
               }
-              EditResultTagsModal.show(
-                info.row.original._id,
-                info.getValue(),
-                "accountPage",
-              );
+
+              showEditResultTagsModal({
+                _id: info.row.original._id,
+                tags: info.getValue(),
+              });
             }}
           />
         );

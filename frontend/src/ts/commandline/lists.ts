@@ -12,23 +12,18 @@ import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
-import LoadChallengeCommands, {
-  update as updateLoadChallengeCommands,
-} from "./lists/load-challenge";
+import LoadChallengeCommands from "./lists/load-challenge";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as getErrorMessage from "../utils/error";
-import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import { showModal } from "../states/modals";
 import {
   showErrorNotification,
-  showSuccessNotification,
   clearAllNotifications,
+  showSuccessNotification,
 } from "../states/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as TestStats from "../test/test-stats";
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -40,22 +35,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { getAllTestEvents } from "../test/events/data";
-import * as TestWords from "../test/test-words";
-
-const challengesPromise = JSONData.getChallengeList();
-challengesPromise
-  .then((challenges) => {
-    updateLoadChallengeCommands(challenges);
-  })
-  .catch((e: unknown) => {
-    console.error(
-      getErrorMessage.createErrorMessage(
-        e,
-        "Failed to update challenges commands",
-      ),
-    );
-  });
+import { lastEventLog } from "../test/test-state";
 
 const adsCommands = buildCommands("ads");
 
@@ -186,7 +166,7 @@ export const commands: CommandsSubgroup = {
       "keymapLegendStyle",
       "keymapSize",
       "keymapLayout",
-      "keymapShowTopRow",
+      "keymapKeys",
     ),
 
     //theme
@@ -292,34 +272,16 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "copyResultStats",
-      display: "Copy result stats",
-      icon: "fa-cog",
-      visible: false,
-      exec: async (): Promise<void> => {
-        navigator.clipboard
-          .writeText(JSON.stringify(TestStats.getStats()))
-          .then(() => {
-            showSuccessNotification("Copied to clipboard");
-          })
-          .catch((e: unknown) => {
-            showErrorNotification("Failed to copy to clipboard", { error: e });
-          });
-      },
-    },
-    {
-      id: "copyResultData",
-      display: "Copy result data",
+      display: "Copy last event log (result data)",
       alias: "stats events",
       icon: "fa-cog",
       visible: false,
+      available: (): boolean => {
+        return lastEventLog !== null;
+      },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(
-            JSON.stringify({
-              events: getAllTestEvents(),
-              words: TestWords.words.list,
-            }),
-          )
+          .writeText(JSON.stringify(lastEventLog))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })
@@ -426,8 +388,6 @@ export function doesListExist(listName: string): boolean {
 export async function getList(
   listName: CommandlineListKey | ConfigKey,
 ): Promise<CommandsSubgroup> {
-  await Promise.allSettled([challengesPromise]);
-
   const subGroup = subgroupByConfigKey[listName];
   if (subGroup !== undefined) {
     return subGroup;
@@ -471,7 +431,6 @@ export function getTopOfStack(): CommandsSubgroup {
 
 let singleList: CommandsSubgroup | undefined;
 export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
-  await Promise.allSettled([challengesPromise]);
   const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);

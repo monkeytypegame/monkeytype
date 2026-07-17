@@ -17,6 +17,9 @@ import { qs, qsr } from "./utils/dom";
 import { createEffect } from "solid-js";
 import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
+import { getLanguage } from "./utils/json-data";
+import { replaceUnderscoresWithSpaces } from "./utils/strings";
+import { isTestActive } from "./states/test";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -29,7 +32,7 @@ export function previewFontFamily(font: FontName): void {
 }
 
 export async function applyFontFamily(): Promise<void> {
-  let font = Config.fontFamily.replace(/_/g, " ");
+  let font = replaceUnderscoresWithSpaces(Config.fontFamily);
 
   const localFont = await fileStorage.getFile("LocalFontFamilyFile");
   if (localFont === undefined) {
@@ -48,10 +51,19 @@ export async function applyFontFamily(): Promise<void> {
       }`);
   }
 
-  document.documentElement.style.setProperty(
-    "--font",
-    `"${font}", "Roboto Mono", "Vazirharf", monospace`,
-  );
+  const preferredFont = (await getLanguage(Config.language))?.preferredFont;
+
+  const fonts = [
+    `"${font}"`,
+    preferredFont !== undefined
+      ? `"${replaceUnderscoresWithSpaces(preferredFont)}"`
+      : undefined,
+    '"Roboto Mono"',
+    '"Vazirharf"',
+    "monospace",
+  ].filter((it) => it !== undefined);
+
+  document.documentElement.style.setProperty("--font", fonts.join(","));
 }
 
 export function clearFontPreview(): void {
@@ -94,7 +106,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestState.isActive) {
+    if (isTestActive()) {
       event.preventDefault();
       // Included for legacy support, e.g. Chrome/Edge < 119
       // oxlint-disable-next-line no-deprecated
@@ -135,7 +147,7 @@ createEffect(() => {
 });
 
 configEvent.subscribe(async ({ key }) => {
-  if (key === "fontFamily") {
+  if (key === "fontFamily" || key === "language") {
     await applyFontFamily();
   }
 });

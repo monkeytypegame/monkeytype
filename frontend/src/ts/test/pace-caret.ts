@@ -12,7 +12,12 @@ import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import {
+  getCurrentQuote,
+  isPaceRepeat,
+  isTestActive,
+  setPaceCaretWpm,
+} from "../states/test";
 
 type Settings = {
   wpm: number;
@@ -116,11 +121,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (
-    currentSettings === null ||
-    !TestState.isActive ||
-    TestState.resultVisible
-  ) {
+  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
     return;
   }
 
@@ -177,23 +178,26 @@ function incrementLetterIndex(): void {
   if (settings === null) return;
 
   try {
-    settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
+      // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+      TestWords.words.get(settings.currentWordIndex)!.text.length
     ) {
       //go to the next word
-      settings.currentLetterIndex = 0;
+      settings.currentLetterIndex = -1;
       settings.currentWordIndex++;
     }
+    settings.currentLetterIndex++;
+
     if (!Config.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
+          if (settings.currentLetterIndex <= -1) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
+              // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+              TestWords.words.get(settings.currentWordIndex - 1)!.text.length;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -203,7 +207,8 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
+            // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+            TestWords.words.get(settings.currentWordIndex)!.text.length + 1
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -230,7 +235,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -= currentWord.length + 1;
+      settings.correction -= currentWord.length;
     }
   } else {
     if (
@@ -239,7 +244,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
       !Config.blindMode
     ) {
       settings.wordsStatus[TestState.activeWordIndex] = true;
-      settings.correction += currentWord.length + 1;
+      settings.correction += currentWord.length;
     }
   }
 }
