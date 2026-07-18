@@ -72,10 +72,6 @@ import {
   getMissedWords,
   getWordBurstHistory,
 } from "./events/stats";
-import {
-  resetCurrentLiveStats,
-  updateLiveProgress,
-} from "../components/pages/test/live-stats/util";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1688,10 +1684,6 @@ function afterAnyTestInput(
     setCurrentLiveStats({ acc });
   }
 
-  if (Config.mode !== "time") {
-    updateLiveProgress(performance.now());
-  }
-
   if (Config.keymapMode === "next") {
     const keyToHighlight =
       TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
@@ -1817,7 +1809,6 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  updateLiveProgress(performance.now());
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
@@ -1825,7 +1816,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   Focus.set(false);
-  resetCurrentLiveStats();
+  setCurrentLiveStats({
+    wpm: undefined,
+    acc: undefined,
+    raw: undefined,
+    burst: undefined,
+    seconds: undefined,
+  });
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);

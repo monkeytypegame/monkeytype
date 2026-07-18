@@ -8,10 +8,8 @@ import {
   getCurrentQuote,
   getFocus,
   isTestActive,
-  setCurrentLiveStats,
 } from "../../../../states/test";
 import * as CustomText from "../../../../test/custom-text";
-import { getLiveCachedTestSeconds } from "../../../../test/events/live-cache";
 import * as TestWords from "../../../../test/test-words";
 import { secondsToString } from "../../../../utils/date-and-time";
 
@@ -95,17 +93,3 @@ export const isTimerFlashHidden = createMemo(() => {
   if (!isFlashStyle || !isTimeLimitedTest()) return false;
   return (getTestTimeLimit() - (currentLiveStats.seconds ?? 0)) % 15 !== 0;
 });
-
-export const resetCurrentLiveStats = (): void => {
-  setCurrentLiveStats({
-    wpm: undefined,
-    acc: undefined,
-    raw: undefined,
-    burst: undefined,
-    seconds: undefined,
-  });
-};
-
-export function updateLiveProgress(now: number): void {
-  setCurrentLiveStats({ seconds: getLiveCachedTestSeconds(now) });
-}

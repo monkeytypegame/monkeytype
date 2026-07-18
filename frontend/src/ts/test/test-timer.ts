@@ -35,7 +35,6 @@ import {
   isTestActive,
   setCurrentLiveStats,
 } from "../states/test";
-import { updateLiveProgress } from "../components/pages/test/live-stats/util";
 
 let emittedTicks = 0;
 let stopped = true;
@@ -316,8 +315,12 @@ function timerStep(now: number, catchingUp: boolean): void {
       premid(testTime);
     });
 
-    setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
-    updateLiveProgress(now);
+    setCurrentLiveStats({
+      wpm: wpmAndRaw.wpm,
+      acc,
+      raw: wpmAndRaw.raw,
+      seconds: getLiveCachedTestSeconds(now),
+    });
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
