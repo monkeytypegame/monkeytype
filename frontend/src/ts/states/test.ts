@@ -86,6 +86,19 @@ export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
+
+export const [
+  getActiveWordIndex,
+  {
+    increase: increaseActiveWordIndex,
+    decrease: decreaseActiveWordIndex,
+    reset: resetActiveWordIndex,
+  },
+] = createSignalWithSetters<number>(0)({
+  increase: (set) => set((n) => n + 1),
+  decrease: (set) => set((n) => n - 1),
+  reset: (set) => set(0),
+});
 export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   wpm?: number;
   acc?: number;

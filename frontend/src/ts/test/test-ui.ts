@@ -60,6 +60,7 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
+  getActiveWordIndex,
   getCurrentQuote,
   isTestActive,
   resetCurrentLiveStats,
@@ -142,7 +143,7 @@ export function getWordElement(index: number): ElementWithUtils | null {
 }
 
 export function getActiveWordElement(): ElementWithUtils | null {
-  return getWordElement(TestState.activeWordIndex);
+  return getWordElement(getActiveWordIndex());
 }
 
 export function updateActiveElement(
@@ -605,7 +606,7 @@ export async function centerActiveLine(): Promise<void> {
   const currentTop = activeWordEl.getOffsetTop();
 
   let previousLineTop = currentTop;
-  for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
+  for (let i = getActiveWordIndex() - 1; i >= 0; i--) {
     previousLineTop = getWordElement(i)?.getOffsetTop() ?? currentTop;
     if (previousLineTop < currentTop) {
       await lineJump(previousLineTop, true);
@@ -703,7 +704,7 @@ export function addWord(
 ): void {
   // if the current active word is the last word, we need to NOT use raf
   // because other ui parts depend on the word existing
-  if (TestState.activeWordIndex === wordIndex - 1) {
+  if (getActiveWordIndex() === wordIndex - 1) {
     wordsEl.appendHtml(buildWordHTML(word, wordIndex));
   } else {
     requestAnimationFrame(async () => {
@@ -1776,7 +1777,7 @@ export function afterTestTextInput(
 
   void updateWordLetters({
     input,
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
 
@@ -1786,7 +1787,7 @@ export function afterTestTextInput(
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
     input: getCurrentInput(),
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
   // correct needs to be true to get the normal click sound
@@ -1796,7 +1797,7 @@ export function afterTestCompositionUpdate(): void {
 export function afterTestDelete(): void {
   void updateWordLetters({
     input: getCurrentInput(),
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
   afterAnyTestInput("delete", null);
@@ -1814,16 +1815,16 @@ export function beforeTestWordChange(
   if (direction === "back") {
     void updateWordLetters({
       input: getCurrentInput(),
-      wordIndex: TestState.activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       compositionData: CompositionState.getData(),
     });
   }
 
   if (direction === "forward") {
     if (Config.blindMode) {
-      highlightAllLettersAsCorrect(TestState.activeWordIndex);
+      highlightAllLettersAsCorrect(getActiveWordIndex());
     } else if (correct === false) {
-      highlightBadWord(TestState.activeWordIndex);
+      highlightBadWord(getActiveWordIndex());
     }
   }
 }
@@ -1864,7 +1865,7 @@ export async function afterTestWordChange(
         const attr = child.getAttribute("data-wordindex");
         if (attr === null) continue;
         const wordIndex = parseInt(attr, 10);
-        if (wordIndex === TestState.activeWordIndex) {
+        if (wordIndex === getActiveWordIndex()) {
           deleteElements = true;
         }
       }
@@ -2052,7 +2053,7 @@ configEvent.subscribe(({ key, newValue }) => {
     if (getActivePage() === "test") {
       void updateWordLetters({
         input: getCurrentInput(),
-        wordIndex: TestState.activeWordIndex,
+        wordIndex: getActiveWordIndex(),
         compositionData: CompositionState.getData(),
       });
     }

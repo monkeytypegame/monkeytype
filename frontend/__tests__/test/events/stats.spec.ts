@@ -5,11 +5,12 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-state", () => ({
-  activeWordIndex: 0,
   bailedOut: false,
   resultCalculating: false,
   koreanStatus: false,
 }));
+
+const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
   Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
@@ -51,6 +52,7 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 
 vi.mock("../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
+  getActiveWordIndex: () => mockState.activeWordIndex,
 }));
 
 import {
@@ -90,7 +92,6 @@ import type {
 } from "../../../src/ts/test/events/types";
 import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
-import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
 
@@ -197,7 +198,7 @@ describe("stats.ts", () => {
     (Config as { funbox: string[] }).funbox = [];
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
-    (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+    mockState.activeWordIndex = 0;
     TestWords.reset();
     inputPerWord.clear();
   });
@@ -1152,7 +1153,7 @@ describe("stats.ts", () => {
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
       pushWords("hello");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       for (let i = 0; i < 5; i++) {
@@ -1173,7 +1174,7 @@ describe("stats.ts", () => {
 
     it("counts incorrect chars", () => {
       pushWords("ab");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1194,7 +1195,7 @@ describe("stats.ts", () => {
 
     it("counts extra chars", () => {
       pushWords("ab");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1219,7 +1220,7 @@ describe("stats.ts", () => {
 
     it("counts missed chars for completed non-last words", () => {
       pushWords("hello", "world");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hel" then space (incomplete first word)
@@ -1265,7 +1266,7 @@ describe("stats.ts", () => {
       // Japanese IME commits words with the ideographic space U+3000, while the
       // target word separator is a regular space — normalize so it still counts
       pushWords("しり", "かこ");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1305,7 +1306,7 @@ describe("stats.ts", () => {
   describe("getWpmHistory", () => {
     it("returns wpm at each timer boundary", () => {
       pushWords("hello");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hello" in first second — 5 correct word chars
@@ -1326,7 +1327,7 @@ describe("stats.ts", () => {
 
     it("returns cumulative wpm across boundaries", () => {
       pushWords("ab", "cd");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "ab " in first second — correct word
@@ -1371,7 +1372,7 @@ describe("stats.ts", () => {
     it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
       (Config as { funbox: string[] }).funbox = ["nospace"];
       pushWords("ab", "cd");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "ab" then "cd" with no space between (nospace mode)
@@ -1405,7 +1406,7 @@ describe("stats.ts", () => {
 
     it("counts multiline word as correct when target ends in newline", () => {
       pushWords("hello\n", "world");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hello\n"

@@ -12,7 +12,7 @@ import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import * as TestState from "../../test/test-state";
-import { activeWordIndex } from "../../test/test-state";
+import { getActiveWordIndex } from "../../states/test";
 import { getCurrentInput } from "../../test/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
@@ -125,7 +125,7 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"
   ) {
-    const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
+    const allWordsTyped = getActiveWordIndex() >= TestWords.words.length - 1;
     const inputPlusComposition =
       getCurrentInput() + (CompositionState.getData() ?? "");
     const inputPlusCompositionIsCorrect =

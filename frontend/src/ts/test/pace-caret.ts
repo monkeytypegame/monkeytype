@@ -13,6 +13,7 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  getActiveWordIndex,
   getCurrentQuote,
   isPaceRepeat,
   isTestActive,
@@ -231,19 +232,19 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === true &&
+      settings.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = undefined;
+      settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
+      settings.wordsStatus[getActiveWordIndex()] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = true;
+      settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
     }
   }

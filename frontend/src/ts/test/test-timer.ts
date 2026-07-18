@@ -14,7 +14,6 @@ import {
 } from "../states/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as TestState from "./test-state";
 import { timerEvent } from "../events/timer";
 import { highlight } from "../events/keymap";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -33,7 +32,11 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
-import { isTestActive, setCurrentLiveStats } from "../states/test";
+import {
+  getActiveWordIndex,
+  isTestActive,
+  setCurrentLiveStats,
+} from "../states/test";
 
 let emittedTicks = 0;
 let stopped = true;
@@ -207,7 +210,7 @@ function checkIfFailed(
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    TestState.activeWordIndex > 3
+    getActiveWordIndex() > 3
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();

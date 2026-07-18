@@ -2,12 +2,15 @@ import { Config } from "../config/store";
 import * as CustomText from "./custom-text";
 import * as DateTime from "../utils/date-and-time";
 import * as TestWords from "./test-words";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { applyReducedMotion } from "../utils/misc";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { animate } from "animejs";
-import { getCurrentQuote, isTestActive } from "../states/test";
+import {
+  getActiveWordIndex,
+  getCurrentQuote,
+  isTestActive,
+} from "../states/test";
 import { getLiveCachedTestSeconds } from "./events/live-cache";
 
 const barEl = document.querySelector("#barTimerProgress .bar") as HTMLElement;
@@ -106,21 +109,20 @@ export function instantHide(): void {
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
-    const currentSectionIndex = TestWords.words.get(
-      TestState.activeWordIndex,
-    )?.sectionIndex;
+    const currentSectionIndex =
+      TestWords.words.get(getActiveWordIndex())?.sectionIndex;
 
     if (currentSectionIndex === undefined) {
       return 0;
     }
     return currentSectionIndex - 1;
   } else {
-    return TestState.activeWordIndex;
+    return getActiveWordIndex();
   }
 }
 
 function setTimerHtmlToInputLength(el: HTMLElement, wrapInDiv: boolean): void {
-  let historyLength = `${TestState.activeWordIndex}`;
+  let historyLength = `${getActiveWordIndex()}`;
 
   if (wrapInDiv) {
     historyLength = `<div>${historyLength}</div>`;
@@ -213,9 +215,7 @@ export function update(): void {
         outof = getCurrentQuote()?.textSplit.length ?? 1;
       }
       if (Config.timerStyle === "bar") {
-        const percent = Math.floor(
-          ((TestState.activeWordIndex + 1) / outof) * 100,
-        );
+        const percent = Math.floor(((getActiveWordIndex() + 1) / outof) * 100);
 
         animate(barEl, {
           width: `${percent}vw`,
