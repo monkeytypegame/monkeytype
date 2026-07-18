@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "moduleResolution": "Bundler",
-    "module": "ES6",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "target": "ES2015",
-    "lib": ["es2019", "dom"]
+    "lib": ["es2019"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

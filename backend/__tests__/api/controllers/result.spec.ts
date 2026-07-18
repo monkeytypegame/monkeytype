@@ -12,6 +12,7 @@ import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
 import { omit } from "../../../src/utils/misc";
 import { CompletedEvent } from "@monkeytype/schemas/results";
+import * as ChallengeVerify from "@monkeytype/challenges/verify";
 
 const { mockApp, uid, mockAuth } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -591,6 +592,7 @@ describe("result controller test", () => {
     );
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
+    const challengeVerifyMock = vi.spyOn(ChallengeVerify, "verify");
 
     beforeEach(async () => {
       await enableResultsSaving(true);
@@ -607,6 +609,7 @@ describe("result controller test", () => {
         georgeAwardChallengeMock,
         resultAddMock,
         publicUpdateStatsMock,
+        challengeVerifyMock,
       ].forEach((it) => it.mockClear());
 
       userGetMock.mockResolvedValue({ name: "bob" } as any);
@@ -617,6 +620,7 @@ describe("result controller test", () => {
       georgeAwardChallengeMock.mockResolvedValue();
       resultAddMock.mockResolvedValue({ insertedId });
       userIncrementXpMock.mockResolvedValue();
+      challengeVerifyMock.mockReturnValue({ state: "success" } as any);
     });
 
     it("should add result", async () => {
@@ -764,6 +768,53 @@ describe("result controller test", () => {
 
       //THEN
       expect(userUpdateChallengeMock).toHaveBeenCalledWith(uid, "69");
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+    it("should fail when challenge verification fails", async () => {
+      //GIVEN
+      challengeVerifyMock.mockReturnValue({
+        state: "failed",
+        reason: "Challenge failed: WPM below 69",
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            challenge: "69",
+          }),
+        })
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("Challenge failed: WPM below 69");
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+
+    it("should fail when challenge verification has error", async () => {
+      //GIVEN
+      challengeVerifyMock.mockReturnValue({
+        state: "error",
+        errorMessage: "failed to verify challenge",
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            challenge: "69",
+          }),
+        })
+        .expect(500);
+
+      //THEN
+      expect(body.message).toEqual("failed to verify challenge");
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
       expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
     });
 

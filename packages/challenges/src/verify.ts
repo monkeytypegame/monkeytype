@@ -19,14 +19,15 @@ export function verify(
 
   const loadedChallenge = getChallenge(result.challenge);
 
-  if (
-    loadedChallenge === undefined ||
-    loadedChallenge.settings?.requirements === undefined
-  ) {
+  if (loadedChallenge === undefined) {
     return {
       state: "error",
-      errorMessage: "challenge unknown or missing settings",
+      errorMessage: "challenge unknown",
     };
+  }
+
+  if (loadedChallenge.settings?.requirements === undefined) {
+    return { state: "success", challenge: loadedChallenge };
   }
 
   try {
@@ -37,10 +38,6 @@ export function verify(
         state: "failed",
         reason: `Challenge failed: AFK time is greater than 10%`,
       };
-    }
-
-    if (loadedChallenge.settings?.requirements === undefined) {
-      return { state: "error", errorMessage: "challenge missing settings" };
     }
 
     let requirementsMet = true;

@@ -93,18 +93,15 @@ describe("verify", () => {
   });
 
   describe("missing settings", () => {
-    it("returns error when challenge has no settings", () => {
+    it("returns success when challenge has no settings", () => {
       const result = buildCompletedEvent({
         challenge: "ultimateMonkeyFlex",
       });
       const verification = verify(result);
-      expect(verification).toEqual({
-        state: "error",
-        errorMessage: "challenge unknown or missing settings",
-      });
+      expect(verification.state).toEqual("success");
     });
 
-    it("returns error when challenge has settings but no requirements", () => {
+    it("returns success when challenge has settings but no requirements", () => {
       // thumbWarrior has settings but no requirements field
       const result = buildCompletedEvent({
         challenge: "thumbWarrior",
@@ -112,10 +109,7 @@ describe("verify", () => {
         testDuration: 3600,
       });
       const verification = verify(result);
-      expect(verification).toEqual({
-        state: "error",
-        errorMessage: "challenge unknown or missing settings",
-      });
+      expect(verification.state).toEqual("success");
     });
   });
 
@@ -145,17 +139,6 @@ describe("verify", () => {
       const verification = verify(result) as VerifyFailed;
       expect(verification.state).toEqual("failed");
       expect(verification.reason).toContain("WPM not 69");
-    });
-
-    it("returns error for challenges with no settings", () => {
-      // 1000hours has no settings
-      const result = buildCompletedEvent({
-        challenge: "1000hours",
-        wpm: 100,
-        testDuration: 3600,
-      });
-      const verification = verify(result);
-      expect(verification.state).toBe("error");
     });
   });
 
@@ -480,19 +463,6 @@ describe("verify", () => {
       });
       const verification = verify(result);
       expect(verification.state).toBe("error");
-    });
-
-    it("returns error for challenges with no settings at all", () => {
-      const result = buildCompletedEvent({
-        challenge: "footBarbarian",
-        wpm: 100,
-        testDuration: 7200,
-      });
-      const verification = verify(result);
-      expect(verification).toEqual({
-        state: "error",
-        errorMessage: "challenge unknown or missing settings",
-      });
     });
   });
 
