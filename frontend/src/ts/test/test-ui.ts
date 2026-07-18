@@ -1689,7 +1689,7 @@ function afterAnyTestInput(
   }
 
   if (Config.mode !== "time") {
-    updateLiveProgress();
+    updateLiveProgress(performance.now());
   }
 
   if (Config.keymapMode === "next") {
@@ -1817,7 +1817,7 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  updateLiveProgress();
+  updateLiveProgress(performance.now());
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {

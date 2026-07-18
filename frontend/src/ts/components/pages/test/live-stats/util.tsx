@@ -1,17 +1,17 @@
 import { createMemo } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
-import * as Time from "../../../../legacy-states/time";
 import Format from "../../../../singletons/format";
 import {
   currentLiveStats,
+  getActiveWordIndex,
   getCurrentQuote,
   getFocus,
   isTestActive,
   setCurrentLiveStats,
 } from "../../../../states/test";
 import * as CustomText from "../../../../test/custom-text";
-import * as TestState from "../../../../test/test-state";
+import { getLiveCachedTestSeconds } from "../../../../test/events/live-cache";
 import * as TestWords from "../../../../test/test-words";
 import { secondsToString } from "../../../../utils/date-and-time";
 import {
@@ -38,12 +38,11 @@ export function getTestTimeLimit(): number {
 
 function getCurrentWordCount(): number {
   if (getConfig.mode === "custom" && CustomText.getLimitMode() === "section") {
-    const sectionIndex = TestWords.words.get(
-      TestState.activeWordIndex,
-    )?.sectionIndex;
+    const sectionIndex =
+      TestWords.words.get(getActiveWordIndex())?.sectionIndex;
     return sectionIndex === undefined ? 0 : sectionIndex - 1;
   }
-  return TestState.activeWordIndex;
+  return getActiveWordIndex();
 }
 
 function getWordsTotal(): number {
@@ -128,11 +127,11 @@ export const resetCurrentLiveStats = (): void => {
  * Deferred a frame because the input handlers advance activeWordIndex *after*
  * calling this — reading it synchronously would leave the counter a word behind.
  */
-export function updateLiveProgress(): void {
+export function updateLiveProgress(now: number): void {
   requestDebouncedAnimationFrame(LIVE_PROGRESS_FRAME, () => {
     setCurrentLiveStats({
-      seconds: Time.get(),
-      wordIndex: TestState.activeWordIndex,
+      seconds: getLiveCachedTestSeconds(now),
+      wordIndex: getActiveWordIndex(),
       wordCount: getCurrentWordCount(),
       wordsTotal: getWordsTotal(),
     });

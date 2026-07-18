@@ -317,7 +317,7 @@ function timerStep(now: number, catchingUp: boolean): void {
     });
 
     setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
-    updateLiveProgress();
+    updateLiveProgress(now);
 
     //logic
     if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
