@@ -1,3 +1,4 @@
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
 import { configMetadata } from "../../../config/metadata";
@@ -10,7 +11,6 @@ import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { getResultVisible, getFocus } from "../../../states/test";
 import { FaObject } from "../../../types/font-awesome";
-import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";

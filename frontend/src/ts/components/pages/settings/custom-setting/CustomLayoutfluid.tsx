@@ -1,11 +1,11 @@
 import { CustomLayoutFluid } from "@monkeytype/schemas/configs";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
-import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import SlimSelect from "../../../ui/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
