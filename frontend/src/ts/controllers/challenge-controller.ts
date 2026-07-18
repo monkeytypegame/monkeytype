@@ -50,7 +50,6 @@ export function verify(result: CompletedEvent): ChallengeName | null {
 
   //Config is not verified by the verifyChallenge
   if (verification.challenge.settings?.requirements?.config !== undefined) {
-    //TODO check config requirement
     const requirementValue =
       verification.challenge.settings.requirements.config;
     const failReasons: string[] = [];
