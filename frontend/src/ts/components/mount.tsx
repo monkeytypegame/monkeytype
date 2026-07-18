@@ -27,6 +27,7 @@ import { CompositionDisplay } from "./pages/test/CompositionDisplay";
 import { Keymap } from "./pages/test/Keymap";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { Monkey } from "./pages/test/Monkey";
+import { OutOfFocusWarning } from "./pages/test/OutOfFocusWarning";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
@@ -56,6 +57,7 @@ const components: Record<string, () => JSXElement> = {
   accountsettingspage: () => <AccountSettingsPage />,
   keymap: () => <Keymap />,
   monkey: () => <Monkey />,
+  outoffocuswarning: () => <OutOfFocusWarning />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
