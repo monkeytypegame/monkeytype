@@ -11,7 +11,10 @@ import {
   checkIfFailedDueToMinBurst,
   checkIfFinished,
 } from "../helpers/fail-or-finish";
-import { removeLanguageSize } from "../../utils/strings";
+import {
+  removeLanguageSize,
+  checkAccentOrderMismatch,
+} from "../../utils/strings";
 import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
@@ -121,16 +124,36 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   // input and target word
   const testInput = getCurrentInput();
-  const currentWord = TestWords.words.getCurrent()?.textWithCommit ?? "";
+  const currentWord = TestWords.words.getCurrent();
+  const wordText = currentWord?.text ?? "";
+  let wordTextWithCommit = currentWord?.textWithCommit ?? "";
 
   // if the character is visually equal, replace it with the target character
   // this ensures all future equivalence checks work correctly
   const normalizedData = normalizeDataAndUpdateInputIfNeeded(
     options.data,
     testInput,
-    currentWord,
+    wordTextWithCommit,
   );
   const data = normalizedData ?? options.data;
+
+  // if the input is committing to a pattern that is different from target word's pattern
+  // and those patterns are equivalent, replace target word's pattern with input's.
+  // changing target word here ensures the input is considered correct,
+  // and actually typed characters are highlighted in `updateWordLetters()`.
+  const pattern = checkAccentOrderMismatch(
+    testInput + data,
+    wordText,
+    Config.language,
+  );
+  if (pattern !== null) {
+    const changedWord = TestWords.words.changeText(
+      wordText.slice(0, pattern.patternStart) +
+        pattern.inputPattern +
+        wordText.slice(pattern.patternStart + pattern.inputPattern.length),
+    );
+    if (changedWord) wordTextWithCommit = changedWord.textWithCommit;
+  }
 
   // start if needed
   if (!isTestActive()) {
@@ -146,14 +169,14 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const commitCharacterType = getCommitCharacterType({
     data,
     inputValue: testInput,
-    targetWord: currentWord,
+    targetWord: wordTextWithCommit,
   });
 
   // is char correct
   const correct = isCharCorrect({
     data,
     inputValue: testInput,
-    targetWord: currentWord,
+    targetWord: wordTextWithCommit,
     correctShiftUsed,
   });
 
@@ -189,7 +212,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     shouldGoToNextWord({
       data,
       inputValue: testInput,
-      targetWord: currentWord,
+      targetWord: wordTextWithCommit,
       commitCharacterType,
     });
 
@@ -235,7 +258,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (goingToNextWord) {
     const result = await goToNextWord({
       correctInsert:
-        Config.mode === "zen" ? true : testInput + data === currentWord,
+        Config.mode === "zen" ? true : testInput + data === wordTextWithCommit,
       now,
     });
     lastBurst = result.lastBurst;
@@ -264,7 +287,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       checkIfFailedDueToDifficulty({
         data,
         testInput: testInput,
-        targetWord: currentWord,
+        targetWord: wordTextWithCommit,
         correct,
         commitCharacterType,
       })
@@ -274,7 +297,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       increasedWordIndex &&
       checkIfFailedDueToMinBurst({
         testInputWithData: testInput + data,
-        currentWord,
+        currentWord: wordTextWithCommit,
         lastBurst,
       })
     ) {
@@ -283,7 +306,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       checkIfFinished({
         goingToNextWord,
         testInputWithData: testInput + data,
-        currentWord,
+        currentWord: wordTextWithCommit,
         allWordsTyped: wordIndex >= TestWords.words.length - 1,
         allWordsGenerated: areAllWordsGenerated(),
       })

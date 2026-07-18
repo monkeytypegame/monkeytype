@@ -10,6 +10,8 @@ type Word = {
   sectionIndex: number;
 };
 
+type WordMinimal = Omit<Word, "textWithCommit" | "display">;
+
 const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
 
 class Words {
@@ -19,6 +21,18 @@ class Words {
   constructor() {
     this.list = [];
     this.length = 0;
+  }
+
+  private createFullWord(minimalWord: WordMinimal): Word {
+    return {
+      ...minimalWord,
+      textWithCommit: minimalWord.text + minimalWord.commit,
+      display:
+        minimalWord.text +
+        (commitCharsToDisplay.has(minimalWord.commit)
+          ? minimalWord.commit
+          : ""),
+    };
   }
 
   get(i?: undefined, raw?: boolean): Word[];
@@ -33,22 +47,26 @@ class Words {
       }
       if (raw) {
         const text = word.text.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-        return {
-          text,
-          textWithCommit: text + word.commit,
-          commit: word.commit,
-          display:
-            text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
-          sectionIndex: word.sectionIndex,
-        };
+        return this.createFullWord({ ...word, text });
       } else {
         return word;
       }
     }
   }
+
   getCurrent(): Word | undefined {
     return this.list[TestState.activeWordIndex];
   }
+
+  changeText(newText: string, wordIndex?: number): Word | null {
+    let word = this.list[wordIndex ?? TestState.activeWordIndex];
+    if (word === undefined) return null;
+
+    word = this.createFullWord({ ...word, text: newText });
+    this.list[wordIndex ?? TestState.activeWordIndex] = word;
+    return word;
+  }
+
   push(word: string, sectionIndex: number): Word {
     let commit: CommitChar = "";
     if (word.endsWith(" ")) {
@@ -58,13 +76,8 @@ class Words {
       commit = "\n";
       word = word.slice(0, -1);
     }
-    const wordObj = {
-      text: word,
-      textWithCommit: word + commit,
-      commit,
-      display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
-      sectionIndex,
-    };
+
+    const wordObj = this.createFullWord({ text: word, commit, sectionIndex });
     this.list.push(wordObj);
     this.length = this.list.length;
 
