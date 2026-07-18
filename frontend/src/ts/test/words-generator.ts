@@ -372,10 +372,10 @@ function applyFunboxesToWord(
   return word;
 }
 
-async function applyBritishEnglishToWord(
+function applyBritishEnglishToWord(
   word: string,
   previousWord: string | undefined,
-): Promise<string> {
+): string {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
   const currentQuote = getCurrentQuote();
@@ -387,7 +387,7 @@ async function applyBritishEnglishToWord(
     return word;
   }
 
-  return await BritishEnglish.replace(word, previousWord);
+  return BritishEnglish.replace(word, previousWord);
 }
 
 function applyLazyModeToWord(word: string, language: LanguageObject): string {
@@ -952,7 +952,7 @@ export async function getNextWord(
     );
   }
 
-  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+  randomWord = applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.numbers) {
     if (random() < 0.1) {

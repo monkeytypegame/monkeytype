@@ -11,6 +11,7 @@ import {
   Setter,
 } from "solid-js";
 
+import { Config } from "../../config/store";
 import { LanguageList } from "../../constants/languages";
 import { LayoutsList } from "../../constants/layouts";
 import { createDebouncedSignal } from "../../hooks/createDebouncedSignal";
@@ -20,6 +21,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
+import * as BritishEnglish from "../../test/british-english";
 import * as JSONData from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -122,9 +124,10 @@ type FilterFormValues = {
 
 type FilterResult = { words: string[] } | { error: string };
 
-function filterWordList(
+export function filterWordList(
   value: FilterFormValues,
   words: string[],
+  useBritishEnglish = false,
 ): FilterResult {
   const exactMatchOnly = value.exactMatch;
 
@@ -162,16 +165,19 @@ function filterWordList(
 
   const filteredWords: string[] = [];
   for (const word of words) {
-    const testincl = regincl.test(word);
+    const wordToTest = useBritishEnglish
+      ? BritishEnglish.replace(word, undefined)
+      : word;
+    const testincl = regincl.test(wordToTest);
     const testexcl =
-      exactMatchOnly || filterout === "" ? false : regexcl.test(word);
-    const testlit = exactMatchOnly ? true : reglit.test(word);
+      exactMatchOnly || filterout === "" ? false : regexcl.test(wordToTest);
+    const testlit = exactMatchOnly ? true : reglit.test(wordToTest);
     if (
       testincl &&
       !testexcl &&
       testlit &&
-      word.length <= max &&
-      word.length >= min
+      wordToTest.length <= max &&
+      wordToTest.length >= min
     ) {
       filteredWords.push(word);
     }
@@ -188,6 +194,9 @@ export function WordFilterModal(props: {
   const [loading, setLoading] = createSignal(false);
 
   let submitAction: "set" | "add" = "set";
+
+  const useBritishEnglish = () =>
+    Config.britishEnglish && Config.language.includes("english");
 
   const form = createForm(() => ({
     defaultValues: {
@@ -211,7 +220,11 @@ export function WordFilterModal(props: {
           return;
         }
 
-        const result = filterWordList(value, languageWordList.words);
+        const result = filterWordList(
+          value,
+          languageWordList.words,
+          useBritishEnglish(),
+        );
         if ("error" in result) {
           showNoticeNotification(result.error);
           return;
@@ -248,7 +261,7 @@ export function WordFilterModal(props: {
   const matchResult = createMemo<FilterResult | null>(() => {
     const words = languageWords();
     if (words === null || words === undefined) return null;
-    return filterWordList(debouncedValues(), words);
+    return filterWordList(debouncedValues(), words, useBritishEnglish());
   });
 
   const applyPreset = async () => {
