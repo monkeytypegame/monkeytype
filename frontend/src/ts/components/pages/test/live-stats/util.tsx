@@ -14,12 +14,6 @@ import * as CustomText from "../../../../test/custom-text";
 import { getLiveCachedTestSeconds } from "../../../../test/events/live-cache";
 import * as TestWords from "../../../../test/test-words";
 import { secondsToString } from "../../../../utils/date-and-time";
-import {
-  cancelPendingAnimationFrame,
-  requestDebouncedAnimationFrame,
-} from "../../../../utils/debounced-animation-frame";
-
-const LIVE_PROGRESS_FRAME = "live-progress.update";
 
 /** Whether this test counts down a time limit rather than a number of words. */
 export function isTimeLimitedTest(): boolean {
@@ -36,7 +30,12 @@ export function getTestTimeLimit(): number {
     : getConfig.time;
 }
 
-function getCurrentWordCount(): number {
+/**
+ * Words completed so far. Derived from the activeWordIndex signal, so it must be
+ * read inside a computation — never snapshotted into the store, since the input
+ * handlers advance the index *after* the live stat updates run.
+ */
+export function getCurrentWordCount(): number {
   if (getConfig.mode === "custom" && CustomText.getLimitMode() === "section") {
     const sectionIndex =
       TestWords.words.get(getActiveWordIndex())?.sectionIndex;
@@ -45,7 +44,7 @@ function getCurrentWordCount(): number {
   return getActiveWordIndex();
 }
 
-function getWordsTotal(): number {
+export function getWordsTotal(): number {
   if (getConfig.mode === "words") return getConfig.words;
   if (getConfig.mode === "custom") return CustomText.getLimitValue();
   if (getConfig.mode === "quote") {
@@ -72,23 +71,16 @@ export const getLiveBurstText = createMemo(() =>
 
 /** Countdown / word counter shown by the timer displays. */
 export const getTimerText = createMemo(() => {
-  const {
-    seconds = 0,
-    wordIndex = 0,
-    wordCount = 0,
-    wordsTotal,
-  } = currentLiveStats;
-
   if (isTimeLimitedTest()) {
     const limit = getTestTimeLimit();
+    const seconds = currentLiveStats.seconds ?? 0;
     return secondsToString(limit === 0 ? seconds : limit - seconds);
   }
-  if (
-    getConfig.mode === "zen" ||
-    wordsTotal === undefined ||
-    wordsTotal === 0
-  ) {
-    return `${wordIndex}`;
+  // read the signal first so the memo subscribes to it on every branch below
+  const wordCount = getCurrentWordCount();
+  const wordsTotal = getWordsTotal();
+  if (getConfig.mode === "zen" || wordsTotal === 0) {
+    return `${getActiveWordIndex()}`;
   }
   return `${wordCount}/${wordsTotal}`;
 });
@@ -105,35 +97,15 @@ export const isTimerFlashHidden = createMemo(() => {
 });
 
 export const resetCurrentLiveStats = (): void => {
-  // drop any in flight progress frame, it would repopulate the store after this
-  cancelPendingAnimationFrame(LIVE_PROGRESS_FRAME);
   setCurrentLiveStats({
     wpm: undefined,
     acc: undefined,
     raw: undefined,
     burst: undefined,
     seconds: undefined,
-    wordIndex: undefined,
-    wordCount: undefined,
-    wordsTotal: undefined,
   });
 };
 
-/**
- * Copies the test engine's progress (elapsed time, word position) into the store.
- * Time and activeWordIndex are plain vanilla values, so this has to be called
- * whenever they move: every timer tick and every input.
- *
- * Deferred a frame because the input handlers advance activeWordIndex *after*
- * calling this — reading it synchronously would leave the counter a word behind.
- */
 export function updateLiveProgress(now: number): void {
-  requestDebouncedAnimationFrame(LIVE_PROGRESS_FRAME, () => {
-    setCurrentLiveStats({
-      seconds: getLiveCachedTestSeconds(now),
-      wordIndex: getActiveWordIndex(),
-      wordCount: getCurrentWordCount(),
-      wordsTotal: getWordsTotal(),
-    });
-  });
+  setCurrentLiveStats({ seconds: getLiveCachedTestSeconds(now) });
 }

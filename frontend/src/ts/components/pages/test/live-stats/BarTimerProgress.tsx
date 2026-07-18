@@ -6,7 +6,13 @@ import { currentLiveStats } from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
 import { Anime } from "../../../common/anime";
 import { liveStatsBarColorClass } from "./styles";
-import { getTestTimeLimit, isTimeLimitedTest, showLiveStats } from "./util";
+import {
+  getCurrentWordCount,
+  getTestTimeLimit,
+  getWordsTotal,
+  isTimeLimitedTest,
+  showLiveStats,
+} from "./util";
 
 export function BarTimerProgress() {
   let barEl: HTMLElement | undefined;
@@ -23,12 +29,13 @@ export function BarTimerProgress() {
         ease: "linear",
       };
     }
-    const { wordIndex, wordsTotal } = currentLiveStats;
-    if (wordIndex === undefined || wordsTotal === undefined) {
+    const wordsTotal = getWordsTotal();
+    // no elapsed time means the test was reset, so snap back instead of animating
+    if (currentLiveStats.seconds === undefined || wordsTotal === 0) {
       return { width: "0vw", duration: 0 };
     }
     return {
-      width: `${Math.floor(((wordIndex + 1) / wordsTotal) * 100)}vw`,
+      width: `${Math.floor(((getCurrentWordCount() + 1) / wordsTotal) * 100)}vw`,
       duration: 250,
     };
   };

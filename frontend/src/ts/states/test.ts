@@ -112,9 +112,6 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   raw?: number;
   burst?: number;
   seconds?: number;
-  wordIndex?: number;
-  wordCount?: number;
-  wordsTotal?: number;
 }>({});
 
 createEffect(() => {
