@@ -12,7 +12,6 @@ import {
   checkIfFinished,
 } from "../helpers/fail-or-finish";
 import { removeLanguageSize } from "../../utils/strings";
-import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
 import { flash } from "../../events/keymap";
@@ -31,7 +30,7 @@ import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
-import { isTestActive } from "../../states/test";
+import { getActiveWordIndex, isTestActive } from "../../states/test";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -140,7 +139,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // helper consts
   const lastInMultiOrSingle =
     lastInMultiIndex === true || lastInMultiIndex === undefined;
-  const wordIndex = TestState.activeWordIndex;
+  const wordIndex = getActiveWordIndex();
   const correctShiftUsed =
     Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
   const commitCharacterType = getCommitCharacterType({

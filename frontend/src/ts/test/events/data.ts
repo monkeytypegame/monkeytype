@@ -20,17 +20,12 @@ import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
-import {
-  bailedOut,
-  koreanStatus,
-  activeWordIndex,
-  resultCalculating,
-} from "../test-state";
+import { bailedOut, koreanStatus, resultCalculating } from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import { getMode2 } from "../../utils/misc";
-import { getCurrentQuote } from "../../states/test";
+import { getActiveWordIndex, getCurrentQuote } from "../../states/test";
 import { isFunboxActiveWithProperty } from "../funbox/active";
 
 export function buildEventLog(): EventLog {
@@ -207,17 +202,19 @@ export function getCurrentInput(): string {
   if (last !== undefined) {
     const lastWordIndex = last.data.wordIndex;
     //just advanced to a new word - no input event for it yet
-    if (lastWordIndex + 1 === activeWordIndex) return "";
+    if (lastWordIndex + 1 === getActiveWordIndex()) return "";
     //last event is for the active word - return its snapshot
     if (
-      lastWordIndex === activeWordIndex &&
+      lastWordIndex === getActiveWordIndex() &&
       last.data.inputValue !== undefined
     ) {
       return last.data.inputValue;
     }
   }
 
-  return getInputFromDom(getEventsForWord(getAllTestEvents(), activeWordIndex));
+  return getInputFromDom(
+    getEventsForWord(getAllTestEvents(), getActiveWordIndex()),
+  );
 }
 
 export function getInputForWord(wordIndex: number): string {

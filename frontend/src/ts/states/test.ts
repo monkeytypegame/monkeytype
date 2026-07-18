@@ -87,6 +87,19 @@ export const [getLastSignedOutResult, setLastSignedOutResult] =
 
 export const [isTestActive, setTestActive] = createSignal(false);
 
+export const [
+  getActiveWordIndex,
+  {
+    increase: increaseActiveWordIndex,
+    decrease: decreaseActiveWordIndex,
+    reset: resetActiveWordIndex,
+  },
+] = createSignalWithSetters<number>(0)({
+  increase: (set) => set((n) => n + 1),
+  decrease: (set) => set((n) => n - 1),
+  reset: (set) => set(0),
+});
+
 /**
  * Live test stats, rendered by the Solid live stat displays (the mini and text
  * variants and the progress bar). The test engine is still vanilla, so it pushes

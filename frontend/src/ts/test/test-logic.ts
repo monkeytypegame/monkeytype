@@ -41,6 +41,8 @@ import {
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
+  getActiveWordIndex,
+  resetActiveWordIndex,
   setLastSignedOutResult,
   setResultVisible,
   setTestActive,
@@ -87,7 +89,6 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
@@ -138,7 +139,6 @@ export function startTest(now: number): boolean {
   }
 
   setTestActive(true);
-  Time.set(0);
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
@@ -388,7 +388,7 @@ async function init(): Promise<boolean> {
   }
 
   TestWords.words.reset();
-  TestState.setActiveWordIndex(0);
+  resetActiveWordIndex();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -593,7 +593,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(TestState.activeWordIndex + 1);
+    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
     return;
   }
 
@@ -607,7 +607,7 @@ export async function addWord(): Promise<void> {
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
-  if (TestWords.words.length - (TestState.activeWordIndex + 1) > bound) {
+  if (TestWords.words.length - (getActiveWordIndex() + 1) > bound) {
     console.debug("Not adding word, enough words already");
     return;
   }
@@ -617,7 +617,7 @@ export async function addWord(): Promise<void> {
   }
   const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
   if (sectionFunbox) {
-    if (TestWords.words.length - TestState.activeWordIndex < 20) {
+    if (TestWords.words.length - getActiveWordIndex() < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language,
       );

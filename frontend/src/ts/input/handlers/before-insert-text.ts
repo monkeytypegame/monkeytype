@@ -6,7 +6,7 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
-import { wordsHaveNewline } from "../../states/test";
+import { getActiveWordIndex, wordsHaveNewline } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
@@ -101,9 +101,7 @@ export function onBeforeInsertText(data: string): boolean {
     // because this check is expensive (causes layout reflows)
 
     // if there is pending word data, we need to account for that
-    const pendingWordData = TestUI.pendingWordData.get(
-      TestState.activeWordIndex,
-    );
+    const pendingWordData = TestUI.pendingWordData.get(getActiveWordIndex());
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
         (pendingWordData ?? inputValue) + data,

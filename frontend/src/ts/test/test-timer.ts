@@ -12,8 +12,6 @@ import {
 } from "../states/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as TestState from "./test-state";
-import * as Time from "../legacy-states/time";
 import { timerEvent } from "../events/timer";
 import { highlight } from "../events/keymap";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -27,13 +25,19 @@ import { roundTo2 } from "@monkeytype/util/numbers";
 import {
   getLiveCachedAccuracy,
   getLiveCachedTestDurationMs,
+  getLiveCachedTestSeconds,
+  getLiveCachedTimerStartMs,
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
-import { isTestActive, setCurrentLiveStats } from "../states/test";
+import {
+  getActiveWordIndex,
+  isTestActive,
+  setCurrentLiveStats,
+} from "../states/test";
 import { updateLiveProgress } from "../components/pages/test/live-stats/util";
 
-let timerStartMs = 0;
+let emittedTicks = 0;
 let stopped = true;
 const newTimer = createTimer({
   duration: 1000,
@@ -41,8 +45,14 @@ const newTimer = createTimer({
   onComplete: () => {
     // sync guard — finish() is async and isTestActive() flips behind an await
     if (stopped) return;
+
+    const timerStartMs = getLiveCachedTimerStartMs();
+    if (timerStartMs === null) {
+      throw new Error("Timer start ms not found in cache");
+    }
+
     const now = performance.now();
-    const expectedThisFireMs = timerStartMs + (Time.get() + 1) * 1000;
+    const expectedThisFireMs = timerStartMs + (emittedTicks + 1) * 1000;
     const drift = roundTo2(now - expectedThisFireMs);
 
     // animejs is rAF-quantized and can fire fractionally early — reschedule
@@ -60,16 +70,16 @@ const newTimer = createTimer({
     // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
     // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
     const ticksDue = Math.floor((now - timerStartMs) / 1000);
-    while (!stopped && Time.get() + 1 < ticksDue) {
+    while (!stopped && emittedTicks + 1 < ticksDue) {
       console.debug(
         "Catching up timer, missed tick at",
-        Time.get() + 1,
+        emittedTicks + 1,
         "seconds",
       );
       timerStep(now, true);
       logTestEvent("timer", now, {
         event: "step",
-        timer: Time.get(),
+        timer: emittedTicks,
         slowTimer: SlowTimer.get() ? true : undefined,
         catchup: true,
       });
@@ -81,7 +91,7 @@ const newTimer = createTimer({
       timerStep(now, false);
       logTestEvent("timer", now, {
         event: "step",
-        timer: Time.get(),
+        timer: emittedTicks,
         slowTimer: SlowTimer.get() ? true : undefined,
         drift,
       });
@@ -91,7 +101,7 @@ const newTimer = createTimer({
 
     // Anchor to the ideal grid relative to test start (not `now`) so a late
     // tick doesn't permanently offset every tick after it.
-    const expectedNextFireMs = timerStartMs + (Time.get() + 1) * 1000;
+    const expectedNextFireMs = timerStartMs + (emittedTicks + 1) * 1000;
 
     newTimer.duration = Math.max(0, expectedNextFireMs - now);
     newTimer.restart();
@@ -129,28 +139,28 @@ export function clear(logEnd = false, now = performance.now()): void {
   if (logEnd) {
     logTestEvent("timer", now, {
       event: "end",
-      timer: Time.get(),
+      timer: getLiveCachedTestSeconds(now),
       date: new Date().getTime(),
     });
   }
 }
 
-function premid(): void {
+function premid(testTime: number): void {
   if (timerDebug) console.time("premid");
   const premidSecondsLeft = document.querySelector("#premidSecondsLeft");
 
   if (premidSecondsLeft !== null) {
-    premidSecondsLeft.innerHTML = (Config.time - Time.get()).toString();
+    premidSecondsLeft.innerHTML = (Config.time - testTime).toString();
   }
   if (timerDebug) console.timeEnd("premid");
 }
 
-function layoutfluid(): void {
+function layoutfluid(time: number): void {
   if (timerDebug) console.time("layoutfluid");
+
   if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
     const layouts = Config.customLayoutfluid;
     const switchTime = Config.time / layouts.length;
-    const time = Time.get();
     const index = Math.floor(time / switchTime);
     const layout = layouts[index];
     const flooredSwitchTimes = [];
@@ -199,7 +209,7 @@ function checkIfFailed(
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    TestState.activeWordIndex > 3
+    getActiveWordIndex() > 3
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
@@ -218,8 +228,9 @@ function checkIfFailed(
   return false;
 }
 
-function checkIfTimeIsUp(): void {
+function checkIfTimeIsUp(testTime: number): void {
   if (timerDebug) console.time("times up check");
+
   let maxTime = undefined;
 
   if (Config.mode === "time") {
@@ -227,7 +238,7 @@ function checkIfTimeIsUp(): void {
   } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
     maxTime = CustomText.getLimitValue();
   }
-  if (maxTime !== undefined && maxTime !== 0 && Time.get() >= maxTime) {
+  if (maxTime !== undefined && maxTime !== 0 && testTime >= maxTime) {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
@@ -240,7 +251,7 @@ function checkIfTimeIsUp(): void {
   if (timerDebug) console.timeEnd("times up check");
 }
 
-function playTimeWarning(): void {
+function playTimeWarning(testTime: number): void {
   if (timerDebug) console.time("play timer warning");
 
   let maxTime = undefined;
@@ -253,7 +264,7 @@ function playTimeWarning(): void {
 
   if (
     maxTime !== undefined &&
-    Time.get() === maxTime - parseInt(Config.playTimeWarning, 10)
+    testTime === maxTime - parseInt(Config.playTimeWarning, 10)
   ) {
     void SoundController.playTimeWarning();
   }
@@ -271,14 +282,15 @@ export function getTimerStats(): TimerStats[] {
 function timerStep(now: number, catchingUp: boolean): void {
   if (timerDebug) console.time("timer step -----------------------------");
 
-  Time.increment();
+  emittedTicks++;
+  const testTime = emittedTicks;
 
   if (catchingUp) {
     // cheap per-tick side effects — must run for every missed tick during catch-up
     // so warnings/layout switches still fire on the correct seconds
-    if (Config.playTimeWarning !== "off") playTimeWarning();
-    layoutfluid();
-    checkIfTimeIsUp();
+    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
+    layoutfluid(testTime);
+    checkIfTimeIsUp(testTime);
   } else {
     //calc — only the final, real-time tick pays for these
     const eventLog = buildEventLog();
@@ -301,17 +313,17 @@ function timerStep(now: number, catchingUp: boolean): void {
 
     //ui updates
     requestDebouncedAnimationFrame("test-timer.timerStep", () => {
-      premid();
+      premid(testTime);
     });
 
     setCurrentLiveStats({ wpm: wpmAndRaw.wpm, acc, raw: wpmAndRaw.raw });
     updateLiveProgress();
 
     //logic
-    if (Config.playTimeWarning !== "off") playTimeWarning();
-    layoutfluid();
+    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
+    layoutfluid(testTime);
     const failed = checkIfFailed(wpmAndRaw, acc);
-    if (!failed) checkIfTimeIsUp();
+    if (!failed) checkIfTimeIsUp(testTime);
   }
 
   if (timerDebug) console.timeEnd("timer step -----------------------------");
@@ -353,6 +365,7 @@ function checkIfTimerIsSlow(drift: number): void {
 export async function start(now: number): Promise<void> {
   SlowTimer.clear();
   slowTimerCount = 0;
+  emittedTicks = 0;
   for (const id of slowTimerNotifIds) {
     removeNotification(id, "clear");
   }
@@ -363,12 +376,11 @@ export async function start(now: number): Promise<void> {
 
 async function _startNew(now: number): Promise<void> {
   stopped = false;
-  timerStartMs = now;
   newTimer.duration = 1000;
   newTimer.play();
   logTestEvent("timer", now, {
     event: "start",
-    timer: Time.get(),
+    timer: 0,
     date: new Date().getTime(),
   });
 }
@@ -378,7 +390,7 @@ async function _startOld(now: number): Promise<void> {
   expected = now + interval;
   logTestEvent("timer", now, {
     event: "start",
-    timer: Time.get(),
+    timer: 0,
     date: new Date().getTime(),
   });
   (function loop(): void {
@@ -403,7 +415,7 @@ async function _startOld(now: number): Promise<void> {
 
       logTestEvent("timer", now, {
         event: "step",
-        timer: Time.get(),
+        timer: getLiveCachedTestSeconds(now),
         drift: drift,
         slowTimer: SlowTimer.get() ? true : undefined,
       });

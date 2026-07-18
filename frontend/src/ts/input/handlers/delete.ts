@@ -6,13 +6,13 @@ import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
-import { activeWordIndex } from "../../test/test-state";
+import { getActiveWordIndex } from "../../states/test";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {
   const { realInputValue } = getInputElementValue();
 
   const inputBeforeDelete = getCurrentInput();
-  const activeWordIndexBeforeDelete = activeWordIndex;
+  const activeWordIndexBeforeDelete = getActiveWordIndex();
 
   const inputAfterDelete = getInputElementValue().inputValue;
 
@@ -44,7 +44,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     const postNavInputValue = getInputElementValue().inputValue;
     logTestEvent("input", now, {
       inputType: "deleteContentBackward",
-      wordIndex: activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       charIndex: postNavInputValue.length,
       inputValue: postNavInputValue,
     });
@@ -63,7 +63,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     const postNavInputValue = getInputElementValue().inputValue;
     logTestEvent("input", now, {
       inputType: inputType,
-      wordIndex: activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       charIndex: postNavInputValue.length,
       inputValue: postNavInputValue,
       ...(inputBeforeDelete !== "" ? { clearedNextWord: true } : {}),

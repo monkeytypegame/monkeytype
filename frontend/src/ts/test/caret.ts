@@ -1,6 +1,7 @@
 import { Config } from "../config/store";
 import { getCurrentInput } from "./events/data";
 import * as TestState from "../test/test-state";
+import { getActiveWordIndex } from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
@@ -32,7 +33,7 @@ export function resetPosition(): void {
 
 export function updatePosition(noAnim = false): void {
   caret.goTo({
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + CompositionState.getData().length,
     isLanguageRightToLeft: TestState.isLanguageRightToLeft,
     isDirectionReversed: TestState.isDirectionReversed,
