@@ -217,7 +217,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.assets-or-styles == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v6
         with:
