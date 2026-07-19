@@ -5,8 +5,10 @@ import Format from "../../../../singletons/format";
 import {
   currentLiveStats,
   getActiveWordIndex,
+  getBailedOut,
   getCurrentQuote,
   getFocus,
+  isResultCalculating,
   isTestActive,
 } from "../../../../states/test";
 import * as CustomText from "../../../../test/custom-text";
@@ -14,7 +16,7 @@ import * as TestWords from "../../../../test/test-words";
 import { secondsToString } from "../../../../utils/date-and-time";
 
 /** Whether this test counts down a time limit rather than a number of words. */
-export function isTimeLimitedTest(): boolean {
+function isTimeLimitedTest(): boolean {
   return (
     getConfig.mode === "time" ||
     (getConfig.mode === "custom" && CustomText.getLimitMode() === "time")
@@ -22,7 +24,7 @@ export function isTimeLimitedTest(): boolean {
 }
 
 /** Seconds the test counts down from. Only meaningful when {@link isTimeLimitedTest}. */
-export function getTestTimeLimit(): number {
+function getTestTimeLimit(): number {
   return getConfig.mode === "custom"
     ? CustomText.getLimitValue()
     : getConfig.time;
@@ -33,7 +35,7 @@ export function getTestTimeLimit(): number {
  * read inside a computation — never snapshotted into the store, since the input
  * handlers advance the index *after* the live stat updates run.
  */
-export function getCurrentWordCount(): number {
+function getCurrentWordCount(): number {
   if (getConfig.mode === "custom" && CustomText.getLimitMode() === "section") {
     const sectionIndex =
       TestWords.words.get(getActiveWordIndex())?.sectionIndex;
@@ -42,7 +44,7 @@ export function getCurrentWordCount(): number {
   return getActiveWordIndex();
 }
 
-export function getWordsTotal(): number {
+function getWordsTotal(): number {
   if (getConfig.mode === "words") return getConfig.words;
   if (getConfig.mode === "custom") return CustomText.getLimitValue();
   if (getConfig.mode === "quote") {
@@ -51,7 +53,38 @@ export function getWordsTotal(): number {
   return TestWords.words.length;
 }
 
-/** Live stats are only on screen while a test is running and the user is typing. */
+export function getBarTarget(): {
+  width: string;
+  duration: number;
+  ease?: string;
+} {
+  if (isTimeLimitedTest()) {
+    const { seconds } = currentLiveStats;
+    if (seconds === undefined) return { width: "100vw", duration: 0 };
+    return {
+      width: `${100 - ((seconds + 1) / getTestTimeLimit()) * 100}vw`,
+      duration: 1000,
+      ease: "linear",
+    };
+  }
+  const wordsTotal = getWordsTotal();
+  // no elapsed time means the test was reset, so snap back instead of animating
+  if (currentLiveStats.seconds === undefined || wordsTotal === 0) {
+    return { width: "0vw", duration: 0 };
+  }
+  // the active word index stops on the last word instead of going one past it,
+  // so the word count alone tops out at (n-1)/n — fill the bar on finish.
+  // isResultCalculating flips on the first line of finish(); getResultVisible
+  // would be a fade-out too late, since the bar outlives the words fading out.
+  if (isResultCalculating() && !getBailedOut()) {
+    return { width: "100vw", duration: 125 };
+  }
+  return {
+    width: `${Math.floor((getCurrentWordCount() / wordsTotal) * 100)}vw`,
+    duration: 250,
+  };
+}
+
 export const showLiveStats = createMemo(() => isTestActive() && getFocus());
 export const getLiveSpeedText = createMemo(() =>
   Format.typingSpeed(

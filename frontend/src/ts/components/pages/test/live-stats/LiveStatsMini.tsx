@@ -1,7 +1,6 @@
 import { getConfig } from "../../../../config/store";
 import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
-import { isTimerStyle, liveStatsColorClass } from "./styles";
 import {
   getLiveAccText,
   getLiveBurstText,
@@ -9,7 +8,8 @@ import {
   getTimerText,
   isTimerFlashHidden,
   showLiveStats,
-} from "./util";
+} from "./signals";
+import { isTimerStyle, liveStatsColorClass } from "./styles";
 
 export function LiveStatsMini() {
   const isTape = () => getConfig.tapeMode !== "off";

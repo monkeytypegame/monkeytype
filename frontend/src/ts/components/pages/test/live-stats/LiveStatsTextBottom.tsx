@@ -2,16 +2,16 @@ import { getConfig } from "../../../../config/store";
 import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
 import {
-  TEXT_DISPLAY_CLASS,
-  TEXT_WRAPPER_CLASS,
-  liveStatsColorClass,
-} from "./styles";
-import {
   getLiveAccText,
   getLiveBurstText,
   getLiveSpeedText,
   showLiveStats,
-} from "./util";
+} from "./signals";
+import {
+  TEXT_DISPLAY_CLASS,
+  TEXT_WRAPPER_CLASS,
+  liveStatsColorClass,
+} from "./styles";
 
 export function LiveStatsTextBottom() {
   return (

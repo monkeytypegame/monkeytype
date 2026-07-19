@@ -1,13 +1,13 @@
 import { getConfig } from "../../../../config/store";
 import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
+import { getTimerText, isTimerFlashHidden, showLiveStats } from "./signals";
 import {
   TEXT_DISPLAY_CLASS,
   TEXT_WRAPPER_CLASS,
   isTimerStyle,
   liveStatsColorClass,
 } from "./styles";
-import { getTimerText, isTimerFlashHidden, showLiveStats } from "./util";
 
 export function LiveStatsTextTop() {
   return (
