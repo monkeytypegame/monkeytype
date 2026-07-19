@@ -340,7 +340,6 @@ export function restart(options = {} as RestartOptions): void {
       setIsRepeated(options.withSameWordset ?? false);
       setIsPaceRepeat(repeatWithPace);
       TestInitFailed.hide();
-      TestState.setTestInitSuccess(true);
       const initResult = await init();
 
       if (!initResult) {
@@ -387,7 +386,6 @@ async function init(): Promise<boolean> {
     }
     TestInitFailed.show();
     TestState.setTestRestarting(false);
-    TestState.setTestInitSuccess(false);
     return false;
   }
 

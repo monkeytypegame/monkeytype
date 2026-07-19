@@ -3,7 +3,6 @@ import { EventLog } from "./events/types";
 
 export let selectedQuoteId =
   parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
-export let testInitSuccess = true;
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
@@ -22,10 +21,6 @@ export function setKoreanStatus(val: boolean): void {
 export function setSelectedQuoteId(id: number): void {
   selectedQuoteId = id;
   localStorage.setItem("selectedQuoteId", id.toString());
-}
-
-export function setTestInitSuccess(tf: boolean): void {
-  testInitSuccess = tf;
 }
 
 export function setIsLanguageRightToLeft(rtl: boolean): void {
