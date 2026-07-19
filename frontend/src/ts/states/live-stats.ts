@@ -61,7 +61,9 @@ export function getBarTarget(): {
   if (isTimeLimitedTest()) {
     const { seconds } = currentLiveStats;
     const limit = getTestTimeLimit();
-    if (seconds === undefined || limit === 0) return { width: "100vw", duration: 0 };
+    if (seconds === undefined || limit === 0) {
+      return { width: "100vw", duration: 0 };
+    }
     return {
       width: `${100 - ((seconds + 1) / limit) * 100}vw`,
       duration: 1000,
