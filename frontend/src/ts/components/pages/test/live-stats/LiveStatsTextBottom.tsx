@@ -1,12 +1,12 @@
 import { getConfig } from "../../../../config/store";
-import { cn } from "../../../../utils/cn";
-import { AnimeShow } from "../../../common/anime";
 import {
   getLiveAccText,
   getLiveBurstText,
   getLiveSpeedText,
   showLiveStats,
-} from "./signals";
+} from "../../../../states/live-stats";
+import { cn } from "../../../../utils/cn";
+import { AnimeShow } from "../../../common/anime";
 import {
   TEXT_DISPLAY_CLASS,
   TEXT_WRAPPER_CLASS,

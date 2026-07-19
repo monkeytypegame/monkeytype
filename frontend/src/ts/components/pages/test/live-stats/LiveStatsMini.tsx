@@ -1,6 +1,4 @@
 import { getConfig } from "../../../../config/store";
-import { cn } from "../../../../utils/cn";
-import { AnimeShow } from "../../../common/anime";
 import {
   getLiveAccText,
   getLiveBurstText,
@@ -8,7 +6,9 @@ import {
   getTimerText,
   isTimerFlashHidden,
   showLiveStats,
-} from "./signals";
+} from "../../../../states/live-stats";
+import { cn } from "../../../../utils/cn";
+import { AnimeShow } from "../../../common/anime";
 import { isTimerStyle, liveStatsColorClass } from "./styles";
 
 export function LiveStatsMini() {

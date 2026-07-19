@@ -1,7 +1,10 @@
 import { createMemo } from "solid-js";
 
-import { getConfig } from "../../../../config/store";
-import Format from "../../../../singletons/format";
+import { getConfig } from "../config/store";
+import Format from "../singletons/format";
+import * as CustomText from "../test/custom-text";
+import * as TestWords from "../test/test-words";
+import { secondsToString } from "../utils/date-and-time";
 import {
   currentLiveStats,
   getActiveWordIndex,
@@ -10,10 +13,7 @@ import {
   getFocus,
   isResultCalculating,
   isTestActive,
-} from "../../../../states/test";
-import * as CustomText from "../../../../test/custom-text";
-import * as TestWords from "../../../../test/test-words";
-import { secondsToString } from "../../../../utils/date-and-time";
+} from "./test";
 
 /** Whether this test counts down a time limit rather than a number of words. */
 function isTimeLimitedTest(): boolean {

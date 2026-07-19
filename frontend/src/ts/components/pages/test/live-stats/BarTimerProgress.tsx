@@ -2,9 +2,9 @@ import { animate } from "animejs";
 import { createEffect } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { getBarTarget, showLiveStats } from "../../../../states/live-stats";
 import { cn } from "../../../../utils/cn";
 import { Anime } from "../../../common/anime";
-import { getBarTarget, showLiveStats } from "./signals";
 import { liveStatsBarColorClass } from "./styles";
 
 export function BarTimerProgress() {

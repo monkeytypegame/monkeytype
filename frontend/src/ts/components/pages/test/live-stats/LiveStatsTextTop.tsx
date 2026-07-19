@@ -1,7 +1,11 @@
 import { getConfig } from "../../../../config/store";
+import {
+  getTimerText,
+  isTimerFlashHidden,
+  showLiveStats,
+} from "../../../../states/live-stats";
 import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
-import { getTimerText, isTimerFlashHidden, showLiveStats } from "./signals";
 import {
   TEXT_DISPLAY_CLASS,
   TEXT_WRAPPER_CLASS,
