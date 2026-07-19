@@ -169,7 +169,7 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
-export function restart(options = {} as RestartOptions): void {
+export async function restart(options = {} as RestartOptions): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
     practiseMissed: false,
@@ -180,8 +180,6 @@ export function restart(options = {} as RestartOptions): void {
 
   options = { ...defaultOptions, ...options };
   Strings.clearWordDirectionCache();
-
-  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -303,71 +301,49 @@ export function restart(options = {} as RestartOptions): void {
     ConnectionState.showOfflineBanner();
   }
 
-  // TestUI.beforeTestRestart();
-
-  let source: "testPage" | "resultPage";
-  let el: HTMLElement;
-  if (TestState.resultVisible) {
-    //results are being displayed
-    el = document.querySelector("#result") as HTMLElement;
-    source = "resultPage";
-  } else {
-    //words are being displayed
-    el = document.querySelector("#typingTest") as HTMLElement;
-    source = "testPage";
-  }
+  const source: "testPage" | "resultPage" = TestState.resultVisible
+    ? "resultPage"
+    : "testPage";
 
   TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
-  animate(el, {
-    opacity: 0,
-    duration: animationTime,
-    onComplete: async () => {
-      setResultVisible(false);
-      setInputElementValue("");
+  const noAnim = options.noAnim ?? false;
+  await TestUI.fadeOutForRestart(source, noAnim);
 
-      await Funbox.rememberSettings();
+  setResultVisible(false);
+  setInputElementValue("");
 
-      testReinitCount = 0;
-      failReason = "";
+  await Funbox.rememberSettings();
 
-      let repeatWithPace = false;
-      if (Config.repeatedPace && options.withSameWordset) {
-        repeatWithPace = true;
-      }
+  testReinitCount = 0;
+  failReason = "";
 
-      setIsRepeated(options.withSameWordset ?? false);
-      setIsPaceRepeat(repeatWithPace);
-      TestInitFailed.hide();
-      const initResult = await init();
+  let repeatWithPace = false;
+  if (Config.repeatedPace && options.withSameWordset) {
+    repeatWithPace = true;
+  }
 
-      if (!initResult) {
-        TestState.setTestRestarting(false);
-        return;
-      }
+  setIsRepeated(options.withSameWordset ?? false);
+  setIsPaceRepeat(repeatWithPace);
+  TestInitFailed.hide();
+  const initResult = await init();
 
-      await PaceCaret.init();
+  if (!initResult) {
+    TestState.setTestRestarting(false);
+    return;
+  }
 
-      for (const fb of getActiveFunboxesWithFunction("restart")) {
-        fb.functions.restart();
-      }
+  await PaceCaret.init();
 
-      TestUI.onTestRestart(source);
+  for (const fb of getActiveFunboxesWithFunction("restart")) {
+    fb.functions.restart();
+  }
 
-      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
-      animate(typingTestEl, {
-        opacity: [0, 1],
-        onBegin: () => {
-          typingTestEl.classList.remove("hidden");
-        },
-        duration: animationTime,
-        onComplete: () => {
-          TestState.setTestRestarting(false);
-        },
-      });
-    },
-  });
+  TestUI.onTestRestart(source);
+
+  await TestUI.fadeInAfterRestart(noAnim);
+  TestState.setTestRestarting(false);
 }
 
 let lastInitError: Error | null = null;
@@ -629,7 +605,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
         );
         toggleFunbox(sectionFunbox.name);
-        restart();
+        void restart();
         return;
       }
 
@@ -1281,7 +1257,7 @@ const debouncedZipfCheck = debounce(250, async () => {
 });
 
 qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
-  restart();
+  void restart();
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
@@ -1291,11 +1267,11 @@ qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    restart({
+    void restart({
       withSameWordset: true,
     });
   } else {
-    restart();
+    void restart();
   }
 });
 
@@ -1306,7 +1282,7 @@ qs(".pageTest")?.onChild(
 );
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
-  restart();
+  void restart();
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
@@ -1314,7 +1290,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  restart({
+  void restart({
     withSameWordset: true,
   });
 });
@@ -1326,7 +1302,7 @@ window.addEventListener("focus", () => {
     !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    restart({
+    void restart({
       noAnim: true,
     });
   }
@@ -1340,13 +1316,13 @@ document.addEventListener("visibilitychange", () => {
     !TestState.resultVisible &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    restart({
+    void restart({
       noAnim: true,
     });
   }
 });
 
-restartTestEvent.subscribe((event) => restart(event));
+restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
@@ -1362,11 +1338,11 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      restart();
+      void restart();
     }
-    if (key === "difficulty" && !nosave) restart();
+    if (key === "difficulty" && !nosave) void restart();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      restart();
+      void restart();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {

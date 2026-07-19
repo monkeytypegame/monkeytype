@@ -21,7 +21,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "missed",
       exec: (): void => {
         PractiseWords.init("words", false);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -31,7 +31,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "slow",
       exec: (): void => {
         PractiseWords.init("off", true);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -41,7 +41,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "both",
       exec: (): void => {
         PractiseWords.init("words", true);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -70,7 +70,7 @@ const commands: Command[] = [
       return TestState.resultVisible;
     },
     exec: (): void => {
-      TestLogic.restart();
+      void TestLogic.restart();
     },
   },
   {
@@ -78,7 +78,7 @@ const commands: Command[] = [
     display: "Repeat test",
     icon: "fa-sync-alt",
     exec: (): void => {
-      TestLogic.restart({
+      void TestLogic.restart({
         withSameWordset: true,
       });
     },

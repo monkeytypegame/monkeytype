@@ -1818,6 +1818,32 @@ export function onTestStart(): void {
   });
 }
 
+function getRestartAnimationTime(noAnim: boolean): number {
+  return noAnim ? 0 : Misc.applyReducedMotion(125);
+}
+
+export async function fadeOutForRestart(
+  source: "testPage" | "resultPage",
+  noAnim: boolean,
+): Promise<void> {
+  const selector = source === "resultPage" ? "#result" : "#typingTest";
+  await qs(selector)?.promiseAnimate({
+    opacity: 0,
+    duration: getRestartAnimationTime(noAnim),
+  });
+}
+
+export async function fadeInAfterRestart(noAnim: boolean): Promise<void> {
+  const typingTestEl = qs("#typingTest");
+  await typingTestEl?.promiseAnimate({
+    opacity: [0, 1],
+    onBegin: () => {
+      typingTestEl.removeClass("hidden");
+    },
+    duration: getRestartAnimationTime(noAnim),
+  });
+}
+
 export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#result")?.hide();
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
