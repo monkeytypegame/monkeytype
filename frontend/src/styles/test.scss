@@ -44,35 +44,6 @@
   }
 }
 
-#barTimerProgress {
-  opacity: 0;
-  position: relative;
-  z-index: 99;
-  .bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 0.5rem;
-    background: black;
-    /*   background: #0f0f0f; */
-    /*   background: red; */
-    // transition: 1s linear;
-    z-index: -1;
-  }
-  &.timerMain .bar {
-    background: var(--main-color);
-  }
-
-  &.timerSub .bar {
-    background: var(--sub-color);
-  }
-
-  &.timerText .bar {
-    background: var(--text-color);
-  }
-}
-
 .pageTest {
   position: relative;
 
@@ -111,81 +82,6 @@
     .fas {
       margin-left: 0.33em;
     }
-  }
-
-  #liveStatsTextTop {
-    pointer-events: none;
-    color: black;
-    z-index: -1;
-    text-align: center;
-    position: relative;
-    display: grid;
-    font-size: 10rem;
-
-    opacity: 0;
-    width: 0;
-    height: 0;
-    justify-self: center;
-
-    transition: none;
-
-    .wrapper {
-      position: absolute;
-      bottom: 1.25rem;
-      display: flex;
-      justify-self: center;
-      gap: 0.5ch;
-      line-height: 1;
-    }
-  }
-
-  #liveStatsTextBottom {
-    font-size: 10rem;
-    color: black;
-    width: 100%;
-    text-align: center;
-    z-index: -1;
-    height: 0;
-    position: relative;
-    display: grid;
-    margin: 0 auto;
-    pointer-events: none;
-
-    .wrapper {
-      position: absolute;
-      top: 1rem;
-      display: flex;
-      justify-self: center;
-      gap: 0.5ch;
-      line-height: 1;
-    }
-  }
-
-  #liveStatsTextBottom.timerMain,
-  #liveStatsTextTop.timerMain {
-    color: var(--main-color);
-  }
-
-  #barTimerProgress.timerMain .bar {
-    background: var(--main-color);
-  }
-
-  #liveStatsTextBottom.timerSub,
-  #liveStatsTextTop.timerSub {
-    color: var(--sub-color);
-  }
-
-  #barTimerProgress.timerSub .bar {
-    background: var(--sub-color);
-  }
-
-  #liveStatsTextBottom.timerText,
-  #liveStatsTextTop.timerText {
-    color: var(--text-color);
-  }
-
-  #barTimerProgress.timerText .bar {
-    background: var(--text-color);
   }
 }
 
@@ -1341,72 +1237,6 @@
     user-select: none;
     pointer-events: none;
     opacity: 0;
-  }
-
-  #liveStatsMini {
-    width: 0;
-    justify-content: start;
-    height: 0;
-    margin-left: 0.25em;
-    display: flex;
-    margin-top: -1.25em;
-    color: black;
-
-    div {
-      font-size: 1em;
-      line-height: 1em;
-    }
-
-    .time,
-    .speed,
-    .acc {
-      margin-right: 0.5em;
-    }
-
-    .time,
-    .speed,
-    .acc,
-    .burst {
-      opacity: 0;
-    }
-
-    &.timerMain {
-      color: var(--main-color);
-    }
-
-    &.timerSub {
-      color: var(--sub-color);
-    }
-
-    &.timerText {
-      color: var(--text-color);
-    }
-
-    &.size125 {
-      margin-top: -1.75rem;
-      font-size: 1.25rem;
-      line-height: 1.25rem;
-    }
-    &.size15 {
-      margin-top: -2rem;
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-    }
-    &.size2 {
-      margin-top: -2.5rem;
-      font-size: 2rem;
-      line-height: 2rem;
-    }
-    &.size3 {
-      margin-top: -3.5rem;
-      font-size: 3rem;
-      line-height: 3rem;
-    }
-    &.size4 {
-      margin-top: -4.5rem;
-      font-size: 4rem;
-      line-height: 4rem;
-    }
   }
 }
 

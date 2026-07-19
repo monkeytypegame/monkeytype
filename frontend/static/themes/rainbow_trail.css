@@ -63,12 +63,6 @@ footer button:hover > .relative > i,
   transition: all 1s ease;
 }
 
-#liveStatsTextTop.timerMain,
-#liveStatsTextBottom.timerMain,
-#liveStatsMini.timerMain {
-  animation: rainbow-infinite-loop 30s linear infinite;
-}
-
 #words {
   --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
   --incorrect-letter-animation: rainbow-error-infinite-loop 1s alternate

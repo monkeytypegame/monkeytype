@@ -57,7 +57,11 @@ import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { getCurrentQuote, isTestInvalid } from "../states/test";
+import {
+  getCurrentQuote,
+  isTestInvalid,
+  setResultCalculating,
+} from "../states/test";
 import {
   getAccuracy,
   getRawHistory,
@@ -1100,7 +1104,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestState.setResultCalculating(false);
+  setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }

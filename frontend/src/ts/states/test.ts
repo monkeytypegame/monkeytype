@@ -7,7 +7,7 @@ import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { getData as getCustomTextData } from "../test/custom-text";
+import * as CustomText from "../test/custom-text";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
@@ -24,6 +24,11 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from the first line of TestLogic.finish() until the result is built, so
+// it covers the words fade-out that getResultVisible() is still false during.
+export const [isResultCalculating, setResultCalculating] = createSignal(false);
+// Set when the user bails out of a test early; reset by TestLogic.restart().
+export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 // #words is still vanilla so it's blurred imperatively (see test/test-ui);
 // the Solid-owned composition display + OutOfFocusWarning read this signal.
@@ -99,13 +104,20 @@ export const [
   decrease: (set) => set((n) => n - 1),
   reset: (set) => set(0),
 });
+
+/**
+ * Live test stats, rendered by the Solid live stat displays (the mini and text
+ * variants and the progress bar). The test engine is still vanilla, so it pushes
+ * plain numbers in here as it goes; everything shown on screen is derived below.
+ * `undefined` means "no data yet" and is what the displays fall back to defaults on.
+ */
 export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   wpm?: number;
   acc?: number;
   raw?: number;
+  burst?: number;
+  seconds?: number;
 }>({});
-export const resetCurrentLiveStats = (): void =>
-  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
 
 createEffect(() => {
   getActivePage(); // depend on active page
@@ -114,7 +126,7 @@ createEffect(() => {
       getConfig.mode,
       getConfig.words,
       getConfig.time,
-      getCustomTextData(),
+      CustomText.getData(),
       getCustomTextIndicator()?.isLong ?? false,
     ),
   );

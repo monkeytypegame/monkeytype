@@ -5,8 +5,6 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-state", () => ({
-  bailedOut: false,
-  resultCalculating: false,
   koreanStatus: false,
 }));
 
@@ -53,6 +51,8 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 vi.mock("../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
   getActiveWordIndex: () => mockState.activeWordIndex,
+  isResultCalculating: () => false,
+  getBailedOut: () => false,
 }));
 
 import {

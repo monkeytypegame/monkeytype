@@ -5,7 +5,11 @@ import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
-import { getActiveWordIndex, isTestActive } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isResultCalculating,
+  isTestActive,
+} from "../../states/test";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!isTestActive()) {
@@ -20,7 +24,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.resultCalculating) {
+  if (isResultCalculating()) {
     event.preventDefault();
     return;
   }
