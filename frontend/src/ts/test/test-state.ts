@@ -1,7 +1,6 @@
 import { promiseWithResolvers } from "../utils/misc";
 import { EventLog } from "./events/types";
 
-export let bailedOut = false;
 export let selectedQuoteId =
   parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
 export let testInitSuccess = true;
@@ -9,7 +8,6 @@ export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
 export let resultVisible = false;
-export let resultCalculating = false;
 export let koreanStatus = false;
 export let lastEventLog: EventLog | null = null;
 
@@ -19,10 +17,6 @@ export function setLastEventLog(log: EventLog): void {
 
 export function setKoreanStatus(val: boolean): void {
   koreanStatus = val;
-}
-
-export function setBailedOut(tf: boolean): void {
-  bailedOut = tf;
 }
 
 export function setSelectedQuoteId(id: number): void {
@@ -61,8 +55,4 @@ export function setTestRestarting(val: boolean): void {
 
 export function setResultVisible(val: boolean): void {
   resultVisible = val;
-}
-
-export function setResultCalculating(val: boolean): void {
-  resultCalculating = val;
 }

@@ -6,7 +6,11 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
-import { getActiveWordIndex, wordsHaveNewline } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isResultCalculating,
+  wordsHaveNewline,
+} from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
@@ -26,7 +30,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (TestState.resultCalculating) {
+  if (isResultCalculating()) {
     return true;
   }
 

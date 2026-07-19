@@ -1809,6 +1809,13 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
+  setCurrentLiveStats({
+    wpm: 0,
+    acc: 100,
+    raw: 0,
+    burst: 0,
+    seconds: 0,
+  });
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {

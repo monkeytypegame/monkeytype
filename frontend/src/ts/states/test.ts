@@ -24,6 +24,11 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from the first line of TestLogic.finish() until the result is built, so
+// it covers the words fade-out that getResultVisible() is still false during.
+export const [isResultCalculating, setResultCalculating] = createSignal(false);
+// Set when the user bails out of a test early; reset by TestLogic.restart().
+export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 // #words is still vanilla so it's blurred imperatively (see test/test-ui);
 // the Solid-owned composition display + OutOfFocusWarning read this signal.
