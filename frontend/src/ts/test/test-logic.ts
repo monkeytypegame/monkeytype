@@ -43,7 +43,11 @@ import {
   setLastResult,
   getActiveWordIndex,
   resetActiveWordIndex,
+  getBailedOut,
+  isResultCalculating,
+  setBailedOut,
   setLastSignedOutResult,
+  setResultCalculating,
   setResultVisible,
   setTestActive,
   setWordsHaveNewline,
@@ -191,7 +195,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (TestState.testRestarting || TestState.resultCalculating) {
+  if (TestState.testRestarting || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
@@ -287,7 +291,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   setTestActive(false);
   Replay.pauseReplay();
-  TestState.setBailedOut(false);
+  setBailedOut(false);
   Caret.resetPosition();
   PaceCaret.reset();
   TestState.setKoreanStatus(false);
@@ -805,7 +809,7 @@ function buildCompletedEvent(
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config, currentQuote),
-    bailedOut: TestState.bailedOut,
+    bailedOut: getBailedOut(),
     funbox: Config.funbox,
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
@@ -833,7 +837,7 @@ function buildCompletedEvent(
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!isTestActive()) return;
-  TestState.setResultCalculating(true);
+  setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
 
@@ -908,7 +912,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (TestState.bailedOut) afkDetected = false;
+  if (getBailedOut()) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -917,7 +921,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !TestState.bailedOut &&
+    !getBailedOut() &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
@@ -1012,7 +1016,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      TestState.bailedOut ||
+      getBailedOut() ||
       getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
@@ -1283,7 +1287,7 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
-  if (TestState.resultCalculating) return;
+  if (isResultCalculating()) return;
   if (
     isTestActive() &&
     Config.repeatQuotes === "typing" &&
