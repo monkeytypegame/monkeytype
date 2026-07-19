@@ -15,6 +15,7 @@ import {
 import {
   getActiveWordIndex,
   getCurrentQuote,
+  getResultVisible,
   isPaceRepeat,
   isTestActive,
   setPaceCaretWpm,
@@ -122,7 +123,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
+  if (currentSettings === null || !isTestActive() || getResultVisible()) {
     return;
   }
 

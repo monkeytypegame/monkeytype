@@ -12,6 +12,7 @@ import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
+import { getResultVisible } from "../../states/test";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -67,7 +68,7 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     icon: "fa-chevron-right",
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
     exec: (): void => {
       void TestLogic.restart();
@@ -83,7 +84,7 @@ const commands: Command[] = [
       });
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -92,7 +93,7 @@ const commands: Command[] = [
     icon: "fa-exclamation-triangle",
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -103,7 +104,7 @@ const commands: Command[] = [
       void TestUI.toggleResultWords();
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -117,7 +118,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -131,7 +132,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -164,7 +165,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
 ];

@@ -59,6 +59,7 @@ import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import {
   getCurrentQuote,
+  getResultVisible,
   isTestInvalid,
   setResultCalculating,
 } from "../states/test";
@@ -81,7 +82,7 @@ let quoteId = "";
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
   showSuccessNotification(useSmoothedBurst ? "on" : "off");
-  if (TestState.resultVisible) {
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -91,7 +92,7 @@ export function toggleSmoothedBurst(): void {
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
   showSuccessNotification(useFakeChartData ? "on" : "off");
-  if (TestState.resultVisible) {
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -1386,7 +1387,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
 configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
-    TestState.resultVisible
+    getResultVisible()
   ) {
     resultAnnotation = [];
 

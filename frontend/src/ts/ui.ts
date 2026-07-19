@@ -1,7 +1,6 @@
 import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
-import * as TestState from "./test/test-state";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
@@ -19,7 +18,7 @@ import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
-import { isTestActive } from "./states/test";
+import { getResultVisible, isTestActive } from "./states/test";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -116,7 +115,7 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 const debouncedEvent = debounce(250, () => {
-  if (getActivePage() === "test" && !TestState.resultVisible) {
+  if (getActivePage() === "test" && !getResultVisible()) {
     if (Config.tapeMode !== "off") {
       void TestUI.scrollTape();
     } else {

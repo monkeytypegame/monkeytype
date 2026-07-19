@@ -6,7 +6,6 @@ export let selectedQuoteId =
 export let isLanguageRightToLeft = false;
 export let isDirectionReversed = false;
 export let testRestarting = false;
-export let resultVisible = false;
 export let koreanStatus = false;
 export let lastEventLog: EventLog | null = null;
 
@@ -46,8 +45,4 @@ export function setTestRestarting(val: boolean): void {
   } else {
     restartingResolve();
   }
-}
-
-export function setResultVisible(val: boolean): void {
-  resultVisible = val;
 }

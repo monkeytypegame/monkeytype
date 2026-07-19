@@ -64,6 +64,7 @@ import {
   wordsHaveNewline,
   setTestFocusState,
   showOutOfFocusWarning,
+  getResultVisible,
 } from "../states/test";
 import { createEffect } from "solid-js";
 import {
@@ -318,7 +319,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     getActivePage() !== "test" ||
-    TestState.resultVisible ||
+    getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
     return;
@@ -614,7 +615,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (getActivePage() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -952,7 +953,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (getActivePage() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1400,7 +1401,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
     wordEl.addEventListener("mouseenter", (e) => {
       // if (noHover) return;
-      if (!TestState.resultVisible) return;
+      if (!getResultVisible()) return;
       const input =
         (e.currentTarget as HTMLElement).getAttribute("input") ?? "";
       const burst = parseInt(
@@ -1439,7 +1440,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export async function toggleResultWords(noAnimation = false): Promise<void> {
-  if (!TestState.resultVisible) return;
+  if (!getResultVisible()) return;
   ResultWordHighlight.updateToggleWordsHistoryTime();
 
   if (resultWordsHistoryEl.isHidden()) {
@@ -1948,7 +1949,7 @@ addEventListener("resize", () => {
 
 qs("#wordsInput")?.on("focus", (e) => {
   if (!isInputElementFocused()) return;
-  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
+  if (!getResultVisible() && Config.showOutOfFocusWarning) {
     setTestFocusState("focused");
   }
   Caret.show(true);
@@ -1996,7 +1997,7 @@ configEvent.subscribe(({ key, newValue }) => {
   ) {
     void updateHintsPositionDebounced();
   }
-  if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
+  if ((key === "theme" || key === "burstHeatmap") && getResultVisible()) {
     void applyBurstHeatmap();
   }
   if (key === "highlightMode") {

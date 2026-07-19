@@ -53,6 +53,7 @@ import {
   setWordsHaveNewline,
   setWordsHaveNumbers,
   setWordsHaveTab,
+  getResultVisible,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -301,11 +302,10 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     ConnectionState.showOfflineBanner();
   }
 
-  const source: "testPage" | "resultPage" = TestState.resultVisible
+  const source: "testPage" | "resultPage" = getResultVisible()
     ? "resultPage"
     : "testPage";
 
-  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
   const noAnim = options.noAnim ?? false;
@@ -835,7 +835,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   forceReleaseAllKeys();
 
   setResultVisible(true);
-  TestState.setResultVisible(true);
   setTestActive(false);
 
   cleanupData();
@@ -1153,7 +1152,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (TestState.resultVisible) {
+    if (getResultVisible()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }
@@ -1299,7 +1298,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
 window.addEventListener("focus", () => {
   if (
     !isTestActive() &&
-    !TestState.resultVisible &&
+    !getResultVisible() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     void restart({
@@ -1313,7 +1312,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
   if (
     !isTestActive() &&
-    !TestState.resultVisible &&
+    !getResultVisible() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     void restart({
