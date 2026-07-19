@@ -9,7 +9,7 @@ import {
 } from "../../../../states/live-stats";
 import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
-import { isTimerStyle, liveStatsColorClass } from "./styles";
+import { liveStatsTextColor } from "./styles";
 
 export function LiveStatsMini() {
   const isTape = () => getConfig.tapeMode !== "off";
@@ -19,7 +19,7 @@ export function LiveStatsMini() {
       class={cn("mt-[-1.25em] flex h-0 w-0 gap-[0.5em] leading-[1em]", {
         "justify-center": isTape(),
         "justify-start": !isTape(),
-        ...liveStatsColorClass(),
+        ...liveStatsTextColor(),
       })}
       style={{
         "font-size": `${getConfig.fontSize}rem`,
@@ -27,7 +27,12 @@ export function LiveStatsMini() {
         "margin-left": isTape() ? `${getConfig.tapeMargin}%` : "0.25em",
       }}
     >
-      <AnimeShow when={showLiveStats() && isTimerStyle("mini", "flash_mini")}>
+      <AnimeShow
+        when={
+          showLiveStats() &&
+          ["mini", "flash_mini"].includes(getConfig.timerStyle)
+        }
+      >
         {/* the fade animates the wrapper opacity, so the flash gate lives on the child */}
         <div style={{ opacity: isTimerFlashHidden() ? 0 : 1 }}>
           {getTimerText()}

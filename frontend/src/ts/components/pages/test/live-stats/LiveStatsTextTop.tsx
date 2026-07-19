@@ -9,8 +9,7 @@ import { AnimeShow } from "../../../common/anime";
 import {
   TEXT_DISPLAY_CLASS,
   TEXT_WRAPPER_CLASS,
-  isTimerStyle,
-  liveStatsColorClass,
+  liveStatsTextColor,
 } from "./styles";
 
 export function LiveStatsTextTop() {
@@ -19,14 +18,19 @@ export function LiveStatsTextTop() {
       class={cn(
         TEXT_DISPLAY_CLASS,
         "w-0 justify-self-center",
-        liveStatsColorClass(),
+        liveStatsTextColor(),
       )}
       style={{
         opacity: getConfig.timerOpacity,
       }}
     >
       <div class={cn(TEXT_WRAPPER_CLASS, "bottom-5")}>
-        <AnimeShow when={showLiveStats() && isTimerStyle("text", "flash_text")}>
+        <AnimeShow
+          when={
+            showLiveStats() &&
+            ["text", "flash_text"].includes(getConfig.timerStyle)
+          }
+        >
           {/* flash_text blanks the text instead of fading it, unlike flash_mini */}
           <div>{isTimerFlashHidden() ? "" : getTimerText()}</div>
         </AnimeShow>

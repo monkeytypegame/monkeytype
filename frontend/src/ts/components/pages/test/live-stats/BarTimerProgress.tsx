@@ -5,7 +5,7 @@ import { getConfig } from "../../../../config/store";
 import { getBarTarget, showLiveStats } from "../../../../states/live-stats";
 import { cn } from "../../../../utils/cn";
 import { Anime } from "../../../common/anime";
-import { liveStatsBarColorClass } from "./styles";
+import { liveStatsBgColor } from "./styles";
 
 export function BarTimerProgress() {
   let barEl: HTMLElement | undefined;
@@ -31,7 +31,7 @@ export function BarTimerProgress() {
           ref={(el) => (barEl = el)}
           class={cn(
             "fixed top-0 left-0 z-[-1] h-2 w-screen",
-            liveStatsBarColorClass(),
+            liveStatsBgColor(),
           )}
         ></div>
       </Anime>

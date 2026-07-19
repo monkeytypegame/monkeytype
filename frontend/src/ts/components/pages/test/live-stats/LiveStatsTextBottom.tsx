@@ -10,13 +10,13 @@ import { AnimeShow } from "../../../common/anime";
 import {
   TEXT_DISPLAY_CLASS,
   TEXT_WRAPPER_CLASS,
-  liveStatsColorClass,
+  liveStatsTextColor,
 } from "./styles";
 
 export function LiveStatsTextBottom() {
   return (
     <div
-      class={cn(TEXT_DISPLAY_CLASS, "mx-auto w-full", liveStatsColorClass())}
+      class={cn(TEXT_DISPLAY_CLASS, "mx-auto w-full", liveStatsTextColor())}
       style={{
         opacity: getConfig.timerOpacity,
       }}
