@@ -73,6 +73,8 @@ import {
   getMissedWords,
   getWordBurstHistory,
 } from "./events/stats";
+import * as ConnectionState from "../legacy-states/connection";
+import * as TestInitFailed from "../elements/test-init-failed";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1863,6 +1865,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();
+  Caret.hide();
+  Caret.resetPosition();
+  TestInitFailed.hide();
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
 
   if (source === "resultPage") {
     if (Config.randomTheme !== "off") {

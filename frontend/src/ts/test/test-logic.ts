@@ -13,7 +13,6 @@ import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
-import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
 import * as Replay from "./replay-ui";
@@ -65,7 +64,6 @@ import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
-import * as ConnectionState from "../legacy-states/connection";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
@@ -287,20 +285,14 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   TestTimer.clear();
   setIsTestInvalid(false);
   resetModifierState();
-  Caret.hide();
   setTestActive(false);
   Replay.pauseReplay();
   setBailedOut(false);
-  Caret.resetPosition();
   PaceCaret.reset();
   TestState.setKoreanStatus(false);
   clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
-
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
 
   const source: "testPage" | "resultPage" = getResultVisible()
     ? "resultPage"
@@ -326,7 +318,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   setIsRepeated(options.withSameWordset ?? false);
   setIsPaceRepeat(repeatWithPace);
-  TestInitFailed.hide();
   const initResult = await init();
 
   if (!initResult) {
