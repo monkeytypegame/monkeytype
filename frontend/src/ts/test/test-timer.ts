@@ -19,7 +19,6 @@ import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { createTimer } from "animejs";
-import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import {
@@ -142,16 +141,6 @@ export function clear(logEnd = false, now = performance.now()): void {
       date: new Date().getTime(),
     });
   }
-}
-
-function premid(testTime: number): void {
-  if (timerDebug) console.time("premid");
-  const premidSecondsLeft = document.querySelector("#premidSecondsLeft");
-
-  if (premidSecondsLeft !== null) {
-    premidSecondsLeft.innerHTML = (Config.time - testTime).toString();
-  }
-  if (timerDebug) console.timeEnd("premid");
 }
 
 function layoutfluid(time: number): void {
@@ -309,11 +298,6 @@ function timerStep(now: number, catchingUp: boolean): void {
         ),
       ),
     };
-
-    //ui updates
-    requestDebouncedAnimationFrame("test-timer.timerStep", () => {
-      premid(testTime);
-    });
 
     setCurrentLiveStats({
       wpm: wpmAndRaw.wpm,

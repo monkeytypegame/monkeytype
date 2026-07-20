@@ -56,7 +56,6 @@ import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
   getActiveWordIndex,
-  getCurrentQuote,
   isTestActive,
   setCompositionText,
   setCurrentLiveStats,
@@ -1156,20 +1155,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   }
 }
 
-export function updatePremid(): void {
-  const mode2 = Misc.getMode2(Config, getCurrentQuote());
-  let fbtext = "";
-  if (Config.funbox.length > 0) {
-    fbtext = ` ${Config.funbox.join(" ")}`;
-  }
-  qs(".pageTest #premidTestMode")?.setText(
-    `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
-      Config.language,
-    )}${fbtext}`,
-  );
-  qs(".pageTest #premidSecondsLeft")?.setText(`${Config.time}`);
-}
-
 function removeTestElements(lastElementIndexToRemove: number): void {
   const wordsChildren = wordsEl.getChildren();
 
@@ -1860,7 +1845,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     seconds: undefined,
   });
   LayoutfluidFunboxTimer.instantHide();
-  updatePremid();
   focusWords(true);
   ResultWordHighlight.destroy();
   MonkeyPower.reset();

@@ -32,6 +32,7 @@ import { LiveStatsTextTop } from "./pages/test/live-stats/LiveStatsTextTop";
 import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
 import { Monkey } from "./pages/test/Monkey";
 import { OutOfFocusWarning } from "./pages/test/OutOfFocusWarning";
+import { Premid } from "./pages/test/Premid";
 import { TestConfig } from "./pages/test/TestConfig";
 import { Popups } from "./popups/Popups";
 
@@ -66,6 +67,7 @@ const components: Record<string, () => JSXElement> = {
   livestatstexttop: () => <LiveStatsTextTop />,
   livestatstextbottom: () => <LiveStatsTextBottom />,
   bartimerprogress: () => <BarTimerProgress />,
+  premid: () => <Premid />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
