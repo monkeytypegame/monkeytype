@@ -205,7 +205,7 @@ function getBuildOptions({
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
-    rollupOptions: {
+    rolldownOptions: {
       input: {
         monkeytype: path.resolve(__dirname, "src/index.html"),
         email: path.resolve(__dirname, "src/email-handler.html"),
@@ -275,7 +275,7 @@ function getBuildOptions({
         },
       },
     },
-  } as BuildEnvironmentOptions;
+  };
 }
 
 function getCssOptions({

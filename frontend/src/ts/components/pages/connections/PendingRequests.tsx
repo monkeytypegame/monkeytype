@@ -31,7 +31,7 @@ export function PendingRequests() {
             <DataTable
               id="pendingConnections"
               columns={columns()}
-              data={[...pendingQueryData()]}
+              data={pendingQueryData()}
             />
           </Show>
         )}

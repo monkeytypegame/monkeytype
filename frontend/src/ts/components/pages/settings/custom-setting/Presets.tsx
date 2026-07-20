@@ -9,13 +9,13 @@ import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { Button } from "../../../common/Button";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function Presets(): JSXElement {
   const presets = usePresetsLiveQuery();
 
   return (
-    <Setting
+    <SearchableSetting
       key="presets"
       title="presets"
       description="Create settings presets that can be applied with one click. Remember to edit your preset if you make any changes - they don't save on their own."

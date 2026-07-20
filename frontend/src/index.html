@@ -9,11 +9,7 @@
 
     <!-- theme component adds to the head element, don't move to head.html -->
     <mount data-component="theme"></mount>
-    <div id="barTimerProgress" class="timerMain">
-      <div class="opacityWrapper" style="opacity: 0">
-        <div class="bar"></div>
-      </div>
-    </div>
+    <mount data-component="bartimerprogress"></mount>
     <mount data-component="modals" id="solidmodals"></mount>
     <mount data-component="popups" id="solidpopups"></mount>
     <div id="popups">
@@ -61,7 +57,9 @@
           <mount data-component="notfoundpage"></mount>
         </div>
 
-        <load src="html/pages/account-settings.html" />
+        <div class="page pageAccountSettings hidden" id="pageAccountSettings">
+          <mount data-component="accountsettingspage"></mount>
+        </div>
 
         <div class="page pageFriends hidden" id="pageFriends">
           <mount data-component="friendspage"></mount>
