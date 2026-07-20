@@ -136,6 +136,7 @@ export async function resetUser(uid: string): Promise<void> {
         timeTyping: 0,
         lbMemory: {},
         bananas: 0,
+
         profileDetails: {
           bio: "",
           keyboard: "",
@@ -151,13 +152,13 @@ export async function resetUser(uid: string): Promise<void> {
           maxLength: 0,
         },
         testActivity: {},
-        challenges: {},
       },
       $unset: {
         discordAvatar: "",
         discordId: "",
         lbOptOut: "",
         inbox: "",
+        challenges: "",
       },
     },
   );
@@ -622,9 +623,8 @@ export async function linkDiscord(
   if (discordAvatar !== undefined && discordAvatar !== null) {
     updates.discordAvatar = discordAvatar;
   }
-  if (challenges !== undefined) {
-    updates.challenges = challenges;
-  }
+
+  updates.challenges = challenges ?? {};
 
   await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }

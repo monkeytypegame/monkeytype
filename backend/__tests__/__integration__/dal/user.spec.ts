@@ -757,6 +757,8 @@ describe("UserDal", () => {
 
     await UserDAL.updateChallenge(uid, "69");
 
+    await UserDAL.linkDiscord(uid, "testId", "testAvatar");
+
     await UserDAL.updateProfile(
       uid,
       {
@@ -795,7 +797,10 @@ describe("UserDal", () => {
       lastResultTimestamp: 0,
       maxLength: 0,
     });
-    expect(resetUser.challenges).toStrictEqual({});
+
+    expect(resetUser.discordAvatar).toBeUndefined();
+    expect(resetUser.discordId).toBeUndefined();
+    expect(resetUser.challenges).toBeUndefined();
   });
 
   it("getInbox should return the user's inbox", async () => {
@@ -1309,6 +1314,22 @@ describe("UserDal", () => {
       const read = await UserDAL.getUser(uid, "read");
       expect(read.discordId).toEqual("newId");
       expect(read.discordAvatar).toEqual("discordAvatar");
+    });
+
+    it("should update without challenges", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+      //creates without challenges
+      expect((await UserDAL.getUser(uid, "read")).challenges).toBeUndefined();
+
+      //when
+      await UserDAL.linkDiscord(uid, "newId", undefined, undefined);
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.challenges).toEqual({});
     });
   });
   describe("unlinkDiscord", () => {
