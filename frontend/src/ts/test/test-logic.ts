@@ -178,7 +178,8 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   };
 
   options = { ...defaultOptions, ...options };
-  Strings.clearWordDirectionCache();
+
+  // guards
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -226,6 +227,8 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
         return;
       }
     }
+
+    // close out the abandoned test
 
     if (isRepeated()) {
       options.withSameWordset = true;
@@ -281,6 +284,8 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     PractiseWords.resetBefore();
   }
 
+  // reset state
+
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
@@ -293,14 +298,24 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
+  Strings.clearWordDirectionCache();
+  testReinitCount = 0;
+  failReason = "";
+
+  const repeatWithPace =
+    (Config.repeatedPace && options.withSameWordset) ?? false;
+  setIsRepeated(options.withSameWordset ?? false);
+  setIsPaceRepeat(repeatWithPace);
+
+  // restart
 
   const source: "testPage" | "resultPage" = getResultVisible()
     ? "resultPage"
     : "testPage";
+  const noAnim = options.noAnim ?? false;
 
   TestState.setTestRestarting(true);
 
-  const noAnim = options.noAnim ?? false;
   await TestUI.fadeOutForRestart(source, noAnim);
 
   setResultVisible(false);
@@ -308,16 +323,6 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   await Funbox.rememberSettings();
 
-  testReinitCount = 0;
-  failReason = "";
-
-  let repeatWithPace = false;
-  if (Config.repeatedPace && options.withSameWordset) {
-    repeatWithPace = true;
-  }
-
-  setIsRepeated(options.withSameWordset ?? false);
-  setIsPaceRepeat(repeatWithPace);
   const initResult = await init();
 
   if (!initResult) {
