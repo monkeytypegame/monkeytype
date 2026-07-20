@@ -30,7 +30,8 @@ const percentageFormat = (percentage: number) => {
     alwaysShowDecimalPlaces: true,
     typingSpeedUnit: "wpm",
   });
-  return format.percentage(percentage);
+
+  return format.percentage(percentage < 0.01 ? 0.01 : percentage);
 };
 export function Challenges(props: {
   isAccountPage?: true;
@@ -161,7 +162,7 @@ function ChallengeItem(props: {
       : "",
   );
 
-  const isRare = () => getChallengeUnlockPercentage(props.challenge) < 0.5;
+  const isRare = () => getChallengeUnlockPercentage(props.challenge) < 0.1;
 
   return (
     <Balloon
@@ -337,7 +338,7 @@ function ChallengesList(props: {
 }
 
 function getChallengeUnlockPercentage(challenge: Challenge): number {
-  return (challenge.initialCount / 20_000) * 100;
+  return (challenge.initialCount / 63_000) * 100;
 }
 function printChallengeUnlockPercentage(challenge: Challenge): string {
   return `${percentageFormat(getChallengeUnlockPercentage(challenge))} of players have completed this challenge`;
