@@ -37,6 +37,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { lastAuthenticationState } from "./legacy-states/last-authentication";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
@@ -229,6 +230,15 @@ export async function onAuthStateChanged(
     } else {
       setUserId(null);
       DB.setSnapshot(undefined);
+
+      const lastState = lastAuthenticationState.get();
+      if (lastState.isLoggedIn && Date.now() - lastState.timestamp > 5_000) {
+        showNoticeNotification("You got logged out.");
+        lastAuthenticationState.set({
+          isLoggedIn: false,
+          timestamp: Date.now(),
+        });
+      }
     }
   }
 
