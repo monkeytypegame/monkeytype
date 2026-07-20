@@ -34,18 +34,23 @@ export function clearActive(): void {
   }
 }
 
-export function verify(result: CompletedEvent): ChallengeName | null {
-  if (result.challenge === undefined) return null;
+export function verify(result: CompletedEvent): void {
+  const loadedChallenge = getLoadedChallenge();
+  if (loadedChallenge === undefined || loadedChallenge === null) return;
+
+  result.challenge = loadedChallenge.name;
   const verification = verifyChallenge(result);
 
   if (verification.state === "error") {
     showNoticeNotification(
       `${verification.errorMessage}: ${(verification.error as Error)?.message}`,
     );
-    return null;
+    delete result.challenge;
+    return;
   } else if (verification.state === "failed") {
     showNoticeNotification(verification.reason);
-    return null;
+    delete result.challenge;
+    return;
   }
 
   //Config is not verified by the verifyChallenge
@@ -63,7 +68,8 @@ export function verify(result: CompletedEvent): ChallengeName | null {
       showNoticeNotification(
         `${result.challenge} challenge failed: ${failReasons.join(", ")}`,
       );
-      return null;
+      delete result.challenge;
+      return;
     }
   }
 
@@ -76,7 +82,6 @@ export function verify(result: CompletedEvent): ChallengeName | null {
   showSuccessNotification(
     `${verification.challenge.display} challenge passed!`,
   );
-  return verification.challenge.name;
 }
 
 export async function setup(challengeName: ChallengeName): Promise<boolean> {

@@ -1073,8 +1073,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       resetIncompleteTests();
 
       if (!completedEvent.bailedOut) {
-        const challenge = ChallengeContoller.verify(completedEvent);
-        if (challenge !== null) completedEvent.challenge = challenge;
+        ChallengeContoller.verify(completedEvent);
       }
 
       completedEvent.uid = user.uid;
