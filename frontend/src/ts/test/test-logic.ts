@@ -13,7 +13,6 @@ import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
-import * as Caret from "./caret";
 import * as TestTimer from "./test-timer";
 import * as DB from "../db";
 import * as Replay from "./replay-ui";
@@ -41,12 +40,19 @@ import {
   setIsRepeated,
   setIsTestInvalid,
   setLastResult,
+  getActiveWordIndex,
+  resetActiveWordIndex,
+  getBailedOut,
+  isResultCalculating,
+  setBailedOut,
   setLastSignedOutResult,
+  setResultCalculating,
   setResultVisible,
   setTestActive,
   setWordsHaveNewline,
   setWordsHaveNumbers,
   setWordsHaveTab,
+  getResultVisible,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -58,7 +64,6 @@ import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
-import * as ConnectionState from "../legacy-states/connection";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
@@ -87,7 +92,6 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { animate } from "animejs";
 import { setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import * as Time from "../legacy-states/time";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
@@ -138,7 +142,6 @@ export function startTest(now: number): boolean {
   }
 
   setTestActive(true);
-  Time.set(0);
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
@@ -165,7 +168,7 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
-export function restart(options = {} as RestartOptions): void {
+export async function restart(options = {} as RestartOptions): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
     practiseMissed: false,
@@ -175,9 +178,8 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
-  Strings.clearWordDirectionCache();
 
-  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
+  // guards
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -191,7 +193,7 @@ export function restart(options = {} as RestartOptions): void {
     return;
   }
 
-  if (TestState.testRestarting || TestState.resultCalculating) {
+  if (TestState.testRestarting || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
@@ -225,6 +227,8 @@ export function restart(options = {} as RestartOptions): void {
         return;
       }
     }
+
+    // close out the abandoned test
 
     if (isRepeated()) {
       options.withSameWordset = true;
@@ -280,91 +284,62 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
+  // reset state
+
   resetTestEvents();
   TestTimer.clear();
   setIsTestInvalid(false);
   resetModifierState();
-  Caret.hide();
   setTestActive(false);
   Replay.pauseReplay();
-  TestState.setBailedOut(false);
-  Caret.resetPosition();
+  setBailedOut(false);
   PaceCaret.reset();
   TestState.setKoreanStatus(false);
   clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
+  Strings.clearWordDirectionCache();
+  testReinitCount = 0;
+  failReason = "";
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
-  }
+  const repeatWithPace =
+    (Config.repeatedPace && options.withSameWordset) ?? false;
+  setIsRepeated(options.withSameWordset ?? false);
+  setIsPaceRepeat(repeatWithPace);
 
-  // TestUI.beforeTestRestart();
+  // restart
 
-  let source: "testPage" | "resultPage";
-  let el: HTMLElement;
-  if (TestState.resultVisible) {
-    //results are being displayed
-    el = document.querySelector("#result") as HTMLElement;
-    source = "resultPage";
-  } else {
-    //words are being displayed
-    el = document.querySelector("#typingTest") as HTMLElement;
-    source = "testPage";
-  }
+  const source: "testPage" | "resultPage" = getResultVisible()
+    ? "resultPage"
+    : "testPage";
+  const noAnim = options.noAnim ?? false;
 
-  TestState.setResultVisible(false);
   TestState.setTestRestarting(true);
 
-  animate(el, {
-    opacity: 0,
-    duration: animationTime,
-    onComplete: async () => {
-      setResultVisible(false);
-      setInputElementValue("");
+  await TestUI.fadeOutForRestart(source, noAnim);
 
-      await Funbox.rememberSettings();
+  setResultVisible(false);
+  setInputElementValue("");
 
-      testReinitCount = 0;
-      failReason = "";
+  await Funbox.rememberSettings();
 
-      let repeatWithPace = false;
-      if (Config.repeatedPace && options.withSameWordset) {
-        repeatWithPace = true;
-      }
+  const initResult = await init();
 
-      setIsRepeated(options.withSameWordset ?? false);
-      setIsPaceRepeat(repeatWithPace);
-      TestInitFailed.hide();
-      TestState.setTestInitSuccess(true);
-      const initResult = await init();
+  if (!initResult) {
+    TestState.setTestRestarting(false);
+    return;
+  }
 
-      if (!initResult) {
-        TestState.setTestRestarting(false);
-        return;
-      }
+  await PaceCaret.init();
 
-      await PaceCaret.init();
+  for (const fb of getActiveFunboxesWithFunction("restart")) {
+    fb.functions.restart();
+  }
 
-      for (const fb of getActiveFunboxesWithFunction("restart")) {
-        fb.functions.restart();
-      }
+  TestUI.onTestRestart(source);
 
-      TestUI.onTestRestart(source);
-
-      const typingTestEl = document.querySelector("#typingTest") as HTMLElement;
-      animate(typingTestEl, {
-        opacity: [0, 1],
-        onBegin: () => {
-          typingTestEl.classList.remove("hidden");
-        },
-        duration: animationTime,
-        onComplete: () => {
-          TestState.setTestRestarting(false);
-        },
-      });
-    },
-  });
+  await TestUI.fadeInAfterRestart(noAnim);
+  TestState.setTestRestarting(false);
 }
 
 let lastInitError: Error | null = null;
@@ -383,12 +358,11 @@ async function init(): Promise<boolean> {
     }
     TestInitFailed.show();
     TestState.setTestRestarting(false);
-    TestState.setTestInitSuccess(false);
     return false;
   }
 
   TestWords.words.reset();
-  TestState.setActiveWordIndex(0);
+  resetActiveWordIndex();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -593,7 +567,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(TestState.activeWordIndex + 1);
+    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
     return;
   }
 
@@ -607,7 +581,7 @@ export async function addWord(): Promise<void> {
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
-  if (TestWords.words.length - (TestState.activeWordIndex + 1) > bound) {
+  if (TestWords.words.length - (getActiveWordIndex() + 1) > bound) {
     console.debug("Not adding word, enough words already");
     return;
   }
@@ -617,7 +591,7 @@ export async function addWord(): Promise<void> {
   }
   const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
   if (sectionFunbox) {
-    if (TestWords.words.length - TestState.activeWordIndex < 20) {
+    if (TestWords.words.length - getActiveWordIndex() < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language,
       );
@@ -627,7 +601,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
         );
         toggleFunbox(sectionFunbox.name);
-        restart();
+        void restart();
         return;
       }
 
@@ -805,7 +779,7 @@ function buildCompletedEvent(
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config, currentQuote),
-    bailedOut: TestState.bailedOut,
+    bailedOut: getBailedOut(),
     funbox: Config.funbox,
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
@@ -833,7 +807,7 @@ function buildCompletedEvent(
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!isTestActive()) return;
-  TestState.setResultCalculating(true);
+  setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
 
@@ -857,7 +831,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   forceReleaseAllKeys();
 
   setResultVisible(true);
-  TestState.setResultVisible(true);
   setTestActive(false);
 
   cleanupData();
@@ -908,7 +881,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (TestState.bailedOut) afkDetected = false;
+  if (getBailedOut()) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -917,7 +890,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !TestState.bailedOut &&
+    !getBailedOut() &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
@@ -1012,7 +985,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      TestState.bailedOut ||
+      getBailedOut() ||
       getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
@@ -1174,7 +1147,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (TestState.resultVisible) {
+    if (getResultVisible()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }
@@ -1278,21 +1251,21 @@ const debouncedZipfCheck = debounce(250, async () => {
 });
 
 qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
-  restart();
+  void restart();
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
-  if (TestState.resultCalculating) return;
+  if (isResultCalculating()) return;
   if (
     isTestActive() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    restart({
+    void restart({
       withSameWordset: true,
     });
   } else {
-    restart();
+    void restart();
   }
 });
 
@@ -1303,7 +1276,7 @@ qs(".pageTest")?.onChild(
 );
 
 qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
-  restart();
+  void restart();
 });
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
@@ -1311,7 +1284,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  restart({
+  void restart({
     withSameWordset: true,
   });
 });
@@ -1320,10 +1293,10 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
 window.addEventListener("focus", () => {
   if (
     !isTestActive() &&
-    !TestState.resultVisible &&
+    !getResultVisible() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    restart({
+    void restart({
       noAnim: true,
     });
   }
@@ -1334,16 +1307,16 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
   if (
     !isTestActive() &&
-    !TestState.resultVisible &&
+    !getResultVisible() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    restart({
+    void restart({
       noAnim: true,
     });
   }
 });
 
-restartTestEvent.subscribe((event) => restart(event));
+restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
@@ -1359,11 +1332,11 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      restart();
+      void restart();
     }
-    if (key === "difficulty" && !nosave) restart();
+    if (key === "difficulty" && !nosave) void restart();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      restart();
+      void restart();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {

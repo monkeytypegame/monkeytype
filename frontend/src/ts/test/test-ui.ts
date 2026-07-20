@@ -10,7 +10,6 @@ import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
-import * as OutOfFocus from "./out-of-focus";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import { blendTwoHexColors } from "../utils/colors";
@@ -21,7 +20,6 @@ import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
-import { TimerColor, TimerOpacity } from "@monkeytype/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as TestState from "./test-state";
@@ -33,11 +31,7 @@ import {
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import { highlight } from "../events/keymap";
-import * as LiveAcc from "./live-acc";
 import * as Focus from "../test/focus";
-import * as TimerProgress from "../test/timer-progress";
-import * as LiveBurst from "./live-burst";
-import * as LiveSpeed from "./live-speed";
 import {
   blurInputElement,
   focusInputElement,
@@ -46,7 +40,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
-import * as CompositionDisplay from "../elements/composition-display";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -62,17 +55,26 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
+  getActiveWordIndex,
   getCurrentQuote,
   isTestActive,
-  resetCurrentLiveStats,
+  setCompositionText,
+  setCurrentLiveStats,
+  setOutOfFocusMaxHeight,
   wordsHaveNewline,
+  setTestFocusState,
+  showOutOfFocusWarning,
+  getResultVisible,
 } from "../states/test";
+import { createEffect } from "solid-js";
 import {
   getCorrectedWordsHistory,
   getInputHistory,
   getMissedWords,
   getWordBurstHistory,
 } from "./events/stats";
+import * as ConnectionState from "../legacy-states/connection";
+import * as TestInitFailed from "../elements/test-init-failed";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -87,6 +89,16 @@ export let activeWordTop = 0;
 export let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
 let lineTransition = false;
+
+// #words is still vanilla; the warning itself is Solid (OutOfFocusWarning.tsx).
+// show/hideOutOfFocus live in states/test so commandline needn't import test-ui.
+createEffect(() => {
+  if (showOutOfFocusWarning()) {
+    wordsEl.setStyle({ transition: "0.25s" })?.addClass("blurred");
+  } else {
+    wordsEl.setStyle({ transition: "none" })?.removeClass("blurred");
+  }
+});
 let currentTestLine = 0;
 
 export function focusWords(force = false): void {
@@ -129,7 +141,7 @@ export function getWordElement(index: number): ElementWithUtils | null {
 }
 
 export function getActiveWordElement(): ElementWithUtils | null {
-  return getWordElement(TestState.activeWordIndex);
+  return getWordElement(getActiveWordIndex());
 }
 
 export function updateActiveElement(
@@ -309,7 +321,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     getActivePage() !== "test" ||
-    TestState.resultVisible ||
+    getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
     return;
@@ -404,7 +416,7 @@ function buildWordHTML(word: string, wordIndex: number): string {
 
 function updateWordWrapperClasses(): void {
   // outoffocus applies transition, need to remove it
-  OutOfFocus.hide();
+  setTestFocusState("focused");
 
   if (Config.tapeMode !== "off") {
     wordsEl.addClass("tape");
@@ -450,9 +462,9 @@ function updateWordWrapperClasses(): void {
     wordsEl.removeClass("colorfulMode");
   }
 
-  qsa(
-    "#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput, #compositionDisplay",
-  ).setStyle({ fontSize: `${Config.fontSize}rem` });
+  qsa("#caret, #paceCaret, #typingTest, #wordsInput").setStyle({
+    fontSize: `${Config.fontSize}rem`,
+  });
 
   if (TestState.isLanguageRightToLeft) {
     wordsEl.addClass("rightToLeftTest");
@@ -489,10 +501,10 @@ function updateWordWrapperClasses(): void {
   updateWordsMargin();
   updateWordsInputPosition();
   void updateHintsPositionDebounced();
-  Caret.updatePosition();
+  Caret.updatePosition(true);
 
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
 }
 
@@ -592,7 +604,7 @@ export async function centerActiveLine(): Promise<void> {
   const currentTop = activeWordEl.getOffsetTop();
 
   let previousLineTop = currentTop;
-  for (let i = TestState.activeWordIndex - 1; i >= 0; i--) {
+  for (let i = getActiveWordIndex() - 1; i >= 0; i--) {
     previousLineTop = getWordElement(i)?.getOffsetTop() ?? currentTop;
     if (previousLineTop < currentTop) {
       await lineJump(previousLineTop, true);
@@ -605,11 +617,8 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (getActivePage() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
-  const outOfFocusEl = document.querySelector(
-    ".outOfFocusWarning",
-  ) as HTMLElement;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
@@ -669,7 +678,7 @@ export function updateWordsWrapperHeight(force = false): void {
     }
   }
 
-  outOfFocusEl.style.maxHeight = `${wordHeight * 3}px`;
+  setOutOfFocusMaxHeight(wordHeight * 3);
 }
 
 function updateWordsMargin(): void {
@@ -693,7 +702,7 @@ export function addWord(
 ): void {
   // if the current active word is the last word, we need to NOT use raf
   // because other ui parts depend on the word existing
-  if (TestState.activeWordIndex === wordIndex - 1) {
+  if (getActiveWordIndex() === wordIndex - 1) {
     wordsEl.appendHtml(buildWordHTML(word, wordIndex));
   } else {
     requestAnimationFrame(async () => {
@@ -946,7 +955,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (getActivePage() !== "test" || TestState.resultVisible) return;
+  if (getActivePage() !== "test" || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1394,7 +1403,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
     wordEl.addEventListener("mouseenter", (e) => {
       // if (noHover) return;
-      if (!TestState.resultVisible) return;
+      if (!getResultVisible()) return;
       const input =
         (e.currentTarget as HTMLElement).getAttribute("input") ?? "";
       const burst = parseInt(
@@ -1433,7 +1442,7 @@ async function loadWordsHistory(): Promise<boolean> {
 }
 
 export async function toggleResultWords(noAnimation = false): Promise<void> {
-  if (!TestState.resultVisible) return;
+  if (!getResultVisible()) return;
   ResultWordHighlight.updateToggleWordsHistoryTime();
 
   if (resultWordsHistoryEl.isHidden()) {
@@ -1617,63 +1626,6 @@ function updateWordsWidth(): void {
   }
 }
 
-function updateLiveStatsMargin(): void {
-  if (Config.tapeMode === "off") {
-    qs("#liveStatsMini")?.setStyle({
-      justifyContent: "start",
-      marginLeft: "0.25em",
-    });
-  } else {
-    qs("#liveStatsMini")?.setStyle({
-      justifyContent: "center",
-      marginLeft: `${Config.tapeMargin}%`,
-    });
-  }
-}
-
-function updateLiveStatsOpacity(value: TimerOpacity): void {
-  qs("#barTimerProgress")?.setStyle({ opacity: value });
-  qs("#liveStatsTextTop")?.setStyle({ opacity: value });
-  qs("#liveStatsTextBottom")?.setStyle({
-    opacity: value,
-  });
-  qs("#liveStatsMini")?.setStyle({ opacity: value });
-}
-
-function updateLiveStatsColor(value: TimerColor): void {
-  qs("#barTimerProgress")?.removeClass("timerSub");
-  qs("#barTimerProgress")?.removeClass("timerText");
-  qs("#barTimerProgress")?.removeClass("timerMain");
-
-  qs("#liveStatsTextTop")?.removeClass("timerSub");
-  qs("#liveStatsTextTop")?.removeClass("timerText");
-  qs("#liveStatsTextTop")?.removeClass("timerMain");
-  qs("#liveStatsTextBottom")?.removeClass("timerSub");
-  qs("#liveStatsTextBottom")?.removeClass("timerText");
-  qs("#liveStatsTextBottom")?.removeClass("timerMain");
-
-  qs("#liveStatsMini")?.removeClass("timerSub");
-  qs("#liveStatsMini")?.removeClass("timerText");
-  qs("#liveStatsMini")?.removeClass("timerMain");
-
-  if (value === "main") {
-    qs("#barTimerProgress")?.addClass("timerMain");
-    qs("#liveStatsTextTop")?.addClass("timerMain");
-    qs("#liveStatsTextBottom")?.addClass("timerMain");
-    qs("#liveStatsMini")?.addClass("timerMain");
-  } else if (value === "sub") {
-    qs("#barTimerProgress")?.addClass("timerSub");
-    qs("#liveStatsTextTop")?.addClass("timerSub");
-    qs("#liveStatsTextBottom")?.addClass("timerSub");
-    qs("#liveStatsMini")?.addClass("timerSub");
-  } else if (value === "text") {
-    qs("#barTimerProgress")?.addClass("timerText");
-    qs("#liveStatsTextTop")?.addClass("timerText");
-    qs("#liveStatsTextBottom")?.addClass("timerText");
-    qs("#liveStatsMini")?.addClass("timerText");
-  }
-}
-
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
     qs(".pageTest #restartTestButton")?.show();
@@ -1732,11 +1684,7 @@ function afterAnyTestInput(
 
   const acc = Numbers.roundTo2(getLiveCachedAccuracy());
   if (!isNaN(acc)) {
-    LiveAcc.update(acc);
-  }
-
-  if (Config.mode !== "time") {
-    TimerProgress.update();
+    setCurrentLiveStats({ acc });
   }
 
   if (Config.keymapMode === "next") {
@@ -1766,7 +1714,7 @@ export function afterTestTextInput(
 
   void updateWordLetters({
     input,
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
 
@@ -1776,7 +1724,7 @@ export function afterTestTextInput(
 export function afterTestCompositionUpdate(): void {
   void updateWordLetters({
     input: getCurrentInput(),
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
   // correct needs to be true to get the normal click sound
@@ -1786,7 +1734,7 @@ export function afterTestCompositionUpdate(): void {
 export function afterTestDelete(): void {
   void updateWordLetters({
     input: getCurrentInput(),
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
   });
   afterAnyTestInput("delete", null);
@@ -1804,16 +1752,16 @@ export function beforeTestWordChange(
   if (direction === "back") {
     void updateWordLetters({
       input: getCurrentInput(),
-      wordIndex: TestState.activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       compositionData: CompositionState.getData(),
     });
   }
 
   if (direction === "forward") {
     if (Config.blindMode) {
-      highlightAllLettersAsCorrect(TestState.activeWordIndex);
+      highlightAllLettersAsCorrect(getActiveWordIndex());
     } else if (correct === false) {
-      highlightBadWord(TestState.activeWordIndex);
+      highlightBadWord(getActiveWordIndex());
     }
   }
 }
@@ -1828,7 +1776,7 @@ export async function afterTestWordChange(
   Caret.updatePosition();
 
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
-    void LiveBurst.update(Math.round(lastBurst));
+    setCurrentLiveStats({ burst: Math.round(lastBurst) });
   }
 
   if (Config.keymapMode === "next") {
@@ -1854,7 +1802,7 @@ export async function afterTestWordChange(
         const attr = child.getAttribute("data-wordindex");
         if (attr === null) continue;
         const wordIndex = parseInt(attr, 10);
-        if (wordIndex === TestState.activeWordIndex) {
+        if (wordIndex === getActiveWordIndex()) {
           deleteElements = true;
         }
       }
@@ -1864,11 +1812,39 @@ export async function afterTestWordChange(
 
 export function onTestStart(): void {
   Focus.set(true);
-  TimerProgress.show();
-  LiveSpeed.show();
-  LiveAcc.show();
-  LiveBurst.show();
-  TimerProgress.update();
+  setCurrentLiveStats({
+    wpm: 0,
+    acc: 100,
+    raw: 0,
+    burst: 0,
+    seconds: 0,
+  });
+}
+
+function getRestartAnimationTime(noAnim: boolean): number {
+  return noAnim ? 0 : Misc.applyReducedMotion(125);
+}
+
+export async function fadeOutForRestart(
+  source: "testPage" | "resultPage",
+  noAnim: boolean,
+): Promise<void> {
+  const selector = source === "resultPage" ? "#result" : "#typingTest";
+  await qs(selector)?.promiseAnimate({
+    opacity: 0,
+    duration: getRestartAnimationTime(noAnim),
+  });
+}
+
+export async function fadeInAfterRestart(noAnim: boolean): Promise<void> {
+  const typingTestEl = qs("#typingTest");
+  await typingTestEl?.promiseAnimate({
+    opacity: [0, 1],
+    onBegin: () => {
+      typingTestEl.removeClass("hidden");
+    },
+    duration: getRestartAnimationTime(noAnim),
+  });
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
@@ -1876,21 +1852,25 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   Focus.set(false);
-  LiveSpeed.instantHide();
-  LiveSpeed.reset();
-  LiveBurst.instantHide();
-  LiveBurst.reset();
-  LiveAcc.instantHide();
-  LiveAcc.reset();
-  TimerProgress.instantHide();
-  TimerProgress.reset();
-  resetCurrentLiveStats();
+  setCurrentLiveStats({
+    wpm: undefined,
+    acc: undefined,
+    raw: undefined,
+    burst: undefined,
+    seconds: undefined,
+  });
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();
+  Caret.resetPosition();
+  TestInitFailed.hide();
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
 
   if (source === "resultPage") {
     if (Config.randomTheme !== "off") {
@@ -1905,10 +1885,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
   AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
-    CompositionDisplay.update(" ");
-    CompositionDisplay.show();
-  } else {
-    CompositionDisplay.hide();
+    setCompositionText(" ");
   }
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
@@ -1917,11 +1894,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 export function onTestFinish(): void {
   Caret.hide();
-  LiveSpeed.hide();
-  LiveAcc.hide();
-  LiveBurst.hide();
-  TimerProgress.hide();
-  OutOfFocus.hide();
+  setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
   }
@@ -1984,15 +1957,15 @@ addEventListener("resize", () => {
 
 qs("#wordsInput")?.on("focus", (e) => {
   if (!isInputElementFocused()) return;
-  if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+  if (!getResultVisible() && Config.showOutOfFocusWarning) {
+    setTestFocusState("focused");
   }
   Caret.show(true);
 });
 
 qs("#wordsInput")?.on("focusout", () => {
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
   Caret.hide();
 });
@@ -2006,35 +1979,24 @@ qs("#wordsWrapper")?.on("click", () => {
 });
 
 window.addEventListener("blur", () => {
-  OutOfFocus.show("window");
+  setTestFocusState("unfocusedWindow");
 });
 
 // little roadblock for basic cheating
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "hidden") return;
-  OutOfFocus.show("window");
+  setTestFocusState("unfocusedWindow");
 });
 
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "quickRestart") {
     showHideTestRestartButton(newValue === "off");
   }
-  if (key === "timerOpacity") {
-    updateLiveStatsOpacity(newValue);
-  }
-  if (key === "timerColor") {
-    updateLiveStatsColor(newValue);
-  }
   if (key === "showOutOfFocusWarning" && !newValue) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
-  if (key === "compositionDisplay") {
-    if (newValue === "below") {
-      CompositionDisplay.update(" ");
-      CompositionDisplay.show();
-    } else {
-      CompositionDisplay.hide();
-    }
+  if (key === "compositionDisplay" && newValue === "below") {
+    setCompositionText(" ");
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
@@ -2043,14 +2005,14 @@ configEvent.subscribe(({ key, newValue }) => {
   ) {
     void updateHintsPositionDebounced();
   }
-  if ((key === "theme" || key === "burstHeatmap") && TestState.resultVisible) {
+  if ((key === "theme" || key === "burstHeatmap") && getResultVisible()) {
     void applyBurstHeatmap();
   }
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
       void updateWordLetters({
         input: getCurrentInput(),
-        wordIndex: TestState.activeWordIndex,
+        wordIndex: getActiveWordIndex(),
         compositionData: CompositionState.getData(),
       });
     }
@@ -2076,8 +2038,5 @@ configEvent.subscribe(({ key, newValue }) => {
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Joining.update(key, wordsEl);
     }
-  }
-  if (["tapeMode", "tapeMargin"].includes(key)) {
-    updateLiveStatsMargin();
   }
 });

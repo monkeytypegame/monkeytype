@@ -5,7 +5,11 @@ import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
-import { isTestActive } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isResultCalculating,
+  isTestActive,
+} from "../../states/test";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!isTestActive()) {
@@ -20,7 +24,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.resultCalculating) {
+  if (isResultCalculating()) {
     event.preventDefault();
     return;
   }
@@ -30,15 +34,13 @@ export function onBeforeDelete(event: InputEvent): void {
 
   if (inputIsEmpty) {
     // we are on the first word, just prevent default, nothing to go back to
-    if (TestState.activeWordIndex === 0) {
+    if (getActiveWordIndex() === 0) {
       event.preventDefault();
       return;
     }
 
     // this is nested because we only wanna pull the element from the dom if needed
-    const previousWordElement = TestUI.getWordElement(
-      TestState.activeWordIndex - 1,
-    );
+    const previousWordElement = TestUI.getWordElement(getActiveWordIndex() - 1);
     if (previousWordElement === null) {
       event.preventDefault();
       return;
@@ -51,10 +53,9 @@ export function onBeforeDelete(event: InputEvent): void {
   }
 
   const confidence = Config.confidenceMode;
-  const previousWord = TestWords.words.get(TestState.activeWordIndex - 1);
+  const previousWord = TestWords.words.get(getActiveWordIndex() - 1);
   const previousWordCorrect =
-    getInputForWord(TestState.activeWordIndex - 1) ===
-    previousWord?.textWithCommit;
+    getInputForWord(getActiveWordIndex() - 1) === previousWord?.textWithCommit;
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

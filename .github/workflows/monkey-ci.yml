@@ -217,7 +217,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.assets-or-styles == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v6
         with:
@@ -280,7 +280,7 @@ jobs:
         run: npm run lint-json-assets
 
       - name: Validate language assets
-        if: steps.filter.outputs.languages == 'true'
+        if: steps.filter.outputs.languages == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
         run: npm run check-assets-languages
 
       - name: Validate quote assets
@@ -288,7 +288,7 @@ jobs:
         run: npm run check-assets-quotes
 
       - name: Validate other assets
-        if: steps.filter.outputs.others == 'true'
+        if: steps.filter.outputs.others == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
         run: npm run check-assets-others
 
   ci-pkg:

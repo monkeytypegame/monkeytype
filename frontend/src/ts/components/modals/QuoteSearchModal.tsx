@@ -347,7 +347,9 @@ export function QuoteSearchModal(): JSXElement {
 
   createEffect(
     on(lengthFilter, (lengths) => {
-      if (lengths.includes("4") && !hasCustomFilter()) {
+      if (!lengths.includes("4")) {
+        setHasCustomFilter(false);
+      } else if (!hasCustomFilter()) {
         showSimpleModal({
           title: "Enter minimum and maximum number of words",
           buttonText: "save",
@@ -364,7 +366,7 @@ export function QuoteSearchModal(): JSXElement {
             setCustomFilterMin(min);
             setCustomFilterMax(max);
             setHasCustomFilter(true);
-            return { status: "success", message: "Saved custom filter" };
+            return { status: "success", showNotification: false };
           },
         });
       }
@@ -398,7 +400,7 @@ export function QuoteSearchModal(): JSXElement {
     }
     TestState.setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    TestLogic.restart();
+    void TestLogic.restart();
     hideModalAndClearChain("QuoteSearch");
   };
 

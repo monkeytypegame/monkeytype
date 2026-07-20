@@ -31,6 +31,7 @@ function makeField(
     }),
     setValue: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
+    form: { options: { defaultValues: { [name]: value } } } as any,
   } as unknown as AnyFieldApi;
 }
 
@@ -158,5 +159,18 @@ describe("InputField", () => {
     render(() => <InputField field={() => field} type="number" />);
 
     expect(screen.getByRole("spinbutton").getAttribute("value")).toBeNull();
+  });
+
+  it("handles empty then numeric input with default value", async () => {
+    const field = makeField("age", 5);
+    render(() => <InputField field={() => field} type="number" />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    // Set to 6
+    fireEvent.input(input, { target: { value: "6" } });
+    expect(field.handleChange).toHaveBeenCalledWith(6);
   });
 });

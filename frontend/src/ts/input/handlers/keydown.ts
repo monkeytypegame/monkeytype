@@ -2,7 +2,6 @@ import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
 import { emulateInsertText } from "./insert-text";
-import * as TestState from "../../test/test-state";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -18,7 +17,7 @@ import {
 } from "../state";
 import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { __nonReactive, wordsHaveTab } from "../../states/test";
+import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
 import { getCustomTextIndicator } from "../../states/core";
 import { logTestEvent } from "../../test/events/data";
@@ -64,7 +63,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        TestState.setBailedOut(true);
+        setBailedOut(true);
         void TestLogic.finish();
         return;
       }
@@ -78,7 +77,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.keymapLayout !== "overrideSync"
   ) {
     let keymapLayout = await __nonReactive
-      .getInputLayout()
+      .getKeymapLayout()
       .catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");

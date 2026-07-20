@@ -13,7 +13,9 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  getActiveWordIndex,
   getCurrentQuote,
+  getResultVisible,
   isPaceRepeat,
   isTestActive,
   setPaceCaretWpm,
@@ -121,7 +123,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
+  if (currentSettings === null || !isTestActive() || getResultVisible()) {
     return;
   }
 
@@ -231,19 +233,19 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === true &&
+      settings.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = undefined;
+      settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
+      settings.wordsStatus[getActiveWordIndex()] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = true;
+      settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
     }
   }
