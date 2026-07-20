@@ -501,7 +501,7 @@ function updateWordWrapperClasses(): void {
   updateWordsMargin();
   updateWordsInputPosition();
   void updateHintsPositionDebounced();
-  Caret.updatePosition();
+  Caret.updatePosition(true);
 
   if (!isInputElementFocused()) {
     setTestFocusState("unfocused");
@@ -1865,7 +1865,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
   MemoryFunboxTimer.reset();
-  Caret.hide();
   Caret.resetPosition();
   TestInitFailed.hide();
 
