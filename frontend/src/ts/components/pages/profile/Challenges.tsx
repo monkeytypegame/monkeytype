@@ -78,8 +78,11 @@ export function Challenges(props: {
   });
 
   const unlockPercentage = () =>
-    (Object.keys(props.challenges ?? {}).length * 100) /
-    getRegularChallenges().length;
+    Math.min(
+      (Object.keys(props.challenges ?? {}).length * 100) /
+        getRegularChallenges().length,
+      100,
+    );
 
   return (
     <Show when={props.isAccountPage === true || props.challenges !== undefined}>
