@@ -81,7 +81,7 @@ export function Challenges(props: {
     getRegularChallenges().length;
 
   return (
-    <Show when={props.challenges !== undefined}>
+    <Show when={props.isAccountPage === true || props.challenges !== undefined}>
       <ChallengesModal
         completed={completedChallenges()}
         incompleted={incompleteChallenges()}
