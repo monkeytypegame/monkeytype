@@ -162,7 +162,7 @@ function ChallengeItem(props: {
       : "",
   );
 
-  const isRare = () => getChallengeUnlockPercentage(props.challenge) < 0.1;
+  const isRare = () => getChallengeUnlockPercentage(props.challenge) < 0.025;
 
   return (
     <Balloon
