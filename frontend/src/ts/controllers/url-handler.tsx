@@ -288,7 +288,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["funbox"] = val.join(", ");
   }
 
-  restartTest({
+  void restartTest({
     nosave: true,
   });
 
@@ -331,7 +331,7 @@ export async function loadChallengeFromUrl(
   ChallengeController.setup(challengeName)
     .then((result) => {
       if (result) {
-        restartTest({
+        void restartTest({
           nosave: true,
         });
       }
