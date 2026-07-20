@@ -64,6 +64,7 @@ import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
 import { getChallenges } from "@monkeytype/challenges";
+import { verify as verifyChallenge } from "@monkeytype/challenges/verify";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -465,11 +466,28 @@ export async function addResult(
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    autoRoleChallengeNames.has(completedEvent.challenge) &&
-    user.discordId !== undefined &&
-    user.discordId !== ""
+    autoRoleChallengeNames.has(completedEvent.challenge)
   ) {
-    void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    const verification = verifyChallenge(completedEvent);
+    switch (verification.state) {
+      case "success":
+        {
+          await UserDAL.updateChallenge(uid, completedEvent.challenge);
+          if (user.discordId !== undefined && user.discordId !== "") {
+            void GeorgeQueue.awardChallenge(
+              user.discordId,
+              completedEvent.challenge,
+            );
+          }
+        }
+        break;
+      case "failed": {
+        throw new MonkeyError(400, verification.reason);
+      }
+      case "error": {
+        throw new MonkeyError(500, verification.errorMessage);
+      }
+    }
   } else {
     delete completedEvent.challenge;
   }

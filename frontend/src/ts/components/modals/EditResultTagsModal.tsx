@@ -1,3 +1,4 @@
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { createEffect, createSignal, For } from "solid-js";
 
 import { updateTags } from "../../collections/results";
@@ -10,7 +11,6 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { updateTagsAfterEdit } from "../../test/result";
-import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { createErrorMessage } from "../../utils/error";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";

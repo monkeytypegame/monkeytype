@@ -13,6 +13,7 @@ import fileStorage from "../utils/file-storage";
 import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../states/core";
 import { setTheme, ThemeIdentifier } from "../states/theme";
+import { areSortedArraysEqual } from "@monkeytype/util/arrays";
 
 export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;
@@ -89,9 +90,7 @@ function updateThemeIndicator(nameOverride?: string): void {
     // Match current custom theme by colors since Config does not store custom theme IDs
     const matchedTheme = CustomThemes.__nonReactive
       .getCustomThemes()
-      .find((ct) =>
-        Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
-      );
+      .find((ct) => areSortedArraysEqual(ct.colors, Config.customThemeColors));
 
     if (matchedTheme) {
       str = `${matchedTheme.name} (custom)`;

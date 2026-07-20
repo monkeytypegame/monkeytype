@@ -650,6 +650,9 @@ importers:
       '@monkeytype/schemas':
         specifier: workspace:*
         version: link:../schemas
+      '@monkeytype/util':
+        specifier: workspace:*
+        version: link:../util
     devDependencies:
       '@monkeytype/tsup-config':
         specifier: workspace:*
@@ -13715,7 +13718,7 @@ snapshots:
 
   '@eslint/eslintrc@3.3.3':
     dependencies:
-      ajv: 6.12.6
+      ajv: 6.15.0
       debug: 4.4.3
       espree: 10.4.0
       globals: 14.0.0

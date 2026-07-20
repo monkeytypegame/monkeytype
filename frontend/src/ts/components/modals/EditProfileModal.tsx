@@ -1,6 +1,7 @@
 import {
   GithubProfileSchema,
   TwitterProfileSchema,
+  UserProfileDetails,
   UserProfileDetailsSchema,
   WebsiteSchema,
 } from "@monkeytype/schemas/users";
@@ -39,11 +40,13 @@ export function EditProfile() {
       twitter: snapshot.details?.socialProfiles?.twitter ?? "",
       website: snapshot.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        snapshot.details?.showActivityOnPublicProfile ?? true,
+        snapshot.details?.showActivityOnPublicProfile ?? false,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
+      showChallengesOnPublicProfile:
+        snapshot.details?.showChallengesOnPublicProfile ?? false,
     },
     onSubmit: async ({ value }) => {
-      const updates = {
+      const updates: UserProfileDetails = {
         bio: value.bio,
         keyboard: value.keyboard,
         socialProfiles: {
@@ -52,6 +55,7 @@ export function EditProfile() {
           website: value.website,
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
+        showChallengesOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
       const response = await Ape.users.updateProfile({
@@ -253,6 +257,18 @@ export function EditProfile() {
               <Checkbox
                 field={field}
                 label="Include test activity graph on your public profile."
+              />
+            )}
+          </form.Field>
+        </div>
+
+        <div>
+          <label class="mb-[0.25em] block text-sub">public challenges</label>
+          <form.Field name="showChallengesOnPublicProfile">
+            {(field) => (
+              <Checkbox
+                field={field}
+                label="Include challenges on your public profile."
               />
             )}
           </form.Field>

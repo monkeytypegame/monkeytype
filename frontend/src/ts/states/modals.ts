@@ -37,7 +37,8 @@ export type ModalId =
   | "GoogleSignup"
   | "ForgotPassword"
   | "UserReport"
-  | "EditResultTags";
+  | "EditResultTags"
+  | "AllChallenges";
 
 export type ModalVisibility = {
   visible: boolean;

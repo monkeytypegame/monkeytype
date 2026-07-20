@@ -6,7 +6,7 @@ import {
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
 
-import { areUnsortedArraysEqual } from "../utils/arrays";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getActivePage, isAuthenticated } from "../states/core";

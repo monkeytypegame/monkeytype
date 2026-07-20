@@ -11,13 +11,14 @@ import { Config } from "../config/store";
 import { configEvent } from "../events/config";
 import * as TestState from "../test/test-state";
 
-import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
+import { getChallenge } from "@monkeytype/challenges";
+import { verify as verifyChallenge } from "@monkeytype/challenges/verify";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { ConfigValue } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
-import { areUnsortedArraysEqual } from "../utils/arrays";
 import { qs } from "../utils/dom";
 
 let challengeLoading = false;
@@ -33,169 +34,54 @@ export function clearActive(): void {
   }
 }
 
-function verifyRequirement(
-  result: CompletedEvent,
-  requirements: NonNullable<ChallengeSettings["requirements"]>,
-  requirementType: keyof NonNullable<ChallengeSettings["requirements"]>,
-): [boolean, string[]] {
-  let requirementsMet = true;
-  let failReasons: string[] = [];
+export function verify(result: CompletedEvent): void {
+  const loadedChallenge = getLoadedChallenge();
+  if (loadedChallenge === undefined || loadedChallenge === null) return;
 
-  const afk = (result.afkDuration / result.testDuration) * 100;
+  result.challenge = loadedChallenge.name;
+  const verification = verifyChallenge(result);
 
-  if (requirements[requirementType] === undefined) {
-    throw new Error("Requirement value is undefined");
+  if (verification.state === "error") {
+    showNoticeNotification(
+      `${verification.errorMessage}: ${(verification.error as Error)?.message}`,
+    );
+    delete result.challenge;
+    return;
+  } else if (verification.state === "failed") {
+    showNoticeNotification(verification.reason);
+    delete result.challenge;
+    return;
   }
 
-  if (requirementType === "wpm" && requirements.wpm) {
-    const requirementValue = requirements.wpm;
-    if ("exact" in requirementValue) {
-      if (Math.round(result.wpm) !== requirementValue.exact) {
-        requirementsMet = false;
-        failReasons.push(`WPM not ${requirementValue.exact}`);
-      }
-    } else if ("min" in requirementValue) {
-      if (result.wpm < requirementValue.min) {
-        requirementsMet = false;
-        failReasons.push(`WPM below ${requirementValue.min}`);
-      }
-    }
-  } else if (requirementType === "acc" && requirements.acc) {
-    const requirementValue = requirements.acc;
-    if ("exact" in requirementValue) {
-      if (result.acc !== requirementValue.exact) {
-        requirementsMet = false;
-        failReasons.push(`Accuracy not ${requirementValue.exact}`);
-      }
-    } else if ("min" in requirementValue) {
-      if (result.acc < requirementValue.min) {
-        requirementsMet = false;
-        failReasons.push(`Accuracy below ${requirementValue.min}`);
-      }
-    }
-  } else if (requirementType === "afk" && requirements.afk) {
-    const requirementValue = requirements.afk;
-    if (requirementValue.max) {
-      if (Math.round(afk) > requirementValue.max) {
-        requirementsMet = false;
-        failReasons.push(`AFK percentage above ${requirementValue.max}`);
-      }
-    }
-  } else if (requirementType === "time" && requirements.time) {
-    const requirementValue = requirements.time;
-    if (requirementValue.min) {
-      if (Math.round(result.testDuration) < requirementValue.min) {
-        requirementsMet = false;
-        failReasons.push(`Test time below ${requirementValue.min}`);
-      }
-    }
-  } else if (requirementType === "funbox" && requirements.funbox) {
-    const funboxMode = requirements.funbox.exact;
-    if (funboxMode === undefined) {
-      throw new Error("Funbox mode is undefined");
-    }
-
-    if (!areUnsortedArraysEqual(funboxMode, result.funbox)) {
-      requirementsMet = false;
-      for (const f of funboxMode) {
-        if (!result.funbox?.includes(f)) {
-          failReasons.push(`${f} funbox not active`);
-        }
-      }
-      if (result.funbox !== undefined && result.funbox.length > 0) {
-        for (const f of result.funbox) {
-          if (!funboxMode.includes(f)) {
-            failReasons.push(`${f} funbox active`);
-          }
-        }
-      }
-    }
-  } else if (requirementType === "raw" && requirements.raw) {
-    const requirementValue = requirements.raw;
-    if (requirementValue.exact) {
-      if (Math.round(result.rawWpm) !== requirementValue.exact) {
-        requirementsMet = false;
-        failReasons.push(`Raw WPM not ${requirementValue.exact}`);
-      }
-    }
-  } else if (requirementType === "con" && requirements.con) {
-    const requirementValue = requirements.con;
-    if (requirementValue.exact) {
-      if (Math.round(result.consistency) !== requirementValue.exact) {
-        requirementsMet = false;
-        failReasons.push(`Consistency not ${requirementValue.exact}`);
-      }
-    }
-  } else if (requirementType === "config" && requirements.config) {
-    const requirementValue = requirements.config;
+  //Config is not verified by the verifyChallenge
+  if (verification.challenge.settings?.requirements?.config !== undefined) {
+    const requirementValue =
+      verification.challenge.settings.requirements.config;
+    const failReasons: string[] = [];
     for (const configKey of typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
       if (Config[configKey] !== configValue) {
-        requirementsMet = false;
         failReasons.push(`${configKey} not set to ${configValue}`);
       }
     }
+    if (failReasons.length !== 0) {
+      showNoticeNotification(
+        `${result.challenge} challenge failed: ${failReasons.join(", ")}`,
+      );
+      delete result.challenge;
+      return;
+    }
   }
-  return [requirementsMet, failReasons];
-}
 
-export function verify(result: CompletedEvent): ChallengeName | null {
-  const loadedChallenge = getLoadedChallenge();
-
-  if (loadedChallenge === null) return null;
-
-  try {
-    const afk = (result.afkDuration / result.testDuration) * 100;
-
-    if (afk > 10) {
-      showNoticeNotification(`Challenge failed: AFK time is greater than 10%`);
-      return null;
-    }
-
-    if (loadedChallenge.settings?.requirements === undefined) {
-      showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
-      return loadedChallenge.name || null;
-    } else {
-      let requirementsMet = true;
-      const failReasons: string[] = [];
-      for (const requirementType of typedKeys(
-        loadedChallenge.settings.requirements,
-      )) {
-        const [passed, requirementFailReasons] = verifyRequirement(
-          result,
-          loadedChallenge.settings.requirements,
-          requirementType,
-        );
-        if (!passed) {
-          requirementsMet = false;
-        }
-        failReasons.push(...requirementFailReasons);
-      }
-      if (requirementsMet) {
-        if (loadedChallenge.settings.autoRole) {
-          showSuccessNotification(
-            "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
-            { durationMs: 5000 },
-          );
-        }
-        showSuccessNotification(`${loadedChallenge.display} challenge passed!`);
-        return loadedChallenge.name;
-      } else {
-        showNoticeNotification(
-          `${
-            loadedChallenge.display
-          } challenge failed: ${failReasons.join(", ")}`,
-        );
-        return null;
-      }
-    }
-  } catch (e) {
-    console.error(e);
-    showNoticeNotification(
-      `Something went wrong when verifying challenge: ${(e as Error).message}`,
+  if (verification.challenge.settings?.autoRole) {
+    showSuccessNotification(
+      "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
+      { durationMs: 5000 },
     );
-    return null;
   }
+  showSuccessNotification(
+    `${verification.challenge.display} challenge passed!`,
+  );
 }
 
 export async function setup(challengeName: ChallengeName): Promise<boolean> {
@@ -215,6 +101,17 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         qs(".page.pageTest")?.show();
       }, 250);
       return false;
+    }
+    if ("parameters" in settings && "config" in settings.parameters) {
+      const config =
+        (settings.parameters.config === "fromRequirements"
+          ? settings.requirements?.config
+          : settings.parameters.config) ?? {};
+
+      for (const configKey of typedKeys(config)) {
+        const configValue = config[configKey] as ConfigValue;
+        setConfig(configKey, configValue, { nosave: true });
+      }
     }
     if (settings.type === "customTime") {
       setConfig("time", settings.parameters.time, {
@@ -248,7 +145,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         nosave: true,
       });
     } else if (settings.type === "customText") {
-      CustomText.setText(settings.parameters.text.split(" "));
+      CustomText.setText(
+        settings.parameters.text.split(
+          settings.parameters.isPipeDelimiter ? "|" : " ",
+        ),
+      );
       CustomText.setMode(settings.parameters.mode);
       CustomText.setLimitValue(settings.parameters.limit);
       CustomText.setLimitMode(settings.parameters.limitMode);
@@ -284,7 +185,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         setConfig("theme", settings.parameters.theme);
       }
       if (settings.parameters.funboxes !== undefined) {
-        void Funbox.activate(settings.parameters.funboxes);
+        const funboxes =
+          settings.parameters.funboxes === "fromRequirements"
+            ? (settings.requirements?.funbox?.exact ?? [])
+            : settings.parameters.funboxes;
+        void Funbox.activate(funboxes);
       }
     } else if (settings.type === "accuracy") {
       setConfig("time", 0, {
@@ -318,13 +223,11 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
         });
       }
 
-      if (
-        !setConfig("funbox", [settings.parameters.funbox], {
-          nosave: true,
-        })
-      ) {
-        throw new Error("Can't load challenge with current config");
-      }
+      const funboxes =
+        settings.parameters.funboxes === "fromRequirements"
+          ? (settings.requirements?.funbox?.exact ?? [])
+          : settings.parameters.funboxes;
+      void Funbox.activate(funboxes);
     } else if (settings.type === "other") {
       if (challengeName === "wingdings") {
         // Ten Words of Pain: 10-word Master mode test using the Wingdings custom font, no keymap

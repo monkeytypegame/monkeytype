@@ -1,3 +1,4 @@
+import { getRegularChallenges } from "@monkeytype/challenges";
 import {
   TypingStats as TypingStatsType,
   UserProfile,
@@ -9,6 +10,7 @@ import {
   getCurrentDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { isSafeNumber } from "@monkeytype/util/numbers";
+import { typedKeys } from "@monkeytype/util/objects";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
@@ -80,6 +82,7 @@ export function UserDetails(props: {
         </Show>
         <TypingStats
           typingStats={props.profile.typingStats}
+          completedChallenges={typedKeys(props.profile.challenges ?? {}).length}
           variant={variant()}
         />
         <Show when={variant() === "full" || variant() === "hasSocials"}>
@@ -412,6 +415,7 @@ function BioAndKeyboard(props: {
 
 function TypingStats(props: {
   typingStats: TypingStatsType;
+  completedChallenges: number | undefined;
   variant: Variant;
 }): JSXElement {
   const stats = () => formatTypingStatsRatio(props.typingStats);
@@ -432,13 +436,13 @@ function TypingStats(props: {
         class={cn(
           "grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-2",
           props.variant === "basic" &&
-            "sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 lg:text-[1.25rem]",
+            "sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-4 lg:text-[1.25rem]",
           props.variant === "hasBioOrKeyboard" &&
             "sm:col-span-2 md:order-2 md:col-span-1 md:grid-cols-1",
           props.variant === "hasSocials" &&
-            "sm:col-span-2 sm:grid-cols-3 md:col-span-1 md:grid-cols-1 lg:grid-cols-3 xl:text-[1.25rem]",
+            "sm:col-span-2 sm:grid-cols-4 md:col-span-1 md:grid-cols-1 lg:grid-cols-4 xl:text-[1.25rem]",
           props.variant === "full" &&
-            "sm:col-span-2 sm:grid-cols-3 md:col-span-3 md:grid-cols-3 lg:order-2 lg:col-span-1 lg:grid-cols-1",
+            "sm:col-span-2 sm:grid-cols-4 md:col-span-3 md:grid-cols-4 lg:order-2 lg:col-span-1 lg:grid-cols-1",
         )}
       >
         <div class="flex flex-col">
@@ -470,6 +474,16 @@ function TypingStats(props: {
             )}
           </div>
         </div>
+
+        <Show when={props.completedChallenges !== undefined}>
+          <div class="hidden md:flex md:flex-col">
+            <div class="text-em-sm text-sub">challenges</div>
+            <div class="text-em-2xl leading-8">
+              {props.completedChallenges}
+              <span class="text-sub">/{getRegularChallenges().length}</span>
+            </div>
+          </div>
+        </Show>
       </div>
     </>
   );
