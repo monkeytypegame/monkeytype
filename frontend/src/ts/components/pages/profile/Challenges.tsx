@@ -212,7 +212,7 @@ function ChallengeItem(props: {
                 onClick={async () => {
                   await navigate("/");
                   await setup(props.challenge.name);
-                  restart({ nosave: true });
+                  await restart({ nosave: true });
                 }}
               />
             </Show>
