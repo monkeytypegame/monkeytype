@@ -1021,9 +1021,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     }
   }
 
-  const wordRightMargin = parseFloat(
-    window.getComputedStyle(activeWordEl.native).marginRight,
-  );
+  const spaceWidth = Misc.getTotalInlineMargin(activeWordEl.native);
 
   /*calculate .afterNewline & #words new margins + determine elements to remove*/
   for (let i = 0; i <= lastElementIndex; i++) {
@@ -1046,7 +1044,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     } else if (child.hasClass("afterNewline")) {
       if (leadingNewLine) continue;
       const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
-      fullLineWidths -= nlCharWidth + wordRightMargin;
+      fullLineWidths -= nlCharWidth + spaceWidth;
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
       /** words that are wider than limit can cause a barely visible bottom line shifting,
@@ -1090,43 +1088,79 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   }
 
   /* calculate current word width to add to #words margin */
+  const inputWord = getCurrentInput();
+  const targetWord = TestWords.words.getCurrent()?.display ?? inputWord; // fallback for zen mode
+  const [isActiveWordRTL] = Strings.isWordRightToLeft(
+    targetWord,
+    TestState.isLanguageRightToLeft,
+    TestState.isDirectionReversed,
+  );
   let currentWordWidth = 0;
-  const inputLength = getCurrentInput().length;
-  if (Config.tapeMode === "letter" && inputLength > 0) {
-    const letters = activeWordEl.qsa("letter");
-    let lastPositiveLetterWidth = 0;
-    for (let i = 0; i < inputLength; i++) {
-      const letter = letters[i];
-      if (
-        (Config.blindMode || Config.hideExtraLetters) &&
-        letter?.hasClass("extra")
-      ) {
-        continue;
-      }
-      const letterOuterWidth = letter?.getOffsetWidth() ?? 0;
-      currentWordWidth += letterOuterWidth;
-      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
+  if (Config.tapeMode === "letter") {
+    let inputLength = inputWord.length;
+    const targetWordLength = targetWord.length;
+    if (Config.blindMode || Config.hideExtraLetters) {
+      inputLength = Math.min(targetWordLength, inputLength);
     }
+
+    let letterIndex;
+    let side: "beforeLetter" | "afterLetter";
+    if (
+      inputLength < targetWordLength ||
+      (Config.mode === "zen" && inputLength === 0)
+    ) {
+      side = "beforeLetter";
+      letterIndex = inputLength;
+    } else {
+      side = "afterLetter";
+      letterIndex = inputLength - 1;
+    }
+
     // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.getOffsetWidth() === 0) {
-      currentWordWidth -= lastPositiveLetterWidth;
+    let i = letterIndex;
+    const letters = activeWordEl.qsa("letter");
+    let ltr;
+    while ((ltr = letters[i]) && ltr.getOffsetWidth() === 0 && i > 0) i--;
+    let currentLetterOffset = ltr?.getOffsetLeft() ?? 0;
+    let currentLetterWidth = ltr?.getOffsetWidth() ?? 0;
+
+    if (
+      (isActiveWordRTL && side === "beforeLetter") ||
+      (!isActiveWordRTL && side === "afterLetter")
+    ) {
+      currentLetterOffset += currentLetterWidth;
     }
+
+    if (isTestRightToLeft) {
+      currentWordWidth = activeWordEl.getOffsetWidth() - currentLetterOffset;
+    } else {
+      currentWordWidth = currentLetterOffset;
+    }
+  }
+
+  if (Config.tapeMode === "word" && isTestRightToLeft !== isActiveWordRTL) {
+    currentWordWidth += activeWordEl.getOffsetWidth();
   }
 
   /* change to new #words & .afterNewline margins */
   const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
-  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
-  let newMargin = tapeMarginPx - newMarginOffset;
+  let typedWidth = -1 * (wordsWidthBeforeActive + currentWordWidth);
+  let newMargin = tapeMarginPx + typedWidth;
   if (isTestRightToLeft) {
-    newMarginOffset *= -1;
-    newMargin = wordRightMargin - newMargin;
+    typedWidth *= -1;
+    newMargin *= -1;
+    newMargin += spaceWidth;
   }
+
+  // center current letter
+  if (isActiveWordRTL) newMargin += 0.5 * spaceWidth;
+  else newMargin -= 0.5 * spaceWidth;
 
   const duration = noAnimation ? 0 : 125;
   const ease = "inOut(1.25)";
 
   const caretScrollOptions = {
-    newValue: newMarginOffset * -1,
+    newValue: typedWidth,
     duration: Config.smoothLineScroll ? duration : 0,
     ease,
   };
