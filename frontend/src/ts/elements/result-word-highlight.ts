@@ -4,7 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import { isLanguageRightToLeft } from "../test/test-state";
+import { isLanguageRightToLeft } from "../states/test";
 import { qsr } from "../utils/dom";
 
 const PADDING_X = 16;

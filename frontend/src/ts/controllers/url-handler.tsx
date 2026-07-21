@@ -32,9 +32,9 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
+import { setSelectedQuoteId } from "../states/test";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
-import { setSelectedQuoteId } from "../test/test-state";
 import * as Misc from "../utils/misc";
 import * as ChallengeController from "./challenge-controller";
 

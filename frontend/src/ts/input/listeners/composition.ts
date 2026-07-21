@@ -1,11 +1,11 @@
 import { getInputElement } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
-import { testRestarting } from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
 import {
+  testRestarting,
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,

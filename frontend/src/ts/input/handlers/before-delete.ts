@@ -1,11 +1,11 @@
 import { Config } from "../../config/store";
-import { testRestarting } from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
 import {
+  testRestarting,
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,

@@ -13,7 +13,7 @@ import {
   getWordBurstHistory,
 } from "./events/stats";
 import { setCustomTextIndicator } from "../states/core";
-import { lastEventLog } from "./test-state";
+import { lastEventLog } from "../states/test";
 
 type Before = {
   mode: Mode | null;

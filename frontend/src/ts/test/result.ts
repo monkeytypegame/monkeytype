@@ -52,12 +52,12 @@ import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import { lastEventLog } from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import {
+  lastEventLog,
   getCurrentQuote,
   getResultVisible,
   isTestInvalid,

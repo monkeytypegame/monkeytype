@@ -27,6 +27,12 @@ import {
   isAuthenticated,
 } from "../states/core";
 import {
+  setIsDirectionReversed,
+  setIsLanguageRightToLeft,
+  setKoreanStatus,
+  setLastEventLog,
+  setTestRestarting,
+  testRestarting,
   getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
@@ -57,14 +63,6 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import {
-  setIsDirectionReversed,
-  setIsLanguageRightToLeft,
-  setKoreanStatus,
-  setLastEventLog,
-  setTestRestarting,
-  testRestarting,
-} from "./test-state";
 import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";

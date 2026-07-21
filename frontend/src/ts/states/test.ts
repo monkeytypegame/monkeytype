@@ -1,5 +1,8 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
+import { z } from "zod";
 import { getConfig } from "../config/store";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { EventLog } from "../test/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
@@ -228,3 +231,19 @@ export const __nonReactive = {
     return result;
   },
 };
+
+export const [selectedQuoteId, setSelectedQuoteId] = useLocalStorage({
+  key: "selectedQuoteId",
+  schema: z.number().int().min(1),
+  fallback: 1,
+});
+
+export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
+  createSignal(false);
+export const [isDirectionReversed, setIsDirectionReversed] =
+  createSignal(false);
+export const [testRestarting, setTestRestarting] = createSignal(false);
+export const [koreanStatus, setKoreanStatus] = createSignal(false);
+export const [lastEventLog, setLastEventLog] = createSignal<EventLog | null>(
+  null,
+);

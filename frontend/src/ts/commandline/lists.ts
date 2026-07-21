@@ -35,7 +35,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { lastEventLog } from "../test/test-state";
+import { lastEventLog } from "../states/test";
 
 const adsCommands = buildCommands("ads");
 

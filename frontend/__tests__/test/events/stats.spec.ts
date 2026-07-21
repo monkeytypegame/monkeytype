@@ -4,10 +4,6 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
-vi.mock("../../../src/ts/test/test-state", () => ({
-  koreanStatus: () => false,
-}));
-
 const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
@@ -53,6 +49,7 @@ vi.mock("../../../src/ts/states/test", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
   getBailedOut: () => false,
+  koreanStatus: () => false,
 }));
 
 import {

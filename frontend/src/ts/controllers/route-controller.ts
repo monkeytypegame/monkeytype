@@ -3,11 +3,14 @@ import * as PageTransition from "../legacy-states/page-transition";
 import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
-import { testRestarting } from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
 import { authEvent } from "../events/auth";
-import { isResultCalculating, isTestActive } from "../states/test";
+import {
+  testRestarting,
+  isResultCalculating,
+  isTestActive,
+} from "../states/test";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc

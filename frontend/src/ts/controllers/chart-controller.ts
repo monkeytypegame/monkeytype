@@ -65,7 +65,7 @@ import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
-import { lastEventLog } from "../test/test-state";
+import { lastEventLog } from "../states/test";
 import { typedKeys } from "@monkeytype/util/objects";
 
 export class ChartWithUpdateColors<

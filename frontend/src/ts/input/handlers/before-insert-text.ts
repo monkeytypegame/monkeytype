@@ -1,5 +1,4 @@
 import { Config } from "../../config/store";
-import { testRestarting } from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
@@ -7,6 +6,7 @@ import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import {
+  testRestarting,
   getActiveWordIndex,
   isResultCalculating,
   wordsHaveNewline,

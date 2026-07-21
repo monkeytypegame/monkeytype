@@ -5,14 +5,13 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { lastEventLog } from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
-import { getResultVisible } from "../../states/test";
+import { lastEventLog, getResultVisible } from "../../states/test";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",

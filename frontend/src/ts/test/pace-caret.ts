@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
-import { isDirectionReversed, isLanguageRightToLeft } from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
@@ -13,6 +12,8 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
   getActiveWordIndex,
   getCurrentQuote,
   getResultVisible,

@@ -20,12 +20,12 @@ import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
-import { koreanStatus } from "../test-state";
 import * as TestWords from "../test-words";
 import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import { getMode2 } from "../../utils/misc";
 import {
+  koreanStatus,
   getActiveWordIndex,
   getCurrentQuote,
   getBailedOut,

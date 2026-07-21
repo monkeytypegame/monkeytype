@@ -1,7 +1,10 @@
 import { Config } from "../config/store";
 import { getCurrentInput } from "./events/data";
-import { isDirectionReversed, isLanguageRightToLeft } from "../test/test-state";
-import { getActiveWordIndex } from "../states/test";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
+} from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";

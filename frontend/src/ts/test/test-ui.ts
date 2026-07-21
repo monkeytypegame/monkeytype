@@ -22,12 +22,6 @@ import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
-import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
-  koreanStatus,
-  lastEventLog,
-} from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
@@ -60,6 +54,10 @@ import {
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  koreanStatus,
+  lastEventLog,
   getActiveWordIndex,
   isTestActive,
   setCompositionText,

@@ -13,7 +13,6 @@ import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
-import { selectedQuoteId } from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder } from "../utils/json-data";
 import {
@@ -28,7 +27,12 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
-import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import {
+  selectedQuoteId,
+  getCurrentQuote,
+  isRepeated,
+  setCurrentQuote,
+} from "../states/test";
 import * as TestWords from "./test-words";
 
 //pin implementation
