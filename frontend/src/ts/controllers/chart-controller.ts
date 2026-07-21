@@ -273,13 +273,14 @@ export const result = new ChartWithUpdateColors<
         callbacks: {
           afterLabel: function (ti): string {
             if (prevTi === ti) return "";
-            if (lastEventLog === null) return "";
+            const eventLog = lastEventLog();
+            if (eventLog === null) return "";
 
             prevTi = ti;
             try {
               const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
               const wordsToHighlight = getWordIndexesForSecond(
-                lastEventLog,
+                eventLog,
                 keypressIndex,
               );
 

@@ -140,12 +140,13 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      if (TestState.lastEventLog === null) {
+      const eventLog = TestState.lastEventLog();
+      if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;
       }
 
-      const inputHistory = getInputHistory(TestState.lastEventLog);
+      const inputHistory = getInputHistory(eventLog);
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")

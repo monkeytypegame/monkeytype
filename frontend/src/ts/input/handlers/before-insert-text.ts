@@ -22,7 +22,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (TestState.testRestarting) {
+  if (TestState.testRestarting()) {
     return true;
   }
 

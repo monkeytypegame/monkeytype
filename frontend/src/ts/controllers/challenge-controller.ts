@@ -26,7 +26,7 @@ export function clearActive(): void {
   if (
     getLoadedChallenge() !== null &&
     !challengeLoading &&
-    !TestState.testRestarting
+    !TestState.testRestarting()
   ) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);

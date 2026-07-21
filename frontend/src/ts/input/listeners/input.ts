@@ -96,7 +96,7 @@ inputEl.addEventListener("input", async (event) => {
   }
 
   // just in case before input doesn't catch this
-  if (isResultCalculating() || TestState.testRestarting) return;
+  if (isResultCalculating() || TestState.testRestarting()) return;
 
   const now = performance.now();
 

@@ -277,11 +277,11 @@ export const commands: CommandsSubgroup = {
       icon: "fa-cog",
       visible: false,
       available: (): boolean => {
-        return lastEventLog !== null;
+        return lastEventLog() !== null;
       },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(JSON.stringify(lastEventLog))
+          .writeText(JSON.stringify(lastEventLog()))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

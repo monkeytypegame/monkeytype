@@ -57,8 +57,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft(),
+    isDirectionReversed: TestState.isDirectionReversed(),
     animate: false,
   });
 }
@@ -141,8 +141,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: TestState.isLanguageRightToLeft(),
+      isDirectionReversed: TestState.isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration,

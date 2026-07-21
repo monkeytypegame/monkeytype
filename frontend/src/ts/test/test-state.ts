@@ -1,48 +1,20 @@
-import { promiseWithResolvers } from "../utils/misc";
+import { createSignal } from "solid-js";
+import { z } from "zod";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { EventLog } from "./events/types";
 
-export let selectedQuoteId =
-  parseInt(localStorage.getItem("selectedQuoteId") ?? "1", 10) || 1;
-export let isLanguageRightToLeft = false;
-export let isDirectionReversed = false;
-export let testRestarting = false;
-export let koreanStatus = false;
-export let lastEventLog: EventLog | null = null;
+export const [selectedQuoteId, setSelectedQuoteId] = useLocalStorage({
+  key: "selectedQuoteId",
+  schema: z.number(),
+  fallback: 1,
+});
 
-export function setLastEventLog(log: EventLog): void {
-  lastEventLog = log;
-}
-
-export function setKoreanStatus(val: boolean): void {
-  koreanStatus = val;
-}
-
-export function setSelectedQuoteId(id: number): void {
-  selectedQuoteId = id;
-  localStorage.setItem("selectedQuoteId", id.toString());
-}
-
-export function setIsLanguageRightToLeft(rtl: boolean): void {
-  isLanguageRightToLeft = rtl;
-}
-
-export function setIsDirectionReversed(val: boolean): void {
-  isDirectionReversed = val;
-}
-
-const {
-  promise: testRestartingPromise,
-  resolve: restartingResolve,
-  reset: resetTestRestarting,
-} = promiseWithResolvers();
-
-export { testRestartingPromise };
-
-export function setTestRestarting(val: boolean): void {
-  testRestarting = val;
-  if (val) {
-    resetTestRestarting();
-  } else {
-    restartingResolve();
-  }
-}
+export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
+  createSignal(false);
+export const [isDirectionReversed, setIsDirectionReversed] =
+  createSignal(false);
+export const [testRestarting, setTestRestarting] = createSignal(false);
+export const [koreanStatus, setKoreanStatus] = createSignal(false);
+export const [lastEventLog, setLastEventLog] = createSignal<EventLog | null>(
+  null,
+);

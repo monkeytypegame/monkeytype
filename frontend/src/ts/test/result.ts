@@ -102,7 +102,8 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong" || TestState.lastEventLog === null) {
+  const eventLog = TestState.lastEventLog();
+  if (result.chartData === "toolong" || eventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
     ChartController.result.getDataset("burst").data = [];
@@ -114,7 +115,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  const labels = getTimerBoundaryLabels(TestState.lastEventLog, false);
+  const labels = getTimerBoundaryLabels(eventLog, false);
 
   const chartData1 = [
     ...result.chartData.wpm.map((a) =>
@@ -122,7 +123,7 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = getRawHistory(TestState.lastEventLog).map((a) =>
+  const chartData2 = getRawHistory(eventLog).map((a) =>
     Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
   );
 
@@ -344,8 +345,9 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  if (TestState.lastEventLog !== null) {
-    const acc = getAccuracy(TestState.lastEventLog);
+  const accEventLog = TestState.lastEventLog();
+  if (accEventLog !== null) {
+    const acc = getAccuracy(accEventLog);
     if (Config.alwaysShowDecimalPlaces) {
       if (Config.typingSpeedUnit !== "wpm") {
         qs("#result .stats .wpm .bottom")?.setAttribute(

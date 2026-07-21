@@ -92,7 +92,7 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => lastEventLog,
+  lastEventLog: () => lastEventLog(),
   currentEventLog: buildEventLog,
 });
 

@@ -243,8 +243,8 @@ async function joinOverlappingHints(
 
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
     currentWord.text,
-    TestState.isLanguageRightToLeft,
-    TestState.isDirectionReversed,
+    TestState.isLanguageRightToLeft(),
+    TestState.isDirectionReversed(),
   );
 
   let previousBlocksAdjacent = false;
@@ -465,7 +465,7 @@ function updateWordWrapperClasses(): void {
     fontSize: `${Config.fontSize}rem`,
   });
 
-  if (TestState.isLanguageRightToLeft) {
+  if (TestState.isLanguageRightToLeft()) {
     wordsEl.addClass("rightToLeftTest");
     qs("#resultWordsHistory .words")?.addClass("rightToLeftTest");
     qs("#resultReplay .words")?.addClass("rightToLeftTest");
@@ -537,9 +537,9 @@ export function appendEmptyWordElement(index: number): void {
 
 export function updateWordsInputPosition(): void {
   if (getActivePage() !== "test") return;
-  const isTestRightToLeft = TestState.isDirectionReversed
-    ? !TestState.isLanguageRightToLeft
-    : TestState.isLanguageRightToLeft;
+  const isTestRightToLeft = TestState.isDirectionReversed()
+    ? !TestState.isLanguageRightToLeft()
+    : TestState.isLanguageRightToLeft();
 
   const el = getInputElement();
 
@@ -958,9 +958,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   await centeringActiveLine;
 
-  const isTestRightToLeft = TestState.isDirectionReversed
-    ? !TestState.isLanguageRightToLeft
-    : TestState.isLanguageRightToLeft;
+  const isTestRightToLeft = TestState.isDirectionReversed()
+    ? !TestState.isLanguageRightToLeft()
+    : TestState.isLanguageRightToLeft();
 
   const wordsWrapperWidth = wordsWrapperEl.getOffsetWidth();
   const wordsChildrenArr = wordsEl.getChildren();
@@ -1278,7 +1278,7 @@ function buildWordLettersHTML(
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
-    const historyWord: string = !TestState.koreanStatus
+    const historyWord: string = !TestState.koreanStatus()
       ? (corrected ?? "")
       : Hangul.assemble((corrected ?? "").split(""));
     if (
@@ -1323,19 +1323,20 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  if (TestState.lastEventLog === null) {
+  const eventLog = TestState.lastEventLog();
+  if (eventLog === null) {
     return false;
   }
 
-  const inputHistory = getInputHistory(TestState.lastEventLog);
-  const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+  const inputHistory = getInputHistory(eventLog);
+  const burstHistory = getWordBurstHistory(eventLog);
 
-  const correctedHistory = getCorrectedWordsHistory(TestState.lastEventLog);
+  const correctedHistory = getCorrectedWordsHistory(eventLog);
   const inputHistoryLength = inputHistory.length;
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const target = TestWords.words.get(i)?.textWithCommit ?? "";
-    const corrected = TestState.koreanStatus
+    const corrected = TestState.koreanStatus()
       ? Hangul.assemble((correctedHistory[i] ?? "").split(""))
       : correctedHistory[i];
 
@@ -1443,12 +1444,13 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 }
 
 export async function applyBurstHeatmap(): Promise<void> {
-  if (TestState.lastEventLog === null) return;
+  const eventLog = TestState.lastEventLog();
+  if (eventLog === null) return;
 
   if (Config.burstHeatmap) {
     qsa("#resultWordsHistory .heatmapLegend")?.show();
 
-    const burstHistory = getWordBurstHistory(TestState.lastEventLog);
+    const burstHistory = getWordBurstHistory(eventLog);
     let burstlist = [...burstHistory];
 
     burstlist = burstlist.map((x) => (x >= 1000 ? Infinity : x));
@@ -1885,14 +1887,15 @@ export function onTestFinish(): void {
 }
 
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
-  if (TestState.lastEventLog === null) return;
+  const eventLog = TestState.lastEventLog();
+  if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory(TestState.lastEventLog).join("");
+    words = getInputHistory(eventLog).join("");
   } else {
     words = TestWords.words
       .get()
-      .slice(0, getInputHistory(TestState.lastEventLog).length)
+      .slice(0, getInputHistory(eventLog).length)
       .map((w) => w.textWithCommit)
       .join("");
   }
@@ -1900,12 +1903,13 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 });
 
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
-  if (TestState.lastEventLog === null) return;
+  const eventLog = TestState.lastEventLog();
+  if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
-    words = getInputHistory(TestState.lastEventLog).join("");
+    words = getInputHistory(eventLog).join("");
   } else {
-    words = Object.keys(getMissedWords(TestState.lastEventLog)).join(" ");
+    words = Object.keys(getMissedWords(eventLog)).join(" ");
   }
   await copyToClipboard(words);
 });

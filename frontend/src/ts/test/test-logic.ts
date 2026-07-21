@@ -193,7 +193,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     return;
   }
 
-  if (TestState.testRestarting || isResultCalculating()) {
+  if (TestState.testRestarting() || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }

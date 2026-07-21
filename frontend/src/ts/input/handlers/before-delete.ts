@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.testRestarting) {
+  if (TestState.testRestarting()) {
     event.preventDefault();
     return;
   }

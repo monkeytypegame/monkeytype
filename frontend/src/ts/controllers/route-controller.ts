@@ -162,12 +162,12 @@ export async function navigate(
 ): Promise<void> {
   if (
     !options.force &&
-    (TestState.testRestarting || isResultCalculating() || PageTransition.get())
+    (TestState.testRestarting() ||
+      isResultCalculating() ||
+      PageTransition.get())
   ) {
     console.debug(
-      `navigate: ${url} ignored, page is busy (testRestarting: ${
-        TestState.testRestarting
-      }, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
+      `navigate: ${url} ignored, page is busy (testRestarting: ${TestState.testRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }

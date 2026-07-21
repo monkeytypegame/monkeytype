@@ -25,8 +25,8 @@ export function resetPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft(),
+    isDirectionReversed: TestState.isDirectionReversed(),
     animate: false,
   });
 }
@@ -35,8 +35,8 @@ export function updatePosition(noAnim = false): void {
   caret.goTo({
     wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + CompositionState.getData().length,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: TestState.isLanguageRightToLeft(),
+    isDirectionReversed: TestState.isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }

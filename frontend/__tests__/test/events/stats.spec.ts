@@ -5,7 +5,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 }));
 
 vi.mock("../../../src/ts/test/test-state", () => ({
-  koreanStatus: false,
+  koreanStatus: () => false,
 }));
 
 const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));

@@ -540,12 +540,12 @@ async function getQuoteWordList(
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
-      TestState.selectedQuoteId,
+      TestState.selectedQuoteId(),
     );
     if (targetQuote === undefined) {
       setQuoteLengthAll();
       throw new WordGenError(
-        `Quote ${TestState.selectedQuoteId} does not exist`,
+        `Quote ${TestState.selectedQuoteId()} does not exist`,
       );
     }
     rq = targetQuote;

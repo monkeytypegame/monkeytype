@@ -38,7 +38,7 @@ export function buildEventLog(): EventLog {
     targetWords: [...TestWords.words.get().map((w) => w.textWithCommit)],
     mode: Config.mode,
     mode2: getMode2(Config, getCurrentQuote()),
-    koreanStatus: koreanStatus,
+    koreanStatus: koreanStatus(),
     bailedOut: getBailedOut(),
     ...(Config.mode === "custom" && {
       customTextLimitMode: CustomText.getLimit().mode,
