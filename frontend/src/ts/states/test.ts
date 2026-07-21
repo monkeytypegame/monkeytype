@@ -232,7 +232,7 @@ export const __nonReactive = {
   },
 };
 
-export const [selectedQuoteId, setSelectedQuoteId] = useLocalStorage({
+export const [getSelectedQuoteId, setSelectedQuoteId] = useLocalStorage({
   key: "selectedQuoteId",
   schema: z.number().int().min(1),
   fallback: 1,
@@ -242,8 +242,8 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
-export const [testRestarting, setTestRestarting] = createSignal(false);
-export const [koreanStatus, setKoreanStatus] = createSignal(false);
-export const [lastEventLog, setLastEventLog] = createSignal<EventLog | null>(
+export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
+export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
+export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
   null,
 );

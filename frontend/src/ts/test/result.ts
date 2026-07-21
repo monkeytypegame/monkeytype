@@ -57,7 +57,7 @@ import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import {
-  lastEventLog,
+  getLastEventLog,
   getCurrentQuote,
   getResultVisible,
   isTestInvalid,
@@ -102,7 +102,7 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (result.chartData === "toolong" || eventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
@@ -345,7 +345,7 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  const accEventLog = lastEventLog();
+  const accEventLog = getLastEventLog();
   if (accEventLog !== null) {
     const acc = getAccuracy(accEventLog);
     if (Config.alwaysShowDecimalPlaces) {

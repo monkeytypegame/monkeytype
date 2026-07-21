@@ -25,7 +25,7 @@ import { Config } from "../../config/store";
 import * as CustomText from "../../test/custom-text";
 import { getMode2 } from "../../utils/misc";
 import {
-  koreanStatus,
+  getKoreanStatus,
   getActiveWordIndex,
   getCurrentQuote,
   getBailedOut,
@@ -38,7 +38,7 @@ export function buildEventLog(): EventLog {
     targetWords: [...TestWords.words.get().map((w) => w.textWithCommit)],
     mode: Config.mode,
     mode2: getMode2(Config, getCurrentQuote()),
-    koreanStatus: koreanStatus(),
+    koreanStatus: getKoreanStatus(),
     bailedOut: getBailedOut(),
     ...(Config.mode === "custom" && {
       customTextLimitMode: CustomText.getLimit().mode,

@@ -12,7 +12,7 @@ import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
 import {
-  testRestarting,
+  isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
 } from "../../states/test";
@@ -99,7 +99,7 @@ inputEl.addEventListener("input", async (event) => {
   }
 
   // just in case before input doesn't catch this
-  if (isResultCalculating() || testRestarting()) return;
+  if (isResultCalculating() || isTestRestarting()) return;
 
   const now = performance.now();
 

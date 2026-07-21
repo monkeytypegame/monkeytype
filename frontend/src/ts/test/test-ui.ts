@@ -56,8 +56,8 @@ import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
-  koreanStatus,
-  lastEventLog,
+  getKoreanStatus,
+  getLastEventLog,
   getActiveWordIndex,
   isTestActive,
   setCompositionText,
@@ -1281,7 +1281,7 @@ function buildWordLettersHTML(
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
-    const historyWord: string = !koreanStatus()
+    const historyWord: string = !getKoreanStatus()
       ? (corrected ?? "")
       : Hangul.assemble((corrected ?? "").split(""));
     if (
@@ -1326,7 +1326,7 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (eventLog === null) {
     return false;
   }
@@ -1339,7 +1339,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const target = TestWords.words.get(i)?.textWithCommit ?? "";
-    const corrected = koreanStatus()
+    const corrected = getKoreanStatus()
       ? Hangul.assemble((correctedHistory[i] ?? "").split(""))
       : correctedHistory[i];
 
@@ -1447,7 +1447,7 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 }
 
 export async function applyBurstHeatmap(): Promise<void> {
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (eventLog === null) return;
 
   if (Config.burstHeatmap) {
@@ -1890,7 +1890,7 @@ export function onTestFinish(): void {
 }
 
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
@@ -1906,7 +1906,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 });
 
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {

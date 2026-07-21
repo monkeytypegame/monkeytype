@@ -31,8 +31,8 @@ import {
   setIsLanguageRightToLeft,
   setKoreanStatus,
   setLastEventLog,
-  setTestRestarting,
-  testRestarting,
+  setIsTestRestarting,
+  isTestRestarting,
   getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
@@ -198,7 +198,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     return;
   }
 
-  if (testRestarting() || isResultCalculating()) {
+  if (isTestRestarting() || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
@@ -319,7 +319,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     : "testPage";
   const noAnim = options.noAnim ?? false;
 
-  setTestRestarting(true);
+  setIsTestRestarting(true);
 
   await TestUI.fadeOutForRestart(source, noAnim);
 
@@ -331,7 +331,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   const initResult = await init();
 
   if (!initResult) {
-    setTestRestarting(false);
+    setIsTestRestarting(false);
     return;
   }
 
@@ -344,7 +344,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   TestUI.onTestRestart(source);
 
   await TestUI.fadeInAfterRestart(noAnim);
-  setTestRestarting(false);
+  setIsTestRestarting(false);
 }
 
 let lastInitError: Error | null = null;
@@ -362,7 +362,7 @@ async function init(): Promise<boolean> {
       );
     }
     TestInitFailed.show();
-    setTestRestarting(false);
+    setIsTestRestarting(false);
     return false;
   }
 

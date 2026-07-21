@@ -6,7 +6,7 @@ import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import {
-  testRestarting,
+  isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
   wordsHaveNewline,
@@ -22,7 +22,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (testRestarting()) {
+  if (isTestRestarting()) {
     return true;
   }
 

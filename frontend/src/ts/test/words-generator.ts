@@ -28,7 +28,7 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import {
-  selectedQuoteId,
+  getSelectedQuoteId,
   getCurrentQuote,
   isRepeated,
   setCurrentQuote,
@@ -543,10 +543,10 @@ async function getQuoteWordList(
 
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(selectedQuoteId());
+    const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
     if (targetQuote === undefined) {
       setQuoteLengthAll();
-      throw new WordGenError(`Quote ${selectedQuoteId()} does not exist`);
+      throw new WordGenError(`Quote ${getSelectedQuoteId()} does not exist`);
     }
     rq = targetQuote;
   } else if (Config.quoteLength.includes(-3)) {

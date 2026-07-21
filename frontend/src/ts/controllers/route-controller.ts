@@ -7,7 +7,7 @@ import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
 import { authEvent } from "../events/auth";
 import {
-  testRestarting,
+  isTestRestarting,
   isResultCalculating,
   isTestActive,
 } from "../states/test";
@@ -165,10 +165,10 @@ export async function navigate(
 ): Promise<void> {
   if (
     !options.force &&
-    (testRestarting() || isResultCalculating() || PageTransition.get())
+    (isTestRestarting() || isResultCalculating() || PageTransition.get())
   ) {
     console.debug(
-      `navigate: ${url} ignored, page is busy (testRestarting: ${testRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
+      `navigate: ${url} ignored, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }

@@ -11,7 +11,7 @@ import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
-import { lastEventLog, getResultVisible } from "../../states/test";
+import { getLastEventLog, getResultVisible } from "../../states/test";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -139,7 +139,7 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      const eventLog = lastEventLog();
+      const eventLog = getLastEventLog();
       if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;
