@@ -35,7 +35,7 @@ import {
   showFpsCounter,
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
-import { lastEventLog } from "../states/test";
+import { getLastEventLog } from "../states/test";
 
 const adsCommands = buildCommands("ads");
 
@@ -277,11 +277,11 @@ export const commands: CommandsSubgroup = {
       icon: "fa-cog",
       visible: false,
       available: (): boolean => {
-        return lastEventLog() !== null;
+        return getLastEventLog() !== null;
       },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(JSON.stringify(lastEventLog()))
+          .writeText(JSON.stringify(getLastEventLog()))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

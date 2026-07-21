@@ -13,7 +13,7 @@ import {
   getWordBurstHistory,
 } from "./events/stats";
 import { setCustomTextIndicator } from "../states/core";
-import { lastEventLog } from "../states/test";
+import { getLastEventLog } from "../states/test";
 
 type Before = {
   mode: Mode | null;
@@ -33,7 +33,7 @@ export function init(
   missed: "off" | "words" | "biwords",
   slow: boolean,
 ): boolean {
-  const eventLog = lastEventLog();
+  const eventLog = getLastEventLog();
   if (eventLog === null) return false;
   if (Config.mode === "zen") return false;
   let limit;

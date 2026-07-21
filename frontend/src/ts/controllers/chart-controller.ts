@@ -65,7 +65,7 @@ import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
-import { lastEventLog } from "../states/test";
+import { getLastEventLog } from "../states/test";
 import { typedKeys } from "@monkeytype/util/objects";
 
 export class ChartWithUpdateColors<
@@ -273,7 +273,7 @@ export const result = new ChartWithUpdateColors<
         callbacks: {
           afterLabel: function (ti): string {
             if (prevTi === ti) return "";
-            const eventLog = lastEventLog();
+            const eventLog = getLastEventLog();
             if (eventLog === null) return "";
 
             prevTi = ti;
