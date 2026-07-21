@@ -49,7 +49,7 @@ vi.mock("../../../src/ts/states/test", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
   getBailedOut: () => false,
-  koreanStatus: () => false,
+  getKoreanStatus: () => false,
 }));
 
 import {
