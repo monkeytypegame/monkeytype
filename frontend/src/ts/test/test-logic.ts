@@ -27,6 +27,12 @@ import {
   isAuthenticated,
 } from "../states/core";
 import {
+  setIsDirectionReversed,
+  setIsLanguageRightToLeft,
+  setKoreanStatus,
+  setLastEventLog,
+  setIsTestRestarting,
+  isTestRestarting,
   getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
@@ -57,7 +63,6 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import * as TestState from "./test-state";
 import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
@@ -193,7 +198,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     return;
   }
 
-  if (TestState.testRestarting || isResultCalculating()) {
+  if (isTestRestarting() || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
@@ -294,7 +299,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   Replay.pauseReplay();
   setBailedOut(false);
   PaceCaret.reset();
-  TestState.setKoreanStatus(false);
+  setKoreanStatus(false);
   clearQuoteStats();
   CompositionState.setComposing(false);
   CompositionState.setData("");
@@ -314,7 +319,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     : "testPage";
   const noAnim = options.noAnim ?? false;
 
-  TestState.setTestRestarting(true);
+  setIsTestRestarting(true);
 
   await TestUI.fadeOutForRestart(source, noAnim);
 
@@ -326,7 +331,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   const initResult = await init();
 
   if (!initResult) {
-    TestState.setTestRestarting(false);
+    setIsTestRestarting(false);
     return;
   }
 
@@ -339,7 +344,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   TestUI.onTestRestart(source);
 
   await TestUI.fadeInAfterRestart(noAnim);
-  TestState.setTestRestarting(false);
+  setIsTestRestarting(false);
 }
 
 let lastInitError: Error | null = null;
@@ -357,7 +362,7 @@ async function init(): Promise<boolean> {
       );
     }
     TestInitFailed.show();
-    TestState.setTestRestarting(false);
+    setIsTestRestarting(false);
     return false;
   }
 
@@ -522,7 +527,7 @@ async function init(): Promise<boolean> {
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
       )
   ) {
-    TestState.setKoreanStatus(true);
+    setKoreanStatus(true);
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
@@ -551,10 +556,8 @@ async function init(): Promise<boolean> {
   TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  TestState.setIsLanguageRightToLeft(isLanguageRTL);
-  TestState.setIsDirectionReversed(
-    isFunboxActiveWithProperty("reverseDirection"),
-  );
+  setIsLanguageRightToLeft(isLanguageRTL);
+  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
 
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
@@ -872,7 +875,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
-  TestState.setLastEventLog(eventLog);
+  setLastEventLog(eventLog);
   setLastResult(structuredClone(completedEvent));
 
   ///////// completed event ready

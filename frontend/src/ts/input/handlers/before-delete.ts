@@ -1,11 +1,11 @@
 import { Config } from "../../config/store";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
 import {
+  isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,
@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.testRestarting) {
+  if (isTestRestarting()) {
     event.preventDefault();
     return;
   }

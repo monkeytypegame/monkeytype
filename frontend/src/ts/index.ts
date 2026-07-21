@@ -39,7 +39,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
-import { lastEventLog } from "./test/test-state";
+import { getLastEventLog } from "./states/test";
 import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
@@ -92,7 +92,7 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => lastEventLog,
+  lastEventLog: () => getLastEventLog(),
   currentEventLog: buildEventLog,
 });
 

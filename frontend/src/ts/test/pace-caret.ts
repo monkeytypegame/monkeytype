@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
@@ -13,6 +12,8 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
   getActiveWordIndex,
   getCurrentQuote,
   getResultVisible,
@@ -57,8 +58,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
@@ -141,8 +142,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration,

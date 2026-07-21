@@ -5,14 +5,13 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
-import { getResultVisible } from "../../states/test";
+import { getLastEventLog, getResultVisible } from "../../states/test";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -140,12 +139,13 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      if (TestState.lastEventLog === null) {
+      const eventLog = getLastEventLog();
+      if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;
       }
 
-      const inputHistory = getInputHistory(TestState.lastEventLog);
+      const inputHistory = getInputHistory(eventLog);
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
