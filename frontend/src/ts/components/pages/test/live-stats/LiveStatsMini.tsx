@@ -28,7 +28,12 @@ export function LiveStatsMini() {
           "margin-left": isTape() ? `${getConfig.tapeMargin}%` : "0.25em",
         }}
       >
-        <AnimeShow when={true}>
+        <AnimeShow
+          when={
+            showLiveStats() &&
+            ["mini", "flash_mini"].includes(getConfig.timerStyle)
+          }
+        >
           {/* the fade animates the wrapper opacity, so the flash gate lives on the child */}
           <div style={{ opacity: isTimerFlashHidden() ? 0 : 1 }}>
             {getTimerText()}
