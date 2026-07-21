@@ -11,7 +11,7 @@ import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
 import * as CompositionState from "../../legacy-states/composition";
-import * as TestState from "../../test/test-state";
+import { testRestarting } from "../../test/test-state";
 import { getActiveWordIndex, isResultCalculating } from "../../states/test";
 import { getCurrentInput } from "../../test/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
@@ -96,7 +96,7 @@ inputEl.addEventListener("input", async (event) => {
   }
 
   // just in case before input doesn't catch this
-  if (isResultCalculating() || TestState.testRestarting()) return;
+  if (isResultCalculating() || testRestarting()) return;
 
   const now = performance.now();
 

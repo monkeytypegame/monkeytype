@@ -3,7 +3,7 @@ import * as PageTransition from "../legacy-states/page-transition";
 import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
-import * as TestState from "../test/test-state";
+import { testRestarting } from "../test/test-state";
 import { showNoticeNotification } from "../states/notifications";
 import { navigationEvent, type NavigateOptions } from "../events/navigation";
 import { authEvent } from "../events/auth";
@@ -162,12 +162,10 @@ export async function navigate(
 ): Promise<void> {
   if (
     !options.force &&
-    (TestState.testRestarting() ||
-      isResultCalculating() ||
-      PageTransition.get())
+    (testRestarting() || isResultCalculating() || PageTransition.get())
   ) {
     console.debug(
-      `navigate: ${url} ignored, page is busy (testRestarting: ${TestState.testRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
+      `navigate: ${url} ignored, page is busy (testRestarting: ${testRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
     );
     return;
   }

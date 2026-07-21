@@ -22,7 +22,12 @@ import { getActivePage } from "../states/core";
 import Format from "../singletons/format";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
-import * as TestState from "./test-state";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  koreanStatus,
+  lastEventLog,
+} from "./test-state";
 import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
@@ -243,8 +248,8 @@ async function joinOverlappingHints(
 
   const [isWordRightToLeft] = Strings.isWordRightToLeft(
     currentWord.text,
-    TestState.isLanguageRightToLeft(),
-    TestState.isDirectionReversed(),
+    isLanguageRightToLeft(),
+    isDirectionReversed(),
   );
 
   let previousBlocksAdjacent = false;
@@ -465,7 +470,7 @@ function updateWordWrapperClasses(): void {
     fontSize: `${Config.fontSize}rem`,
   });
 
-  if (TestState.isLanguageRightToLeft()) {
+  if (isLanguageRightToLeft()) {
     wordsEl.addClass("rightToLeftTest");
     qs("#resultWordsHistory .words")?.addClass("rightToLeftTest");
     qs("#resultReplay .words")?.addClass("rightToLeftTest");
@@ -537,9 +542,9 @@ export function appendEmptyWordElement(index: number): void {
 
 export function updateWordsInputPosition(): void {
   if (getActivePage() !== "test") return;
-  const isTestRightToLeft = TestState.isDirectionReversed()
-    ? !TestState.isLanguageRightToLeft()
-    : TestState.isLanguageRightToLeft();
+  const isTestRightToLeft = isDirectionReversed()
+    ? !isLanguageRightToLeft()
+    : isLanguageRightToLeft();
 
   const el = getInputElement();
 
@@ -958,9 +963,9 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   await centeringActiveLine;
 
-  const isTestRightToLeft = TestState.isDirectionReversed()
-    ? !TestState.isLanguageRightToLeft()
-    : TestState.isLanguageRightToLeft();
+  const isTestRightToLeft = isDirectionReversed()
+    ? !isLanguageRightToLeft()
+    : isLanguageRightToLeft();
 
   const wordsWrapperWidth = wordsWrapperEl.getOffsetWidth();
   const wordsChildrenArr = wordsEl.getChildren();
@@ -1278,7 +1283,7 @@ function buildWordLettersHTML(
 
     let correctedChar = correctedChars[c];
     let extraCorrected = "";
-    const historyWord: string = !TestState.koreanStatus()
+    const historyWord: string = !koreanStatus()
       ? (corrected ?? "")
       : Hangul.assemble((corrected ?? "").split(""));
     if (
@@ -1323,7 +1328,7 @@ async function loadWordsHistory(): Promise<boolean> {
   const wordsContainer = qs("#resultWordsHistory .words");
   wordsContainer?.empty();
 
-  const eventLog = TestState.lastEventLog();
+  const eventLog = lastEventLog();
   if (eventLog === null) {
     return false;
   }
@@ -1336,7 +1341,7 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < inputHistoryLength + 2; i++) {
     const input = inputHistory[i];
     const target = TestWords.words.get(i)?.textWithCommit ?? "";
-    const corrected = TestState.koreanStatus()
+    const corrected = koreanStatus()
       ? Hangul.assemble((correctedHistory[i] ?? "").split(""))
       : correctedHistory[i];
 
@@ -1444,7 +1449,7 @@ export async function toggleResultWords(noAnimation = false): Promise<void> {
 }
 
 export async function applyBurstHeatmap(): Promise<void> {
-  const eventLog = TestState.lastEventLog();
+  const eventLog = lastEventLog();
   if (eventLog === null) return;
 
   if (Config.burstHeatmap) {
@@ -1887,7 +1892,7 @@ export function onTestFinish(): void {
 }
 
 qs(".pageTest #copyWordsListButton")?.on("click", async () => {
-  const eventLog = TestState.lastEventLog();
+  const eventLog = lastEventLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
@@ -1903,7 +1908,7 @@ qs(".pageTest #copyWordsListButton")?.on("click", async () => {
 });
 
 qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
-  const eventLog = TestState.lastEventLog();
+  const eventLog = lastEventLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {

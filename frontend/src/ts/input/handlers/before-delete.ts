@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestState from "../../test/test-state";
+import { testRestarting } from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.testRestarting()) {
+  if (testRestarting()) {
     event.preventDefault();
     return;
   }

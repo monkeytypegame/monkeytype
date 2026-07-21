@@ -52,7 +52,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import * as TestState from "./test-state";
+import { lastEventLog } from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
@@ -102,7 +102,7 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  const eventLog = TestState.lastEventLog();
+  const eventLog = lastEventLog();
   if (result.chartData === "toolong" || eventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
@@ -345,7 +345,7 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  const accEventLog = TestState.lastEventLog();
+  const accEventLog = lastEventLog();
   if (accEventLog !== null) {
     const acc = getAccuracy(accEventLog);
     if (Config.alwaysShowDecimalPlaces) {

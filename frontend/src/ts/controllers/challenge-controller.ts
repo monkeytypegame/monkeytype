@@ -9,7 +9,7 @@ import * as Funbox from "../test/funbox/funbox";
 import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
-import * as TestState from "../test/test-state";
+import { testRestarting } from "../test/test-state";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
@@ -23,11 +23,7 @@ import { qs } from "../utils/dom";
 let challengeLoading = false;
 
 export function clearActive(): void {
-  if (
-    getLoadedChallenge() !== null &&
-    !challengeLoading &&
-    !TestState.testRestarting()
-  ) {
+  if (getLoadedChallenge() !== null && !challengeLoading && !testRestarting()) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);
   }

@@ -5,7 +5,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestState from "../../test/test-state";
+import { lastEventLog } from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
@@ -140,7 +140,7 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      const eventLog = TestState.lastEventLog();
+      const eventLog = lastEventLog();
       if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;

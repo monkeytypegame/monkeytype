@@ -13,7 +13,7 @@ import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
-import * as TestState from "../test/test-state";
+import { selectedQuoteId } from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder } from "../utils/json-data";
 import {
@@ -539,14 +539,10 @@ async function getQuoteWordList(
 
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(
-      TestState.selectedQuoteId(),
-    );
+    const targetQuote = QuotesController.getQuoteById(selectedQuoteId());
     if (targetQuote === undefined) {
       setQuoteLengthAll();
-      throw new WordGenError(
-        `Quote ${TestState.selectedQuoteId()} does not exist`,
-      );
+      throw new WordGenError(`Quote ${selectedQuoteId()} does not exist`);
     }
     rq = targetQuote;
   } else if (Config.quoteLength.includes(-3)) {

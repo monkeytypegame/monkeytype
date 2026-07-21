@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestState from "../../test/test-state";
+import { testRestarting } from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
@@ -22,7 +22,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (TestState.testRestarting()) {
+  if (testRestarting()) {
     return true;
   }
 

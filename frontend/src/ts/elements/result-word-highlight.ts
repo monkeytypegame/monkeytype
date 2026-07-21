@@ -4,7 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import * as TestState from "../test/test-state";
+import { isLanguageRightToLeft } from "../test/test-state";
 import { qsr } from "../utils/dom";
 
 const PADDING_X = 16;
@@ -103,7 +103,7 @@ export async function highlightWordsInRange(
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    TestState.isLanguageRightToLeft(),
+    isLanguageRightToLeft(),
   );
 
   // For each line...
@@ -304,7 +304,7 @@ async function init(): Promise<boolean> {
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
       let RTL_offset;
-      if (TestState.isLanguageRightToLeft()) {
+      if (isLanguageRightToLeft()) {
         RTL_offset = line.rect.left - RWH_rect.left + PADDING_X;
       } else {
         RTL_offset = 0;

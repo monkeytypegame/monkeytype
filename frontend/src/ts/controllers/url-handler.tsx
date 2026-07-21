@@ -34,7 +34,7 @@ import {
 } from "../states/notifications";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
-import * as TestState from "../test/test-state";
+import { setSelectedQuoteId } from "../test/test-state";
 import * as Misc from "../utils/misc";
 import * as ChallengeController from "./challenge-controller";
 
@@ -205,7 +205,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       });
     } else if (mode === "quote") {
       setConfig("quoteLength", [-2]);
-      TestState.setSelectedQuoteId(parseInt(de[1], 10));
+      setSelectedQuoteId(parseInt(de[1], 10));
     }
     applied["mode2"] = de[1];
   }

@@ -1,6 +1,6 @@
 import { getInputElement } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
-import * as TestState from "../../test/test-state";
+import { testRestarting } from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
@@ -22,7 +22,7 @@ inputEl.addEventListener("compositionstart", (event) => {
 
   const now = performance.now();
 
-  if (TestState.testRestarting() || isResultCalculating()) return;
+  if (testRestarting() || isResultCalculating()) return;
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -42,7 +42,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
-  if (TestState.testRestarting() || isResultCalculating()) return;
+  if (testRestarting() || isResultCalculating()) return;
   CompositionState.setData(event.data);
   setCompositionText(event.data);
 
@@ -58,7 +58,7 @@ inputEl.addEventListener("compositionupdate", (event) => {
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
 
-  if (TestState.testRestarting() || isResultCalculating()) return;
+  if (testRestarting() || isResultCalculating()) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
   setCompositionText("");

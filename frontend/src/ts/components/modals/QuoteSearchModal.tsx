@@ -29,7 +29,7 @@ import {
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
+import { setSelectedQuoteId } from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
@@ -398,7 +398,7 @@ export function QuoteSearchModal(): JSXElement {
       showNoticeNotification("Quote ID must be at least 1");
       return;
     }
-    TestState.setSelectedQuoteId(quoteId);
+    setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
     void TestLogic.restart();
     hideModalAndClearChain("QuoteSearch");
