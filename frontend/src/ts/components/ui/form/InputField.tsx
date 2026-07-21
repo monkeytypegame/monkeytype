@@ -5,6 +5,7 @@ import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
 import { getZodType, unwrapSchema } from "../../../utils/zod";
+import { Button } from "../../common/Button";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -30,6 +31,9 @@ export function InputField(props: {
   alwaysShowFieldIndicator?: boolean;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
+  const [showPassword, setShowPassword] = createSignal(false);
+  const isPasswordType = () => props.type === "password";
+  const hasValidators = () => !!props.field().options.validators;
 
   const shakeItIfYouWantIt = () => {
     if (
@@ -62,10 +66,18 @@ export function InputField(props: {
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
           "autofill-fix",
-          props.field().options.validators ? "pr-[1.85em]" : "",
+          isPasswordType() || props.field().options.validators
+            ? "pr-[1.85em]"
+            : "",
           props.class,
         )}
-        type={props.type ?? "text"}
+        type={
+          isPasswordType()
+            ? showPassword()
+              ? "text"
+              : "password"
+            : (props.type ?? "text")
+        }
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
@@ -110,6 +122,27 @@ export function InputField(props: {
         max={props.max}
         step={props.step?.toString()}
       />
+      <Show when={isPasswordType()}>
+        <Button
+          tabIndex={-1}
+          variant="text"
+          balloon={{ text: showPassword() ? "hide password" : "show password" }}
+          fa={{
+            icon: showPassword() ? "fa-eye-slash" : "fa-eye",
+            fixedWidth: true,
+          }}
+          class={cn(
+            "col-start-1 row-start-1 cursor-pointer self-center justify-self-end text-em-base hover:text-main focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
+            hasValidators() ? "pr-[1.8em]" : "pr-[0.4em]",
+          )}
+          onClick={() => {
+            setShowPassword((prev) => {
+              const next = !prev;
+              return next;
+            });
+          }}
+        />
+      </Show>
       <Show when={props.field().options.validators}>
         <FieldIndicator
           field={props.field()}
