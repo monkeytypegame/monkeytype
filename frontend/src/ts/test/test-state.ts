@@ -5,7 +5,7 @@ import { EventLog } from "./events/types";
 
 export const [selectedQuoteId, setSelectedQuoteId] = useLocalStorage({
   key: "selectedQuoteId",
-  schema: z.number(),
+  schema: z.number().int().min(1),
   fallback: 1,
 });
 
