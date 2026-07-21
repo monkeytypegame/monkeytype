@@ -3,15 +3,22 @@ import {
   PaceCaretCustomSpeedSchema,
 } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
+import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement } from "solid-js";
 
 import {
   configMetadata,
+  getOptionLabel,
   getOptionSearchKeywords,
 } from "../../../../config/metadata";
+import {
+  getPaceCaretContext,
+  isPaceCaretModeAvailable,
+} from "../../../../config/pace-caret-options";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
+import { getServerConfigurationQueryOptions } from "../../../../queries/server-configuration";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { InputField } from "../../../ui/form/InputField";
@@ -20,6 +27,9 @@ import { SearchableSetting } from "../SearchableSetting";
 
 export function PaceCaret(): JSXElement {
   const savedIndicator = useSavedIndicator();
+  const serverConfiguration = useQuery(() =>
+    getServerConfigurationQueryOptions(),
+  );
 
   const form = createForm(() => ({
     defaultValues: {
@@ -77,15 +87,17 @@ export function PaceCaret(): JSXElement {
             />
           </form>
           <div class="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-2">
-            <For each={getOptions(ConfigSchema.shape.paceCaret)}>
+            <For
+              each={getOptions(ConfigSchema.shape.paceCaret)?.filter((option) =>
+                isPaceCaretModeAvailable(
+                  option,
+                  getPaceCaretContext(),
+                  serverConfiguration.data,
+                ),
+              )}
+            >
               {(option) => {
-                const optionMeta = configMetadata.paceCaret
-                  .optionsMetadata as Record<
-                  string,
-                  { displayString?: string }
-                >;
-                const displayString =
-                  optionMeta?.[String(option)]?.displayString ?? String(option);
+                const displayString = getOptionLabel("paceCaret", option);
                 return (
                   <Button
                     active={getConfig.paceCaret === option}

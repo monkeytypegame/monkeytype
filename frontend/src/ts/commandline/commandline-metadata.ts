@@ -15,6 +15,10 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import * as UI from "../ui";
 import { Validation } from "../types/validation";
 import { typedKeys } from "@monkeytype/util/objects";
+import {
+  getPaceCaretContext,
+  isPaceCaretModeAvailable,
+} from "../config/pace-caret-options";
 
 //TODO: remove display property and instead use optionsMetadata from configMetadata
 // eventually this file should be fully merged into config metadata, probably under the 'commandline' property
@@ -482,7 +486,18 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   paceCaret: {
     display: "Pace caret mode...",
     subgroup: {
-      options: ["off", "pb", "tagPb", "last", "average", "daily"],
+      options: [
+        "off",
+        "pb",
+        "tagPb",
+        "last",
+        "average",
+        "daily",
+        "next",
+        "nextDaily",
+      ],
+      isAvailable: (value) => () =>
+        isPaceCaretModeAvailable(value, getPaceCaretContext()),
       afterExec: () => {
         void TestLogic.restart();
       },

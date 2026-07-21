@@ -493,6 +493,54 @@ describe("Loaderboard Controller", () => {
     });
   });
 
+  describe("get next leaderboard WPM", () => {
+    const getNextWpmMock = vi.spyOn(LeaderboardDal, "getNextWpm");
+
+    beforeEach(() => {
+      getNextWpmMock.mockReset();
+      getNextWpmMock.mockResolvedValue(null);
+    });
+
+    it("requires authentication", async () => {
+      await mockApp
+        .get("/leaderboards/next")
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(401);
+    });
+
+    it("returns the next distinct WPM", async () => {
+      getNextWpmMock.mockResolvedValue(105.25);
+
+      const { body } = await mockApp
+        .get("/leaderboards/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(200);
+
+      expect(body.data).toEqual({ next: 105.25 });
+      expect(getNextWpmMock).toHaveBeenCalledWith("time", "60", "english", uid);
+    });
+
+    it("returns null for unsupported modes and missing entries", async () => {
+      const unsupported = await mockApp
+        .get("/leaderboards/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "spanish", mode: "time", mode2: "60" })
+        .expect(200);
+
+      expect(unsupported.body.data).toBeNull();
+      expect(getNextWpmMock).not.toHaveBeenCalled();
+
+      const missing = await mockApp
+        .get("/leaderboards/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(200);
+
+      expect(missing.body.data).toBeNull();
+    });
+  });
+
   describe("get daily leaderboard", () => {
     const getDailyLeaderboardMock = vi.spyOn(
       DailyLeaderboards,
@@ -1051,6 +1099,66 @@ describe("Loaderboard Controller", () => {
       expect(body.message).toEqual(
         "There is no daily leaderboard for this mode",
       );
+    });
+  });
+
+  describe("get next daily leaderboard WPM", () => {
+    const getDailyLeaderboardMock = vi.spyOn(
+      DailyLeaderboards,
+      "getDailyLeaderboard",
+    );
+    const getNextWpmMock = vi.fn();
+
+    beforeEach(async () => {
+      getDailyLeaderboardMock.mockReset();
+      getNextWpmMock.mockReset();
+      getNextWpmMock.mockResolvedValue(null);
+      getDailyLeaderboardMock.mockReturnValue({
+        getNextWpm: getNextWpmMock,
+      } as any);
+      await dailyLeaderboardEnabled(true);
+    });
+
+    it("requires authentication", async () => {
+      await mockApp
+        .get("/leaderboards/daily/next")
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(401);
+    });
+
+    it("returns the next daily WPM or null", async () => {
+      getNextWpmMock.mockResolvedValue(99.5);
+
+      const { body } = await mockApp
+        .get("/leaderboards/daily/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(200);
+
+      expect(body.data).toEqual({ next: 99.5 });
+      expect(getNextWpmMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards,
+      );
+
+      getDailyLeaderboardMock.mockReturnValue(null);
+      const unavailable = await mockApp
+        .get("/leaderboards/daily/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "spanish", mode: "time", mode2: "60" })
+        .expect(200);
+
+      expect(unavailable.body.data).toBeNull();
+    });
+
+    it("is unavailable when daily leaderboards are disabled", async () => {
+      await dailyLeaderboardEnabled(false);
+
+      await mockApp
+        .get("/leaderboards/daily/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(503);
     });
   });
 

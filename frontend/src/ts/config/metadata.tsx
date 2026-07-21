@@ -13,6 +13,10 @@ import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getOptions } from "../utils/zod";
 import { canSetFunboxWithConfig } from "./funbox-validation";
+import {
+  getPaceCaretContext,
+  isPaceCaretModeAvailable,
+} from "./pace-caret-options";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -700,11 +704,15 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description:
-      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
+      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours. 'next' targets the next distinct all-time leaderboard WPM, while 'daily next' targets today's daily leaderboard.",
     optionsMetadata: {
       tagPb: {
         displayString: "tag pb",
       },
+      nextDaily: {
+        displayString: "daily next",
+      },
+      next: {},
       average: {},
       custom: {},
       daily: {},
@@ -714,6 +722,17 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
+        if (
+          (value === "next" || value === "nextDaily") &&
+          !isPaceCaretModeAvailable(value, getPaceCaretContext())
+        ) {
+          showNoticeNotification(
+            `Pace caret "${
+              value === "nextDaily" ? "daily next" : "next"
+            }" is unavailable for this test`,
+          );
+          return true;
+        }
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           showNoticeNotification(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
