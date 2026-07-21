@@ -880,6 +880,7 @@ const modal = new AnimatedModal({
     input.on(
       "input",
       debounce(50, async (e) => {
+        if (isAnimating) return;
         inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
@@ -898,6 +899,11 @@ const modal = new AnimatedModal({
     );
 
     input.on("keydown", async (e) => {
+      //the commandline is on its way out - swallow everything
+      if (isAnimating) {
+        e.preventDefault();
+        return;
+      }
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||
