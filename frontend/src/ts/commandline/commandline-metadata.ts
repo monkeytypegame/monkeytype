@@ -405,6 +405,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           "24": "razer green",
           "25": "tealios v2",
           "26": "trust gxt",
+          "27": "chalk",
         };
         return map[value];
       },
