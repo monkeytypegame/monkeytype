@@ -193,6 +193,25 @@ describe("url-handler", () => {
       );
       expect(restartTestMock).toHaveBeenCalled();
     });
+    it("sets pipeDelimiter to false", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["abc"],
+            pipeDelimiter: false,
+            mode: "repeat",
+            limit: { mode: "word", value: 10 },
+          },
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(TestLogic.restart).toHaveBeenCalled();
+    });
     it("sets funbox legacy", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
