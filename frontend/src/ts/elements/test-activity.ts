@@ -22,6 +22,8 @@ export function clear(element?: HTMLElement): void {
   element?.querySelector(".activity")?.replaceChildren();
 }
 
+let tooltipResizeObserver: ResizeObserver | undefined;
+
 export function update(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
@@ -51,7 +53,8 @@ export function update(
     }
   }
 
-  for (const day of calendar.getDays()) {
+  const days = calendar.getDays();
+  for (const day of days) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
@@ -60,6 +63,38 @@ export function update(
     }
     container.appendChild(elem);
   }
+
+  const longestLabel = [...container.children].reduce((longest, child) => {
+    const label = child.getAttribute("aria-label") ?? "";
+    return label.length > longest.length ? label : longest;
+  }, "");
+
+  const probe = document.createElement("span");
+  probe.style.cssText =
+    "position:absolute;visibility:hidden;white-space:nowrap;font-family:var(--font);font-size:var(--balloon-font-size)";
+  probe.textContent = longestLabel;
+  document.body.appendChild(probe);
+  const tooltipWidth = probe.offsetWidth + 16; // +16 for balloon padding
+  document.body.removeChild(probe);
+
+  const updateTooltipPositions = (): void => {
+    for (const child of container.children) {
+      if (!child.hasAttribute("aria-label")) continue;
+      const rect = (child as HTMLElement).getBoundingClientRect();
+      const pos =
+        rect.left - tooltipWidth / 2 < 0
+          ? "up-left"
+          : rect.right + tooltipWidth / 2 > window.innerWidth
+            ? "up-right"
+            : "up";
+      child.setAttribute("data-balloon-pos", pos);
+    }
+  };
+
+  updateTooltipPositions();
+  tooltipResizeObserver?.disconnect();
+  tooltipResizeObserver = new ResizeObserver(updateTooltipPositions);
+  tooltipResizeObserver.observe(container);
 }
 
 function updateMonths(months: TestActivityMonth[]): void {
