@@ -1,3 +1,11 @@
+<p align="center">
+    <a href="https://github.com/monkeytypegame/monkeytype"><img src="https://img.shields.io/badge/status-active-brightgreen.svg"></a>
+    <a href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"><img src="https://img.shields.io/github/contributors/monkeytypegame/monkeytype?color=blue"></a>
+    <a href="https://github.com/monkeytypegame/monkeytype/stargazers"><img src="https://img.shields.io/github/stars/monkeytypegame/monkeytype.svg?logo=github"></a>
+    <a href="https://github.com/monkeytypegame/monkeytype/network/members"><img src="https://img.shields.io/github/forks/monkeytypegame/monkeytype.svg?color=blue&logo=github"></a>
+    <img src="https://visitor-badge.laobi.icu/badge?page_id=monkeytypegame.monkeytype" alt="visitors"/>   
+</p>
+
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
@@ -20,6 +28,8 @@
 [![Vite](https://img.shields.io/badge/Vite-9135FF?style=for-the-badge&logo=Vite&logoColor=white)](https://vitejs.dev/)
 [![Vitest](https://img.shields.io/badge/vitest-00FF74?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Zod](https://img.shields.io/badge/-Zod-408AFF?style=for-the-badge&logo=zod&logoColor=white)](https://zod.dev/)
+
+<br>
 
 # About
 
