@@ -224,7 +224,31 @@ describe("url-handler", () => {
       );
       expect(restartTestMock).toHaveBeenCalled();
     });
-    it("sets customText with pipeDelimiter to false", () => {
+    it("sets custom text (text, mode, limit, pipeDelimiter)", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["hello", "world"],
+            limit: { mode: "word", value: 5 },
+            mode: "random",
+            pipeDelimiter: true,
+          },
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setTextMock).toHaveBeenCalledWith(["hello", "world"]);
+      expect(setModeMock).toHaveBeenCalledWith("random");
+      expect(setLimitModeMock).toHaveBeenCalledWith("word");
+      expect(setLimitValueMock).toHaveBeenCalledWith(5);
+      expect(setPipeDelimiterMock).toHaveBeenCalledWith(true);
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("sets custom text with pipeDelimiter to false", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
         urlData({
@@ -246,6 +270,104 @@ describe("url-handler", () => {
       expect(setLimitModeMock).toHaveBeenCalledWith("word");
       expect(setLimitValueMock).toHaveBeenLastCalledWith(10);
       expect(setPipeDelimiterMock).toHaveBeenCalledWith(false);
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("sets custom text mode to 'repeat' when undefined", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["hello"],
+            limit: { mode: "word", value: 5 },
+          } as any,
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setModeMock).toHaveBeenCalledWith("repeat");
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("does not call limit setters when limit is undefined", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["hello", "world"],
+            mode: "repeat",
+          } as any,
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setLimitModeMock).not.toHaveBeenCalled();
+      expect(setLimitValueMock).not.toHaveBeenCalled();
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("sets pipeDelimiter to true when delimiter is '|' (legacy)", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["a", "b"],
+            mode: "repeat",
+            delimiter: "|",
+          } as any,
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setPipeDelimiterMock).toHaveBeenCalledWith(true);
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("handles legacy isWordRandom", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["hello"],
+            mode: "repeat",
+            isWordRandom: true,
+            word: 10,
+          } as any,
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setLimitModeMock).toHaveBeenCalledWith("word");
+      expect(setLimitValueMock).toHaveBeenCalledWith(10);
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("handles legacy isTimeRandom", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["hello"],
+            mode: "repeat",
+            isTimeRandom: true,
+            time: 60,
+          } as any,
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setLimitModeMock).toHaveBeenCalledWith("time");
+      expect(setLimitValueMock).toHaveBeenCalledWith(60);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("adds notification", () => {
