@@ -61,11 +61,11 @@ The account system will not let you create an account without a Firebase project
 1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
+   - Save as `serviceAccountKey.json` inside the [backend/src/credentials](/backend/src/credentials) directory.
 
 1. Run `pnpm add -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
-1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
+1. Within the [frontend](/frontend) directory, duplicate [.firebaserc_example](/frontend/.firebaserc_example), rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
    - Run `firebase projects:list` to find your firebase project ID.
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -79,7 +79,7 @@ The account system will not let you create an account without a Firebase project
 
 ### Config file
 
-Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+Within the [frontend/src/ts/constants](/frontend/src/ts/constants) directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
 
 - If you skipped the Firebase step, you can leave the fields blank
 - Otherwise:
@@ -152,7 +152,7 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 Code formatting and linting is enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically runs every time you make a commit.
 
-For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
+For guidelines on commit messages, adding themes, languages, layouts, fonts or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 

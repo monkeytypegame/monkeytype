@@ -13,7 +13,7 @@ First, you will have to make a personal copy of the Monkeytype repository, also 
 
 ## Creating Languages
 
-Once you have forked the repository you can now add your language. Create a new JSON file in `./frontend/static/languages/`, named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
+Once you have forked the repository you can now add your language. Create a new JSON file in [frontend/static/languages](/frontend/static/languages), named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
 The contents of the file should be as follows:
 
@@ -37,7 +37,7 @@ If the words you're adding are ordered by frequency (most common words at the to
 Finally, add your list of words to the `words` field.
 If the language is not rendered correctly, you can provide a `preferredFont`. The font needs to be one of monkeytypes fonts. Check the [fonts documentation](./FONTS.md).
 
-Then, go to `packages/schemas/src/languages.ts` and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
+Then, go to [packages/schemas/src/languages.ts](/packages/schemas/src/languages.ts) and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
 ```typescript
 export const LanguageSchema = z.enum([
@@ -48,7 +48,7 @@ export const LanguageSchema = z.enum([
 ]);
 ```
 
-Then, go to `frontend/src/ts/constants/language.ts` and add your new language name to the `LanguageGroups` map. You can either add it to an existing group or add a new one. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
+Then, go to [frontend/src/ts/constants/languages.ts](/frontend/src/ts/constants/languages.ts) and add your new language name to the `LanguageGroups` map. You can either add it to an existing group or add a new one. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 
 ```typescript
 export const LanguageGroups: Record<string, Language[]> = {
@@ -72,4 +72,6 @@ Create a pull request:
 
 ## Language Guidelines
 
-Make sure your language follows the [Language guidelines](./CONTRIBUTING.md#language-guidelines).
+- Do not include expletive words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
