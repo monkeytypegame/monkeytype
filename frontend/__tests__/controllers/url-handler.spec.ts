@@ -6,6 +6,7 @@ import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/states/test";
 import * as Misc from "../../src/ts/utils/misc";
+import * as CustomText from "../../src/ts/test/custom-text";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import { loadTestSettingsFromUrl } from "../../src/ts/controllers/url-handler";
@@ -28,6 +29,12 @@ describe("url-handler", () => {
     );
     const notifyMock = vi.spyOn(Notifications, "showNoticeNotification");
 
+    const setTextMock = vi.spyOn(CustomText, "setText");
+    const setModeMock = vi.spyOn(CustomText, "setMode");
+    const setLimitModeMock = vi.spyOn(CustomText, "setLimitMode");
+    const setLimitValueMock = vi.spyOn(CustomText, "setLimitValue");
+    const setPipeDelimiterMock = vi.spyOn(CustomText, "setPipeDelimiter");
+
     beforeEach(() => {
       [
         setConfigMock,
@@ -36,6 +43,11 @@ describe("url-handler", () => {
         restartTestMock,
         notifySuccessMock,
         notifyMock,
+        setTextMock,
+        setModeMock,
+        setLimitModeMock,
+        setLimitValueMock,
+        setPipeDelimiterMock,
       ].forEach((it) => it.mockClear());
 
       findGetParameterMock.mockImplementation((override) => override);
@@ -193,25 +205,6 @@ describe("url-handler", () => {
       );
       expect(restartTestMock).toHaveBeenCalled();
     });
-    it("sets pipeDelimiter to false", () => {
-      //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({
-          customText: {
-            text: ["abc"],
-            pipeDelimiter: false,
-            mode: "repeat",
-            limit: { mode: "word", value: 10 },
-          },
-        }),
-      );
-
-      //WHEN
-      loadTestSettingsFromUrl("");
-
-      //THEN
-      expect(TestLogic.restart).toHaveBeenCalled();
-    });
     it("sets funbox legacy", () => {
       //GIVEN
       findGetParameterMock.mockReturnValue(
@@ -229,6 +222,30 @@ describe("url-handler", () => {
           nosave: true,
         },
       );
+      expect(restartTestMock).toHaveBeenCalled();
+    });
+    it("sets customText with pipeDelimiter to false", () => {
+      //GIVEN
+      findGetParameterMock.mockReturnValue(
+        urlData({
+          customText: {
+            text: ["a b c"],
+            pipeDelimiter: false,
+            mode: "repeat",
+            limit: { mode: "word", value: 10 },
+          },
+        }),
+      );
+
+      //WHEN
+      loadTestSettingsFromUrl("");
+
+      //THEN
+      expect(setTextMock).toHaveBeenLastCalledWith(["a b c"]);
+      expect(setModeMock).toHaveBeenCalledWith("repeat");
+      expect(setLimitModeMock).toHaveBeenCalledWith("word");
+      expect(setLimitValueMock).toHaveBeenLastCalledWith(10);
+      expect(setPipeDelimiterMock).toHaveBeenCalledWith(false);
       expect(restartTestMock).toHaveBeenCalled();
     });
     it("adds notification", () => {
