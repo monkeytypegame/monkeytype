@@ -39345,6 +39345,48 @@
       "source": "Doctor Who, Fallen Heroes",
       "id": 7770,
       "length": 485
+    },
+    {
+    "text": "Sorry? Be sorry for your poor mother, whose last words were, \"where is she? Where's my boy? Where's my boy?\" No, no! You walked out on this family, and now you come back? Now, you have the nerve to show your face around here? You're a disgrace! Get out of my house! I have no son.",
+    "source": "Smiling Friends",
+    "id": 7771,
+    "length": 280
+    },
+    {
+    "text": "I gotta say for everyone listening, never officially quit Scratch, because it'll make things extremely awkward when you show up again suddenly on someone else's popular projects. I've quit like, three times, and I regretted it every single time, so now I'm just going radio silent instead of quitting. That's the best thing to do.",
+    "source": "ScratchRunning Podcast",
+    "id": 7772,
+    "length": 330
+    },
+    {
+    "text": "You are my special gal, you are my favorite pal, and I owe it all to you.",
+    "source": "Skrunkly Royale Turbo: Executive Showdown",
+    "id": 7773,
+    "length": 73
+    },
+    {
+    "text": "This is the Violence of Light. In the darkness of the Abstract, everything exists in a state of infinite probability. When observed through the light of Aetus, it stops. Probability collapses into a single possible outcome, but the same can be done in stable reality, given enough influence. Perception informs reality. What is believed grows into what is true. What was once considered fact melts into fiction. All of these perceptions are transformed through influence, but require immense amounts of energy. The sheer amount of change this incurs kills the previous reality, thus, it is a form of violence.",
+    "source": "Goomble Gurt II",
+    "id": 7774,
+    "length": 609
+    },
+    {
+    "text": "These sunglasses? You can't even afford these sunglasses, and get your hands off the ropes!",
+    "source": "Punch-Out!!",
+    "id": 7775,
+    "length": 91
+    },
+    {
+    "text": "Deemed unworthy of holding the Sword of Light after trying to take the Combo Gem all for himself, this human lost himself to the \"Darc\", an evil force feeding on the spiteful and power-hungry.",
+    "source": "Super Fighter Re:Tournament",
+    "id": 7776,
+    "length": 192
+    },
+    {
+    "text": "Step one: don't use blocks. Blocks take up the majority of space in your .JSON file. Your time is better spent using lists, as they are much smaller. Step two: don't use lists. If you use lists, you are eventually going to run out of kilobyte space. Again, .JSON file has a five megabyte limit, while asset size has a fifty gigabyte limit. Step three: use assets. You may be asking, \"how can I use a costume to code my scratch game?\" And I would say you are a fool. You are a simpleton, because color is data. You are to create a wide array of bright colors, and then use a script to detect each color, convert it into integer data, and then put that integer data into premade lists, and run those premade lists into your scratch game. Your data can now exceed far above five megabytes. As long as you don't save at this point, your Scratch game is good to go.",
+    "source": "HOW TO MAKE A GAME IN SCRATCH",
+    "id": 7777,
+    "length": 860
     }
   ]
 }
