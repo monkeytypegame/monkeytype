@@ -201,6 +201,7 @@ export const commands: CommandsSubgroup = {
       "capsLockWarning",
       "showAverage",
       "showPb",
+      "showDailyLbStanding",
       "monkeyPowerLevel",
       "monkey",
     ),

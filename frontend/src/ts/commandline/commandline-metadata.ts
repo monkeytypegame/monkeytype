@@ -738,6 +738,12 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
     alias: "pb",
   },
+  showDailyLbStanding: {
+    subgroup: {
+      options: "fromSchema",
+    },
+    alias: "daily standing",
+  },
   monkeyPowerLevel: {
     alias: "powermode",
     isVisible: false,
