@@ -330,7 +330,11 @@ function getFunboxWordsFrequency(): FunboxWordsFrequency | undefined {
 }
 
 async function getFunboxSection(): Promise<string[]> {
-  const ret = [];
+  const ret: string[] = [];
+
+  if (skipFunboxSection) {
+    return ret;
+  }
 
   const funbox = findSingleActiveFunboxWithFunction("pullSection");
 
@@ -600,6 +604,7 @@ async function getQuoteWordList(
 let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
+let skipFunboxSection = false;
 
 type GenerateWordsReturn = {
   words: string[];
@@ -614,7 +619,9 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
   language: LanguageObject,
+  options?: { skipFunboxSection?: boolean },
 ): Promise<GenerateWordsReturn> {
+  skipFunboxSection = options?.skipFunboxSection ?? false;
   if (!isRepeated()) {
     previousGetNextWordReturns = [];
   }
@@ -634,7 +641,8 @@ export async function generateWords(
     allJoiningScript: language.joiningScript ?? false,
   };
 
-  isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
+  isCurrentlyUsingFunboxSection =
+    !skipFunboxSection && isFunboxActiveWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
   console.debug("Word order", wordOrder);
