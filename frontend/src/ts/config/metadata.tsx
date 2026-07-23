@@ -1226,6 +1226,15 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "hideElements",
   },
+  showDailyLbStanding: {
+    key: "showDailyLbStanding",
+    fa: { icon: "fa-list-ol" },
+    displayString: "show daily leaderboard standing",
+    changeRequiresRestart: false,
+    group: "hideElements",
+    description:
+      "On the result page, show your current daily leaderboard standing even when the completed test did not improve your daily best. Only applies to modes with a daily leaderboard.",
+  },
 
   // other (hidden)
   accountChart: {
