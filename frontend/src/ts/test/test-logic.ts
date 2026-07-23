@@ -171,6 +171,7 @@ type RestartOptions = {
   practiseMissed?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
+  skipFunboxSection?: boolean;
 };
 
 export async function restart(options = {} as RestartOptions): Promise<void> {
@@ -328,7 +329,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   await Funbox.rememberSettings();
 
-  const initResult = await init();
+  const initResult = await init({
+    skipFunboxSection: options.skipFunboxSection,
+  });
 
   if (!initResult) {
     setIsTestRestarting(false);
@@ -351,7 +354,9 @@ let lastInitError: Error | null = null;
 let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
-async function init(): Promise<boolean> {
+async function init(options?: {
+  skipFunboxSection?: boolean;
+}): Promise<boolean> {
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -380,7 +385,7 @@ async function init(): Promise<boolean> {
   }
 
   if (!language || language.name !== Config.language) {
-    return await init();
+    return await init(options);
   }
 
   if (getActivePage() === "test") {
@@ -479,7 +484,9 @@ async function init(): Promise<boolean> {
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
-    const gen = await WordsGenerator.generateWords(language);
+    const gen = await WordsGenerator.generateWords(language, {
+      skipFunboxSection: options?.skipFunboxSection,
+    });
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
@@ -504,7 +511,7 @@ async function init(): Promise<boolean> {
       });
     }
 
-    return await init();
+    return await init(options);
   }
 
   let hasNumbers = false;
