@@ -21,19 +21,14 @@ const defaultOptions: CreateHotkeyOptions = {
   conflictBehavior: "replace",
 };
 
-const beforeCallback: ProxyHandler<HotkeyCallback> = {
-  apply(
-    target: (event: KeyboardEvent, callback: HotkeyCallbackContext) => void,
-    thisArg: Window,
-    args: [KeyboardEvent, HotkeyCallbackContext],
-  ) {
-    const [e, context] = args;
+function attachBeforeCallback(callback: HotkeyCallback): HotkeyCallback {
+  return (e, context) => {
     if (handleHotkeyOnInteractiveElement(e, context)) return;
     e.stopPropagation();
     e.preventDefault();
-    Reflect.apply(target, thisArg, args);
-  },
-};
+    callback(e, context);
+  };
+}
 
 export function createHotkey(
   hotkey: Hotkey | (() => Hotkey),
@@ -45,7 +40,7 @@ export function createHotkey(
     >
   > = () => ({}),
 ): void {
-  registerHotkey(hotkey, new Proxy(callback, beforeCallback), () => ({
+  registerHotkey(hotkey, attachBeforeCallback(callback), () => ({
     ...defaultOptions,
     enabled: (typeof hotkey === "function" ? hotkey() : hotkey) !== NoKey,
     ...options(),
@@ -64,7 +59,7 @@ export function createHotkeys(
   const modifiedHotkeys = (): CreateHotkeyDefinition[] => {
     const resolvedHotkeys = typeof hotkeys === "function" ? hotkeys() : hotkeys;
     resolvedHotkeys.forEach((hotkey) => {
-      hotkey.callback = new Proxy(hotkey.callback, beforeCallback);
+      hotkey.callback = attachBeforeCallback(hotkey.callback);
       hotkey.options ??= {};
       hotkey.options.enabled ??= hotkey.hotkey !== NoKey;
     });
