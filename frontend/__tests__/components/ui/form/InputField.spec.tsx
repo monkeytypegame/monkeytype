@@ -173,4 +173,15 @@ describe("InputField", () => {
     fireEvent.input(input, { target: { value: "6" } });
     expect(field.handleChange).toHaveBeenCalledWith(6);
   });
+
+  it("keeps empty string for string values", async () => {
+    const field = makeField("age", "test");
+    render(() => <InputField field={() => field} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(field.handleChange).toHaveBeenCalledWith("");
+  });
 });
