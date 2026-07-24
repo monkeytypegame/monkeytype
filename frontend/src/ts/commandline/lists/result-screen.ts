@@ -5,13 +5,13 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
+import { getLastEventLog, getResultVisible } from "../../states/test";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -21,7 +21,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "missed",
       exec: (): void => {
         PractiseWords.init("words", false);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -31,7 +31,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "slow",
       exec: (): void => {
         PractiseWords.init("off", true);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -41,7 +41,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "both",
       exec: (): void => {
         PractiseWords.init("words", true);
-        TestLogic.restart({
+        void TestLogic.restart({
           practiseMissed: true,
         });
       },
@@ -67,10 +67,10 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     icon: "fa-chevron-right",
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
     exec: (): void => {
-      TestLogic.restart();
+      void TestLogic.restart();
     },
   },
   {
@@ -78,12 +78,12 @@ const commands: Command[] = [
     display: "Repeat test",
     icon: "fa-sync-alt",
     exec: (): void => {
-      TestLogic.restart({
+      void TestLogic.restart({
         withSameWordset: true,
       });
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -92,7 +92,7 @@ const commands: Command[] = [
     icon: "fa-exclamation-triangle",
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -103,7 +103,7 @@ const commands: Command[] = [
       void TestUI.toggleResultWords();
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -117,7 +117,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -131,7 +131,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
   {
@@ -139,12 +139,13 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     exec: (): void => {
-      if (TestState.lastEventLog === null) {
+      const eventLog = getLastEventLog();
+      if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;
       }
 
-      const inputHistory = getInputHistory(TestState.lastEventLog);
+      const inputHistory = getInputHistory(eventLog);
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
@@ -164,7 +165,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return getResultVisible();
     },
   },
 ];

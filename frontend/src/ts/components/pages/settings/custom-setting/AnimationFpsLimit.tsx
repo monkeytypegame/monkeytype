@@ -17,7 +17,7 @@ export function AnimationFpsLimit(): JSXElement {
     },
     onSubmit: ({ value }) => {
       const val = parseFloat(String(value.fpsLimit));
-      if (val === getfpsLimit()) return;
+      if (isNaN(val) || val === getfpsLimit()) return;
       setfpsLimit(val);
       savedIndicator.flash();
     },

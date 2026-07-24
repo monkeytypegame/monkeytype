@@ -1,5 +1,8 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
+import { z } from "zod";
 import { getConfig } from "../config/store";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { EventLog } from "../test/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
@@ -7,7 +10,7 @@ import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { getData as getCustomTextData } from "../test/custom-text";
+import * as CustomText from "../test/custom-text";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
@@ -15,6 +18,7 @@ import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage, getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
+import { clearTimeouts } from "../utils/misc";
 
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
@@ -23,7 +27,43 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
 export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from the first line of TestLogic.finish() until the result is built, so
+// it covers the words fade-out that getResultVisible() is still false during.
+export const [isResultCalculating, setResultCalculating] = createSignal(false);
+// Set when the user bails out of a test early; reset by TestLogic.restart().
+export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
+// #words is still vanilla so it's blurred imperatively (see test/test-ui);
+// the Solid-owned composition display + OutOfFocusWarning read this signal.
+const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
+export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
+export const [testFocusState, { setTestFocusState }] =
+  createSignalWithSetters<TestFocusState>("focused")({
+    setTestFocusState: (set, val: TestFocusState) => {
+      if (val === "focused") {
+        clearTimeouts(outOfFocusTimeouts);
+        set(val);
+      } else {
+        outOfFocusTimeouts.push(
+          setTimeout(() => {
+            set(val);
+          }, 1000),
+        );
+      }
+    },
+  });
+
+export const showOutOfFocusWarning = createMemo(
+  () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
+);
+
+// max-height of the warning, kept in sync with the words wrapper by test-ui.
+export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
+  number | undefined
+>(undefined);
+
+// live IME composition text, pushed from the compositionupdate/end events.
+export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
 export const [getLastResult, setLastResult] = createSignal<Omit<
@@ -54,13 +94,33 @@ export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
+
+export const [
+  getActiveWordIndex,
+  {
+    increase: increaseActiveWordIndex,
+    decrease: decreaseActiveWordIndex,
+    reset: resetActiveWordIndex,
+  },
+] = createSignalWithSetters<number>(0)({
+  increase: (set) => set((n) => n + 1),
+  decrease: (set) => set((n) => n - 1),
+  reset: (set) => set(0),
+});
+
+/**
+ * Live test stats, rendered by the Solid live stat displays (the mini and text
+ * variants and the progress bar). The test engine is still vanilla, so it pushes
+ * plain numbers in here as it goes; everything shown on screen is derived below.
+ * `undefined` means "no data yet" and is what the displays fall back to defaults on.
+ */
 export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   wpm?: number;
   acc?: number;
   raw?: number;
+  burst?: number;
+  seconds?: number;
 }>({});
-export const resetCurrentLiveStats = (): void =>
-  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
 
 createEffect(() => {
   getActivePage(); // depend on active page
@@ -69,7 +129,7 @@ createEffect(() => {
       getConfig.mode,
       getConfig.words,
       getConfig.time,
-      getCustomTextData(),
+      CustomText.getData(),
       getCustomTextIndicator()?.isLong ?? false,
     ),
   );
@@ -171,3 +231,19 @@ export const __nonReactive = {
     return result;
   },
 };
+
+export const [getSelectedQuoteId, setSelectedQuoteId] = useLocalStorage({
+  key: "selectedQuoteId",
+  schema: z.number().int().min(1),
+  fallback: 1,
+});
+
+export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
+  createSignal(false);
+export const [isDirectionReversed, setIsDirectionReversed] =
+  createSignal(false);
+export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
+export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
+export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
+  null,
+);

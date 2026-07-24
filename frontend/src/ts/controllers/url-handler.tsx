@@ -32,9 +32,9 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
+import { setSelectedQuoteId } from "../states/test";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
-import * as TestState from "../test/test-state";
 import * as Misc from "../utils/misc";
 import * as ChallengeController from "./challenge-controller";
 
@@ -205,7 +205,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       });
     } else if (mode === "quote") {
       setConfig("quoteLength", [-2]);
-      TestState.setSelectedQuoteId(parseInt(de[1], 10));
+      setSelectedQuoteId(parseInt(de[1], 10));
     }
     applied["mode2"] = de[1];
   }
@@ -288,7 +288,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["funbox"] = val.join(", ");
   }
 
-  restartTest({
+  void restartTest({
     nosave: true,
   });
 
@@ -331,7 +331,7 @@ export async function loadChallengeFromUrl(
   ChallengeController.setup(challengeName)
     .then((result) => {
       if (result) {
-        restartTest({
+        void restartTest({
           nosave: true,
         });
       }

@@ -6,7 +6,6 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showNoticeNotification } from "../states/notifications";
-import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
   getCommandlineSubgroup,
@@ -34,6 +33,7 @@ import {
   isModalOpen,
 } from "../states/modals";
 import { ValidationResult } from "../types/validation";
+import { setTestFocusState } from "../states/test";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -74,14 +74,14 @@ let lastState:
 function removeCommandlineBackground(): void {
   qs("#commandLine")?.addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
 }
 
 function addCommandlineBackground(): void {
   qs("#commandLine")?.removeClass("noBackground");
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
 }
 
@@ -880,6 +880,7 @@ const modal = new AnimatedModal({
     input.on(
       "input",
       debounce(50, async (e) => {
+        if (isAnimating) return;
         inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
@@ -898,6 +899,11 @@ const modal = new AnimatedModal({
     );
 
     input.on("keydown", async (e) => {
+      //the commandline is on its way out - swallow everything
+      if (isAnimating) {
+        e.preventDefault();
+        return;
+      }
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||

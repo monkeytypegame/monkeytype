@@ -9,14 +9,17 @@ import * as Funbox from "../test/funbox/funbox";
 import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
-import * as TestState from "../test/test-state";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
-import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
+import {
+  isTestRestarting,
+  getLoadedChallenge,
+  setLoadedChallenge,
+} from "../states/test";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { qs } from "../utils/dom";
 
@@ -26,7 +29,7 @@ export function clearActive(): void {
   if (
     getLoadedChallenge() !== null &&
     !challengeLoading &&
-    !TestState.testRestarting
+    !isTestRestarting()
   ) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);
