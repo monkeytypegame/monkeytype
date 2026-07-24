@@ -142,12 +142,7 @@ export function CustomBackground(): JSXElement {
               <form.Field
                 name="customBackground"
                 validators={{
-                  onChange: ({ value }) => {
-                    const val = value;
-                    return fromSchema(CustomBackgroundSchema)({
-                      value: val,
-                    });
-                  },
+                  onChange: fromSchema(CustomBackgroundSchema),
                   onBlur: () => {
                     void form.handleSubmit();
                   },
