@@ -54,7 +54,7 @@ createEffectOn(isAuthenticated, (hasUser) => {
 export function readAccountSettingsGetParameters(
   params: AccountSettingsUrlParams | undefined,
 ): void {
-  if (params === undefined || params.tab === undefined) return;
+  if (params?.tab === undefined) return;
 
   setCurrentTab(params.tab);
 }

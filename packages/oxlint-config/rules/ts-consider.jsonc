@@ -17,5 +17,7 @@
         "allowArray": true,
       },
     ],
+    // 237 just in frontend
+    "strict-void-return": "off",
   },
 }

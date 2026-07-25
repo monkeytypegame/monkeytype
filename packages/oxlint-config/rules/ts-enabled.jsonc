@@ -1,5 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true,
+    "typeCheck": true,
+  },
   "rules": {
     "typescript/strict-boolean-expressions": [
       "error",
@@ -60,5 +64,8 @@
     "typescript/prefer-regexp-exec": "error",
     "typescript/prefer-find": "error",
     "typescript/consistent-type-exports": "error",
+    "prefer-optional-chain": "error",
+    "no-unnecessary-type-conversion": "error",
+    "prefer-string-starts-ends-with": "error",
   },
 }

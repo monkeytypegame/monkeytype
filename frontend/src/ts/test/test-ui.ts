@@ -353,10 +353,7 @@ async function updateHintsPosition(): Promise<void> {
 
     for (const currentLetterIndex of letterIndices) {
       const lastBlock = hintIndices[hintIndices.length - 1];
-      if (
-        lastBlock &&
-        lastBlock[lastBlock.length - 1] === currentLetterIndex - 1
-      ) {
+      if (lastBlock?.[lastBlock.length - 1] === currentLetterIndex - 1) {
         lastBlock.push(currentLetterIndex);
       } else {
         hintIndices.push([currentLetterIndex]);
@@ -835,7 +832,7 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
+              if (lastBlock?.[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
               } else {
                 hintIndices.push([i]);
