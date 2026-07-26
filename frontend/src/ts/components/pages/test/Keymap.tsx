@@ -15,7 +15,7 @@ import {
 } from "../../../states/test";
 import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
-import { applyReducedMotion, isMacLike } from "../../../utils/misc";
+import { isMacLike } from "../../../utils/misc";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { convertLayoutToKeymap } from "./keymapConverter";
@@ -167,7 +167,8 @@ function Key(
       props.legends?.some((legend) => legend === getKeymapHighlightKey()),
   );
 
-  const fadeDuration = applyReducedMotion(250);
+  // Don't apply reduced motion. If the user activates react/next they want animations.
+  const fadeDuration = 250;
 
   const keyMatchesHighlight = createMemo(() =>
     props.legends?.some((legend) => legend === getKeymapHighlightKey()),
