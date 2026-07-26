@@ -167,9 +167,6 @@ function Key(
       props.legends?.some((legend) => legend === getKeymapHighlightKey()),
   );
 
-  // Don't apply reduced motion. If the user activates react/next they want animations.
-  const fadeDuration = 250;
-
   const keyMatchesHighlight = createMemo(() =>
     props.legends?.some((legend) => legend === getKeymapHighlightKey()),
   );
@@ -227,10 +224,11 @@ function Key(
     return [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub];
   });
 
+  // Don't apply reduced motion. If the user activates react/next they want animations.
   const animDuration = createMemo(() => {
-    if (isFading()) return fadeDuration;
+    if (isFading()) return 250;
     if (flashInfo().tick === 0) return 0;
-    return fadeDuration;
+    return 250;
   });
 
   return (
@@ -255,6 +253,8 @@ function Key(
         "background-color": "var(--keybgcolor)",
         color: "var(--keycolor)",
       }}
+      // Don't apply reduced motion. If the user activates react/next they want animations.
+      respectReducedMotion={false}
       animation={{
         "--keybgcolor": animKeyBgColor(),
         "--keycolor": animKeyColor(),
