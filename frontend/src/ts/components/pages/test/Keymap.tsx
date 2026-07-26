@@ -35,25 +35,26 @@ export function Keymap() {
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const layer = createMemo(() => {
     const { alt, shift } = getModifierState();
+    const isShifted = isMacLike()
+      ? shift || isCapsLockOn()
+      : shift !== isCapsLockOn();
     switch (getConfig.keymapLegendStyle) {
       case "blank":
-        return -1;
+        return { index: -1 };
       case "lowercase":
-        return 0;
+        return { index: 0 };
       case "uppercase":
-        return 1;
+        return { index: 1 };
       case "dynamic": {
         if (shift && alt) {
-          return 3;
+          return { index: 3 };
         } else if (alt) {
-          return 2;
-        } else if (shift || isCapsLockOn()) {
-          return 1;
+          return { index: 2 };
         }
-        return 0;
+        return { index: isShifted ? 1 : 0, firstRow: shift ? 1 : 0 };
       }
       default:
-        return 0;
+        return { index: 0 };
     }
   });
 
@@ -93,7 +94,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
 
 function KeyboardDefinitionRenderer(props: {
   keyboardDef: KeyboardDefinition;
-  layer: number;
+  layer: { index: number; firstRow?: number };
   showFirstRow: boolean;
   flashState: Record<string, FlashEntry | undefined>;
 }) {
@@ -118,9 +119,9 @@ function KeyboardDefinitionRenderer(props: {
                 {(key) => {
                   const label = () => {
                     const layer =
-                      rowNum() === 0 && isMacLike() && isCapsLockOn()
-                        ? props.layer - 1
-                        : props.layer;
+                      rowNum() === 0
+                        ? (props.layer.firstRow ?? props.layer.index)
+                        : props.layer.index;
                     return key.legends[layer] ?? "";
                   };
                   const flashEntry = () =>
