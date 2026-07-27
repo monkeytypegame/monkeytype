@@ -1926,9 +1926,7 @@ qs(".pageTest #copySlowWordsListButton")?.on("click", () => {
   );
   const avgWpm =
     validBursts.length > 0
-      ? Math.round(
-          validBursts.reduce((a, b) => a + b, 0) / validBursts.length,
-        )
+      ? Math.round(validBursts.reduce((a, b) => a + b, 0) / validBursts.length)
       : 80;
 
   showSimpleModal({
