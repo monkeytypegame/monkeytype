@@ -70,8 +70,7 @@ export async function highlightWordsInRange(
 
   // Early exit if highlight range has not changed
   if (
-    highlightRange !== undefined &&
-    firstWordIndex === highlightRange[0] &&
+    firstWordIndex === highlightRange?.[0] &&
     lastWordIndex === highlightRange[1]
   ) {
     return false;

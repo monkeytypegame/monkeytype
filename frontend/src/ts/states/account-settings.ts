@@ -24,7 +24,7 @@ export const accountSettingsTabs: Record<
 > = {
   account: { text: "account", icon: "fa-user" },
   authentication: { text: "authentication", icon: "fa-key" },
-  blockedUsers: { text: "blocked users", icon: "fa-user-shield" },
+  blockedUsers: { text: "blocked users", icon: "fa-ban" },
   apeKeys: { text: "ape keys", icon: "fa-code" },
   dangerZone: { text: "danger zone", icon: "fa-exclamation-triangle" },
 };
@@ -54,7 +54,7 @@ createEffectOn(isAuthenticated, (hasUser) => {
 export function readAccountSettingsGetParameters(
   params: AccountSettingsUrlParams | undefined,
 ): void {
-  if (params === undefined || params.tab === undefined) return;
+  if (params?.tab === undefined) return;
 
   setCurrentTab(params.tab);
 }
