@@ -1,6 +1,5 @@
 {
   "language": "english",
-  "formatting_fix": true,
   "groups": [
     [0, 100],
     [101, 300],
