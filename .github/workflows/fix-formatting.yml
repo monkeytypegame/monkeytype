@@ -33,8 +33,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatter
-        run: pnpm install -D -w oxfmt --ignore-scripts
+      - name: Install
+        run: pnpm install --ignore-scripts
 
       - name: Get changed files and write to temp
         id: get-changed-files
