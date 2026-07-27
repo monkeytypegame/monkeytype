@@ -1921,10 +1921,13 @@ qs(".pageTest #copySlowWordsListButton")?.on("click", () => {
   if (eventLog === null) return;
 
   const burstHistory = getWordBurstHistory(eventLog);
+  const validBursts = burstHistory.filter(
+    (wpm) => Number.isFinite(wpm) && wpm > 0,
+  );
   const avgWpm =
-    burstHistory.length > 0
+    validBursts.length > 0
       ? Math.round(
-          burstHistory.reduce((a, b) => a + b, 0) / burstHistory.length,
+          validBursts.reduce((a, b) => a + b, 0) / validBursts.length,
         )
       : 80;
 
@@ -1933,7 +1936,7 @@ qs(".pageTest #copySlowWordsListButton")?.on("click", () => {
     buttonText: "copy",
     buttonAlwaysEnabled: true,
     schema: z.object({
-      speedThreshold: z.number().positive(),
+      speedThreshold: z.number().finite().positive(),
     }),
     inputs: {
       speedThreshold: {
