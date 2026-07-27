@@ -1,7 +1,7 @@
 name: Check formatting
 
 env:
-  PNPM_VERSION: "10.28.1"
+  PNPM_VERSION: "11.17.0"
   NODE_VERSION: "24.11.0"
 
 on:
