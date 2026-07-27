@@ -84,7 +84,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           />
           <Button
             onClick={() => void blockConnection({ id: info.getValue() })}
-            balloon={{ text: "block" }}
+            balloon={{ text: "block user" }}
             fa={{ icon: "fa-ban", fixedWidth: true }}
           />
         </div>
