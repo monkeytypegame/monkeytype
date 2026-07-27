@@ -60,4 +60,4 @@ jobs:
       - name: Check formatting (changed files)
         if: steps.get-changed-files.outputs.has-files == 'true'
         run: |
-          xargs -0 pnpm oxfmt --no-error-on-unmatched-pattern < /tmp/changed-files.txt
+          xargs -0 pnpm oxfmt --check --no-error-on-unmatched-pattern < /tmp/changed-files.txt
