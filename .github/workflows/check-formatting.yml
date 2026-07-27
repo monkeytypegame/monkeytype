@@ -35,12 +35,12 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatter
-        run: pnpm install -D -w oxfmt
+      - name: Install
+        run: pnpm install --ignore-scripts
 
-      - name: Get changed files
+      - name: Get changed files and write to temp
         id: get-changed-files
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const changedFiles = await github.paginate(
@@ -51,11 +51,13 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
+            if (files.length > 0) {
+              require('fs').writeFileSync('/tmp/changed-files.txt', files.join('\0'));
+              core.setOutput('has-files', 'true');
+            }
 
       - name: Check formatting (changed files)
+        if: steps.get-changed-files.outputs.has-files == 'true'
         run: |
-          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
-          if [ -n "$CHANGED_FILES" ]; then
-            pnpm oxfmt $CHANGED_FILES --check --no-error-on-unmatched-pattern
-          fi
+          xargs -0 pnpm oxfmt --check --no-error-on-unmatched-pattern < /tmp/changed-files.txt
