@@ -20,3 +20,6 @@ allowBuilds:
 
 overrides:
   "postcss": "8.5.8"
+engineStrict: true
+saveExact: true
+savePrefix: ""
