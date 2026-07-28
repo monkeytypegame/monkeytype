@@ -516,6 +516,16 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
 function Picker(props: { color: ColorName }): JSXElement {
   let colorInputRef: HTMLInputElement | undefined = undefined;
 
+  const resetColor = () => {
+    const presetTheme = ThemesList.find(
+      (theme) => theme.name === getConfig.theme,
+    );
+    const fallbackColor = getTheme()[props.color];
+    const nextColor = presetTheme?.[props.color] ?? fallbackColor;
+
+    updateThemeColor(props.color, nextColor);
+  };
+
   const text = () => {
     if (props.color === "bg") return "background";
     if (props.color === "main") return "main";
@@ -554,7 +564,7 @@ function Picker(props: { color: ColorName }): JSXElement {
 
   return (
     <div
-      class="grid w-full grid-cols-[1fr_1fr_min-content] items-center gap-2"
+      class="grid w-full grid-cols-[1fr_1fr_auto_min-content] items-center gap-2"
       style={{
         "--picker-bg": getTheme().bg,
         "--picker-main": getTheme().main,
@@ -581,6 +591,18 @@ function Picker(props: { color: ColorName }): JSXElement {
             return;
           }
           updateThemeColor(props.color, value);
+        }}
+      />
+      <Button
+        variant="text"
+        fa={{
+          icon: "fa-undo",
+          fixedWidth: true,
+        }}
+        class="p-1"
+        onClick={resetColor}
+        balloon={{
+          text: "Reset this color to the current preset value",
         }}
       />
       <div class="grid">
