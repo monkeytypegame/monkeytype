@@ -45,6 +45,8 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           file: ./docker/backend/Dockerfile
           push: true
+          provenance: mode=max
+          sbom: true
           tags: ${{ env.BE_REPO }}:latest,${{ steps.bemeta.outputs.tags }}
           labels: ${{ steps.bemeta.outputs.labels }}
           build-args: |
@@ -74,6 +76,8 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           file: ./docker/frontend/Dockerfile
           push: true
+          provenance: mode=max
+          sbom: true
           tags: ${{ env.FE_REPO }}:latest,${{ steps.femeta.outputs.tags }}
           labels: ${{ steps.femeta.outputs.labels }}
 
