@@ -71,7 +71,7 @@ jobs:
     name: prime-cache
     runs-on: ubuntu-latest
     needs: [pre-ci]
-    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci')
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - name: Checkout pnpm-lock
         uses: actions/checkout@v6
@@ -406,7 +406,7 @@ jobs:
   on-failure:
     name: on-failure
     runs-on: ubuntu-latest
-    needs: [ci-be, ci-fe, ci-assets, ci-pkg, format-check]
+    needs: [ci-be, ci-fe, ci-assets, ci-pkg, check-format]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
       - name: Save the PR number in an artifact
