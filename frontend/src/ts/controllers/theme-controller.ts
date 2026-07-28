@@ -421,8 +421,7 @@ configEvent.subscribe(async ({ key, newValue, nosave }) => {
   if (
     key === "themeDark" &&
     Config.autoSwitchTheme &&
-    window.matchMedia !== undefined &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches &&
+    window.matchMedia?.("(prefers-color-scheme: dark)")?.matches &&
     !nosave
   ) {
     await set(Config.themeDark, true);

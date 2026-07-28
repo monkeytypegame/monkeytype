@@ -1057,7 +1057,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       savingResultPromise = saveResult(completedEvent, false);
       void savingResultPromise.then((response) => {
-        if (response && response.status === 200) {
+        if (response?.status === 200) {
           void AnalyticsController.log("testCompleted");
         }
       });

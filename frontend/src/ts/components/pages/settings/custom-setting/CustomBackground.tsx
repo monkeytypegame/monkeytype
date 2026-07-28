@@ -174,7 +174,7 @@ export function CustomBackground(): JSXElement {
                   { displayString?: string }
                 >;
                 const displayString =
-                  optionMeta?.[String(option)]?.displayString ?? String(option);
+                  optionMeta?.[option]?.displayString ?? option;
                 return (
                   <Button
                     active={getConfig.customBackgroundSize === option}

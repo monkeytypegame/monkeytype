@@ -114,7 +114,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     colorArray = decoded as unknown as CustomThemeColors;
   }
 
-  if (colorArray === undefined || colorArray.length !== 10) {
+  if (colorArray?.length !== 10) {
     showNoticeNotification("Failed to load theme from URL: no colors found");
     return;
   }

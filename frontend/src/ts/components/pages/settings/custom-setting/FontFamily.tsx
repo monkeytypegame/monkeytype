@@ -127,9 +127,9 @@ export function FontFamily(): JSXElement {
             <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
               {(option) => {
                 const optionsMeta = configMetadata.fontFamily.optionsMetadata;
-                const match = optionsMeta?.[String(option)];
+                const match = optionsMeta?.[option];
                 const displayString =
-                  match?.displayString ?? String(option).replace(/_/g, " ");
+                  match?.displayString ?? option.replace(/_/g, " ");
 
                 const fontFamily = () => {
                   if (option === "Comic_Sans_MS") {

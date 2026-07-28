@@ -233,8 +233,7 @@ function incrementLetterIndex(): void {
 export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
-      settings !== null &&
-      settings.wordsStatus[getActiveWordIndex()] === true &&
+      settings?.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = undefined;
