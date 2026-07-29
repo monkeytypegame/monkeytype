@@ -296,9 +296,7 @@
         });
     }
 
-    function handleRecoverEmail(auth, actionCode, lang) {
-      // Localize the UI to the selected language as determined by the lang
-      // parameter.
+    function handleRecoverEmail(actionCode) {
       var restoredEmail = null;
       // Confirm the action code is valid.
       checkActionCode(Auth, actionCode)
