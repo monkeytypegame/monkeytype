@@ -9,8 +9,8 @@ services:
       monkeytype-frontend:
         condition: service_healthy
     ports:
-      - "80:80"
-      - "443:443"
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
       #Dashboard disabled for security (uncomment only for debugging behind VPN)
       #- "8080:8080"
     networks:
@@ -39,7 +39,7 @@ services:
     image: monkeytype/monkeytype-frontend:latest
     #uncomment if you want to expose the frontend server directly (not recommended)
     #ports:
-    #  - "${HTTP_PORT:-8080}:80"
+    #  - "${FRONTEND_PORT:-8080}:80"
     restart: on-failure
     networks:
       - public

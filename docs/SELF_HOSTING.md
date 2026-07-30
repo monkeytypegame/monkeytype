@@ -35,7 +35,7 @@
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
-- after the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
+- after the command exits successfully you can access [http://localhost](http://localhost)
 
 ### Hosting over the network (HTTPS)
 
