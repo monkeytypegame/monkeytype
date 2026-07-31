@@ -17,7 +17,7 @@ export function LiveStatsTextTop() {
     <div
       class={cn(
         TEXT_DISPLAY_CLASS,
-        "w-0 justify-self-center mx-auto",
+        "mx-auto w-0 justify-self-center",
         liveStatsTextColor(),
       )}
       style={{
