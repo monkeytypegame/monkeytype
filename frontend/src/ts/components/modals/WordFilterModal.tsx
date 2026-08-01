@@ -133,8 +133,12 @@ function filterWordList(
   // Separates string into regex expression
   let reglit = new RegExp("");
   try {
-    const flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
-    const pattern = value.regex.replace(new RegExp(`^/(.*?)/${flags}$`), "$1");
+    let flags = "";
+    let pattern = value.regex;
+    if (value.regex.startsWith("/")) {
+      flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
+      pattern = value.regex.replace(new RegExp(`^/(.*?)/${flags}$`), "$1");
+    }
     reglit = new RegExp(pattern, flags);
   } catch (error) {
     if (error instanceof SyntaxError) {
