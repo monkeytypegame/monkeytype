@@ -501,15 +501,9 @@
 
 .word.fall-clone {
   display: inline-block;
-  //positioned inside #typingTest, so the funboxes that transform the test
-  //(mirror, upside down, nausea) apply to the clone the same way
   position: absolute;
-  //#typingTest is a content grid, and an absolutely positioned grid item is
-  //placed within its grid area - span the whole grid so the offsets it is
-  //positioned with are measured from the same edge they were read from
+  // #typingTest is a content grid, span all of it so the offsets line up
   grid-column: full-width;
-  //no width is set on the clone so it can never end up a hair too narrow for
-  //the word it was cloned from and wrap onto a second line
   white-space: nowrap;
   margin: 0;
   pointer-events: none;
