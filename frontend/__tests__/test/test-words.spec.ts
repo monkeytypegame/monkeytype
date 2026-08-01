@@ -61,7 +61,7 @@ describe("test-words", () => {
       expect(words.get()).toEqual([]);
     });
 
-    it("does not remove the last word when it's only a newline", () => {
+    it("does not empty the last word when it's only a newline", () => {
       words.push("word\n", 0);
       words.push("\n", 0);
       words.removeCommitCharacterFromLastWord();
