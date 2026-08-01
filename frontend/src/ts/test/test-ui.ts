@@ -165,7 +165,7 @@ export function updateActiveElement(
           TypedEffects.onWordTyped(previousActiveWord);
           Joining.set(previousActiveWord, true);
         } else if (direction === "back") {
-          //
+          TypedEffects.onWordUntyped(getActiveWordIndex());
         }
         previousActiveWord.removeClass("active");
         previousActiveWordTop = previousActiveWord.getOffsetTop();
@@ -648,7 +648,7 @@ export function updateWordsWrapperHeight(force = false): void {
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
-      const wordElements = wordsEl.qsa(".word");
+      const wordElements = wordsEl.qsa(".word:not(.fall-clone)");
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
@@ -2026,9 +2026,7 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
-    if (key === "typedEffect" && newValue !== "fall") {
-      TypedEffects.clear();
-    }
+    if (key === "typedEffect") TypedEffects.clear();
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Joining.update(key, wordsEl);
