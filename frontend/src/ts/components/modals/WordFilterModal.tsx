@@ -135,7 +135,7 @@ function filterWordList(
   try {
     let flags = "";
     let pattern = value.regex;
-    if (value.regex.startsWith("/")) {
+    if (/(?<!\\)\//.test(value.regex)) {
       flags = value.regex.replace(/.*\/([gimy]*)$/, "$1");
       pattern = value.regex.replace(new RegExp(`^/(.*?)/${flags}$`), "$1");
     }
