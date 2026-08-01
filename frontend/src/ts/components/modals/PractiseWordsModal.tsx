@@ -31,7 +31,6 @@ export function PractiseWordsModal(): JSXElement {
       id="PractiseWords"
       title="Practice words"
       modalClass="max-w-[400px]"
-      animationMode="modalOnly"
     >
       <form
         onSubmit={(e) => {
@@ -52,6 +51,7 @@ export function PractiseWordsModal(): JSXElement {
                 {(field) => (
                   <ButtonGroup
                     field={field}
+                    class="grid-cols-3"
                     options={[
                       { value: "off", label: "off" },
                       { value: "words", label: "words" },
@@ -75,6 +75,7 @@ export function PractiseWordsModal(): JSXElement {
                 {(field) => (
                   <ButtonGroup
                     field={field}
+                    class="grid-cols-2"
                     options={[
                       { value: false, label: "off" },
                       { value: true, label: "on" },
