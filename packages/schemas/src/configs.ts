@@ -334,6 +334,7 @@ export const FunboxNameSchema = z.enum([
   "polyglot",
   "asl",
   "rot13",
+  "leet",
   "no_quit",
 ]);
 export type FunboxName = z.infer<typeof FunboxNameSchema>;

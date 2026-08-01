@@ -173,6 +173,35 @@ export class PolyglotWordset extends Wordset {
   }
 }
 
+const leetMap: Record<string, string> = {
+  a: "4",
+  b: "I3",
+  c: "[",
+  d: ")",
+  e: "3",
+  f: "|=",
+  g: "6",
+  h: "#",
+  i: "1",
+  j: ",_|",
+  k: ">|",
+  l: "1",
+  m: "/\\/\\",
+  n: "^/",
+  o: "0",
+  p: "|*",
+  q: "(_,)",
+  r: "I2",
+  s: "5",
+  t: "7",
+  u: "(_)",
+  v: "\\/",
+  w: "\\/\\/",
+  x: "><",
+  y: "j",
+  z: "2",
+};
+
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
     getWord(): string {
@@ -648,6 +677,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  leet: {
+    alterText(word: string): string {
+      return word.replace(/[a-zA-Z]/g, (ch) => {
+        return leetMap[ch.toLowerCase()] ?? ch;
+      });
     },
   },
   polyglot: {
