@@ -131,18 +131,10 @@ function filterWordList(
   // Source - https://stackoverflow.com/a/874742
   // Retrieved 2026-06-23, License - CC BY-SA 3.0
   // Separates string into regex expression
-  let reglit = new RegExp("");
-  try {
-    const match = new RegExp("^/(?<pattern>.*?)/(?<flags>[gimy]*)$").exec(
-      value.regex,
-    ) ?? { groups: { pattern: value.regex, flags: "" } };
-    reglit = new RegExp(match.groups?.pattern ?? "", match.groups?.flags);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return { error: "Invalid Regex Expression" };
-    }
-    return { error: String(error) };
-  }
+  const match = new RegExp("^/(?<pattern>.*?)/(?<flags>[gimy]*)$").exec(
+    value.regex,
+  ) ?? { groups: { pattern: value.regex, flags: "" } };
+  const reglit = new RegExp(match.groups?.pattern ?? "", match.groups?.flags);
 
   let filterin = Misc.escapeRegExp(value.include.trim());
   filterin = filterin.replace(/\s+/gi, "|");
