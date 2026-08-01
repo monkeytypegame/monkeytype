@@ -163,7 +163,7 @@ function createResult(
     charStats: [131, 0, 0, 0],
     acc: random(80, 100),
     language: "english",
-    mode: mode as Mode,
+    mode: mode,
     mode2: mode2 as unknown as never,
     timestamp: timestamp.valueOf(),
     testDuration: testDuration,
@@ -285,7 +285,7 @@ async function updateUser(uid: string): Promise<void> {
     }
 
     //update testActivity
-    await updateTestActicity(uid);
+    await updateTestActivity(uid);
   }
 
   //update the user
@@ -317,7 +317,7 @@ function createArray<T>(size: number, builder: () => T): T[] {
   return new Array(size).fill(0).map(() => builder());
 }
 
-async function updateTestActicity(uid: string): Promise<void> {
+async function updateTestActivity(uid: string): Promise<void> {
   await ResultDal.getResultCollection()
     .aggregate(
       [

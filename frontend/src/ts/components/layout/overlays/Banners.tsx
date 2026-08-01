@@ -3,7 +3,6 @@ import { debounce } from "throttle-debounce";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { showPopup } from "../../../modals/simple-modals-base";
 import {
   Banner as BannerType,
   addBanner,
@@ -13,7 +12,9 @@ import {
 import { setGlobalOffsetTop } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
+import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
+import { showUpdateNameModal } from "../../modals/account-settings/UpdateNameModal";
 
 function Banner(props: BannerType): JSXElement {
   const remove = (): void => {
@@ -89,9 +90,7 @@ export function Banners(): JSXElement {
               <button
                 type="button"
                 class="px-2 py-1"
-                onClick={() => {
-                  showPopup("updateName");
-                }}
+                onClick={() => showUpdateNameModal()}
               >
                 Click here
               </button>{" "}
@@ -113,6 +112,14 @@ export function Banners(): JSXElement {
 
   onMount(() => {
     window.addEventListener("resize", debouncedMarginUpdate);
+    if (isProfilerMode()) {
+      addBanner({
+        level: "error",
+        icon: "fas fa-stopwatch",
+        text: "Profiler mode enabled",
+        important: true,
+      });
+    }
   });
 
   onCleanup(() => {

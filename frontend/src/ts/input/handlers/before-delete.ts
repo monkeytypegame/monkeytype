@@ -1,23 +1,31 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
+import { getInputForWord } from "../../test/events/data";
+import {
+  isTestRestarting,
+  getActiveWordIndex,
+  isResultCalculating,
+  isTestActive,
+} from "../../states/test";
 
 export function onBeforeDelete(event: InputEvent): void {
-  if (!TestState.isActive) {
+  if (!isTestActive()) {
     event.preventDefault();
     return;
   }
-  if (TestState.testRestarting) {
+  if (isTestRestarting()) {
+    event.preventDefault();
     return;
   }
   if (isAwaitingNextWord()) {
+    event.preventDefault();
     return;
   }
-  if (TestUI.resultCalculating) {
+  if (isResultCalculating()) {
+    event.preventDefault();
     return;
   }
 
@@ -25,10 +33,14 @@ export function onBeforeDelete(event: InputEvent): void {
   const inputIsEmpty = inputValue === "";
 
   if (inputIsEmpty) {
+    // we are on the first word, just prevent default, nothing to go back to
+    if (getActiveWordIndex() === 0) {
+      event.preventDefault();
+      return;
+    }
+
     // this is nested because we only wanna pull the element from the dom if needed
-    const previousWordElement = TestUI.getWordElement(
-      TestState.activeWordIndex - 1,
-    );
+    const previousWordElement = TestUI.getWordElement(getActiveWordIndex() - 1);
     if (previousWordElement === null) {
       event.preventDefault();
       return;
@@ -41,9 +53,9 @@ export function onBeforeDelete(event: InputEvent): void {
   }
 
   const confidence = Config.confidenceMode;
+  const previousWord = TestWords.words.get(getActiveWordIndex() - 1);
   const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.getText(TestState.activeWordIndex - 1);
+    getInputForWord(getActiveWordIndex() - 1) === previousWord?.textWithCommit;
 
   if (confidence === "on" && inputIsEmpty && !previousWordCorrect) {
     event.preventDefault();

@@ -104,9 +104,9 @@ export function CustomGeneratorModal(props: {
   const form = createForm(() => ({
     defaultValues: {
       characterSet: "",
-      minLength: "2",
-      maxLength: "5",
-      wordCount: "100",
+      minLength: 2,
+      maxLength: 5,
+      wordCount: 100,
     },
     onSubmit: ({ value }) => {
       const input = value.characterSet.trim();
@@ -116,9 +116,9 @@ export function CustomGeneratorModal(props: {
       }
 
       const characters = input.split(/\s+/);
-      const minLength = parseInt(value.minLength) || 2;
-      const maxLength = parseInt(value.maxLength) || 5;
-      const wordCount = parseInt(value.wordCount) || 100;
+      const minLength = value.minLength ?? 2;
+      const maxLength = value.maxLength ?? 5;
+      const wordCount = value.wordCount ?? 100;
       const generatedWords: string[] = [];
 
       for (let i = 0; i < wordCount; i++) {

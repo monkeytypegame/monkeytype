@@ -6,6 +6,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { SnapshotResult } from "../../../constants/default-snapshot";
+import { getFormatting } from "../../../states/core";
 import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
 import { Formatting } from "../../../utils/format";
@@ -318,7 +319,7 @@ export function HistoryChart(props: {
       </div>
       <div class="grid grid-cols-1 items-center lg:grid-cols-[1fr_30rem]">
         <Trend results={props.results} />
-        <div class="grid grid-cols-4 gap-2 text-em-xs">
+        <div class="grid grid-cols-4 gap-2 text-em-xs max-[475px]:grid-cols-2">
           <Button
             fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
             text="Speed"
@@ -350,7 +351,7 @@ export function HistoryChart(props: {
 }
 
 function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   const trend = createMemo(() => {
     const line = findLineByLeastSquares(

@@ -365,7 +365,8 @@ export const ReportUserReasonSchema = z.enum([
 ]);
 export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
 
-export const PasswordSchema = z
+// stricter schema used while password creation
+export const NewPasswordSchema = z
   .string()
   .min(8, { message: "must be at least 8 characters" })
   .max(64, { message: "must be at most 64 characters" })
@@ -374,6 +375,10 @@ export const PasswordSchema = z
   .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
     message: "must contain at least one special character",
   });
+export type NewPassword = z.infer<typeof NewPasswordSchema>;
+
+// lenient schema for existing passwords
+export const PasswordSchema = z.string().min(1, "Required");
 export type Password = z.infer<typeof PasswordSchema>;
 
 export const FriendSchema = UserSchema.pick({
@@ -394,7 +399,7 @@ export const FriendSchema = UserSchema.pick({
     top60: PersonalBestSchema.optional(),
     badgeId: z.number().int().optional(),
     isPremium: z.boolean().optional(),
-    streak: UserStreakSchema.pick({ length: true, maxLength: true }),
+    streak: UserStreakSchema.pick({ length: true, maxLength: true }).optional(),
   })
   .merge(ConnectionSchema.pick({ lastModified: true }).partial());
 

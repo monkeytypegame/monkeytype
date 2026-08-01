@@ -5,11 +5,12 @@ import { describe, it, expect } from "vitest";
 import {
   FormStateSlice,
   SubmitButton,
+  SubscribableForm,
 } from "../../../../src/ts/components/ui/form/SubmitButton";
 
 type FormState = FormStateSlice;
 
-function makeForm(state: Partial<FormState> = {}) {
+function makeForm(state: Partial<FormState> = {}): SubscribableForm {
   const fullState: FormState = {
     canSubmit: true,
     isSubmitting: false,

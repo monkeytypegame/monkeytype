@@ -33,8 +33,7 @@ describe("PresetController", () => {
           showAverage: "off",
         },
       };
-      //@ts-expect-error
-      getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
+      getPresetsMock.mockResolvedValue([presetOne, presetTwo] as any);
 
       //WHEN
       const { body } = await mockApp
@@ -182,7 +181,7 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       addPresetMock.mockResolvedValue({ presetId: "1" });
@@ -358,7 +357,7 @@ describe("PresetController", () => {
         },
       });
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       editPresetMock.mockResolvedValue({} as any);

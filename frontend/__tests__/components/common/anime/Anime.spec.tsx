@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { mockAnimate } = vi.hoisted(() => ({
   mockAnimate: vi.fn().mockReturnValue({
     pause: vi.fn(),
-    then: vi.fn((_cb: unknown) => Promise.resolve()),
+    then: vi.fn(async (_cb: unknown) => Promise.resolve()),
   }),
 }));
 

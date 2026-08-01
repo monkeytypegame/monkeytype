@@ -1,5 +1,5 @@
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import * as Replay from "./replay";
+import * as Replay from "./replay-ui";
 import {
   getActivePage,
   isAuthenticated,
@@ -15,9 +15,10 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import { convertRemToPixels } from "../utils/numbers";
-import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import { download as downloadFile } from "../utils/misc";
+import { getResultVisible } from "../states/test";
 
 let revealReplay = false;
 
@@ -310,26 +311,16 @@ async function getBlob(): Promise<Blob | null> {
 
 export async function download(): Promise<void> {
   try {
-    const blob = await getBlob();
+    const data = await getBlob();
 
-    if (!blob) {
+    if (!data) {
       showErrorNotification("Failed to generate screenshot data");
       return;
     }
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    link.download = `monkeytype-result-${timestamp}.png`;
+    const filename = `monkeytype-result-${timestamp}.png`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
+    downloadFile({ data, filename });
 
     showSuccessNotification("Screenshot download started");
   } catch (error) {
@@ -352,7 +343,7 @@ qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (!(TestState.resultVisible && getActivePage() === "test")) return;
+  if (!(getResultVisible() && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
     ?.removeClass(["far", "fa-image"])
@@ -360,7 +351,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keyup", (event) => {
-  if (!(TestState.resultVisible && getActivePage() === "test")) return;
+  if (!(getResultVisible() && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
     ?.removeClass(["fas", "fa-download"])

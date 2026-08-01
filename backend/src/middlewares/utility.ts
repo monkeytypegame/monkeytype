@@ -1,10 +1,15 @@
-import type { Request, Response, NextFunction, RequestHandler } from "express";
-import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
-import MonkeyError from "../utils/error";
 import { EndpointMetadata } from "@monkeytype/contracts/util/api";
+import { AppRoute, AppRouter } from "@ts-rest/core";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { TsRestRequestWithContext } from "../api/types";
+import MonkeyError from "../utils/error";
+import { isDevEnvironment } from "../utils/misc";
+import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 
+export type AsyncTsRestRequestHandler<T extends AppRouter | AppRoute> = (
+  ...args: Parameters<TsRestRequestHandler<T>>
+) => Promise<void>;
 /**
  * record the client version from the `x-client-version`  or ` client-version` header to prometheus
  */

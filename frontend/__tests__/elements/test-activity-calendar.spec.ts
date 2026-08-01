@@ -1238,11 +1238,11 @@ expect.extend({
     };
   },
   toHaveTests(received: TestActivityDay, expected: number): MatcherResult {
-    const expectedLabel = `${expected} ${expected == 1 ? "test" : "tests"}`;
+    const expectedLabel = `${expected} ${expected === 1 ? "test" : "tests"}`;
     const actual = received.label?.substring(0, received.label.indexOf(" on"));
 
     return {
-      pass: actual == expectedLabel,
+      pass: actual === expectedLabel,
       message: () => `Tests ${actual} is not ${expectedLabel}`,
       actual: actual,
       expected: expectedLabel,

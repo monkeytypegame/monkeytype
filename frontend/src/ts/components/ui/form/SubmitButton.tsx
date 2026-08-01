@@ -9,7 +9,7 @@ export type FormStateSlice = {
   isDefaultValue: boolean;
 };
 
-type SubscribableForm = {
+export type SubscribableForm = {
   Subscribe: (props: {
     selector: (state: FormStateSlice) => FormStateSlice;
     children: (state: () => FormStateSlice) => JSXElement;

@@ -8,7 +8,6 @@ import {
   TestActivityCalendar,
 } from "../elements/test-activity-calendar";
 import { Language } from "@monkeytype/schemas/languages";
-import { ConnectionStatus } from "@monkeytype/schemas/connections";
 
 export type SnapshotResult<M extends Mode> = Omit<
   Result<M>,
@@ -72,7 +71,7 @@ export type Snapshot = Omit<
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
-  connections: Record<string, ConnectionStatus | "incoming">;
+  isMiniSnapshot?: never;
 };
 
 const defaultSnap = {
@@ -111,7 +110,6 @@ const defaultSnap = {
       60: { english: { count: 0, rank: 0 } },
     },
   },
-  connections: {},
 } as Snapshot;
 
 export function getDefaultSnapshot(): Snapshot {

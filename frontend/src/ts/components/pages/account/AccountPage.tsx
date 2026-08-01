@@ -4,7 +4,6 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 import {
   createResultsQueryState,
   getResultsQueryOnce,
-  getResultsSize,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
@@ -16,6 +15,7 @@ import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
+import { Page } from "../../common/Page";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
@@ -24,7 +24,6 @@ import { TestStats } from "./TestStats";
 import { VerifyNotice } from "./VerifyNotice";
 
 export function AccountPage(): JSXElement {
-  const isOpen = (): boolean => getActivePage() === "account";
   const [limit, setLimit] = createSignal(10);
 
   const [sorting, setSorting] = createSignal<{
@@ -36,7 +35,7 @@ export function AccountPage(): JSXElement {
   });
 
   const queryState = createMemo(() => {
-    if (!isOpen() || !isAuthenticated()) return undefined;
+    if (getActivePage() !== "account" || !isAuthenticated()) return undefined;
 
     return createResultsQueryState(filters);
   });
@@ -46,10 +45,14 @@ export function AccountPage(): JSXElement {
   );
   const [isExporting, setIsExporting] = createSignal(false);
 
-  const resultsQuery = useResultsLiveQuery({ queryState, sorting, limit });
+  const resultsQuery = useResultsLiveQuery({
+    queryState,
+    sorting,
+    limit: () => limit() + 1,
+  });
 
   return (
-    <Show when={isAuthenticated() && isOpen()}>
+    <Page id="account" needsAuthentication>
       <div class="flex flex-col gap-8">
         <VerifyNotice />
         <MyProfile />
@@ -117,14 +120,15 @@ export function AccountPage(): JSXElement {
               {({ resultsQueryData }) => (
                 <>
                   <Table
-                    data={[...resultsQueryData()]}
+                    data={resultsQueryData().slice(0, limit())}
                     onSortingChange={(val) => setSorting(val)}
                     selectedRowId={selectedResultId}
                   />
                   <Button
                     text="load more"
                     disabled={
-                      resultsQuery.isLoading || getResultsSize() < limit() + 10
+                      resultsQuery.isLoading ||
+                      resultsQueryData().length <= limit()
                     }
                     onClick={() => setLimit((limit) => limit + 10)}
                     class="w-full text-center"
@@ -135,6 +139,6 @@ export function AccountPage(): JSXElement {
           </>
         </Show>
       </div>
-    </Show>
+    </Page>
   );
 }

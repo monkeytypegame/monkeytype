@@ -8,8 +8,8 @@ import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
+import { getCurrentQuote } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
-import { currentQuote } from "../../test/test-words";
 import { cn } from "../../utils/cn";
 import { getMode2 } from "../../utils/misc";
 import { capitalizeFirstLetter } from "../../utils/strings";
@@ -56,7 +56,7 @@ export function ShareTestSettings(): JSXElement {
       { enabled: values.mode, getValue: () => getConfig.mode },
       {
         enabled: values.mode2,
-        getValue: () => getMode2(getConfig, currentQuote),
+        getValue: () => getMode2(getConfig, getCurrentQuote()),
       },
       { enabled: values.customText, getValue: () => CustomText.getData() },
       { enabled: values.punctuation, getValue: () => getConfig.punctuation },
@@ -81,7 +81,9 @@ export function ShareTestSettings(): JSXElement {
     if (getConfig.mode === "quote") {
       out += "Quote ID ";
     }
-    out += capitalizeFirstLetter(getMode2(getConfig, currentQuote) || "none");
+    out += capitalizeFirstLetter(
+      getMode2(getConfig, getCurrentQuote()) || "none",
+    );
 
     if (getConfig.mode === "time") {
       out += " seconds";

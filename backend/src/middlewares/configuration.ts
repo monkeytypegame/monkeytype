@@ -80,7 +80,7 @@ function getValue(
 function getRequireConfigurations(
   metadata: EndpointMetadata | undefined,
 ): RequireConfiguration[] | undefined {
-  if (metadata === undefined || metadata.requireConfiguration === undefined) {
+  if (metadata?.requireConfiguration === undefined) {
     return undefined;
   }
 

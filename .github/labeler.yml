@@ -1,29 +1,36 @@
 api:
-  - any: ["frontend/src/ts/ape/**/*", "backend/src/api/**/*"]
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/src/ts/ape/**/*"
+          - "backend/src/api/**/*"
 
 assets:
-  - any: ["frontend/static/**/*"]
-    all: ["!frontend/static/**/*.html"]
+  - all:
+      - changed-files:
+          - any-glob-to-any-file: "frontend/static/**/*"
+          - all-globs-to-all-files: "!frontend/static/**/*.html"
 
 backend:
-  - any: ["backend/**/*"]
+  - changed-files:
+      - any-glob-to-any-file: "backend/**/*"
 
 docs:
-  - any: ["**/*.md"]
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
 
 frontend:
-  - any: ["frontend/**/*"]
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**/*"
 
 packages:
-  - any: ["packages/**/*"]
+  - changed-files:
+      - any-glob-to-any-file: "packages/**/*"
 
-local dev:
-  - any:
-      [
-        "**/turbo.json",
-        "**/tsconfig.json",
-        "**/knip.json",
-        "**/.prettierrc",
-        "**/.oxlintrc.json",
-        "**/.eslintrc.cjs",
-      ]
+"local dev":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/turbo.json"
+          - "**/tsconfig.json"
+          - "**/knip.json"
+          - "**/.prettierrc.json"
+          - "**/.oxlintrc.json"

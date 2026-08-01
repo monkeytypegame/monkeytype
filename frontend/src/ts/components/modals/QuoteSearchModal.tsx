@@ -7,11 +7,11 @@ import {
   Show,
   on,
 } from "solid-js";
+import { z } from "zod";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { isCaptchaAvailable } from "../../controllers/captcha-controller";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
 import { createDebouncedEffectOn } from "../../hooks/effects";
@@ -28,8 +28,8 @@ import {
 } from "../../states/notifications";
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
+import { setSelectedQuoteId } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
@@ -129,7 +129,9 @@ function Item(props: {
         class="text-text [&_.highlight]:text-main"
         dir="auto"
         // oxlint-disable-next-line solid/no-innerhtml
-        innerHTML={highlightMatches(props.quote.text, props.matchedTerms)}
+        innerHTML={Misc.escapeHTML(
+          highlightMatches(props.quote.text, props.matchedTerms),
+        )}
       ></div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
         <div class="text-xs text-sub">
@@ -137,9 +139,8 @@ function Item(props: {
           <span
             class="[&_.highlight]:text-main"
             // oxlint-disable-next-line solid/no-innerhtml
-            innerHTML={highlightMatches(
-              props.quote.id.toString(),
-              props.matchedTerms,
+            innerHTML={Misc.escapeHTML(
+              highlightMatches(props.quote.id.toString(), props.matchedTerms),
             )}
           ></span>
         </div>
@@ -153,9 +154,8 @@ function Item(props: {
             <span
               class="[&_.highlight]:text-main"
               // oxlint-disable-next-line solid/no-innerhtml
-              innerHTML={highlightMatches(
-                props.quote.source,
-                props.matchedTerms,
+              innerHTML={Misc.escapeHTML(
+                highlightMatches(props.quote.source, props.matchedTerms),
               )}
             ></span>
           </div>
@@ -347,24 +347,26 @@ export function QuoteSearchModal(): JSXElement {
 
   createEffect(
     on(lengthFilter, (lengths) => {
-      if (lengths.includes("4") && !hasCustomFilter()) {
+      if (!lengths.includes("4")) {
+        setHasCustomFilter(false);
+      } else if (!hasCustomFilter()) {
         showSimpleModal({
           title: "Enter minimum and maximum number of words",
-          inputs: [
-            { type: "number", placeholder: "1" },
-            { type: "number", placeholder: "100" },
-          ],
           buttonText: "save",
-          execFn: async (min: string, max: string) => {
-            const minNum = parseInt(min, 10);
-            const maxNum = parseInt(max, 10);
-            if (isNaN(minNum) || isNaN(maxNum)) {
-              return { status: "notice", message: "Invalid min/max values" };
-            }
-            setCustomFilterMin(minNum);
-            setCustomFilterMax(maxNum);
+          schema: z.object({
+            min: z.number().int().safe().positive(),
+            max: z.number().int().safe().positive(),
+          }),
+          inputs: {
+            min: { type: "number", placeholder: "1" },
+            max: { type: "number", placeholder: "100" },
+          },
+
+          execFn: async ({ min, max }) => {
+            setCustomFilterMin(min);
+            setCustomFilterMax(max);
             setHasCustomFilter(true);
-            return { status: "success", message: "Saved custom filter" };
+            return { status: "success", showNotification: false };
           },
         });
       }
@@ -396,9 +398,9 @@ export function QuoteSearchModal(): JSXElement {
       showNoticeNotification("Quote ID must be at least 1");
       return;
     }
-    TestState.setSelectedQuoteId(quoteId);
+    setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    TestLogic.restart();
+    void TestLogic.restart();
     hideModalAndClearChain("QuoteSearch");
   };
 
@@ -424,12 +426,6 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const handleSubmitClick = async (): Promise<void> => {
-    if (!isCaptchaAvailable()) {
-      showErrorNotification(
-        "Captcha is not available. Please refresh the page or contact support if this issue persists.",
-      );
-      return;
-    }
     showLoaderBar();
     const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
     const isEnabled =

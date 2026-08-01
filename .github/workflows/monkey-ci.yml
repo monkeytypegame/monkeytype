@@ -45,11 +45,11 @@ jobs:
               - 'frontend/static/**/*'
               - '**/*.{scss,css}'
             be-src:
-              - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/**/*'
               - 'backend/package.json'
             fe-src:
-              - 'frontend/**/*.{ts,scss,html}'
-              - 'frontend/package.json'
+              - 'frontend/**/*.{ts,tsx,js,scss,html}'
+              - 'frontend/**/package.json'
             pkg-src:
               - 'packages/**/*'
             anti-cheat:
@@ -71,7 +71,7 @@ jobs:
     name: prime-cache
     runs-on: ubuntu-latest
     needs: [pre-ci]
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - name: Checkout pnpm-lock
         uses: actions/checkout@v6
@@ -112,6 +112,71 @@ jobs:
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
+
+  check-format:
+    name: check-format
+    needs: [prime-cache]
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Full checkout
+        uses: actions/checkout@v6
+
+      - name: Get changed files and write to temp
+        id: get-changed-files
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
+            if (files.length > 0) {
+              require('fs').writeFileSync('/tmp/changed-files.txt', files.join('\0'));
+              core.setOutput('has-files', 'true');
+            }
+
+      - name: Set up Node.js
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        id: cache-pnpm
+        uses: actions/cache@v5
+        env:
+          cache-name: node-modules
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        run: pnpm install
+
+      - name: Check formatting (changed files)
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        run: |
+          xargs -0 pnpm oxfmt --check --no-error-on-unmatched-pattern < /tmp/changed-files.txt
 
   ci-be:
     name: ci-be
@@ -217,7 +282,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    if: needs.pre-ci.outputs.assets-or-styles == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v6
         with:
@@ -280,7 +345,7 @@ jobs:
         run: npm run lint-json-assets
 
       - name: Validate language assets
-        if: steps.filter.outputs.languages == 'true'
+        if: steps.filter.outputs.languages == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
         run: npm run check-assets-languages
 
       - name: Validate quote assets
@@ -288,7 +353,7 @@ jobs:
         run: npm run check-assets-quotes
 
       - name: Validate other assets
-        if: steps.filter.outputs.others == 'true'
+        if: steps.filter.outputs.others == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
         run: npm run check-assets-others
 
   ci-pkg:
@@ -341,7 +406,7 @@ jobs:
   on-failure:
     name: on-failure
     runs-on: ubuntu-latest
-    needs: [ci-be, ci-fe, ci-assets, ci-pkg]
+    needs: [ci-be, ci-fe, ci-assets, ci-pkg, check-format]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
       - name: Save the PR number in an artifact

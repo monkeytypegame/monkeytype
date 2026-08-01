@@ -205,7 +205,7 @@ describe("result controller test", () => {
     it("should get results within regular limits for premium users even if premium is globally disabled", async () => {
       //GIVEN
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
 
       //WHEN
       await mockApp
@@ -225,7 +225,7 @@ describe("result controller test", () => {
     it("should fail exceeding max limit for premium user if premium is globally disabled", async () => {
       //GIVEN
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
 
       //WHEN
       const { body } = await mockApp
@@ -241,7 +241,7 @@ describe("result controller test", () => {
     it("should get results with regular limit as default for premium users if premium is globally disabled", async () => {
       //GIVEN
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
-      enablePremiumFeatures(false);
+      await enablePremiumFeatures(false);
 
       //WHEN
       await mockApp

@@ -8,6 +8,7 @@ import { LoadingCircle } from "../../common/LoadingCircle";
 
 export type FieldIndicatorProps = {
   field: AnyFieldApi;
+  alwaysShow?: boolean;
 };
 
 export function FieldIndicator(props: FieldIndicatorProps) {
@@ -45,9 +46,10 @@ export function FieldIndicator(props: FieldIndicatorProps) {
         </Match>
         <Match
           when={
-            props.field.state.meta.isTouched &&
             props.field.state.meta.isValid &&
-            !props.field.state.meta.isDefaultValue
+            (props.alwaysShow === true ||
+              (props.field.state.meta.isTouched &&
+                !props.field.state.meta.isDefaultValue))
           }
         >
           <Fa icon="fa-check" class="text-main" fixedWidth />

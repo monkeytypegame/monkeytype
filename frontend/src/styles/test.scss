@@ -44,35 +44,6 @@
   }
 }
 
-#barTimerProgress {
-  opacity: 0;
-  position: relative;
-  z-index: 99;
-  .bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 0.5rem;
-    background: black;
-    /*   background: #0f0f0f; */
-    /*   background: red; */
-    // transition: 1s linear;
-    z-index: -1;
-  }
-  &.timerMain .bar {
-    background: var(--main-color);
-  }
-
-  &.timerSub .bar {
-    background: var(--sub-color);
-  }
-
-  &.timerText .bar {
-    background: var(--text-color);
-  }
-}
-
 .pageTest {
   position: relative;
 
@@ -111,81 +82,6 @@
     .fas {
       margin-left: 0.33em;
     }
-  }
-
-  #liveStatsTextTop {
-    pointer-events: none;
-    color: black;
-    z-index: -1;
-    text-align: center;
-    position: relative;
-    display: grid;
-    font-size: 10rem;
-
-    opacity: 0;
-    width: 0;
-    height: 0;
-    justify-self: center;
-
-    transition: none;
-
-    .wrapper {
-      position: absolute;
-      bottom: 1.25rem;
-      display: flex;
-      justify-self: center;
-      gap: 0.5ch;
-      line-height: 1;
-    }
-  }
-
-  #liveStatsTextBottom {
-    font-size: 10rem;
-    color: black;
-    width: 100%;
-    text-align: center;
-    z-index: -1;
-    height: 0;
-    position: relative;
-    display: grid;
-    margin: 0 auto;
-    pointer-events: none;
-
-    .wrapper {
-      position: absolute;
-      top: 1rem;
-      display: flex;
-      justify-self: center;
-      gap: 0.5ch;
-      line-height: 1;
-    }
-  }
-
-  #liveStatsTextBottom.timerMain,
-  #liveStatsTextTop.timerMain {
-    color: var(--main-color);
-  }
-
-  #barTimerProgress.timerMain .bar {
-    background: var(--main-color);
-  }
-
-  #liveStatsTextBottom.timerSub,
-  #liveStatsTextTop.timerSub {
-    color: var(--sub-color);
-  }
-
-  #barTimerProgress.timerSub .bar {
-    background: var(--sub-color);
-  }
-
-  #liveStatsTextBottom.timerText,
-  #liveStatsTextTop.timerText {
-    color: var(--text-color);
-  }
-
-  #barTimerProgress.timerText .bar {
-    background: var(--text-color);
   }
 }
 
@@ -320,7 +216,7 @@
       unicode-bidi: bidi-override;
     }
   }
-  &.withLigatures {
+  &.joiningScript {
     .word {
       overflow-wrap: anywhere;
       padding-bottom: 0.05em; // compensate for letter border
@@ -537,8 +433,8 @@
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
-    &:not(.withLigatures) .word,
-    &.withLigatures .word.broken-ligatures {
+    &:not(.joiningScript) .word,
+    &.joiningScript .word.broken-joining {
       letter {
         position: relative;
         display: inline-block;
@@ -556,17 +452,17 @@
       }
     }
     // unify dot spacing
-    &.withLigatures .word.broken-ligatures {
+    &.joiningScript .word.broken-joining {
       letter {
         width: 0.4em;
       }
     }
-    .word.broken-ligatures:not(.needs-wrap) {
+    .word.broken-joining:not(.needs-wrap) {
       white-space: nowrap;
     }
 
-    &:not(.withLigatures) .word.typed,
-    &.withLigatures .word.broken-ligatures.typed {
+    &:not(.joiningScript) .word.typed,
+    &.joiningScript .word.broken-joining.typed {
       letter {
         color: var(--bg-color);
         animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
@@ -577,18 +473,18 @@
       }
     }
 
-    &:not(.withLigatures):not(.blind) {
+    &:not(.joiningScript):not(.blind) {
       .word letter.incorrect::after {
         background: var(--c-dot--error);
       }
     }
-    &.withLigatures:not(.blind) .word.broken-ligatures letter.incorrect::after {
+    &.joiningScript:not(.blind) .word.broken-joining letter.incorrect::after {
       background: var(--c-dot--error);
     }
 
     @media (prefers-reduced-motion) {
-      &:not(.withLigatures) .word.typed,
-      &.withLigatures .word.broken-ligatures.typed {
+      &:not(.joiningScript) .word.typed,
+      &.joiningScript .word.broken-joining.typed {
         letter {
           animation: none !important;
           transform: scale(0.4);
@@ -705,28 +601,7 @@
   // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
   // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
   text-wrap-mode: nowrap;
-}
-
-#capsWarning {
-  font-size: 1rem;
-  background: var(--main-color);
-  color: var(--bg-color);
-  display: table;
-  position: absolute;
-  left: 50%;
-  // top: 66vh;
-  transform: translateX(-50%) translateY(-50%);
-  padding: 1rem;
-  border-radius: var(--roundness);
-  /* margin-top: 1rem; */
-  transition: 0.125s;
-  z-index: 999;
-  pointer-events: none;
-  top: -2.5rem;
-
-  i {
-    margin-right: 0.5rem;
-  }
+  contain: strict;
 }
 
 .pageTest > .loading {
@@ -888,7 +763,7 @@
             unicode-bidi: bidi-override;
           }
         }
-        &.withLigatures {
+        &.joiningScript {
           .word {
             overflow-wrap: anywhere;
             padding-bottom: 2px; // compensate for letter border
@@ -1334,23 +1209,6 @@
   padding: 1em 2em;
 }
 
-#compositionDisplay {
-  font-size: 0.5em;
-  display: flex;
-  margin: 1rem auto 0px;
-  padding: 1rem 2rem;
-  height: 1.25em;
-  box-sizing: content-box;
-  user-select: none;
-  cursor: default;
-  color: var(--sub-color);
-
-  &.blurred {
-    opacity: 0.25;
-    filter: blur(4px);
-  }
-}
-
 .pageTest {
   height: 100%;
   display: grid;
@@ -1394,112 +1252,9 @@
     pointer-events: none;
     opacity: 0;
   }
-  .outOfFocusWarning {
-    text-align: center;
-    height: 100%;
-    align-content: center;
-    font-size: 1rem;
-    z-index: 999;
-    position: absolute;
-    width: 100%;
-    user-select: none;
-    pointer-events: none;
-  }
-
-  #testModesNotice {
-    font-size: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    color: var(--sub-color);
-    text-align: center;
-    margin-bottom: 0.5rem;
-    transition: opacity 0.125s;
-    justify-content: center;
-    user-select: none;
-
-    .textButton {
-      padding: 0.5em 1em;
-      align-items: center;
-      &.noInteraction {
-        pointer-events: none;
-      }
-    }
-
-    .fas {
-      margin-right: 0.5rem;
-    }
-  }
-  #liveStatsMini {
-    width: 0;
-    justify-content: start;
-    height: 0;
-    margin-left: 0.25em;
-    display: flex;
-    margin-top: -1.25em;
-    color: black;
-
-    div {
-      font-size: 1em;
-      line-height: 1em;
-    }
-
-    .time,
-    .speed,
-    .acc {
-      margin-right: 0.5em;
-    }
-
-    .time,
-    .speed,
-    .acc,
-    .burst {
-      opacity: 0;
-    }
-
-    &.timerMain {
-      color: var(--main-color);
-    }
-
-    &.timerSub {
-      color: var(--sub-color);
-    }
-
-    &.timerText {
-      color: var(--text-color);
-    }
-
-    &.size125 {
-      margin-top: -1.75rem;
-      font-size: 1.25rem;
-      line-height: 1.25rem;
-    }
-    &.size15 {
-      margin-top: -2rem;
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-    }
-    &.size2 {
-      margin-top: -2.5rem;
-      font-size: 2rem;
-      line-height: 2rem;
-    }
-    &.size3 {
-      margin-top: -3.5rem;
-      font-size: 3rem;
-      line-height: 3rem;
-    }
-    &.size4 {
-      margin-top: -4.5rem;
-      font-size: 4rem;
-      line-height: 4rem;
-    }
-  }
 }
 
 main.focus .pageTest {
-  #testModesNotice {
-    opacity: 0 !important;
-  }
   #restartTestButton {
     opacity: 0 !important;
     &:focus-visible {

@@ -11,7 +11,7 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import {
-  currentQuote,
+  selectedQuote,
   quoteStats,
   getQuoteStats,
   updateQuoteStats,
@@ -29,7 +29,7 @@ export function QuoteRateModal(): JSXElement {
   const [hoverRating, setHoverRating] = createSignal(0);
 
   const getLengthDesc = (): string => {
-    const quote = currentQuote();
+    const quote = selectedQuote();
     if (!quote) return "-";
     if (quote.group === 0) return "short";
     if (quote.group === 1) return "medium";
@@ -41,7 +41,7 @@ export function QuoteRateModal(): JSXElement {
   const displayRating = (): number => hoverRating() || rating();
 
   const handleBeforeShow = (): void => {
-    const quote = currentQuote();
+    const quote = selectedQuote();
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
@@ -58,7 +58,7 @@ export function QuoteRateModal(): JSXElement {
       showNoticeNotification("Please select a rating");
       return;
     }
-    const quote = currentQuote();
+    const quote = selectedQuote();
     if (!quote) return;
 
     hideModalAndClearChain("QuoteRate");
@@ -143,12 +143,12 @@ export function QuoteRateModal(): JSXElement {
       <Separator />
       <div class="grid gap-2">
         <div class="text-xl text-text" dir="auto">
-          {currentQuote()?.text ?? "-"}
+          {selectedQuote()?.text ?? "-"}
         </div>
         <div class="grid grid-cols-[1fr_1fr_3fr] gap-2">
           <div class="text-xs text-sub">
             <div class="text-sub opacity-50">id</div>
-            {currentQuote()?.id ?? "-"}
+            {selectedQuote()?.id ?? "-"}
           </div>
           <div class="text-xs text-sub">
             <div class="text-sub opacity-50">length</div>
@@ -156,7 +156,7 @@ export function QuoteRateModal(): JSXElement {
           </div>
           <div class="text-xs text-sub">
             <div class="text-sub opacity-50">source</div>
-            {currentQuote()?.source ?? "-"}
+            {selectedQuote()?.source ?? "-"}
           </div>
         </div>
       </div>

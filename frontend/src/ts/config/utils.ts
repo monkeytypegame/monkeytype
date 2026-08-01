@@ -1,13 +1,12 @@
 import type {
   Config as ConfigSchema,
-  ConfigValue,
-  PartialConfig,
   FunboxName,
+  PartialConfig,
 } from "@monkeytype/schemas/configs";
-import { typedKeys } from "../utils/misc";
-import { sanitize } from "../utils/sanitize";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { typedKeys } from "@monkeytype/util/objects";
 import { getDefaultConfig } from "../constants/default-config";
+import { sanitize } from "../utils/sanitize";
 import { Config } from "./store";
 /**
  * migrates possible outdated config and merges with the default config values
@@ -22,7 +21,7 @@ function mergeWithDefaultConfig(config: PartialConfig): ConfigSchema {
   const defaultConfig = getDefaultConfig();
   const mergedConfig = {} as ConfigSchema;
   for (const key of typedKeys(defaultConfig)) {
-    const newValue = config[key] ?? (defaultConfig[key] as ConfigValue);
+    const newValue = config[key] ?? defaultConfig[key];
     //@ts-expect-error cant be bothered to deal with this
     mergedConfig[key] = newValue;
   }
@@ -217,6 +216,21 @@ function replaceLegacyValues(
     } else if (configObj.maxLineWidth > 1000) {
       configObj.maxLineWidth = 1000;
     }
+  }
+
+  if ("keymapShowTopRow" in configObj && configObj.keymapKeys === undefined) {
+    switch (configObj.keymapShowTopRow) {
+      case "never":
+        configObj.keymapKeys = "minimal";
+        break;
+      case "always":
+        configObj.keymapKeys = "minimal_numrow";
+        break;
+      case "layout":
+        configObj.keymapKeys = "minimal";
+        break;
+    }
+    delete configObj.keymapShowTopRow;
   }
 
   return configObj;

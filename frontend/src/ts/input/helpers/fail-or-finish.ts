@@ -1,5 +1,6 @@
 import { Config } from "../../config/store";
 import { whorf } from "../../utils/misc";
+import { type CommitCharacterType } from "./util";
 
 /**
  * Check if the test should fail due to minimum burst settings
@@ -36,16 +37,20 @@ export function checkIfFailedDueToMinBurst(options: {
 /**
  * Check if the test should fail due to difficulty settings
  * @param options - Options object
- * @param options.testInputWithData - Current test input result (after adding data)
- * @param options.correct - Was the last input correct
- * @param options.spaceOrNewline - Is the input a space or newline
+ * @param options.data - The text data to be inserted
+ * @param options.testInput - Current test input result (before adding data)
+ * @param options.targetWord - Current target word
+ * @param options.correct - Whether the input is correct
+ * @param options.commitCharacterType - Type of the commit character, false if not a commit character
  */
 export function checkIfFailedDueToDifficulty(options: {
-  testInputWithData: string;
+  data: string;
+  testInput: string;
+  targetWord: string;
   correct: boolean;
-  spaceOrNewline: boolean;
+  commitCharacterType: CommitCharacterType | false;
 }): boolean {
-  const { testInputWithData, correct, spaceOrNewline } = options;
+  const { data, testInput, targetWord, correct, commitCharacterType } = options;
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
@@ -53,9 +58,11 @@ export function checkIfFailedDueToDifficulty(options: {
 
   const shouldFailDueToExpert =
     Config.difficulty === "expert" &&
-    !correct &&
-    spaceOrNewline &&
-    testInputWithData.length > 1;
+    commitCharacterType !== false &&
+    // a leading separator (empty input) commits nothing and must not fail;
+    // a nospace commit (e.g. a 1-letter word) does commit on empty input
+    !(commitCharacterType === "separator" && testInput.length === 0) &&
+    testInput + data !== targetWord;
 
   const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
 
@@ -68,21 +75,21 @@ export function checkIfFailedDueToDifficulty(options: {
 /**
  * Determines if the test should finish
  * @param options - Options object
- * @param options.shouldGoToNextWord - Should go to next word
+ * @param options.goingToNextWord - Is this input committing the word and moving on
  * @param options.testInputWithData - Current test input result (after adding data)
  * @param options.currentWord - Current target word
  * @param options.allWordsTyped - Have all words been typed
  * @returns Boolean if test should finish
  */
 export function checkIfFinished(options: {
-  shouldGoToNextWord: boolean;
+  goingToNextWord: boolean;
   testInputWithData: string;
   currentWord: string;
   allWordsTyped: boolean;
   allWordsGenerated: boolean;
 }): boolean {
   const {
-    shouldGoToNextWord,
+    goingToNextWord,
     testInputWithData,
     currentWord,
     allWordsTyped,
@@ -96,7 +103,7 @@ export function checkIfFinished(options: {
   if (
     allWordsTyped &&
     allWordsGenerated &&
-    (wordIsCorrect || shouldQuickEnd || shouldGoToNextWord)
+    (wordIsCorrect || shouldQuickEnd || goingToNextWord)
   ) {
     return true;
   }

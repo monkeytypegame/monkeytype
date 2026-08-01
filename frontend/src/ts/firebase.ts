@@ -134,7 +134,7 @@ export async function signInWithEmailAndPassword(
   return result;
 }
 
-function setUserState(
+export function setUserState(
   options: {
     uid: string;
     emailVerified: boolean;
@@ -166,10 +166,10 @@ export async function signInWithPopup(
     throw translateFirebaseError(error, "Failed to sign in with popup");
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);
-  setUserState(signedInUser.user);
   if (additionalUserInfo?.isNewUser) {
     googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
   } else {
+    setUserState(signedInUser.user);
     ignoreAuthCallback = false;
     await readyCallback?.(true, signedInUser.user);
   }

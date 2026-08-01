@@ -1,4 +1,4 @@
-import * as TestInput from "./test-input";
+import { getLiveCachedMsSinceLastInputEvent } from "./events/live-cache";
 import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
@@ -33,11 +33,11 @@ class Score {
 }
 
 export function updateScore(char: string, isCorrect: boolean): void {
-  const timings = TestInput.keypressTimings.spacing.array;
-  if (timings.length === 0 || typeof timings === "string") {
+  const spacing = getLiveCachedMsSinceLastInputEvent();
+  if (spacing === null) {
     return;
   }
-  let score = timings[timings.length - 1] as number;
+  let score = spacing;
   if (!isCorrect) {
     score += incorrectPenalty;
   }

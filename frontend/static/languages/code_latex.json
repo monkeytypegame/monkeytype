@@ -1,7 +1,6 @@
 {
   "name": "code_latex",
   "noLazyMode": true,
-  "ligatures": false,
   "words": [
     "\\documentclass",
     "\\usepackage",

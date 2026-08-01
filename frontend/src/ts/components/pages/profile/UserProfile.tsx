@@ -6,9 +6,8 @@ import {
 import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../../config/store";
-import * as PbTablesModal from "../../../modals/pb-tables";
-import { Formatting } from "../../../utils/format";
+import { getFormatting } from "../../../states/core";
+import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { formatTopPercentage } from "../../../utils/misc";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
@@ -31,13 +30,13 @@ export function UserProfile(props: {
         />
       </Show>
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <PbTable
+        <PbCard
           mode="time"
           mode2={["15", "30", "60", "120"]}
           pbs={props.profile.personalBests.time}
           isAccountPage={props.isAccountPage}
         />
-        <PbTable
+        <PbCard
           mode="words"
           mode2={["10", "25", "50", "100"]}
           pbs={props.profile.personalBests.words}
@@ -53,7 +52,9 @@ export function UserProfile(props: {
       </Show>
 
       <ActivityCalendar
-        testActivity={props.profile.testActivity}
+        testActivity={
+          props.isAccountPage ? undefined : props.profile.testActivity
+        }
         isAccountPage={props.isAccountPage}
       />
     </div>
@@ -64,7 +65,7 @@ function LeaderboardPosition(props: {
   top15?: RankAndCount;
   top60?: RankAndCount;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   return (
     <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
@@ -97,13 +98,13 @@ function LeaderboardPosition(props: {
   );
 }
 
-function PbTable<M extends "time" | "words">(props: {
+function PbCard<M extends "time" | "words">(props: {
   mode: M;
   mode2: string[];
   pbs: PersonalBests[M];
   isAccountPage?: true;
 }): JSXElement {
-  const format = createMemo(() => new Formatting(getConfig));
+  const format = getFormatting;
 
   const bests = createMemo(() =>
     props.mode2.map((mode) => {
@@ -176,7 +177,7 @@ function PbTable<M extends "time" | "words">(props: {
             balloon={{ text: "Show all personal bests", position: "left" }}
             class="h-full rounded-none rounded-r text-sub hover:text-bg"
             fa={{ icon: "fa-ellipsis-v" }}
-            onClick={() => PbTablesModal.show(props.mode)}
+            onClick={() => showPbTablesModal(props.mode)}
           />
         </div>
       </Show>

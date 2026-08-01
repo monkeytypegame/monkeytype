@@ -6,10 +6,9 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-// import { showSuccessNotification } from "../../../../states/notifications";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MaxLineWidth(): JSXElement {
   const { component: SavedIndicator, flash } = useSavedIndicator();
@@ -19,7 +18,8 @@ export function MaxLineWidth(): JSXElement {
       maxLineWidth: getConfig.maxLineWidth,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.maxLineWidth));
+      const val = value.maxLineWidth;
+
       if (val === getConfig.maxLineWidth) return;
       flash();
       setConfig("maxLineWidth", val);
@@ -27,7 +27,7 @@ export function MaxLineWidth(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="maxLineWidth"
       title={configMetadata.maxLineWidth.displayString ?? "max line width"}
       fa={configMetadata.maxLineWidth.fa}
@@ -44,15 +44,7 @@ export function MaxLineWidth(): JSXElement {
             <form.Field
               name="maxLineWidth"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseInt(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MaxLineWidthSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(MaxLineWidthSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },
@@ -61,6 +53,7 @@ export function MaxLineWidth(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={MaxLineWidthSchema}
                     placeholder={
                       configMetadata.maxLineWidth.displayString ??
                       "max line width"

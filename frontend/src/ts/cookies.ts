@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { activateAnalytics } from "./controllers/analytics-controller";
 import { activateSentry } from "./sentry";
+import { isProfilerMode } from "./utils/profiler-mode";
 
 const AcceptedCookiesSchema = z
   .object({
@@ -39,7 +40,7 @@ export function activateWhatsAccepted(): void {
   if (accepted?.analytics) {
     activateAnalytics();
   }
-  if (accepted?.sentry) {
+  if (accepted?.sentry && !isProfilerMode()) {
     void activateSentry();
   }
 }

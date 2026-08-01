@@ -10,7 +10,7 @@ import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Button } from "../../../common/Button";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MinAcc(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -20,7 +20,7 @@ export function MinAcc(): JSXElement {
       minAccCustom: getConfig.minAccCustom,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.minAccCustom));
+      const val = value.minAccCustom;
       if (val === getConfig.minAccCustom) return;
       if (getConfig.minAcc === "custom") {
         //
@@ -33,7 +33,7 @@ export function MinAcc(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="minAcc"
       title={configMetadata.minAcc.displayString ?? "min accuracy"}
       fa={configMetadata.minAcc.fa}
@@ -50,15 +50,7 @@ export function MinAcc(): JSXElement {
             <form.Field
               name="minAccCustom"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseInt(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MinimumAccuracyCustomSchema)({
-                    value: val,
-                  });
-                },
+                onChange: fromSchema(MinimumAccuracyCustomSchema),
                 onBlur: () => {
                   void form.handleSubmit();
                 },
@@ -67,6 +59,7 @@ export function MinAcc(): JSXElement {
                 <div class="relative">
                   <InputField
                     field={field}
+                    schema={MinimumAccuracyCustomSchema}
                     placeholder={
                       configMetadata.minAcc.displayString ?? "min accuracy"
                     }

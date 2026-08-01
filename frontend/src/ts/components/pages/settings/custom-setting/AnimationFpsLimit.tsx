@@ -7,24 +7,24 @@ import { Button } from "../../../common/Button";
 import { Separator } from "../../../common/Separator";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function AnimationFpsLimit(): JSXElement {
   const savedIndicator = useSavedIndicator();
   const form = createForm(() => ({
     defaultValues: {
-      fpsLimit: "",
+      fpsLimit: getfpsLimit() === 1000 ? "" : String(getfpsLimit()),
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(String(value.fpsLimit));
-      if (val === getfpsLimit()) return;
+      const val = parseFloat(value.fpsLimit);
+      if (isNaN(val) || val === getfpsLimit()) return;
       setfpsLimit(val);
       savedIndicator.flash();
     },
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="animationFpsLimit"
       title="animation fps limit"
       description={`Limit the maximum fps for animations. Setting this to "native" will run the animations as fast as possible (at your monitor's refresh rate). Setting this above your monitor's refresh rate will have no effect.`}
@@ -54,7 +54,10 @@ export function AnimationFpsLimit(): JSXElement {
               name="fpsLimit"
               validators={{
                 onChange: ({ value }) => {
-                  const val = parseInt(String(value));
+                  if (value === "") {
+                    return;
+                  }
+                  const val = parseFloat(value);
                   if (isNaN(val)) {
                     return "Must be a number";
                   }
@@ -72,6 +75,7 @@ export function AnimationFpsLimit(): JSXElement {
                     field={field}
                     placeholder={"custom limit"}
                     type="number"
+                    schema={fpsLimitSchema}
                     resetToDefaultIfEmptyOnBlur
                   />
                   <savedIndicator.component />

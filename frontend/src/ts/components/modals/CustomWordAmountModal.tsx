@@ -1,5 +1,6 @@
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
+import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
@@ -9,15 +10,15 @@ import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
+import { fromSchema } from "../ui/form/utils";
 
 export function CustomWordAmountModal(): JSXElement {
   const form = createForm(() => ({
     defaultValues: {
-      words: getConfig.words.toString(),
+      words: getConfig.words,
     },
     onSubmit: ({ value }) => {
-      const val = parseInt(value.words, 10);
-
+      const val = value.words;
       setConfig("words", val);
       restartTestEvent.dispatch();
 
@@ -40,7 +41,7 @@ export function CustomWordAmountModal(): JSXElement {
       title="Custom word amount"
       focusFirstInput="focusAndSelect"
       beforeShow={() => {
-        form.reset({ words: getConfig.words.toString() });
+        form.reset({ words: getConfig.words });
       }}
     >
       <form
@@ -54,12 +55,7 @@ export function CustomWordAmountModal(): JSXElement {
         <form.Field
           name="words"
           validators={{
-            onChange: ({ value }) => {
-              const val = parseInt(value, 10);
-              if (isNaN(val) || !isFinite(val)) return "Must be a number";
-              if (val < 0) return "Must be non-negative";
-              return undefined;
-            },
+            onChange: fromSchema(z.number().nonnegative().safe()),
           }}
           children={(field) => (
             <InputField field={field} type="number" placeholder="word amount" />

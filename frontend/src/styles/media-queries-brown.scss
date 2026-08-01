@@ -2,13 +2,6 @@
 @use "./media.scss" as *;
 
 @include media-query(brown) {
-  .page404 {
-    .content {
-      grid-template-columns: 1fr;
-      grid-auto-flow: unset;
-      gap: 1rem;
-    }
-  }
   .pageTest {
     #result .wrapper {
       grid-template-columns: 1fr;
@@ -24,39 +17,7 @@
       }
     }
   }
-  #keymap .row {
-    height: 1rem;
-    gap: 0.1rem;
-  }
-  #keymap .keymapKey,
-  #keymap.split_matrix .keymapSplitSpacer {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 0.3rem;
-    font-size: 0.5rem;
-  }
   .testActivity {
     display: none;
-  }
-  .pageFriends {
-    .content .friends table {
-      td:nth-child(3) {
-        display: none;
-      }
-    }
-    .content .pendingRequests table {
-      td:nth-child(2) {
-        display: none;
-      }
-    }
-  }
-
-  .pageAccountSettings [data-tab="blockedUsers"] {
-    table {
-      font-size: 0.75rem;
-      td:nth-child(2) {
-        display: none;
-      }
-    }
   }
 }

@@ -1,4 +1,4 @@
-import LRUCache from "lru-cache";
+import { LRUCache } from "lru-cache";
 import Logger from "../utils/logger";
 import { MonkeyQueue } from "./monkey-queue";
 import { ValidModeRule } from "@monkeytype/schemas/configuration";

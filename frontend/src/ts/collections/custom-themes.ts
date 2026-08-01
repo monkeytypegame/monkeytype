@@ -29,13 +29,13 @@ export function useCustomThemesLiveQuery() {
 const customThemesCollection = createCollection(
   queryCollectionOptions({
     staleTime: Infinity,
+    gcTime: Infinity, //remove when __nonReactive is removed
     startSync: true,
     queryKey: queryKeys.root(),
-
     queryClient,
+    enabled: isAuthenticated,
     getKey: (it) => it._id,
     queryFn: async () => {
-      if (!isAuthenticated()) return [] as CustomThemeItem[];
       const response = await Ape.users.getCustomThemes();
 
       if (response.status !== 200) {
@@ -43,7 +43,6 @@ const customThemesCollection = createCollection(
           `Error fetching custom themes: ${response.body.message}`,
         );
       }
-
       return response.body.data.map(applyIdWorkaround);
     },
   }),

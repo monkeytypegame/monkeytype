@@ -16,6 +16,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "english_shakespearean",
     "english_old",
     "english_medical",
+    "english_legal",
   ],
   spanish: ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"],
   french: [
@@ -381,9 +382,12 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_yoptascript",
     "code_cuda",
     "code_vhdl",
+    "code_6502_assembly",
   ],
   viossa: ["viossa", "viossa_njutro"],
   kokanu: ["kokanu", "likanu"],
+  lao: ["lao"],
+  sindhi: ["sindhi"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;

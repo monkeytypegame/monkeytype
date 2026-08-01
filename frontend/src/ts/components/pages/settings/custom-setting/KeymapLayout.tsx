@@ -6,11 +6,11 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function KeymapLayout(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="keymapLayout"
       title="keymap layout"
       description={configMetadata.keymapLayout.description}
