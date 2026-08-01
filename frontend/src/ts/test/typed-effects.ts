@@ -9,7 +9,6 @@ export function onWordTyped(word: ElementWithUtils): void {
   if (Config.typedEffect === "fall") triggerFall(word);
 }
 
-/** called when an already typed word becomes the active word again */
 export function onWordUntyped(wordIndex: number): void {
   qsa(`.fall-clone[data-fall-index="${wordIndex}"]`).remove();
 }
@@ -25,11 +24,11 @@ function triggerFall(word: ElementWithUtils): void {
   const wordIndex = parseInt(word.getAttribute("data-wordindex") ?? "", 10);
   if (Number.isNaN(wordIndex)) return;
 
-  // a word can be typed again after going back to it
+  // the word may still have a clone from before it was gone back to
   onWordUntyped(wordIndex);
 
-  // the clone goes in #typingTest because #wordsWrapper clips everything below
-  // the last line, and #words is where the rest of the code looks for words
+  // not #words: #wordsWrapper clips below the last line, and words are looked
+  // up by index in #words
   const container = qsr("#typingTest");
   const { top, left } = getOffsetWithin(word.native, container.native);
 
@@ -44,7 +43,7 @@ function triggerFall(word: ElementWithUtils): void {
     .addClass("fall-clone")
     .setAttribute("data-fall-index", `${wordIndex}`)
     .setStyle({ top: `${top}px`, left: `${left}px` });
-  copyLetterColors(word, clone);
+  copyRenderedStyles(word, clone);
 
   container.append(clone);
 
@@ -59,11 +58,7 @@ function triggerFall(word: ElementWithUtils): void {
   });
 }
 
-/**
- * Position of an element relative to an ancestor, in the ancestors own
- * coordinates. Unlike getBoundingClientRect this is not thrown off by the
- * funboxes that transform the test (mirror, upside down, nausea).
- */
+/** unlike getBoundingClientRect, not thrown off by the transform funboxes */
 function getOffsetWithin(
   element: HTMLElement,
   ancestor: HTMLElement,
@@ -81,11 +76,14 @@ function getOffsetWithin(
   return { top, left };
 }
 
-/** letter colors come from css scoped to #words, which the clone is outside of */
-function copyLetterColors(
+/** the clone is outside #words, so styles scoped to it have to be carried over */
+function copyRenderedStyles(
   word: ElementWithUtils,
   clone: ElementWithUtils,
 ): void {
+  const { direction, unicodeBidi } = window.getComputedStyle(word.native);
+  clone.setStyle({ direction, unicodeBidi });
+
   const sourceLetters = word.qsa("letter");
   const cloneLetters = clone.qsa("letter");
 
@@ -94,7 +92,9 @@ function copyLetterColors(
     const target = cloneLetters[i];
     if (source === undefined || target === undefined) break;
 
-    const { color, borderBottom } = window.getComputedStyle(source.native);
-    target.setStyle({ color, borderBottom });
+    const { color, borderBottom, display } = window.getComputedStyle(
+      source.native,
+    );
+    target.setStyle({ color, borderBottom, display });
   }
 }
