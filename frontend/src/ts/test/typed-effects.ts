@@ -1,12 +1,9 @@
 import { Config } from "../config/store";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils, qsa, qsr } from "../utils/dom";
 
 const FALL_DURATION_MS = 1000;
 const FALL_MAX_ROTATION = 45;
 const FALL_MAX_DRIFT = 100;
-
-/** falling clones, keyed by the index of the word they were cloned from */
-const fallingClones = new Map<number, ElementWithUtils>();
 
 export function onWordTyped(word: ElementWithUtils): void {
   if (Config.typedEffect === "fall") triggerFall(word);
@@ -14,21 +11,11 @@ export function onWordTyped(word: ElementWithUtils): void {
 
 /** called when an already typed word becomes the active word again */
 export function onWordUntyped(wordIndex: number): void {
-  removeClone(wordIndex);
+  qsa(`.fall-clone[data-fall-index="${wordIndex}"]`).remove();
 }
 
 export function clear(): void {
-  for (const clone of fallingClones.values()) {
-    clone.remove();
-  }
-  fallingClones.clear();
-}
-
-function removeClone(wordIndex: number): void {
-  const clone = fallingClones.get(wordIndex);
-  if (clone === undefined) return;
-  fallingClones.delete(wordIndex);
-  clone.remove();
+  qsa(".fall-clone").remove();
 }
 
 function triggerFall(word: ElementWithUtils): void {
@@ -38,7 +25,8 @@ function triggerFall(word: ElementWithUtils): void {
   const wordIndex = parseInt(word.getAttribute("data-wordindex") ?? "", 10);
   if (Number.isNaN(wordIndex)) return;
 
-  removeClone(wordIndex);
+  // a word can be typed again after going back to it
+  onWordUntyped(wordIndex);
 
   // the clone goes in #typingTest because #wordsWrapper clips everything below
   // the last line, and #words is where the rest of the code looks for words
@@ -54,11 +42,11 @@ function triggerFall(word: ElementWithUtils): void {
     .removeAttribute("data-wordindex")
     .removeClass(["active", "typed"])
     .addClass("fall-clone")
+    .setAttribute("data-fall-index", `${wordIndex}`)
     .setStyle({ top: `${top}px`, left: `${left}px` });
   copyLetterColors(word, clone);
 
   container.append(clone);
-  fallingClones.set(wordIndex, clone);
 
   clone.animate({
     translateX: (Math.random() - 0.5) * FALL_MAX_DRIFT,
@@ -67,13 +55,7 @@ function triggerFall(word: ElementWithUtils): void {
     opacity: [1, 1, 0],
     duration: FALL_DURATION_MS,
     ease: "inQuad",
-    onComplete: () => {
-      // the word may have been typed again, replacing this clone
-      if (fallingClones.get(wordIndex) === clone) {
-        fallingClones.delete(wordIndex);
-      }
-      clone.remove();
-    },
+    onComplete: () => clone.remove(),
   });
 }
 

@@ -165,7 +165,7 @@ export function updateActiveElement(
           TypedEffects.onWordTyped(previousActiveWord);
           Joining.set(previousActiveWord, true);
         } else if (direction === "back") {
-          TypedEffects.onWordUntyped(getActiveWordIndex());
+          //
         }
         previousActiveWord.removeClass("active");
         previousActiveWordTop = previousActiveWord.getOffsetTop();
@@ -180,6 +180,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    TypedEffects.onWordUntyped(getActiveWordIndex());
     Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
