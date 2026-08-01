@@ -1,11 +1,7 @@
 import { Config } from "../../config/store";
-import * as TestInput from "../../test/test-input";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
-import * as Monkey from "../../test/monkey";
 import { emulateInsertText } from "./insert-text";
-import * as TestState from "../../test/test-state";
-import * as JSONData from "../../utils/json-data";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -19,12 +15,9 @@ import {
   setCorrectShiftUsed,
   setLastBailoutAttempt,
 } from "../state";
-import {
-  getActiveFunboxesWithFunction,
-  getActiveFunboxNames,
-} from "../../test/funbox/list";
+import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { wordsHaveTab } from "../../states/test";
+import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
 import { getCustomTextIndicator } from "../../states/core";
 import { logTestEvent } from "../../test/events/data";
@@ -70,7 +63,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        TestState.setBailedOut(true);
+        setBailedOut(true);
         void TestLogic.finish();
         return;
       }
@@ -83,22 +76,16 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.oppositeShiftMode === "keymap" &&
     Config.keymapLayout !== "overrideSync"
   ) {
-    let keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
-      () => undefined,
-    );
+    let keymapLayout = await __nonReactive
+      .getKeymapLayout()
+      .catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");
 
       return;
     }
 
-    const funbox = getActiveFunboxNames().includes("layout_mirror");
-    if (funbox) {
-      keymapLayout = KeyConverter.mirrorLayoutKeys(keymapLayout);
-    }
-
     const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
-
     setCorrectShiftUsed(
       keycode === undefined ? true : ShiftTracker.isUsingOppositeShift(keycode),
     );
@@ -134,9 +121,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   }
 
   const now = performance.now();
-  if (!TestState.resultCalculating) {
-    TestInput.recordKeydownTime(now, event);
-  }
 
   logTestEvent("keydown", now, {
     code: getTestEventCode(event),
@@ -167,14 +151,6 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   if (prevent) {
     event.preventDefault();
     return;
-  }
-
-  if (!event.repeat) {
-    //delaying because type() is called before show()
-    // meaning the first keypress of the test is not animated
-    setTimeout(() => {
-      Monkey.type(event);
-    }, 0);
   }
 
   if (Config.layout !== "default") {

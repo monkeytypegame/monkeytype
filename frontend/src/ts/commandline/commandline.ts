@@ -6,7 +6,6 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showNoticeNotification } from "../states/notifications";
-import * as OutOfFocus from "../test/out-of-focus";
 import {
   getActivePage,
   getCommandlineSubgroup,
@@ -34,6 +33,7 @@ import {
   isModalOpen,
 } from "../states/modals";
 import { ValidationResult } from "../types/validation";
+import { setTestFocusState } from "../states/test";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -74,14 +74,14 @@ let lastState:
 function removeCommandlineBackground(): void {
   qs("#commandLine")?.addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
 }
 
 function addCommandlineBackground(): void {
   qs("#commandLine")?.removeClass("noBackground");
   if (!isInputElementFocused()) {
-    OutOfFocus.show();
+    setTestFocusState("unfocused");
   }
 }
 
@@ -256,6 +256,10 @@ async function goBackOrHide(): Promise<void> {
   }
 }
 
+function stripPunctuation(str: string): string {
+  return str.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+}
+
 async function filterSubgroup(): Promise<void> {
   const subgroup = await getSubgroup();
   subgroup.beforeList?.();
@@ -267,7 +271,9 @@ async function filterSubgroup(): Promise<void> {
     .trim();
 
   const inputSplit =
-    inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
+    inputNoQuickSingle.length === 0
+      ? []
+      : inputNoQuickSingle.split(" ").map(stripPunctuation).filter(Boolean);
 
   const matches: {
     matchCount: number;
@@ -299,8 +305,10 @@ async function filterSubgroup(): Promise<void> {
         : command.display
     )
       .toLowerCase()
-      .split(" ");
-    const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
+      .split(" ")
+      .map(stripPunctuation);
+    const aliasSplit =
+      command.alias?.toLowerCase().split(" ").map(stripPunctuation) ?? [];
 
     const displayAliasSplit = displaySplit.concat(aliasSplit);
     const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(
@@ -467,12 +475,11 @@ async function showCommands(): Promise<void> {
         }
       }
 
-      return { ...command, isActive } as CommandWithIsActive;
+      return { ...command, isActive };
     });
 
   if (
-    lastState &&
-    usingSingleList === lastState.usingSingleList &&
+    usingSingleList === lastState?.usingSingleList &&
     areSortedArraysEqual(list, lastState.list)
   ) {
     return;
@@ -872,6 +879,7 @@ const modal = new AnimatedModal({
     input.on(
       "input",
       debounce(50, async (e) => {
+        if (isAnimating) return;
         inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
@@ -890,6 +898,11 @@ const modal = new AnimatedModal({
     );
 
     input.on("keydown", async (e) => {
+      //the commandline is on its way out - swallow everything
+      if (isAnimating) {
+        e.preventDefault();
+        return;
+      }
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||
@@ -947,8 +960,7 @@ const modal = new AnimatedModal({
 
     input.on("input", async (e) => {
       if (
-        inputModeParams === null ||
-        inputModeParams.command === null ||
+        inputModeParams?.command === null ||
         !("validation" in inputModeParams.command)
       ) {
         return;

@@ -53,10 +53,7 @@ export function Register(): JSXElement {
       });
     }
 
-    if (
-      disposableEmailModule &&
-      disposableEmailModule.isDisposableEmail !== undefined
-    ) {
+    if (disposableEmailModule?.isDisposableEmail !== undefined) {
       try {
         if (disposableEmailModule.isDisposableEmail(email)) {
           messages.push({
@@ -213,7 +210,7 @@ export function Register(): JSXElement {
         <form.Field
           name="password"
           validators={{
-            onChange: fromSchema(getPasswordSchema()),
+            onChange: fromSchema(getPasswordSchema({ isNew: true })),
           }}
           children={(field) => (
             <InputField

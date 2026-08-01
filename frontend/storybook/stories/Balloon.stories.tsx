@@ -1,11 +1,10 @@
 import preview from "#.storybook/preview";
-import { Component } from "solid-js";
 
 import { Balloon } from "../../src/ts/components/common/Balloon";
 
 const meta = preview.meta({
   title: "Common/Balloon",
-  component: Balloon as Component,
+  component: Balloon,
   parameters: {
     layout: "centered",
   },

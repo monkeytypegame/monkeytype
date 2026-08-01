@@ -2,10 +2,10 @@
 import { debounce } from "throttle-debounce";
 import { configEvent } from "../events/config";
 import { Config } from "../config/store";
-import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { onDOMReady, qs } from "../utils/dom";
+import { isTestActive } from "../states/test";
 // import { createEffect } from "solid-js";
 
 const breakpoint = 900;
@@ -41,7 +41,7 @@ function init(): void {
   }
 
   setInterval(() => {
-    if (TestState.isActive) {
+    if (isTestActive()) {
       return;
     }
     if (choice === "eg") {

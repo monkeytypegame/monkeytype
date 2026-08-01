@@ -24,7 +24,6 @@ import {
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
-import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -43,7 +42,6 @@ import {
   GetResultsResponse,
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
-  ReportCompletedEventMismatchRequest,
 } from "@monkeytype/contracts/results";
 import {
   CompletedEvent,
@@ -65,6 +63,7 @@ import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
+import { getChallenges } from "@monkeytype/challenges";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -81,6 +80,12 @@ try {
     process.exit(1);
   }
 }
+
+const autoRoleChallengeNames = new Set(
+  getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name),
+);
 
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,
@@ -183,48 +188,6 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
-}
-
-export async function reportCompletedEventMismatch(
-  req: MonkeyRequest<undefined, ReportCompletedEventMismatchRequest>,
-): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-  const {
-    notMatching,
-    mismatchedKeys,
-    groupKey,
-    language,
-    mode,
-    mode2,
-    difficulty,
-    duration,
-    funboxes,
-    version,
-    eventLog,
-  } = req.body;
-  // Logger.warning(
-  //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
-  // );
-  // Logger.warning(`Old CE: ${JSON.stringify(ce)}`);
-  // Logger.warning(`New CE: ${JSON.stringify(ce2)}`);
-  void addLog(
-    "completed_event_mismatch",
-    {
-      notMatching,
-      mismatchedKeys,
-      groupKey,
-      language,
-      mode,
-      mode2,
-      difficulty,
-      duration,
-      funboxes,
-      version,
-      eventLog,
-    },
-    uid,
-  );
-  return new MonkeyResponse("Mismatch reported", null);
 }
 
 export async function addResult(
@@ -502,7 +465,7 @@ export async function addResult(
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    AutoRoleList.includes(completedEvent.challenge) &&
+    autoRoleChallengeNames.has(completedEvent.challenge) &&
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {

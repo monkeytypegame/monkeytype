@@ -282,7 +282,7 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   }
 
   //cleanup database
-  await Promise.all([
+  const tasks = [
     UserDAL.deleteUser(uid),
     deleteUserLogs(uid),
     deleteAllApeKeys(uid),
@@ -298,7 +298,13 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       req.ctx.configuration.leaderboards.weeklyXp,
     ),
     ConnectionsDal.deleteByUid(uid),
-  ]);
+  ];
+
+  if (userInfo?.discordId !== undefined) {
+    tasks.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+
+  await Promise.all(tasks);
 
   try {
     //delete user from firebase
@@ -530,7 +536,7 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "ips",
     "testActivity",
     "suspicious",
-  ]) as RelevantUserInfo;
+  ]);
 }
 
 export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {

@@ -13,9 +13,10 @@ import { Config, setFullConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
-import { promiseWithResolvers, typedKeys } from "../utils/misc";
+import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export async function applyConfigFromJson(json: string): Promise<void> {
   try {

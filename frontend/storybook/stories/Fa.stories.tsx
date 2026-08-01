@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { Fa } from "../../src/ts/components/common/Fa";
 
 const meta = preview.meta({
   title: "Common/Fa",
-  component: Fa as Component,
+  component: Fa,
   parameters: {
     layout: "centered",
   },

@@ -7,7 +7,6 @@ import {
 } from "../states/core";
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
-import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
@@ -23,7 +22,7 @@ import { onDOMReady, qsa, qsr } from "../utils/dom";
 import * as Skeleton from "../utils/skeleton";
 import {
   LeaderboardUrlParamsSchema,
-  readGetParameters,
+  readLeaderboardGetParameters,
 } from "../states/leaderboard-selection";
 import { configurationPromise as serverConfigurationPromise } from "../ape/server-configuration";
 import { getSnapshot } from "../db";
@@ -34,6 +33,10 @@ import {
   isConnectionsReady,
   waitForConnectionsReady,
 } from "../collections/connections";
+import {
+  AccountSettingsUrlParamsSchema,
+  readAccountSettingsGetParameters,
+} from "../states/account-settings";
 
 type ChangeOptions = {
   force?: boolean;
@@ -131,7 +134,12 @@ const pages = {
       ],
     },
   }),
-  accountSettings: PageAccountSettings.page,
+  accountSettings: solidPage("accountSettings", {
+    urlParamsSchema: AccountSettingsUrlParamsSchema,
+    beforeShow: async (options) => {
+      readAccountSettingsGetParameters(options.urlParams);
+    },
+  }),
   leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {
@@ -142,7 +150,7 @@ const pages = {
       },
     },
     beforeShow: async (options) => {
-      readGetParameters(options.urlParams);
+      readLeaderboardGetParameters(options.urlParams);
     },
   }),
 };

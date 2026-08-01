@@ -5,10 +5,6 @@
     --content-max-width: 640px;
   }
   .pageTest {
-    #liveStatsTextTop,
-    #liveStatsTextBottom {
-      font-size: 5rem;
-    }
     #result .wrapper {
       grid-template-columns: 1fr;
       grid-template-areas:
@@ -25,21 +21,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
-      }
-    }
-  }
-  .pageAccountSettings {
-    .main {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
-      .tabs {
-        padding: 0;
-        display: grid;
-        grid-auto-flow: row;
-        button {
-          justify-content: center;
-          padding: 1em 0.5em;
-        }
       }
     }
   }

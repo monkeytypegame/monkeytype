@@ -31,7 +31,7 @@ export function PendingRequests() {
             <DataTable
               id="pendingConnections"
               columns={columns()}
-              data={[...pendingQueryData()]}
+              data={pendingQueryData()}
             />
           </Show>
         )}
@@ -84,8 +84,8 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           />
           <Button
             onClick={() => void blockConnection({ id: info.getValue() })}
-            balloon={{ text: "block" }}
-            fa={{ icon: "fa-shield-alt", fixedWidth: true }}
+            balloon={{ text: "block user" }}
+            fa={{ icon: "fa-ban", fixedWidth: true }}
           />
         </div>
       ),

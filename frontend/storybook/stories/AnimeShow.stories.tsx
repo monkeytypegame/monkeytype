@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -6,7 +6,7 @@ import { AnimeShow } from "../../src/ts/components/common/anime/AnimeShow";
 
 const meta = preview.meta({
   title: "Common/Anime/AnimeShow",
-  component: AnimeShow as Component,
+  component: AnimeShow,
   parameters: {
     layout: "centered",
   },

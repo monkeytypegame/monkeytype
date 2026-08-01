@@ -6,7 +6,7 @@ import { NotificationBubble } from "../../src/ts/components/common/NotificationB
 
 const meta = preview.meta({
   title: "Common/NotificationBubble",
-  component: NotificationBubble as Component,
+  component: NotificationBubble,
   parameters: {
     layout: "centered",
   },

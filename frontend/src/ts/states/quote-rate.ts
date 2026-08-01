@@ -54,7 +54,7 @@ export async function getQuoteStats(
 
   if (response.body.data === null) {
     setQuoteStats({});
-    return {} as QuoteStats;
+    return {};
   }
 
   const stats = response.body.data as QuoteStats;

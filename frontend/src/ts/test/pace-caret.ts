@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
@@ -12,7 +11,16 @@ import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
+  getCurrentQuote,
+  getResultVisible,
+  isPaceRepeat,
+  isTestActive,
+  setPaceCaretWpm,
+} from "../states/test";
 
 type Settings = {
   wpm: number;
@@ -50,8 +58,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
@@ -116,11 +124,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (
-    currentSettings === null ||
-    !TestState.isActive ||
-    TestState.resultVisible
-  ) {
+  if (currentSettings === null || !isTestActive() || getResultVisible()) {
     return;
   }
 
@@ -138,8 +142,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration,
@@ -177,23 +181,26 @@ function incrementLetterIndex(): void {
   if (settings === null) return;
 
   try {
-    settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestWords.words.getText(settings.currentWordIndex).length + 1
+      // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+      TestWords.words.get(settings.currentWordIndex)!.text.length
     ) {
       //go to the next word
-      settings.currentLetterIndex = 0;
+      settings.currentLetterIndex = -1;
       settings.currentWordIndex++;
     }
+    settings.currentLetterIndex++;
+
     if (!Config.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
-          if (settings.currentLetterIndex <= -2) {
+          if (settings.currentLetterIndex <= -1) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestWords.words.getText(settings.currentWordIndex - 1).length - 1;
+              // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+              TestWords.words.get(settings.currentWordIndex - 1)!.text.length;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -203,7 +210,8 @@ function incrementLetterIndex(): void {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestWords.words.getText(settings.currentWordIndex).length
+            // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+            TestWords.words.get(settings.currentWordIndex)!.text.length + 1
           ) {
             //go to the next word
             settings.currentLetterIndex = 0;
@@ -225,21 +233,20 @@ function incrementLetterIndex(): void {
 export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
-      settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === true &&
+      settings?.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = undefined;
-      settings.correction -= currentWord.length + 1;
+      settings.wordsStatus[getActiveWordIndex()] = undefined;
+      settings.correction -= currentWord.length;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
+      settings.wordsStatus[getActiveWordIndex()] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = true;
-      settings.correction += currentWord.length + 1;
+      settings.wordsStatus[getActiveWordIndex()] = true;
+      settings.correction += currentWord.length;
     }
   }
 }

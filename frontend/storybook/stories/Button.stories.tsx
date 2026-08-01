@@ -1,4 +1,3 @@
-import { Component } from "solid-js";
 import { fn } from "storybook/test";
 
 import preview from "#.storybook/preview";
@@ -7,7 +6,7 @@ import { Button } from "../../src/ts/components/common/Button";
 
 const meta = preview.meta({
   title: "Common/Button",
-  component: Button as Component,
+  component: Button,
   parameters: {
     layout: "centered",
   },

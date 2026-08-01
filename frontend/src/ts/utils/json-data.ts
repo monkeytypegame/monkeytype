@@ -1,9 +1,8 @@
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { toHex } from "./strings";
 import { languageHashes } from "virtual:language-hashes";
 import { isDevEnvironment } from "./env";
+import { toHex } from "./strings";
 
 //pin implementation
 const fetch = window.fetch;
@@ -155,15 +154,6 @@ export class Section {
 export type FunboxWordOrder = "normal" | "reverse";
 
 /**
- * Fetches the list of challenges from the server.
- * @returns A promise that resolves to the list of challenges.
- */
-export async function getChallengeList(): Promise<Challenge[]> {
-  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-  return data;
-}
-
-/**
  * Fetches the list of supporters from the server.
  * @returns A promise that resolves to the list of supporters.
  */
@@ -235,7 +225,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
   const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
   );
-  if (releases[0] === undefined || releases[0].name === undefined) {
+  if (releases[0]?.name === undefined) {
     throw new Error("No release found");
   }
   return releases[0].name;

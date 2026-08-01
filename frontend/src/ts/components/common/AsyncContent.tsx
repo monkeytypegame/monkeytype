@@ -1,3 +1,4 @@
+import { typedKeys } from "@monkeytype/util/objects";
 import { UseQueryResult } from "@tanstack/solid-query";
 import {
   Accessor,
@@ -12,7 +13,6 @@ import {
 
 import { showErrorNotification } from "../../states/notifications";
 import { createErrorMessage } from "../../utils/error";
-import { typedKeys } from "../../utils/misc";
 import { LoadingCircle } from "./LoadingCircle";
 
 type AsyncEntry<T> = {

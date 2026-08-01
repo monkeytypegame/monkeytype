@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { AutoShrink } from "../../src/ts/components/common/AutoShrink";
 
 const meta = preview.meta({
   title: "Common/AutoShrink",
-  component: AutoShrink as Component,
+  component: AutoShrink,
   parameters: {
     layout: "centered",
   },

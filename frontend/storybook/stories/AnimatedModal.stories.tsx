@@ -1,5 +1,3 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { AnimatedModal } from "../../src/ts/components/common/AnimatedModal";
@@ -25,7 +23,7 @@ function ModalTrigger(props: { modalId: ModalId; label: string }) {
 
 const meta = preview.meta({
   title: "Common/AnimatedModal",
-  component: AnimatedModal as Component,
+  component: AnimatedModal,
   parameters: {
     layout: "fullscreen",
   },

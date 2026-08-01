@@ -1,10 +1,14 @@
 import { Config } from "../config/store";
-import * as TestState from "../test/test-state";
+import { getCurrentInput } from "./events/data";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
+} from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
-import { getCurrentInput } from "./test-input";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -24,18 +28,18 @@ export function resetPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
 
 export function updatePosition(noAnim = false): void {
   caret.goTo({
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + CompositionState.getData().length,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }

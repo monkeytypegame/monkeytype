@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { Bar } from "../../src/ts/components/common/Bar";
 
 const meta = preview.meta({
   title: "Common/Bar",
-  component: Bar as Component,
+  component: Bar,
   parameters: {
     layout: "padded",
   },

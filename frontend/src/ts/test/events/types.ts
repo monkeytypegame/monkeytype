@@ -71,12 +71,19 @@ export type TimerEventData =
   | {
       event: "step";
       timer: number;
-      drift: number;
+      // omitted on catchup steps (they all fire at the same testMs in a
+      // synchronous burst, so per-tick drift isn't a real measurement)
+      drift?: number;
       slowTimer?: true;
+      // true when this step fired as part of a catch-up burst from a stall
+      // (timerStep ran with the cheap path; only the final step of the burst
+      // has the full WPM/UI side effects)
+      catchup?: true;
     }
   | {
       event: "start" | "end";
       timer: number;
+      date: number;
     };
 
 export type InputEvent = EventProps<"input", InputEventData>;

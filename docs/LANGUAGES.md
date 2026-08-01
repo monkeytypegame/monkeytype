@@ -24,6 +24,7 @@ The contents of the file should be as follows:
   "joiningScript": boolean,
   "orderedByFrequency": boolean,
   "bcp47": string,
+  "preferredFont":string,
   "words": string[]
 }
 ```
@@ -34,6 +35,7 @@ It is recommended that you familiarize yourselves with JSON before adding a lang
 For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag).
 If the words you're adding are ordered by frequency (most common words at the top, least at the bottom) set the value of `orderedByFrequency` to `true`, otherwise `false`.
 Finally, add your list of words to the `words` field.
+If the language is not rendered correctly, you can provide a `preferredFont`. The font needs to be one of monkeytypes fonts. Check the [fonts documentation](./FONTS.md).
 
 Then, go to `packages/schemas/src/languages.ts` and add your new language name at the _end_ of the `LanguageSchema` enum. Make sure to end the line with a comma. Make sure to add all your language names if you have created multiple word lists of differing lengths in the same language.
 

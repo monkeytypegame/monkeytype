@@ -181,7 +181,7 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       addPresetMock.mockResolvedValue({ presetId: "1" });
@@ -357,7 +357,7 @@ describe("PresetController", () => {
         },
       });
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       editPresetMock.mockResolvedValue({} as any);

@@ -2,7 +2,6 @@
  * Example usage in root or frontend:
  * pnpm check-assets (npm run check-assets)
  * pnpm check-assets -- -- quotes others (npm run check-assets -- -- quotes others)
- * pnpm check-assets -- -- challenges sound -p (npm run check-assets -- -- challenges sound -p)
  */
 
 import * as fs from "fs";
@@ -18,7 +17,6 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { themes, ThemeSchema, ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
-import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
@@ -97,24 +95,6 @@ function findDuplicates<T>(items: T[]): T[] {
   }
 
   return Array.from(duplicates);
-}
-
-async function validateChallenges(): Promise<void> {
-  const problems = new Problems<"_list.json", never>("Challenges", {});
-
-  const challengesData = JSON.parse(
-    fs.readFileSync("./static/challenges/_list.json", {
-      encoding: "utf8",
-      flag: "r",
-    }),
-  ) as Challenge;
-  const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
-  problems.addValidation("_list.json", validationResult);
-
-  console.log(problems.toString());
-  if (problems.hasError()) {
-    throw new Error("challenges with errors");
-  }
 }
 
 async function validateLayouts(): Promise<void> {
@@ -496,17 +476,10 @@ async function main(): Promise<void> {
     quotes: [validateQuotes],
     languages: [validateLanguages],
     layouts: [validateLayouts],
-    challenges: [validateChallenges],
     fonts: [validateFonts],
     themes: [validateThemes],
     sounds: [validateSounds],
-    others: [
-      validateChallenges,
-      validateLayouts,
-      validateFonts,
-      validateThemes,
-      validateSounds,
-    ],
+    others: [validateLayouts, validateFonts, validateThemes, validateSounds],
   };
 
   // flags

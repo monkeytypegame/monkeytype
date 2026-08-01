@@ -40,6 +40,7 @@ import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { getCurrentQuote } from "../states/test";
+import { removeLanguageSize } from "../utils/strings";
 
 export type ResultsQueryState = {
   difficulty: SnapshotResult<Mode>["difficulty"][];
@@ -590,10 +591,18 @@ export type CurrentSettingsFilter = {
 export function useUserAverage10LiveQuery(options: {
   isEnabled: Accessor<boolean>;
 }) {
-  const settingsFilter = createMemo(() => ({
-    ...getConfig,
-    mode2: getMode2(getConfig, getCurrentQuote()),
-  }));
+  const settingsFilter = createMemo(() => {
+    const language =
+      getConfig.mode === "quote"
+        ? removeLanguageSize(getConfig.language)
+        : getConfig.language;
+
+    return {
+      ...getConfig,
+      mode2: getMode2(getConfig, getCurrentQuote()),
+      language,
+    };
+  });
 
   const activeTagsQuery = useActiveTagsLiveQuery();
 

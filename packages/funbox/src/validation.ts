@@ -178,10 +178,6 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("getEmulatedChar"),
     ).length <= 1;
-  const oneCharCheckerMax =
-    funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("isCharCorrect"),
-    ).length <= 1;
   const oneCharReplacerMax =
     funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
       .length <= 1;
@@ -240,7 +236,6 @@ export function checkCompatibility(
     oneToPushOrPullSectionMax &&
     onePunctuateWordMax &&
     oneGetEmulatedCharMax &&
-    oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
     oneCssModificationPerElement &&

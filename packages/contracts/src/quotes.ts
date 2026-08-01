@@ -30,8 +30,9 @@ export type IsSubmissionEnabledResponse = z.infer<
   typeof IsSubmissionEnabledResponseSchema
 >;
 
+export const QuoteTextSchema = z.string().min(60);
 export const AddQuoteRequestSchema = z.object({
-  text: z.string().min(60),
+  text: QuoteTextSchema,
   source: z.string(),
   language: LanguageSchema,
   captcha: z.string(), //we don't generate the captcha so there should be no validation
