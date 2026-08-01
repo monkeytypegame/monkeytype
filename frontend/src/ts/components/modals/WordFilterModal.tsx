@@ -131,7 +131,7 @@ function filterWordList(
   // Source - https://stackoverflow.com/a/874742
   // Retrieved 2026-06-23, License - CC BY-SA 3.0
   // Separates string into regex expression
-  const match = new RegExp("^/(?<pattern>.*?)/(?<flags>[gimy]*)$").exec(
+  const match = new RegExp("^/(?<pattern>.*?)/(?<flags>[gimydsuv]*)$").exec(
     value.regex,
   ) ?? { groups: { pattern: value.regex, flags: "" } };
   const reglit = new RegExp(match.groups?.pattern ?? "", match.groups?.flags);
