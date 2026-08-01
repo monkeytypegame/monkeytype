@@ -79,7 +79,7 @@ class Words {
   removeCommitCharacterFromLastWord(): void {
     if (this.length === 0) return;
     const lastWord = this.list[this.length - 1];
-    if (lastWord === undefined) return;
+    if (lastWord === undefined || lastWord.text === "") return;
     if (lastWord.commit === " " || lastWord.commit === "\n") {
       lastWord.commit = "";
       lastWord.textWithCommit = lastWord.text;
