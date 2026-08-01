@@ -648,7 +648,7 @@ export function updateWordsWrapperHeight(force = false): void {
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
-      const wordElements = wordsEl.qsa(".word:not(.fall-clone)");
+      const wordElements = wordsEl.qsa(".word");
       let lines = 0;
       let lastTop = 0;
       let wordIndex = 0;
