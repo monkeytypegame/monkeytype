@@ -633,7 +633,7 @@ export function CustomTextModal(): JSXElement {
                 ref={fileInputRef}
                 type="file"
                 class="hidden"
-                accept=".txt,.md,.docx,.doc,.odt,.odp,.ods,.pdf,.rtf,.epub"
+                accept=".txt,.md,.docx,.doc,.odt,.pdf,.rtf,.epub"
                 onChange={handleFileOpen}
               />
               <Button

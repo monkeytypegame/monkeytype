@@ -5,22 +5,12 @@ async function loadOfficeparser(): Promise<typeof import("officeparser")> {
   return officeparser;
 }
 
-type SupportedFileType =
-  | "docx"
-  | "odt"
-  | "odp"
-  | "ods"
-  | "pdf"
-  | "rtf"
-  | "md"
-  | "epub";
+type SupportedFileType = "docx" | "odt" | "pdf" | "rtf" | "md" | "epub";
 
 const EXTENSION_MAP: Record<string, SupportedFileType> = {
   docx: "docx",
   doc: "docx",
   odt: "odt",
-  odp: "odp",
-  ods: "ods",
   pdf: "pdf",
   rtf: "rtf",
   md: "md",
@@ -31,8 +21,6 @@ const MIME_TYPE_MAP: Record<string, SupportedFileType> = {
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
     "docx",
   "application/vnd.oasis.opendocument.text": "odt",
-  "application/vnd.oasis.opendocument.presentation": "odp",
-  "application/vnd.oasis.opendocument.spreadsheet": "ods",
   "application/pdf": "pdf",
   "application/rtf": "rtf",
   "text/markdown": "md",
