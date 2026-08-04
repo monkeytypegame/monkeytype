@@ -21,6 +21,7 @@ import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
 import { cn } from "../../utils/cn";
+import { convertToText } from "../../utils/fileparser";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -320,25 +321,39 @@ export function CustomTextModal(): JSXElement {
     });
   };
 
-  const handleFileOpen = () => {
+  const handleFileOpen = async () => {
     const file = fileInputRef?.files?.[0];
     if (!file) return;
 
-    if (file.type !== "text/plain") {
-      showErrorNotification("File is not a text file", { durationMs: 5000 });
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const isTextFile = file.type === "text/plain" || fileExtension === "txt";
+
+    if (isTextFile) {
+      const reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const text = content;
+        form.setFieldValue("text", text);
+        fileInputRef.value = "";
+      };
+      reader.onerror = () => {
+        showErrorNotification("Failed to read file", { durationMs: 5000 });
+      };
+    } else {
+      try {
+        const text = await convertToText(file, file.name, file.type);
+        form.setFieldValue("text", text);
+        fileInputRef.value = "";
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to parse file";
+        showErrorNotification(`Failed to parse file: ${message}`, {
+          durationMs: 5000,
+        });
+      }
       return;
     }
-
-    const reader = new FileReader();
-    reader.readAsText(file, "UTF-8");
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      form.setFieldValue("text", content);
-      fileInputRef.value = "";
-    };
-    reader.onerror = () => {
-      showErrorNotification("Failed to read file", { durationMs: 5000 });
-    };
   };
 
   const handleTextareaKeydown = (e: KeyboardEvent) => {
@@ -618,7 +633,7 @@ export function CustomTextModal(): JSXElement {
                 ref={fileInputRef}
                 type="file"
                 class="hidden"
-                accept=".txt"
+                accept=".txt,.md,.docx,.doc,.odt,.odp,.ods,.pdf,.rtf,.epub"
                 onChange={handleFileOpen}
               />
               <Button

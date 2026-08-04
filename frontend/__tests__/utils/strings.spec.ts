@@ -590,7 +590,6 @@ describe("string utils", () => {
       });
     });
   });
-
   describe("countChars", () => {
     describe("it should count characters correctly", () => {
       const testCases = [

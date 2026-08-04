@@ -25,7 +25,6 @@ import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
 import solidPlugin from "vite-plugin-solid";
-import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
@@ -103,9 +102,6 @@ function getPlugins({
     tailwindcss(),
 
     solidPlugin(),
-    devtools({
-      autoname: true,
-    }),
   ];
 
   const devPlugins: PluginOption[] = [
@@ -268,6 +264,10 @@ function getBuildOptions({
               test: /src\/ts\/utils\//,
             },
             {
+              name: "vendor-officeparser",
+              test: /node_modules\/officeparser/,
+            },
+            {
               name: "vendor",
               test: /node_modules\//,
             },
@@ -368,7 +368,7 @@ export default defineConfig(({ mode }): UserConfig => {
     root: "src",
     publicDir: "../static",
     optimizeDeps: {
-      exclude: ["@fortawesome/fontawesome-free"],
+      exclude: ["@fortawesome/fontawesome-free", "officeparser"],
     },
   };
 });
