@@ -101,6 +101,7 @@ export function onBeforeInsertText(data: string): boolean {
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
+    !Config.deleteOnError.includes("hard") &&
     inputIsLongerThanOrEqualToWord &&
     !goingToNextWord &&
     Config.mode !== "zen"
