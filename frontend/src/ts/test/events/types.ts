@@ -92,6 +92,11 @@ type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
   inputValue: string;
+  // true when monkeytype produced this input itself instead of the user
+  // pressing a key - delete on error, code mode auto indentation. There is no
+  // keydown behind these, and they share the timestamp of the keypress that
+  // triggered them.
+  automatic?: true;
 };
 
 export type InputEventData =
