@@ -30,6 +30,8 @@ vi.mock("../../../src/ts/input/input-element", () => ({
 const mockState = vi.hoisted(() => ({
   activeWordIndex: 0,
   correctShiftUsed: true as boolean,
+  // words that have scrolled off the screen and been removed from the dom
+  wordsScrolledOff: new Set<number>(),
 }));
 
 const nav = vi.hoisted(() => ({
@@ -94,6 +96,10 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 // peripheral collaborators - none of them feed back into the events we assert
 vi.mock("../../../src/ts/test/test-ui", () => ({
   afterTestTextInput: vi.fn(),
+  // words scrolled off the screen are removed from the dom
+  getWordElement: vi.fn((index: number) =>
+    mockState.wordsScrolledOff.has(index) ? null : {},
+  ),
   pendingWordData: new Map<number, string>(),
 }));
 vi.mock("../../../src/ts/test/test-logic", () => ({
@@ -207,6 +213,7 @@ describe("onInsertText - delete on error", () => {
     TestWords.reset();
     mockState.activeWordIndex = 0;
     mockState.correctShiftUsed = true;
+    mockState.wordsScrolledOff.clear();
     setInput("");
     replaceConfig({
       mode: "words",
@@ -341,6 +348,20 @@ describe("onInsertText - delete on error", () => {
       expect(nav.goToPreviousWord).not.toHaveBeenCalled();
       expect(mockState.activeWordIndex).toBe(0);
       expect(deletesForWord(0)).toEqual([["deleteContentBackward", 1, ""]]);
+    });
+
+    it("does not regress into a word that scrolled off the screen", async () => {
+      replaceConfig({ deleteOnError: "letter_hard", stopOnError: "off" });
+      pushWords("hello", "world");
+      for (const char of "hello ") await type(char);
+      mockState.wordsScrolledOff.add(0);
+
+      await type("x");
+
+      expect(nav.goToPreviousWord).not.toHaveBeenCalled();
+      expect(mockState.activeWordIndex).toBe(1);
+      expect(deletesForWord(1)).toEqual([["deleteContentBackward", 1, ""]]);
+      expect(getInput()).toBe("");
     });
 
     it("does not regress on a mistake later in the word", async () => {

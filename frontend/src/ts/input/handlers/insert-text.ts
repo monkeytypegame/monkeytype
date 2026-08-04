@@ -109,7 +109,14 @@ function handleDeleteOnError(now: number): void {
   }
 
   //mistake on the first character of the word - the hard modes send you back
-  if (goBackAWord && inputLength <= 1 && getActiveWordIndex() > 0) {
+  //but only if the previous word is still in the dom (it might have scrolled
+  //off), same check as the one a normal backspace does in onBeforeDelete
+  if (
+    goBackAWord &&
+    inputLength <= 1 &&
+    getActiveWordIndex() > 0 &&
+    TestUI.getWordElement(getActiveWordIndex() - 1) !== null
+  ) {
     //pretend its a normal backspace, not insertText
     const inputType: DeleteInputType = deleteWholeWord
       ? "deleteWordBackward"
