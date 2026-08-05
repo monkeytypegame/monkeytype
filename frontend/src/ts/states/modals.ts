@@ -25,6 +25,7 @@ export type ModalId =
   | "ShareTestSettings"
   | "CustomWordAmount"
   | "MobileTestConfig"
+  | "PbTables"
   | "MiniResultChartModal"
   | "Cookies"
   | "AddPresetModal"

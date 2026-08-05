@@ -17,7 +17,6 @@ import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
 import { enable } from "./legacy-states/glarses-mode";
-import "./test/caps-warning";
 import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
@@ -40,7 +39,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
-import { lastEventLog } from "./test/test-state";
+import { getLastEventLog } from "./states/test";
 import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
@@ -93,7 +92,7 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => lastEventLog,
+  lastEventLog: () => getLastEventLog(),
   currentEventLog: buildEventLog,
 });
 

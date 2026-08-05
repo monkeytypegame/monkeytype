@@ -1,4 +1,4 @@
-import * as TestState from "./test-state";
+import { getActiveWordIndex } from "../states/test";
 
 type CommitChar = " " | "\n" | "";
 
@@ -47,7 +47,7 @@ class Words {
     }
   }
   getCurrent(): Word | undefined {
-    return this.list[TestState.activeWordIndex];
+    return this.list[getActiveWordIndex()];
   }
   push(word: string, sectionIndex: number): Word {
     let commit: CommitChar = "";
