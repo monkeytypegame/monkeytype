@@ -83,7 +83,7 @@ export function StreakHourOffsetModal() {
             name="offset"
             validators={{
               onChange: ({ value }) => {
-                const val = parseFloat(String(value));
+                const val = parseFloat(value);
                 if (isNaN(val)) {
                   return "Must be a number";
                 }

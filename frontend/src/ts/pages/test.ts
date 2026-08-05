@@ -14,7 +14,7 @@ export const page = new Page({
     blurInputElement();
   },
   afterHide: async (): Promise<void> => {
-    TestLogic.restart({
+    void TestLogic.restart({
       noAnim: true,
     });
     void Funbox.clear();
@@ -23,7 +23,7 @@ export const page = new Page({
   beforeShow: async (): Promise<void> => {
     updateFooterAndVerticalAds(false);
     resetIncompleteTests();
-    TestLogic.restart({
+    void TestLogic.restart({
       noAnim: true,
     });
   },

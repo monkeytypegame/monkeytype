@@ -138,7 +138,7 @@ function filterWordList(
     reglit = new RegExp(pattern, flags);
   } catch (error) {
     if (error instanceof SyntaxError) {
-      return { error: "Invaid Regex Expression" };
+      return { error: "Invalid Regex Expression" };
     }
     return { error: String(error) };
   }

@@ -1,8 +1,8 @@
 import { Config } from "../../config/store";
 import { getCustomTextIndicator } from "../../states/core";
 import * as CustomText from "../../test/custom-text";
+import { setBailedOut } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
 import { Command, CommandsSubgroup } from "../types";
 
 function canBailOut(): boolean {
@@ -38,7 +38,7 @@ const subgroup: CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        TestState.setBailedOut(true);
+        setBailedOut(true);
         void TestLogic.finish();
       },
       available: (): boolean => {

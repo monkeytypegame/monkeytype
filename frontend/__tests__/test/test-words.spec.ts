@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../src/ts/test/test-state", () => ({
-  activeWordIndex: 0,
+vi.mock("../../src/ts/states/test", () => ({
+  getActiveWordIndex: () => 0,
 }));
 
 import { words } from "../../src/ts/test/test-words";

@@ -115,7 +115,7 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   await init();
 
   const safeClickSounds = clickSoundConfig[clickId];
-  if (safeClickSounds === undefined || safeClickSounds[0] === undefined) {
+  if (safeClickSounds?.[0] === undefined) {
     return;
   }
 

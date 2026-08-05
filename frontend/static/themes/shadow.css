@@ -21,11 +21,6 @@ header [data-ui-element="logoText"] {
   }
 }
 
-#liveWpm,
-#liveStatsTextTop {
-  color: white;
-}
-
 #result .stats .group,
 [data-nav-item]:hover,
 footer button:hover,
