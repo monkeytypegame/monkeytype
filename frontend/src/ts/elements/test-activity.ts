@@ -3,6 +3,74 @@ import {
   TestActivityMonth,
 } from "./test-activity-calendar";
 
+const tooltipViewportPadding = 8;
+
+export function getTooltipHorizontalOffset(
+  triggerLeft: number,
+  triggerWidth: number,
+  tooltipWidth: number,
+  viewportWidth: number,
+): number {
+  const availableWidth = Math.max(
+    0,
+    viewportWidth - tooltipViewportPadding * 2,
+  );
+  const renderedTooltipWidth = Math.min(tooltipWidth, availableWidth);
+  const triggerCenter = triggerLeft + triggerWidth / 2;
+  const tooltipLeft = triggerCenter - renderedTooltipWidth / 2;
+  const tooltipRight = triggerCenter + renderedTooltipWidth / 2;
+
+  if (tooltipLeft < tooltipViewportPadding) {
+    return tooltipViewportPadding - tooltipLeft;
+  }
+
+  if (tooltipRight > viewportWidth - tooltipViewportPadding) {
+    return viewportWidth - tooltipViewportPadding - tooltipRight;
+  }
+
+  return 0;
+}
+
+function measureTooltipWidth(element: HTMLElement): number {
+  const label = element.getAttribute("aria-label");
+  if (label === null) {
+    return 0;
+  }
+
+  const tooltipStyle = window.getComputedStyle(element, "::after");
+  const measure = document.createElement("span");
+  measure.textContent = label;
+  Object.assign(measure.style, {
+    fontFamily: tooltipStyle.fontFamily,
+    fontSize: tooltipStyle.fontSize,
+    fontStyle: tooltipStyle.fontStyle,
+    fontWeight: tooltipStyle.fontWeight,
+    letterSpacing: tooltipStyle.letterSpacing,
+    paddingLeft: tooltipStyle.paddingLeft,
+    paddingRight: tooltipStyle.paddingRight,
+    position: "fixed",
+    visibility: "hidden",
+    whiteSpace: "nowrap",
+  });
+  document.body.appendChild(measure);
+  const width = measure.getBoundingClientRect().width;
+  measure.remove();
+
+  return width;
+}
+
+function positionTooltip(element: HTMLElement): void {
+  const triggerRect = element.getBoundingClientRect();
+  const offset = getTooltipHorizontalOffset(
+    triggerRect.left,
+    triggerRect.width,
+    measureTooltipWidth(element),
+    document.documentElement.clientWidth,
+  );
+
+  element.style.setProperty("--activity-tooltip-offset", `${offset}px`);
+}
+
 export function init(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
@@ -51,18 +119,13 @@ export function update(
     }
   }
 
-  const days = calendar.getDays();
-  const lastWeekStart = days.length - 7;
-
-  for (const [index, day] of days.entries()) {
+  for (const day of calendar.getDays()) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
       elem.setAttribute("aria-label", day.label);
-      elem.setAttribute(
-        "data-balloon-pos",
-        index >= lastWeekStart ? "up-right" : "up",
-      );
+      elem.setAttribute("data-balloon-pos", "up");
+      elem.addEventListener("pointerenter", () => positionTooltip(elem));
     }
     container.appendChild(elem);
   }
