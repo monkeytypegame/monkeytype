@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { update } from "../../src/ts/elements/test-activity";
+import {
+  getTooltipHorizontalOffset,
+  update,
+} from "../../src/ts/elements/test-activity";
 import { TestActivityCalendar } from "../../src/ts/elements/test-activity-calendar";
 
 describe("test-activity.ts", () => {
@@ -14,7 +17,7 @@ describe("test-activity.ts", () => {
     document.body.replaceChildren();
   });
 
-  it("aligns tooltips in the last week away from the right edge", () => {
+  it("keeps tooltip arrows centered above every activity day", () => {
     const element = document.createElement("div");
     element.className = "testActivity";
     element.innerHTML = `
@@ -36,17 +39,47 @@ describe("test-activity.ts", () => {
     const days = Array.from(
       element.querySelectorAll<HTMLElement>(".activity > div"),
     );
-    const previousWeeks = days
-      .slice(0, -7)
-      .filter((day) => day.hasAttribute("aria-label"));
-    const lastWeek = days
-      .slice(-7)
-      .filter((day) => day.hasAttribute("aria-label"));
+    const labelledDays = days.filter((day) => day.hasAttribute("aria-label"));
 
-    expect(previousWeeks.at(-1)).toHaveAttribute("data-balloon-pos", "up");
-    expect(lastWeek).not.toHaveLength(0);
-    for (const day of lastWeek) {
-      expect(day).toHaveAttribute("data-balloon-pos", "up-right");
+    expect(labelledDays).not.toHaveLength(0);
+    for (const day of labelledDays) {
+      expect(day).toHaveAttribute("data-balloon-pos", "up");
     }
+  });
+
+  it.each([
+    {
+      description: "away from either edge",
+      triggerLeft: 140,
+      triggerWidth: 10,
+      tooltipWidth: 100,
+      viewportWidth: 300,
+      expected: 0,
+    },
+    {
+      description: "at the left edge",
+      triggerLeft: 2,
+      triggerWidth: 10,
+      tooltipWidth: 100,
+      viewportWidth: 300,
+      expected: 51,
+    },
+    {
+      description: "at the right edge",
+      triggerLeft: 288,
+      triggerWidth: 10,
+      tooltipWidth: 100,
+      viewportWidth: 300,
+      expected: -51,
+    },
+  ])("offsets the tooltip box $description", (testCase) => {
+    expect(
+      getTooltipHorizontalOffset(
+        testCase.triggerLeft,
+        testCase.triggerWidth,
+        testCase.tooltipWidth,
+        testCase.viewportWidth,
+      ),
+    ).toBe(testCase.expected);
   });
 });
