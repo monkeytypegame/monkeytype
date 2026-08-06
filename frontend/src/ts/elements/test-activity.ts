@@ -51,12 +51,18 @@ export function update(
     }
   }
 
-  for (const day of calendar.getDays()) {
+  const days = calendar.getDays();
+  const lastWeekStart = days.length - 7;
+
+  for (const [index, day] of days.entries()) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
       elem.setAttribute("aria-label", day.label);
-      elem.setAttribute("data-balloon-pos", "up");
+      elem.setAttribute(
+        "data-balloon-pos",
+        index >= lastWeekStart ? "up-right" : "up",
+      );
     }
     container.appendChild(elem);
   }
