@@ -5,7 +5,7 @@ import {
 
 const tooltipViewportPadding = 8;
 
-export function getTooltipHorizontalOffset(
+function getTooltipHorizontalOffset(
   triggerLeft: number,
   triggerWidth: number,
   tooltipWidth: number,
