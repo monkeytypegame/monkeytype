@@ -3,6 +3,27 @@ import {
   TestActivityMonth,
 } from "./test-activity-calendar";
 
+// Non-centered balloons on edge weeks so tooltips aren't clipped by viewport.
+const BALLOON_EDGE_WEEKS = 10;
+
+export type ActivityBalloonPos = "up" | "up-left" | "up-right";
+
+/** Right-edge cells → `up-right` (extends left); left-edge → `up-left`. */
+export function getActivityBalloonPos(
+  dayIndex: number,
+  dayCount: number,
+): ActivityBalloonPos {
+  const weekCount = Math.ceil(dayCount / 7);
+  const week = Math.floor(dayIndex / 7);
+  if (week >= weekCount - BALLOON_EDGE_WEEKS) {
+    return "up-right";
+  }
+  if (week < BALLOON_EDGE_WEEKS) {
+    return "up-left";
+  }
+  return "up";
+}
+
 export function init(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
@@ -51,12 +72,18 @@ export function update(
     }
   }
 
-  for (const day of calendar.getDays()) {
+  const days = calendar.getDays();
+  for (let i = 0; i < days.length; i++) {
+    const day = days[i];
+    if (day === undefined) continue;
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
       elem.setAttribute("aria-label", day.label);
-      elem.setAttribute("data-balloon-pos", "up");
+      elem.setAttribute(
+        "data-balloon-pos",
+        getActivityBalloonPos(i, days.length),
+      );
     }
     container.appendChild(elem);
   }
