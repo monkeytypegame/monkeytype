@@ -6,7 +6,8 @@ import {
   updateFromConfigurationFile,
 } from "./init/configuration";
 import app from "./app";
-import { Server } from "http";
+import { createServer, Server } from "http";
+import { attachSocketServer } from "./init/socket";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import * as RedisClient from "./init/redis";
@@ -89,7 +90,10 @@ async function bootServer(port: number): Promise<Server> {
     return process.exit(1);
   }
 
-  return app.listen(port, () => {
+  const httpServer = createServer(app);
+  attachSocketServer(httpServer);
+
+  return httpServer.listen(port, () => {
     Logger.success(`API server listening on port ${port}`);
   });
 }

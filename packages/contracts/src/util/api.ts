@@ -16,7 +16,8 @@ export type OpenApiTag =
   | "users"
   | "quotes"
   | "webhooks"
-  | "connections";
+  | "connections"
+  | "multiplayer";
 
 export type PermissionId =
   | "quoteMod"

@@ -19,6 +19,8 @@ import { MyProfile } from "./pages/account/MyProfile";
 import { FriendsPage } from "./pages/connections/FriendsPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "./pages/login/LoginPage";
+import { MultiplayerPage } from "./pages/multiplayer/MultiplayerPage";
+import { RaceCountdownOverlay } from "./pages/multiplayer/RaceCountdownOverlay";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
@@ -58,6 +60,8 @@ const components: Record<string, () => JSXElement> = {
   capswarning: () => <CapsWarning />,
   compositiondisplay: () => <CompositionDisplay />,
   friendspage: () => <FriendsPage />,
+  multiplayerpage: () => <MultiplayerPage />,
+  racecountdownoverlay: () => <RaceCountdownOverlay />,
   notfoundpage: () => <NotFoundPage />,
   accountsettingspage: () => <AccountSettingsPage />,
   keymap: () => <Keymap />,

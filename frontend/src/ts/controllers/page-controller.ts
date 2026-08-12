@@ -37,6 +37,7 @@ import {
   AccountSettingsUrlParamsSchema,
   readAccountSettingsGetParameters,
 } from "../states/account-settings";
+import * as MultiplayerActions from "../multiplayer/actions";
 
 type ChangeOptions = {
   force?: boolean;
@@ -132,6 +133,18 @@ const pages = {
           text: "Downloading friend requests...",
         },
       ],
+    },
+  }),
+  multiplayer: solidPage("multiplayer", {
+    beforeShow: async (options) => {
+      const roomCode = options.params?.["roomCode"];
+      if (roomCode !== undefined && roomCode !== "") {
+        try {
+          await MultiplayerActions.joinRoomByCode(roomCode);
+        } catch {
+          // error notification already shown by joinRoomByCode
+        }
+      }
     },
   }),
   accountSettings: solidPage("accountSettings", {

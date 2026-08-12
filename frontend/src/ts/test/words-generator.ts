@@ -25,6 +25,7 @@ import {
 import { WordGenError } from "../utils/word-gen-error";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
+import { isRaceModeActive, getRaceWordList } from "../states/multiplayer";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import {
@@ -640,7 +641,9 @@ export async function generateWords(
   console.debug("Word order", wordOrder);
 
   let wordList = language.words;
-  if (Config.mode === "custom") {
+  if (isRaceModeActive() && getRaceWordList() !== null) {
+    wordList = getRaceWordList() as string[];
+  } else if (Config.mode === "custom") {
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
@@ -824,6 +827,10 @@ export async function getNextWord(
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
+      randomWord = currentWordset.nextWord();
+    } else if (isRaceModeActive() && getRaceWordList() !== null) {
+      // race mode: every player must see the exact same sequence, so pull
+      // words off the shared list in order rather than sampling randomly
       randomWord = currentWordset.nextWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
       randomWord = currentWordset.nextWord();

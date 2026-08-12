@@ -386,6 +386,17 @@ export const limits = {
     window: "hour",
     max: 60,
   },
+
+  // Multiplayer Routing
+  multiplayerCreateRoom: {
+    window: "minute",
+    max: 5,
+  },
+
+  multiplayerGetRoom: {
+    window: "minute",
+    max: 60,
+  },
 } satisfies Record<string, RateLimitOptions>;
 
 export type RateLimiterId = keyof typeof limits;

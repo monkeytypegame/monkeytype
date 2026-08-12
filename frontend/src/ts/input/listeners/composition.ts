@@ -11,6 +11,7 @@ import {
   isTestActive,
   setCompositionText,
 } from "../../states/test";
+import { getRaceCountdown } from "../../states/multiplayer";
 
 const inputEl = getInputElement();
 
@@ -22,7 +23,13 @@ inputEl.addEventListener("compositionstart", (event) => {
 
   const now = performance.now();
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (
+    isTestRestarting() ||
+    isResultCalculating() ||
+    getRaceCountdown() !== null
+  ) {
+    return;
+  }
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -42,7 +49,13 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (
+    isTestRestarting() ||
+    isResultCalculating() ||
+    getRaceCountdown() !== null
+  ) {
+    return;
+  }
   CompositionState.setData(event.data);
   setCompositionText(event.data);
 
@@ -58,7 +71,13 @@ inputEl.addEventListener("compositionupdate", (event) => {
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (
+    isTestRestarting() ||
+    isResultCalculating() ||
+    getRaceCountdown() !== null
+  ) {
+    return;
+  }
   CompositionState.setComposing(false);
   CompositionState.setData("");
   setCompositionText("");

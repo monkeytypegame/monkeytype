@@ -17,7 +17,8 @@ export type PageName =
   | "404"
   | "accountSettings"
   | "leaderboards"
-  | "friends";
+  | "friends"
+  | "multiplayer";
 
 type Options<T> = {
   params?: Record<string, string>;
