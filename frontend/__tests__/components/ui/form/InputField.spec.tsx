@@ -173,4 +173,107 @@ describe("InputField", () => {
     fireEvent.input(input, { target: { value: "6" } });
     expect(field.handleChange).toHaveBeenCalledWith(6);
   });
+
+  it("renders password toggle button when type is password", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const toggleButton = container.querySelector(
+      'button[type="button"]',
+    ) as HTMLButtonElement;
+    expect(toggleButton).toBeInTheDocument();
+  });
+
+  it("password field starts with type=password (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(container.querySelector("input")).toHaveAttribute(
+      "type",
+      "password",
+    );
+  });
+
+  it("toggling password button switches input type to text", async () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const toggleButton = container.querySelector(
+      'button[type="button"]',
+    ) as HTMLButtonElement;
+    expect(container.querySelector("input")).toHaveAttribute(
+      "type",
+      "password",
+    );
+
+    fireEvent.click(toggleButton);
+    expect(container.querySelector("input")).toHaveAttribute("type", "text");
+  });
+
+  it("toggling password button a second time switches back to password", async () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const toggleButton = container.querySelector(
+      'button[type="button"]',
+    ) as HTMLButtonElement;
+
+    // First toggle: show
+    fireEvent.click(toggleButton);
+    expect(container.querySelector("input")).toHaveAttribute("type", "text");
+
+    // Second toggle: hide
+    fireEvent.click(toggleButton);
+    expect(container.querySelector("input")).toHaveAttribute(
+      "type",
+      "password",
+    );
+  });
+
+  it("does not render password toggle when type is not password", () => {
+    const field = makeField("name");
+    const { container } = render(() => (
+      <InputField field={() => field} type="text" />
+    ));
+
+    const toggleButton = container.querySelector('button[type="button"]');
+    expect(toggleButton).not.toBeInTheDocument();
+  });
+
+  it("shows eye icon when password is hidden (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(
+      container.querySelector(".fa-eye")?.classList.contains("fa-eye"),
+    ).toBe(true);
+  });
+
+  it("shows eye-slash icon when password is visible", async () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const toggleButton = container.querySelector(
+      'button[type="button"]',
+    ) as HTMLButtonElement;
+    fireEvent.click(toggleButton);
+
+    expect(
+      container
+        .querySelector(".fa-eye-slash")
+        ?.classList.contains("fa-eye-slash"),
+    ).toBe(true);
+  });
 });
