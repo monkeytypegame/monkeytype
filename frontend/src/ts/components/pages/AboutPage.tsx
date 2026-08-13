@@ -194,7 +194,7 @@ export function AboutPage(): JSXElement {
             features many test modes, an account system to save your typing
             speed history, and user-configurable features such as themes,
             sounds, a smooth caret, and more. Monkeytype attempts to emulate the
-            experience of natural keyboard typing during a typing test, by
+            experience of natural keyboard typing during a typing test by
             unobtrusively presenting the text prompts and displaying typed
             characters in-place, providing straightforward, real-time feedback
             on typos, speed, and accuracy.
