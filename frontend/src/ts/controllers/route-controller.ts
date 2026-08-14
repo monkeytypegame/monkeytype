@@ -155,6 +155,43 @@ const routes: Route[] = [
       await PageController.change("friends", options);
     },
   },
+  {
+    path: "/multiplayer",
+    load: async (_params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
+        return;
+      }
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+
+      await PageController.change("multiplayer", options);
+    },
+  },
+  {
+    path: "/multiplayer/:roomCode",
+    load: async (params, options) => {
+      if (!isAuthAvailable()) {
+        await navigate("/", options);
+        return;
+      }
+      if (!isAuthenticated()) {
+        await navigate("/login", options);
+        return;
+      }
+
+      await PageController.change("multiplayer", {
+        ...options,
+        force: true,
+        params: {
+          roomCode: params["roomCode"] as string,
+        },
+        data: options.data,
+      });
+    },
+  },
 ];
 
 export async function navigate(

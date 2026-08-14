@@ -65,6 +65,7 @@
     "modern-screenshot": "4.6.8",
     "object-hash": "3.0.0",
     "slim-select": "2.9.2",
+    "socket.io-client": "4.8.3",
     "stemmer": "2.0.1",
     "tailwind-merge": "3.6.0",
     "throttle-debounce": "5.0.2",

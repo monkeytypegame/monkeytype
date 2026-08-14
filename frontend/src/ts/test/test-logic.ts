@@ -61,6 +61,12 @@ import {
   getResultVisible,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
+import {
+  isRaceModeActive,
+  setRaceModeActive,
+  getRoom,
+} from "../states/multiplayer";
+import { getSocket } from "../multiplayer/socket-client";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import * as PageTransition from "../legacy-states/page-transition";
@@ -171,6 +177,9 @@ type RestartOptions = {
   practiseMissed?: boolean;
   noAnim?: boolean;
   isQuickRestart?: boolean;
+  /** internal: set only by the multiplayer race-start trigger itself, so the
+   * mid-race restart guard below doesn't also block the legitimate one */
+  isRaceStart?: boolean;
 };
 
 export async function restart(options = {} as RestartOptions): Promise<void> {
@@ -190,6 +199,17 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   if (isTestActive() && noQuit) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
+      {
+        important: true,
+      },
+    );
+    options.event?.preventDefault();
+    return;
+  }
+
+  if (isRaceModeActive() && isTestActive() && !options.isRaceStart) {
+    showNoticeNotification(
+      "You can't restart or change the test during a multiplayer race.",
       {
         important: true,
       },
@@ -1041,7 +1061,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let savingResultPromise: ReturnType<typeof saveResult> =
     Promise.resolve(null);
   const user = getAuthenticatedUser();
-  if (user !== null) {
+  if (isRaceModeActive()) {
+    // Multiplayer race: never touch the real results/PB/XP pipeline. Report
+    // the final summary to the room over the socket instead of saving.
+    const room = getRoom();
+    if (room !== null) {
+      getSocket().emit("race:finish", {
+        roomCode: room.roomCode,
+        wpm: completedEvent.wpm,
+        rawWpm: completedEvent.rawWpm,
+        acc: completedEvent.acc,
+        consistency: completedEvent.consistency,
+        charStats: completedEvent.charStats,
+      });
+    }
+    setRaceModeActive(false);
+    dontSave = true;
+  } else if (user !== null) {
     // logged in
     if (dontSave) {
       void AnalyticsController.log("testCompletedInvalid");

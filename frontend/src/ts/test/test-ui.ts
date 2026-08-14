@@ -77,6 +77,7 @@ import {
 } from "./events/stats";
 import * as ConnectionState from "../legacy-states/connection";
 import * as TestInitFailed from "../elements/test-init-failed";
+import { getRaceCountdown } from "../states/multiplayer";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -94,8 +95,10 @@ let lineTransition = false;
 
 // #words is still vanilla; the warning itself is Solid (OutOfFocusWarning.tsx).
 // show/hideOutOfFocus live in states/test so commandline needn't import test-ui.
+// Also blurred during a multiplayer race countdown (RaceCountdownOverlay.tsx)
+// so players can't read ahead before the synchronized start.
 createEffect(() => {
-  if (showOutOfFocusWarning()) {
+  if (showOutOfFocusWarning() || getRaceCountdown() !== null) {
     wordsEl.setStyle({ transition: "0.25s" })?.addClass("blurred");
   } else {
     wordsEl.setStyle({ transition: "none" })?.removeClass("blurred");

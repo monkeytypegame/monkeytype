@@ -16,6 +16,7 @@ import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import connections from "./connections";
+import multiplayer from "./multiplayer";
 import addSwaggerMiddlewares from "./swagger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import {
@@ -60,6 +61,7 @@ const router = s.router(contract, {
   quotes,
   webhooks,
   connections,
+  multiplayer,
 });
 
 export function addApiRoutes(app: Application): void {

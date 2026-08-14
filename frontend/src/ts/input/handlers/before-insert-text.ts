@@ -15,6 +15,7 @@ import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
 import { isSpace } from "../../utils/strings";
+import { getRaceCountdown } from "../../states/multiplayer";
 
 /**
  * Handles logic before inserting text into the input element.
@@ -22,6 +23,12 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
+  // multiplayer race hasn't started yet: words are visible (blurred) but
+  // typing shouldn't count, or start the timer, until the synchronized "go"
+  if (getRaceCountdown() !== null) {
+    return true;
+  }
+
   if (isTestRestarting()) {
     return true;
   }

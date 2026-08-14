@@ -16,7 +16,7 @@ import {
   prefetchLeaderboardPage,
 } from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../states/core";
+import { getActivePage, isAuthenticated } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -113,6 +113,21 @@ export function Nav(): JSXElement {
           prefetchLeaderboardPage();
         }}
       />
+      <Show when={isAuthenticated()}>
+        <Button
+          variant="text"
+          fa={{
+            icon: "fa-bolt",
+            fixedWidth: true,
+          }}
+          router-link
+          dataset={{
+            "data-nav-item": "multiplayer",
+          }}
+          class={buttonClass()}
+          href="/multiplayer"
+        />
+      </Show>
       <Button
         variant="text"
         fa={{
