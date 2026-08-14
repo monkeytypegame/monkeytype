@@ -38,6 +38,7 @@ import type {
   AnnotationOptions,
   LabelPosition,
 } from "chartjs-plugin-annotation";
+import { createTippy } from "../components/common/useTippy";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
@@ -350,14 +351,12 @@ function updateWpmAndAcc(): void {
     const acc = getAccuracy(accEventLog);
     if (Config.alwaysShowDecimalPlaces) {
       if (Config.typingSpeedUnit !== "wpm") {
-        qs("#result .stats .wpm .bottom")?.setAttribute(
-          "aria-label",
-          `${result.wpm.toFixed(2)} wpm`,
-        );
-        qs("#result .stats .raw .bottom")?.setAttribute(
-          "aria-label",
-          `${result.rawWpm.toFixed(2)} wpm`,
-        );
+        createTippy(qs("#result .stats .wpm .bottom")?.native ?? null, {
+          text: `${result.wpm.toFixed(2)} wpm`,
+        });
+        createTippy(qs("#result .stats .raw .bottom")?.native ?? null, {
+          text: `${result.rawWpm.toFixed(2)} wpm`,
+        });
       } else {
         qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
         qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
@@ -370,10 +369,9 @@ function updateWpmAndAcc(): void {
       qs("#result .stats .time .bottom .text")?.setText(time);
       // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
 
-      qs("#result .stats .acc .bottom")?.setAttribute(
-        "aria-label",
-        `${acc.correct} correct\n${acc.incorrect} incorrect`,
-      );
+      createTippy(qs("#result .stats .acc .bottom")?.native ?? null, {
+        text: `${acc.correct} correct\n${acc.incorrect} incorrect`,
+      });
     } else {
       //not showing decimal places
       const decimalsAndSuffix = {
@@ -388,22 +386,16 @@ function updateWpmAndAcc(): void {
         rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
       }
 
-      qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-      qs("#result .stats .raw .bottom")?.setAttribute(
-        "aria-label",
-        rawWpmHover,
-      );
+      createTippy(qs("#result .stats .wpm .bottom")?.native ?? null, {
+        text: wpmHover,
+      });
+      createTippy(qs("#result .stats .raw .bottom")?.native ?? null, {
+        text: rawWpmHover,
+      });
 
-      qs("#result .stats .acc .bottom")
-        ?.setAttribute(
-          "aria-label",
-          `${
-            result.acc === 100
-              ? "100%"
-              : Format.percentage(result.acc, { showDecimalPlaces: true })
-          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
-        )
-        ?.setAttribute("data-balloon-break", "");
+      createTippy(qs("#result .stats .acc .bottom")?.native ?? null, {
+        text: `${result.acc === 100 ? "100%" : Format.percentage(result.acc, { showDecimalPlaces: true })}\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+      });
     }
   }
 }
@@ -484,11 +476,10 @@ export function showCrown(type: PbCrown.CrownType): void {
 }
 
 export function updateCrownText(text: string, wide = false): void {
-  qs("#result .stats .wpm .crown")?.setAttribute("aria-label", text);
-  qs("#result .stats .wpm .crown")?.setAttribute(
-    "data-balloon-length",
-    wide ? "medium" : "",
-  );
+  createTippy(qs("#result .stats .wpm .crown")?.native ?? null, {
+    text,
+    length: wide ? "medium" : undefined,
+  });
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
@@ -695,8 +686,13 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.lazyMode,
     );
     qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
+    const pbTagEl = qs("#result .stats .tags .bottom [tagid='${tag._id}']");
+    createTippy(pbTagEl?.native ?? null, {
+      text: `PB: ${tpb}`,
+      position: "up",
+    });
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
       Config.mode !== "quote" &&
@@ -1287,7 +1283,7 @@ export function updateTagsAfterEdit(
     tagIds.forEach((tag, index) => {
       if (checked.includes(tag)) return;
       if (tagPbIds.includes(tag)) {
-        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
+        html += `<div tagid="${tag}">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
       } else {
         html += `<div tagid="${tag}">${tagNames[index]}</div>`;
       }

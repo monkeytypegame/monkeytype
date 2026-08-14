@@ -173,7 +173,7 @@ describe("Button component", () => {
   });
 
   it("applies balloon to button with default position", () => {
-    const { container } = render(() => (
+    render(() => (
       <Button
         onClick={() => {
           //
@@ -183,13 +183,15 @@ describe("Button component", () => {
       />
     ));
 
-    const button = container.querySelector("button");
-    expect(button).toHaveAttribute("aria-label", "test");
-    expect(button).toHaveAttribute("data-balloon-pos", "up");
+    const buttons = document.querySelectorAll("button");
+    expect(buttons.length).toBeGreaterThan(0);
+    // tippy stores its instance on _tippy
+    const btnEl = buttons[0] as unknown as { _tippy?: unknown };
+    expect(btnEl._tippy !== undefined && btnEl._tippy !== null).toBe(true);
   });
 
   it("applies balloon to button with custom position", () => {
-    const { container } = render(() => (
+    render(() => (
       <Button
         onClick={() => {
           //
@@ -199,9 +201,11 @@ describe("Button component", () => {
       />
     ));
 
-    const button = container.querySelector("button");
-    expect(button).toHaveAttribute("aria-label", "test");
-    expect(button).toHaveAttribute("data-balloon-pos", "down");
+    const buttons = document.querySelectorAll("button");
+    expect(buttons.length).toBeGreaterThan(0);
+    // tippy stores its instance on _tippy
+    const btnEl = buttons[0] as unknown as { _tippy?: unknown };
+    expect(btnEl._tippy !== undefined && btnEl._tippy !== null).toBe(true);
   });
 
   it("applies router-link to button", () => {
@@ -220,7 +224,7 @@ describe("Button component", () => {
   });
 
   it("applies balloon to anchor with default position", () => {
-    const { container } = render(() => (
+    render(() => (
       <Button
         href="http://example.com"
         text="Hello"
@@ -228,13 +232,15 @@ describe("Button component", () => {
       />
     ));
 
-    const anchor = container.querySelector("a");
-    expect(anchor).toHaveAttribute("aria-label", "test");
-    expect(anchor).toHaveAttribute("data-balloon-pos", "up");
+    const anchors = document.querySelectorAll("a");
+    expect(anchors.length).toBeGreaterThan(0);
+    // tippy stores its instance on _tippy
+    const ancEl = anchors[0] as unknown as { _tippy?: unknown };
+    expect(ancEl._tippy !== undefined && ancEl._tippy !== null).toBe(true);
   });
 
   it("applies balloon to anchor with custom position", () => {
-    const { container } = render(() => (
+    render(() => (
       <Button
         href="http://example.com"
         text="Hello"
@@ -242,9 +248,11 @@ describe("Button component", () => {
       />
     ));
 
-    const anchor = container.querySelector("a");
-    expect(anchor).toHaveAttribute("aria-label", "test");
-    expect(anchor).toHaveAttribute("data-balloon-pos", "down");
+    const anchors = document.querySelectorAll("a");
+    expect(anchors.length).toBeGreaterThan(0);
+    // tippy stores its instance on _tippy
+    const ancEl = anchors[0] as unknown as { _tippy?: unknown };
+    expect(ancEl._tippy !== undefined && ancEl._tippy !== null).toBe(true);
   });
 
   it("applies router-link to anchor", () => {

@@ -222,7 +222,7 @@ export function getHTMLById(
 
   let balloon = "";
   if (!noBalloon) {
-    balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
+    balloon = `aria-label="${balloonText}"`;
   }
 
   let icon = "";
@@ -234,9 +234,11 @@ export function getHTMLById(
 
   const text = `<div class="text">${badgeName}</div>`;
 
-  return `<div class="badge" ${balloon} style="${style}">${icon}${
-    noText ? "" : text
-  }</div>`;
+  const html = `<div class="badge" ${balloon} style="${style}">${icon}${noText ? "" : text}</div>`;
+
+  // Initialize tippy tooltip on the badge element after it's inserted into the DOM.
+  // The HTML string is returned; caller should call createTippy on the result.
+  return html;
 }
 
 export function getById(id: number): UserBadge | undefined {

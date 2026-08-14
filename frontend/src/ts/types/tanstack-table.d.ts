@@ -25,7 +25,8 @@ declare module "@tanstack/solid-table" {
 
     /**
      * additional attributes to be set on the table cell.
-     * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
+     * Use `aria-label` + `data-balloon-pos` to enable tippy tooltips
+     * (handled automatically by DataTable).
      */
     cellMeta?:
       | JSX.HTMLAttributes<HTMLTableCellElement>
@@ -35,8 +36,9 @@ declare module "@tanstack/solid-table" {
         }) => JSX.HTMLAttributes<HTMLTableCellElement>);
 
     /**
-     * additional attributes to be set on the header
-     * Can be used to define mouse-overs with `aria-label` and `data-balloon-pos`
+     * additional attributes to be set on the header.
+     * Use `aria-label` + `data-balloon-pos` to enable tippy tooltips
+     * (handled automatically by DataTable).
      */
     headerMeta?: JSX.HTMLAttributes;
 

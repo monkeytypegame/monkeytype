@@ -5,7 +5,7 @@ import { definePreview } from "storybook-solidjs-vite";
 import "../stories/tailwind.css";
 import "../stories/storybook-theme.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "balloon-css/balloon.min.css";
+import "tippy.js/dist/tippy.css";
 //@ts-expect-error this works i think
 import "slim-select/styles";
 

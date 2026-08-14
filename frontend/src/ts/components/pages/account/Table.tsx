@@ -15,6 +15,7 @@ import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
+import { Tooltip } from "../../common/Tooltip";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
@@ -163,52 +164,49 @@ function getColumns<M extends Mode>({
 
         return (
           <div class="flex gap-0.5">
-            <span aria-label={info.row.original.language} data-balloon-pos="up">
+            <Tooltip text={info.row.original.language} as={"span"}>
               <Fa icon="fa-globe-americas" fixedWidth={true} />
-            </span>
-            <span
-              aria-label={info.row.original.difficulty}
-              data-balloon-pos="up"
-            >
+            </Tooltip>
+            <Tooltip text={info.row.original.difficulty} as={"span"}>
               <Fa {...difficultyIcon(info.row.original.difficulty)} />
-            </span>
+            </Tooltip>
             <Show when={info.row.original.punctuation}>
-              <span aria-label="punctuation" data-balloon-pos="up">
+              <Tooltip text={"punctuation"} as={"span"}>
                 <Fa icon="fa-at" fixedWidth={true} />
-              </span>
+              </Tooltip>
             </Show>
             <Show when={info.row.original.numbers}>
-              <span aria-label="numbers" data-balloon-pos="up">
+              <Tooltip text={"numbers"} as={"span"}>
                 <Fa icon="fa-hashtag" fixedWidth={true} />
-              </span>
+              </Tooltip>
             </Show>
             <Show when={info.row.original.blindMode}>
-              <span aria-label="blind mode" data-balloon-pos="up">
+              <Tooltip text={"blind mode"} as={"span"}>
                 <Fa icon="fa-eye-slash" fixedWidth={true} />
-              </span>
+              </Tooltip>
             </Show>
             <Show when={info.row.original.lazyMode}>
-              <span aria-label="lazy mode" data-balloon-pos="up">
+              <Tooltip text={"lazy mode"} as={"span"}>
                 <Fa icon="fa-couch" fixedWidth={true} />
-              </span>
+              </Tooltip>
             </Show>
             <Show when={(info.row.original.funbox ?? []).length > 0}>
-              <span
-                aria-label={info.row.original.funbox
+              <Tooltip
+                text={info.row.original.funbox
                   .map(replaceUnderscoresWithSpaces)
                   .join(", ")}
-                data-balloon-pos="up"
+                as={"span"}
               >
                 <Fa icon="fa-gamepad" fixedWidth={true} />
-              </span>
+              </Tooltip>
             </Show>
-            <span
-              data-balloon-pos="up"
-              aria-label={
+            <Tooltip
+              text={
                 hasChart
                   ? "View graph"
                   : "Graph history is not available for long tests"
               }
+              as={"span"}
             >
               <Button
                 disabled={!hasChart}
@@ -219,7 +217,7 @@ function getColumns<M extends Mode>({
                   onMiniResultChartSelected(info.getValue());
                 }}
               />
-            </span>
+            </Tooltip>
           </div>
         );
       },

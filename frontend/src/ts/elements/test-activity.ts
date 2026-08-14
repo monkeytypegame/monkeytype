@@ -1,3 +1,4 @@
+import { createTippy } from "../components/common/useTippy";
 import {
   TestActivityCalendar,
   TestActivityMonth,
@@ -55,8 +56,7 @@ export function update(
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
-      elem.setAttribute("aria-label", day.label);
-      elem.setAttribute("data-balloon-pos", "up");
+      createTippy(elem, { text: day.label, position: "up" });
     }
     container.appendChild(elem);
   }

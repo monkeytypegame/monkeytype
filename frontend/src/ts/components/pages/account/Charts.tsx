@@ -17,6 +17,7 @@ import {
 import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
+import { Tooltip } from "../../common/Tooltip";
 import { DailyActivityChart } from "./DailyActivityChart";
 import { HistogramChart } from "./HistogramChart";
 import { HistoryChart, HistoryChartClickEvent } from "./HistoryChart";
@@ -96,13 +97,12 @@ function FilterSummary(props: {
     );
 
     return (
-      <span
-        aria-label={capitalizeFirstLetter(options.group)}
-        data-balloon-pos="up"
-      >
-        <Fa icon={options.icon} fixedWidth />
-        {values()}
-      </span>
+      <Tooltip text={capitalizeFirstLetter(options.group)} as="span">
+        <span>
+          <Fa icon={options.icon} fixedWidth />
+          {values()}
+        </span>
+      </Tooltip>
     );
   };
 

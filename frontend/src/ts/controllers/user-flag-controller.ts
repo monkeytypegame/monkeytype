@@ -73,7 +73,7 @@ function toHtml(flag: UserFlag, formatOptions: UserFlagOptions): string {
     style.push(`color: ${flag.color};`);
   }
 
-  const balloon = `aria-label="${flag.description}" data-balloon-pos="right"`;
+  const balloon = `aria-label="${flag.description}"`;
 
   return `<div class="flag" ${balloon} style="${style.join("")}">${icon}</div>`;
 }

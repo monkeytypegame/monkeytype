@@ -11,6 +11,7 @@ import {
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
+import { useTippy } from "../../common/useTippy";
 
 export function ThemeIndicator(): JSXElement {
   const themes = useCustomThemesLiveQuery();
@@ -34,12 +35,16 @@ export function ThemeIndicator(): JSXElement {
     }
   };
 
+  const { ref: tippyRef } = useTippy(() => ({
+    text: "Shift-click to toggle custom theme",
+    position: "left",
+  }));
+
   return (
     <button
       type="button"
       class="textButton"
-      aria-label="Shift-click to toggle custom theme"
-      data-balloon-pos="left"
+      ref={tippyRef}
       onClick={handleClick}
     >
       <div class="relative">

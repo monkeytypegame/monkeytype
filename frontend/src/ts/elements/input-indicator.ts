@@ -1,3 +1,4 @@
+import { createTippy } from "../components/common/useTippy";
 import { ElementWithUtils } from "../utils/dom";
 
 type InputIndicatorOption = {
@@ -39,14 +40,6 @@ export class InputIndicator {
       <div
         class="indicator level${option.level} hidden"
         data-option-id="${optionId}"
-        
-        ${
-          (option.message?.length ?? 0) > 27
-            ? `data-balloon-length="large"`
-            : ""
-        }
-        data-balloon-pos="left"
-        ${(option.message ?? "") ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${
           option.spinIcon ? "fa-spin" : ""
@@ -58,6 +51,14 @@ export class InputIndicator {
     indicator += `</div>`;
 
     this.parentElement.appendHtml(indicator);
+
+    // Initialize tippy tooltips for all indicators with messages.
+    for (const [optionId, option] of Object.entries(options)) {
+      if (option.message !== undefined && option.message !== "") {
+        const el = this.parentElement.qs(`[data-option-id="${optionId}"]`);
+        createTippy(el?.native ?? null, { text: option.message });
+      }
+    }
   }
 
   hide(): void {
@@ -76,12 +77,7 @@ export class InputIndicator {
     indicator?.show();
 
     if (messageOverride !== undefined && messageOverride !== "") {
-      if (messageOverride.length > 20) {
-        indicator?.setAttribute("data-balloon-length", "large");
-      } else {
-        indicator?.removeAttribute("data-balloon-length");
-      }
-      indicator?.setAttribute("aria-label", messageOverride);
+      createTippy(indicator?.native ?? null, { text: messageOverride });
     }
 
     this.inputElement.setStyle({ paddingRight: "2.1em" });

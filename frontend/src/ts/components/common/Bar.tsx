@@ -1,6 +1,7 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, onMount } from "solid-js";
 
 import { Anime } from "./anime";
+import { createTippy } from "./useTippy";
 
 type Props = {
   percent: number;
@@ -22,15 +23,18 @@ const fillClassMap: Record<Props["fill"], string> = {
 };
 
 export function Bar(props: Props): JSXElement {
+  let el: HTMLDivElement | null = null;
+
+  onMount(() => {
+    if (el && (props.showPercentageOnHover ?? false)) {
+      createTippy(el, { text: `${props.percent.toFixed(2)}%`, position: "up" });
+    }
+  });
+
   return (
     <div
+      ref={(node) => (el = node)}
       class={`h-[0.5em] flex-1 rounded ${bgClassMap[props.bg]}`}
-      {...((props.showPercentageOnHover ?? false)
-        ? {
-            "data-balloon-pos": "up",
-            "aria-label": `${props.percent.toFixed(2)}%`,
-          }
-        : {})}
     >
       <Anime
         animation={{

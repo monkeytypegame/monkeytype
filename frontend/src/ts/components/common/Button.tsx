@@ -1,8 +1,8 @@
 import { JSXElement, Show } from "solid-js";
 
 import { cn } from "../../utils/cn";
-import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
 import { Fa, FaProps } from "./Fa";
+import { useTippy, type BalloonProps } from "./useTippy";
 
 type BaseProps = {
   text?: string;
@@ -11,6 +11,9 @@ type BaseProps = {
   variant?: "text" | "button";
   children?: JSXElement;
   balloon?: BalloonProps;
+
+  // tippyRef is used internally to attach tooltip via useTippy.
+  ref?: (el: HTMLElement | null) => void;
   "router-link"?: true;
   onClick?: (e: MouseEvent) => void;
   type?: HTMLButtonElement["type"];
@@ -43,6 +46,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
 
   const variant = () => props.variant ?? "button";
 
+  // Initialize tippy tooltip on hover/focus instead of balloon-css data attributes.
+  const { ref: tippyRef } = useTippy(() => props.balloon);
+
   const content = (
     <>
       <Show when={props.fa !== undefined}>
@@ -52,8 +58,6 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       {props.children}
     </>
   );
-
-  const balloonHtmlProps = () => buildBalloonHtmlProperties(props.balloon);
 
   const getClasses = (): string => {
     return cn(
@@ -91,10 +95,10 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}
+          ref={tippyRef}
           onClick={(e) => props.onClick?.(e)}
           onMouseEnter={(e) => props.onMouseEnter?.(e)}
           onMouseLeave={(e) => props.onMouseLeave?.(e)}
-          {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
@@ -109,6 +113,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       <a
         class={getClasses()}
         href={props.href}
+        ref={tippyRef}
         target={
           props["router-link"] || props.href?.startsWith("#")
             ? undefined
@@ -119,7 +124,6 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
             ? undefined
             : "noreferrer noopener"
         }
-        {...balloonHtmlProps()}
         {...(props["router-link"] ? { "router-link": "" } : {})}
         onClick={(e) => props.onClick?.(e)}
         onMouseEnter={(e) => props.onMouseEnter?.(e)}

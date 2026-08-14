@@ -25,6 +25,7 @@ import { z } from "zod";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
+import { createTippy, type BalloonProps } from "../../common/useTippy";
 import {
   Table,
   TableBody,
@@ -269,6 +270,24 @@ export function DataTable<TData extends Object, TValue = any>(
                               props.headerCellClass,
                               header.column.columnDef.meta?.headerClass,
                             )}
+                            ref={(el) => {
+                              const hm = header.column.columnDef.meta
+                                ?.headerMeta as
+                                | Record<string, unknown>
+                                | undefined;
+                              if (
+                                el !== null &&
+                                hm !== undefined &&
+                                "data-balloon-pos" in hm
+                              ) {
+                                // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+                                createTippy(el, {
+                                  text: (hm["aria-label"] ?? "") as string,
+                                  position: (hm["data-balloon-pos"] ??
+                                    "up") as BalloonProps["position"],
+                                });
+                              }
+                            }}
                             {...(header.column.columnDef.meta?.headerMeta ??
                               {})}
                           >
@@ -324,17 +343,34 @@ export function DataTable<TData extends Object, TValue = any>(
               >
                 <For each={row.getVisibleCells()}>
                   {(cell) => {
-                    const [cellClass, cellMeta] = splitProps(
+                    const rawCellMeta =
                       typeof cell.column.columnDef.meta?.cellMeta === "function"
                         ? cell.column.columnDef.meta.cellMeta({
                             value: cell.getValue(),
                             row: cell.row.original,
                           })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {}),
+                        : (cell.column.columnDef.meta?.cellMeta ?? {});
+                    const [cellClass, cellMeta] = splitProps(
+                      (rawCellMeta ?? {}) as {
+                        class?: string;
+                        [key: string]: unknown;
+                      },
                       ["class"],
                     );
+
                     return (
                       <TableCell
+                        ref={(el: HTMLTableCellElement | null) => {
+                          if (!el) return; // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+                          const rm = rawCellMeta as Record<string, unknown>;
+                          if (rm["data-balloon-pos"] !== undefined) {
+                            createTippy(el, {
+                              text: (rm["aria-label"] ?? "") as string,
+                              position: (rm["data-balloon-pos"] ??
+                                "up") as BalloonProps["position"],
+                            });
+                          }
+                        }}
                         {...cellMeta}
                         class={cn(
                           "",

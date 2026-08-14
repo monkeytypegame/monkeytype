@@ -15,6 +15,7 @@ import { Selection } from "../../../states/leaderboard-selection";
 import { capitalizeFirstLetter } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
+import { Tooltip } from "../../common/Tooltip";
 
 export function Title(props: {
   selection: Selection;
@@ -85,14 +86,13 @@ export function Title(props: {
       />
       <Show when={subTitle() !== null}>
         <div class="flex items-center gap-2">
-          <div
-            class="text-sub"
-            data-balloon-pos="down"
-            data-balloon-break
-            aria-label={subTitle()?.localString}
+          <Tooltip
+            text={subTitle()?.localString ?? ""}
+            position="down"
+            as="span"
           >
-            {subTitle()?.dateString}
-          </div>
+            <span class="text-sub">{subTitle()?.dateString}</span>
+          </Tooltip>
           <div class="h-[1.75em] w-[0.25em] rounded bg-sub-alt"></div>
           <Button
             text={subTitle()?.buttonText}
