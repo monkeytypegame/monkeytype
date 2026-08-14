@@ -54,7 +54,7 @@
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.7",
     "ua-parser-js": "0.7.33",
-    "uuid": "14.0.0",
+    "uuid": "14.0.1",
     "winston": "3.6.0",
     "zod": "3.23.8"
   },
