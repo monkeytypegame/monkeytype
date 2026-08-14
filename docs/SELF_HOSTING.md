@@ -11,6 +11,7 @@
   - [Prerequisites](#prerequisites)
   - [Quickstart](#quickstart)
     - [Hosting over the network (HTTPS)](#hosting-over-the-network-https)
+  - [Security](#security)
   - [Account System](#account-system)
     - [Setup Firebase](#setup-firebase)
     - [Update backend configuration](#update-backend-configuration)
@@ -59,6 +60,30 @@ docker compose up -d --force-recreate
 
 > [!TIP]
 >     After updating your configuration and recreating the containers, clear your browser cache or perform a hard reload (Ctrl + F5) to make sure your browser isn't running an old cached version of the frontend.
+
+
+## Security
+
+Do not expose the Monkeytype backend directly to the internet. Instead, place it behind a reverse proxy and configure the backend to only accept connections from the reverse proxy.
+
+The backend's built-in rate limiting is based on the authenticated user's `uid` or, for unauthenticated requests, the client's IP address.
+
+To determine the client's IP address, the backend checks the following sources in order:
+
+1. `CF-Connecting-IP` (when requests are proxied through Cloudflare)
+2. `X-Forwarded-For`
+3. The source IP address of the HTTP connection
+
+We recommend the following configuration:
+
+- If you are **not** using Cloudflare, remove any incoming `CF-Connecting-IP` header in your reverse proxy before forwarding requests.
+- Configure your reverse proxy to set the `X-Forwarded-For` header to the client's IP address.
+- Configure the backend to only accept connections from the reverse proxy to prevent clients from spoofing trusted headers.
+
+
+Sources:
+- [cloudflare documentation for cf-connecting-ip](https://developers.cloudflare.com/fundamentals/reference/http-headers/#cf-connecting-ip)
+- [handling headers in traefik](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/headers)
 
 
 ## Account System
