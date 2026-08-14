@@ -112,6 +112,7 @@ export const commands: CommandsSubgroup = {
       "strictSpace",
       "oppositeShiftMode",
       "stopOnError",
+      "deleteOnError",
       "confidenceMode",
       "quickEnd",
       "indicateTypos",

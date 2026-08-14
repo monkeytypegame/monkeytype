@@ -808,6 +808,9 @@ function updateTestType(randomQuote: Quote | null): void {
   if (Config.stopOnError !== "off") {
     testType += `<br>stop on ${Config.stopOnError}`;
   }
+  if (Config.deleteOnError !== "off") {
+    testType += `<br>delete on ${Config.deleteOnError.replace(/_/g, " ")}`;
+  }
 
   qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
