@@ -58,6 +58,7 @@ export function TestModesNotice() {
       <Funbox />
       <ConfidenceMode />
       <StopOnError />
+      <DeleteOnError />
       <Layout />
       <OppositeShift />
       <Tags />
@@ -341,6 +342,19 @@ function StopOnError() {
       icon="fa-hand-paper"
       openCommandline="stopOnError"
       text={`stop on ${getConfig.stopOnError}`}
+    />
+  );
+}
+
+function DeleteOnError() {
+  return (
+    <Notice
+      when={getConfig.deleteOnError !== "off"}
+      icon="fa-eraser"
+      openCommandline="deleteOnError"
+      text={`delete on ${replaceUnderscoresWithSpaces(
+        getConfig.deleteOnError,
+      )}`}
     />
   );
 }

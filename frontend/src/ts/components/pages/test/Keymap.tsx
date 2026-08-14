@@ -21,6 +21,8 @@ import { Button } from "../../common/Button";
 import { convertLayoutToKeymap } from "./keymapConverter";
 import { KeyboardDefinition, KeyDefinition } from "./keymapLayouts";
 
+const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
+
 export function Keymap() {
   return (
     <Show when={getConfig.keymapMode !== "off" && keymapLayoutObject()}>
@@ -35,25 +37,33 @@ export function Keymap() {
 function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
   const layer = createMemo(() => {
     const { alt, shift } = getModifierState();
+
+    // MacOS has different CapsLock and Shift logic than other operating systems
+    // Windows and Linux only capitalize letters if either Shift OR CapsLock are
+    // pressed, but not both at once.
+    // MacOS instead capitalizes when either or both are pressed,
+    // so we have to check for that.
+    const isShifted = isMacLike()
+      ? shift || isCapsLockOn()
+      : shift !== isCapsLockOn();
+
     switch (getConfig.keymapLegendStyle) {
       case "blank":
-        return -1;
+        return { index: -1 };
       case "lowercase":
-        return 0;
+        return { index: 0 };
       case "uppercase":
-        return 1;
+        return { index: 1, symbolIndex: 0 };
       case "dynamic": {
         if (shift && alt) {
-          return 3;
+          return { index: 3 };
         } else if (alt) {
-          return 2;
-        } else if (shift || isCapsLockOn()) {
-          return 1;
+          return { index: 2 };
         }
-        return 0;
+        return { index: isShifted ? 1 : 0, symbolIndex: shift ? 1 : 0 };
       }
       default:
-        return 0;
+        return { index: 0 };
     }
   });
 
@@ -93,7 +103,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
 
 function KeyboardDefinitionRenderer(props: {
   keyboardDef: KeyboardDefinition;
-  layer: number;
+  layer: { index: number; symbolIndex?: number };
   showFirstRow: boolean;
   flashState: Record<string, FlashEntry | undefined>;
 }) {
@@ -117,11 +127,21 @@ function KeyboardDefinitionRenderer(props: {
               <For each={keys}>
                 {(key) => {
                   const label = () => {
-                    const layer =
-                      rowNum() === 0 && isMacLike() && isCapsLockOn()
-                        ? props.layer - 1
-                        : props.layer;
-                    return key.legends[layer] ?? "";
+                    let label = key.legends[props.layer.index];
+
+                    if (props.layer.symbolIndex !== undefined) {
+                      const keyIsSymbol = [
+                        key.legends[props.layer.index],
+                        key.legends[props.layer.symbolIndex],
+                      ].some((character) =>
+                        symbolsPattern.test(character ?? ""),
+                      );
+
+                      if (keyIsSymbol) {
+                        label = key.legends[props.layer.symbolIndex];
+                      }
+                    }
+                    return label ?? "";
                   };
                   const flashEntry = () =>
                     key.legends

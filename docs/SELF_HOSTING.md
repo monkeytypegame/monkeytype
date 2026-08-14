@@ -11,6 +11,7 @@
   - [Prerequisites](#prerequisites)
   - [Quickstart](#quickstart)
     - [Hosting over the network (HTTPS)](#hosting-over-the-network-https)
+  - [Security](#security)
   - [Account System](#account-system)
     - [Setup Firebase](#setup-firebase)
     - [Update backend configuration](#update-backend-configuration)
@@ -35,13 +36,25 @@
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
-- after the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
+- after the command exits successfully you can access [http://localhost](http://localhost)
 
 ### Hosting over the network (HTTPS)
 
 If you plan to access your self-hosted Monkeytype instance over a local network or the internet (not using `localhost`), **you must serve it over HTTPS**. Modern browsers restrict key web features, such as `crypto.randomUUID`, to secure contexts. Accessing the site via HTTP over a network will cause the frontend to crash with errors like `Uncaught TypeError: crypto.randomUUID is not a function`.
 
-To solve this, you need to place a reverse proxy (like Nginx, Caddy, or Traefik) in front of your containers to handle HTTPS/TLS termination.
+#### Enable HTTPS
+
+Update the `.env` file and uncomment these lines and set the values based on your domain.
+
+```
+DOMAIN=mydomain.com
+BASE_URL=https://mydomain.com
+ACME_EMAIL=certmanager@mydomain.com
+```
+
+Update the `docker-compose.yml` and uncomment all lines marked with `# enable for HTTPS`.
+
+
 
 #### Troubleshooting Frontend Connection Issues
 
@@ -49,8 +62,8 @@ If your reverse proxy is up but you see errors like `Looks like the server is ex
 
 Ensure you configure the frontend to talk to your secure backend URL by following these rules in your `.env` file:
 
-1. **Update the frontend and backend URL:** Set `MONKEYTYPE_FRONTENDURL` and `MONKEYTYPE_BACKENDURL` to your full HTTPS backend domain.
-2. **Do not include a trailing slash:** Ensure the URL does not end with a `/` (e.g., use `https://api.yourdomain.com`, **not** `https://api.yourdomain.com/`). A trailing slash will cause `404 Not Found` errors due to double slashes in the API calls (like `//configuration`).
+1. **Update the frontend and backend URL:** Set `DOMAIN` and `BASE_URL` correctly, usually `BASE_URL` is `https://DOMAIN`.
+2. **Do not include a trailing slash:** Ensure the URL does not end with a `/` (e.g., use `https://yourdomain.com`, **not** `https://yourdomain.com/`). A trailing slash will cause `404 Not Found` errors due to double slashes in the API calls (like `//configuration`).
 3. **Force container recreation:** Monkeytype is a Single Page Application (SPA), meaning environment variables are baked into the static JavaScript files during startup. If you change your `.env`, you must completely recreate the container for the changes to apply:
 
 ```bash
@@ -59,6 +72,30 @@ docker compose up -d --force-recreate
 
 > [!TIP]
 >     After updating your configuration and recreating the containers, clear your browser cache or perform a hard reload (Ctrl + F5) to make sure your browser isn't running an old cached version of the frontend.
+
+
+## Security
+
+Do not expose the Monkeytype backend directly to the internet. Instead, place it behind a reverse proxy and configure the backend to only accept connections from the reverse proxy.
+
+The backend's built-in rate limiting is based on the authenticated user's `uid` or, for unauthenticated requests, the client's IP address.
+
+To determine the client's IP address, the backend checks the following sources in order:
+
+1. `CF-Connecting-IP` (when requests are proxied through Cloudflare)
+2. `X-Forwarded-For`
+3. The source IP address of the HTTP connection
+
+We recommend the following configuration:
+
+- If you are **not** using Cloudflare, remove any incoming `CF-Connecting-IP` header in your reverse proxy before forwarding requests.
+- Configure your reverse proxy to set the `X-Forwarded-For` header to the client's IP address.
+- Configure the backend to only accept connections from the reverse proxy to prevent clients from spoofing trusted headers.
+
+
+Sources:
+- [cloudflare documentation for cf-connecting-ip](https://developers.cloudflare.com/fundamentals/reference/http-headers/#cf-connecting-ip)
+- [handling headers in traefik](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/headers)
 
 
 ## Account System
