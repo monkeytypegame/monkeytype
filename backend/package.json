@@ -81,7 +81,7 @@
     "@vitest/coverage-v8": "4.1.5",
     "concurrently": "8.2.2",
     "openapi3-ts": "2.0.2",
-    "oxlint": "1.75.0",
+    "oxlint": "1.77.0",
     "oxlint-tsgolint": "7.0.2001",
     "readline-sync": "1.4.10",
     "supertest": "7.1.4",
