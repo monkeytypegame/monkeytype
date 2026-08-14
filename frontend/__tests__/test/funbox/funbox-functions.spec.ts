@@ -5,48 +5,48 @@ import {
 } from "../../../src/ts/test/funbox/funbox-functions";
 
 describe("funbox functions", () => {
-  describe("leet funbox", () => {
+  describe("l33t funbox", () => {
     const funboxFunctions = getFunboxFunctions();
-    const leetFunbox = funboxFunctions.leet as Required<
+    const l33tFunbox = funboxFunctions.l33t as Required<
       Pick<FunboxFunctions, "alterText">
     >;
 
     const alterText = (word: string): string =>
-      leetFunbox.alterText(word, 0, word.length);
+      l33tFunbox.alterText(word, 0, word.length);
 
-    it("should convert lowercase letters to leet speak", () => {
-      expect(alterText("hello world")).toBe("#3110 \\/\\/0I21)");
+    it("should convert lowercase letters to l33t speak", () => {
+      expect(alterText("hello world")).toBe("h3110 w0r1d");
     });
 
     it("should handle uppercase letters", () => {
-      expect(alterText("Hello")).toBe("#3110");
+      expect(alterText("Hello")).toBe("H3110");
     });
 
     it("should handle mixed case", () => {
-      expect(alterText("HeLLo")).toBe("#3110");
+      expect(alterText("HeLLo")).toBe("H3110");
     });
 
     it("should keep non-letter characters unchanged", () => {
-      expect(alterText("h3llo!")).toBe("#3110!");
+      expect(alterText("h3llo!")).toBe("h3110!");
     });
 
     it("should handle spaces", () => {
       const result = alterText("hello world");
-      expect(result.startsWith("#3110 ")).toBe(true);
-      expect(result.endsWith("0I21)")).toBe(true);
-      expect(result).toContain("/");
+      expect(result.startsWith("h3110 ")).toBe(true);
+      expect(result.endsWith("w0r1d")).toBe(true);
+      expect(result).not.toContain("/");
     });
 
-    it("should handle all leet characters", () => {
-      expect(alterText("abcdefg")).toBe("4I3[)3|=6");
+    it("should handle all l33t characters", () => {
+      expect(alterText("abcdefg")).toBe("4bcd3f6");
     });
 
-    it("should handle all leet characters (uppercase)", () => {
-      expect(alterText("ABCDEFG")).toBe("4I3[)3|=6");
+    it("should handle all l33t characters (uppercase)", () => {
+      expect(alterText("ABCDEFG")).toBe("4BCD3F6");
     });
 
-    it("should convert xyz to leet", () => {
-      expect(alterText("xyz")).toBe("><j2");
+    it("should convert xyz to l33t", () => {
+      expect(alterText("xyz")).toBe("xy2");
     });
 
     it("should handle empty string", () => {
