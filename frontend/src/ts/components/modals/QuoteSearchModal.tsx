@@ -129,8 +129,9 @@ function Item(props: {
         class="text-text [&_.highlight]:text-main"
         dir="auto"
         // oxlint-disable-next-line solid/no-innerhtml
-        innerHTML={Misc.escapeHTML(
-          highlightMatches(props.quote.text, props.matchedTerms),
+        innerHTML={highlightMatches(
+          Misc.escapeHTML(props.quote.text),
+          props.matchedTerms,
         )}
       ></div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
@@ -139,8 +140,9 @@ function Item(props: {
           <span
             class="[&_.highlight]:text-main"
             // oxlint-disable-next-line solid/no-innerhtml
-            innerHTML={Misc.escapeHTML(
-              highlightMatches(props.quote.id.toString(), props.matchedTerms),
+            innerHTML={highlightMatches(
+              Misc.escapeHTML(props.quote.id.toString()),
+              props.matchedTerms,
             )}
           ></span>
         </div>
@@ -154,8 +156,9 @@ function Item(props: {
             <span
               class="[&_.highlight]:text-main"
               // oxlint-disable-next-line solid/no-innerhtml
-              innerHTML={Misc.escapeHTML(
-                highlightMatches(props.quote.source, props.matchedTerms),
+              innerHTML={highlightMatches(
+                Misc.escapeHTML(props.quote.source),
+                props.matchedTerms,
               )}
             ></span>
           </div>
@@ -291,7 +294,10 @@ export function QuoteSearchModal(): JSXElement {
       ];
     }
 
-    setSearchResults({ quotes: matches, matchedTerms: matchedQueryTerms });
+    setSearchResults({
+      quotes: matches,
+      matchedTerms: matchedQueryTerms.map(Misc.escapeHTML),
+    });
   };
 
   const filteredQuotes = (): Quote[] => {
