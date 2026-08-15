@@ -8,6 +8,8 @@ import * as ReportDal from "../../../src/dal/report";
 import * as LogsDal from "../../../src/dal/logs";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
+import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
+import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import Test from "supertest/lib/test";
@@ -66,12 +68,26 @@ describe("AdminController", () => {
     const userBannedMock = vi.spyOn(UserDal, "setBanned");
     const georgeBannedMock = vi.spyOn(GeorgeQueue, "userBanned");
     const getUserMock = vi.spyOn(UserDal, "getPartialUser");
+    const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
+      DailyLeaderboards,
+      "purgeUserFromDailyLeaderboards",
+    );
+    const purgeUserFromXpLeaderboardsMock = vi.spyOn(
+      WeeklyXpLeaderboard,
+      "purgeUserFromXpLeaderboards",
+    );
 
     beforeEach(() => {
-      [userBannedMock, georgeBannedMock, getUserMock].forEach((it) =>
-        it.mockClear(),
-      );
+      [
+        userBannedMock,
+        georgeBannedMock,
+        getUserMock,
+        purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
+      ].forEach((it) => it.mockClear());
       userBannedMock.mockResolvedValue();
+      purgeUserFromDailyLeaderboardsMock.mockResolvedValue();
+      purgeUserFromXpLeaderboardsMock.mockResolvedValue();
     });
 
     it("should ban user with discordId", async () => {
@@ -101,6 +117,14 @@ describe("AdminController", () => {
       ]);
       expect(userBannedMock).toHaveBeenCalledWith(victimUid, true);
       expect(georgeBannedMock).toHaveBeenCalledWith("discordId", true);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        victimUid,
+        (await configuration).dailyLeaderboards,
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        victimUid,
+        (await configuration).leaderboards.weeklyXp,
+      );
     });
     it("should unban user without discordId", async () => {
       //GIVEN
@@ -128,6 +152,8 @@ describe("AdminController", () => {
       ]);
       expect(userBannedMock).toHaveBeenCalledWith(victimUid, false);
       expect(georgeBannedMock).not.toHaveBeenCalled();
+      expect(purgeUserFromDailyLeaderboardsMock).not.toHaveBeenCalled();
+      expect(purgeUserFromXpLeaderboardsMock).not.toHaveBeenCalled();
     });
     it("should fail without mandatory properties", async () => {
       //GIVEN
