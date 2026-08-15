@@ -46,6 +46,7 @@ import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ThemeController from "../controllers/theme-controller";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import * as TypedEffects from "./typed-effects";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -163,6 +164,7 @@ export function updateActiveElement(
       if (previousActiveWord !== null) {
         if (direction === "forward") {
           previousActiveWord.addClass("typed");
+          TypedEffects.onWordTyped(previousActiveWord);
           Joining.set(previousActiveWord, true);
         } else if (direction === "back") {
           //
@@ -180,6 +182,7 @@ export function updateActiveElement(
     newActiveWord.addClass("active");
     newActiveWord.removeClass("error");
     newActiveWord.removeClass("typed");
+    TypedEffects.onWordUntyped(getActiveWordIndex());
     Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
@@ -510,6 +513,7 @@ function updateWordWrapperClasses(): void {
 }
 
 function showWords(): void {
+  TypedEffects.clear();
   wordsEl.setHtml("");
 
   if (Config.mode === "zen") {
@@ -1881,6 +1885,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 }
 
 export function onTestFinish(): void {
+  TypedEffects.clear();
   Caret.hide();
   setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
@@ -2093,6 +2098,7 @@ configEvent.subscribe(({ key, newValue }) => {
       "tapeMargin",
     ].includes(key)
   ) {
+    if (key === "typedEffect") TypedEffects.clear();
     if (key !== "fontFamily") updateWordWrapperClasses();
     if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
       Joining.update(key, wordsEl);
