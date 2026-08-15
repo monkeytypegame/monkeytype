@@ -16,6 +16,7 @@ export const page = new Page({
   afterHide: async (): Promise<void> => {
     void TestLogic.restart({
       noAnim: true,
+      skipFunboxSection: true,
     });
     void Funbox.clear();
     updateFooterAndVerticalAds(true);
