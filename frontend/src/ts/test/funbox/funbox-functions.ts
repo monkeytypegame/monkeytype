@@ -351,12 +351,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       const segmenter = new Intl.Segmenter();
       const graphemes = [...segmenter.segment(word)].map((s) => s.segment);
 
+      const emojiRegex = /\p{Emoji}/u;
       const emojiComponentRegex = /\p{Emoji_Component}/u;
 
       const units = [];
       for (const g of graphemes) {
         // Handles emojis that have ZWJs and regional indicators
-        if (emojiComponentRegex.test(g)) {
+        if (emojiRegex.test(g) && emojiComponentRegex.test(g)) {
           units.push(g);
           continue;
         }
