@@ -350,17 +350,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     alterText(word: string): string {
       const segmenter = new Intl.Segmenter();
       const graphemes = [...segmenter.segment(word)].map((s) => s.segment);
-
       const emojiRegex = /\p{Emoji}/u;
 
-      const units = [];
-      for (const g of graphemes) {
-        if (emojiRegex.test(g)) {
-          units.push(g);
-        } else {
-          units.push(...g);
-        }
-      }
+      const units = graphemes.flatMap((g) =>
+        emojiRegex.test(g) ? [g] : [...g],
+      );
+
       return units.reverse().join("");
     },
   },
