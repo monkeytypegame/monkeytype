@@ -357,10 +357,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       for (const g of graphemes) {
         if (emojiRegex.test(g)) {
           units.push(g);
-          continue;
+        } else {
+          units.push(...g);
         }
-
-        units.push(...g);
       }
       return units.reverse().join("");
     },
