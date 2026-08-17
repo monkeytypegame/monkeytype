@@ -115,6 +115,8 @@
   }
 
   .activity {
+    --activity-tooltip-offset: 0px;
+
     grid-area: chart;
     display: grid;
     grid-auto-flow: column;
@@ -130,6 +132,27 @@
       }
       &[data-level="filler"]:hover {
         border: none;
+      }
+
+      &[aria-label][data-balloon-pos="up"]::after {
+        font-size: clamp(0.75rem, calc(0.55rem + 1vw), 1rem);
+        line-height: 1.2;
+        max-width: calc(100vw - 1rem);
+        text-align: center;
+        transform: translate(
+          calc(-50% + var(--activity-tooltip-offset)),
+          var(--balloon-move)
+        );
+        white-space: normal;
+        width: max-content;
+      }
+
+      &[aria-label][data-balloon-pos="up"]:hover::after,
+      &[aria-label][data-balloon-pos="up"][data-balloon-visible]::after,
+      &[aria-label][data-balloon-pos="up"]:not(
+          [data-balloon-nofocus]
+        ):focus::after {
+        transform: translate(calc(-50% + var(--activity-tooltip-offset)), 0);
       }
     }
   }
