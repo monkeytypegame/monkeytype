@@ -67,6 +67,7 @@ export type Snapshot = Omit<
   streak: number;
   maxStreak: number;
   isPremium: boolean;
+  streakLastResultTimestamp?: number;
   streakHourOffset?: number;
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
@@ -103,6 +104,7 @@ const defaultSnap = {
   inboxUnreadSize: 0,
   streak: 0,
   maxStreak: 0,
+  streakLastResultTimestamp: undefined,
   streakHourOffset: undefined,
   allTimeLbs: {
     time: {

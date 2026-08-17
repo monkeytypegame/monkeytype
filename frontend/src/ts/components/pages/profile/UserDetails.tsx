@@ -3,29 +3,22 @@ import {
   UserProfile,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
-import {
-  isToday as dateIsToday,
-  isYesterday as dateIsYesterday,
-  getCurrentDayTimestamp,
-} from "@monkeytype/util/date-and-time";
-import { isSafeNumber } from "@monkeytype/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
-import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
-import { Snapshot } from "../../../constants/default-snapshot";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
-import { getLastResult } from "../../../states/snapshot";
+import { getStreakIndicatorState } from "../../../states/streak";
 import { setUserToReport } from "../../../states/user-report";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
+import { formatStreak, getStreakHoverText } from "../../../utils/streak";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -207,52 +200,17 @@ function AvatarAndName(props: {
     return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   };
 
-  const formatStreak = (length: number) =>
-    `${length} ${length === 1 ? "day" : "days"}`;
+  const currentStreak = () =>
+    props.isAccountPage
+      ? Number(getStreakIndicatorState().label ?? 0)
+      : (props.profile.streak ?? 0);
 
-  const extraStreakText = () => {
-    if (!props.isAccountPage) return "";
-    let hoverText = "";
-
-    const lastResult = getLastResult();
-    if (lastResult === undefined) return "";
-
-    const streakOffset = (props.profile as Snapshot).streakHourOffset;
-
-    const dayInMilis = 1000 * 60 * 60 * 24;
-
-    let target = getCurrentDayTimestamp(streakOffset) + dayInMilis;
-    if (target < Date.now()) {
-      target += dayInMilis;
-    }
-    const timeDif = formatDistanceToNowStrict(target);
-
-    if (lastResult !== undefined) {
-      //check if the last result is from today
-      const isToday = dateIsToday(lastResult.timestamp, streakOffset);
-      const isYesterday = dateIsYesterday(lastResult.timestamp, streakOffset);
-
-      const offsetString = isSafeNumber(streakOffset)
-        ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
-        : "";
-
-      if (isToday) {
-        hoverText += `\nClaimed today: yes`;
-        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
-      } else if (isYesterday) {
-        hoverText += `\nClaimed today: no`;
-        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
-      } else {
-        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
-        hoverText += `\nIt will be removed from your profile on the next result save`;
-      }
-
-      if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
-      }
-    }
-    return hoverText;
-  };
+  const streakHoverText = () =>
+    props.isAccountPage
+      ? getStreakIndicatorState().hoverText
+      : getStreakHoverText({
+          maxStreak: props.profile.maxStreak,
+        });
 
   const balloonPosition = (): BalloonProps["position"] =>
     bp().md ? "right" : "up";
@@ -319,15 +277,15 @@ function AvatarAndName(props: {
           <Balloon inline text={accountAgeHint()} position={balloonPosition()}>
             Joined {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
           </Balloon>
-          <Show when={(props.profile.streak ?? 0) > 1}>
+          <Show when={currentStreak() > 0}>
             <Balloon
               inline
-              text={`Longest streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
+              text={streakHoverText()}
               position={balloonPosition()}
               break
               length="large"
             >
-              Current streak {formatStreak(props.profile.streak)}
+              Current streak {formatStreak(currentStreak())}
             </Balloon>
           </Show>
         </div>
