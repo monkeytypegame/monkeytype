@@ -348,7 +348,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   backwards: {
     alterText(word: string): string {
-      return word.split("").reverse().join("");
+      // @ts-expect-error - v flag is only supported in es2024+, need to consider alternatives
+      const regex = /\p{RGI_Emoji}|\p{Any}/gv;
+      return (word.match(regex) ?? []).reverse().join("");
     },
   },
   capitals: {
