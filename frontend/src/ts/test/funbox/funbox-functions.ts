@@ -348,9 +348,22 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   backwards: {
     alterText(word: string): string {
-      // @ts-expect-error - v flag is only supported in es2024+, need to consider alternatives
-      const regex = /\p{RGI_Emoji}|\p{Any}/gv;
-      return (word.match(regex) ?? []).reverse().join("");
+      const segmenter = new Intl.Segmenter();
+      const graphemes = [...segmenter.segment(word)].map((s) => s.segment);
+
+      const emojiComponentRegex = /\p{Emoji_Component}/u;
+
+      const units = [];
+      for (const g of graphemes) {
+        // Handles emojis that have ZWJs and regional indicators
+        if (emojiComponentRegex.test(g)) {
+          units.push(g);
+          continue;
+        }
+
+        units.push(...g);
+      }
+      return units.reverse().join("");
     },
   },
   capitals: {
