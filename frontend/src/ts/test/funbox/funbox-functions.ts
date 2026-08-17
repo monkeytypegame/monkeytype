@@ -354,8 +354,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       const graphemes = [...segmenter.segment(word)].map((s) => s.segment);
       const emojiRegex = /\p{Emoji}/u;
 
-      // The codepoints making up an emoji sequence aren't reversed, everything else is split
-      // and reversed.
+      // Emoji sequences aren't reversed, everything else is.
       const units = graphemes.flatMap((g) =>
         emojiRegex.test(g) ? [g] : [...g],
       );
