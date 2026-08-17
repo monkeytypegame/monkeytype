@@ -2174,6 +2174,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#e9632d",
     colorfulErrorExtra: "#e9632d",
   },
+  tokyo_night: {
+    bg: "#1a1b26",
+    caret: "#c0caf5",
+    main: "#7aa2f7",
+    sub: "#565f89",
+    subAlt: "#24283b",
+    text: "#a9b1d6",
+    error: "#f7768e",
+    errorExtra: "#db4b4b",
+    colorfulError: "#f7768e",
+    colorfulErrorExtra: "#e0af68",
+  },
   trackday: {
     bg: "#464d66",
     caret: "#475782",
