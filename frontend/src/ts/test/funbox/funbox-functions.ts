@@ -348,7 +348,18 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   backwards: {
     alterText(word: string): string {
-      return word.split("").reverse().join("");
+      if (!("Segmenter" in Intl)) return [...word].reverse().join("");
+
+      const segmenter = new Intl.Segmenter();
+      const graphemes = [...segmenter.segment(word)].map((s) => s.segment);
+      const emojiRegex = /\p{Emoji}/u;
+
+      // Emojis aren't reversed, everything else is.
+      const units = graphemes.flatMap((g) =>
+        emojiRegex.test(g) ? [g] : [...g],
+      );
+
+      return units.reverse().join("");
     },
   },
   capitals: {
