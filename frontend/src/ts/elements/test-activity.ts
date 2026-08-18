@@ -35,13 +35,13 @@ export function update(
   container.innerHTML = "";
 
   if (calendar === undefined) {
-    updateMonths([]);
+    updateMonths(element, []);
     element.querySelector(".nodata")?.classList.remove("hidden");
 
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  updateMonths(element, calendar.getMonths());
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
@@ -62,8 +62,11 @@ export function update(
   }
 }
 
-function updateMonths(months: TestActivityMonth[]): void {
-  const element = document.querySelector(".testActivity .months");
+function updateMonths(
+  parentEl: HTMLElement,
+  months: TestActivityMonth[],
+): void {
+  const element = parentEl.querySelector(".months");
 
   if (element === null) {
     return;
