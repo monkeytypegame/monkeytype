@@ -2,10 +2,10 @@ import { Config } from "../config/store";
 import britishEnglishReplacements from "../constants/british-english";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
-export async function replace(
+export function replace(
   word: string,
   previousWord: string | undefined,
-): Promise<string> {
+): string {
   // Convert American-style double quotes to British-style single quotes
   if (word.includes('"')) {
     word = word.replace(/"/g, "'");
@@ -14,11 +14,10 @@ export async function replace(
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure
     //we don't have to add every possible combination to the list
-    return (
-      await Promise.all(
-        word.split("-").map(async (w) => replace(w, previousWord)),
-      )
-    ).join("-");
+    return word
+      .split("-")
+      .map((wordPart) => replace(wordPart, previousWord))
+      .join("-");
   } else {
     const cleanedWord = word.replace(/^[\W]+|[\W]+$/g, "").toLowerCase();
     if (
