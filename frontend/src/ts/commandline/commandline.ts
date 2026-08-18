@@ -479,8 +479,7 @@ async function showCommands(): Promise<void> {
     });
 
   if (
-    lastState &&
-    usingSingleList === lastState.usingSingleList &&
+    usingSingleList === lastState?.usingSingleList &&
     areSortedArraysEqual(list, lastState.list)
   ) {
     return;
@@ -961,8 +960,7 @@ const modal = new AnimatedModal({
 
     input.on("input", async (e) => {
       if (
-        inputModeParams === null ||
-        inputModeParams.command === null ||
+        inputModeParams?.command === null ||
         !("validation" in inputModeParams.command)
       ) {
         return;

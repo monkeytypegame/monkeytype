@@ -1,7 +1,7 @@
 name: Fix formatting
 
 env:
-  PNPM_VERSION: "10.28.1"
+  PNPM_VERSION: "11.21.0"
   NODE_VERSION: "24.11.0"
 
 permissions:
@@ -33,12 +33,12 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Install formatter
-        run: pnpm install -D -w oxfmt --ignore-scripts
+      - name: Install
+        run: pnpm install --ignore-scripts
 
-      - name: Get changed files
+      - name: Get changed files and write to temp
         id: get-changed-files
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const changedFiles = await github.paginate(
@@ -49,15 +49,16 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
+            if (files.length > 0) {
+              require('fs').writeFileSync('/tmp/changed-files.txt', files.join('\0'));
+              core.setOutput('has-files', 'true');
+            }
 
       - name: Fix formatting
-        env:
-          CHANGED_FILES: ${{ steps.get-changed-files.outputs.result }}
+        if: steps.get-changed-files.outputs.has-files == 'true'
         run: |
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "$CHANGED_FILES" | tr ' ' '\n' | xargs pnpm oxfmt --no-error-on-unmatched-pattern
-          fi
+          xargs -0 pnpm oxfmt --no-error-on-unmatched-pattern < /tmp/changed-files.txt
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5

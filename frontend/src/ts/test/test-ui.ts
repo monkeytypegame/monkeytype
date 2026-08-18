@@ -2,6 +2,8 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../states/notifications";
+import { showSimpleModal } from "../states/simple-modal";
+import { z } from "zod";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
@@ -353,10 +355,7 @@ async function updateHintsPosition(): Promise<void> {
 
     for (const currentLetterIndex of letterIndices) {
       const lastBlock = hintIndices[hintIndices.length - 1];
-      if (
-        lastBlock &&
-        lastBlock[lastBlock.length - 1] === currentLetterIndex - 1
-      ) {
+      if (lastBlock?.[lastBlock.length - 1] === currentLetterIndex - 1) {
         lastBlock.push(currentLetterIndex);
       } else {
         hintIndices.push([currentLetterIndex]);
@@ -835,7 +834,7 @@ export async function updateWordLetters({
               Config.indicateTypos === "both"
             ) {
               const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock && lastBlock[lastBlock.length - 1] === i - 1) {
+              if (lastBlock?.[lastBlock.length - 1] === i - 1) {
                 lastBlock.push(i);
               } else {
                 hintIndices.push([i]);
@@ -1917,10 +1916,79 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
   await copyToClipboard(words);
 });
 
-async function copyToClipboard(content: string): Promise<void> {
+qs(".pageTest #copySlowWordsListButton")?.on("click", () => {
+  const eventLog = getLastEventLog();
+  if (eventLog === null) return;
+
+  const burstHistory = getWordBurstHistory(eventLog);
+  const validBursts = burstHistory.filter(
+    (wpm) => Number.isFinite(wpm) && wpm > 0,
+  );
+  const avgWpm =
+    validBursts.length > 0
+      ? Math.round(validBursts.reduce((a, b) => a + b, 0) / validBursts.length)
+      : 80;
+
+  showSimpleModal({
+    title: "Copy slow words",
+    buttonText: "copy",
+    buttonAlwaysEnabled: true,
+    schema: z.object({
+      speedThreshold: z.number().finite().positive(),
+    }),
+    inputs: {
+      speedThreshold: {
+        type: "number",
+        label: "WPM threshold:",
+        placeholder: "80",
+        initVal: avgWpm,
+      },
+    },
+    execFn: async ({ speedThreshold }) => {
+      let typedWords: string[];
+      if (Config.mode === "zen") {
+        typedWords = getInputHistory(eventLog);
+      } else {
+        typedWords = TestWords.words
+          .get()
+          .slice(0, getInputHistory(eventLog).length)
+          .map((w) => w.text);
+      }
+
+      const slowWords: string[] = [];
+      typedWords.forEach((word, index) => {
+        const speed = burstHistory[index] ?? Infinity;
+        if (speed < speedThreshold) {
+          slowWords.push(word);
+        }
+      });
+
+      if (slowWords.length === 0) {
+        return {
+          status: "notice",
+          message: `No words typed under ${speedThreshold} WPM`,
+        };
+      }
+
+      await copyToClipboard(
+        slowWords.join(" "),
+        `Copied ${slowWords.length} slow word${slowWords.length > 1 ? "s" : ""} to clipboard`,
+      );
+      return {
+        status: "success",
+        showNotification: false,
+      };
+    },
+  });
+});
+
+async function copyToClipboard(
+  content: string,
+  customMessage?: string,
+): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
-    showNoticeNotification("Copied to clipboard", {
+    showNoticeNotification(customMessage ?? "Copied to clipboard", {
       durationMs: 2000,
     });
   } catch (e) {
