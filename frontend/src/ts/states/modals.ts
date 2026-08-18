@@ -27,6 +27,7 @@ export type ModalId =
   | "MobileTestConfig"
   | "PbTables"
   | "MiniResultChartModal"
+  | "PractiseWords"
   | "Cookies"
   | "AddPresetModal"
   | "EditPresetModal"
