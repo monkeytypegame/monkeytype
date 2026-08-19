@@ -975,6 +975,12 @@
         &.dailyLeaderboard {
           max-width: 13rem;
           white-space: nowrap;
+
+          .score {
+            color: var(--sub-color);
+            font-size: 0.75rem;
+            line-height: 0.75rem;
+          }
         }
 
         &.source {

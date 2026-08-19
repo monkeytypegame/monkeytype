@@ -269,6 +269,9 @@ export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 export const ShowPbSchema = z.boolean();
 export type ShowPb = z.infer<typeof ShowPbSchema>;
 
+export const ShowDailyLbStandingSchema = z.boolean();
+export type ShowDailyLbStanding = z.infer<typeof ShowDailyLbStandingSchema>;
+
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
@@ -508,6 +511,7 @@ export const ConfigSchema = z
     capsLockWarning: z.boolean(),
     showAverage: ShowAverageSchema,
     showPb: ShowPbSchema,
+    showDailyLbStanding: ShowDailyLbStandingSchema,
 
     // other (hidden)
     accountChart: AccountChartSchema,

@@ -72,7 +72,9 @@ import { getAuthenticatedUser } from "../firebase";
 import { highlight } from "../events/keymap";
 import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import Format from "../singletons/format";
-import { Mode } from "@monkeytype/schemas/shared";
+import { Mode, Mode2 } from "@monkeytype/schemas/shared";
+import { Language } from "@monkeytype/schemas/languages";
+import * as DailyLbStanding from "./daily-lb-standing";
 import {
   CompletedEvent,
   CompletedEventCustomText,
@@ -1203,18 +1205,29 @@ async function saveResult(
 
   if (data.dailyLeaderboardRank === undefined) {
     dailyLeaderboardEl.classList.add("hidden");
+    if (Config.showDailyLbStanding) {
+      void showCurrentDailyStanding(
+        dailyLeaderboardEl,
+        result.mode,
+        result.mode2,
+        result.language,
+      );
+    }
   } else {
     dailyLeaderboardEl.classList.remove("hidden");
     dailyLeaderboardEl.style.maxWidth = "13rem";
+
+    // undo the dimming/label a previous "current standing" render may have set
+    const valueEl = qs("#result .stats .dailyLeaderboard .bottom");
+    valueEl?.native.style.removeProperty("opacity");
+    valueEl?.setAttribute("aria-label", "Show daily leaderboard");
 
     animate(dailyLeaderboardEl, {
       opacity: [0, 1],
       duration: Misc.applyReducedMotion(250),
     });
 
-    qs("#result .stats .dailyLeaderboard .bottom")?.setHtml(
-      Format.rank(data.dailyLeaderboardRank, { fallback: "" }),
-    );
+    setDailyLeaderboardValue(data.dailyLeaderboardRank, result.wpm, result.acc);
   }
 
   qs("#retrySavingResultButton")?.hide();
@@ -1223,6 +1236,53 @@ async function saveResult(
   }
   DB.saveLocalResult(localDataToSave);
   return response;
+}
+
+// Shown when the completed test did not improve the user's daily best (so the
+// server returned no rank) but the user still has an entry on today's
+// leaderboard. Dimmed to distinguish it from a placement made by this test.
+async function showCurrentDailyStanding(
+  dailyLeaderboardEl: HTMLElement,
+  mode: Mode,
+  mode2: Mode2<Mode>,
+  language: Language,
+): Promise<void> {
+  const standing = await DailyLbStanding.getCurrentStanding(
+    mode,
+    mode2,
+    language,
+  );
+  if (standing === null || !getResultVisible()) return;
+
+  const valueEl = qs("#result .stats .dailyLeaderboard .bottom");
+  dailyLeaderboardEl.classList.remove("hidden");
+  dailyLeaderboardEl.style.maxWidth = "13rem";
+  valueEl?.native.style.setProperty("opacity", "0.5");
+  valueEl?.setAttribute("aria-label", "current standing");
+
+  animate(dailyLeaderboardEl, {
+    opacity: [0, 1],
+    duration: Misc.applyReducedMotion(250),
+  });
+
+  setDailyLeaderboardValue(standing.rank, standing.wpm, standing.acc);
+}
+
+// The rank sits in .text, with the score that holds it below in .score, so the
+// user can see what they need to beat without opening the leaderboard.
+function setDailyLeaderboardValue(
+  rank: number,
+  wpm: number,
+  acc: number,
+): void {
+  qs("#result .stats .dailyLeaderboard .bottom .text")?.setHtml(
+    Format.rank(rank, { fallback: "" }),
+  );
+  qs("#result .stats .dailyLeaderboard .bottom .score")?.setText(
+    `${Format.typingSpeed(wpm, {
+      suffix: ` ${Config.typingSpeedUnit}`,
+    })} ${Format.accuracy(acc)}`,
+  );
 }
 
 export function fail(reason: string): void {

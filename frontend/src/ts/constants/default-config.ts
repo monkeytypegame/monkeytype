@@ -102,6 +102,7 @@ const obj: Config = {
   lazyMode: false,
   showAverage: "off",
   showPb: false,
+  showDailyLbStanding: false,
   tapeMode: "off",
   tapeMargin: 50,
   maxLineWidth: 0,
