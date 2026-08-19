@@ -742,10 +742,8 @@ export function getTotalInlineMargin(element: HTMLElement): number {
   );
 }
 
-export function getQuotesLanguage(): Language {
-  return Config.language.startsWith("swiss_german")
-    ? "german"
-    : Config.language;
+export function getQuotesLanguage(language = Config.language): Language {
+  return language.startsWith("swiss_german") ? "german" : language;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
