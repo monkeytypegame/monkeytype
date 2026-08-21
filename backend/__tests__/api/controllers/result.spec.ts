@@ -584,6 +584,10 @@ describe("result controller test", () => {
     const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
     const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const resultGetLastResultTimestampMock = vi.spyOn(
+      ResultDal,
+      "getLastResultTimestamp",
+    );
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
 
     beforeEach(async () => {
@@ -598,6 +602,7 @@ describe("result controller test", () => {
         userIncrementXpMock,
         userUpdateTypingStatsMock,
         resultAddMock,
+        resultGetLastResultTimestampMock,
         publicUpdateStatsMock,
       ].forEach((it) => it.mockClear());
 
@@ -606,6 +611,7 @@ describe("result controller test", () => {
       userCheckIfTagPbMock.mockResolvedValue([]);
       userCheckIfPbMock.mockResolvedValue(true);
       resultAddMock.mockResolvedValue({ insertedId });
+      resultGetLastResultTimestampMock.mockResolvedValue(0);
       userIncrementXpMock.mockResolvedValue();
     });
 
@@ -636,6 +642,7 @@ describe("result controller test", () => {
           base: 20,
           incomplete: 5,
           funbox: 80,
+          daily: 0,
         },
         streak: 0,
         insertedId: insertedId.toHexString(),
@@ -760,24 +767,247 @@ describe("result controller test", () => {
       expect(body.message).toEqual("Duplicate funboxes");
     });
 
-    // it("should fail invalid properties ", async () => {
-    //GIVEN
-    //WHEN
-    // const { body } = await mockApp
-    //   .post("/results")
-    //   .set("Authorization", `Bearer ${uid}`)
-    //   //TODO add all properties
-    //   .send({ result: { acc: 25 } })
-    //   .expect(422);
-    //THEN
-    /*
-      expect(body).toEqual({
-        message: "Invalid request data schema",
-        validationErrors: [
-        ],
+    it("should fail if user needs to change name", async () => {
+      //GIVEN
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        needsToChangeName: true,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent(),
+        })
+        .expect(403);
+
+      //THEN
+      expect(body.message).toEqual(
+        "Please change your name before submitting a result",
+      );
+    });
+
+    it("should fail if the test is too short", async () => {
+      //GIVEN
+      const completedEvent = buildCompletedEvent({
+        mode: "time",
+        mode2: "10",
       });
-      */
-    // });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(460);
+
+      //THEN
+      expect(body.message).toEqual("Test too short");
+    });
+
+    it("should fail if accuracy is too low", async () => {
+      //GIVEN
+      const completedEvent = buildCompletedEvent({
+        acc: 70,
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("Accuracy too low");
+    });
+
+    it("should not fail if accuracy is low but user opted out of leaderboards", async () => {
+      //GIVEN
+      userGetMock.mockResolvedValue({ name: "bob", lbOptOut: true } as any);
+      const completedEvent = buildCompletedEvent({
+        acc: 70,
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result saved");
+    });
+
+    it("should fail with impossible funbox combination", async () => {
+      //GIVEN
+      const completedEvent = buildCompletedEvent({
+        funbox: ["rAnDoMcAsE", "sPoNgEcAsE"],
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("Impossible funbox combination");
+    });
+
+    it("should fail if result spacing is too fast", async () => {
+      //GIVEN
+      const now = Math.floor(Date.now() / 1000) * 1000;
+      resultGetLastResultTimestampMock.mockResolvedValue(now);
+
+      const completedEvent = buildCompletedEvent({
+        testDuration: 10,
+        incompleteTestSeconds: 5,
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(462);
+
+      //THEN
+      expect(body.message).toEqual("Invalid result spacing");
+    });
+
+    it("should fail if object hash check is enabled and hash is incorrect", async () => {
+      //GIVEN
+      await enableObjectHashCheck(true);
+      const logToDbMock = vi
+        .spyOn(LogsDal, "addLog")
+        .mockResolvedValue(undefined);
+
+      try {
+        const completedEvent = buildCompletedEvent({
+          hash: "incorrect_hash",
+        });
+
+        //WHEN
+        const { body } = await mockApp
+          .post("/results")
+          .set("Authorization", `Bearer ${uid}`)
+          .send({
+            result: completedEvent,
+          })
+          .expect(461);
+
+        //THEN
+        expect(body.message).toEqual("Incorrect result hash");
+        expect(logToDbMock).toHaveBeenCalledWith(
+          "incorrect_result_hash",
+          expect.any(Object),
+          uid,
+        );
+      } finally {
+        // Cleanup
+        await enableObjectHashCheck(false);
+        logToDbMock.mockRestore();
+      }
+    });
+
+    it("should fail if high WPM and key data is missing", async () => {
+      //GIVEN
+      const completedEvent = buildCompletedEvent({
+        mode: "time",
+        wpm: 140,
+        testDuration: 15,
+        keySpacing: "toolong",
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(464);
+
+      //THEN
+      expect(body.message).toEqual("Missing key data");
+    });
+
+    it("should fail if high WPM and key overlap is undefined", async () => {
+      //GIVEN
+      const completedEvent = buildCompletedEvent({
+        mode: "time",
+        wpm: 140,
+        testDuration: 15,
+        keyOverlap: undefined,
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.message).toEqual("Invalid request data schema");
+      expect(body.validationErrors).toContain('"result.keyOverlap" Required');
+    });
+
+    it("should fail if duplicate result hash is detected", async () => {
+      //GIVEN
+      await enableLastHashesCheck(true);
+      const logToDbMock = vi
+        .spyOn(LogsDal, "addLog")
+        .mockResolvedValue(undefined);
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        lastReultHashes: ["some_hash"],
+      } as any);
+
+      try {
+        const completedEvent = buildCompletedEvent({
+          hash: "some_hash",
+        });
+
+        //WHEN
+        const { body } = await mockApp
+          .post("/results")
+          .set("Authorization", `Bearer ${uid}`)
+          .send({
+            result: completedEvent,
+          })
+          .expect(466);
+
+        //THEN
+        expect(body.message).toEqual("Duplicate result");
+        expect(logToDbMock).toHaveBeenCalledWith(
+          "duplicate_result",
+          expect.any(Object),
+          uid,
+        );
+      } finally {
+        // Cleanup
+        await enableLastHashesCheck(false);
+        logToDbMock.mockRestore();
+      }
+    });
   });
 });
 
@@ -885,6 +1115,31 @@ async function enableResultsSaving(enabled: boolean): Promise<void> {
 async function enableUsersXpGain(enabled: boolean): Promise<void> {
   const mockConfig = await configuration;
   mockConfig.users.xp = { ...mockConfig.users.xp, enabled, funboxBonus: 1 };
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig,
+  );
+}
+
+async function enableObjectHashCheck(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.results = {
+    ...mockConfig.results,
+    objectHashCheckEnabled: enabled,
+  };
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig,
+  );
+}
+
+async function enableLastHashesCheck(enabled: boolean): Promise<void> {
+  const mockConfig = await configuration;
+  mockConfig.users.lastHashesCheck = {
+    ...mockConfig.users.lastHashesCheck,
+    enabled,
+    maxHashes: 10,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig,
