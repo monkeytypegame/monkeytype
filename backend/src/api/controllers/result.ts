@@ -162,14 +162,6 @@ export async function getLastResult(
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
-}
-
 export async function updateTags(
   req: MonkeyRequest<undefined, UpdateResultTagsRequest>,
 ): Promise<UpdateResultTagsResponse> {

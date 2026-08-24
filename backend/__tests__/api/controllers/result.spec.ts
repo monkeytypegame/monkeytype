@@ -3,7 +3,6 @@ import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
-import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
@@ -12,7 +11,7 @@ import { DBResult } from "../../../src/utils/result";
 import { omit } from "../../../src/utils/misc";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 
-const { mockApp, uid, mockAuth } = setup();
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
 
@@ -396,45 +395,6 @@ describe("result controller test", () => {
       await expect(
         mockApp.get("/results/last").set("Authorization", `ApeKey ${apeKey}`),
       ).toBeRateLimited({ max: 30, windowMs: 60 * 1000 }); //should use defaultApeRateLimit
-    });
-  });
-  describe("deleteAll", () => {
-    const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
-    const logToDbMock = vi.spyOn(LogsDal, "addLog");
-    afterEach(() => {
-      deleteAllMock.mockClear();
-      logToDbMock.mockClear();
-    });
-
-    it("should delete", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: Date.now() - 1000 });
-      deleteAllMock.mockResolvedValue(undefined as any);
-
-      //WHEN
-      const { body } = await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("All results deleted");
-      expect(body.data).toBeNull();
-
-      expect(deleteAllMock).toHaveBeenCalledWith(uid);
-      expect(logToDbMock).toHaveBeenCalledWith("user_results_deleted", "", uid);
-    });
-    it("should fail to delete with non-fresh token", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: 0 });
-
-      //WHEN/THEN
-      await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(401);
     });
   });
   describe("updateTags", () => {
