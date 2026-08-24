@@ -544,6 +544,10 @@ describe("result controller test", () => {
     const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
     const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const resultGetLastTimestampMock = vi.spyOn(
+      ResultDal,
+      "getLastResultTimestamp",
+    );
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
 
     beforeEach(async () => {
@@ -558,6 +562,7 @@ describe("result controller test", () => {
         userIncrementXpMock,
         userUpdateTypingStatsMock,
         resultAddMock,
+        resultGetLastTimestampMock,
         publicUpdateStatsMock,
       ].forEach((it) => it.mockClear());
 
@@ -566,6 +571,8 @@ describe("result controller test", () => {
       userCheckIfTagPbMock.mockResolvedValue([]);
       userCheckIfPbMock.mockResolvedValue(true);
       resultAddMock.mockResolvedValue({ insertedId });
+      //a prior result exists so incomplete-test time is credited (not zeroed)
+      resultGetLastTimestampMock.mockResolvedValue(0);
       userIncrementXpMock.mockResolvedValue();
     });
 
@@ -596,6 +603,7 @@ describe("result controller test", () => {
           base: 20,
           incomplete: 5,
           funbox: 80,
+          daily: 0,
         },
         streak: 0,
         insertedId: insertedId.toHexString(),

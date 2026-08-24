@@ -321,6 +321,16 @@ export async function addResult(
     ResultDAL.getLastResultTimestamp(uid),
   );
 
+  // Abandoned-test time (incompleteTestSeconds/incompleteTests) is client
+  // supplied. When a previous result exists it is bounded to real elapsed time
+  // by the result-spacing check below. When it does not (new account, or all
+  // results deleted) there is nothing to bound it against, so it must not be
+  // credited toward timeTyping / XP / leaderboard eligibility.
+  if (!isSafeNumber(lastResultTimestamp)) {
+    completedEvent.incompleteTestSeconds = 0;
+    completedEvent.incompleteTests = [];
+  }
+
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
