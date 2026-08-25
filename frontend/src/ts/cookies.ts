@@ -1,7 +1,9 @@
 import { z } from "zod";
+import { createSignal } from "solid-js";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { activateAnalytics } from "./controllers/analytics-controller";
 import { activateSentry } from "./sentry";
+import { isProfilerMode } from "./utils/profiler-mode";
 
 const AcceptedCookiesSchema = z
   .object({
@@ -14,16 +16,6 @@ const AcceptedCookiesSchema = z
 
 export type AcceptedCookies = z.infer<typeof AcceptedCookiesSchema>;
 
-export function getAcceptedCookies(): AcceptedCookies | null {
-  return cookies.get();
-}
-
-export function setAcceptedCookies(accepted: AcceptedCookies): void {
-  cookies.set(accepted);
-
-  activateWhatsAccepted();
-}
-
 const cookies = new LocalStorageWithSchema({
   key: "acceptedCookies",
   schema: AcceptedCookiesSchema,
@@ -31,12 +23,24 @@ const cookies = new LocalStorageWithSchema({
   // no migration here, if cookies changed, we need to ask the user again
 });
 
+const [acceptedCookies, _setAcceptedCookies] = createSignal(cookies.get());
+
+export function getAcceptedCookies(): AcceptedCookies | null {
+  return acceptedCookies();
+}
+
+export function setAcceptedCookies(accepted: AcceptedCookies): void {
+  cookies.set(accepted);
+  _setAcceptedCookies(accepted);
+  activateWhatsAccepted();
+}
+
 export function activateWhatsAccepted(): void {
   const accepted = getAcceptedCookies();
   if (accepted?.analytics) {
     activateAnalytics();
   }
-  if (accepted?.sentry) {
+  if (accepted?.sentry && !isProfilerMode()) {
     void activateSentry();
   }
 }

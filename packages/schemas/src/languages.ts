@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KnownFontNameSchema } from "./fonts";
 import { customEnumErrorHandler } from "./util";
 
 export const LanguageSchema = z.enum(
@@ -114,6 +115,7 @@ export const LanguageSchema = z.enum(
     "greek_5k",
     "greek_10k",
     "greek_25k",
+    "greek_koine",
     "greeklish",
     "greeklish_1k",
     "greeklish_5k",
@@ -443,6 +445,11 @@ export const LanguageSchema = z.enum(
     "pokemon_1k",
     "kokanu",
     "likanu",
+    "code_vhdl",
+    "lao",
+    "code_6502_assembly",
+    "english_legal",
+    "sindhi",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
@@ -456,13 +463,14 @@ export const LanguageObjectSchema = z
     name: LanguageSchema,
     rightToLeft: z.boolean().optional(),
     noLazyMode: z.boolean().optional(),
-    ligatures: z.boolean().optional(),
+    joiningScript: z.boolean().optional(),
     orderedByFrequency: z.boolean().optional(),
     words: z.array(z.string()).min(1),
     additionalAccents: z
       .array(z.tuple([z.string().min(1), z.string().min(1)]))
       .optional(),
     bcp47: z.string().optional(),
+    preferredFont: KnownFontNameSchema.optional(),
     originalPunctuation: z.boolean().optional(),
   })
   .strict();

@@ -1,9 +1,14 @@
 import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../states/notifications";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
+import { download } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
@@ -40,7 +45,7 @@ export function SavedTextsModal(props: {
   };
 
   const handleNameClick = (name: string, long: boolean) => {
-    CustomTextState.setCustomTextName(name, long);
+    setCustomTextIndicator({ name, isLong: long });
     const text = getSavedText(name, long);
     props.setChainedData({ text, long });
     hideModal("SavedTexts");
@@ -53,7 +58,7 @@ export function SavedTextsModal(props: {
       buttonText: "delete",
       execFn: async () => {
         CustomText.deleteCustomText(name, long);
-        CustomTextState.setCustomTextName("", undefined);
+        setCustomTextIndicator(undefined);
         refresh();
         return {
           status: "success",
@@ -81,6 +86,18 @@ export function SavedTextsModal(props: {
     });
   };
 
+  const handleDownload = (name: string, long: boolean) => {
+    const text = CustomText.getCustomText(name, long);
+
+    try {
+      const data = new Blob([text.join(" ")], { type: "text/plain" });
+      download({ filename: `${name}.txt`, data });
+      showSuccessNotification("custom text downloaded");
+    } catch (e) {
+      showErrorNotification(`failed to download custom text: ${e}`);
+    }
+  };
+
   return (
     <AnimatedModal
       id="SavedTexts"
@@ -104,7 +121,14 @@ export function SavedTextsModal(props: {
                 />
                 <Button
                   variant="button"
+                  balloon={{ text: "download" }}
+                  fa={{ icon: "fa-file-download", fixedWidth: true }}
+                  onClick={() => handleDownload(name, false)}
+                />
+                <Button
+                  variant="button"
                   fa={{ icon: "fa-trash", fixedWidth: true }}
+                  balloon={{ text: "delete" }}
                   onClick={() => handleDelete(name, false)}
                 />
               </div>
@@ -144,7 +168,14 @@ export function SavedTextsModal(props: {
                   />
                   <Button
                     variant="button"
+                    balloon={{ text: "download" }}
+                    fa={{ icon: "fa-file-download", fixedWidth: true }}
+                    onClick={() => handleDownload(name(), true)}
+                  />
+                  <Button
+                    variant="button"
                     fa={{ icon: "fa-trash", fixedWidth: true }}
+                    balloon={{ text: "delete" }}
                     onClick={() => handleDelete(name(), true)}
                   />
                 </div>
@@ -156,7 +187,7 @@ export function SavedTextsModal(props: {
 
       <Separator />
 
-      <div class="text-em-xs text-sub">
+      <div class="text-em-xs text-error">
         Heads up! These texts are only stored locally. If you switch devices or
         clear your local browser data they will be lost.
       </div>

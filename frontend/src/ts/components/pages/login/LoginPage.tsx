@@ -2,20 +2,18 @@ import { useQuery } from "@tanstack/solid-query";
 import { JSXElement, Show } from "solid-js";
 
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../states/core";
 import { getLoginPageInputsEnabled } from "../../../states/login";
+import { Page } from "../../common/Page";
 import { Login } from "./Login";
 import { Register } from "./Register";
 
 export function LoginPage(): JSXElement {
-  const isOpen = () => getActivePage() === "login";
-
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
   const isSignUpDisabled = (): boolean =>
     !(serverConfig.data?.users.signUp ?? true);
 
   return (
-    <Show when={isOpen()}>
+    <Page id="login">
       <Show when={!getLoginPageInputsEnabled()}>
         <div class="fixed top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 text-3xl text-main transition-opacity duration-250">
           <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -36,6 +34,6 @@ export function LoginPage(): JSXElement {
           </p>
         </div>
       </Show>
-    </Show>
+    </Page>
   );
 }

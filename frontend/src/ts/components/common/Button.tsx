@@ -18,6 +18,7 @@ type BaseProps = {
   onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
+  tabIndex?: number;
 };
 
 export type ButtonProps = BaseProps & {
@@ -25,6 +26,7 @@ export type ButtonProps = BaseProps & {
   href?: never;
   sameTarget?: true;
   disabled?: boolean;
+  danger?: boolean;
 };
 
 type AnchorProps = BaseProps & {
@@ -69,6 +71,9 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       variant() === "text" &&
         isActive() &&
         "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
+      !isAnchor() &&
+        (props as ButtonProps).danger &&
+        "[--themable-button-bg:var(--error-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
       {
         "pointer-events-none opacity-[0.33]": props.disabled,
       },
@@ -94,6 +99,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
+          tabIndex={props.tabIndex ?? 0}
           {...props.dataset}
         >
           {content}

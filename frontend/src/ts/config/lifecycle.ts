@@ -9,14 +9,14 @@ import {
   saveToLocalStorage,
   saveFullConfigToLocalStorage,
 } from "./persistence";
-import { Config, setConfigStore } from "./store";
+import { Config, setFullConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
-import { promiseWithResolvers, typedKeys } from "../utils/misc";
+import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
-import { reconcile } from "solid-js/store";
+import { typedKeys } from "@monkeytype/util/objects";
 
 export async function applyConfigFromJson(json: string): Promise<void> {
   try {
@@ -108,7 +108,7 @@ export async function applyConfig(
   }
 
   configEvent.dispatch({ key: "fullConfigChangeFinished" });
-  setConfigStore(reconcile(Config));
+  setFullConfigStore(fullConfig);
 }
 
 export async function resetConfig(): Promise<void> {

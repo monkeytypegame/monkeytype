@@ -13,7 +13,7 @@ export async function updateBar(
   duration: number,
 ): Promise<void> {
   await barEl?.qs(".fill")?.promiseAnimate({
-    width: percentage + "%",
+    width: `${percentage}%`,
     duration,
   });
 }

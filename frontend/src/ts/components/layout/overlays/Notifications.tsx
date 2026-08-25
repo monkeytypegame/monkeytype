@@ -58,7 +58,7 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
           icon: `fa-${props.notification.customIcon}`,
           fixedWidth: true,
         } as FaProps)
-      : ({ icon: config().icon } as FaProps);
+      : { icon: config().icon };
 
   const title = (): string => props.notification.customTitle ?? config().title;
 

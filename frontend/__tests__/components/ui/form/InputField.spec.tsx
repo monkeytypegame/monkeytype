@@ -1,25 +1,39 @@
 import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
+import { z } from "zod";
 
 import { InputField } from "../../../../src/ts/components/ui/form/InputField";
 
-function makeField(name: string, value = "") {
+function makeField(
+  name: string,
+  value?: string | number | boolean | Date,
+): AnyFieldApi {
+  let current = value;
+  const meta = {
+    isValidating: false,
+    isTouched: false,
+    isValid: true,
+    isDefaultValue: true,
+    errors: [] as string[],
+  };
   return {
     name,
-    state: {
-      value,
-      meta: {
-        isValidating: false,
-        isTouched: false,
-        isValid: true,
-        isDefaultValue: true,
-        errors: [],
-      },
+    get state() {
+      return {
+        value: current,
+        meta,
+      };
     },
+    options: { default: value },
     handleBlur: vi.fn(),
-    handleChange: vi.fn(),
+    handleChange: vi.fn((v: unknown) => {
+      current = v as typeof value;
+    }),
+    setValue: vi.fn(),
     getMeta: () => ({ hasWarning: false, warnings: [] }),
-  } as any;
+    form: { options: { defaultValues: { [name]: value } } } as any,
+  } as unknown as AnyFieldApi;
 }
 
 describe("InputField", () => {
@@ -53,17 +67,27 @@ describe("InputField", () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} />);
 
-    await fireEvent.input(screen.getByRole("textbox"), {
+    fireEvent.input(screen.getByRole("textbox"), {
       target: { value: "test" },
     });
     expect(field.handleChange).toHaveBeenCalledWith("test");
+  });
+
+  it("calls handleChange on input for number", async () => {
+    const field = makeField("name", 2.5);
+    render(() => <InputField field={() => field} type="number" />);
+
+    fireEvent.input(screen.getByRole("spinbutton"), {
+      target: { value: "1.25" },
+    });
+    expect(field.handleChange).toHaveBeenCalledWith(1.25);
   });
 
   it("calls handleBlur on blur", async () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} />);
 
-    await fireEvent.blur(screen.getByRole("textbox"));
+    fireEvent.blur(screen.getByRole("textbox"));
     expect(field.handleBlur).toHaveBeenCalled();
   });
 
@@ -72,7 +96,7 @@ describe("InputField", () => {
     const onFocus = vi.fn();
     render(() => <InputField field={() => field} onFocus={onFocus} />);
 
-    await fireEvent.focus(screen.getByRole("textbox"));
+    fireEvent.focus(screen.getByRole("textbox"));
     expect(onFocus).toHaveBeenCalled();
   });
 
@@ -83,12 +107,11 @@ describe("InputField", () => {
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
-  it("shows FieldIndicator when showIndicator is true", () => {
+  it("shows FieldIndicator", () => {
     const field = makeField("name");
+    field.options = { validators: { onChange: () => undefined } } as any;
     field.state.meta.isValidating = true;
-    const { container } = render(() => (
-      <InputField field={() => field} showIndicator />
-    ));
+    const { container } = render(() => <InputField field={() => field} />);
 
     expect(container.querySelector(".fa-circle-notch")).toBeInTheDocument();
   });
@@ -98,5 +121,120 @@ describe("InputField", () => {
     const { container } = render(() => <InputField field={() => field} />);
 
     expect(container.querySelector(".fa-circle-notch")).not.toBeInTheDocument();
+  });
+
+  it("resets to default value on blur when empty for type number", async () => {
+    const field = makeField("age", 25);
+    field.form = { options: { defaultValues: { age: 25 } } } as any;
+    render(() => (
+      <InputField
+        field={() => field}
+        type="number"
+        resetToDefaultIfEmptyOnBlur
+      />
+    ));
+
+    fireEvent.input(screen.getByRole("spinbutton"), {
+      target: { value: "" },
+    });
+    fireEvent.blur(screen.getByRole("spinbutton"));
+    expect(field.setValue).toHaveBeenCalledWith(25);
+  });
+
+  it("resets to default value on blur when empty for type string", async () => {
+    const field = makeField("name", "Alice");
+    field.form = { options: { defaultValues: { name: "Alice" } } } as any;
+    render(() => (
+      <InputField field={() => field} resetToDefaultIfEmptyOnBlur />
+    ));
+
+    fireEvent.input(screen.getByRole("textbox"), {
+      target: { value: "" },
+    });
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(field.setValue).toHaveBeenCalledWith("Alice");
+  });
+
+  it("renders NaN as empty string for type number", async () => {
+    const field = makeField("value", NaN);
+    render(() => <InputField field={() => field} type="number" />);
+
+    expect(screen.getByRole("spinbutton").getAttribute("value")).toBeNull();
+  });
+
+  it("handles empty then numeric input with default value", async () => {
+    const field = makeField("age", 5);
+    render(() => <InputField field={() => field} type="number" />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    // Set to 6
+    fireEvent.input(input, { target: { value: "6" } });
+    expect(field.handleChange).toHaveBeenCalledWith(6);
+  });
+
+  it("keeps empty string for string values", async () => {
+    const field = makeField("age", "test");
+    render(() => <InputField field={() => field} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(field.handleChange).toHaveBeenCalledWith("");
+  });
+
+  it("handles empty string for numeric fields", async () => {
+    const field = makeField("age", 5);
+    render(() => <InputField field={() => field} type="number" />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(field.handleChange).toHaveBeenCalledWith(undefined);
+  });
+
+  it("applies number schema constraints", async () => {
+    const field = makeField("value", 10);
+    const schema = z.number().min(1).max(100).int();
+    render(() => (
+      <InputField field={() => field} type="number" schema={schema} />
+    ));
+
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("min", "1");
+    expect(input).toHaveAttribute("max", "100");
+    expect(input).toHaveAttribute("step", "1");
+  });
+
+  it("applies float number schema constraints", async () => {
+    const field = makeField("value", 1.5);
+    const schema = z.number().min(0.5).max(10.5);
+    render(() => (
+      <InputField field={() => field} type="number" schema={schema} />
+    ));
+
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("min", "0.5");
+    expect(input).toHaveAttribute("max", "10.5");
+    expect(input).toHaveAttribute("step", "any");
+  });
+
+  it("applies date schema constraints", async () => {
+    const field = makeField("date", new Date("2024-01-15"));
+    const schema = z
+      .date()
+      .min(new Date("2024-01-01"))
+      .max(new Date("2024-12-31"));
+    const { container } = render(() => (
+      <InputField field={() => field} type="date" schema={schema} />
+    ));
+
+    const input = container.querySelector("input") as HTMLInputElement;
+    expect(input).toHaveAttribute("min", "2024-01-01");
+    expect(input).toHaveAttribute("max", "2024-12-31");
   });
 });

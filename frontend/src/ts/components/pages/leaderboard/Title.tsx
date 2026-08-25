@@ -55,7 +55,7 @@ export function Title(props: {
       }
       const endTimestamp = endOfDay(timestamp);
       return {
-        dateString: dateFormat(timestamp, utcDateFormat) + " UTC",
+        dateString: `${dateFormat(timestamp, utcDateFormat)} UTC`,
         localString: toLocalString(timestamp, endTimestamp),
         buttonText: props.selection.previous ? "show today" : "show yesterday",
       };

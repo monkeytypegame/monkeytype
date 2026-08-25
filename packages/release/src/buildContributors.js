@@ -8,7 +8,7 @@ const REPO = "monkeytype";
 const EXCLUDED = new Set(["monkeytypegeorge", "miodec"]);
 
 async function getContributors(page) {
-  console.log("Getting contributors from page " + page);
+  console.log(`Getting contributors from page ${page}`);
   const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contributors?anon=1&per_page=100&page=${page}`,
     {

@@ -7,7 +7,7 @@ const { mockAnimate } = vi.hoisted(() => ({
     const callbacks: Array<() => void> = [];
     const animation = {
       pause: vi.fn(),
-      then: vi.fn((cb: () => void) => {
+      then: vi.fn(async (cb: () => void) => {
         callbacks.push(cb);
         // Invoke immediately so exit animations complete synchronously in tests
         cb();

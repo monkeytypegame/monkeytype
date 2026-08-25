@@ -37,7 +37,7 @@ export function AccountMenu(props: Props): JSXElement {
         <Show when={getServerConfiguration()?.connections.enabled}>
           <Button
             text="Friends"
-            class={buttonClass + " relative"}
+            class={`${buttonClass} relative`}
             fa={{
               icon: "fa-user-friends",
               fixedWidth: true,
@@ -59,7 +59,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-globe-americas",
             fixedWidth: true,
           }}
-          href={"/profile/" + (getSnapshot()?.name ?? "")}
+          href={`/profile/${getSnapshot()?.name ?? ""}`}
           router-link
         />
         <Button

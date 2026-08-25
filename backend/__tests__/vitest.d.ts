@@ -1,3 +1,4 @@
+// oxlint-disable typescript/consistent-type-definitions
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
 import type { Test as SuperTest } from "supertest";
 import MonkeyError from "../src/utils/error";
@@ -9,7 +10,9 @@ type ExpectedRateLimit = {
   windowMs: number;
 };
 interface RestRequestMatcher<R = Supertest> {
-  toBeRateLimited: (expected: ExpectedRateLimit) => RestRequestMatcher<R>;
+  toBeRateLimited: (
+    expected: ExpectedRateLimit,
+  ) => Promise<RestRequestMatcher<R>>;
 }
 interface ThrowMatcher {
   toMatchMonkeyError: (expected: {

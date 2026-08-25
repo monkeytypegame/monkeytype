@@ -18,7 +18,7 @@ const isFavorite = (theme: ThemeWithName): boolean =>
  */
 const createThemeCommand = (theme: ThemeWithName): Command => {
   return {
-    id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
+    id: `changeTheme${capitalizeFirstLetterOfEachWord(theme.name)}`,
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
     // customStyle: `color:${theme.main};background:${theme.bg};`,

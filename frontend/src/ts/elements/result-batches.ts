@@ -5,6 +5,7 @@ import { mapRange } from "@monkeytype/util/numbers";
 import { getTheme } from "../states/theme";
 import { qs } from "../utils/dom";
 
+//TODO
 export function hide(): void {
   qs(".pageAccount .resultBatches")?.hide();
 }
@@ -14,7 +15,8 @@ export function show(): void {
 }
 
 export async function update(): Promise<void> {
-  const results = DB.getSnapshot()?.results;
+  //TODO fix or delete?
+  const results: string[] | undefined = [];
 
   if (results === undefined) {
     console.error(
@@ -53,7 +55,7 @@ export async function update(): Promise<void> {
   };
 
   bars.downloaded.fill?.setStyle({
-    width: Math.min(percentageDownloaded, 100) + "%",
+    width: `${Math.min(percentageDownloaded, 100)}%`,
   });
   bars.downloaded.rightText?.setText(
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`,
@@ -62,7 +64,7 @@ export async function update(): Promise<void> {
   const colors = getTheme();
 
   bars.limit.fill?.setStyle({
-    width: Math.min(percentageLimit, 100) + "%",
+    width: `${Math.min(percentageLimit, 100)}%`,
     background: blendTwoHexColors(
       colors.sub,
       colors.error,

@@ -7,7 +7,7 @@ export async function createUser(
   user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
-  await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+  await UserDAL.addUser(`user${uid}`, `${uid}@example.com`, uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   return await UserDAL.getUser(uid, "test");
 }
@@ -16,7 +16,7 @@ export async function createUserWithoutMigration(
   user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
-  await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+  await UserDAL.addUser(`user${uid}`, `${uid}@example.com`, uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   await DB.collection("users").updateOne(
     { uid },

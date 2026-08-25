@@ -1,20 +1,16 @@
-import { AllRewards } from "@monkeytype/schemas/users";
-import { createPacedMutations } from "@tanstack/solid-db";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { createEffect, For, JSXElement, Show } from "solid-js";
 
 import {
-  flushPendingChanges,
-  flushStrategy,
-  inboxCollection,
+  claimAllInboxItems,
+  deleteAllInboxItems,
   InboxItem,
   maxMailboxSize,
+  mutateInboxItem,
   useInboxQuery,
 } from "../../../collections/inbox";
-import * as BadgeController from "../../../controllers/badge-controller";
-import { addBadge, addXp, updateInboxUnreadSize } from "../../../db";
+import { updateInboxUnreadSize } from "../../../db";
 import { getModalVisibility } from "../../../states/modals";
-import { showSuccessNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
@@ -23,39 +19,10 @@ import { H3 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { AlertsSection } from "./AlertsSection";
 
-const inboxItemIdsToClaim: string[] = [];
 export function Inbox(): JSXElement {
   const inboxQuery = useInboxQuery(
     () => getModalVisibility("Alerts")?.visible ?? false,
   );
-
-  const claimRewards = (pendingRewards: AllRewards[]) => {
-    if (pendingRewards.length === 0) return;
-
-    let totalXp = 0;
-    const badgeNames: string[] = [];
-    for (const reward of pendingRewards) {
-      if (reward.type === "xp") {
-        totalXp += reward.item;
-      } else if (reward.type === "badge") {
-        const badge = BadgeController.getById(reward.item.id);
-        if (badge) {
-          badgeNames.push(badge.name);
-          addBadge(reward.item);
-        }
-      }
-    }
-    if (totalXp > 0) {
-      addXp(totalXp);
-    }
-
-    if (badgeNames.length > 0) {
-      showSuccessNotification(
-        `New badge${badgeNames.length > 1 ? "s" : ""} unlocked: ${badgeNames.join(", ")}`,
-        { durationMs: 5000, customTitle: "Reward", customIcon: "gift" },
-      );
-    }
-  };
 
   createEffect(() => {
     const items = inboxQuery();
@@ -64,42 +31,6 @@ export function Inbox(): JSXElement {
     ).length;
     updateInboxUnreadSize(count);
   });
-
-  const mutate = createPacedMutations<
-    Pick<InboxItem, "id" | "status">,
-    InboxItem
-  >({
-    onMutate: ({ id, status }) => {
-      inboxCollection.update(id, (old) => {
-        if (old.status === "unclaimed") {
-          inboxItemIdsToClaim.push(old.id);
-        }
-        old.status = status;
-      });
-    },
-    mutationFn: async (changes) => {
-      await flushPendingChanges(changes);
-
-      const allRewards: AllRewards[] = changes.transaction.mutations
-        .map((it) => it.modified)
-        .filter((it) => inboxItemIdsToClaim.includes(it.id))
-        .flatMap((it) => it.rewards);
-      inboxItemIdsToClaim.length = 0;
-      claimRewards(allRewards);
-    },
-    strategy: flushStrategy.strategy,
-  });
-
-  const updateInbox = (options: {
-    from: InboxItem["status"][];
-    to: InboxItem["status"];
-  }): void => {
-    inboxCollection.forEach((it) => {
-      if (options.from.includes(it.status)) {
-        mutate({ id: it.id, status: options.to });
-      }
-    });
-  };
 
   const inboxSize = () => inboxQuery().length;
 
@@ -128,9 +59,7 @@ export function Inbox(): JSXElement {
                 <Button
                   fa={{ icon: "fa-gift", fixedWidth: true }}
                   text="Claim all"
-                  onClick={() =>
-                    updateInbox({ from: ["unclaimed"], to: "read" })
-                  }
+                  onClick={() => claimAllInboxItems()}
                 />
               </Show>
               <Show
@@ -144,9 +73,7 @@ export function Inbox(): JSXElement {
                 <Button
                   fa={{ icon: "fa-trash", fixedWidth: true }}
                   text="Delete all"
-                  onClick={() =>
-                    updateInbox({ from: ["read", "unread"], to: "deleted" })
-                  }
+                  onClick={() => deleteAllInboxItems()}
                 />
               </Show>
 
@@ -154,7 +81,7 @@ export function Inbox(): JSXElement {
                 each={inboxQueryData()}
                 fallback={<div class="place-self-center">Nothing to show</div>}
               >
-                {(entry) => <Entry entry={entry} mutate={mutate} />}
+                {(entry) => <Entry entry={entry} mutate={mutateInboxItem} />}
               </For>
             </>
           )}

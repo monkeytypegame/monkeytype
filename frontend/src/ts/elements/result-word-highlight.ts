@@ -4,7 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import * as TestState from "../test/test-state";
+import { isLanguageRightToLeft } from "../states/test";
 import { qsr } from "../utils/dom";
 
 const PADDING_X = 16;
@@ -70,8 +70,7 @@ export async function highlightWordsInRange(
 
   // Early exit if highlight range has not changed
   if (
-    highlightRange !== undefined &&
-    firstWordIndex === highlightRange[0] &&
+    firstWordIndex === highlightRange?.[0] &&
     lastWordIndex === highlightRange[1]
   ) {
     return false;
@@ -103,7 +102,7 @@ export async function highlightWordsInRange(
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    TestState.isLanguageRightToLeft,
+    isLanguageRightToLeft(),
   );
 
   // For each line...
@@ -126,11 +125,11 @@ export async function highlightWordsInRange(
     if (!position) continue;
 
     // Update highlight element positions
-    highlightEl.style.right = position.highlightRight + "px";
+    highlightEl.style.right = `${position.highlightRight}px`;
     // inputWordsContainer.style.right = 0 + "px";
 
-    inputWordsContainer.style.left = position.inputContainerLeft + "px";
-    highlightEl.style.left = position.highlightLeft + "px";
+    inputWordsContainer.style.left = `${position.inputContainerLeft}px`;
+    highlightEl.style.left = `${position.highlightLeft}px`;
   }
 
   // Update flags and variables
@@ -269,10 +268,10 @@ async function init(): Promise<boolean> {
     const IWC_height = line.rect.height;
 
     // Calculate top, left as % relative to "#resultWordsHistory"
-    const HC_top_percent = (HC_rel_top / RWH_height) * 100 + "%";
-    const HC_left_percent = (HC_rel_left / RWH_width) * 100 + "%";
-    const HC_width_percent = (HC_width / RWH_width) * 100 + "%";
-    const HC_height_percent = (HC_height / RWH_height) * 100 + "%";
+    const HC_top_percent = `${(HC_rel_top / RWH_height) * 100}%`;
+    const HC_left_percent = `${(HC_rel_left / RWH_width) * 100}%`;
+    const HC_width_percent = `${(HC_width / RWH_width) * 100}%`;
+    const HC_height_percent = `${(HC_height / RWH_height) * 100}%`;
 
     highlightContainer.style.width = HC_width_percent;
     highlightContainer.style.top = HC_top_percent;
@@ -284,10 +283,10 @@ async function init(): Promise<boolean> {
     const inputWordsContainerEl = document.createElement("div");
 
     // Calculate inputWordsContainerEl properties relative to highlightContainer
-    inputWordsContainerEl.style.top = line.rect.top - HC_rect_top + "px";
-    inputWordsContainerEl.style.left = line.rect.left - HC_rect_left + "px";
-    inputWordsContainerEl.style.width = IWC_width + "px";
-    inputWordsContainerEl.style.height = IWC_height + "px";
+    inputWordsContainerEl.style.top = `${line.rect.top - HC_rect_top}px`;
+    inputWordsContainerEl.style.left = `${line.rect.left - HC_rect_left}px`;
+    inputWordsContainerEl.style.width = `${IWC_width}px`;
+    inputWordsContainerEl.style.height = `${IWC_height}px`;
 
     highlightEl.className = "highlight highlight-hidden";
     inputWordsContainerEl.className = "inputWordsContainer";
@@ -304,15 +303,14 @@ async function init(): Promise<boolean> {
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
       let RTL_offset;
-      if (TestState.isLanguageRightToLeft) {
+      if (isLanguageRightToLeft()) {
         RTL_offset = line.rect.left - RWH_rect.left + PADDING_X;
       } else {
         RTL_offset = 0;
       }
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
-      inputWordEl.style.left =
-        wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset + "px";
+      inputWordEl.style.left = `${wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset}px`;
       inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
         .replace(/\n/g, "_")

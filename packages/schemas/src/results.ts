@@ -10,6 +10,7 @@ import {
 import { LanguageSchema } from "./languages";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema } from "./configs";
+import { ChallengeNameSchema } from "./challenges";
 
 export const IncompleteTestSchema = z.object({
   acc: PercentageSchema,
@@ -136,7 +137,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
 })
   .extend({
     charTotal: z.number().int().nonnegative(),
-    challenge: token().max(100).optional(),
+    challenge: ChallengeNameSchema.optional(),
     customText: CompletedEventCustomTextSchema.optional(),
     hash: token().max(100),
     keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")),

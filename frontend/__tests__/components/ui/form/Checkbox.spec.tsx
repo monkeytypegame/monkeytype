@@ -1,15 +1,16 @@
 import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
 
 import { Checkbox } from "../../../../src/ts/components/ui/form/Checkbox";
 
-function makeField(name: string, checked = false) {
+function makeField(name: string, checked = false): AnyFieldApi {
   return {
     name,
     state: { value: checked },
     handleBlur: vi.fn(),
     handleChange: vi.fn(),
-  } as any;
+  } as unknown as AnyFieldApi;
 }
 
 describe("Checkbox", () => {
@@ -50,7 +51,7 @@ describe("Checkbox", () => {
     render(() => <Checkbox field={() => field} />);
 
     const input = screen.getByRole("checkbox", { hidden: true });
-    await fireEvent.change(input, { target: { checked: true } });
+    fireEvent.change(input, { target: { checked: true } });
     expect(field.handleChange).toHaveBeenCalledWith(true);
   });
 
@@ -59,7 +60,7 @@ describe("Checkbox", () => {
     render(() => <Checkbox field={() => field} />);
 
     const input = screen.getByRole("checkbox", { hidden: true });
-    await fireEvent.blur(input);
+    fireEvent.blur(input);
     expect(field.handleBlur).toHaveBeenCalled();
   });
 

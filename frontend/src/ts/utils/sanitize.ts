@@ -95,5 +95,5 @@ export function sanitize<T extends z.ZodTypeAny>(
   const errorsString = result?.error.errors
     .map((e) => `${e.path.join(".")}: ${e.message}`)
     .join(", ");
-  throw new Error("unable to sanitize: " + errorsString);
+  throw new Error(`unable to sanitize: ${errorsString}`);
 }

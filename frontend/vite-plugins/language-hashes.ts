@@ -4,11 +4,11 @@ import { TextEncoder } from "util";
 import { createHash } from "crypto";
 
 const virtualModuleId = "virtual:language-hashes";
-const resolvedVirtualModuleId = "\0" + virtualModuleId;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
 function calcHash(file: string): string {
   const currentLanguage = JSON.stringify(
-    JSON.parse(readFileSync("./static/languages/" + file).toString()),
+    JSON.parse(readFileSync(`./static/languages/${file}`).toString()),
     null,
     0,
   );

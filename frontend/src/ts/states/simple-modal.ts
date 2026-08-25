@@ -1,14 +1,12 @@
 import { createSignal } from "solid-js";
-import { z } from "zod";
 
 import { showModal, hideModal } from "./modals";
-import {
-  addNotificationWithLevel,
-  AddNotificationOptions,
-  showErrorNotification,
-} from "./notifications";
-import { showLoaderBar, hideLoaderBar } from "./loader-bar";
-import { IsValidResponse } from "../types/validation";
+import { AddNotificationOptions } from "./notifications";
+
+import { Validation } from "../types/validation";
+import { z, ZodTypeAny } from "zod";
+
+type InferSchema<T extends ZodTypeAny> = z.infer<T>;
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -17,117 +15,128 @@ type CommonInput<TType, TValue> = {
   placeholder?: string;
   hidden?: boolean;
   disabled?: boolean;
-  optional?: boolean;
   label?: string;
+  class?: string;
   oninput?: (event: Event) => void;
-  validation?: {
-    schema?: z.Schema<string>;
-    isValid?: (value: string) => Promise<IsValidResponse>;
-    debounceDelay?: number;
-  };
+  /**
+   * preprocess is applied before validation and execFn
+   * @param value
+   * @returns
+   */
+  preprocess?: (value: TValue) => TValue;
+  validation?: Omit<Validation<TValue>, "schema">;
 };
 
-export type TextInput = CommonInput<"text", string>;
-export type TextArea = CommonInput<"textarea", string>;
-export type PasswordInput = CommonInput<"password", string>;
-type EmailInput = CommonInput<"email", string>;
+// strings
+type TextInput<T extends string> = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"text", T>;
 
-type RangeInput = {
-  min: number;
-  max: number;
+type TextArea<T extends string> = {
+  readOnly?: boolean;
+  clickToSelect?: boolean;
+} & CommonInput<"textarea", T>;
+
+type PasswordInput<T extends string> = CommonInput<"password", T>;
+type EmailInput<T extends string> = CommonInput<"email", T>;
+
+type StringTypeInput<T extends string> =
+  | TextInput<T>
+  | TextArea<T>
+  | PasswordInput<T>
+  | EmailInput<T>;
+
+// numbers
+type NumberInput<T extends number> = CommonInput<"number", T>;
+type RangeInput<T extends number> = {
   step?: number;
-} & CommonInput<"range", number>;
+} & CommonInput<"range", T>;
 
-type DateTimeInput = {
-  min?: Date;
-  max?: Date;
-} & CommonInput<"datetime-local", Date>;
+type NumberTypeInput<T extends number> = NumberInput<T> | RangeInput<T>;
 
-type DateInput = {
-  min?: Date;
-  max?: Date;
-} & CommonInput<"date", Date>;
-
-type CheckboxInput = {
+// booleans
+type CheckboxInput<T extends boolean> = {
   label: string;
   placeholder?: never;
   description?: string;
-} & CommonInput<"checkbox", boolean>;
+} & CommonInput<"checkbox", T>;
 
-type NumberInput = {
-  min?: number;
-  max?: number;
-} & CommonInput<"number", number>;
+type BooleanTypeInput<T extends boolean> = CheckboxInput<T>;
 
-export type SimpleModalInput =
-  | TextInput
-  | TextArea
-  | PasswordInput
-  | EmailInput
-  | RangeInput
-  | DateTimeInput
-  | DateInput
-  | CheckboxInput
-  | NumberInput;
+// dates
+
+type DateInput<T extends Date> = CommonInput<"date", T>;
+type DateTimeInput<T extends Date> = CommonInput<"datetime-local", T>;
+type DateTypeInput<T extends Date> = DateInput<T> | DateTimeInput<T>;
+
+export type SimpleModalInput<T> = T extends string
+  ? StringTypeInput<T>
+  : T extends number
+    ? NumberTypeInput<T>
+    : T extends boolean
+      ? BooleanTypeInput<T>
+      : T extends Date
+        ? DateTypeInput<T>
+        : never;
+
+// oxlint-disable-next-line typescript/no-explicit-any
+export type GenericSimpleModalInput = SimpleModalInput<any>;
 
 export type ExecReturn = {
   status: "success" | "notice" | "error";
-  message: string;
-  showNotification?: false;
-  notificationOptions?: AddNotificationOptions;
   afterHide?: () => void;
   alwaysHide?: boolean;
+} & (
+  | {
+      message?: never;
+      showNotification: false;
+      notificationOptions?: never;
+    }
+  | {
+      message: string;
+      showNotification?: never;
+      notificationOptions?: AddNotificationOptions;
+    }
+);
+
+// oxlint-disable-next-line typescript/no-explicit-any
+export type InputsFromSchema<S extends z.ZodObject<any>> = {
+  [K in keyof S["shape"]]: SimpleModalInput<z.infer<S["shape"][K]>>;
 };
 
-export type SimpleModalConfig = {
+// oxlint-disable-next-line typescript/no-explicit-any
+export type SimpleModalConfig<S extends z.ZodObject<any>> = {
   title: string;
-  inputs?: SimpleModalInput[];
   text?: string;
+  textClass?: string;
   textAllowHtml?: boolean;
-  buttonText: string;
-  execFn: (...inputValues: string[]) => Promise<ExecReturn>;
-};
+  buttonText?: string;
+  buttonAlwaysEnabled?: boolean;
+
+  focusFirstInput?: true | "focusAndSelect";
+  class?: string;
+
+  execFn: (values: InferSchema<S>) => Promise<ExecReturn>;
+} & (
+  | { schema: S; inputs: InputsFromSchema<S> }
+  | { schema?: never; inputs?: never }
+);
 
 const [simpleModalConfig, setSimpleModalConfig] =
-  createSignal<SimpleModalConfig | null>(null);
+  // oxlint-disable-next-line typescript/no-explicit-any
+  createSignal<SimpleModalConfig<any> | null>(null);
 
 export { simpleModalConfig };
 
-export function showSimpleModal(config: SimpleModalConfig): void {
+// oxlint-disable-next-line typescript/no-explicit-any
+export function showSimpleModal<T extends z.ZodObject<any>>(
+  config: SimpleModalConfig<T>,
+): void {
   setSimpleModalConfig(config);
   showModal("SimpleModal");
 }
 
 export function hideSimpleModal(): void {
   hideModal("SimpleModal");
-}
-
-export async function executeSimpleModal(values: string[]): Promise<void> {
-  const config = simpleModalConfig();
-  if (config === null) return;
-
-  showLoaderBar();
-  try {
-    const res = await config.execFn(...values);
-    hideLoaderBar();
-
-    if (res.showNotification !== false) {
-      addNotificationWithLevel(
-        res.message,
-        res.status,
-        res.notificationOptions,
-      );
-    }
-
-    if (res.status === "success" || res.alwaysHide) {
-      hideSimpleModal();
-      res.afterHide?.();
-    }
-  } catch (error) {
-    console.error("Error executing simple modal function:", error);
-    showErrorNotification("An unexpected error occurred", {
-      error,
-    });
-    hideLoaderBar();
-  }
 }

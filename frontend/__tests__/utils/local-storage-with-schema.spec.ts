@@ -183,6 +183,7 @@ describe("local-storage-with-schema.ts", () => {
           fontSize: 1,
         };
 
+        // oxlint-disable-next-line typescript/no-unsafe-return
         const migrateFnMock = vi.fn(() => migrated as any);
 
         const ls = new LocalStorageWithSchema({
@@ -271,6 +272,7 @@ describe("local-storage-with-schema.ts", () => {
           fontSize: 1,
         };
 
+        // oxlint-disable-next-line typescript/no-unsafe-return
         const migrateFnMock = vi.fn(() => invalidMigrated as any);
 
         const ls = new LocalStorageWithSchema({

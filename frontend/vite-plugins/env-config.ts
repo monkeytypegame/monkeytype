@@ -2,7 +2,7 @@ import { Plugin } from "vite";
 import { EnvConfig } from "virtual:env-config";
 
 const virtualModuleId = "virtual:env-config";
-const resolvedVirtualModuleId = "\0" + virtualModuleId;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
 function fallback(value: string | undefined | null, fallback: string): string {
   if (value === null || value === undefined || value === "") return fallback;

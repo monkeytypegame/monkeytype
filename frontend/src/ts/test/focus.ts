@@ -1,8 +1,4 @@
 import * as Caret from "./caret";
-import * as LiveSpeed from "./live-speed";
-import * as LiveBurst from "./live-burst";
-import * as LiveAcc from "./live-acc";
-import * as TimerProgress from "./timer-progress";
 import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
@@ -24,7 +20,6 @@ function initializeCache(): void {
     "footer",
     "main",
     "#bannerCenter",
-    "#capsWarning",
     "#ad-vertical-right-wrapper",
     "#ad-vertical-left-wrapper",
     "#ad-footer-wrapper",
@@ -39,6 +34,7 @@ function initializeCache(): void {
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
+  if (value === getFocus()) return;
   requestDebouncedAnimationFrame("focus.set", () => {
     initializeCache();
     cache.cursor = qsa("body, button, a");
@@ -55,10 +51,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.stopAnimation();
-      LiveSpeed.show();
-      LiveBurst.show();
-      LiveAcc.show();
-      TimerProgress.show();
     } else if (!value && getFocus()) {
       setFocus(false);
 
@@ -70,10 +62,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.startAnimation();
-      LiveSpeed.hide();
-      LiveBurst.hide();
-      LiveAcc.hide();
-      TimerProgress.hide();
     }
   });
 }

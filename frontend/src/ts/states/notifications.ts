@@ -127,7 +127,7 @@ export function addNotificationWithLevel(
           ? options.response.body.validationErrors
           : undefined,
     };
-    message = message + ": " + options.response.body.message;
+    message = `${message}: ${options.response.body.message}`;
   }
 
   if (options.error !== undefined) {

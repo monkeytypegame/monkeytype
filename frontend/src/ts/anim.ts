@@ -1,6 +1,7 @@
 import { engine } from "animejs";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { z } from "zod";
+import { createSignal } from "solid-js";
 
 export const fpsLimitSchema = z.number().int().min(15).max(1000);
 
@@ -10,14 +11,19 @@ const fpsLimit = new LocalStorageWithSchema({
   fallback: 1000,
 });
 
+const [fpsLimitSignal, setFpsLimitSignal] = createSignal(fpsLimit.get());
+
 export function setfpsLimit(fps: number): boolean {
   const result = fpsLimit.set(fps);
+  if (result) {
+    setFpsLimitSignal(fps);
+  }
   applyEngineSettings();
   return result;
 }
 
 export function getfpsLimit(): number {
-  return fpsLimit.get();
+  return fpsLimitSignal();
 }
 
 export function applyEngineSettings(): void {

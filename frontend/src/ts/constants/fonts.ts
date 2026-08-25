@@ -146,4 +146,8 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   Space_Grotesk: {
     fileName: "SpaceGrotesk-Regular.woff2",
   },
+  Noto_Sans_Lao: {
+    display: "Noto Sans Lao (ລາວ)",
+    fileName: "NotoSansLao-Regular.woff2",
+  },
 };

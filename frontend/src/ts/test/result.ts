@@ -15,7 +15,7 @@ import {
   showSuccessNotification,
   addNotificationWithLevel,
 } from "../states/notifications";
-import { isAuthenticated } from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getQuoteStats } from "../states/quote-rate";
 import * as GlarsesMode from "../legacy-states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
@@ -26,14 +26,11 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as PbCrown from "./pb-crown";
-import * as TestInput from "./test-input";
-import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import { configEvent } from "../events/config";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
-import * as CustomTextState from "./../legacy-states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../singletons/format";
 import confetti from "canvas-confetti";
@@ -45,17 +42,32 @@ import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotUserTag } from "../constants/default-snapshot";
+import {
+  getLocalTagPB,
+  saveLocalTagPB,
+  type TagItem,
+  __nonReactive,
+} from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
-import { currentQuote } from "./test-words";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
+import {
+  getLastEventLog,
+  getCurrentQuote,
+  getResultVisible,
+  isTestInvalid,
+  setResultCalculating,
+} from "../states/test";
+import {
+  getAccuracy,
+  getRawHistory,
+  getTimerBoundaryLabels,
+} from "./events/stats";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -70,7 +82,7 @@ let quoteId = "";
 export function toggleSmoothedBurst(): void {
   useSmoothedBurst = !useSmoothedBurst;
   showSuccessNotification(useSmoothedBurst ? "on" : "off");
-  if (TestState.resultVisible) {
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -80,7 +92,7 @@ export function toggleSmoothedBurst(): void {
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
   showSuccessNotification(useFakeChartData ? "on" : "off");
-  if (TestState.resultVisible) {
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -90,7 +102,8 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong") {
+  const eventLog = getLastEventLog();
+  if (result.chartData === "toolong" || eventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
     ChartController.result.getDataset("burst").data = [];
@@ -102,15 +115,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  let labels = [];
-
-  for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
-    if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
-      labels.push(Numbers.roundTo2(result.testDuration).toString());
-    } else {
-      labels.push(i.toString());
-    }
-  }
+  const labels = getTimerBoundaryLabels(eventLog, false);
 
   const chartData1 = [
     ...result.chartData.wpm.map((a) =>
@@ -118,11 +123,9 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = [
-    ...TestInput.rawHistory.map((a) =>
-      Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
-    ),
-  ];
+  const chartData2 = getRawHistory(eventLog).map((a) =>
+    Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
+  );
 
   const valueWindow = Math.max(...result.chartData.burst) * 0.25;
   let smoothedBurst = Arrays.smoothWithValueWindow(
@@ -135,16 +138,6 @@ async function updateChartData(): Promise<void> {
     ...smoothedBurst.map((a) => Numbers.roundTo2(typingSpeedUnit.fromWpm(a))),
   ];
 
-  if (
-    Config.mode !== "time" &&
-    TestStats.lastSecondNotRound &&
-    result.testDuration % 1 < 0.5
-  ) {
-    labels.pop();
-    chartData1.pop();
-    chartData2.pop();
-  }
-
   const subcolor = getTheme().sub;
 
   if (Config.funbox.length > 0) {
@@ -152,7 +145,7 @@ async function updateChartData(): Promise<void> {
     for (const fb of getActiveFunboxes()) {
       content += fb.name;
       if (fb.functions?.getResultContent) {
-        content += "(" + fb.functions.getResultContent() + ")";
+        content += `(${fb.functions.getResultContent()})`;
       }
       content += " ";
     }
@@ -290,7 +283,7 @@ function applyFakeChartData(): void {
 
 export async function updateChartPBLine(): Promise<void> {
   const themecolors = getTheme();
-  const localPb = await DB.getLocalPB(
+  const localPb = DB.getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation ?? false,
@@ -312,7 +305,7 @@ export async function updateChartPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors.sub + "55",
+    borderColor: `${themecolors.sub}55`,
     borderWidth: 1,
     // borderDash: [4, 16],
     label: {
@@ -352,61 +345,66 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  if (Config.alwaysShowDecimalPlaces) {
-    if (Config.typingSpeedUnit !== "wpm") {
-      qs("#result .stats .wpm .bottom")?.setAttribute(
+  const accEventLog = getLastEventLog();
+  if (accEventLog !== null) {
+    const acc = getAccuracy(accEventLog);
+    if (Config.alwaysShowDecimalPlaces) {
+      if (Config.typingSpeedUnit !== "wpm") {
+        qs("#result .stats .wpm .bottom")?.setAttribute(
+          "aria-label",
+          `${result.wpm.toFixed(2)} wpm`,
+        );
+        qs("#result .stats .raw .bottom")?.setAttribute(
+          "aria-label",
+          `${result.rawWpm.toFixed(2)} wpm`,
+        );
+      } else {
+        qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
+        qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
+      }
+
+      let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
+      if (result.testDuration > 61) {
+        time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+      }
+      qs("#result .stats .time .bottom .text")?.setText(time);
+      // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+
+      qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        result.wpm.toFixed(2) + " wpm",
-      );
-      qs("#result .stats .raw .bottom")?.setAttribute(
-        "aria-label",
-        result.rawWpm.toFixed(2) + " wpm",
+        `${acc.correct} correct\n${acc.incorrect} incorrect`,
       );
     } else {
-      qs("#result .stats .wpm .bottom")?.removeAttribute("aria-label");
-      qs("#result .stats .raw .bottom")?.removeAttribute("aria-label");
-    }
+      //not showing decimal places
+      const decimalsAndSuffix = {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      };
+      let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+      let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
 
-    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-    // qs("#result .stats .acc .bottom")?.removeAttribute("aria-label");
+      if (Config.typingSpeedUnit !== "wpm") {
+        wpmHover += ` (${result.wpm.toFixed(2)} wpm)`;
+        rawWpmHover += ` (${result.rawWpm.toFixed(2)} wpm)`;
+      }
 
-    qs("#result .stats .acc .bottom")?.setAttribute(
-      "aria-label",
-      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`,
-    );
-  } else {
-    //not showing decimal places
-    const decimalsAndSuffix = {
-      showDecimalPlaces: true,
-      suffix: ` ${Config.typingSpeedUnit}`,
-    };
-    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
-    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
-
-    if (Config.typingSpeedUnit !== "wpm") {
-      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
-      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
-    }
-
-    qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
-    qs("#result .stats .raw .bottom")?.setAttribute("aria-label", rawWpmHover);
-
-    qs("#result .stats .acc .bottom")
-      ?.setAttribute(
+      qs("#result .stats .wpm .bottom")?.setAttribute("aria-label", wpmHover);
+      qs("#result .stats .raw .bottom")?.setAttribute(
         "aria-label",
-        `${
-          result.acc === 100
-            ? "100%"
-            : Format.percentage(result.acc, { showDecimalPlaces: true })
-        }\n${TestInput.accuracy.correct} correct\n${
-          TestInput.accuracy.incorrect
-        } incorrect`,
-      )
-      ?.setAttribute("data-balloon-break", "");
+        rawWpmHover,
+      );
+
+      qs("#result .stats .acc .bottom")
+        ?.setAttribute(
+          "aria-label",
+          `${
+            result.acc === 100
+              ? "100%"
+              : Format.percentage(result.acc, { showDecimalPlaces: true })
+          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+        )
+        ?.setAttribute("data-balloon-break", "");
+    }
   }
 }
 
@@ -437,7 +435,7 @@ function updateTime(): void {
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (afkSecondsPercent > 0) {
     qs("#result .stats .time .bottom .afk")?.setText(
-      afkSecondsPercent + "% afk",
+      `${afkSecondsPercent}% afk`,
     );
   }
   qs("#result .stats .time .bottom")?.setAttribute(
@@ -446,13 +444,13 @@ function updateTime(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     qs("#result .stats .time .bottom .text")?.setText(time);
   } else {
-    let time = Math.round(result.testDuration) + "s";
+    let time = `${Math.round(result.testDuration)}s`;
     if (result.testDuration > 61) {
       time = DateTime.secondsToString(Math.round(result.testDuration));
     }
@@ -474,13 +472,9 @@ export function updateTodayTracker(): void {
 
 function updateKey(): void {
   qs("#result .stats .key .bottom")?.setText(
-    result.charStats[0] +
-      "/" +
-      result.charStats[1] +
-      "/" +
-      result.charStats[2] +
-      "/" +
-      result.charStats[3],
+    `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
+      result.charStats[3]
+    }`,
   );
 }
 
@@ -509,7 +503,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
 
   if (canGetPb.value) {
-    const localPb = await DB.getLocalPB(
+    const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -530,11 +524,11 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       console.debug("Showing pending crown");
       showCrown("pending");
       updateCrownText(
-        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true }),
+        `+${Format.typingSpeed(pbDiff, { showDecimalPlaces: true })}`,
       );
     }
   } else {
-    const localPb = await DB.getLocalPB(
+    const localPb = DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -662,15 +656,8 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: SnapshotUserTag[] = [];
-  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
-  try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag);
-      }
-    });
-  } catch (e) {}
+  const activeTags: TagItem[] = __nonReactive.getActiveTags();
+  const userTagsCount = __nonReactive.getTags().length;
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();
@@ -697,7 +684,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   for (const tag of activeTags) {
-    const tpb = await DB.getLocalTagPB(
+    const tpb = getLocalTagPB(
       tag._id,
       Config.mode,
       result.mode2,
@@ -708,7 +695,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.lazyMode,
     );
     qs("#result .stats .tags .bottom")?.appendHtml(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
     const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
@@ -718,7 +705,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        await DB.saveLocalTagPB(
+        saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -735,7 +722,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         qs(`#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`)?.show();
         qs(
           `#result .stats .tags .bottom div[tagid="${tag._id}"]`,
-        )?.setAttribute("aria-label", "+" + Numbers.roundTo2(result.wpm - tpb));
+        )?.setAttribute("aria-label", `+${Numbers.roundTo2(result.wpm - tpb)}`);
         // console.log("new pb for tag " + tag.display);
       } else {
         const themecolors = getTheme();
@@ -745,7 +732,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors.sub + "55",
+          borderColor: `${themecolors.sub}55`,
           borderWidth: 1,
           // borderDash: [4, 16],
           label: {
@@ -763,7 +750,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             display: true,
-            content: `${tag.display} PB: ${Numbers.roundTo2(
+            content: `${tag.name} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb),
             ).toFixed(2)}`,
           },
@@ -786,17 +773,17 @@ function updateTestType(randomQuote: Quote | null): void {
   testType += Config.mode;
 
   if (Config.mode === "time") {
-    testType += " " + Config.time;
+    testType += ` ${Config.time}`;
   } else if (Config.mode === "words") {
-    testType += " " + Config.words;
+    testType += ` ${Config.words}`;
   } else if (Config.mode === "quote") {
     if (randomQuote?.group !== undefined) {
-      testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
+      testType += ` ${["short", "medium", "long", "thicc"][randomQuote.group]}`;
     }
   }
   const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + Strings.getLanguageDisplayString(result.language);
+    testType += `<br>${Strings.getLanguageDisplayString(result.language)}`;
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -811,8 +798,7 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += "<br>lazy";
   }
   if (Config.funbox.length > 0) {
-    testType +=
-      "<br>" + Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ");
+    testType += `<br>${Config.funbox.map((it) => it.replace(/_/g, " ")).join(", ")}`;
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
@@ -821,6 +807,9 @@ function updateTestType(randomQuote: Quote | null): void {
   }
   if (Config.stopOnError !== "off") {
     testType += `<br>stop on ${Config.stopOnError}`;
+  }
+  if (Config.deleteOnError !== "off") {
+    testType += `<br>delete on ${Config.deleteOnError.replace(/_/g, " ")}`;
   }
 
   qsa("#result .stats .testType .bottom")?.setHtml(testType);
@@ -840,7 +829,7 @@ function updateOther(
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
-  if (TestStats.invalid) {
+  if (isTestInvalid()) {
     otherText += "<br>invalid";
     const extra: string[] = [];
     if (
@@ -1057,7 +1046,7 @@ export async function update(
       qs("main #result #rateQuoteButton")?.hide();
       qs("main #result #reportQuoteButton")?.hide();
     } else {
-      updateRateQuote(currentQuote);
+      updateRateQuote(getCurrentQuote());
       qs("main #result #reportQuoteButton")?.show();
     }
     qs("main #result .stats .dailyLeaderboard")?.hide();
@@ -1097,7 +1086,7 @@ export async function update(
     Config.words,
     Config.time,
     CustomText.getData(),
-    CustomTextState.isCustomTextLong() ?? false,
+    getCustomTextIndicator()?.isLong ?? false,
   );
 
   if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
@@ -1121,7 +1110,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestUI.setResultCalculating(false);
+  setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }
@@ -1268,11 +1257,10 @@ export function updateTagsAfterEdit(
 
   if (tagIds.length > 0) {
     for (const tag of tagIds) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
-        }
-      });
+      const localTag = __nonReactive.getTag(tag);
+      if (localTag !== undefined) {
+        tagNames.push(localTag.name);
+      }
     }
   }
 
@@ -1404,7 +1392,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
 configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
-    TestState.resultVisible
+    getResultVisible()
   ) {
     resultAnnotation = [];
 

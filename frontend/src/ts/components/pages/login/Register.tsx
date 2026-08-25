@@ -1,14 +1,9 @@
-import {
-  PasswordSchema,
-  UserEmailSchema,
-  UserNameSchema,
-} from "@monkeytype/schemas/users";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
-import { z } from "zod";
 
 import Ape from "../../../ape";
-import { signUp } from "../../../auth";
+import { getPasswordSchema, signUp } from "../../../auth";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
@@ -19,7 +14,6 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../states/notifications";
-import { isDevEnvironment } from "../../../utils/env";
 import { remoteValidationForm } from "../../../utils/remote-validation";
 import { H3 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
@@ -59,10 +53,7 @@ export function Register(): JSXElement {
       });
     }
 
-    if (
-      disposableEmailModule &&
-      disposableEmailModule.isDisposableEmail !== undefined
-    ) {
+    if (disposableEmailModule?.isDisposableEmail !== undefined) {
       try {
         if (disposableEmailModule.isDisposableEmail(email)) {
           messages.push({
@@ -166,7 +157,6 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="username"
-              showIndicator
               autocomplete="new-username"
               disabled={!getLoginPageInputsEnabled()}
             />
@@ -175,10 +165,7 @@ export function Register(): JSXElement {
         <form.Field
           name="email"
           validators={{
-            onChange: (field) => {
-              void field.fieldApi.form.validateField("emailVerify", "change");
-              return fromSchema(UserEmailSchema)(field);
-            },
+            onChange: fromSchema(UserEmailSchema),
             onChangeAsyncDebounceMs: 0,
             onChangeAsync: async (field) =>
               handleResult(field.fieldApi, await emailIsValid(field.value)),
@@ -187,7 +174,6 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="email"
-              showIndicator
               autocomplete="new-email"
               disabled={!getLoginPageInputsEnabled()}
               onFocus={() => {
@@ -206,6 +192,7 @@ export function Register(): JSXElement {
         <form.Field
           name="emailVerify"
           validators={{
+            onChangeListenTo: ["email"],
             onChange: (field) =>
               field.value === field.fieldApi.form.getFieldValue("email")
                 ? undefined
@@ -214,7 +201,6 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
-              showIndicator
               autocomplete="verify-email"
               placeholder="verify email"
               disabled={!getLoginPageInputsEnabled()}
@@ -224,21 +210,12 @@ export function Register(): JSXElement {
         <form.Field
           name="password"
           validators={{
-            onChange: (field) => {
-              void field.fieldApi.form.validateField(
-                "passwordVerify",
-                "change",
-              );
-              return fromSchema(
-                isDevEnvironment() ? z.string().min(6) : PasswordSchema,
-              )(field);
-            },
+            onChange: fromSchema(getPasswordSchema({ isNew: true })),
           }}
           children={(field) => (
             <InputField
               field={field}
               placeholder="password"
-              showIndicator
               autocomplete="new-password"
               type="password"
               disabled={!getLoginPageInputsEnabled()}
@@ -248,6 +225,7 @@ export function Register(): JSXElement {
         <form.Field
           name="passwordVerify"
           validators={{
+            onChangeListenTo: ["password"],
             onChange: (field) =>
               field.value === field.fieldApi.form.getFieldValue("password")
                 ? undefined
@@ -256,7 +234,6 @@ export function Register(): JSXElement {
           children={(field) => (
             <InputField
               field={field}
-              showIndicator
               placeholder="verify password"
               autocomplete="verify-password"
               type="password"

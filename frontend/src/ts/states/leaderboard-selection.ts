@@ -67,10 +67,10 @@ export const getSelection = (): Selection => {
 
 export { setSelection };
 
-export function readGetParameters(
+export function readLeaderboardGetParameters(
   params: LeaderboardUrlParams | undefined,
 ): void {
-  if (params === undefined || params.type === undefined) return;
+  if (params?.type === undefined) return;
 
   let newSelection: Partial<Selection> = {
     type: params.type,

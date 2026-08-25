@@ -27,7 +27,7 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
       </g>
     </svg>
     `;
-    return "data:image/svg+xml;base64," + btoa(svgPre);
+    return `data:image/svg+xml;base64,${btoa(svgPre)}`;
   });
 
   return (

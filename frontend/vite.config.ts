@@ -29,21 +29,17 @@ import devtools from "solid-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 function getFontsConfig(): string {
-  return (
-    "\n" +
-    Object.keys(Fonts)
-      .sort()
-      .map((name: string) => {
-        const config = Fonts[name as KnownFontName];
-        if (config.systemFont === true) return "";
-        return `"${name.replaceAll("_", " ")}": (
+  return `\n${Object.keys(Fonts)
+    .sort()
+    .map((name: string) => {
+      const config = Fonts[name as KnownFontName];
+      if (config.systemFont === true) return "";
+      return `"${name.replaceAll("_", " ")}": (
         "src": "${config.fileName}",
         "weight": ${config.weight ?? 400},
         ),`;
-      })
-      .join("\n") +
-    "\n"
-  );
+    })
+    .join("\n")}\n`;
 }
 
 function pad(
@@ -209,7 +205,7 @@ function getBuildOptions({
     emptyOutDir: true,
     outDir: "../dist",
     assetsInlineLimit: 0, //dont inline small files as data
-    rollupOptions: {
+    rolldownOptions: {
       input: {
         monkeytype: path.resolve(__dirname, "src/index.html"),
         email: path.resolve(__dirname, "src/email-handler.html"),
@@ -279,7 +275,7 @@ function getBuildOptions({
         },
       },
     },
-  } as BuildEnvironmentOptions;
+  };
 }
 
 function getCssOptions({

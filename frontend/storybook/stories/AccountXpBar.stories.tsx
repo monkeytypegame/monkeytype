@@ -1,7 +1,8 @@
 import type { XpBreakdown } from "@monkeytype/schemas/results";
 
-import preview from "#.storybook/preview";
 import { onMount } from "solid-js";
+
+import preview from "#.storybook/preview";
 
 import { AccountXpBar } from "../../src/ts/components/layout/header/AccountXpBar";
 import { setXpBarData, setAnimatedLevel } from "../../src/ts/states/header";

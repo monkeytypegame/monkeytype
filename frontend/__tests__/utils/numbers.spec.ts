@@ -55,11 +55,11 @@ describe("numbers", () => {
     });
 
     it("should return undefined when given null", () => {
-      expect(Numbers.parseIntOptional(null)).toBeUndefined();
+      expect(Numbers.parseIntOptional(null as any)).toBeUndefined();
     });
 
     it("should return undefined when given undefined", () => {
-      expect(Numbers.parseIntOptional(undefined)).toBeUndefined();
+      expect(Numbers.parseIntOptional(undefined as any)).toBeUndefined();
     });
 
     it("should handle non-numeric strings", () => {

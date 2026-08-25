@@ -1,6 +1,10 @@
 import { Config } from "../config/store";
-import * as TestInput from "./test-input";
-import * as TestState from "../test/test-state";
+import { getCurrentInput } from "./events/data";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
+} from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
@@ -24,19 +28,18 @@ export function resetPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
 
 export function updatePosition(noAnim = false): void {
   caret.goTo({
-    wordIndex: TestState.activeWordIndex,
-    letterIndex:
-      TestInput.input.current.length + CompositionState.getData().length,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    wordIndex: getActiveWordIndex(),
+    letterIndex: getCurrentInput().length + CompositionState.getData().length,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }

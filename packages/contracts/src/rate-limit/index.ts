@@ -13,7 +13,7 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 5000,
+    window: 5000, // 5 seconds
     max: 1,
   },
 
@@ -73,23 +73,23 @@ export const limits = {
 
   // Quote reporting
   quoteReportSubmit: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   // Quote favorites
   quoteFavoriteGet: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoritePost: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
   quoteFavoriteDelete: {
-    window: 30 * 60 * 1000, // 30 min
+    window: 30 * 60 * 1000, // 30 minutes
     max: 50,
   },
 
@@ -120,7 +120,7 @@ export const limits = {
     max: 60,
   },
 
-  // get public speed stats
+  // Get public speed stats
   publicStatsGet: {
     window: "minute",
     max: 60,
@@ -390,7 +390,7 @@ export const limits = {
 
 export type RateLimiterId = keyof typeof limits;
 export type RateLimitIds = {
-  /** rate limiter options for non-apeKey requests */
+  /** Rate limiter options for non-apeKey requests */
   normal: RateLimiterId;
   /** Rate limiter options for apeKey requests */
   apeKey: RateLimiterId;

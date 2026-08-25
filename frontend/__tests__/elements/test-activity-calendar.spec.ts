@@ -1213,7 +1213,7 @@ describe("test-activity-calendar.ts", () => {
 });
 
 function getDate(date: string): Date {
-  return new UTCDateMini(Dates.parseISO(date + "T00:00:00Z"));
+  return new UTCDateMini(Dates.parseISO(`${date}T00:00:00Z`));
 }
 
 function getData(from: string, to: string): number[] {
@@ -1238,11 +1238,11 @@ expect.extend({
     };
   },
   toHaveTests(received: TestActivityDay, expected: number): MatcherResult {
-    const expectedLabel = `${expected} ${expected == 1 ? "test" : "tests"}`;
+    const expectedLabel = `${expected} ${expected === 1 ? "test" : "tests"}`;
     const actual = received.label?.substring(0, received.label.indexOf(" on"));
 
     return {
-      pass: actual == expectedLabel,
+      pass: actual === expectedLabel,
       message: () => `Tests ${actual} is not ${expectedLabel}`,
       actual: actual,
       expected: expectedLabel,

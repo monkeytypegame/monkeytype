@@ -6,8 +6,8 @@ import readlineSync from "readline-sync";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const FILENAME = fileURLToPath(import.meta.url);
+const DIRNAME = dirname(FILENAME);
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ const noSyncCheck = args.has("--no-sync-check");
 const hotfix = args.has("--hotfix");
 const previewFe = args.has("--preview-fe");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../../../");
+const PROJECT_ROOT = path.resolve(DIRNAME, "../../../");
 
 const runCommand = (command, force) => {
   if (isDryRun && !force) {
@@ -144,7 +144,7 @@ const updatePackage = (newVersion) => {
   // Write the updated JSON back to package.json
   fs.writeFileSync(
     packagePath,
-    JSON.stringify(packageJson, null, 2) + "\n",
+    `${JSON.stringify(packageJson, null, 2)}\n`,
     "utf8",
   );
 
@@ -188,7 +188,7 @@ const buildProject = () => {
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  const p = path.resolve(__dirname, "../bin/deployBackend.sh");
+  const p = path.resolve(DIRNAME, "../bin/deployBackend.sh");
   runCommand(`sh ${p}`);
 };
 
@@ -201,14 +201,14 @@ const deployFrontend = () => {
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  const p = path.resolve(__dirname, "../bin/purgeCfCache.sh");
+  const p = path.resolve(DIRNAME, "../bin/purgeCfCache.sh");
   runCommand(`sh ${p}`);
 };
 
 const generateChangelog = async () => {
   console.log("Generating changelog...");
 
-  const p = path.resolve(__dirname, "./buildChangelog.js");
+  const p = path.resolve(DIRNAME, "./buildChangelog.js");
 
   const changelog = runCommand(`node ${p}`, true);
 
@@ -218,7 +218,7 @@ const generateChangelog = async () => {
 const generateContributors = () => {
   console.log("Generating contributors list...");
   try {
-    const p = path.resolve(__dirname, "./buildContributors.js");
+    const p = path.resolve(DIRNAME, "./buildContributors.js");
 
     let contributors = runCommand(`node ${p}`, true);
 
