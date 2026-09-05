@@ -143,6 +143,7 @@
           calc(-50% + var(--activity-tooltip-offset)),
           var(--balloon-move)
         );
+        transition-property: opacity, transform;
         white-space: normal;
         width: max-content;
       }
