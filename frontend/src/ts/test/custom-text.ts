@@ -1,4 +1,5 @@
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
+import { createSignal } from "solid-js";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import {
@@ -57,13 +58,27 @@ const customTextSettings = new LocalStorageWithSchema({
   },
 });
 
+const [customTextSettingsSignal, setCustomTextSettingsSignal] = createSignal(
+  customTextSettings.get(),
+);
+
+function getSettings(): CustomTextSettings {
+  return structuredClone(customTextSettingsSignal());
+}
+
+function setSettings(settings: CustomTextSettings): void {
+  if (customTextSettings.set(settings)) {
+    setCustomTextSettingsSignal(settings);
+  }
+}
+
 export function getText(): string[] {
-  return customTextSettings.get().text;
+  return getSettings().text;
 }
 
 export function setText(txt: string[]): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
+  const currentSettings = getSettings();
+  setSettings({
     ...currentSettings,
     text: txt,
     limit: { value: txt.length, mode: currentSettings.limit.mode },
@@ -71,13 +86,13 @@ export function setText(txt: string[]): void {
 }
 
 export function getMode(): CustomTextMode {
-  const currentSettings = customTextSettings.get();
+  const currentSettings = getSettings();
   return currentSettings.mode;
 }
 
 export function setMode(val: CustomTextMode): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
+  const currentSettings = getSettings();
+  setSettings({
     ...currentSettings,
     mode: val,
     limit: {
@@ -88,47 +103,47 @@ export function setMode(val: CustomTextMode): void {
 }
 
 export function getLimit(): CustomTextLimit {
-  return customTextSettings.get().limit;
+  return getSettings().limit;
 }
 
 export function getLimitValue(): number {
-  return customTextSettings.get().limit.value;
+  return getSettings().limit.value;
 }
 
 export function getLimitMode(): CustomTextLimitMode {
-  return customTextSettings.get().limit.mode;
+  return getSettings().limit.mode;
 }
 
 export function setLimitValue(val: number): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
+  const currentSettings = getSettings();
+  setSettings({
     ...currentSettings,
     limit: { value: val, mode: currentSettings.limit.mode },
   });
 }
 
 export function setLimitMode(val: CustomTextLimitMode): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
+  const currentSettings = getSettings();
+  setSettings({
     ...currentSettings,
     limit: { value: currentSettings.limit.value, mode: val },
   });
 }
 
 export function getPipeDelimiter(): boolean {
-  return customTextSettings.get().pipeDelimiter;
+  return getSettings().pipeDelimiter;
 }
 
 export function setPipeDelimiter(val: boolean): void {
-  const currentSettings = customTextSettings.get();
-  customTextSettings.set({
+  const currentSettings = getSettings();
+  setSettings({
     ...currentSettings,
     pipeDelimiter: val,
   });
 }
 
 export function getData(): CustomTextSettings {
-  return customTextSettings.get();
+  return getSettings();
 }
 
 export function getCustomText(name: string, long = false): string[] {
