@@ -1,7 +1,7 @@
 import { onDelete } from "../handlers/delete";
 import { onInsertText } from "../handlers/insert-text";
 import { isSupportedInputType } from "../helpers/input-type";
-import { getInputElement } from "../input-element";
+import { getInputElement, getInputElementValue } from "../input-element";
 import {
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
@@ -35,6 +35,20 @@ inputEl.addEventListener("beforeinput", async (event) => {
     data: event.data,
     value: (event.target as HTMLInputElement).value,
   });
+
+  if (
+    event.inputType === "deleteSoftLineBackward" ||
+    event.inputType === "deleteHardLineBackward"
+  ) {
+    onBeforeDelete(event);
+    if (!event.defaultPrevented) {
+      // The input holds one word. Keep its leading spacer unless navigating back.
+      inputEl.value = getInputElementValue().inputValue === "" ? "" : " ";
+      onDelete("deleteWordBackward", performance.now());
+    }
+    event.preventDefault();
+    return;
+  }
 
   if (!isSupportedInputType(event.inputType)) {
     event.preventDefault();
