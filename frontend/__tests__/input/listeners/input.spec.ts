@@ -7,6 +7,7 @@ const state = vi.hoisted(() => ({
   calculating: false,
   awaiting: false,
   visible: true,
+  tops: [0, 0, 0, 0],
   inputs: ["wrong ", "typo"],
 }));
 
@@ -39,7 +40,8 @@ vi.mock("../../../src/ts/input/state", () => ({
   isAwaitingNextWord: () => state.awaiting,
 }));
 vi.mock("../../../src/ts/test/test-ui", () => ({
-  getWordElement: () => (state.visible ? {} : null),
+  getWordElement: (index: number) =>
+    state.visible ? { getOffsetTop: () => state.tops[index] } : null,
   beforeTestWordChange: vi.fn(),
   afterTestWordChange: vi.fn(),
   afterTestDelete: vi.fn(),
@@ -47,7 +49,15 @@ vi.mock("../../../src/ts/test/test-ui", () => ({
 vi.mock("../../../src/ts/test/events/data", () => ({
   getCurrentInput: () => state.inputs[state.index] ?? "",
   getInputForWord: (index: number) => state.inputs[index] ?? "",
-  logTestEvent: vi.fn(),
+  logTestEvent: vi.fn(
+    (
+      _type: string,
+      _now: number,
+      data: { wordIndex: number; inputValue: string },
+    ) => {
+      state.inputs[data.wordIndex] = data.inputValue;
+    },
+  ),
 }));
 vi.mock("../../../src/ts/test/funbox/list", () => ({
   isFunboxActiveWithProperty: () => false,
@@ -66,6 +76,7 @@ import { Config } from "../../../src/ts/config/store";
 import { getInputElement } from "../../../src/ts/input/input-element";
 import { logTestEvent } from "../../../src/ts/test/events/data";
 import { words } from "../../../src/ts/test/test-words";
+import { afterTestDelete } from "../../../src/ts/test/test-ui";
 import "../../../src/ts/input/listeners/input";
 
 const element = getInputElement();
@@ -88,8 +99,11 @@ describe.each(["deleteSoftLineBackward", "deleteHardLineBackward"])(
         calculating: false,
         awaiting: false,
         visible: true,
+        tops: [0, 0, 0, 0],
         inputs: ["wrong ", "typo"],
       });
+      Config.language = "english";
+      Config.codeUnindentOnBackspace = false;
       Config.freedomMode = false;
       Config.confidenceMode = "off";
       element.value = " typo";
@@ -98,7 +112,8 @@ describe.each(["deleteSoftLineBackward", "deleteHardLineBackward"])(
       words.push("world", 0);
     });
 
-    it("clears only the current word and records a word deletion", () => {
+    it("clears the current word without crossing a correct word", () => {
+      state.inputs[0] = "hello ";
       deleteLine(inputType);
       expect(element.value).toBe(" ");
       expect(state.index).toBe(1);
@@ -136,13 +151,90 @@ describe.each(["deleteSoftLineBackward", "deleteHardLineBackward"])(
       expect(logTestEvent).not.toHaveBeenCalled();
     });
 
-    it("allows deleting a correct word in freedom mode", () => {
+    it("preserves the last correct word even in freedom mode", () => {
       element.value = " ";
       state.inputs = ["hello ", ""];
       Config.freedomMode = true;
       deleteLine(inputType);
-      expect(state.index).toBe(0);
-      expect(logTestEvent).toHaveBeenCalled();
+      expect(state.index).toBe(1);
+      expect(logTestEvent).not.toHaveBeenCalled();
+    });
+
+    it("clears multiple incorrect words in one press", () => {
+      state.index = 3;
+      state.inputs = ["hello ", "wrnog ", "baad ", "typo"];
+      words.push("test ", 0);
+      words.push("again", 0);
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(state.inputs).toEqual(["hello ", "", "", ""]);
+      expect(element.value).toBe(" ");
+      for (const [index, wordIndex] of [3, 2, 1].entries()) {
+        expect(logTestEvent).toHaveBeenNthCalledWith(
+          index + 1,
+          "input",
+          expect.any(Number),
+          expect.objectContaining({ wordIndex, inputValue: "" }),
+        );
+      }
+    });
+
+    it("stops at the visual line boundary even if the preceding word is wrong", () => {
+      state.index = 2;
+      state.inputs = ["wrong ", "bad ", "typo"];
+      state.tops = [0, 20, 20];
+      words.push("again", 0);
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(state.inputs).toEqual(["wrong ", "", ""]);
+    });
+
+    it("does not cross a line when the current word is empty", () => {
+      state.tops = [0, 20];
+      state.inputs[1] = "";
+      element.value = " ";
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(logTestEvent).not.toHaveBeenCalled();
+    });
+
+    it("uses the original line boundary when deleting changes the wrapping", () => {
+      state.index = 2;
+      state.inputs = ["wrong ", "bad ", "typo"];
+      state.tops = [0, 20, 20];
+      words.push("again", 0);
+      vi.mocked(afterTestDelete).mockImplementationOnce(() => {
+        state.tops = [0, 0, 0];
+      });
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(state.inputs).toEqual(["wrong ", "", ""]);
+    });
+
+    it("preserves a fully correct current word", () => {
+      state.inputs[1] = "world";
+      element.value = " world";
+      deleteLine(inputType);
+      expect(element.value).toBe(" world");
+      expect(logTestEvent).not.toHaveBeenCalled();
+    });
+
+    it("clears only the current word with confidence mode on", () => {
+      Config.confidenceMode = "on";
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(state.inputs).toEqual(["wrong ", ""]);
+    });
+
+    it("does not unindent across the boundary in a code language", () => {
+      Config.language = "code_javascript";
+      Config.codeUnindentOnBackspace = true;
+      state.tops = [0, 20];
+      state.inputs[1] = "\t";
+      element.value = " \t";
+      deleteLine(inputType);
+      expect(state.index).toBe(1);
+      expect(state.inputs).toEqual(["wrong ", ""]);
     });
 
     it.each([
