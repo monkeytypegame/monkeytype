@@ -1,12 +1,16 @@
 import { getInputElement } from "../input-element";
 import * as CompositionState from "../../legacy-states/composition";
-import * as TestState from "../../test/test-state";
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
-import * as CompositionDisplay from "../../elements/composition-display";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
-import { isTestActive } from "../../states/test";
+import {
+  isTestRestarting,
+  getActiveWordIndex,
+  isResultCalculating,
+  isTestActive,
+  setCompositionText,
+} from "../../states/test";
 
 const inputEl = getInputElement();
 
@@ -18,7 +22,7 @@ inputEl.addEventListener("compositionstart", (event) => {
 
   const now = performance.now();
 
-  if (TestState.testRestarting || TestState.resultCalculating) return;
+  if (isTestRestarting() || isResultCalculating()) return;
   CompositionState.setComposing(true);
   CompositionState.setData("");
   setLastInsertCompositionTextData("");
@@ -28,7 +32,7 @@ inputEl.addEventListener("compositionstart", (event) => {
 
   logTestEvent("composition", now, {
     event: "start",
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
   });
 });
 
@@ -38,26 +42,26 @@ inputEl.addEventListener("compositionupdate", (event) => {
     data: event.data,
   });
 
-  if (TestState.testRestarting || TestState.resultCalculating) return;
+  if (isTestRestarting() || isResultCalculating()) return;
   CompositionState.setData(event.data);
-  CompositionDisplay.update(event.data);
+  setCompositionText(event.data);
 
   const now = performance.now();
 
   logTestEvent("composition", now, {
     event: "update",
     data: event.data,
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
   });
 });
 
 inputEl.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { event, data: event.data });
 
-  if (TestState.testRestarting || TestState.resultCalculating) return;
+  if (isTestRestarting() || isResultCalculating()) return;
   CompositionState.setComposing(false);
   CompositionState.setData("");
-  CompositionDisplay.update("");
+  setCompositionText("");
   setLastInsertCompositionTextData("");
 
   const now = performance.now();
@@ -73,6 +77,6 @@ inputEl.addEventListener("compositionend", async (event) => {
   logTestEvent("composition", now, {
     event: "end",
     data: event.data,
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
   });
 });

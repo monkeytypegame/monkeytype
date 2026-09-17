@@ -225,7 +225,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
   const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
   );
-  if (releases[0] === undefined || releases[0].name === undefined) {
+  if (releases[0]?.name === undefined) {
     throw new Error("No release found");
   }
   return releases[0].name;

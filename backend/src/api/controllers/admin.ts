@@ -16,6 +16,8 @@ import MonkeyError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
+import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
 
 export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK", null);
@@ -33,13 +35,28 @@ export async function toggleBan(
   const discordId = user.discordId;
   const discordIdIsValid = discordId !== undefined && discordId !== "";
 
-  await UserDAL.setBanned(uid, !user.banned);
-  if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, !user.banned);
+  const banning = !user.banned;
 
-  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
+  await UserDAL.setBanned(uid, banning);
+  if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, banning);
+
+  if (banning) {
+    await Promise.all([
+      purgeUserFromDailyLeaderboards(
+        uid,
+        req.ctx.configuration.dailyLeaderboards,
+      ),
+      purgeUserFromXpLeaderboards(
+        uid,
+        req.ctx.configuration.leaderboards.weeklyXp,
+      ),
+    ]);
+  }
+
+  void addImportantLog("user_ban_toggled", { banned: banning }, uid);
 
   return new MonkeyResponse(`Ban toggled`, {
-    banned: !user.banned,
+    banned: banning,
   });
 }
 

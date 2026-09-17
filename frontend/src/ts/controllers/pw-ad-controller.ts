@@ -5,7 +5,7 @@
 
 import { Config } from "../config/store";
 import { getActivePage } from "../states/core";
-import * as TestState from "../test/test-state";
+import { getResultVisible } from "../states/test";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -207,7 +207,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (getActivePage() === "test" && !TestState.resultVisible) {
+  if (getActivePage() === "test" && !getResultVisible()) {
     ramp.destroyUnits("all");
     return;
   }

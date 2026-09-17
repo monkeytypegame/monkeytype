@@ -270,10 +270,33 @@ export default class AnimatedModal<
         this.wrapperEl.native.showModal();
       }
 
+      const wrapperAnimation = options?.customAnimation?.wrapper ??
+        this.customShowAnimations?.wrapper ?? {
+          opacity: [0, 1],
+        };
+
+      //the wrapper is still hidden (display:none) at this point - the show
+      //animation's onBegin is what normally reveals it, and that only runs on
+      //the first animation frame. focus() silently does nothing on a hidden
+      //element, so reveal it now and let the animation fade it in. only force
+      //it transparent if the animation actually drives opacity, otherwise it
+      //would never be brought back up
+      this.wrapperEl.show();
+      if (wrapperAnimation["opacity"] !== undefined) {
+        this.wrapperEl.setStyle({ opacity: "0" });
+      }
+
+      //focus before beforeAnimation runs - it can be slow (dynamic imports,
+      //list building) and any keypress in that gap would otherwise be lost.
+      //never selects here, the value to select is only set up in beforeAnimation
+      if (options?.focusFirstInput !== undefined) {
+        this.focusFirstInput(true);
+      }
+
       await options?.beforeAnimation?.(this.modalEl, options?.modalChainData);
 
       //wait until the next event loop to allow the dialog to start animating
-      setTimeout(async () => {
+      setTimeout(() => {
         this.focusFirstInput(options?.focusFirstInput);
       }, 1);
 
@@ -285,10 +308,6 @@ export default class AnimatedModal<
         this.customShowAnimations?.modal ?? {
           opacity: [0, 1],
           marginTop: ["1rem", 0],
-        };
-      const wrapperAnimation = options?.customAnimation?.wrapper ??
-        this.customShowAnimations?.wrapper ?? {
-          opacity: [0, 1],
         };
       const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.duration ??
@@ -318,7 +337,6 @@ export default class AnimatedModal<
             this.wrapperEl.show();
           },
           onComplete: async () => {
-            this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(
               this.modalEl,
               options?.modalChainData,
@@ -333,7 +351,6 @@ export default class AnimatedModal<
           ...modalAnimation,
           duration: modalAnimationDuration,
           onComplete: async () => {
-            this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(
               this.modalEl,
               options?.modalChainData,

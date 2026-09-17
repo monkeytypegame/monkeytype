@@ -102,6 +102,7 @@ export function SettingsPage(): JSXElement {
             <SearchableAutoSetting key="strictSpace" />
             <SearchableAutoSetting key="oppositeShiftMode" />
             <SearchableAutoSetting key="stopOnError" />
+            <SearchableAutoSetting key="deleteOnError" />
             <SearchableAutoSetting key="confidenceMode" />
             <SearchableAutoSetting key="quickEnd" />
             <SearchableAutoSetting key="indicateTypos" />

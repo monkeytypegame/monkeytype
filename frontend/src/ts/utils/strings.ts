@@ -293,7 +293,7 @@ export function isWordRightToLeft(
 export const CHAR_EQUIVALENCE_SETS = [
   new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
   new Set([`"`, "”", "“", "„"]),
-  new Set(["–", "—", "-", "‐"]),
+  new Set(["–", "—", "-", "‐", "‑"]),
   new Set([",", "‚"]),
 ];
 

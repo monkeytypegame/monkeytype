@@ -16,7 +16,7 @@ export function ContactModal(): JSXElement {
         <br />
         Please <span class="text-error">do not send</span> requests to delete
         account, update email, update name or clear personal bests - you can do
-        that in the settings page.
+        that in the <a href="/account-settings">account settings</a> page.
       </div>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <Button

@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
@@ -19,7 +18,11 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
   getCurrentQuote,
+  getResultVisible,
   isPaceRepeat,
   isTestActive,
   setPaceCaretWpm,
@@ -61,8 +64,8 @@ export function resetCaretPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
@@ -170,7 +173,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
+  if (currentSettings === null || !isTestActive() || getResultVisible()) {
     return;
   }
 
@@ -188,8 +191,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration,
@@ -279,20 +282,19 @@ function incrementLetterIndex(): void {
 export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
-      settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === true &&
+      settings?.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = undefined;
+      settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
+      settings.wordsStatus[getActiveWordIndex()] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = true;
+      settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
     }
   }

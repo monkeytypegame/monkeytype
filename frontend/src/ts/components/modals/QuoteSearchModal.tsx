@@ -28,8 +28,8 @@ import {
 } from "../../states/notifications";
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
+import { setSelectedQuoteId } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
@@ -129,7 +129,10 @@ function Item(props: {
         class="text-text [&_.highlight]:text-main"
         dir="auto"
         // oxlint-disable-next-line solid/no-innerhtml
-        innerHTML={highlightMatches(props.quote.text, props.matchedTerms)}
+        innerHTML={highlightMatches(
+          Misc.escapeHTML(props.quote.text),
+          props.matchedTerms,
+        )}
       ></div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
         <div class="text-xs text-sub">
@@ -138,7 +141,7 @@ function Item(props: {
             class="[&_.highlight]:text-main"
             // oxlint-disable-next-line solid/no-innerhtml
             innerHTML={highlightMatches(
-              props.quote.id.toString(),
+              Misc.escapeHTML(props.quote.id.toString()),
               props.matchedTerms,
             )}
           ></span>
@@ -154,7 +157,7 @@ function Item(props: {
               class="[&_.highlight]:text-main"
               // oxlint-disable-next-line solid/no-innerhtml
               innerHTML={highlightMatches(
-                props.quote.source,
+                Misc.escapeHTML(props.quote.source),
                 props.matchedTerms,
               )}
             ></span>
@@ -291,7 +294,10 @@ export function QuoteSearchModal(): JSXElement {
       ];
     }
 
-    setSearchResults({ quotes: matches, matchedTerms: matchedQueryTerms });
+    setSearchResults({
+      quotes: matches,
+      matchedTerms: matchedQueryTerms.map(Misc.escapeHTML),
+    });
   };
 
   const filteredQuotes = (): Quote[] => {
@@ -347,7 +353,9 @@ export function QuoteSearchModal(): JSXElement {
 
   createEffect(
     on(lengthFilter, (lengths) => {
-      if (lengths.includes("4") && !hasCustomFilter()) {
+      if (!lengths.includes("4")) {
+        setHasCustomFilter(false);
+      } else if (!hasCustomFilter()) {
         showSimpleModal({
           title: "Enter minimum and maximum number of words",
           buttonText: "save",
@@ -364,7 +372,7 @@ export function QuoteSearchModal(): JSXElement {
             setCustomFilterMin(min);
             setCustomFilterMax(max);
             setHasCustomFilter(true);
-            return { status: "success", message: "Saved custom filter" };
+            return { status: "success", showNotification: false };
           },
         });
       }
@@ -396,9 +404,9 @@ export function QuoteSearchModal(): JSXElement {
       showNoticeNotification("Quote ID must be at least 1");
       return;
     }
-    TestState.setSelectedQuoteId(quoteId);
+    setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    TestLogic.restart();
+    void TestLogic.restart();
     hideModalAndClearChain("QuoteSearch");
   };
 

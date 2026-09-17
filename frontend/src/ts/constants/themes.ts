@@ -937,7 +937,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#791717",
     colorfulError: "#da3333",
     colorfulErrorExtra: "#791717",
-    hasCss: true,
   },
   iceberg_dark: {
     bg: "#161821",
@@ -1182,7 +1181,6 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#791717",
     colorfulError: "#da3333",
     colorfulErrorExtra: "#791717",
-    hasCss: true,
   },
   menthol: {
     bg: "#00c18c",

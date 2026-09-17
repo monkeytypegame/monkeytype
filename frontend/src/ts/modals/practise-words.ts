@@ -71,7 +71,7 @@ function hide(clearChain = false): void {
 function apply(): void {
   PractiseWords.init(state.missed, state.slow);
   hide(true);
-  TestLogic.restart({
+  void TestLogic.restart({
     practiseMissed: true,
   });
 }

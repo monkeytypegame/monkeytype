@@ -23,7 +23,10 @@ import {
   incrementDailyLeaderboard,
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
-import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import {
+  getDailyLeaderboard,
+  purgeUserFromDailyLeaderboards,
+} from "../../utils/daily-leaderboards";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -386,11 +389,21 @@ export async function addResult(
               subject: "Banned",
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            await UserDAL.addToInbox(
-              uid,
-              [mail],
-              req.ctx.configuration.users.inbox,
-            );
+            await Promise.all([
+              UserDAL.addToInbox(
+                uid,
+                [mail],
+                req.ctx.configuration.users.inbox,
+              ),
+              purgeUserFromDailyLeaderboards(
+                uid,
+                req.ctx.configuration.dailyLeaderboards,
+              ),
+              WeeklyXpLeaderboard.purgeUserFromXpLeaderboards(
+                uid,
+                req.ctx.configuration.leaderboards.weeklyXp,
+              ),
+            ]);
             user.banned = true;
           }
         }

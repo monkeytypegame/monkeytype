@@ -342,6 +342,7 @@ describe("checkIfFinished", () => {
     replaceConfig({
       quickEnd: false,
       stopOnError: "off",
+      deleteOnError: "off",
     });
     // oxlint-disable-next-line typescript/no-unsafe-call
     (Strings.isSpace as any).mockReturnValue(false);
@@ -389,6 +390,31 @@ describe("checkIfFinished", () => {
       currentWord: "word",
       config: { quickEnd: false },
       expected: false,
+    },
+    {
+      //the character is taken back, so it must not end the test
+      desc: "false if quickEnd enabled, lengths match, but stop on error is on",
+      allWordsTyped: true,
+      testInputWithData: "asdf",
+      currentWord: "word",
+      config: { quickEnd: true, stopOnError: "letter" },
+      expected: false,
+    },
+    {
+      desc: "false if quickEnd enabled, lengths match, but delete on error is on",
+      allWordsTyped: true,
+      testInputWithData: "asdf",
+      currentWord: "word",
+      config: { quickEnd: true, deleteOnError: "letter" },
+      expected: false,
+    },
+    {
+      desc: "true if quickEnd enabled, lengths match and delete on error is off",
+      allWordsTyped: true,
+      testInputWithData: "asdf",
+      currentWord: "word",
+      config: { quickEnd: true, deleteOnError: "off" },
+      expected: true,
     },
     {
       desc: "true if space on the last word",
