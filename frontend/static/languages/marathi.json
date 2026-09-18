@@ -1,5 +1,6 @@
 {
   "name": "marathi",
+  "joiningScript": true,
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [
