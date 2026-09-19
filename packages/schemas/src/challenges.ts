@@ -104,6 +104,8 @@ export const ChallengeNameSchema = z.enum(
     "roleZombie",
     "roleOverlord",
     "roleImp",
+    "allYearLong",
+    "twoYearsStrong",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known challenge name"),

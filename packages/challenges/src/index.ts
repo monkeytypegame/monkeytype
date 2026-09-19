@@ -1358,6 +1358,20 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description: "Type out your favourite chapter from 50 Shades of Gray.",
   },
+  allYearLong: {
+    display: "All year long",
+    discordRoleId: "1546021140642799647",
+    initialCount: 8,
+    category: "other",
+    description: "Maintain a streak of 365 days of typing.",
+  },
+  twoYearsStrong: {
+    display: "Two years strong",
+    discordRoleId: "1546023277426638899",
+    initialCount: 4,
+    category: "other",
+    description: "Maintain a streak of 760 days of typing.",
+  },
 };
 
 const map: Record<ChallengeName, Challenge> = Object.fromEntries(
