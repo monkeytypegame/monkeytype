@@ -651,7 +651,7 @@ export const configMetadata: ConfigMetadataObject = {
       "20": { displayString: "cherrymx blue abs" },
       "21": { displayString: "cherrymx blue pbt" },
       "22": { displayString: "cherrymx brown pbt" },
-      "23": { displayString: "kalih box white" },
+      "23": { displayString: "kailh box white" },
       "24": { displayString: "razer green" },
       "25": { displayString: "tealios v2" },
       "26": { displayString: "trust gxt" },
