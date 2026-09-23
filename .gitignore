@@ -133,3 +133,6 @@ frontend/static/webfonts-preview
 frontend/.env.sentry-build-plugin
 .claude/worktrees
 1024MiB
+.pnpm-store
+keylogs
+frontend/scripts/keylog-report.ts

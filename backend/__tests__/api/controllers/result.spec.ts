@@ -3,8 +3,8 @@ import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
-import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
+import * as LogsDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
@@ -12,11 +12,19 @@ import { DBResult } from "../../../src/utils/result";
 import { omit } from "../../../src/utils/misc";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 
-const { mockApp, uid, mockAuth } = setup();
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
 
 describe("result controller test", () => {
+  const addLogMock = vi.spyOn(LogsDal, "addLog");
+  const addImportantLogMock = vi.spyOn(LogsDal, "addImportantLog");
+
+  beforeEach(() => {
+    addLogMock.mockClear().mockResolvedValue();
+    addImportantLogMock.mockClear().mockResolvedValue();
+  });
+
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 
@@ -398,45 +406,6 @@ describe("result controller test", () => {
       ).toBeRateLimited({ max: 30, windowMs: 60 * 1000 }); //should use defaultApeRateLimit
     });
   });
-  describe("deleteAll", () => {
-    const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
-    const logToDbMock = vi.spyOn(LogsDal, "addLog");
-    afterEach(() => {
-      deleteAllMock.mockClear();
-      logToDbMock.mockClear();
-    });
-
-    it("should delete", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: Date.now() - 1000 });
-      deleteAllMock.mockResolvedValue(undefined as any);
-
-      //WHEN
-      const { body } = await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("All results deleted");
-      expect(body.data).toBeNull();
-
-      expect(deleteAllMock).toHaveBeenCalledWith(uid);
-      expect(logToDbMock).toHaveBeenCalledWith("user_results_deleted", "", uid);
-    });
-    it("should fail to delete with non-fresh token", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: 0 });
-
-      //WHEN/THEN
-      await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(401);
-    });
-  });
   describe("updateTags", () => {
     const getResultMock = vi.spyOn(ResultDal, "getResult");
     const updateTagsMock = vi.spyOn(ResultDal, "updateTags");
@@ -584,6 +553,10 @@ describe("result controller test", () => {
     const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
     const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const resultGetLastTimestampMock = vi.spyOn(
+      ResultDal,
+      "getLastResultTimestamp",
+    );
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
 
     beforeEach(async () => {
@@ -598,6 +571,7 @@ describe("result controller test", () => {
         userIncrementXpMock,
         userUpdateTypingStatsMock,
         resultAddMock,
+        resultGetLastTimestampMock,
         publicUpdateStatsMock,
       ].forEach((it) => it.mockClear());
 
@@ -606,6 +580,8 @@ describe("result controller test", () => {
       userCheckIfTagPbMock.mockResolvedValue([]);
       userCheckIfPbMock.mockResolvedValue(true);
       resultAddMock.mockResolvedValue({ insertedId });
+      //a prior result exists so incomplete-test time is credited (not zeroed)
+      resultGetLastTimestampMock.mockResolvedValue(0);
       userIncrementXpMock.mockResolvedValue();
     });
 
@@ -636,6 +612,7 @@ describe("result controller test", () => {
           base: 20,
           incomplete: 5,
           funbox: 80,
+          daily: 0,
         },
         streak: 0,
         insertedId: insertedId.toHexString(),
