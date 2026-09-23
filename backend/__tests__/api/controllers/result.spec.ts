@@ -4,6 +4,7 @@ import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as PublicDal from "../../../src/dal/public";
+import * as LogsDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
@@ -16,6 +17,14 @@ const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
 
 describe("result controller test", () => {
+  const addLogMock = vi.spyOn(LogsDal, "addLog");
+  const addImportantLogMock = vi.spyOn(LogsDal, "addImportantLog");
+
+  beforeEach(() => {
+    addLogMock.mockClear().mockResolvedValue();
+    addImportantLogMock.mockClear().mockResolvedValue();
+  });
+
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 
