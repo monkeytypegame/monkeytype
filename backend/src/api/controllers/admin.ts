@@ -7,6 +7,7 @@ import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../ut
 import {
   AcceptReportsRequest,
   ClearStreakHourOffsetRequest,
+  DeleteUserRequest,
   RejectReportsRequest,
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
@@ -18,6 +19,7 @@ import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
+import { deleteUserAccount } from "../../services/user-deletion";
 
 export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK", null);
@@ -69,6 +71,29 @@ export async function clearStreakHourOffset(
   void addImportantLog("admin_streak_hour_offset_cleared_by", {}, uid);
 
   return new MonkeyResponse("Streak hour offset cleared", null);
+}
+
+export async function deleteUser(
+  req: MonkeyRequest<undefined, DeleteUserRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  if (uid === req.ctx.decodedToken.uid) {
+    throw new MonkeyError(
+      403,
+      "You cannot delete your own account with this endpoint",
+    );
+  }
+
+  const userInfo = await deleteUserAccount(uid, req.ctx.configuration);
+
+  void addImportantLog(
+    "user_deleted_by_admin",
+    `${userInfo?.email} ${userInfo?.name}`,
+    uid,
+  );
+
+  return new MonkeyResponse("User deleted", null);
 }
 
 export async function acceptReports(
