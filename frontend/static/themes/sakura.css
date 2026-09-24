@@ -1,0 +1,18 @@
+/* frontend/static/themes/sakura.css */
+[data-nav-item] {
+  border-radius: 10rem !important;
+  --themable-button-text: var(--main-color);
+  --themable-button-hover-bg: var(--text-color);
+  --themable-button-hover-text: var(--bg-color);
+}
+
+[data-nav-item="alerts"],
+[data-ui-element="navAvatar"] {
+  --notification-bg: var(--bg-color);
+}
+
+header[data-focused] [data-nav-item],
+[data-ui-element="settingspage"] {
+  --nav-focus-opacity: 0.5;
+  --settings-accent: var(--main-color);
+}
