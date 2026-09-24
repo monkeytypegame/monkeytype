@@ -311,12 +311,12 @@ async function init(): Promise<boolean> {
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
       inputWordEl.style.left = `${wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset}px`;
-      inputWordEl.innerHTML = userInputString
-        .replace(/\t/g, "_")
-        .replace(/\n/g, "_")
-        .replace(/</g, "&lt")
-        .replace(/>/g, "&gt")
-        .slice(0, wordEl.childElementCount);
+      inputWordEl.innerHTML = Misc.escapeHTML(
+        userInputString
+          .replace(/\t/g, "_")
+          .replace(/\n/g, "_")
+          .slice(0, wordEl.childElementCount),
+      );
 
       inputWordEl.className = "inputWord";
       inputWordsContainerEl.append(inputWordEl);
