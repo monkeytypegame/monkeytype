@@ -13,6 +13,7 @@ import {
   getFocus,
   isResultCalculating,
   isTestActive,
+  isTestRestarting,
 } from "./test";
 
 /** Whether this test counts down a time limit rather than a number of words. */
@@ -105,6 +106,7 @@ export const getLiveBurstText = createMemo(() =>
 
 /** Countdown / word counter shown by the timer displays. */
 export const getTimerText = createMemo(() => {
+  isTestRestarting();
   if (isTimeLimitedTest()) {
     const limit = getTestTimeLimit();
     const seconds = currentLiveStats.seconds ?? 0;
