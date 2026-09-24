@@ -17,6 +17,9 @@ export default s.router(adminContract, {
     handler: async (r) =>
       callController(AdminController.clearStreakHourOffset)(r),
   },
+  deleteUser: {
+    handler: async (r) => callController(AdminController.deleteUser)(r),
+  },
   acceptReports: {
     handler: async (r) => callController(AdminController.acceptReports)(r),
   },

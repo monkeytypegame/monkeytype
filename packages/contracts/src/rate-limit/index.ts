@@ -160,11 +160,6 @@ export const limits = {
     max: 100,
   },
 
-  resultsDeleteAll: {
-    window: "hour",
-    max: 10,
-  },
-
   resultsLeaderboardGet: {
     window: "hour",
     max: 60,
