@@ -31,6 +31,7 @@ type Settings = {
   currentLetterIndex: number;
   wordsStatus: Record<number, true | undefined>;
   timeout: NodeJS.Timeout | null;
+  skipped: number;
 };
 
 let startTimestamp = 0;
@@ -118,6 +119,7 @@ export async function init(): Promise<void> {
     currentLetterIndex: 0,
     wordsStatus: {},
     timeout: null,
+    skipped: 0,
   };
   setPaceCaretWpm(wpm);
 }
@@ -128,45 +130,45 @@ export async function update(expectedStepEnd: number): Promise<void> {
     return;
   }
 
-  if (caret.isHidden()) {
-    caret.show();
-  }
+  const now = performance.now();
+  const absoluteStepEnd = startTimestamp + expectedStepEnd;
+  const duration = absoluteStepEnd - now;
 
-  incrementLetterIndex();
+  if (incrementLetterIndex()) {
+    if (caret.isHidden()) {
+      caret.show();
+    }
 
-  try {
-    const now = performance.now();
-    const absoluteStepEnd = startTimestamp + expectedStepEnd;
-    const duration = absoluteStepEnd - now;
-
-    caret.goTo({
-      wordIndex: currentSettings.currentWordIndex,
-      letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: isLanguageRightToLeft(),
-      isDirectionReversed: isDirectionReversed(),
-      animate: true,
-      animationOptions: {
-        duration,
-        easing: "linear",
-      },
-    });
-
-    currentSettings.timeout = setTimeout(
-      () => {
-        if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
-          () => {
-            if (settings === currentSettings) settings = null;
-          },
-        );
-      },
-      Math.max(0, duration),
-    );
-  } catch (e) {
-    console.error(e);
+    try {
+      caret.goTo({
+        wordIndex: currentSettings.currentWordIndex,
+        letterIndex: currentSettings.currentLetterIndex,
+        isLanguageRightToLeft: isLanguageRightToLeft(),
+        isDirectionReversed: isDirectionReversed(),
+        animate: true,
+        animationOptions: {
+          duration,
+          easing: "linear",
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      caret.hide();
+      return;
+    }
+  } else {
     caret.hide();
-    return;
   }
+
+  currentSettings.timeout = setTimeout(
+    () => {
+      if (settings !== currentSettings) return;
+      update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(() => {
+        if (settings === currentSettings) settings = null;
+      });
+    },
+    Math.max(0, duration),
+  );
 }
 
 export function reset(): void {
@@ -177,20 +179,30 @@ export function reset(): void {
   startTimestamp = 0;
 }
 
-function incrementLetterIndex(): void {
-  if (settings === null) return;
+function incrementLetterIndex(): boolean {
+  if (settings === null) return false;
+
+  const before = {
+    currentWordIndex: settings.currentWordIndex,
+    currentLetterIndex: settings.currentLetterIndex,
+    correction: settings.correction,
+    skipped: settings.skipped,
+  };
 
   try {
-    if (
-      settings.currentLetterIndex >=
-      // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
-      TestWords.words.get(settings.currentWordIndex)!.text.length
-    ) {
-      //go to the next word
-      settings.currentLetterIndex = -1;
-      settings.currentWordIndex++;
+    for (let i = 0; i <= settings.skipped; i++) {
+      if (
+        settings.currentLetterIndex >=
+        // oxlint-disable-next-line typescript/no-non-null-assertion let it throw if undefined
+        TestWords.words.get(settings.currentWordIndex)!.text.length
+      ) {
+        //go to the next word
+        settings.currentLetterIndex = -1;
+        settings.currentWordIndex++;
+      }
+      settings.currentLetterIndex++;
     }
-    settings.currentLetterIndex++;
+    settings.skipped = 0;
 
     if (!Config.blindMode) {
       if (settings.correction < 0) {
@@ -221,12 +233,14 @@ function incrementLetterIndex(): void {
         }
       }
     }
+    return true;
   } catch (e) {
-    //out of words
-    settings = null;
-    console.log("pace caret out of words");
-    caret.hide();
-    return;
+    //out of words, they might still get generated so keep counting steps
+    settings.currentWordIndex = before.currentWordIndex;
+    settings.currentLetterIndex = before.currentLetterIndex;
+    settings.correction = before.correction;
+    settings.skipped = before.skipped + 1;
+    return false;
   }
 }
 
