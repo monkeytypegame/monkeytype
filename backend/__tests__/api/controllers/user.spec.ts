@@ -1492,7 +1492,7 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .patch("/users/password")
         .set("Authorization", `Bearer ${uid}`)
-        .send({ newPassword: "sw0rdf1sh" })
+        .send({ newPassword: "Sw0rdf1sh!" })
         .expect(200);
 
       //THEN
@@ -1500,7 +1500,7 @@ describe("user controller test", () => {
         message: "Password updated",
         data: null,
       });
-      expect(updatePasswordMock).toHaveBeenCalledWith(uid, "sw0rdf1sh");
+      expect(updatePasswordMock).toHaveBeenCalledWith(uid, "Sw0rdf1sh!");
     });
     it("should fail without mandatory properties", async () => {
       //WHEN
@@ -1520,7 +1520,7 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .patch("/users/password")
         .set("Authorization", `Bearer ${uid}`)
-        .send({ newPassword: "sw0rdf1sh", extra: "value" })
+        .send({ newPassword: "Sw0rdf1sh!", extra: "value" })
         .expect(422);
 
       //THEN
@@ -1529,7 +1529,7 @@ describe("user controller test", () => {
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
-    it("should fail with password too short", async () => {
+    it("should fail with invalid password", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/password")
@@ -1541,7 +1541,10 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          '"newPassword" String must contain at least 6 character(s)',
+          '"newPassword" must be at least 8 characters',
+          '"newPassword" must contain at least one capital letter',
+          '"newPassword" must contain at least one number',
+          '"newPassword" must contain at least one special character',
         ],
       });
     });
