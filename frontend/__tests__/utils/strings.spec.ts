@@ -591,6 +591,78 @@ describe("string utils", () => {
     });
   });
 
+  describe("stripMarkdown", () => {
+    it.each([
+      // Headings
+      ["# Heading 1", "Heading 1", "heading 1"],
+      ["## Heading 2", "Heading 2", "heading 2"],
+      ["###### Heading 6", "Heading 6", "heading 6"],
+      // Bold (only 2+ consecutive markers are formatting)
+      ["**bold** text", "bold text", "double asterisk bold"],
+      ["__bold__ text", "bold text", "double underscore bold"],
+      // Bold + italic (3+ consecutive)
+      ["***bold italic***", "bold italic", "triple asterisk bold italic"],
+      // Single * or _ are NOT stripped (literal punctuation)
+      ["a *b* c", "a *b* c", "single asterisk is literal"],
+      ["a _b_ c", "a _b_ c", "single underscore is literal"],
+      // Links (keep text, remove URL)
+      ["[click here](https://example.com)", "click here", "link"],
+      // Images (keep alt text)
+      ["![alt text](image.png)", "alt text", "image"],
+      // Inline code
+      ["use `console.log` here", "use console.log here", "inline code"],
+      // Code blocks (remove entirely)
+      [
+        "some text\n```\ncode block\n```\nmore text",
+        "some text\nmore text",
+        "code block",
+      ],
+      // Blockquotes
+      ["> quoted text", "quoted text", "blockquote"],
+      // Horizontal rules
+      ["before\n---\nafter", "before\nafter", "horizontal rule (dash)"],
+      ["before\n***\nafter", "before\nafter", "horizontal rule (asterisk)"],
+      // List markers
+      [
+        "- item 1\n- item 2\n- item 3",
+        "item 1\nitem 2\nitem 3",
+        "unordered list",
+      ],
+      ["1. first\n2. second\n3. third", "first\nsecond\nthird", "ordered list"],
+      // HTML tags
+      ["<p>paragraph</p>", "paragraph", "HTML tags"],
+      // Mixed markdown
+      [
+        "# Hello\n\nThis is **bold** and italic.\n\n[link](url)\n\n```\ncode\n```\n\n> quote\n\n---\n\n- list item",
+        "Hello\nThis is bold and italic.\nlink\nquote\nlist item",
+        "mixed markdown",
+      ],
+      // Strikethrough
+      ["~~deleted~~ text", "deleted text", "strikethrough"],
+      // Task lists
+      ["- [ ] unchecked\n- [x] checked", "unchecked\nchecked", "task list"],
+      // Tables (pipe characters removed, separator line remains)
+      [
+        "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell   |",
+        "Header Header \n ------ ------ \n Cell Cell",
+        "table",
+      ],
+      // Plain text (no markdown)
+      ["just plain text", "just plain text", "plain text"],
+      // Empty string
+      ["", "", "empty string"],
+      // Plain text (no markdown)
+      ["just plain text", "just plain text", "plain text"],
+      // Empty string
+      ["", "", "empty string"],
+    ])(
+      "should strip markdown: %s -> %s (%s)",
+      (input: string, expected: string, _description: string) => {
+        expect(Strings.stripMarkdown(input)).toBe(expected);
+      },
+    );
+  });
+
   describe("countChars", () => {
     describe("it should count characters correctly", () => {
       const testCases = [
