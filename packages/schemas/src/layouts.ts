@@ -250,7 +250,7 @@ export const LayoutNameSchema = z.enum(
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;
 
-const KeyLegendsSchema = z.array(z.string().length(1)).min(1).max(4);
+const KeyLegendsSchema = z.array(z.string().min(1)).min(1).max(4);
 export type KeyLegends = z.infer<typeof KeyLegendsSchema>;
 
 const commonLayoutSchema = z
