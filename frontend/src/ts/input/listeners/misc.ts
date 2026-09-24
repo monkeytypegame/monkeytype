@@ -9,12 +9,11 @@ inputEl.addEventListener("focus", () => {
   moveInputElementCaretToTheEnd();
 });
 
-inputEl.addEventListener("copy paste", (event) => {
+inputEl.addEventListener("copy", (event) => {
   event.preventDefault();
 });
 
-//this might not do anything
-inputEl.addEventListener("select selectstart", (event) => {
+inputEl.addEventListener("paste", (event) => {
   event.preventDefault();
 });
 
