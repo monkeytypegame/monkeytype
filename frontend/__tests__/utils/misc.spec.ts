@@ -3,6 +3,7 @@ import {
   isObject,
   escapeHTML,
   promiseWithResolvers,
+  clearTimeouts,
 } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
@@ -221,6 +222,21 @@ describe("misc.ts", () => {
         const result = getErrorMessage(test.input);
         expect(result).toBe(test.expected);
       });
+    });
+  });
+
+  describe("clearTimeouts", () => {
+    it("should clear timeouts and empty the array", () => {
+      //GIVEN
+      const spy = vi.fn();
+      const timeouts = [setTimeout(spy, 1000), setTimeout(spy, 1000)];
+
+      //WHEN
+      clearTimeouts(timeouts);
+
+      //THEN
+      expect(timeouts).toHaveLength(0);
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 
