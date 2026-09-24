@@ -57,7 +57,7 @@ Refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 Before contributing to this repository, please read the [code of conduct](./docs/CODE_OF_CONDUCT.md).
 
-# Security
+# Security Vulnerabilities Reports 
 
 To report a security vulnerability, please refer to [SECURITY.md](./docs/SECURITY.md).
 
