@@ -7,6 +7,8 @@ import { Fa, FaProps } from "./Fa";
 type BaseProps = {
   text?: string;
   fa?: FaProps;
+  /** Leading icon for icons that are not available in Font Awesome. Rendered in the same slot as `fa`. */
+  icon?: JSXElement;
   class?: string;
   variant?: "text" | "button";
   children?: JSXElement;
@@ -48,6 +50,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       <Show when={props.fa !== undefined}>
         <Fa {...(props.fa as FaProps)} />
       </Show>
+      {props.icon}
       <Show when={props.text !== undefined}>{props.text}</Show>
       {props.children}
     </>

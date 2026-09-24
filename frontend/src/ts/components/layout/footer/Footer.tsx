@@ -5,6 +5,7 @@ import { showModal } from "../../../states/modals";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
+import { XIcon } from "../../common/XIcon";
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
@@ -64,12 +65,8 @@ export function Footer(): JSXElement {
           />
           <Button
             variant="text"
-            text="twitter"
-            fa={{
-              icon: "fa-twitter",
-              variant: "brand",
-              fixedWidth: true,
-            }}
+            text="x"
+            icon={<XIcon fixedWidth />}
             href="https://x.com/monkeytype"
           />
           <Button

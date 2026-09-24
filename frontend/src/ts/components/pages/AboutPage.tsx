@@ -17,6 +17,7 @@ import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { H2, H3 } from "../common/Headers";
 import { Page } from "../common/Page";
+import { XIcon } from "../common/XIcon";
 import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
 import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
 
@@ -307,8 +308,8 @@ export function AboutPage(): JSXElement {
               class="w-full p-8"
             />
             <Button
-              text="twitter"
-              fa={{ icon: "fa-twitter", variant: "brand" }}
+              text="x"
+              icon={<XIcon />}
               href="https://x.com/monkeytype"
               class="w-full p-8"
             />
