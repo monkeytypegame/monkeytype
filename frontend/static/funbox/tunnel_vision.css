@@ -1,0 +1,13 @@
+#words {
+  /* em keeps the visible area proportional to the current typing font size. */
+  --tunnel-vision-radius: 3em;
+  --tunnel-vision-softness: 0.8em;
+
+  mask-image: radial-gradient(
+    circle at var(--caret-center-x, 50%) var(--caret-center-y, 50%),
+    #000 0,
+    #000 var(--tunnel-vision-radius),
+    transparent
+      calc(var(--tunnel-vision-radius) + var(--tunnel-vision-softness))
+  );
+}
