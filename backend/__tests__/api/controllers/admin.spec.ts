@@ -10,6 +10,7 @@ import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
+import * as UserDeletion from "../../../src/services/user-deletion";
 
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import Test from "supertest/lib/test";
@@ -544,6 +545,99 @@ describe("AdminController", () => {
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
+  describe("delete user", () => {
+    const deleteUserAccountMock = vi.spyOn(UserDeletion, "deleteUserAccount");
+
+    beforeEach(() => {
+      deleteUserAccountMock.mockClear().mockResolvedValue(undefined);
+    });
+
+    it("should delete user", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+      deleteUserAccountMock.mockResolvedValue({
+        banned: false,
+        name: "victim",
+        email: "victim@example.com",
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/deleteUser")
+        .send({ uid: victimUid })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "User deleted",
+        data: null,
+      });
+
+      expect(deleteUserAccountMock).toHaveBeenCalledWith(
+        victimUid,
+        expect.anything(),
+      );
+      expect(logsAddImportantLog).toHaveBeenCalledWith(
+        "user_deleted_by_admin",
+        "victim@example.com victim",
+        victimUid,
+      );
+    });
+    it("should fail for own account", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/deleteUser")
+        .send({ uid })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(403);
+
+      //THEN
+      expect(body.message).toEqual(
+        "You cannot delete your own account with this endpoint",
+      );
+      expect(deleteUserAccountMock).not.toHaveBeenCalled();
+    });
+    it("should fail with unknown properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/deleteUser")
+        .send({ uid: new ObjectId().toHexString(), extra: "value" })
+        .set("Authorization", `Bearer ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`Unrecognized key(s) in object: 'extra'`],
+      });
+    });
+    it("should fail for non admin", async () => {
+      await expectFailForNonAdmin(
+        mockApp
+          .post("/admin/deleteUser")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`),
+      );
+    });
+    it("should fail if admin endpoints are disabled", async () => {
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/admin/deleteUser")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`),
+      );
+    });
+    it("should be rate limited", async () => {
+      await expect(
+        mockApp
+          .post("/admin/deleteUser")
+          .send({ uid: new ObjectId().toHexString() })
+          .set("Authorization", `Bearer ${uid}`),
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
+  });
+
   describe("send forgot password email", () => {
     const sendForgotPasswordEmailMock = vi.spyOn(
       AuthUtil,

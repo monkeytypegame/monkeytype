@@ -162,14 +162,6 @@ export async function getLastResult(
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
-}
-
 export async function updateTags(
   req: MonkeyRequest<undefined, UpdateResultTagsRequest>,
 ): Promise<UpdateResultTagsResponse> {
@@ -328,6 +320,16 @@ export async function addResult(
   const { data: lastResultTimestamp } = await tryCatch(
     ResultDAL.getLastResultTimestamp(uid),
   );
+
+  // Abandoned-test time (incompleteTestSeconds/incompleteTests) is client
+  // supplied. When a previous result exists it is bounded to real elapsed time
+  // by the result-spacing check below. When it does not (new account, or all
+  // results deleted) there is nothing to bound it against, so it must not be
+  // credited toward timeTyping / XP / leaderboard eligibility.
+  if (!isSafeNumber(lastResultTimestamp)) {
+    completedEvent.incompleteTestSeconds = 0;
+    completedEvent.incompleteTests = [];
+  }
 
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
