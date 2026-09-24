@@ -218,16 +218,26 @@ async function setFunboxBodyClasses(): Promise<boolean> {
   return true;
 }
 
-async function applyFunboxCSS(): Promise<boolean> {
+async function applyFunboxCSS(): Promise<void> {
   qsa(".funBoxTheme").remove();
-  for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
-    const css = document.createElement("link");
-    css.classList.add("funBoxTheme");
-    css.rel = "stylesheet";
-    css.href = `funbox/${funbox.name}.css`;
-    document.head.appendChild(css);
-  }
-  return true;
+
+  await Promise.allSettled(
+    getActiveFunboxesWithProperty("hasCssFile").map(
+      async (funbox) =>
+        new Promise<void>((resolve, reject) => {
+          const css = document.createElement("link");
+          css.classList.add("funBoxTheme");
+          css.rel = "stylesheet";
+          css.href = `funbox/${funbox.name}.css`;
+          css.onload = () => resolve();
+          css.onerror = (e) => {
+            console.error(`Error loading css of funbox ${funbox.name}`, e);
+            reject();
+          };
+          document.head.appendChild(css);
+        }),
+    ),
+  );
 }
 
 configEvent.subscribe(async ({ key }) => {
