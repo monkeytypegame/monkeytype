@@ -354,6 +354,35 @@ describe("Daily Leaderboards", () => {
       });
     });
 
+    describe("getNextWpm", () => {
+      it("returns the lowest higher WPM across paginated results", async () => {
+        const paginatedConfig = { ...dailyLeaderboardsConfig, maxResults: 105 };
+        // oxlint-disable-next-line no-non-null-assertion
+        const paginatedLb = DailyLeaderboards.getDailyLeaderboard(
+          "english",
+          "time",
+          "60",
+          paginatedConfig,
+        )!;
+        const current = await givenResult(
+          { wpm: 80 },
+          paginatedLb,
+          paginatedConfig,
+        );
+
+        await Promise.all(
+          Array.from({ length: 100 }, async (_, index) =>
+            givenResult({ wpm: 100 + index }, paginatedLb, paginatedConfig),
+          ),
+        );
+        await givenResult({ wpm: 90 }, paginatedLb, paginatedConfig);
+
+        expect(await paginatedLb.getNextWpm(current.uid, paginatedConfig)).toBe(
+          90,
+        );
+      });
+    });
+
     it("purgeUserFromDailyLeaderboards", async () => {
       //GIVEN
       const cheater = await givenResult({ wpm: 50 });
@@ -381,6 +410,8 @@ describe("Daily Leaderboards", () => {
 
     async function givenResult(
       entry?: Partial<RedisDailyLeaderboardEntry>,
+      leaderboard = lb,
+      config = dailyLeaderboardsConfig,
     ): Promise<RedisDailyLeaderboardEntry> {
       const uid = new ObjectId().toHexString();
       const result = {
@@ -397,7 +428,7 @@ describe("Daily Leaderboards", () => {
         isPremium: false,
         ...entry,
       };
-      await lb.addResult(result, dailyLeaderboardsConfig);
+      await leaderboard.addResult(result, config);
       return result;
     }
   });
