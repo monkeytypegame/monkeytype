@@ -257,7 +257,8 @@ async function goBackOrHide(): Promise<void> {
 }
 
 function stripPunctuation(str: string): string {
-  return str.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+  // allow '+' for code c++
+  return str.replace(/[!"#$%&'()*,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
 }
 
 async function filterSubgroup(): Promise<void> {
