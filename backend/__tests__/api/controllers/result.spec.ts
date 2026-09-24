@@ -664,6 +664,28 @@ describe("result controller test", () => {
         15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
     });
+    it("should keep incomplete xp for zen", async () => {
+      //GIVEN
+      await enableUsersXpGain(true, 1);
+      const completedEvent = buildCompletedEvent({
+        mode: "zen",
+        mode2: "zen",
+      });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body.data.xp).toEqual(5);
+      expect(body.data.xpBreakdown).toEqual({ incomplete: 5 });
+      expect(userIncrementXpMock).toHaveBeenCalledWith(uid, 5);
+    });
     it("should fail if result saving is disabled", async () => {
       //GIVEN
       await enableResultsSaving(false);
@@ -859,9 +881,17 @@ async function enableResultsSaving(enabled: boolean): Promise<void> {
     mockConfig,
   );
 }
-async function enableUsersXpGain(enabled: boolean): Promise<void> {
+async function enableUsersXpGain(
+  enabled: boolean,
+  gainMultiplier = 0,
+): Promise<void> {
   const mockConfig = await configuration;
-  mockConfig.users.xp = { ...mockConfig.users.xp, enabled, funboxBonus: 1 };
+  mockConfig.users.xp = {
+    ...mockConfig.users.xp,
+    enabled,
+    funboxBonus: 1,
+    gainMultiplier,
+  };
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
     mockConfig,
