@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
-export const ThemeNameSchema = z.enum(GalaxyBash
-  [
+export const ThemeNameSchema = z.enum([
+  "galaxybash",
+]);
+
     "8008",
     "80s_after_dark",
     "9009",
