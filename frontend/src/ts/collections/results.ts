@@ -1,6 +1,7 @@
 import { ResultMinified } from "@monkeytype/schemas/results";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
+import { lengthDescToGroup } from "@monkeytype/schemas/quotes";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   avg,
@@ -492,12 +493,7 @@ export function createResultsQueryState(
     numbers: boolFilter(filters.numbers),
     timestamp: timestampFilter(filters.date),
     quoteLength: [
-      ...valueFilter(filters.quoteLength, {
-        short: 0,
-        medium: 1,
-        long: 2,
-        thicc: 3,
-      }),
+      ...valueFilter(filters.quoteLength, lengthDescToGroup),
       -1, // fallback value for results without quoteLength, set in the collection
     ],
     tags: valueFilter(filters.tags),

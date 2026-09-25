@@ -51,13 +51,6 @@ export const DefaultTimeModeSchema = z.union([
   z.literal("120"),
 ]);
 
-export const QuoteLengthSchema = z.union([
-  z.literal("short"),
-  z.literal("medium"),
-  z.literal("long"),
-  z.literal("thicc"),
-]);
-
 // // Step 1: Define the schema for specific string values "10" and "25"
 // const SpecificKeySchema = z.union([z.literal("10"), z.literal("25")]);
 
