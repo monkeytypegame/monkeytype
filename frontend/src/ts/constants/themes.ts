@@ -24,20 +24,6 @@ export const ThemeSchema = z.object({
 export type Theme = z.infer<typeof ThemeSchema>;
 export type ColorName = keyof Omit<Theme, "hasCss">;
 export const themes: Record<ThemeName, Theme> = {
-  // ... existing themes
-  galaxybash: {
-    bg: "#1b0042",
-    caret: "#14135e",
-    main: "#878787",
-    sub: "#cc22d8",
-    subAlt: "#14135e",
-    text: "#ffffff",
-    error: "#e09eff",
-    errorExtra: "#000000",
-    colorfulError: "#000000",
-    colorfulErrorExtra: "#000000",
-  },
-};
 
   "9009": {
     bg: "#eeebe2",
@@ -2322,6 +2308,18 @@ export const themes: Record<ThemeName, Theme> = {
     errorExtra: "#b29a91",
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
+  },
+    galaxybash: {
+    bg: "#1b0042",
+    caret: "#14135e",
+    main: "#878787",
+    sub: "#cc22d8",
+    subAlt: "#14135e",
+    text: "#ffffff",
+    error: "#e09eff",
+    errorExtra: "#000000",
+    colorfulError: "#000000",
+    colorfulErrorExtra: "#000000",
   },
 };
 
