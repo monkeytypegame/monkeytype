@@ -25,7 +25,7 @@ export type Theme = z.infer<typeof ThemeSchema>;
 export type ColorName = keyof Omit<Theme, "hasCss">;
 export const themes: Record<ThemeName, Theme> = {
   // ... existing themes
-  my_theme: {
+  galaxybash: {
     bg: "#1b0042",
     caret: "#14135e",
     main: "#878787",
