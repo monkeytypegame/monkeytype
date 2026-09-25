@@ -708,21 +708,22 @@ export function formatTypingStatsRatio(stats: {
   completedPercentage: string;
   restartRatio: string;
 } {
-  if (
-    stats.completedTests === undefined ||
-    stats.startedTests === undefined ||
-    stats.startedTests === 0
-  ) {
-    return { completedPercentage: "", restartRatio: "" };
+  const startedTests = stats.startedTests ?? 0;
+  const completedTests = stats.completedTests ?? 0;
+
+  if (startedTests === 0) {
+    return { completedPercentage: "0", restartRatio: "0" };
   }
+
+  const abandonedTests = startedTests - completedTests;
+  const restartRatio =
+    completedTests === 0 ? "0" : (abandonedTests / completedTests).toFixed(1);
+
   return {
     completedPercentage: Math.floor(
-      (stats.completedTests / stats.startedTests) * 100,
+      (completedTests / startedTests) * 100,
     ).toString(),
-    restartRatio: (
-      (stats.startedTests - stats.completedTests) /
-      stats.completedTests
-    ).toFixed(1),
+    restartRatio,
   };
 }
 
