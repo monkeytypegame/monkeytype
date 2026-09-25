@@ -181,8 +181,6 @@ export async function navigate(
         important: true,
       },
     );
-    //todo: figure out if this was ever used
-    // event?.preventDefault();
     return;
   }
 
