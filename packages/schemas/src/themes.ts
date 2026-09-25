@@ -192,6 +192,7 @@ export const ThemeNameSchema = z.enum([
     "witch_girl",
     "pale_nimbus",
     "spiderman",
+    "galaxybash",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),
