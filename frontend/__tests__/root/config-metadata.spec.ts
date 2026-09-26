@@ -65,6 +65,16 @@ describe("ConfigMeta", () => {
       ].sort(),
     );
   });
+
+  it("should show an on label for blind mode", () => {
+    expect(configMetadata.blindMode.optionsMetadata?.true?.displayString).toBe(
+      "on",
+    );
+    expect(configMetadata.blindMode.optionsMetadata?.false?.displayString).toBe(
+      "off",
+    );
+  });
+
   describe("overrideValue", () => {
     const testCases: TestsByConfig<{
       given?: Partial<ConfigType>;
