@@ -305,9 +305,10 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-eye-slash" },
     optionsMetadata: {
       true: {
-        // Use an `&ensp;` here so that the `on` button for blind mode will
-        // have the same height on both Chromium and Firefox.
-        displayString: " ",
+        displayString: "on",
+      },
+      false: {
+        displayString: "off",
       },
     },
     displayString: "blind mode",
