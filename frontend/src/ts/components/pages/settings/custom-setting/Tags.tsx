@@ -40,6 +40,7 @@ export function Tags(): JSXElement {
                   }}
                 />
                 <Button
+                  aria-label={`Clear personal bests for tag ${tag.name}`}
                   fa={{
                     icon: "fa-crown",
                   }}
@@ -60,6 +61,7 @@ export function Tags(): JSXElement {
                   }}
                 />
                 <Button
+                  aria-label={`Rename tag ${tag.name}`}
                   fa={{
                     icon: "fa-pen",
                   }}
@@ -91,6 +93,7 @@ export function Tags(): JSXElement {
                   }}
                 />
                 <Button
+                  aria-label={`Delete tag ${tag.name}`}
                   fa={{
                     icon: "fa-trash",
                   }}

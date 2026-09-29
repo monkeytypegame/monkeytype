@@ -336,6 +336,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
       data-theme-id={props.theme._id}
     >
       <Button
+        aria-label={`Edit theme ${replaceUnderscoresWithSpaces(props.theme.name)}`}
         variant="text"
         fa={{
           icon: "fa-pen",
@@ -401,6 +402,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
       />
       <div>{replaceUnderscoresWithSpaces(props.theme.name)}</div>
       <Button
+        aria-label={`Delete theme ${replaceUnderscoresWithSpaces(props.theme.name)}`}
         variant="text"
         fa={{
           icon: "fa-trash",
@@ -600,6 +602,7 @@ function Picker(props: { color: ColorName }): JSXElement {
           // }}
         />
         <Button
+          aria-label={`Pick ${text()} color`}
           class={cn(
             `col-[1/1] row-[1/1]`,
             `bg-(--picker-${props.color}) text-(--picker-bg)`,

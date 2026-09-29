@@ -19,6 +19,7 @@ export function Overlays(): JSXElement {
     <>
       <ScrollToTop />
       <button
+        aria-label="Open command line"
         type="button"
         id="commandLineMobileButton"
         class={cn(

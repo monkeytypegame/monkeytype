@@ -11,6 +11,8 @@ type BaseProps = {
   variant?: "text" | "button";
   children?: JSXElement;
   balloon?: BalloonProps;
+  // accessible name for icon-only buttons, balloon text takes precedence
+  "aria-label"?: string;
   "router-link"?: true;
   onClick?: (e: MouseEvent) => void;
   type?: HTMLButtonElement["type"];
@@ -94,6 +96,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onClick={(e) => props.onClick?.(e)}
           onMouseEnter={(e) => props.onMouseEnter?.(e)}
           onMouseLeave={(e) => props.onMouseLeave?.(e)}
+          aria-label={props["aria-label"]}
           {...balloonHtmlProps()}
           {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
@@ -119,6 +122,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
             ? undefined
             : "noreferrer noopener"
         }
+        aria-label={props["aria-label"]}
         {...balloonHtmlProps()}
         {...(props["router-link"] ? { "router-link": "" } : {})}
         onClick={(e) => props.onClick?.(e)}

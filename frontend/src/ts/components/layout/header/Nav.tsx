@@ -82,6 +82,7 @@ export function Nav(): JSXElement {
   return (
     <nav class={cn("z-5 flex w-full items-center gap-1 md:gap-2")}>
       <Button
+        aria-label="Typing test"
         variant="text"
         fa={{
           icon: "fa-keyboard",
@@ -98,6 +99,7 @@ export function Nav(): JSXElement {
         }}
       />
       <Button
+        aria-label="Leaderboards"
         variant="text"
         fa={{
           icon: "fa-crown",
@@ -114,6 +116,7 @@ export function Nav(): JSXElement {
         }}
       />
       <Button
+        aria-label="About"
         variant="text"
         fa={{
           icon: "fa-info",
@@ -130,6 +133,7 @@ export function Nav(): JSXElement {
         }}
       />
       <Button
+        aria-label="Settings"
         variant="text"
         fa={{
           icon: "fa-cog",
@@ -144,6 +148,7 @@ export function Nav(): JSXElement {
       />
       <div class="grow"></div>
       <Button
+        aria-label="Alerts"
         variant="text"
         fa={{
           icon: "fa-bell",
@@ -173,6 +178,7 @@ export function Nav(): JSXElement {
             >
               <Show when={showLoginButton()}>
                 <Button
+                  aria-label="Login"
                   variant="text"
                   href="/login"
                   dataset={{
