@@ -1,3 +1,4 @@
+import { getKeySelection } from "../practice/selection";
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
 
@@ -812,6 +813,10 @@ function updateTestType(randomQuote: Quote | null): void {
     testType += `<br>delete on ${Config.deleteOnError.replace(/_/g, " ")}`;
   }
 
+  const selection = getKeySelection();
+  if (selection !== null) {
+    testType += `<br>key selection (${selection.characters.length} keys)<br>unranked · not saved`;
+  }
   qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
 
@@ -967,7 +972,7 @@ export async function update(
   qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
-  if (isAuthenticated()) {
+  if (isAuthenticated() || getKeySelection() !== null) {
     qs("#result .loginTip")?.hide();
   } else {
     qs("#result .loginTip")?.show();
@@ -1042,7 +1047,7 @@ export async function update(
     qsa("main #result .stats")?.show();
     qs("main #result .chart")?.show();
     if (!isAuthenticated()) {
-      qs("main #result .loginTip")?.show();
+      if (getKeySelection() === null) qs("main #result .loginTip")?.show();
       qs("main #result #rateQuoteButton")?.hide();
       qs("main #result #reportQuoteButton")?.hide();
     } else {

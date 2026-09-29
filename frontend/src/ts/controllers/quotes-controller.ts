@@ -128,7 +128,11 @@ class QuotesController {
     this.queueIndex = 0;
   }
 
-  getRandomQuote(): Quote | null {
+  getRandomQuote(matches?: (quote: Quote) => boolean): Quote | null {
+    if (matches !== undefined) {
+      const matching = this.quoteQueue.filter(matches);
+      return matching.length === 0 ? null : randomElementFromArray(matching);
+    }
     if (this.quoteQueue.length === 0) {
       return null;
     }
@@ -145,7 +149,10 @@ class QuotesController {
     return randomQuote;
   }
 
-  getRandomFavoriteQuote(language: Language): Quote | null {
+  getRandomFavoriteQuote(
+    language: Language,
+    matches?: (quote: Quote) => boolean,
+  ): Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return null;
@@ -171,6 +178,14 @@ class QuotesController {
       return null;
     }
 
+    if (matches !== undefined) {
+      const matching = quoteIds
+        .map((id) => this.getQuoteById(Number(id)))
+        .filter(
+          (quote): quote is Quote => quote !== undefined && matches(quote),
+        );
+      return matching.length === 0 ? null : randomElementFromArray(matching);
+    }
     const randomQuoteId = randomElementFromArray(quoteIds);
     const randomQuote = this.getQuoteById(parseInt(randomQuoteId, 10));
 
