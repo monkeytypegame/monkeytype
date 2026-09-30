@@ -22,6 +22,7 @@ import { ShareTestSettings } from "./ShareTestSettings";
 import { SimpleModal } from "./SimpleModal";
 import { StreakHourOffsetModal } from "./StreakHourOffsetModal";
 import { SupportModal } from "./SupportModal";
+import { TheRestModal } from "./TheRestModal";
 import { UserReportModal } from "./UserReportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
@@ -52,6 +53,7 @@ export function Modals(): JSXElement {
       <ForgotPasswordModal />
       <UserReportModal />
       <EditResultTagsModal />
+      <TheRestModal />
     </>
   );
 }
