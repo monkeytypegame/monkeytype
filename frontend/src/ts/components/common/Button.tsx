@@ -99,7 +99,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
-          tabIndex={props.tabIndex ?? 0}
+          tabIndex={props.tabIndex ?? undefined}
           {...props.dataset}
         >
           {content}
