@@ -218,6 +218,7 @@ export const LayoutNameSchema = z.enum([
     "tarmak_2",
     "tarmak_3",
     "tarmak_4",
+    "upsidedown",
   ], 
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
