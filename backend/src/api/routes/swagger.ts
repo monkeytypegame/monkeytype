@@ -6,16 +6,16 @@ import Logger from "../../utils/logger";
 import { tryCatchSync } from "@monkeytype/util/trycatch";
 
 function addSwaggerMiddlewares(app: Application): void {
-  const openApiSpec = __dirname + "/../../../dist/static/api/openapi.json";
+  const openApiSpec = `${__dirname}/../../../dist/static/api/openapi.json`;
 
   const { data: spec, error } = tryCatchSync(
     () =>
-      JSON.parse(readFileSync(openApiSpec, "utf8")) as Record<string, unknown>
+      JSON.parse(readFileSync(openApiSpec, "utf8")) as Record<string, unknown>,
   );
 
   if (error) {
     Logger.warning(
-      `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`
+      `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`,
     );
   }
 
@@ -32,7 +32,7 @@ function addSwaggerMiddlewares(app: Application): void {
           password === process.env["STATS_PASSWORD"]
         );
       },
-    })
+    }),
   );
 }
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { KnownFontNameSchema } from "./fonts";
 import { customEnumErrorHandler } from "./util";
 
 export const LanguageSchema = z.enum(
@@ -55,6 +56,10 @@ export const LanguageSchema = z.enum(
     "chinese_simplified_10k",
     "chinese_simplified_50k",
     "chinese_traditional",
+    "chinese_traditional_1k",
+    "chinese_traditional_5k",
+    "chinese_traditional_10k",
+    "chinese_traditional_50k",
     "russian",
     "russian_1k",
     "russian_5k",
@@ -110,6 +115,7 @@ export const LanguageSchema = z.enum(
     "greek_5k",
     "greek_10k",
     "greek_25k",
+    "greek_koine",
     "greeklish",
     "greeklish_1k",
     "greeklish_5k",
@@ -119,6 +125,7 @@ export const LanguageSchema = z.enum(
     "turkish_1k",
     "turkish_5k",
     "irish",
+    "irish_1k",
     "italian",
     "italian_1k",
     "italian_7k",
@@ -161,6 +168,7 @@ export const LanguageSchema = z.enum(
     "danish_1k",
     "danish_10k",
     "hungarian",
+    "hungarian_1k",
     "hungarian_2k",
     "norwegian_bokmal",
     "norwegian_bokmal_1k",
@@ -178,6 +186,7 @@ export const LanguageSchema = z.enum(
     "hebrew_1k",
     "hebrew_5k",
     "hebrew_10k",
+    "icelandic",
     "icelandic_1k",
     "romanian",
     "romanian_1k",
@@ -215,6 +224,9 @@ export const LanguageSchema = z.enum(
     "pinyin_10k",
     "hausa",
     "hausa_1k",
+    "bemba",
+    "bemba_1k",
+    "bemba_10k",
     "swedish",
     "swedish_1k",
     "swedish_diacritics",
@@ -233,7 +245,9 @@ export const LanguageSchema = z.enum(
     "lithuanian_1k",
     "lithuanian_3k",
     "bulgarian",
+    "bulgarian_1k",
     "bulgarian_latin",
+    "bulgarian_latin_1k",
     "bangla",
     "bangla_letters",
     "bangla_10k",
@@ -262,6 +276,7 @@ export const LanguageSchema = z.enum(
     "urdu",
     "urdu_1k",
     "urdu_5k",
+    "urdu_roman",
     "urdish",
     "albanian",
     "albanian_1k",
@@ -350,6 +365,8 @@ export const LanguageSchema = z.enum(
     "kabyle_2k",
     "kabyle_5k",
     "kabyle_10k",
+    "hawaiian",
+    "hawaiian_1k",
     "code_python",
     "code_python_1k",
     "code_python_2k",
@@ -406,23 +423,55 @@ export const LanguageSchema = z.enum(
     "code_v",
     "code_ook",
     "code_typescript",
+    "code_ocaml",
     "code_odin",
     "xhosa",
     "xhosa_3k",
     "tibetan",
     "tibetan_1k",
     "code_cobol",
+    "code_clojure",
     "code_common_lisp",
+    "code_erlang",
     "docker_file",
     "code_fortran",
     "viossa",
     "viossa_njutro",
     "code_abap",
     "code_abap_1k",
+    "code_yoptascript",
+    "code_cuda",
+    "kinyarwanda",
+    "pokemon_1k",
+    "kokanu",
+    "likanu",
+    "code_vhdl",
+    "lao",
+    "code_6502_assembly",
+    "english_legal",
+    "sindhi",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported language"),
-  }
+  },
 );
 
 export type Language = z.infer<typeof LanguageSchema>;
+
+export const LanguageObjectSchema = z
+  .object({
+    name: LanguageSchema,
+    rightToLeft: z.boolean().optional(),
+    noLazyMode: z.boolean().optional(),
+    joiningScript: z.boolean().optional(),
+    orderedByFrequency: z.boolean().optional(),
+    words: z.array(z.string()).min(1),
+    additionalAccents: z
+      .array(z.tuple([z.string().min(1), z.string().min(1)]))
+      .optional(),
+    bcp47: z.string().optional(),
+    preferredFont: KnownFontNameSchema.optional(),
+    originalPunctuation: z.boolean().optional(),
+  })
+  .strict();
+export type LanguageObject = z.infer<typeof LanguageObjectSchema>;

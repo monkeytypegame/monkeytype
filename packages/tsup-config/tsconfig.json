@@ -3,10 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
-    "moduleResolution": "Node",
-    "module": "ES6",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "target": "ES2015",
     "lib": ["es2016"]
   },

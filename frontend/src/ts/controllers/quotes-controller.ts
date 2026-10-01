@@ -1,39 +1,19 @@
 import { removeLanguageSize } from "../utils/strings";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
-import { subscribe } from "../observables/config-event";
+import { configEvent } from "../events/config";
 import * as DB from "../db";
 import Ape from "../ape";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
+import { QuoteData } from "@monkeytype/schemas/quotes";
+import {
+  Quote as QuoteType,
+  QuoteWithTextSplit as QuoteWithTextSplitType,
+} from "../types/quotes";
 
-export type Quote = {
-  text: string;
-  britishText?: string;
-  source: string;
-  length: number;
-  id: number;
-  group: number;
-  language: Language;
-  textSplit?: string[];
-};
-
-export type QuoteWithTextSplit = Quote & {
-  textSplit: string[];
-};
-
-type QuoteData = {
-  language: Language;
-  quotes: {
-    text: string;
-    britishText?: string;
-    source: string;
-    length: number;
-    id: number;
-  }[];
-  groups: [number, number][];
-};
-
+export type Quote = QuoteType;
+export type QuoteWithTextSplit = QuoteWithTextSplitType;
 type QuoteCollection = {
   quotes: Quote[];
   length: number;
@@ -56,13 +36,13 @@ class QuotesController {
 
   async getQuotes(
     language: Language,
-    quoteLengths?: number[]
+    quoteLengths?: number[],
   ): Promise<QuoteCollection> {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       const { data, error } = await tryCatch(
-        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`)
+        cachedFetchJson<QuoteData>(`quotes/${normalizedLanguage}.json`),
       );
       if (error) {
         if (
@@ -217,7 +197,7 @@ class QuotesController {
           return false;
         }
         return (favoriteQuotes[language] ?? []).includes(id.toString());
-      }
+      },
     );
 
     return matchedLanguage !== undefined;
@@ -240,7 +220,7 @@ class QuotesController {
 
       if (response.status === 200) {
         const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
-          `${quote.id}`
+          `${quote.id}`,
         ) as number;
         snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
       } else {
@@ -256,12 +236,8 @@ class QuotesController {
       });
 
       if (response.status === 200) {
-        if (snapshot.favoriteQuotes === undefined) {
-          snapshot.favoriteQuotes = {};
-        }
-        if (!snapshot.favoriteQuotes[quote.language]) {
-          snapshot.favoriteQuotes[quote.language] = [];
-        }
+        snapshot.favoriteQuotes ??= {};
+        snapshot.favoriteQuotes[quote.language] ??= [];
         snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
       } else {
         throw new Error(response.body.message);
@@ -272,9 +248,9 @@ class QuotesController {
 
 const quoteController = new QuotesController();
 
-subscribe((key, newValue) => {
+configEvent.subscribe(({ key, newValue }) => {
   if (key === "quoteLength") {
-    quoteController.updateQuoteQueue(newValue as number[]);
+    quoteController.updateQuoteQueue(newValue);
   }
 });
 

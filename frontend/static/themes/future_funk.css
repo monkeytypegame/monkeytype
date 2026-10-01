@@ -1,33 +1,38 @@
-:root {
-  --bg-color: #2e1a47;
-  --main-color: #f7f2ea;
-  --caret-color: #f7f2ea;
-  --sub-color: #c18fff;
-  --sub-alt-color: #27173c;
-  --text-color: #f7f2ea;
-  --error-color: #f04e98;
-  --error-extra-color: #bd1c66;
-  --colorful-error-color: #f04e98;
-  --colorful-error-extra-color: #bd1c66;
-}
-
-nav > .textButton:nth-child(1) {
+[data-nav-item="test"] {
   color: #f04e98;
+  &:hover {
+    color: color-mix(in srgb, #f04e98 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(2) {
+[data-nav-item="leaderboards"] {
   color: #f8bed6;
+  &:hover {
+    color: color-mix(in srgb, #f8bed6 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(3) {
+[data-nav-item="about"] {
   color: #f6eb61;
+  &:hover {
+    color: color-mix(in srgb, #f6eb61 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(4) {
+[data-nav-item="settings"] {
   color: #a4dbe8;
+  &:hover {
+    color: color-mix(in srgb, #a4dbe8 75%, black 25%);
+  }
 }
 
-nav > .textButton:nth-child(5),
-nav > .textButton:nth-child(6) {
-  color: #a266ed;
+[data-nav-item="alerts"],
+[data-nav-item="account"],
+[data-nav-item="login"] {
+  --themable-button-text: #a266ed;
+  --themable-button-hover-text: color-mix(
+    in srgb,
+    var(--themable-button-text) 75%,
+    black 25%
+  );
 }

@@ -1,6 +1,6 @@
-import { Config } from "@monkeytype/schemas/configs";
+import { Config, ConfigKey } from "@monkeytype/schemas/configs";
 import AnimatedModal from "../utils/animated-modal";
-import { Validation } from "../elements/input-validation";
+import { Validation } from "../types/validation";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 
@@ -30,7 +30,7 @@ export type Command = {
   configValueMode?: "include";
   exec?: (options: CommandExecOptions<string>) => void;
   hover?: () => void;
-  available?: () => boolean;
+  available?: () => boolean | Promise<boolean>;
   active?: () => boolean;
   shouldFocusTestUI?: boolean;
   customData?: Record<string, string | boolean>;
@@ -56,6 +56,15 @@ export type CommandsSubgroup = {
   list: Command[];
   beforeList?: () => void;
 };
+
+export type CommandlineSubgroupKey = ConfigKey | CommandlineListKey;
+export type CommandlineListKey =
+  | "themes"
+  | "loadChallenge"
+  | "minBurst"
+  | "funbox"
+  | "tags"
+  | "ads";
 
 export function withValidation<T>(command: CommandWithValidation<T>): Command {
   return command as unknown as Command;

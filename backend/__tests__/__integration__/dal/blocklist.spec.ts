@@ -1,21 +1,32 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  beforeEach,
+  afterEach,
+  vi,
+} from "vitest";
 import { ObjectId } from "mongodb";
 import * as BlacklistDal from "../../../src/dal/blocklist";
-import { describeIntegration } from "..";
 
-describeIntegration()("BlocklistDal", () => {
+describe("BlocklistDal", () => {
+  beforeAll(async () => {
+    await BlacklistDal.createIndicies();
+  });
   describe("add", () => {
     beforeEach(() => {
-      vitest.useFakeTimers();
+      vi.useFakeTimers();
     });
     afterEach(() => {
-      vitest.useRealTimers();
+      vi.useRealTimers();
     });
     it("adds user", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
 
       //WHEN
@@ -25,7 +36,7 @@ describeIntegration()("BlocklistDal", () => {
       await expect(
         BlacklistDal.getCollection().findOne({
           emailHash: BlacklistDal.hash(email),
-        })
+        }),
       ).resolves.toMatchObject({
         emailHash: BlacklistDal.hash(email),
         timestamp: now,
@@ -34,7 +45,7 @@ describeIntegration()("BlocklistDal", () => {
       await expect(
         BlacklistDal.getCollection().findOne({
           usernameHash: BlacklistDal.hash(name),
-        })
+        }),
       ).resolves.toMatchObject({
         usernameHash: BlacklistDal.hash(name),
         timestamp: now,
@@ -43,9 +54,9 @@ describeIntegration()("BlocklistDal", () => {
     it("adds user with discordId", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -56,7 +67,7 @@ describeIntegration()("BlocklistDal", () => {
       await expect(
         BlacklistDal.getCollection().findOne({
           discordIdHash: BlacklistDal.hash(discordId),
-        })
+        }),
       ).resolves.toMatchObject({
         discordIdHash: BlacklistDal.hash(discordId),
         timestamp: now,
@@ -65,9 +76,9 @@ describeIntegration()("BlocklistDal", () => {
     it("adds user should not create duplicate name", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const email2 = `${name}@otherdomain.com`;
       await BlacklistDal.add({ name, email });
@@ -81,31 +92,31 @@ describeIntegration()("BlocklistDal", () => {
           .find({
             usernameHash: BlacklistDal.hash(name),
           })
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(1);
       await expect(
         BlacklistDal.getCollection()
           .find({
             emailHash: BlacklistDal.hash(email),
           })
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(1);
       await expect(
         BlacklistDal.getCollection()
           .find({
             emailHash: BlacklistDal.hash(email2),
           })
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(1);
     });
     it("adds user should not create duplicate email", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
-      const name2 = "user" + new ObjectId().toHexString();
+      const name2 = `user${new ObjectId().toHexString()}`;
       await BlacklistDal.add({ name, email });
 
       //WHEN
@@ -117,16 +128,16 @@ describeIntegration()("BlocklistDal", () => {
           .find({
             emailHash: BlacklistDal.hash(email),
           })
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(1);
     });
     it("adds user should not create duplicate discordId", async () => {
       //GIVEN
       const now = 1715082588;
-      vitest.setSystemTime(now);
+      vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
-      const name2 = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
+      const name2 = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -142,14 +153,14 @@ describeIntegration()("BlocklistDal", () => {
           .find({
             discordIdHash: BlacklistDal.hash(discordId),
           })
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(1);
     });
   });
   describe("contains", () => {
     it("contains user", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -159,33 +170,33 @@ describeIntegration()("BlocklistDal", () => {
       //by name
       await expect(BlacklistDal.contains({ name })).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ name: name.toUpperCase() })
+        BlacklistDal.contains({ name: name.toUpperCase() }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ name, email: "unknown", discordId: "unknown" })
+        BlacklistDal.contains({ name, email: "unknown", discordId: "unknown" }),
       ).resolves.toBeTruthy();
 
       //by email
       await expect(BlacklistDal.contains({ email })).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ email: email.toUpperCase() })
+        BlacklistDal.contains({ email: email.toUpperCase() }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ name: "unknown", email, discordId: "unknown" })
+        BlacklistDal.contains({ name: "unknown", email, discordId: "unknown" }),
       ).resolves.toBeTruthy();
 
       //by discordId
       await expect(BlacklistDal.contains({ discordId })).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ discordId: discordId.toUpperCase() })
+        BlacklistDal.contains({ discordId: discordId.toUpperCase() }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ name: "unknown", email: "unknown", discordId })
+        BlacklistDal.contains({ name: "unknown", email: "unknown", discordId }),
       ).resolves.toBeTruthy();
 
       //by name and email and discordId
       await expect(
-        BlacklistDal.contains({ name, email, discordId })
+        BlacklistDal.contains({ name, email, discordId }),
       ).resolves.toBeTruthy();
     });
     it("does not contain user", async () => {
@@ -195,20 +206,20 @@ describeIntegration()("BlocklistDal", () => {
 
       //WHEN / THEN
       await expect(
-        BlacklistDal.contains({ name: "unknown" })
+        BlacklistDal.contains({ name: "unknown" }),
       ).resolves.toBeFalsy();
       await expect(
-        BlacklistDal.contains({ email: "unknown" })
+        BlacklistDal.contains({ email: "unknown" }),
       ).resolves.toBeFalsy();
       await expect(
-        BlacklistDal.contains({ discordId: "unknown" })
+        BlacklistDal.contains({ discordId: "unknown" }),
       ).resolves.toBeFalsy();
       await expect(
         BlacklistDal.contains({
           name: "unknown",
           email: "unknown",
           discordId: "unknown",
-        })
+        }),
       ).resolves.toBeFalsy();
 
       await expect(BlacklistDal.contains({})).resolves.toBeFalsy();
@@ -218,7 +229,7 @@ describeIntegration()("BlocklistDal", () => {
   describe("remove", () => {
     it("removes existing username", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -232,15 +243,15 @@ describeIntegration()("BlocklistDal", () => {
 
       //decoy still exists
       await expect(
-        BlacklistDal.contains({ name: "test" })
+        BlacklistDal.contains({ name: "test" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ email: "test@example.com" })
+        BlacklistDal.contains({ email: "test@example.com" }),
       ).resolves.toBeTruthy();
     });
     it("removes existing email", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -254,15 +265,15 @@ describeIntegration()("BlocklistDal", () => {
 
       //decoy still exists
       await expect(
-        BlacklistDal.contains({ name: "test" })
+        BlacklistDal.contains({ name: "test" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ email: "test@example.com" })
+        BlacklistDal.contains({ email: "test@example.com" }),
       ).resolves.toBeTruthy();
     });
     it("removes existing discordId", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -282,18 +293,18 @@ describeIntegration()("BlocklistDal", () => {
 
       //decoy still exists
       await expect(
-        BlacklistDal.contains({ name: "test" })
+        BlacklistDal.contains({ name: "test" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ email: "test@example.com" })
+        BlacklistDal.contains({ email: "test@example.com" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ discordId: "testDiscordId" })
+        BlacklistDal.contains({ discordId: "testDiscordId" }),
       ).resolves.toBeTruthy();
     });
     it("removes existing username,email and discordId", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -313,19 +324,19 @@ describeIntegration()("BlocklistDal", () => {
 
       //decoy still exists
       await expect(
-        BlacklistDal.contains({ name: "test" })
+        BlacklistDal.contains({ name: "test" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ email: "test@example.com" })
+        BlacklistDal.contains({ email: "test@example.com" }),
       ).resolves.toBeTruthy();
       await expect(
-        BlacklistDal.contains({ discordId: "testDiscordId" })
+        BlacklistDal.contains({ discordId: "testDiscordId" }),
       ).resolves.toBeTruthy();
     });
 
     it("does not remove for empty user", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -344,8 +355,8 @@ describeIntegration()("BlocklistDal", () => {
     it("hashes case insensitive", () => {
       ["test", "TEST", "tESt"].forEach((value) =>
         expect(BlacklistDal.hash(value)).toEqual(
-          "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-        )
+          "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        ),
       );
     });
   });

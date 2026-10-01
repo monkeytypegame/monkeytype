@@ -1,8 +1,8 @@
-import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction, Request } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import {
+  ipKeyGenerator,
   rateLimit,
   RateLimitRequestHandler,
   type Options,
@@ -29,29 +29,30 @@ export const customHandler = (
   req: ExpressRequestWithContext,
   _res: Response,
   _next: NextFunction,
-  _options: Options
+  _options: Options,
 ): void => {
   if (req.ctx.decodedToken.type === "ApeKey") {
     throw new MonkeyError(
       statuses.APE_KEY_RATE_LIMIT_EXCEEDED.code,
-      statuses.APE_KEY_RATE_LIMIT_EXCEEDED.message
+      statuses.APE_KEY_RATE_LIMIT_EXCEEDED.message,
     );
   }
   throw new MonkeyError(429, "Request limit reached, please try again later.");
 };
 
 const getKey = (req: Request, _res: Response): string => {
-  return (
+  const ip =
     (req.headers["cf-connecting-ip"] as string) ||
     (req.headers["x-forwarded-for"] as string) ||
     (req.ip as string) ||
-    "255.255.255.255"
-  );
+    "255.255.255.255";
+  const key = ipKeyGenerator(ip);
+  return key;
 };
 
 const getKeyWithUid = (
   req: ExpressRequestWithContext,
-  _res: Response
+  _res: Response,
 ): string => {
   const uid = req?.ctx?.decodedToken?.uid;
   const useUid = uid !== undefined && uid !== "";
@@ -65,7 +66,7 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
   const convert = (options: RateLimitOptions): RateLimitRequestHandler => {
     return rateLimit({
       windowMs: convertWindowToMs(options.window),
-      max: options.max * REQUEST_MULTIPLIER,
+      limit: options.max * REQUEST_MULTIPLIER,
       handler: customHandler,
       keyGenerator: getKeyWithUid,
     });
@@ -96,28 +97,30 @@ export const requestLimiters: Record<RateLimiterId, RateLimitRequestHandler> =
   initialiseLimiters();
 
 export function rateLimitRequest<
-  T extends AppRouter | AppRoute
+  T extends AppRouter | AppRoute,
 >(): TsRestRequestHandler<T> {
   return async (
     req: TsRestRequestWithContext,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
-    const rateLimit = getMetadata(req).rateLimit;
-    if (rateLimit === undefined) {
+    const metadataRateLimit = getMetadata(req).rateLimit;
+    if (metadataRateLimit === undefined) {
       next();
       return;
     }
 
-    const hasApeKeyLimiterId = typeof rateLimit === "object";
+    const hasApeKeyLimiterId = typeof metadataRateLimit === "object";
     let rateLimiterId: RateLimiterId;
 
     if (req.ctx.decodedToken.type === "ApeKey") {
       rateLimiterId = hasApeKeyLimiterId
-        ? rateLimit.apeKey
+        ? metadataRateLimit.apeKey
         : "defaultApeRateLimit";
     } else {
-      rateLimiterId = hasApeKeyLimiterId ? rateLimit.normal : rateLimit;
+      rateLimiterId = hasApeKeyLimiterId
+        ? metadataRateLimit.normal
+        : metadataRateLimit;
     }
 
     const rateLimiter = requestLimiters[rateLimiterId];
@@ -125,8 +128,8 @@ export function rateLimitRequest<
       next(
         new MonkeyError(
           500,
-          `Unknown rateLimiterId '${rateLimiterId}', how did you manage to do this?`
-        )
+          `Unknown rateLimiterId '${rateLimiterId}', how did you manage to do this?`,
+        ),
       );
     } else {
       await rateLimiter(req, res, next);
@@ -137,12 +140,12 @@ export function rateLimitRequest<
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
   windowMs: 60 * 1000 * 60,
-  max: 1000 * REQUEST_MULTIPLIER,
+  limit: 1000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
       429,
-      "Maximum API request (root) limit reached. Please try again later."
+      "Maximum API request (root) limit reached. Please try again later.",
     );
   },
 });
@@ -156,7 +159,7 @@ const badAuthRateLimiter = new RateLimiterMemory({
 export async function badAuthRateLimiterHandler(
   req: ExpressRequestWithContext,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const badAuthEnabled =
     req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
@@ -172,7 +175,7 @@ export async function badAuthRateLimiterHandler(
     if (rateLimitStatus !== null && rateLimitStatus?.remainingPoints <= 0) {
       throw new MonkeyError(
         429,
-        "Too many bad authentication attempts, please try again later."
+        "Too many bad authentication attempts, please try again later.",
       );
     }
   } catch (error) {
@@ -186,7 +189,7 @@ export async function badAuthRateLimiterHandler(
 export async function incrementBadAuth(
   req: ExpressRequestWithContext,
   res: Response,
-  status: number
+  status: number,
 ): Promise<void> {
   const { enabled, penalty, flaggedStatusCodes } =
     req?.ctx?.configuration?.rateLimiting?.badAuthentication ?? {};
@@ -203,7 +206,7 @@ export async function incrementBadAuth(
 
 export const webhookLimit = rateLimit({
   windowMs: 1000,
-  max: 1 * REQUEST_MULTIPLIER,
+  limit: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

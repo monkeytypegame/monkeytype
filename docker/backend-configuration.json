@@ -12,7 +12,7 @@
     "dailyLeaderboards": {
       "enabled": false
     },
-    "leaderboards":{
+    "leaderboards": {
       "minTimeTyping": 0
     }
   }

@@ -1,5 +1,5 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
-import { IdSchema, StringNumberSchema } from "./util";
+import { IdSchema, nameWithSeparators, slug, StringNumberSchema } from "./util";
 import { LanguageSchema } from "./languages";
 import {
   ModeSchema,
@@ -9,17 +9,18 @@ import {
   DefaultTimeModeSchema,
   QuoteLengthSchema,
   DifficultySchema,
+  PersonalBestSchema,
 } from "./shared";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
-import { doesNotContainProfanity } from "./validation/validation";
+import { doesNotContainDisallowedWords } from "./validation/validation";
+import { ConnectionSchema } from "./connections";
+
+export const ResultFilterPresetNameSchema = slug().max(16);
 
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: z
-    .string()
-    .regex(/^[0-9a-zA-Z_.-]+$/)
-    .max(16),
+  name: ResultFilterPresetNameSchema,
   pb: z
     .object({
       no: z.boolean(),
@@ -57,8 +58,9 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;
 
-export const StreakHourOffsetSchema = z.number().int().min(-11).max(12);
+export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;
 
 export const UserStreakSchema = z
@@ -70,40 +72,36 @@ export const UserStreakSchema = z
   })
   .strict();
 export type UserStreak = z.infer<typeof UserStreakSchema>;
+export const TagNameSchema = nameWithSeparators().max(16);
+export type TagName = z.infer<typeof TagNameSchema>;
 
 export const UserTagSchema = z
   .object({
     _id: IdSchema,
-    name: z.string(),
+    name: TagNameSchema,
     personalBests: PersonalBestsSchema,
   })
   .strict();
 export type UserTag = z.infer<typeof UserTagSchema>;
 
 function profileDetailsBase(
-  schema: ZodString
+  schema: ZodString,
 ): ZodEffects<ZodOptional<ZodEffects<ZodString>>> {
-  return doesNotContainProfanity("word", schema)
+  return doesNotContainDisallowedWords("word", schema)
     .optional()
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(20)
-    .regex(/^[0-9a-zA-Z_.-]+$/)
-).or(z.literal(""));
+export const TwitterProfileSchema = profileDetailsBase(slug().max(15)).or(
+  z.literal(""),
+);
 
-export const GithubProfileSchema = profileDetailsBase(
-  z
-    .string()
-    .max(39)
-    .regex(/^[0-9a-zA-Z_.-]+$/)
-).or(z.literal(""));
+export const GithubProfileSchema = profileDetailsBase(slug().max(39)).or(
+  z.literal(""),
+);
 
 export const WebsiteSchema = profileDetailsBase(
-  z.string().url().max(200).startsWith("https://")
+  z.string().url().max(200).startsWith("https://"),
 ).or(z.literal(""));
 
 export const UserProfileDetailsSchema = z
@@ -118,14 +116,12 @@ export const UserProfileDetailsSchema = z
       })
       .strict()
       .optional(),
+    showActivityOnPublicProfile: z.boolean().optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
-export const CustomThemeNameSchema = z
-  .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
-  .max(16);
+export const CustomThemeNameSchema = nameWithSeparators().max(16);
 export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
 export const CustomThemeSchema = z
@@ -151,8 +147,8 @@ export const UserQuoteRatingsSchema = z.record(
   LanguageSchema,
   z.record(
     StringNumberSchema.describe("quoteId as string"),
-    z.number().nonnegative()
-  )
+    z.number().nonnegative(),
+  ),
 );
 export type UserQuoteRatings = z.infer<typeof UserQuoteRatingsSchema>;
 
@@ -160,8 +156,8 @@ export const UserLbMemorySchema = z.record(
   ModeSchema,
   z.record(
     Mode2Schema,
-    z.record(LanguageSchema, z.number().int().nonnegative())
-  )
+    z.record(LanguageSchema, z.number().int().nonnegative()),
+  ),
 );
 export type UserLbMemory = z.infer<typeof UserLbMemorySchema>;
 
@@ -174,7 +170,7 @@ export type RankAndCount = z.infer<typeof RankAndCountSchema>;
 export const AllTimeLbsSchema = z.object({
   time: z.record(
     Mode2Schema,
-    z.record(LanguageSchema, RankAndCountSchema.optional())
+    z.record(LanguageSchema, RankAndCountSchema.optional()),
   ),
 });
 export type AllTimeLbs = z.infer<typeof AllTimeLbsSchema>;
@@ -205,7 +201,7 @@ export const TestActivitySchema = z
     testsByDays: z
       .array(z.number().int().nonnegative().or(z.null()))
       .describe(
-        "Number of tests by day. Last element of the array is on the date `lastDay`. `null` means no tests on that day."
+        "Number of tests by day. Last element of the array is on the date `lastDay`. `null` means no tests on that day.",
       ),
     lastDay: z
       .number()
@@ -224,25 +220,42 @@ export const CountByYearAndDaySchema = z.record(
       .int()
       .nonnegative()
       .nullable()
-      .describe("number of tests, position in the array is the day of the year")
-  )
+      .describe(
+        "number of tests, position in the array is the day of the year",
+      ),
+  ),
 );
 export type CountByYearAndDay = z.infer<typeof CountByYearAndDaySchema>;
 
 //Record<language, array with quoteIds as string
 export const FavoriteQuotesSchema = z.record(
   LanguageSchema,
-  z.array(StringNumberSchema)
+  z.array(StringNumberSchema),
 );
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
+export const UserEmailSchema = z.string().email();
+
+/**
+ * username schema without profanity check
+ */
+export const UserNameWithoutFilterSchema = slug().min(1).max(16);
+
+/**
+ * username schema with profanity check
+ */
+export const UserNameSchema = doesNotContainDisallowedWords(
+  "substring",
+  UserNameWithoutFilterSchema,
+);
+
 export const UserSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
+  name: UserNameSchema,
+  email: UserEmailSchema,
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
-  lastReultHashes: z.array(z.string()).optional(), //todo: fix typo (its in the db too)
+  lastReultHashes: z.array(z.string()).optional(), //TODO: fix typo (it's in the db too)
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
   timeTyping: z
@@ -279,12 +292,6 @@ export type ResultFiltersGroup = keyof ResultFilters;
 export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
   keyof ResultFilters[T];
 
-export const TagNameSchema = z
-  .string()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
-  .max(16);
-export type TagName = z.infer<typeof TagNameSchema>;
-
 export const TypingStatsSchema = z.object({
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
@@ -304,6 +311,7 @@ export const UserProfileSchema = UserSchema.pick({
   isPremium: true,
   inventory: true,
   allTimeLbs: true,
+  testActivity: true,
 })
   .extend({
     typingStats: TypingStatsSchema,
@@ -356,3 +364,43 @@ export const ReportUserReasonSchema = z.enum([
   "Suspected cheating",
 ]);
 export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
+
+// stricter schema used while password creation
+export const NewPasswordSchema = z
+  .string()
+  .min(8, { message: "must be at least 8 characters" })
+  .max(64, { message: "must be at most 64 characters" })
+  .regex(/[A-Z]/, { message: "must contain at least one capital letter" })
+  .regex(/[\d]/, { message: "must contain at least one number" })
+  .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
+    message: "must contain at least one special character",
+  });
+export type NewPassword = z.infer<typeof NewPasswordSchema>;
+
+// lenient schema for existing passwords
+export const PasswordSchema = z.string().min(1, "Required");
+export type Password = z.infer<typeof PasswordSchema>;
+
+export const FriendSchema = UserSchema.pick({
+  uid: true,
+  name: true,
+  discordId: true,
+  discordAvatar: true,
+  startedTests: true,
+  completedTests: true,
+  timeTyping: true,
+  xp: true,
+  banned: true,
+  lbOptOut: true,
+})
+  .extend({
+    connectionId: IdSchema.optional(),
+    top15: PersonalBestSchema.optional(),
+    top60: PersonalBestSchema.optional(),
+    badgeId: z.number().int().optional(),
+    isPremium: z.boolean().optional(),
+    streak: UserStreakSchema.pick({ length: true, maxLength: true }).optional(),
+  })
+  .merge(ConnectionSchema.pick({ lastModified: true }).partial());
+
+export type Friend = z.infer<typeof FriendSchema>;

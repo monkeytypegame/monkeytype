@@ -16,6 +16,8 @@ export type GetConfigurationResponse = z.infer<
   typeof GetConfigurationResponseSchema
 >;
 
+// marked as deprecated but zod team might reconsider according to https://github.com/colinhacks/zod/issues/2854#issuecomment-3100623150
+// oxlint-disable-next-line no-deprecated
 export const PartialConfigurationSchema = ConfigurationSchema.deepPartial();
 export type PartialConfiguration = z.infer<typeof PartialConfigurationSchema>;
 
@@ -96,5 +98,5 @@ export const configurationContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

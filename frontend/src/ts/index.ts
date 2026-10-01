@@ -1,53 +1,45 @@
-// this file should be concatenated at the top of the legacy ts files
-import "jquery-color";
-import "jquery.easing";
+// register signal tracking hook before any signals are created
+import "./dev/signal-tracker";
+
+//enable solidjs-devtools
+import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/footer";
-import "./event-handlers/keymap";
 import "./event-handlers/test";
-import "./event-handlers/about";
-import "./event-handlers/settings";
-import "./event-handlers/account";
-import "./event-handlers/leaderboards";
-import "./event-handlers/login";
 
-import "./modals/google-sign-up";
-
-import "./firebase";
+import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
-import "./elements/settings/account-settings-notice";
 import "./controllers/ad-controller";
-import Config, { loadFromLocalStorage } from "./config";
-import * as TestStats from "./test/test-stats";
-import * as Replay from "./test/replay";
+import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import "./controllers/account-controller";
-import { enable } from "./states/glarses-mode";
-import "./test/caps-warning";
-import "./modals/simple-modals";
-import * as CookiesModal from "./modals/cookies";
-import "./controllers/input-controller";
-import "./ready";
+import { onAuthStateChanged } from "./auth";
+import "./input/listeners";
 import "./controllers/route-controller";
-import "./pages/about";
-import "./elements/scroll-to-top";
-import * as Account from "./pages/account";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
-import "./states/connection";
+import "./legacy-states/connection";
 import "./test/tts";
-import "./elements/fps-counter";
-import "./controllers/profile-search-controller";
-import { isDevEnvironment } from "./utils/misc";
-import * as VersionButton from "./elements/version-button";
+import { addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";
-import { getDevOptionsModal } from "./utils/async-modules";
+import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
+import "./elements/psa";
+import "./controllers/url-handler";
+import { applyEngineSettings } from "./anim";
+import { qs, qsa, qsr } from "./utils/dom";
+import { mountComponents } from "./components/mount";
+import "./ready";
+import { setVersion } from "./states/core";
+import { loadFromLocalStorage } from "./config/lifecycle";
+
+import "./input/hotkeys";
+import { showModal } from "./states/modals";
+import { getLastEventLog } from "./states/test";
+import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
 Object.defineProperty(Math, "random", {
@@ -68,44 +60,41 @@ Object.defineProperty(window, "Math", {
   enumerable: true,
 });
 
-function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
-}
-
+applyEngineSettings();
 void loadFromLocalStorage();
-void VersionButton.update();
-Focus.set(true, true);
+void fetchLatestVersion().then((data) => {
+  if (data === null) return;
+  setVersion(data);
+});
 
+Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
-  CookiesModal.show();
-} else {
-  Cookies.activateWhatsAccepted();
+  showModal("Cookies");
 }
+void init(onAuthStateChanged).then(() => {
+  if (accepted !== null) {
+    Cookies.activateWhatsAccepted();
+  }
+});
 
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  toggleFilterDebug: Account.toggleFilterDebug,
-  glarsesMode: enable,
-  stats: TestStats.getStats,
-  replay: Replay.getReplayExport,
+  glarsesMode: () => {
+    console.log("Moved to settings > danger zone > the rest");
+  },
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
+  toggleSmoothedBurst: Result.toggleSmoothedBurst,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,
+  qs: qs,
+  qsa: qsa,
+  qsr: qsr,
+  lastEventLog: () => getLastEventLog(),
+  currentEventLog: buildEventLog,
 });
 
-if (isDevEnvironment()) {
-  void import("jquery").then((jq) => {
-    addToGlobal({ $: jq.default });
-  });
-  void getDevOptionsModal().then((module) => {
-    module.appendButton();
-  });
-}
+mountComponents();

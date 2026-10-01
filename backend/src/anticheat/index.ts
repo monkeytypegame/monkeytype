@@ -14,7 +14,7 @@ export function validateResult(
   _result: object,
   _version: string,
   _uaStringifiedObject: string,
-  _lbOptOut: boolean
+  _lbOptOut: boolean,
 ): boolean {
   Logger.warning("No anticheat module found, result will not be validated.");
   return true;
@@ -24,7 +24,7 @@ export function validateKeys(
   _result: CompletedEvent,
   _keySpacingStats: KeyStats,
   _keyDurationStats: KeyStats,
-  _uid: string
+  _uid: string,
 ): boolean {
   Logger.warning("No anticheat module found, key data will not be validated.");
   return true;

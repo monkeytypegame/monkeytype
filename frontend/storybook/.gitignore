@@ -1,0 +1,5 @@
+node_modules
+dist
+storybook-static
+bun.lock
+package-lock.json

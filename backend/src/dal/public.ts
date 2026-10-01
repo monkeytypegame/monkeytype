@@ -12,7 +12,7 @@ export type PublicSpeedStatsDB = {
 
 export async function updateStats(
   restartCount: number,
-  time: number
+  time: number,
 ): Promise<boolean> {
   await db.collection<PublicTypingStatsDB>("public").updateOne(
     { _id: "stats" },
@@ -23,7 +23,7 @@ export async function updateStats(
         timeTyping: roundTo2(time),
       },
     },
-    { upsert: true }
+    { upsert: true },
   );
   return true;
 }
@@ -34,7 +34,7 @@ export async function updateStats(
 export async function getSpeedHistogram(
   language: string,
   mode: string,
-  mode2: string
+  mode2: string,
 ): Promise<SpeedHistogram> {
   const key = `${language}_${mode}_${mode2}` as keyof PublicSpeedStatsDB;
 
@@ -42,7 +42,7 @@ export async function getSpeedHistogram(
     throw new MonkeyError(
       400,
       "Invalid speed histogram key",
-      "get speed histogram"
+      "get speed histogram",
     );
   }
 
@@ -62,7 +62,7 @@ export async function getTypingStats(): Promise<PublicTypingStatsDB> {
     throw new MonkeyError(
       404,
       "Public typing stats not found",
-      "get typing stats"
+      "get typing stats",
     );
   }
   return stats;

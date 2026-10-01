@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 
 export function isTestTooShort(result: CompletedEvent): boolean {

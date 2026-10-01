@@ -36,7 +36,7 @@ const pairs: Pair[] = [
 export async function check(word: string): Promise<boolean> {
   if (
     pairs.find((pair) =>
-      word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi"))
+      word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi")),
     ) === undefined
   ) {
     return false;
@@ -46,7 +46,7 @@ export async function check(word: string): Promise<boolean> {
 
 export async function replace(word: string): Promise<string> {
   const replacement = pairs.find((pair) =>
-    word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi"))
+    word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi")),
   );
 
   if (replacement === undefined) return word;
@@ -57,17 +57,18 @@ export async function replace(word: string): Promise<string> {
     RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
     (_, $1, $2, $3) =>
       $1 +
+      // oxlint-disable-next-line typescript/prefer-string-starts-ends-with
       (($2 as string).charAt(0) === ($2 as string).charAt(0).toUpperCase()
         ? shouldWholeReplacementWordBeCapitalised($2 as string)
           ? randomReplacement.toUpperCase()
           : capitalizeFirstLetterOfEachWord(randomReplacement)
         : randomReplacement) +
-      $3
+      $3,
   );
 }
 
 function shouldWholeReplacementWordBeCapitalised(
-  wordToBeReplaced: string
+  wordToBeReplaced: string,
 ): boolean {
   if (wordToBeReplaced === "I") return false;
   if (wordToBeReplaced === wordToBeReplaced.toUpperCase()) return true;

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { buildMonkeyMail } from "../../src/utils/monkey-mail";
 
 describe("Monkey Mail", () => {

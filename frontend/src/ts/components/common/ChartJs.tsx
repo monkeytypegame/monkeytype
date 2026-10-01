@@ -1,0 +1,99 @@
+import {
+  CartesianScaleOptions,
+  Chart,
+  ChartData,
+  ChartOptions,
+  ChartType,
+  DefaultDataPoint,
+  ScaleChartOptions,
+} from "chart.js";
+import chartTrendline from "chartjs-plugin-trendline";
+import { createDeferred, JSXElement, onCleanup, onMount } from "solid-js";
+
+import { Theme } from "../../constants/themes";
+import { createEffectOn } from "../../hooks/effects";
+import { useRefWithUtils } from "../../hooks/useRefWithUtils";
+import { getTheme } from "../../states/theme";
+
+Chart.register(chartTrendline);
+type ChartJSProps<
+  T extends ChartType = ChartType,
+  TData = DefaultDataPoint<T>,
+> = {
+  name: string;
+  type: T;
+  data: ChartData<T, TData>;
+  options?: ChartOptions<T>;
+  onChartInit?: (chart: Chart<T, TData>) => void;
+};
+
+export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
+  props: ChartJSProps<T, TData>,
+): JSXElement {
+  // Refs are assigned by SolidJS via the ref attribute
+  const [canvasRef, canvasEl] = useRefWithUtils<HTMLCanvasElement>();
+
+  let chart: Chart<T, TData> | undefined;
+
+  onMount(() => {
+    const canvas = canvasEl();
+    if (canvas === undefined) return;
+    if (chart !== undefined) return;
+
+    chart = new Chart(canvas.native, {
+      type: props.type,
+      data: props.data,
+      options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
+    });
+    props.onChartInit?.(chart);
+  });
+
+  const updateChart = (data: ChartData<T, TData>): void => {
+    if (!chart) return;
+
+    chart.data = data;
+
+    if (props.options) {
+      chart.options = addColorsToOptions(props.options, getTheme);
+    }
+
+    chart.update("none");
+  };
+
+  const deferredData = createDeferred(() => props.data, { timeoutMs: 500 });
+
+  createEffectOn(deferredData, (data) => updateChart(data), { defer: true });
+
+  onCleanup(() => {
+    chart?.destroy();
+  });
+
+  return <canvas class="chartCanvas" ref={canvasRef}></canvas>;
+}
+
+function addColorsToOptions<TType extends ChartType = ChartType>(
+  options: ChartOptions<TType>,
+  theme: () => Theme,
+): ChartOptions<TType> {
+  //axis colors
+  const chartScaleOptions = options as ScaleChartOptions<TType>;
+  Object.keys(chartScaleOptions.scales).forEach((scaleID) => {
+    const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
+    axis.ticks = {
+      ...axis.ticks,
+      color: theme().sub,
+    };
+    axis.title = {
+      ...axis.title,
+      color: theme().sub,
+    };
+    axis.grid = {
+      ...axis.grid,
+      color: theme().subAlt,
+      tickColor: theme().subAlt,
+      borderColor: theme().subAlt,
+    };
+  });
+
+  return options;
+}

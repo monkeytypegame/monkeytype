@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { LocalStorageWithSchema } from "./local-storage-with-schema";
-import { isDevEnvironment } from "./misc";
+import { isDevEnvironment } from "./env";
+import { isProfilerMode } from "./profiler-mode";
 
 const nativeLog = console.log;
 const nativeWarn = console.warn;
@@ -14,7 +15,9 @@ const debugLogsLS = new LocalStorageWithSchema({
 
 let debugLogs = debugLogsLS.get();
 
-if (isDevEnvironment()) {
+if (isProfilerMode()) {
+  debugLogs = false;
+} else if (isDevEnvironment()) {
   debugLogs = true;
   debug("Debug logs automatically enabled on localhost");
 }
@@ -29,7 +32,7 @@ function info(...args: unknown[]): void {
   nativeLog(
     "%cINFO",
     "background:#4CAF50;color: #111;padding:0 5px;border-radius:10px",
-    ...args
+    ...args,
   );
 }
 
@@ -37,7 +40,7 @@ function warn(...args: unknown[]): void {
   nativeWarn(
     "%cWRN",
     "background:#FFC107;color: #111;padding:0 5px;border-radius:10px",
-    ...args
+    ...args,
   );
 }
 
@@ -45,7 +48,7 @@ function error(...args: unknown[]): void {
   nativeError(
     "%cERR",
     "background:#F44336;color: #111;padding:0 5px;border-radius:10px",
-    ...args
+    ...args,
   );
 }
 
@@ -54,7 +57,7 @@ function debug(...args: unknown[]): void {
   nativeLog(
     "%cDEBG",
     "background:#2196F3;color: #111;padding:0 5px;border-radius:10px",
-    ...args
+    ...args,
   );
 }
 

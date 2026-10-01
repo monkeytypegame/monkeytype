@@ -20,7 +20,7 @@ export const AddPresetRequestSchema = PresetSchema.omit({ _id: true });
 export type AddPresetRequest = z.infer<typeof AddPresetRequestSchema>;
 
 export const AddPresetResponseSchemna = responseWithData(
-  z.object({ presetId: IdSchema })
+  z.object({ presetId: IdSchema }),
 );
 export type AddPresetResponse = z.infer<typeof AddPresetResponseSchemna>;
 
@@ -94,5 +94,5 @@ export const presetsContract = c.router(
     }),
 
     commonResponses: CommonResponses,
-  }
+  },
 );

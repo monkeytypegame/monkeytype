@@ -2,7 +2,10 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["vitest/globals"]
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
+    "useUnknownInCatchVariables": false,
+    "strictPropertyInitialization": false
   },
   "files": ["vitest.d.ts"],
   "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]

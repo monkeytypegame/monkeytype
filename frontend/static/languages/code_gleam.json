@@ -1,6 +1,5 @@
 {
   "name": "code_gleam",
-  "ligatures": true,
   "words": [
     "!",
     "!=",

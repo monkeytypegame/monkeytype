@@ -25,11 +25,11 @@ export type PersonalBest = z.infer<typeof PersonalBestSchema>;
 export const PersonalBestsSchema = z.object({
   time: z.record(
     StringNumberSchema.describe("Number of seconds as string"),
-    z.array(PersonalBestSchema)
+    z.array(PersonalBestSchema),
   ),
   words: z.record(
     StringNumberSchema.describe("Number of words as string"),
-    z.array(PersonalBestSchema)
+    z.array(PersonalBestSchema),
   ),
   quote: z.record(StringNumberSchema, z.array(PersonalBestSchema)),
   custom: z.record(z.literal("custom"), z.array(PersonalBestSchema)),
@@ -74,7 +74,7 @@ export const Mode2Schema = z.union(
     errorMap: () => ({
       message: 'Needs to be either a number, "zen" or "custom".',
     }),
-  }
+  },
 );
 
 export type Mode2<M extends Mode> = M extends M

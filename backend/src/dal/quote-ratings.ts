@@ -14,19 +14,19 @@ export async function submit(
   quoteId: number,
   language: Language,
   rating: number,
-  update: boolean
+  update: boolean,
 ): Promise<void> {
   if (update) {
     await getQuoteRatingCollection().updateOne(
       { quoteId, language },
       { $inc: { totalRating: rating } },
-      { upsert: true }
+      { upsert: true },
     );
   } else {
     await getQuoteRatingCollection().updateOne(
       { quoteId, language },
       { $inc: { ratings: 1, totalRating: rating } },
-      { upsert: true }
+      { upsert: true },
     );
   }
 
@@ -37,18 +37,18 @@ export async function submit(
   const average = parseFloat(
     (
       Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
-    ).toFixed(1)
+    ).toFixed(1),
   );
 
   await getQuoteRatingCollection().updateOne(
     { quoteId, language },
-    { $set: { average } }
+    { $set: { average } },
   );
 }
 
 export async function get(
   quoteId: number,
-  language: Language
+  language: Language,
 ): Promise<DBQuoteRating | null> {
   return await getQuoteRatingCollection().findOne({ quoteId, language });
 }

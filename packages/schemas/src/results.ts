@@ -10,6 +10,7 @@ import {
 import { LanguageSchema } from "./languages";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema } from "./configs";
+import { ChallengeNameSchema } from "./challenges";
 
 export const IncompleteTestSchema = z.object({
   acc: PercentageSchema,
@@ -17,9 +18,16 @@ export const IncompleteTestSchema = z.object({
 });
 export type IncompleteTest = z.infer<typeof IncompleteTestSchema>;
 
+export const OldChartDataSchema = z.object({
+  wpm: z.array(z.number().nonnegative()).max(122),
+  raw: z.array(z.number().int().nonnegative()).max(122),
+  err: z.array(z.number().nonnegative()).max(122),
+});
+export type OldChartData = z.infer<typeof OldChartDataSchema>;
+
 export const ChartDataSchema = z.object({
   wpm: z.array(z.number().nonnegative()).max(122),
-  raw: z.array(z.number().nonnegative()).max(122),
+  burst: z.array(z.number().int().nonnegative()).max(122),
   err: z.array(z.number().nonnegative()).max(122),
 });
 export type ChartData = z.infer<typeof ChartDataSchema>;
@@ -42,6 +50,14 @@ export const CompletedEventCustomTextSchema = z.object({
 export type CompletedEventCustomText = z.infer<
   typeof CompletedEventCustomTextSchema
 >;
+
+export const CustomTextSettingsSchema = CompletedEventCustomTextSchema.omit({
+  textLen: true,
+}).extend({
+  text: z.array(z.string()).min(1),
+});
+
+export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
 
 export const CharStatsSchema = z.tuple([
   z.number().int().nonnegative(),
@@ -121,7 +137,7 @@ export const CompletedEventSchema = ResultBaseSchema.required({
 })
   .extend({
     charTotal: z.number().int().nonnegative(),
-    challenge: token().max(100).optional(),
+    challenge: ChallengeNameSchema.optional(),
     customText: CompletedEventCustomTextSchema.optional(),
     hash: token().max(100),
     keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")),

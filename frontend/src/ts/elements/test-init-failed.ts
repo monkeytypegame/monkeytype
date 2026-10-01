@@ -1,7 +1,7 @@
 const elem = document.querySelector<HTMLElement>(".pageTest #testInitFailed");
 const testElem = document.querySelector<HTMLElement>(".pageTest #typingTest");
 const errorElem = document.querySelector<HTMLElement>(
-  ".pageTest #testInitFailed .error"
+  ".pageTest #testInitFailed .error",
 );
 
 export function show(): void {

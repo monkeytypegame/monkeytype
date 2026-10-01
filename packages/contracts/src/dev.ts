@@ -1,6 +1,11 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { CommonResponses, meta, responseWithData } from "./util/api";
+import {
+  CommonResponses,
+  meta,
+  MonkeyResponseSchema,
+  responseWithData,
+} from "./util/api";
 import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GenerateDataRequestSchema = z.object({
@@ -9,7 +14,7 @@ export const GenerateDataRequestSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "If `true` create user with <username>@example.com and password `password`. If false user has to exist."
+      "If `true` create user with <username>@example.com and password `password`. If false user has to exist.",
     ),
   firstTestTimestamp: z.number().int().nonnegative().optional(),
   lastTestTimestamp: z.number().int().nonnegative().optional(),
@@ -22,9 +27,16 @@ export const GenerateDataResponseSchema = responseWithData(
   z.object({
     uid: IdSchema,
     email: z.string().email(),
-  })
+  }),
 );
 export type GenerateDataResponse = z.infer<typeof GenerateDataResponseSchema>;
+
+export const AddDebugInboxItemRequestSchema = z.object({
+  rewardType: z.enum(["xp", "badge", "none"]),
+});
+export type AddDebugInboxItemRequest = z.infer<
+  typeof AddDebugInboxItemRequestSchema
+>;
 
 const c = initContract();
 export const devContract = c.router(
@@ -39,6 +51,19 @@ export const devContract = c.router(
         200: GenerateDataResponseSchema,
       },
     },
+    addDebugInboxItem: {
+      summary: "add debug inbox item",
+      description: "Add a debug inbox item with optional reward.",
+      method: "POST",
+      path: "/addDebugInboxItem",
+      body: AddDebugInboxItemRequestSchema.strict(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: meta({
+        openApiTags: "development",
+      }),
+    },
   },
   {
     pathPrefix: "/dev",
@@ -50,5 +75,5 @@ export const devContract = c.router(
       },
     }),
     commonResponses: CommonResponses,
-  }
+  },
 );

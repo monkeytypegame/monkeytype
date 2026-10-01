@@ -18,9 +18,10 @@ export type FunboxProperty =
   | "speaks"
   | "unspeakable"
   | "noInfiniteDuration"
-  | "noLigatures"
+  | "noJoiningScript"
   | `toPush:${number}`
   | "wordOrder:reverse"
+  | "reverseDirection"
   | "ignoreReducedMotion";
 
 type FunboxCSSModification = "typingTest" | "words" | "body" | "main";

@@ -1,6 +1,6 @@
 ## Build locally
 
-From root directoy: 
+From root directoy:
 
 ```
   docker buildx build --progress=plain --no-cache -t monkeytype/monkeytype-backend:latest . -f  ./docker/backend/Dockerfile

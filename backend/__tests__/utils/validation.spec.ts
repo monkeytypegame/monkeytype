@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Validation from "../../src/utils/validation";
 
 describe("Validation", () => {
@@ -47,7 +48,7 @@ describe("Validation", () => {
 
     testCases.forEach((testCase) => {
       expect(Validation.isTestTooShort(testCase.result as any)).toBe(
-        testCase.expected
+        testCase.expected,
       );
     });
   });

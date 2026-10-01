@@ -5,7 +5,7 @@ function getRandomIPvXaddress(
   parts: number,
   base: number,
   pad: boolean,
-  separator: string
+  separator: string,
 ): string {
   const addr: string[] = [];
   const b = Math.round(bits / parts);
@@ -27,7 +27,7 @@ function getIPCidr(
   base: number,
   separator: string,
   address: string,
-  maskSize: number
+  maskSize: number,
 ): string {
   const addr = address.split(separator).map((a) => parseInt(a, base));
   const b = Math.round(bits / parts);
@@ -42,11 +42,9 @@ function getIPCidr(
       }
     }
   }
-  return (
-    addr.map((a) => a.toString(base)).join(separator) +
-    "/" +
-    maskSize.toString()
-  );
+  return `${addr
+    .map((a) => a.toString(base))
+    .join(separator)}/${maskSize.toString()}`;
 }
 
 export function getRandomIPv4address(): string {
@@ -118,9 +116,11 @@ export function compressIpv6(ip: string): string {
         index >= longestStartIndex &&
         index <= longestEndIndex &&
         longestStartIndex !== longestEndIndex
-      )
+      ) {
         return ":";
-      else return "0";
+      } else {
+        return "0";
+      }
     }
 
     return word;
@@ -133,7 +133,7 @@ export function compressIpv6(ip: string): string {
 
   if (ipPortSplit.length > 1) {
     // The IP has a port. Add it back
-    newIp += "/" + ipPortSplit[1];
+    newIp += `/${ipPortSplit[1]}`;
   }
 
   return newIp;

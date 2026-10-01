@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Numbers from "../src/numbers";
 
 describe("numbers", () => {
@@ -91,8 +92,8 @@ describe("numbers", () => {
             input.inMax,
             input.outMin,
             input.outMax,
-            input.clamp
-          )
+            input.clamp,
+          ),
         ).toEqual(expected);
       });
     });
@@ -121,7 +122,7 @@ describe("numbers", () => {
         "should return $expected for $input",
         ({ input, expected }) => {
           expect(Numbers.isSafeNumber(input)).toEqual(expected);
-        }
+        },
       );
     });
   });
@@ -149,7 +150,7 @@ describe("numbers", () => {
         "should return $expected for $input",
         ({ input, expected }) => {
           expect(Numbers.safeNumber(input as number)).toEqual(expected);
-        }
+        },
       );
     });
   });

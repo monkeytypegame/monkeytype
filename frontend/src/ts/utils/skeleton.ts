@@ -7,6 +7,11 @@ export function save(id: string, removeAfter = true): void {
   if (removeAfter) remove(id);
 }
 
+export function add(id: string): void {
+  if (!has(id)) {
+    save(id);
+  }
+}
 export function remove(id: string): void {
   const popup = skeletons.get(id);
   if (popup) {
@@ -24,7 +29,11 @@ const parents = {
 };
 
 export function append(id: string, parent: SkeletonAppendParents): void {
-  const popup = skeletons.get(id) as HTMLElement;
+  let popup = skeletons.get(id) as HTMLElement;
+
+  if (popup === undefined) {
+    console.error(`Skeleton with id ${id} not found`);
+  }
   parents[parent].append(popup);
 }
 

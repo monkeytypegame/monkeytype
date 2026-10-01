@@ -1,5 +1,6 @@
 {
   "name": "irish",
+  "bcp47": "ga-IE",
   "words": [
     "an",
     "bí",

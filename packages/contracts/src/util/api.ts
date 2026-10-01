@@ -15,7 +15,8 @@ export type OpenApiTag =
   | "development"
   | "users"
   | "quotes"
-  | "webhooks";
+  | "webhooks"
+  | "connections";
 
 export type PermissionId =
   | "quoteMod"
@@ -43,12 +44,12 @@ export type EndpointMetadata = {
 
 /**
  *
- * @param meta Ensure the type of metadata is `EndpointMetadata`.
+ * @param metadata Ensure the type of metadata is `EndpointMetadata`.
  * Ts-rest does not allow to specify the type of `metadata`.
  * @returns
  */
-export function meta(meta: EndpointMetadata): EndpointMetadata {
-  return meta;
+export function meta(metadata: EndpointMetadata): EndpointMetadata {
+  return metadata;
 }
 
 export type RequestAuthenticationOptions = {
@@ -76,6 +77,8 @@ export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 
 export const MonkeyClientError = MonkeyResponseSchema;
+export type MonkeyClientErrorType = z.infer<typeof MonkeyClientError>;
+
 export const MonkeyServerError = MonkeyClientError.extend({
   errorId: z.string(),
   uid: z.string().optional(),
@@ -83,7 +86,7 @@ export const MonkeyServerError = MonkeyClientError.extend({
 export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
 
 export function responseWithNullableData<T extends ZodSchema>(
-  dataSchema: T
+  dataSchema: T,
 ): z.ZodObject<
   z.objectUtil.extendShape<
     typeof MonkeyResponseSchema.shape,
@@ -98,7 +101,7 @@ export function responseWithNullableData<T extends ZodSchema>(
 }
 
 export function responseWithData<T extends ZodSchema>(
-  dataSchema: T
+  dataSchema: T,
 ): z.ZodObject<
   z.objectUtil.extendShape<
     typeof MonkeyResponseSchema.shape,
@@ -115,13 +118,31 @@ export function responseWithData<T extends ZodSchema>(
 export const CommonResponses = {
   400: MonkeyClientError.describe("Generic client error"),
   401: MonkeyClientError.describe(
-    "Authentication required but not provided or invalid"
+    "Authentication required but not provided or invalid",
   ),
   403: MonkeyClientError.describe("Operation not permitted"),
   422: MonkeyValidationErrorSchema.describe("Request validation failed"),
   429: MonkeyClientError.describe("Rate limit exceeded"),
+  470: MonkeyClientError.describe("Invalid ApeKey"),
+  471: MonkeyClientError.describe("ApeKey is inactive"),
+  472: MonkeyClientError.describe("ApeKey is malformed"),
+  479: MonkeyClientError.describe("ApeKey rate limit exceeded"),
   500: MonkeyServerError.describe("Generic server error"),
   503: MonkeyServerError.describe(
-    "Endpoint disabled or server is under maintenance"
+    "Endpoint disabled or server is under maintenance",
   ),
 };
+
+export type CommonResponsesType =
+  | {
+      status: 400 | 401 | 403 | 429 | 470 | 471 | 472 | 479;
+      body: MonkeyClientErrorType;
+    }
+  | {
+      status: 422;
+      body: MonkeyValidationError;
+    }
+  | {
+      status: 500 | 503;
+      body: MonkeyServerErrorType;
+    };

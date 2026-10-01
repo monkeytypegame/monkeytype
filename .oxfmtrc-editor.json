@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/heads/main/npm/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "htmlWhitespaceSensitivity": "ignore",
+  "endOfLine": "lf",
+  "trailingComma": "all",
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    "node_modules",
+    ".turbo",
+    "dist",
+    "build",
+    "logs",
+    "coverage",
+    "*.md"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "options": {
+        "experimentalSortImports": {
+          "groups": [
+            "type-import",
+            ["value-builtin", "value-external"],
+            "type-internal",
+            "value-internal",
+            ["type-parent", "type-sibling", "type-index"],
+            ["value-parent", "value-sibling", "value-index"],
+            "unknown"
+          ]
+        }
+      }
+    }
+  ]
+}

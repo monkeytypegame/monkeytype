@@ -1,13 +1,13 @@
+import { describe, it, expect } from "vitest";
 import { ObjectId } from "mongodb";
 import * as PresetDal from "../../../src/dal/preset";
-import _ from "lodash";
-import { describeIntegration } from "..";
 
-describeIntegration()("PresetDal", () => {
+describe("PresetDal", () => {
   describe("readPreset", () => {
     it("should read", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
+      const decoyUid = new ObjectId().toHexString();
       const first = await PresetDal.addPreset(uid, {
         name: "first",
         config: { ads: "sellout" },
@@ -22,7 +22,11 @@ describeIntegration()("PresetDal", () => {
           showAverage: "off",
         },
       });
-      await PresetDal.addPreset("unknown", { name: "unknown", config: {} });
+
+      await PresetDal.addPreset(decoyUid, {
+        name: "unknown",
+        config: {},
+      });
 
       //WHEN
       const read = await PresetDal.getPresets(uid);
@@ -49,7 +53,7 @@ describeIntegration()("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
   });
@@ -63,9 +67,9 @@ describeIntegration()("PresetDal", () => {
       }
 
       //WHEN / THEN
-      await expect(() =>
-        PresetDal.addPreset(uid, { name: "max", config: {} })
-      ).rejects.toThrowError("Too many presets");
+      await expect(async () =>
+        PresetDal.addPreset(uid, { name: "max", config: {} }),
+      ).rejects.toThrow("Too many presets");
     });
     it("should add preset", async () => {
       //GIVEN
@@ -94,14 +98,15 @@ describeIntegration()("PresetDal", () => {
             name: "new",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
   });
 
   describe("editPreset", () => {
     it("should not fail if preset is unknown", async () => {
-      await PresetDal.editPreset("uid", {
+      const uid = new ObjectId().toHexString();
+      await PresetDal.editPreset(uid, {
         _id: new ObjectId().toHexString(),
         name: "new",
         config: {},
@@ -157,7 +162,7 @@ describeIntegration()("PresetDal", () => {
             name: "second",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
@@ -167,7 +172,7 @@ describeIntegration()("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
 
@@ -194,7 +199,7 @@ describeIntegration()("PresetDal", () => {
             name: "newName",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
     it("should edit with name only - partial preset", async () => {
@@ -232,7 +237,7 @@ describeIntegration()("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
     it("should not edit present not matching uid", async () => {
@@ -264,7 +269,7 @@ describeIntegration()("PresetDal", () => {
             name: "first",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
     it("should edit when partial is edited to full", async () => {
@@ -300,7 +305,7 @@ describeIntegration()("PresetDal", () => {
             config: { ads: "off" },
             settingGroups: null,
           }),
-        ])
+        ]),
       );
     });
     it("should edit when full is edited to partial", async () => {
@@ -343,16 +348,17 @@ describeIntegration()("PresetDal", () => {
               showAverage: "off",
             },
           }),
-        ])
+        ]),
       );
     });
   });
 
   describe("removePreset", () => {
     it("should fail if preset is unknown", async () => {
-      await expect(() =>
-        PresetDal.removePreset("uid", new ObjectId().toHexString())
-      ).rejects.toThrowError("Preset not found");
+      const uid = new ObjectId().toHexString();
+      await expect(async () =>
+        PresetDal.removePreset(uid, new ObjectId().toHexString()),
+      ).rejects.toThrow("Preset not found");
     });
     it("should remove", async () => {
       //GIVEN
@@ -375,7 +381,7 @@ describeIntegration()("PresetDal", () => {
       ).presetId;
 
       //WHEN
-      PresetDal.removePreset(uid, first);
+      await PresetDal.removePreset(uid, first);
 
       //THEN
       const read = await PresetDal.getPresets(uid);
@@ -388,7 +394,7 @@ describeIntegration()("PresetDal", () => {
             name: "second",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
@@ -398,7 +404,7 @@ describeIntegration()("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
     it("should not remove present not matching uid", async () => {
@@ -413,9 +419,9 @@ describeIntegration()("PresetDal", () => {
       ).presetId;
 
       //WHEN
-      await expect(() =>
-        PresetDal.removePreset(decoyUid, first)
-      ).rejects.toThrowError("Preset not found");
+      await expect(async () =>
+        PresetDal.removePreset(decoyUid, first),
+      ).rejects.toThrow("Preset not found");
 
       //THEN
       const read = await PresetDal.getPresets(uid);
@@ -428,14 +434,15 @@ describeIntegration()("PresetDal", () => {
             name: "first",
             config: { ads: "sellout" },
           }),
-        ])
+        ]),
       );
     });
   });
 
   describe("deleteAllPresets", () => {
     it("should not fail if preset is unknown", async () => {
-      await PresetDal.deleteAllPresets("uid");
+      const uid = new ObjectId().toHexString();
+      await PresetDal.deleteAllPresets(uid);
     });
     it("should delete all", async () => {
       //GIVEN
@@ -468,7 +475,7 @@ describeIntegration()("PresetDal", () => {
             name: "unknown",
             config: { ads: "result" },
           }),
-        ])
+        ]),
       );
     });
   });

@@ -1,22 +1,16 @@
-import request from "supertest";
-import app from "../../../src/app";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { setup } from "../../__testData__/controller-test";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
-import { mockBearerAuthentication } from "../../__testData__/auth";
-const mockApp = request(app);
-const uid = new ObjectId().toHexString();
-const mockAuth = mockBearerAuthentication(uid);
+
+const { mockApp, uid } = setup();
 
 describe("PresetController", () => {
-  beforeEach(() => {
-    mockAuth.beforeEach();
-  });
-
   describe("get presets", () => {
     const getPresetsMock = vi.spyOn(PresetDal, "getPresets");
 
     afterEach(() => {
-      getPresetsMock.mockReset();
+      getPresetsMock.mockClear();
     });
 
     it("should get the users presets", async () => {
@@ -39,8 +33,7 @@ describe("PresetController", () => {
           showAverage: "off",
         },
       };
-      //@ts-expect-error
-      getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
+      getPresetsMock.mockResolvedValue([presetOne, presetTwo] as any);
 
       //WHEN
       const { body } = await mockApp
@@ -97,7 +90,7 @@ describe("PresetController", () => {
     const addPresetMock = vi.spyOn(PresetDal, "addPreset");
 
     afterEach(() => {
-      addPresetMock.mockReset();
+      addPresetMock.mockClear();
     });
 
     it("should add the users full preset", async () => {
@@ -188,7 +181,7 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       addPresetMock.mockResolvedValue({ presetId: "1" });
@@ -290,7 +283,7 @@ describe("PresetController", () => {
     const editPresetMock = vi.spyOn(PresetDal, "editPreset");
 
     afterEach(() => {
-      editPresetMock.mockReset();
+      editPresetMock.mockClear();
     });
 
     it("should update the users preset", async () => {
@@ -364,7 +357,7 @@ describe("PresetController", () => {
         },
       });
     });
-    it("should not fail with emtpy config", async () => {
+    it("should not fail with empty config", async () => {
       //GIVEN
 
       editPresetMock.mockResolvedValue({} as any);
@@ -469,7 +462,7 @@ describe("PresetController", () => {
     const deletePresetMock = vi.spyOn(PresetDal, "removePreset");
 
     afterEach(() => {
-      deletePresetMock.mockReset();
+      deletePresetMock.mockClear();
     });
 
     it("should delete the users preset", async () => {

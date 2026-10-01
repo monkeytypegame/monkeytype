@@ -2,8 +2,7 @@ import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
 import { EditPresetRequest, Preset } from "@monkeytype/schemas/presets";
-import { omit } from "lodash";
-import { WithObjectId } from "../utils/misc";
+import { WithObjectId, omit } from "../utils/misc";
 
 const MAX_PRESETS = 10;
 
@@ -15,7 +14,7 @@ type DBConfigPreset = WithObjectId<
 
 function getPresetKeyFilter(
   uid: string,
-  keyId: string
+  keyId: string,
 ): Filter<DBConfigPreset> {
   return {
     _id: new ObjectId(keyId),
@@ -40,7 +39,7 @@ export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
 
 export async function addPreset(
   uid: string,
-  preset: Omit<Preset, "_id">
+  preset: Omit<Preset, "_id">,
 ): Promise<PresetCreationResult> {
   const presets = await getPresetsCollection().countDocuments({ uid });
 
@@ -60,9 +59,9 @@ export async function addPreset(
 
 export async function editPreset(
   uid: string,
-  preset: EditPresetRequest
+  preset: EditPresetRequest,
 ): Promise<void> {
-  const update: Partial<Omit<Preset, "_id">> = omit(preset, "_id");
+  const update: Partial<Omit<Preset, "_id">> = omit(preset, ["_id"]);
   if (
     preset.config === undefined ||
     preset.config === null ||
@@ -78,10 +77,10 @@ export async function editPreset(
 
 export async function removePreset(
   uid: string,
-  presetId: string
+  presetId: string,
 ): Promise<void> {
   const deleteResult = await getPresetsCollection().deleteOne(
-    getPresetKeyFilter(uid, presetId)
+    getPresetKeyFilter(uid, presetId),
   );
 
   if (deleteResult.deletedCount === 0) {

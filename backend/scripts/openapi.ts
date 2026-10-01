@@ -1,5 +1,5 @@
 import { generateOpenApi } from "@ts-rest/open-api";
-import { contract } from "@monkeytype/contracts/index";
+import { COMPATIBILITY_CHECK, contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
 import { EndpointMetadata, PermissionId } from "@monkeytype/contracts/util/api";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
@@ -24,7 +24,7 @@ export function getOpenApi(): OpenAPIObject {
         title: "Monkeytype API",
         description:
           "Documentation for the endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
-        version: "2.0.0",
+        version: `2.${COMPATIBILITY_CHECK}.0`,
         termsOfService: "https://monkeytype.com/terms-of-service",
         contact: {
           name: "Support",
@@ -100,6 +100,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Leaderboards",
         },
         {
+          name: "connections",
+          description: "Connections between users.",
+          "x-displayName": "Connections",
+          "x-public": "no",
+        },
+        {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",
@@ -156,14 +162,14 @@ export function getOpenApi(): OpenAPIObject {
         addTags(operation, metadata);
         return operation;
       },
-    }
+    },
   );
   return openApiDocument;
 }
 
 function addAuth(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
   const auth = metadata?.authenticationOptions ?? {};
   const permissions = getRequiredPermissions(metadata) ?? [];
@@ -182,27 +188,29 @@ function addAuth(
 
   if (permissions.length !== 0) {
     operation.description += `**Required permissions:** ${permissions.join(
-      ", "
+      ", ",
     )}\n\n`;
   }
 }
 
 function getRequiredPermissions(
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
-  if (metadata === undefined || metadata.requirePermission === undefined)
+  if (metadata?.requirePermission === undefined) {
     return undefined;
+  }
 
-  if (Array.isArray(metadata.requirePermission))
+  if (Array.isArray(metadata.requirePermission)) {
     return metadata.requirePermission;
+  }
   return [metadata.requirePermission];
 }
 
 function addTags(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.openApiTags === undefined) return;
+  if (metadata?.openApiTags === undefined) return;
   operation.tags = Array.isArray(metadata.openApiTags)
     ? metadata.openApiTags
     : [metadata.openApiTags];
@@ -210,17 +218,18 @@ function addTags(
 
 function addRateLimit(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.rateLimit === undefined) return;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  if (metadata?.rateLimit === undefined) return;
+  // oxlint-disable-next-line no-unsafe-assignment
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
 
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line no-unsafe-assignment no-unsafe-member-access
   okResponse["headers"] = {
+    // oxlint-disable-next-line no-unsafe-member-access
     ...okResponse["headers"],
     "x-ratelimit-limit": {
       schema: { type: "integer" },
@@ -246,11 +255,11 @@ function getRateLimitDescription(limit: RateLimiterId | RateLimitIds): string {
 
   if (limits.apeKeyLimiter !== undefined) {
     result += ` and up to ${limits.apeKeyLimiter.max} times ${formatWindow(
-      limits.apeKeyLimiter.window
+      limits.apeKeyLimiter.window,
     )} with ApeKeys`;
   }
 
-  return result + ".\n\n";
+  return `${result}.\n\n`;
 }
 
 function formatWindow(window: Window): string {
@@ -264,15 +273,16 @@ function formatWindow(window: Window): string {
 
     return `every ${duration}`;
   }
-  return "per " + window;
+  return `per ${window}`;
 }
 
 function addRequiredConfiguration(
   operation: OperationObject,
-  metadata: EndpointMetadata | undefined
+  metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.requireConfiguration === undefined)
+  if (metadata?.requireConfiguration === undefined) {
     return;
+  }
 
   //@ts-expect-error somehow path doesnt exist
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;

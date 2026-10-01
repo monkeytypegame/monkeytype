@@ -33,7 +33,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   async linkDiscord(
     discordId: string,
     uid: string,
-    lbOptOut: boolean
+    lbOptOut: boolean,
   ): Promise<void> {
     const taskName = "linkDiscord";
     const linkDiscordTask = buildGeorgeTask(taskName, [
@@ -52,7 +52,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
 
   async awardChallenge(
     discordId: string,
-    challengeName: string
+    challengeName: string,
   ): Promise<void> {
     const taskName = "awardChallenge";
     const awardChallengeTask = buildGeorgeTask(taskName, [
@@ -70,7 +70,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
 
   async announceLeaderboardUpdate(
     newRecords: Omit<LeaderboardEntry, "_id">[],
-    leaderboardId: string
+    leaderboardId: string,
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
 
@@ -97,7 +97,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   async announceDailyLeaderboardTopResults(
     leaderboardId: string,
     leaderboardTimestamp: number,
-    topResults: LeaderboardEntry[]
+    topResults: LeaderboardEntry[],
   ): Promise<void> {
     const taskName = "announceDailyLeaderboardTopResults";
 

@@ -1,5 +1,10 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { Day } from "date-fns";
+import {
+  Day,
+  formatDistanceToNow,
+  formatDuration,
+  intervalToDuration,
+} from "date-fns";
 
 /**
  * Converts seconds to a human-readable string representation of time.
@@ -17,7 +22,7 @@ export function secondsToString(
   alwaysShowHours = false,
   delimiter: ":" | "text" = ":",
   showSeconds = true,
-  showDays = false
+  showDays = false,
 ): string {
   sec = Math.abs(sec);
   let days = 0;
@@ -38,19 +43,19 @@ export function secondsToString(
 
   if (showDays) {
     days < 10 && delimiter !== "text"
-      ? (daysString = "0" + days)
+      ? (daysString = `0${days}`)
       : (daysString = days);
   }
   hours < 10 && delimiter !== "text"
-    ? (hoursString = "0" + hours)
+    ? (hoursString = `0${hours}`)
     : (hoursString = hours);
   minutes < 10 && delimiter !== "text"
-    ? (minutesString = "0" + minutes)
+    ? (minutesString = `0${minutes}`)
     : (minutesString = minutes);
   seconds < 10 &&
   (minutes > 0 || hours > 0 || alwaysShowMinutes) &&
   delimiter !== "text"
-    ? (secondsString = "0" + seconds)
+    ? (secondsString = `0${seconds}`)
     : (secondsString = seconds);
 
   let ret = "";
@@ -233,8 +238,8 @@ export function getFirstDayOfTheWeek(): Day {
 
   if ("getWeekInfo" in locale) {
     // @ts-expect-error getWeekInfo is not in the type definition
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return (locale.getWeekInfo().firstDay as number) % 7;
+    // oxlint-disable-next-line no-unsafe-member-access
+    return locale.getWeekInfo().firstDay % 7;
   }
 
   //use fallback generated from date-fns for browsers like firefox
@@ -250,4 +255,23 @@ export function getFirstDayOfTheWeek(): Day {
   }
 
   return 0; //start on sunday
+}
+
+export function formatAge(
+  timestamp: number | undefined,
+  format?: "short" | "full",
+): string {
+  if (timestamp === undefined) return "";
+  let formatted = "";
+  const duration = intervalToDuration({ start: timestamp, end: Date.now() });
+
+  if (format === undefined || format === "full") {
+    formatted = formatDuration(duration, {
+      format: ["years", "months", "days", "hours", "minutes"],
+    });
+  } else {
+    formatted = formatDistanceToNow(timestamp);
+  }
+
+  return formatted !== "" ? formatted : "less than a minute";
 }

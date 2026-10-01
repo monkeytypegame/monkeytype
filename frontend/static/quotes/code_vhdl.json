@@ -1,0 +1,59 @@
+{
+  "language": "code_vhdl",
+  "groups": [
+    [0, 150],
+    [151, 300],
+    [301, 500],
+    [501, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "entity big_xnor is\n\tport (\n\t\tA, B : in std_logic;\n\t\tF : out std_logic\n\t);\nend big_xnor;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter9",
+      "length": 87,
+      "id": 1
+    },
+    {
+      "text": "-- yet another solution to the previous example\narchitecture f3_4 of my_ckt_f3 is\nbegin\n\twith ((L = '0' and M = '0' and N = '1') or (L = '1' and M = '1')) select\n\t\tF3 <= '1' when '1',\n\t\t\t'0' when '0',\n\t\t\t'0' when others;\nend f3_4;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter4 example 5",
+      "length": 230,
+      "id": 2
+    },
+    {
+      "text": "-- library declaration\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n-- entity\nentity my_nand3 is\n\tport (\n\t\tA, B, C : in std_logic;\n\t\tF : out std_logic\n\t);\nend my_nand3;\n-- architecture\narchitecture exa_nand3 of my_nand3 is\nbegin\n\tF <= NOT(A AND B AND C);\nend exa_nand3;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter4 example 1",
+      "length": 267,
+      "id": 3
+    },
+    {
+      "text": "-- library declaration\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n-- entity\nentity my_xor is\n\tport (\n\t\tA, B : in std_logic;\n\t\tF : out std_logic\n\t);\nend my_xor;\n-- architecture\narchitecture behav of my_xor is\nbegin\n\txor_proc: process(A, B) is\n\tbegin\n\t\tF <= A XOR B;\n\tend process xor_proc;\nend behav;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter5",
+      "length": 298,
+      "id": 4
+    },
+    {
+      "text": "-----------------------------------\n-- Model of a simple D Flip-Flop --\n-----------------------------------\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n\nentity d_ff is\n\tport (\n\t\tD, CLK : in std_logic;\n\t\tQ : out std_logic\n\t);\nend d_ff;\n\narchitecture my_d_ff of d_ff is\nbegin\n\tdff: process(CLK)\n\tbegin\n\t\tif (rising_edge(CLK)) then\n\t\t--or if (CLK'event and CLK = '1') then\n\t\t\tQ <= D;\n\t\tend if;\n\tend process dff;\nend my_d_ff;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter7 example 14",
+      "length": 420,
+      "id": 5
+    },
+    {
+      "text": "-- library declarations\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n\nentity gen_parity_check is\n\tgeneric (\n\t\tn : positive\n\t);\n\tport (\n\t\tx : in std_logic_vector(n-1 downto 0);\n\t\ty : out std_logic\n\t);\nend gen_parity_check;\n\narchitecture arch of gen_parity_check is\nbegin\n\tprocess(x)\n\t\tvariable temp : std_logic;\n\tbegin\n\t\ttemp := '0';\n\t\tfor i in x'range loop\n\t\t\ttemp := temp XOR x(i);\n\t\tend loop;\n\t\ty <= temp;\n\tend process;\nend arch;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter9 example 22",
+      "length": 429,
+      "id": 6
+    },
+    {
+      "text": "-- library declaration\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n\nentity my_example is\n\tport (\n\t\tA, B, C : in std_logic;\n\t\tF_OUT : out std_logic\n\t);\nend my_example;\n\narchitecture my_soln_exam of my_example is\n\tsignal ABC : std_logic_vector(2 downto 0);\nbegin\n\tABC <= A & B & C; -- group signals for case statement\n\tmy_proc: process (ABC)\n\tbegin\n\t\tcase (ABC) is\n\t\t\twhen \"100\" => F_OUT <= '1';\n\t\t\twhen \"011\" => F_OUT <= '1';\n\t\t\twhen \"111\" => F_OUT <= '1';\n\t\t\twhen others => F_OUT <= '0';\n\t\tend case;\n\tend process my_proc;\nend my_soln_exam;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter5 example 12",
+      "length": 538,
+      "id": 7
+    },
+    {
+      "text": "-- library declaration\nlibrary IEEE;\nuse IEEE.std_logic_1164.all;\n\nentity my_fsm1 is\n\tport (\n\t\tTOG_EN : in std_logic;\n\t\tCLK, CLR : in std_logic;\n\t\tZ1 : out std_logic\n\t);\nend my_fsm1;\n\narchitecture fsm1 of my_fsm1 is\n\ttype state_type is (ST0, ST1);\n\tsignal PS, NS : state_type;\nbegin\n\tsync_proc: process(CLK, NS, CLR)\n\tbegin\n\t\t-- take care of the asynchronous input\n\t\tif (CLR = '1') then\n\t\t\tPS <= ST0;\n\t\telsif (rising_edge(CLK)) then\n\t\t\tPS <= NS;\n\t\tend if;\n\tend process sync_proc;\n\n\tcomb_proc: process(PS, TOG_EN)\n\tbegin\n\t\tZ1 <= '0'; -- pre-assign output\n\t\tcase PS is\n\t\t\twhen ST0 => -- items regarding state ST0\n\t\t\t\tZ1 <= '0'; -- Moore output\n\t\t\t\tif (TOG_EN = '1') then NS <= ST1;\n\t\t\t\telse NS <= ST0;\n\t\t\t\tend if;\n\t\t\twhen ST1 => -- items regarding state ST1\n\t\t\t\tZ1 <= '1'; -- Moore output\n\t\t\t\tif (TOG_EN = '1') then NS <= ST0;\n\t\t\t\telse NS <= ST1;\n\t\t\t\tend if;\n\t\t\twhen others => -- the catch-all condition\n\t\t\t\tZ1 <= '0'; -- arbitrary; it should never\n\t\t\t\tNS <= ST0; -- make it to these two statements\n\t\tend case;\n\tend process comb_proc;\nend fsm1;",
+      "source": "Github - fabriziotappero/Free-Range-VHDL-book - chapter8 example 18",
+      "length": 1042,
+      "id": 8
+    }
+  ]
+}

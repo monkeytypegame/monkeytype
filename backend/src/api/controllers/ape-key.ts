@@ -1,10 +1,9 @@
-import _ from "lodash";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import * as ApeKeysDAL from "../../dal/ape-keys";
 import MonkeyError from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { base64UrlEncode } from "../../utils/misc";
+import { base64UrlEncode, omit } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 
 import {
@@ -18,22 +17,24 @@ import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { MonkeyRequest } from "../types";
 
 function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
-  return _.omit(apeKey, "hash", "_id", "uid", "useCount");
+  return omit(apeKey, ["hash", "_id", "uid", "useCount"]);
 }
 
 export async function getApeKeys(
-  req: MonkeyRequest
+  req: MonkeyRequest,
 ): Promise<GetApeKeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
-  const cleanedKeys = _(apeKeys).keyBy("_id").mapValues(cleanApeKey).value();
+  const cleanedKeys: Record<string, ApeKey> = Object.fromEntries(
+    apeKeys.map((item) => [item._id.toHexString(), cleanApeKey(item)]),
+  );
 
   return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
 }
 
 export async function generateApeKey(
-  req: MonkeyRequest<undefined, AddApeKeyRequest>
+  req: MonkeyRequest<undefined, AddApeKeyRequest>,
 ): Promise<AddApeKeyResponse> {
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
@@ -71,7 +72,7 @@ export async function generateApeKey(
 }
 
 export async function editApeKey(
-  req: MonkeyRequest<undefined, EditApeKeyRequest, ApeKeyParams>
+  req: MonkeyRequest<undefined, EditApeKeyRequest, ApeKeyParams>,
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { name, enabled } = req.body;
@@ -83,7 +84,7 @@ export async function editApeKey(
 }
 
 export async function deleteApeKey(
-  req: MonkeyRequest<undefined, undefined, ApeKeyParams>
+  req: MonkeyRequest<undefined, undefined, ApeKeyParams>,
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { uid } = req.ctx.decodedToken;

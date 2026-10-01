@@ -13,10 +13,12 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - name: Download workflow artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+          name: pr_num
+          path: ./pr_num
 
       - name: Read the pr_num file
         id: pr_num_reader
@@ -34,6 +36,6 @@ jobs:
       - name: Apply label changes
         uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
-          issue_number:  ${{ steps.pr_num_reader.outputs.content }}
+          issue_number: ${{ steps.pr_num_reader.outputs.content }}
           add: "waiting for update"
           remove: "waiting for review"

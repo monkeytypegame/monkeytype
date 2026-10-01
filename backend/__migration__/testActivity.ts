@@ -27,10 +27,9 @@ if (require.main === module) {
 async function main(): Promise<void> {
   try {
     console.log(
-      `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`
+      `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`,
     );
 
-    //@ts-ignore
     if (!readlineSync.keyInYN("Ready to start migration?")) {
       appRunning = false;
     }
@@ -222,7 +221,7 @@ async function migrateUsers(uids: string[]): Promise<void> {
           },
         },
       ],
-      { allowDiskUse: true }
+      { allowDiskUse: true },
     )
     .toArray();
 }
@@ -232,7 +231,7 @@ async function handleUsersWithNoResults(uids: string[]): Promise<void> {
     {
       $and: [{ uid: { $in: uids } }, filter],
     },
-    { $set: { testActivity: {} } }
+    { $set: { testActivity: {} } },
   );
 }
 
@@ -240,11 +239,11 @@ function updateProgress(
   all: number,
   current: number,
   start: number,
-  previousBatchSizeTime: number
+  previousBatchSizeTime: number,
 ): void {
   const percentage = (current / all) * 100;
   const timeLeft = Math.round(
-    (((new Date().valueOf() - start) / percentage) * (100 - percentage)) / 1000
+    (((new Date().valueOf() - start) / percentage) * (100 - percentage)) / 1000,
   );
 
   process.stdout.clearLine?.(0);
@@ -253,7 +252,7 @@ function updateProgress(
     `Previous batch took ${Math.round(previousBatchSizeTime)}ms (~${
       previousBatchSizeTime / batchSize
     }ms per user) ${Math.round(
-      percentage
-    )}% done, estimated time left ${timeLeft} seconds.`
+      percentage,
+    )}% done, estimated time left ${timeLeft} seconds.`,
   );
 }

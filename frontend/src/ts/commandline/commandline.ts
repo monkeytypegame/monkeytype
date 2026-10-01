@@ -1,21 +1,39 @@
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./lists";
-import Config from "../config";
+import { Config } from "../config/store";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as Notifications from "../elements/notifications";
-import * as OutOfFocus from "../test/out-of-focus";
-import * as ActivePage from "../states/active-page";
-import { focusWords } from "../test/test-ui";
-import * as Loader from "../elements/loader";
-import { Command, CommandsSubgroup, CommandWithValidation } from "./types";
+import { showNoticeNotification } from "../states/notifications";
+import {
+  getActivePage,
+  getCommandlineSubgroup,
+  setCommandlineSubgroup,
+} from "../states/core";
+import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
+import {
+  Command,
+  CommandlineSubgroupKey,
+  CommandsSubgroup,
+  CommandWithValidation,
+} from "./types";
 import { areSortedArraysEqual, areUnsortedArraysEqual } from "../utils/arrays";
 import { parseIntOptional } from "../utils/numbers";
 import { debounce } from "throttle-debounce";
 import { intersect } from "@monkeytype/util/arrays";
 import { createInputEventHandler } from "../elements/input-validation";
+import { isInputElementFocused } from "../input/input-element";
+import { qs } from "../utils/dom";
+import { createEffect } from "solid-js";
+import {
+  getModalVisibility,
+  hideModal as storeHideModal,
+  hideModalAndClearChain as storeClearChain,
+  isModalOpen,
+} from "../states/modals";
+import { ValidationResult } from "../types/validation";
+import { setTestFocusState } from "../states/test";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -23,11 +41,10 @@ type InputModeParams = {
   placeholder: string | null;
   value: string | null;
   icon: string | null;
-  validation?: {
-    status: "checking" | "success" | "failed";
-    errorMessage?: string;
-  };
+  validation?: ValidationResult;
 };
+
+const MODAL_STORE_ID = "Commandline";
 
 let activeIndex = 0;
 let usingSingleList = false;
@@ -55,29 +72,28 @@ let lastState:
   | undefined;
 
 function removeCommandlineBackground(): void {
-  $("#commandLine").addClass("noBackground");
+  qs("#commandLine")?.addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
+    setTestFocusState("focused");
   }
 }
 
 function addCommandlineBackground(): void {
-  $("#commandLine").removeClass("noBackground");
-  const isWordsFocused = $("#wordsInput").is(":focus");
-  if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    OutOfFocus.show();
+  qs("#commandLine")?.removeClass("noBackground");
+  if (!isInputElementFocused()) {
+    setTestFocusState("unfocused");
   }
 }
 
 type ShowSettings = {
-  subgroupOverride?: CommandsSubgroup | string;
+  subgroupOverride?: CommandsSubgroup | CommandlineSubgroupKey;
   commandOverride?: string;
   singleListOverride?: boolean;
 };
 
 export function show(
   settings?: ShowSettings,
-  modalShowSettings?: ShowOptions
+  modalShowSettings?: ShowOptions,
 ): void {
   void modal.show({
     ...modalShowSettings,
@@ -94,27 +110,32 @@ export function show(
         value: null,
         icon: null,
       };
-      if (settings?.subgroupOverride !== undefined) {
-        if (typeof settings.subgroupOverride === "string") {
-          const exists = CommandlineLists.doesListExist(
-            settings.subgroupOverride
-          );
+      const subgroupSignal = getCommandlineSubgroup();
+
+      const overrideStringOrGroup =
+        settings?.subgroupOverride ?? subgroupSignal ?? null;
+
+      if (
+        overrideStringOrGroup !== undefined &&
+        overrideStringOrGroup !== null
+      ) {
+        if (typeof overrideStringOrGroup === "string") {
+          const exists = CommandlineLists.doesListExist(overrideStringOrGroup);
           if (exists) {
-            Loader.show();
+            showLoaderBar();
             subgroupOverride = await CommandlineLists.getList(
-              settings.subgroupOverride as CommandlineLists.ListsObjectKeys
+              overrideStringOrGroup as CommandlineSubgroupKey,
             );
-            Loader.hide();
+            hideLoaderBar();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
-            Notifications.add(
-              `Command list ${settings.subgroupOverride} not found`,
-              0
+            showNoticeNotification(
+              `Command list ${overrideStringOrGroup} not found`,
             );
           }
         } else {
-          subgroupOverride = settings.subgroupOverride;
+          subgroupOverride = overrideStringOrGroup;
         }
         usingSingleList = false;
       } else {
@@ -126,14 +147,15 @@ export function show(
 
       if (settings?.commandOverride !== undefined) {
         const command = (await getList()).find(
-          (c) => c.id === settings.commandOverride
+          (c) => c.id === settings.commandOverride,
         );
         if (command === undefined) {
-          Notifications.add(`Command ${settings.commandOverride} not found`, 0);
+          showNoticeNotification(
+            `Command ${settings.commandOverride} not found`,
+          );
         } else if (command?.input !== true) {
-          Notifications.add(
+          showNoticeNotification(
             `Command ${settings.commandOverride} is not an input command`,
-            0
           );
         } else {
           showInputCommand = command;
@@ -151,6 +173,7 @@ export function show(
       await showCommands();
       await updateActiveCommand();
       setTimeout(() => {
+        lastActiveIndex = undefined;
         keepActiveCommandInView();
         if (showInputCommand) {
           const escaped =
@@ -175,26 +198,32 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
-  if (ActivePage.get() === "test") {
-    focusWords();
-  }
   isAnimating = true;
-  void modal.hide({
-    clearModalChain,
-    afterAnimation: async () => {
-      hideWarning();
-      addCommandlineBackground();
-      if (ActivePage.get() === "test") {
-        const isWordsFocused = $("#wordsInput").is(":focus");
-        if (ActivePage.get() === "test" && !isWordsFocused) {
-          focusWords();
+
+  // If managed by store, notify the store
+  if (isModalOpen(MODAL_STORE_ID)) {
+    if (clearModalChain) {
+      storeClearChain(MODAL_STORE_ID);
+    } else {
+      storeHideModal(MODAL_STORE_ID);
+    }
+    // Cleanup will happen in the effect when visibility changes
+  } else {
+    // Old modal system, hide directly
+    void modal.hide({
+      clearModalChain,
+      afterAnimation: async () => {
+        hideWarning();
+        addCommandlineBackground();
+        if (getActivePage() !== "test") {
+          (document.activeElement as HTMLElement | undefined)?.blur();
         }
-      } else {
-        (document.activeElement as HTMLElement | undefined)?.blur();
-      }
-      isAnimating = false;
-    },
-  });
+        isAnimating = false;
+        subgroupOverride = null;
+        setCommandlineSubgroup(null);
+      },
+    });
+  }
 }
 
 async function goBackOrHide(): Promise<void> {
@@ -227,6 +256,10 @@ async function goBackOrHide(): Promise<void> {
   }
 }
 
+function stripPunctuation(str: string): string {
+  return str.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, "");
+}
+
 async function filterSubgroup(): Promise<void> {
   const subgroup = await getSubgroup();
   subgroup.beforeList?.();
@@ -238,7 +271,9 @@ async function filterSubgroup(): Promise<void> {
     .trim();
 
   const inputSplit =
-    inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
+    inputNoQuickSingle.length === 0
+      ? []
+      : inputNoQuickSingle.split(" ").map(stripPunctuation).filter(Boolean);
 
   const matches: {
     matchCount: number;
@@ -247,7 +282,7 @@ async function filterSubgroup(): Promise<void> {
 
   const matchCounts: number[] = [];
   for (const command of list) {
-    const isAvailable = command.available?.() ?? true;
+    const isAvailable = (await command.available?.()) ?? true;
     if (!isAvailable) {
       matches.push({
         matchCount: -1,
@@ -270,12 +305,14 @@ async function filterSubgroup(): Promise<void> {
         : command.display
     )
       .toLowerCase()
-      .split(" ");
-    const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
+      .split(" ")
+      .map(stripPunctuation);
+    const aliasSplit =
+      command.alias?.toLowerCase().split(" ").map(stripPunctuation) ?? [];
 
     const displayAliasSplit = displaySplit.concat(aliasSplit);
     const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(
-      () => null
+      () => null,
     );
 
     let matchStrength = 0;
@@ -425,11 +462,11 @@ async function showCommands(): Promise<void> {
             if (Array.isArray(command.configValue)) {
               isActive = areUnsortedArraysEqual(
                 intersect(Config[configKey] as unknown[], command.configValue),
-                command.configValue
+                command.configValue,
               );
             } else {
               isActive = (Config[configKey] as unknown[]).includes(
-                command.configValue
+                command.configValue,
               );
             }
           } else {
@@ -437,12 +474,12 @@ async function showCommands(): Promise<void> {
           }
         }
       }
-      return { ...command, isActive } as CommandWithIsActive;
+
+      return { ...command, isActive };
     });
 
   if (
-    lastState &&
-    usingSingleList === lastState.usingSingleList &&
+    usingSingleList === lastState?.usingSingleList &&
     areSortedArraysEqual(list, lastState.list)
   ) {
     return;
@@ -460,6 +497,11 @@ async function showCommands(): Promise<void> {
 
   for (const command of list) {
     if (command.found !== true) continue;
+
+    if (command.isActive && firstActive === null && inputValue === "") {
+      firstActive = index;
+    }
+
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
       customStyle = command.customStyle;
@@ -473,8 +515,9 @@ async function showCommands(): Promise<void> {
       if (command.configValue !== undefined || command.active !== undefined) {
         display = display.replace(
           `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
-          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` +
+          `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
             configIconHtml
+          }`,
         );
       }
     }
@@ -501,16 +544,16 @@ async function showCommands(): Promise<void> {
         <i class="fas fa-star"></i>
       </div>
       <div class="themeBubbles" style="background: ${
-        command.customData["bgColor"]
-      };outline: 0.25rem solid ${command.customData["bgColor"]};">
+        command.customData["bg"]
+      };outline: 0.25rem solid ${command.customData["bg"]};">
         <div class="themeBubble" style="background: ${
-          command.customData["mainColor"]
+          command.customData["main"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["subColor"]
+          command.customData["sub"]
         }"></div>
         <div class="themeBubble" style="background: ${
-          command.customData["textColor"]
+          command.customData["text"]
         }"></div>
       </div>
       </div>`;
@@ -564,7 +607,10 @@ async function updateActiveCommand(): Promise<void> {
   keepActiveCommandInView();
 
   clearFontPreview();
-  if (/changeTheme.+/gi.test(command.id)) {
+  if (
+    command.id?.startsWith("changeTheme") ||
+    command.id?.startsWith("setCustomThemeId")
+  ) {
     removeCommandlineBackground();
   } else {
     void ThemeController.clearPreview();
@@ -573,6 +619,8 @@ async function updateActiveCommand(): Promise<void> {
 
   command.hover?.();
 }
+
+let shakeTimeout: null | NodeJS.Timeout;
 
 function handleInputSubmit(): void {
   if (isAnimating) return;
@@ -584,13 +632,13 @@ function handleInputSubmit(): void {
     //validation ongoing, ignore the submit
     return;
   } else if (inputModeParams.validation?.status === "failed") {
-    const cmdLine = $("#commandLine .modal");
-    cmdLine
-      .stop(true, true)
-      .addClass("hasError")
-      .animate({ undefined: 1 }, 500, () => {
-        cmdLine.removeClass("hasError");
-      });
+    modal.getModal().addClass("hasError");
+    if (shakeTimeout !== null) {
+      clearTimeout(shakeTimeout);
+    }
+    shakeTimeout = setTimeout(() => {
+      modal.getModal().removeClass("hasError");
+    }, 500);
     return;
   }
 
@@ -599,7 +647,7 @@ function handleInputSubmit(): void {
       commandlineModal: modal,
 
       // @ts-expect-error this is fine
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // oxlint-disable-next-line no-unsafe-assignment
       input: inputModeParams.command.inputValueConvert(inputValue),
     });
   } else {
@@ -664,7 +712,7 @@ function keepActiveCommandInView(): void {
   if (mouseMode) return;
 
   const active: HTMLElement | null = document.querySelector(
-    ".suggestions .command.active"
+    ".suggestions .command.active",
   );
 
   if (active === null || active.dataset["index"] === lastActiveIndex) {
@@ -677,7 +725,7 @@ function keepActiveCommandInView(): void {
 
 async function updateInput(setInput?: string): Promise<void> {
   const iconElement: HTMLElement | null = document.querySelector(
-    "#commandLine .searchicon"
+    "#commandLine .searchicon",
   );
   const element: HTMLInputElement | null =
     document.querySelector("#commandLine input");
@@ -741,49 +789,43 @@ async function decrementActiveIndex(): Promise<void> {
 }
 
 function showWarning(message: string): void {
-  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
-  const warningTextEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".warning .text");
+  const warningEl = modal.getModal().qs(".warning");
+  const warningTextEl = modal.getModal().qs(".warning .text");
   if (warningEl === null || warningTextEl === null) {
     throw new Error("Commandline warning element not found");
   }
-  warningEl.classList.remove("hidden");
-  warningTextEl.textContent = message;
+  warningEl.show();
+  warningTextEl.setText(message);
 }
 
 const showCheckingIcon = debounce(200, async () => {
-  const checkingiconEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".checkingicon");
+  const checkingiconEl = modal.getModal().qs(".checkingicon");
   if (checkingiconEl === null) {
     throw new Error("Commandline checking icon element not found");
   }
-  checkingiconEl.classList.remove("hidden");
+  checkingiconEl.show();
 });
 
 function hideCheckingIcon(): void {
   showCheckingIcon.cancel({ upcomingOnly: true });
 
-  const checkingiconEl = modal
-    .getModal()
-    .querySelector<HTMLElement>(".checkingicon");
+  const checkingiconEl = modal.getModal().qs(".checkingicon");
   if (checkingiconEl === null) {
     throw new Error("Commandline checking icon element not found");
   }
-  checkingiconEl.classList.add("hidden");
+  checkingiconEl.hide();
 }
 
 function hideWarning(): void {
-  const warningEl = modal.getModal().querySelector<HTMLElement>(".warning");
+  const warningEl = modal.getModal().qs(".warning");
   if (warningEl === null) {
     throw new Error("Commandline warning element not found");
   }
-  warningEl.classList.add("hidden");
+  warningEl.hide();
 }
 
 function updateValidationResult(
-  validation: NonNullable<InputModeParams["validation"]>
+  validation: NonNullable<InputModeParams["validation"]>,
 ): void {
   inputModeParams.validation = validation;
   if (validation.status === "checking") {
@@ -813,7 +855,7 @@ function createValidationHandler(command: Command): void {
       commandWithValidation.validation,
       "inputValueConvert" in commandWithValidation
         ? commandWithValidation.inputValueConvert
-        : undefined
+        : undefined,
     );
     handlersCache.set(command.id, handler);
   }
@@ -821,6 +863,7 @@ function createValidationHandler(command: Command): void {
 
 const modal = new AnimatedModal({
   dialogId: "commandLine",
+  storeId: MODAL_STORE_ID,
   customEscapeHandler: (): void => {
     //
   },
@@ -831,11 +874,12 @@ const modal = new AnimatedModal({
     focusFirstInput: true,
   },
   setup: async (modalEl): Promise<void> => {
-    const input = modalEl.querySelector("input") as HTMLInputElement;
+    const input = modalEl.qsr("input");
 
-    input.addEventListener(
+    input.on(
       "input",
       debounce(50, async (e) => {
+        if (isAnimating) return;
         inputValue = ((e as InputEvent).target as HTMLInputElement).value;
         if (subgroupOverride === null) {
           if (Config.singleListCommandLine === "on") {
@@ -850,10 +894,15 @@ const modal = new AnimatedModal({
         await filterSubgroup();
         await showCommands();
         await updateActiveCommand();
-      })
+      }),
     );
 
-    input.addEventListener("keydown", async (e) => {
+    input.on("keydown", async (e) => {
+      //the commandline is on its way out - swallow everything
+      if (isAnimating) {
+        e.preventDefault();
+        return;
+      }
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||
@@ -909,10 +958,9 @@ const modal = new AnimatedModal({
       }
     });
 
-    input.addEventListener("input", async (e) => {
+    input.on("input", async (e) => {
       if (
-        inputModeParams === null ||
-        inputModeParams.command === null ||
+        inputModeParams?.command === null ||
         !("validation" in inputModeParams.command)
       ) {
         return;
@@ -921,14 +969,14 @@ const modal = new AnimatedModal({
       const handler = handlersCache.get(inputModeParams.command.id);
       if (handler === undefined) {
         throw new Error(
-          `Expected handler for command ${inputModeParams.command.id} is missing`
+          `Expected handler for command ${inputModeParams.command.id} is missing`,
         );
       }
 
       await handler(e);
     });
 
-    modalEl.addEventListener("mousemove", (_e) => {
+    modalEl.on("mousemove", (_e) => {
       mouseMode = true;
     });
 
@@ -964,4 +1012,41 @@ const modal = new AnimatedModal({
       await runActiveCommand();
     });
   },
+});
+
+let lastVisibility: { visible: boolean; chained: boolean } | null = null;
+
+createEffect(() => {
+  const visibility = getModalVisibility(MODAL_STORE_ID);
+  const isVisible = visibility?.visible ?? false;
+  const wasVisible = lastVisibility?.visible ?? false;
+
+  // Show when visibility changes from false to true
+  if (isVisible && !wasVisible) {
+    show();
+  }
+  // Hide when visibility changes from true to false (triggered by store)
+  else if (!isVisible && wasVisible) {
+    // Only trigger hide if modal is actually open
+    if (modal.isOpen()) {
+      clearFontPreview();
+      void ThemeController.clearPreview();
+      // The store already updated, just trigger the animation
+      void modal.hide({
+        clearModalChain: !visibility?.chained,
+        afterAnimation: async () => {
+          hideWarning();
+          addCommandlineBackground();
+          if (getActivePage() !== "test") {
+            (document.activeElement as HTMLElement | undefined)?.blur();
+          }
+          isAnimating = false;
+          subgroupOverride = null;
+          setCommandlineSubgroup(null);
+        },
+      });
+    }
+  }
+
+  lastVisibility = visibility ? { ...visibility } : null;
 });

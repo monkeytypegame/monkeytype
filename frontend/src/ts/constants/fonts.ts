@@ -133,7 +133,21 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
   Iosevka: {
     fileName: "Iosevka-Regular.woff2",
   },
-  "0xProto": {
+  Proto: {
+    display: "0xProto",
     fileName: "0xProto-Regular.woff2",
+  },
+  Adwaita_Mono: {
+    fileName: "AdwaitaMono-Regular.woff2",
+  },
+  Inter_Tight: {
+    fileName: "InterTight-Regular.woff2",
+  },
+  Space_Grotesk: {
+    fileName: "SpaceGrotesk-Regular.woff2",
+  },
+  Noto_Sans_Lao: {
+    display: "Noto Sans Lao (ລາວ)",
+    fileName: "NotoSansLao-Regular.woff2",
   },
 };

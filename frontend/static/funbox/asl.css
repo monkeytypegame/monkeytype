@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "Gallaudet";
+  font-family: Gallaudet;
   src: url("/webfonts/GallaudetRegular.woff2") format("woff2");
 }
 
 #wordsWrapper {
-  font-family: "Gallaudet" !important;
+  font-family: Gallaudet !important;
 }

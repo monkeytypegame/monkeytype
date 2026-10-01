@@ -7,6 +7,7 @@ import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../ut
 import {
   AcceptReportsRequest,
   ClearStreakHourOffsetRequest,
+  DeleteUserRequest,
   RejectReportsRequest,
   SendForgotPasswordEmailRequest,
   ToggleBanRequest,
@@ -16,13 +17,16 @@ import MonkeyError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 import { MonkeyRequest } from "../types";
+import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
+import { deleteUserAccount } from "../../services/user-deletion";
 
 export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK", null);
 }
 
 export async function toggleBan(
-  req: MonkeyRequest<undefined, ToggleBanRequest>
+  req: MonkeyRequest<undefined, ToggleBanRequest>,
 ): Promise<ToggleBanResponse> {
   const { uid } = req.body;
 
@@ -33,18 +37,33 @@ export async function toggleBan(
   const discordId = user.discordId;
   const discordIdIsValid = discordId !== undefined && discordId !== "";
 
-  await UserDAL.setBanned(uid, !user.banned);
-  if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, !user.banned);
+  const banning = !user.banned;
 
-  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
+  await UserDAL.setBanned(uid, banning);
+  if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, banning);
+
+  if (banning) {
+    await Promise.all([
+      purgeUserFromDailyLeaderboards(
+        uid,
+        req.ctx.configuration.dailyLeaderboards,
+      ),
+      purgeUserFromXpLeaderboards(
+        uid,
+        req.ctx.configuration.leaderboards.weeklyXp,
+      ),
+    ]);
+  }
+
+  void addImportantLog("user_ban_toggled", { banned: banning }, uid);
 
   return new MonkeyResponse(`Ban toggled`, {
-    banned: !user.banned,
+    banned: banning,
   });
 }
 
 export async function clearStreakHourOffset(
-  req: MonkeyRequest<undefined, ClearStreakHourOffsetRequest>
+  req: MonkeyRequest<undefined, ClearStreakHourOffsetRequest>,
 ): Promise<MonkeyResponse> {
   const { uid } = req.body;
 
@@ -54,24 +73,47 @@ export async function clearStreakHourOffset(
   return new MonkeyResponse("Streak hour offset cleared", null);
 }
 
+export async function deleteUser(
+  req: MonkeyRequest<undefined, DeleteUserRequest>,
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  if (uid === req.ctx.decodedToken.uid) {
+    throw new MonkeyError(
+      403,
+      "You cannot delete your own account with this endpoint",
+    );
+  }
+
+  const userInfo = await deleteUserAccount(uid, req.ctx.configuration);
+
+  void addImportantLog(
+    "user_deleted_by_admin",
+    `${userInfo?.email} ${userInfo?.name}`,
+    uid,
+  );
+
+  return new MonkeyResponse("User deleted", null);
+}
+
 export async function acceptReports(
-  req: MonkeyRequest<undefined, AcceptReportsRequest>
+  req: MonkeyRequest<undefined, AcceptReportsRequest>,
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     true,
-    req.ctx.configuration.users.inbox
+    req.ctx.configuration.users.inbox,
   );
   return new MonkeyResponse("Reports removed and users notified.", null);
 }
 
 export async function rejectReports(
-  req: MonkeyRequest<undefined, RejectReportsRequest>
+  req: MonkeyRequest<undefined, RejectReportsRequest>,
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     false,
-    req.ctx.configuration.users.inbox
+    req.ctx.configuration.users.inbox,
   );
   return new MonkeyResponse("Reports removed and users notified.", null);
 }
@@ -79,7 +121,7 @@ export async function rejectReports(
 export async function handleReports(
   reports: { reportId: string; reason?: string }[],
   accept: boolean,
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"],
 ): Promise<void> {
   const reportIds = reports.map(({ reportId }) => reportId);
 
@@ -88,13 +130,13 @@ export async function handleReports(
 
   const existingReportIds = new Set(reportsFromDb.map((report) => report.id));
   const missingReportIds = reportIds.filter(
-    (reportId) => !existingReportIds.has(reportId)
+    (reportId) => !existingReportIds.has(reportId),
   );
 
   if (missingReportIds.length > 0) {
     throw new MonkeyError(
       404,
-      `Reports not found for some IDs ${missingReportIds.join(",")}`
+      `Reports not found for some IDs ${missingReportIds.join(",")}`,
     );
   }
 
@@ -132,7 +174,7 @@ export async function handleReports(
       } else {
         throw new MonkeyError(
           500,
-          "Error handling reports: " + getErrorMessage(e)
+          `Error handling reports: ${getErrorMessage(e)}`,
         );
       }
     }
@@ -140,7 +182,7 @@ export async function handleReports(
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyRequest<undefined, SendForgotPasswordEmailRequest>
+  req: MonkeyRequest<undefined, SendForgotPasswordEmailRequest>,
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);

@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as ResultDal from "../../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import { DBResult } from "../../../src/utils/result";
-import { describeIntegration } from "..";
+import * as ResultUtils from "../../../src/utils/result";
 
 let uid: string;
 const timestamp = Date.now() - 60000;
@@ -10,7 +11,7 @@ const timestamp = Date.now() - 60000;
 async function createDummyData(
   uid: string,
   count: number,
-  modify?: Partial<DBResult>
+  modify?: Partial<DBResult>,
 ): Promise<void> {
   const dummyUser: UserDal.DBUser = {
     _id: new ObjectId(),
@@ -38,7 +39,7 @@ async function createDummyData(
         charStats: [0, 0, 0, 0],
         acc: 0,
         mode: "time",
-        mode2: "10" as never,
+        mode2: "10",
         quoteLength: 1,
         timestamp,
         restartCount: 0,
@@ -49,7 +50,7 @@ async function createDummyData(
         tags: [],
         consistency: 100,
         keyConsistency: 100,
-        chartData: { wpm: [], raw: [], err: [] },
+        chartData: { wpm: [], burst: [], err: [] },
         uid,
         keySpacingStats: { average: 0, sd: 0 },
         keyDurationStats: { average: 0, sd: 0 },
@@ -63,12 +64,15 @@ async function createDummyData(
     });
   }
 }
-describeIntegration()("ResultDal", () => {
+describe("ResultDal", () => {
+  const replaceLegacyValuesMock = vi.spyOn(ResultUtils, "replaceLegacyValues");
+
   beforeEach(() => {
     uid = new ObjectId().toHexString();
   });
   afterEach(async () => {
     if (uid) await ResultDal.deleteAll(uid);
+    replaceLegacyValuesMock.mockClear();
   });
   describe("getResults", () => {
     it("should read lastest 10 results ordered by timestamp", async () => {
@@ -135,84 +139,52 @@ describeIntegration()("ResultDal", () => {
         expect(it.tags).toContain("old");
       });
     });
-    it("should convert legacy values", async () => {
+    it("should call replaceLegacyValues", async () => {
       //GIVEN
-      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+      await createDummyData(uid, 1);
 
       //WHEN
-      const results = await ResultDal.getResults(uid);
+      await ResultDal.getResults(uid);
 
       //THEN
-      expect(results[0]?.funbox).toEqual(["58008", "read_ahead"]);
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getResult", () => {
-    it("should convert legacy values", async () => {
+    it("should call replaceLegacyValues", async () => {
       //GIVEN
-      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+      await createDummyData(uid, 1);
       const resultId = (await ResultDal.getLastResult(uid))._id.toHexString();
 
       //WHEN
-      const result = await ResultDal.getResult(uid, resultId);
+      await ResultDal.getResult(uid, resultId);
 
       //THEN
-      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getLastResult", () => {
-    it("should convert legacy values", async () => {
+    it("should call replaceLegacyValues", async () => {
       //GIVEN
-      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+      await createDummyData(uid, 1);
 
       //WHEN
-      const result = await ResultDal.getLastResult(uid);
+      await ResultDal.getLastResult(uid);
 
       //THEN
-      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
   describe("getResultByTimestamp", () => {
-    it("should convert legacy values", async () => {
+    it("should call replaceLegacyValues", async () => {
       //GIVEN
-      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
+      await createDummyData(uid, 1);
 
       //WHEN
-      const result = await ResultDal.getResultByTimestamp(uid, timestamp);
+      await ResultDal.getResultByTimestamp(uid, timestamp);
 
       //THEN
-      expect(result?.funbox).toEqual(["58008", "read_ahead"]);
-    });
-  });
-  describe("converts legacy values", () => {
-    it("should convert funbox as string", async () => {
-      //GIVEN
-      await createDummyData(uid, 1, { funbox: "58008#read_ahead" as any });
-
-      //WHEN
-      const read = await ResultDal.getLastResult(uid);
-
-      //THEN
-      expect(read.funbox).toEqual(["58008", "read_ahead"]);
-    });
-    it("should convert funbox 'none'", async () => {
-      //GIVEN
-      await createDummyData(uid, 1, { funbox: "none" as any });
-
-      //WHEN
-      const read = await ResultDal.getLastResult(uid);
-
-      //THEN
-      expect(read.funbox).toEqual([]);
-    });
-    it("should not convert funbox as array", async () => {
-      //GIVEN
-      await createDummyData(uid, 1, { funbox: ["58008", "read_ahead"] });
-
-      //WHEN
-      const read = await ResultDal.getLastResult(uid);
-
-      //THEN
-      expect(read.funbox).toEqual(["58008", "read_ahead"]);
+      expect(replaceLegacyValuesMock).toHaveBeenCalled();
     });
   });
 });

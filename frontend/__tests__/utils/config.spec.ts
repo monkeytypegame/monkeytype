@@ -1,5 +1,6 @@
+import { describe, it, expect } from "vitest";
 import { getDefaultConfig } from "../../src/ts/constants/default-config";
-import { migrateConfig } from "../../src/ts/utils/config";
+import { migrateConfig } from "../../src/ts/config/utils";
 import { PartialConfig } from "@monkeytype/schemas/configs";
 
 const defaultConfig = getDefaultConfig();
@@ -64,7 +65,7 @@ describe("config.ts", () => {
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
         const result = migrateConfig(given);
         expect(result, description).toEqual(expect.objectContaining(expected));
@@ -104,7 +105,7 @@ describe("config.ts", () => {
         //WHEN
 
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
 
         const result = migrateConfig(given);
@@ -240,7 +241,7 @@ describe("config.ts", () => {
         },
       ])(`$given`, ({ given, expected }) => {
         const description = `given: ${JSON.stringify(
-          given
+          given,
         )}, expected: ${JSON.stringify(expected)} `;
 
         const result = migrateConfig(given);

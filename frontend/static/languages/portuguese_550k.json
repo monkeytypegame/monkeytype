@@ -1,7 +1,6 @@
 {
   "name": "portuguese_550k",
   "_comment": "Sourced from the pythonprobr/palavras repository, which is based on the LibreOffice pt_BR dictionary and the IME/USP repository.",
-  "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "pt",
   "words": [

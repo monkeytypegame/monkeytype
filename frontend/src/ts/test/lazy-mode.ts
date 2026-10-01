@@ -1,3 +1,6 @@
+import { LanguageObject } from "@monkeytype/schemas/languages";
+export type Accents = LanguageObject["additionalAccents"];
+
 const accents: Accents = [
   ["áàâäåãąą́āą̄ă", "a"],
   ["éèêëẽęę́ēę̄ėě", "e"],
@@ -43,35 +46,49 @@ const accents: Accents = [
 ];
 
 const accentsMap = new Map<string, string>(
-  accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
+  // ignoring for now but this might need a different approach
+  // oxlint-disable-next-line no-misused-spread
+  accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]])),
 );
-
-export type Accents = [string, string][];
 
 function findAccent(
   wordSlice: string,
-  additionalAccents?: Accents
+  additionalAccents?: Accents,
 ): [string, string] | undefined {
   const lookup = wordSlice.toLowerCase();
 
-  const found = additionalAccents?.find((rule) => lookup.startsWith(rule[0]));
+  const additionalAccentsMap = new Map<string, string>(
+    additionalAccents?.flatMap((rule) =>
+      // ignoring for now but this might need a different approach
+      // oxlint-disable-next-line no-misused-spread
+      [...rule[0]].map((accent) => [accent, rule[1]]),
+    ) ?? [],
+  );
 
   const common = accentsMap.get(lookup[0] as string);
+  const additional = additionalAccentsMap.get(lookup[0] as string);
 
   const commonFound =
     common !== undefined
       ? ([lookup[0], common] as [string, string])
       : undefined;
 
-  return found !== undefined ? found : commonFound;
+  const additionalFound =
+    additional !== undefined
+      ? ([lookup[0], additional] as [string, string])
+      : undefined;
+
+  return additionalFound ?? commonFound;
 }
 
 export function replaceAccents(
   word: string,
-  additionalAccents?: Accents
+  additionalAccents?: Accents,
 ): string {
   if (!word) return word;
   const uppercased = word.toUpperCase();
+  // ignoring for now but this might need a different approach
+  // oxlint-disable-next-line no-misused-spread
   const cases = [...word].map((it, i) => it === uppercased[i]);
   const newWordArray: string[] = [];
 

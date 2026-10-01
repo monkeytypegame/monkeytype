@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../../config";
-import { isAuthenticated } from "../../firebase";
-import * as DB from "../../db";
+import { setConfig } from "../../config/setters";
+import { isAuthenticated } from "../../states/core";
+import * as CustomThemes from "../../collections/custom-themes";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -30,29 +30,18 @@ export function update(): void {
 
   subgroup.list = [];
 
-  const snapshot = DB.getSnapshot();
-
-  if (!snapshot) return;
-
-  if (snapshot.customThemes === undefined) {
-    return;
-  }
-
-  if (snapshot.customThemes?.length === 0) {
-    return;
-  }
-  for (const theme of snapshot.customThemes) {
+  const customThemes = CustomThemes.__nonReactive.getCustomThemes();
+  for (const theme of customThemes) {
     subgroup.list.push({
-      id: "setCustomThemeId" + theme._id,
+      id: `setCustomThemeId${theme._id}`,
       display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {
         ThemeController.preview("custom", theme.colors);
       },
       exec: (): void => {
-        // UpdateConfig.setCustomThemeId(theme._id);
-        UpdateConfig.setCustomTheme(true);
-        UpdateConfig.setCustomThemeColors(theme.colors);
+        setConfig("customTheme", true);
+        setConfig("customThemeColors", theme.colors);
       },
     });
   }

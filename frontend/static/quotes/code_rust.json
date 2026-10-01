@@ -51,9 +51,9 @@
     },
     {
       "id": 8,
-      "length": 37,
+      "length": 36,
       "source": "Iterate over list values - programming-idioms.org",
-      "text": "for x in items {\n\t\tdo_something(x);\n}"
+      "text": "for x in items {\n\tdo_something(x);\n}"
     },
     {
       "id": 9,
@@ -255,9 +255,9 @@
     },
     {
       "id": 43,
-      "length": 145,
+      "length": 143,
       "source": "Parallelize execution of 1000 independent tasks - programming-idioms.org",
-      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| {\n\t\tthread::spawn(move || f(i))\n}).collect();\nfor thread in threads {\n\t\tthread.join();\n}"
+      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| {\n\tthread::spawn(move || f(i))\n}).collect();\nfor thread in threads {\n\tthread.join();\n}"
     },
     {
       "id": 44,
@@ -297,9 +297,9 @@
     },
     {
       "id": 50,
-      "length": 149,
+      "length": 147,
       "source": "First-class function : compose - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 51,
@@ -309,9 +309,9 @@
     },
     {
       "id": 52,
-      "length": 149,
+      "length": 147,
       "source": "First-class function : generic composition - programming-idioms.org",
-      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<dyn Fn(A) -> C + 'a>\n\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\tBox::new(move |x| g(f(x)))\n}"
     },
     {
       "id": 53,
@@ -459,9 +459,9 @@
     },
     {
       "id": 77,
-      "length": 129,
+      "length": 128,
       "source": "Launch 1000 parallel tasks and wait for completion - programming-idioms.org",
-      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| thread::spawn(move || f(i))).collect();\nfor t in threads {\n\t\tt.join();\n}"
+      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| thread::spawn(move || f(i))).collect();\nfor t in threads {\n\tt.join();\n}"
     },
     {
       "id": 78,
@@ -813,9 +813,9 @@
     },
     {
       "id": 136,
-      "length": 108,
+      "length": 107,
       "source": "Iterate over map entries, ordered by values - programming-idioms.org",
-      "text": "use itertools::Itertools;\nfor (k, x) in mymap.iter().sorted_by_key(|x| x.1) {\n\t\tprintln!(\"[{},{}]\", k, x);\n}"
+      "text": "use itertools::Itertools;\nfor (k, x) in mymap.iter().sorted_by_key(|x| x.1) {\n\tprintln!(\"[{},{}]\", k, x);\n}"
     },
     {
       "id": 137,
@@ -939,15 +939,15 @@
     },
     {
       "id": 157,
-      "length": 497,
+      "length": 482,
       "source": "Breadth-first traversing in a graph - programming-idioms.org",
-      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn bft(start: Rc<RefCell<Vertex<V>>>, f: impl Fn(&V)) {\n\t\tlet mut q = vec![start];\n\t\tlet mut i = 0;\n\t\twhile i < q.len() {\n\t\t\tlet v = Rc::clone(&q[i]);\n\t\t\ti += 1;\n\t\t\t(f)(&v.borrow().value);\n\t\t\tfor n in &v.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbour\");\n\t\t\t\tif q.iter().all(|v| v.as_ptr() != n.as_ptr()) {\n\t\t\t\t\tq.push(n);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n}"
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\tvalue: V,\n\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn bft(start: Rc<RefCell<Vertex<V>>>, f: impl Fn(&V)) {\n\tlet mut q = vec![start];\n\tlet mut i = 0;\n\twhile i < q.len() {\n\t\tlet v = Rc::clone(&q[i]);\n\t\ti += 1;\n\t\t(f)(&v.borrow().value);\n\t\tfor n in &v.borrow().neighbours {\n\t\t\tlet n = n.upgrade().expect(\"Invalid neighbour\");\n\t\t\tif q.iter().all(|v| v.as_ptr() != n.as_ptr()) {\n\t\t\t\tq.push(n);\n\t\t\t}\n\t\t}\n\t}\n}"
     },
     {
       "id": 158,
-      "length": 465,
+      "length": 450,
       "source": "Depth-first traversing in a graph - programming-idioms.org",
-      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn dft_helper(start: Rc<RefCell<Vertex<V>>>, f: &impl Fn(&V), s: &mut Vec<*const Vertex<V>>) {\n\t\ts.push(start.as_ptr());\n\t\t(f)(&start.borrow().value);\n\t\tfor n in &start.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbor\");\n\t\t\t\tif s.iter().all(|&p| p != n.as_ptr()) {\n\t\t\t\t\t\tSelf::dft_helper(n, f, s);\n\t\t\t\t}\n\t\t}\n}"
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\tvalue: V,\n\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn dft_helper(start: Rc<RefCell<Vertex<V>>>, f: &impl Fn(&V), s: &mut Vec<*const Vertex<V>>) {\n\ts.push(start.as_ptr());\n\t(f)(&start.borrow().value);\n\tfor n in &start.borrow().neighbours {\n\t\tlet n = n.upgrade().expect(\"Invalid neighbor\");\n\t\tif s.iter().all(|&p| p != n.as_ptr()) {\n\t\t\tSelf::dft_helper(n, f, s);\n\t\t}\n\t}\n}"
     },
     {
       "id": 159,
@@ -1005,9 +1005,9 @@
     },
     {
       "id": 168,
-      "length": 141,
+      "length": 127,
       "source": "Check if string contains only digits - programming-idioms.org",
-      "text": "let chars_are_numeric: Vec<bool> = s.chars()\n\t\t\t\t\t\t\t\t.map(|c|c.is_numeric())\n\t\t\t\t\t\t\t\t.collect();\nlet b = !chars_are_numeric.contains(&false);"
+      "text": "let chars_are_numeric: Vec<bool> = s.chars()\n\t.map(|c|c.is_numeric())\n\t.collect();\nlet b = !chars_are_numeric.contains(&false);"
     },
     {
       "id": 169,
@@ -1347,9 +1347,9 @@
     },
     {
       "id": 225,
-      "length": 63,
+      "length": 60,
       "source": "Filter and transform list - programming-idioms.org",
-      "text": "let y = x.iter()\n\t\t.filter(P)\n\t\t.map(T)\n\t\t.collect::<Vec<_>>();"
+      "text": "let y = x.iter()\n\t.filter(P)\n\t.map(T)\n\t.collect::<Vec<_>>();"
     },
     {
       "id": 226,
@@ -1377,9 +1377,9 @@
     },
     {
       "id": 230,
-      "length": 129,
+      "length": 127,
       "source": "Get a list of lines from a file - programming-idioms.org",
-      "text": "use std::io::prelude::*;\nuse std::io::BufReader;\nlet lines = BufReader::new(File::open(path)?)\n\t\t.lines()\n\t\t.collect::<Vec<_>>();"
+      "text": "use std::io::prelude::*;\nuse std::io::BufReader;\nlet lines = BufReader::new(File::open(path)?)\n\t.lines()\n\t.collect::<Vec<_>>();"
     },
     {
       "id": 231,
@@ -1431,15 +1431,15 @@
     },
     {
       "id": 239,
-      "length": 74,
+      "length": 73,
       "source": "Formula with arrays - programming-idioms.org",
-      "text": "for i in range 0..a.len() {\n\t\ta[i] = e*(a[i] + b[i] + c[i] + d[i].cos())\n}"
+      "text": "for i in range 0..a.len() {\n\ta[i] = e*(a[i] + b[i] + c[i] + d[i].cos())\n}"
     },
     {
       "id": 240,
-      "length": 131,
+      "length": 121,
       "source": "Type with automatic deep deallocation - programming-idioms.org",
-      "text": "struct T {\n\t\ts: String,\n\t\tn: Vec<usize>,\n}\nfn main() {\n\t\tlet v = T {\n\t\t\t\ts: \"Hello, world!\".into(),\n\t\t\t\tn: vec![1,4,9,16,25]\n\t\t};\n}"
+      "text": "struct T {\n\ts: String,\n\tn: Vec<usize>,\n}\nfn main() {\n\tlet v = T {\n\ts: \"Hello, world!\".into(),\n\tn: vec![1,4,9,16,25]\n\t};\n}"
     },
     {
       "id": 241,
@@ -1473,9 +1473,9 @@
     },
     {
       "id": 246,
-      "length": 138,
+      "length": 136,
       "source": "Pad a string on both sides - programming-idioms.org",
-      "text": "use std::iter;\nlet s2 = iter::repeat(c).take((m + 1) / 2).collect::<String>()\n\t\t+ &s\n\t\t+ &iter::repeat(c).take(m / 2).collect::<String>();"
+      "text": "use std::iter;\nlet s2 = iter::repeat(c).take((m + 1) / 2).collect::<String>()\n\t+ &s\n\t+ &iter::repeat(c).take(m / 2).collect::<String>();"
     },
     {
       "id": 247,
@@ -1539,9 +1539,9 @@
     },
     {
       "id": 257,
-      "length": 101,
+      "length": 99,
       "source": "for else loop - programming-idioms.org",
-      "text": "if let None = items.iter().find(|&&item| item == \"rockstar programmer\") {\n\t\tprintln!(\"NotFound\");\n\t};"
+      "text": "if let None = items.iter().find(|&&item| item == \"rockstar programmer\") {\n\tprintln!(\"NotFound\");\n};"
     },
     {
       "id": 258,

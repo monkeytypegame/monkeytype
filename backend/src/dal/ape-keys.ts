@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as db from "../init/db";
 import {
   type Filter,
@@ -47,14 +46,18 @@ export async function addApeKey(apeKey: DBApeKey): Promise<string> {
 async function updateApeKey(
   uid: string,
   keyId: string,
-  updates: MatchKeysAndValues<DBApeKey>
+  updates: MatchKeysAndValues<DBApeKey>,
 ): Promise<void> {
   const updateResult = await getApeKeysCollection().updateOne(
     getApeKeyFilter(uid, keyId),
     {
-      $inc: { useCount: _.has(updates, "lastUsedOn") ? 1 : 0 },
-      $set: _.pickBy(updates, (value) => !_.isNil(value)),
-    }
+      $inc: { useCount: "lastUsedOn" in updates ? 1 : 0 },
+      $set: Object.fromEntries(
+        Object.entries(updates).filter(
+          ([_, value]) => value !== null && value !== undefined,
+        ),
+      ),
+    },
   );
 
   if (updateResult.modifiedCount === 0) {
@@ -66,7 +69,7 @@ export async function editApeKey(
   uid: string,
   keyId: string,
   name?: string,
-  enabled?: boolean
+  enabled?: boolean,
 ): Promise<void> {
   //check if there is a change
   if (name === undefined && enabled === undefined) return;
@@ -81,7 +84,7 @@ export async function editApeKey(
 
 export async function updateLastUsedOn(
   uid: string,
-  keyId: string
+  keyId: string,
 ): Promise<void> {
   const apeKeyUpdates = {
     lastUsedOn: Date.now(),
@@ -92,7 +95,7 @@ export async function updateLastUsedOn(
 
 export async function deleteApeKey(uid: string, keyId: string): Promise<void> {
   const deletionResult = await getApeKeysCollection().deleteOne(
-    getApeKeyFilter(uid, keyId)
+    getApeKeyFilter(uid, keyId),
   );
 
   if (deletionResult.deletedCount === 0) {

@@ -1,5 +1,5 @@
+import { __nonReactive } from "../collections/results";
 import * as DateTime from "../utils/date-and-time";
-import * as DB from "../db";
 
 let seconds = 0;
 let addedAllToday = false;
@@ -31,11 +31,9 @@ export function addAllFromToday(): void {
   const todayDateMS = todayDate.getTime();
 
   seconds = 0;
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  const results = snapshot.results;
+  const results = __nonReactive.getResults();
 
-  results?.forEach((result) => {
+  for (const result of results) {
     const resultDate = new Date(result.timestamp);
     resultDate.setSeconds(0);
     resultDate.setMinutes(0);
@@ -47,7 +45,7 @@ export function addAllFromToday(): void {
       seconds +=
         result.testDuration + result.incompleteTestSeconds - result.afkDuration;
     }
-  });
+  }
 
   addedAllToday = true;
 }

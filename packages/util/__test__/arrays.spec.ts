@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import * as Arrays from "../src/arrays";
 
 describe("arrays", () => {

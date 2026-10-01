@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
-export const LayoutNameSchema = z.enum([
+export const LayoutNameSchema = z.enum(
+  [
     "qwerty",
     "dvorak",
     "colemak",
+    "colemak_angle",
     "colemak_wide",
     "colemak_dh",
     "colemak_dh_iso",
@@ -43,6 +45,7 @@ export const LayoutNameSchema = z.enum([
     "dvorak_R",
     "dvorak_fr",
     "azerty",
+    "azerty_AFNOR",
     "bepo",
     "bepo_AFNOR",
     "alpha",
@@ -50,6 +53,8 @@ export const LayoutNameSchema = z.enum([
     "hungarian",
     "handsdown_alt",
     "handsdown_promethium",
+    "handsdown_neu",
+    "handsdown_neu_inverted",
     "typehack",
     "MTGAP",
     "MTGAP_full",
@@ -58,6 +63,8 @@ export const LayoutNameSchema = z.enum([
     "niro",
     "mongolian",
     "JCUKEN",
+    "statica_3x5",
+    "Vestnik",
     "Diktor",
     "Diktor_VoronovMod",
     "Redaktor",
@@ -108,6 +115,7 @@ export const LayoutNameSchema = z.enum([
     "klauser",
     "oneproduct",
     "pine",
+    "pine_v4",
     "real",
     "rolll",
     "stndc",
@@ -151,6 +159,7 @@ export const LayoutNameSchema = z.enum([
     "gallium_angle",
     "gallium_v2",
     "gallium_v2_matrix",
+    "gallium_nl",
     "maya",
     "gallaya_angle_ansi",
     "gallaya_angle_iso",
@@ -178,6 +187,7 @@ export const LayoutNameSchema = z.enum([
     "estonian",
     "stronk",
     "dhorf",
+    "gust",
     "recurva",
     "seht-drai",
     "ints",
@@ -196,11 +206,13 @@ export const LayoutNameSchema = z.enum([
     "inqwerted",
     "rain",
     "night",
+    "night_stic",
     "whix2",
     "haruka",
     "kuntum",
     "anishtro",
     "Kuntem",
+    "kuntem-jq",
     "BEAKL_Zi",
     "snorkle",
     "MALTRON",
@@ -218,11 +230,67 @@ export const LayoutNameSchema = z.enum([
     "tarmak_2",
     "tarmak_3",
     "tarmak_4",
+    "rulemak",
+    "persian_farsi_colemak",
+    "persian_standard_colemak",
+    "ergo_split46",
+    "tamil99",
+    "Gralmak",
+    "GralmakS",
+    "vitrimak",
+    "miligram",
+    "nokwts",
+    "vylet_v4",
+    "armenian_hm_qwerty",
     "upsidedown",
-  ], 
+  ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
-  }
+  },
 );
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;
+
+const KeyLegendsSchema = z.array(z.string().length(1)).min(1).max(4);
+export type KeyLegends = z.infer<typeof KeyLegendsSchema>;
+
+const commonLayoutSchema = z
+  .object({
+    keymapShowTopRow: z.boolean(),
+    matrixShowRightColumn: z.boolean().optional(),
+  })
+  .strict();
+
+const ansiLayoutSchema = commonLayoutSchema
+  .extend({
+    type: z.literal("ansi"),
+    keys: z
+      .object({
+        row1: z.array(KeyLegendsSchema).length(13),
+        row2: z.array(KeyLegendsSchema).length(13),
+        row3: z.array(KeyLegendsSchema).length(11),
+        row4: z.array(KeyLegendsSchema).length(10),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
+      })
+      .strict(),
+  })
+  .strict();
+
+const isoLayoutSchema = commonLayoutSchema
+  .extend({
+    type: z.literal("iso"),
+    keys: z
+      .object({
+        row1: z.array(KeyLegendsSchema).length(13),
+        row2: z.array(KeyLegendsSchema).length(12),
+        row3: z.array(KeyLegendsSchema).length(12),
+        row4: z.array(KeyLegendsSchema).length(11),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
+      })
+      .strict(),
+  })
+  .strict();
+
+export const LayoutObjectSchema = ansiLayoutSchema.or(isoLayoutSchema);
+
+export type LayoutObject = z.infer<typeof LayoutObjectSchema>;
