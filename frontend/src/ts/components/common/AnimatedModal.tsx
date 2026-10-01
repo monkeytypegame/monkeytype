@@ -1,4 +1,10 @@
-import { JSXElement, ParentProps, Show, onCleanup } from "solid-js";
+import {
+  JSXElement,
+  ParentProps,
+  Show,
+  createSignal,
+  onCleanup,
+} from "solid-js";
 
 import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
@@ -58,6 +64,11 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const visibility = (): boolean => isModalOpen(props.id);
 
+  // Stays true for the duration of the hide animation, so the modal is still
+  // mounted while it animates out. Cleared once the animation has finished.
+  const [contentMounted, setContentMounted] = createSignal(false);
+  const renderContent = (): boolean => visibility() || contentMounted();
+
   // Handle open/close with animations
   createEffectOn(
     visibility,
@@ -65,6 +76,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       const isChained = isModalChained(props.id);
 
       if (visible) {
+        setContentMounted(true);
         void showModal(isChained);
       } else if (dialogEl()?.native.open) {
         void hideModal(isChained);
@@ -261,6 +273,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
   const handleAfterHide = async (): Promise<void> => {
     await props.afterHide?.();
+    setContentMounted(false);
     storeHideModal(props.id);
   };
 
@@ -332,7 +345,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       Don't show the modal content on non-visible modals.
       If the modal contains data from e.g. a collection the collection would init on page load instead of when it is needed.
       */}
-      <Show when={isModalOpen(props.id)}>
+      <Show when={renderContent()}>
         <div
           class={cn(
             "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto overscroll-y-none rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
