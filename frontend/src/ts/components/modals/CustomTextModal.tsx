@@ -244,7 +244,7 @@ export function CustomTextModal(): JSXElement {
     if (
       mode === "repeat" &&
       CustomText.getLimitMode() !== "time" &&
-      CustomText.getLimitValue() === CustomText.getText().length
+      CustomText.getLimitValue() === CustomText.getStoredText().length
     ) {
       mode = "simple";
     }
@@ -264,7 +264,7 @@ export function CustomTextModal(): JSXElement {
       }
     }
 
-    const text = CustomText.getText()
+    const text = CustomText.getStoredText()
       .join(pipeDelimiter ? "|" : " ")
       .replace(/^ +/gm, "");
 
