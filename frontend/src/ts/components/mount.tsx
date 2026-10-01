@@ -18,6 +18,7 @@ import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { FriendsPage } from "./pages/connections/FriendsPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
+import { LoadingPage } from "./pages/LoadingPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
@@ -41,6 +42,7 @@ const components: Record<string, () => JSXElement> = {
   aboutpage: () => <AboutPage />,
   settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
+  loadingpage: () => <LoadingPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
   profilepage: () => <ProfilePage />,
