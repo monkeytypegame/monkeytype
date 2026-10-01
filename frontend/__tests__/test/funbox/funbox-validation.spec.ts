@@ -26,6 +26,7 @@ describe("funbox-validation", () => {
         "read_ahead_easy", //changesWordVisibility
         "tts", //speaks
         "layout_mirror", //changesLayout
+        "upside_down_layout", // flips layout upside down
         "zipf", //changesWordsFrequency
       ].map((funbox) => ({
         key: "mode",
