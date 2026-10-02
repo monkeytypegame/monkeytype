@@ -349,6 +349,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         <div
           class={cn(
             "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto overscroll-y-none rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            "focus:outline-none",
             props.modalClass,
           )}
           ref={modalRef}
