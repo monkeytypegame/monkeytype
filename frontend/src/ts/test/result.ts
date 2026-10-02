@@ -1309,10 +1309,11 @@ export function updateTagsAfterEdit(
   );
 }
 
-qsa(".pageTest #result .chart .chartLegend button")?.on(
+qs(".pageTest")?.onChild(
   "click",
+  "#result .chart .chartLegend button",
   async (event) => {
-    const $target = event.target as HTMLElement;
+    const $target = event.childTarget as HTMLElement;
     const id = $target.getAttribute("data-id");
 
     if (id === "scale") {
@@ -1340,7 +1341,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
   },
 );
 
-qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
+qs(".pageTest")?.onChild("click", "#favoriteQuoteButton", async () => {
   if (quoteLang === undefined || quoteId === "") {
     showErrorNotification("Could not get quote stats!");
     return;

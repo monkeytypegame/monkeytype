@@ -37,7 +37,12 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+// created lazily - #paceCaret is rendered by the TestPage component
+export let caret: Caret;
+
+export function initElement(): void {
+  caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+}
 
 let lastTestWpm = 0;
 
