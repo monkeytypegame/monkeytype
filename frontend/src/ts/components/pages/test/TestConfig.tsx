@@ -1,3 +1,4 @@
+import { lengthDescToGroup } from "@monkeytype/schemas/quotes";
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
 import { configMetadata } from "../../../config/metadata";
@@ -310,13 +311,6 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
 }
 
 function Mode2Quote(props: ComponentProps<"div">): JSXElement {
-  const quoteLengths = [
-    { text: "short", length: 0 },
-    { text: "medium", length: 1 },
-    { text: "long", length: 2 },
-    { text: "thicc", length: 3 },
-  ] as const;
-
   return (
     <div {...props}>
       <TCButton
@@ -327,13 +321,13 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           restartTestEvent.dispatch();
         }}
       />
-      <For each={quoteLengths}>
-        {({ text, length }) => (
+      <For each={Object.entries(lengthDescToGroup)}>
+        {([desc, group]) => (
           <TCButton
-            text={text}
-            active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
+            text={desc}
+            active={areUnsortedArraysEqual(getConfig.quoteLength, [group])}
             onClick={() => {
-              setConfig("quoteLength", [length]);
+              setConfig("quoteLength", [group]);
               restartTestEvent.dispatch();
             }}
           />

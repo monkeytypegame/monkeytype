@@ -7,10 +7,10 @@ import {
   PersonalBestsSchema,
   DefaultWordsModeSchema,
   DefaultTimeModeSchema,
-  QuoteLengthSchema,
   DifficultySchema,
   PersonalBestSchema,
 } from "./shared";
+import { QuoteLengthSchema } from "./quotes";
 import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";

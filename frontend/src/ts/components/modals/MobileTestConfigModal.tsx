@@ -4,6 +4,7 @@ import type {
 } from "@monkeytype/schemas/configs";
 import type { Mode } from "@monkeytype/schemas/shared";
 
+import { groupToLengthDesc } from "@monkeytype/schemas/quotes";
 import { For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
@@ -26,13 +27,13 @@ const quoteLengths: {
   loginRequired?: boolean;
 }[] = [
   { value: "all", label: "all" },
-  { value: "0", label: "short" },
-  { value: "1", label: "medium" },
-  { value: "2", label: "long" },
-  { value: "3", label: "thicc" },
+  ...Object.entries(groupToLengthDesc).map(([group, desc]) => ({
+    value: group,
+    label: desc,
+  })),
   { value: "-3", label: "favorite", loginRequired: true },
   { value: "-2", label: "search" },
-] as const;
+];
 
 function MCButton(props: {
   text: string;

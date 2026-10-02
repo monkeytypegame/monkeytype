@@ -28,16 +28,6 @@ export function QuoteRateModal(): JSXElement {
   const [rating, setRating] = createSignal(0);
   const [hoverRating, setHoverRating] = createSignal(0);
 
-  const getLengthDesc = (): string => {
-    const quote = selectedQuote();
-    if (!quote) return "-";
-    if (quote.group === 0) return "short";
-    if (quote.group === 1) return "medium";
-    if (quote.group === 2) return "long";
-    if (quote.group === 3) return "thicc";
-    return "-";
-  };
-
   const displayRating = (): number => hoverRating() || rating();
 
   const handleBeforeShow = (): void => {
@@ -152,7 +142,7 @@ export function QuoteRateModal(): JSXElement {
           </div>
           <div class="text-xs text-sub">
             <div class="text-sub opacity-50">length</div>
-            {getLengthDesc()}
+            {selectedQuote()?.groupDescription ?? "-"}
           </div>
           <div class="text-xs text-sub">
             <div class="text-sub opacity-50">source</div>
