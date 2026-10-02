@@ -21,7 +21,6 @@ const createThemeCommand = (theme: ThemeWithName): Command => {
     id: `changeTheme${capitalizeFirstLetterOfEachWord(theme.name)}`,
     display: theme.name.replace(/_/g, " "),
     configValue: theme.name,
-    // customStyle: `color:${theme.main};background:${theme.bg};`,
     customData: {
       main: theme.main,
       bg: theme.bg,
