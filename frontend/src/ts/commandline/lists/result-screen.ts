@@ -1,6 +1,5 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
-import * as PractiseWordsModal from "../../modals/practise-words";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -12,6 +11,7 @@ import { Command, CommandsSubgroup } from "../types";
 import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
 import { getLastEventLog, getResultVisible } from "../../states/test";
+import { showModal } from "../../states/modals";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -50,11 +50,8 @@ const practiceSubgroup: CommandsSubgroup = {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
-      exec: (options): void => {
-        PractiseWordsModal.show({
-          animationMode: "modalOnly",
-          modalChain: options.commandlineModal,
-        });
+      exec: (): void => {
+        showModal("PractiseWords");
       },
     },
   ],
