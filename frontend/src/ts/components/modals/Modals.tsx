@@ -1,6 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { ViewApeKeyModal } from "./account-settings/ViewApeKeyModal";
+import { CommandlineModal } from "./CommandlineModal";
 import { ContactModal } from "./ContactModal";
 import { CookiesModal } from "./CookiesModal";
 import { CustomTestDurationModal } from "./CustomTestDurationModal";
@@ -30,6 +31,7 @@ import { VersionHistoryModal } from "./VersionHistoryModal";
 export function Modals(): JSXElement {
   return (
     <>
+      <CommandlineModal />
       <VersionHistoryModal />
       <ContactModal />
       <RegisterCaptchaModal />
