@@ -4,7 +4,14 @@ const errorElem = document.querySelector<HTMLElement>(
   ".pageTest #testInitFailed .error",
 );
 
-export function show(): void {
+const messageElem = document.querySelector<HTMLElement>(
+  ".pageTest #testInitFailed .message .text",
+);
+const defaultMessage = messageElem?.innerText ?? "";
+
+export function show(message?: string): void {
+  if (messageElem) messageElem.innerText = message ?? defaultMessage;
+  if (message !== undefined) hideError();
   if (elem && testElem) {
     elem.classList.remove("hidden");
     testElem.classList.add("hidden");
