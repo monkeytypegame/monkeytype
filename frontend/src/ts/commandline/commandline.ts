@@ -534,6 +534,25 @@ async function showCommands(): Promise<void> {
 
     if (command.customData !== undefined) {
       if (command.id.startsWith("changeTheme")) {
+        /*
+         * Theme bubbles.
+         *
+         * The old markup used `outline: 0.25rem solid <bg>` to draw the
+         * highlight strip. `outline` is a *stroke*, and at fractional zoom
+         * levels the browser anti-aliases that stroke path — producing a
+         * faint seam around the bubbles even when its colour equals the
+         * element's own background.
+         *
+         * Fix: drop the outline and use `padding: 0.25rem` on the same
+         * element. The element's own `background` (already set to bg) fills
+         * that padding area, so it renders as the exact same 4px "border".
+         * Because a background is a filled rectangle (not a stroke), it
+         * fills whole pixels and has no edge to anti-alias into a seam.
+         *
+         * `box-sizing: content-box` preserves the element's original visual
+         * footprint (which previously included the outline drawn outside
+         * the border box).
+         */
         html += `<div class="command changeThemeCommand" data-command-id="${
           command.id
         }" data-index="${index}" style="${customStyle}">
@@ -545,7 +564,7 @@ async function showCommands(): Promise<void> {
       </div>
       <div class="themeBubbles" style="background: ${
         command.customData["bg"]
-      };outline: 0.25rem solid ${command.customData["bg"]};">
+      };padding: 0.25rem;box-sizing: content-box;">
         <div class="themeBubble" style="background: ${
           command.customData["main"]
         }"></div>
