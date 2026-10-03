@@ -142,6 +142,7 @@ export function CookiesModal(): JSXElement {
                     are more relevant to you.
                   </div>
                   <Button
+                    aria-label="Open ad consent settings"
                     fa={{ icon: "fa-external-link-alt", fixedWidth: true }}
                     class="text-[0.85em]"
                     onClick={() => {

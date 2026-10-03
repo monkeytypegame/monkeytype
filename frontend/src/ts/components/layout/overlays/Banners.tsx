@@ -55,6 +55,7 @@ function Banner(props: BannerType): JSXElement {
           when={props.important === true}
           fallback={
             <button
+              aria-label="Close"
               type="button"
               class="text -mr-2 self-center text-bg hover:text-text"
               onClick={() => {

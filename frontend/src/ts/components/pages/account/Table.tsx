@@ -211,6 +211,7 @@ function getColumns<M extends Mode>({
               }
             >
               <Button
+                aria-label="View graph"
                 disabled={!hasChart}
                 class="p-0 text-inherit"
                 variant="text"

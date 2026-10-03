@@ -60,6 +60,7 @@ export function Filters(props: {
                     }
                   />
                   <Button
+                    aria-label={`Delete preset ${preset.name}`}
                     fa={{ icon: "fa-trash", fixedWidth: true }}
                     onClick={() =>
                       showSimpleModal({
