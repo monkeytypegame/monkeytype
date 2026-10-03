@@ -1,4 +1,4 @@
-import { JSXElement, ParentProps, Show } from "solid-js";
+import { children, JSXElement, ParentProps, Show } from "solid-js";
 import { z } from "zod";
 import { serialize } from "zod-urlsearchparams";
 
@@ -47,6 +47,11 @@ export type SettingProps = {
 
 export function Setting(props: SettingProps): JSXElement {
   const breakpoints = () => props.breakpoints ?? "normal";
+  // JSX props are getters that build new DOM on every read - resolve each once
+  const description = children(() => props.description);
+  const inputs = children(() => props.inputs);
+  const fullWidthInputs = children(() => props.fullWidthInputs);
+  const content = children(() => props.children);
   return (
     <div
       class={cn(
@@ -79,23 +84,23 @@ export function Setting(props: SettingProps): JSXElement {
             breakpoints() === "narrow" &&
               "md:gap-x-8 lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr]",
 
-            props.inputs === undefined &&
+            inputs() === undefined &&
               breakpoints() === "normal" &&
               "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
           )}
         >
-          <Show when={props.description !== ""}>
-            <div>{props.description}</div>
+          <Show when={description() !== ""}>
+            <div>{description()}</div>
           </Show>
-          <Show when={props.inputs !== undefined}>
-            <div>{props.inputs}</div>
+          <Show when={inputs() !== undefined}>
+            <div>{inputs()}</div>
           </Show>
-          <Show when={props.children}>
-            <div>{props.children}</div>
+          <Show when={content()}>
+            <div>{content()}</div>
           </Show>
         </div>
 
-        <Show when={props.fullWidthInputs}>{props.fullWidthInputs}</Show>
+        <Show when={fullWidthInputs()}>{fullWidthInputs()}</Show>
       </Show>
     </div>
   );
