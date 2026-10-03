@@ -1402,11 +1402,7 @@ async function loadWordsHistory(): Promise<boolean> {
         "beforeend",
         `<div class="wordInputHighlight withSpeed">
           <div class="text">
-          ${input
-            .replace(/\t/g, "_")
-            .replace(/\n/g, "_")
-            .replace(/</g, "&lt")
-            .replace(/>/g, "&gt")}
+          ${Misc.escapeHTML(input.replace(/\t/g, "_").replace(/\n/g, "_"))}
           </div>
           <div class="speed">
           ${isNaN(burst) || burst >= 1000 ? "Infinite" : Format.typingSpeed(burst, { showDecimalPlaces: false })}
