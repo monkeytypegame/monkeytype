@@ -1,5 +1,5 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { TestEvent } from "./types";
+import { InputEvent, TestEvent } from "./types";
 
 // Running tallies maintained as events arrive, so live readers don't rescan
 // the event log. For replay, derive from the event log directly.
@@ -7,6 +7,8 @@ const cache = {
   correctInputs: 0,
   totalInputs: 0,
   timerStartMs: null as number | null,
+  previousInput: null as InputEvent | null,
+  lastInput: null as InputEvent | null,
   msSinceLastInputEvent: {
     value: null as number | null,
     lastEventMs: null as number | null,
@@ -17,12 +19,16 @@ export function resetLiveCache(): void {
   cache.correctInputs = 0;
   cache.totalInputs = 0;
   cache.timerStartMs = null;
+  cache.previousInput = null;
+  cache.lastInput = null;
   cache.msSinceLastInputEvent.value = null;
   cache.msSinceLastInputEvent.lastEventMs = null;
 }
 
 export function recordEventForCache(event: TestEvent): void {
   if (event.type === "input") {
+    cache.previousInput = cache.lastInput;
+    cache.lastInput = event;
     if ("correct" in event.data) {
       cache.totalInputs++;
       if (event.data.correct) cache.correctInputs++;
@@ -46,6 +52,13 @@ export function getLiveCachedAccuracy(): number {
 
 export function getLiveCachedMsSinceLastInputEvent(): number | null {
   return cache.msSinceLastInputEvent.value;
+}
+
+export function getLiveCachedInputPair(): [
+  InputEvent | null,
+  InputEvent | null,
+] {
+  return [cache.previousInput, cache.lastInput];
 }
 
 export function getLiveCachedTimerStartMs(): number | null {
