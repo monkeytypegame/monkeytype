@@ -1,9 +1,11 @@
 import { lastElementFromArray } from "./arrays";
-import { Config } from "@monkeytype/schemas/configs";
+import { Config as ConfigSchema } from "@monkeytype/schemas/configs";
+import { Config } from "../config/store";
 import { Mode, Mode2, PersonalBests } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { RankAndCount } from "@monkeytype/schemas/users";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { Language } from "@monkeytype/schemas/languages";
 import { animate, AnimationParams } from "animejs";
 import { ElementWithUtils } from "./dom";
 import { isDevEnvironment } from "./env";
@@ -235,7 +237,7 @@ export async function swapElements(
 }
 
 export function getMode2<M extends keyof PersonalBests>(
-  config: Config,
+  config: ConfigSchema,
   randomQuote: { id: number } | null,
 ): Mode2<M> {
   const mode = config.mode;
@@ -738,6 +740,10 @@ export function getTotalInlineMargin(element: HTMLElement): number {
   return (
     parseInt(computedStyle.marginRight) + parseInt(computedStyle.marginLeft)
   );
+}
+
+export function getQuotesLanguage(language = Config.language): Language {
+  return language.startsWith("swiss_german") ? "german" : language;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
