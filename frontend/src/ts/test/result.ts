@@ -17,7 +17,7 @@ import {
 } from "../states/notifications";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getQuoteStats } from "../states/quote-rate";
-import * as GlarsesMode from "../legacy-states/glarses-mode";
+import { getGlarsesMode } from "../states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -50,14 +50,21 @@ import {
 } from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
+import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
+import { getSmoothedBurst, setSmoothedBurst } from "../states/smoothed-burst";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
-import * as TestState from "./test-state";
 import { blurInputElement } from "../input/input-element";
 import * as ConnectionState from "../legacy-states/connection";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { getCurrentQuote, isTestInvalid } from "../states/test";
+import {
+  getLastEventLog,
+  getCurrentQuote,
+  getResultVisible,
+  isTestInvalid,
+  setResultCalculating,
+} from "../states/test";
 import {
   getAccuracy,
   getRawHistory,
@@ -68,16 +75,15 @@ let result: CompletedEvent;
 let minChartVal: number;
 let maxChartVal: number;
 
-let useSmoothedBurst = true;
 let useFakeChartData = false;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
-  useSmoothedBurst = !useSmoothedBurst;
-  showSuccessNotification(useSmoothedBurst ? "on" : "off");
-  if (TestState.resultVisible) {
+  setSmoothedBurst(!getSmoothedBurst());
+  showSuccessNotification(getSmoothedBurst() ? "on" : "off");
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -87,7 +93,7 @@ export function toggleSmoothedBurst(): void {
 export function toggleUserFakeChartData(): void {
   useFakeChartData = !useFakeChartData;
   showSuccessNotification(useFakeChartData ? "on" : "off");
-  if (TestState.resultVisible) {
+  if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
     });
@@ -97,7 +103,8 @@ export function toggleUserFakeChartData(): void {
 let resultAnnotation: AnnotationOptions<"line">[] = [];
 
 async function updateChartData(): Promise<void> {
-  if (result.chartData === "toolong" || TestState.lastEventLog === null) {
+  const eventLog = getLastEventLog();
+  if (result.chartData === "toolong" || eventLog === null) {
     ChartController.result.getDataset("wpm").data = [];
     ChartController.result.getDataset("raw").data = [];
     ChartController.result.getDataset("burst").data = [];
@@ -109,7 +116,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getScale("wpm").title.text =
     typingSpeedUnit.fullUnitString;
 
-  const labels = getTimerBoundaryLabels(TestState.lastEventLog, false);
+  const labels = getTimerBoundaryLabels(eventLog, false);
 
   const chartData1 = [
     ...result.chartData.wpm.map((a) =>
@@ -117,7 +124,7 @@ async function updateChartData(): Promise<void> {
     ),
   ];
 
-  const chartData2 = getRawHistory(TestState.lastEventLog).map((a) =>
+  const chartData2 = getRawHistory(eventLog).map((a) =>
     Numbers.roundTo2(typingSpeedUnit.fromWpm(a)),
   );
 
@@ -125,7 +132,7 @@ async function updateChartData(): Promise<void> {
   let smoothedBurst = Arrays.smoothWithValueWindow(
     result.chartData.burst,
     1,
-    useSmoothedBurst ? valueWindow : 0,
+    getSmoothedBurst() ? valueWindow : 0,
   );
 
   const chartData3 = [
@@ -339,8 +346,9 @@ function updateWpmAndAcc(): void {
     result.acc === 100 ? "100%" : Format.accuracy(result.acc),
   );
 
-  if (TestState.lastEventLog !== null) {
-    const acc = getAccuracy(TestState.lastEventLog);
+  const accEventLog = getLastEventLog();
+  if (accEventLog !== null) {
+    const acc = getAccuracy(accEventLog);
     if (Config.alwaysShowDecimalPlaces) {
       if (Config.typingSpeedUnit !== "wpm") {
         qs("#result .stats .wpm .bottom")?.setAttribute(
@@ -801,6 +809,9 @@ function updateTestType(randomQuote: Quote | null): void {
   if (Config.stopOnError !== "off") {
     testType += `<br>stop on ${Config.stopOnError}`;
   }
+  if (Config.deleteOnError !== "off") {
+    testType += `<br>delete on ${Config.deleteOnError.replace(/_/g, " ")}`;
+  }
 
   qsa("#result .stats .testType .bottom")?.setHtml(testType);
 }
@@ -1002,9 +1013,9 @@ export async function update(
     qs("#result .stats .infoAndTags")?.show();
   }
 
-  if (GlarsesMode.get()) {
+  if (getGlarsesMode()) {
     qs("main #result .noStressMessage")?.remove();
-    qs("main #result")?.prependHtml(`
+    qs("main #result .wrapper")?.prependHtml(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -1045,7 +1056,12 @@ export async function update(
     qs("main #result #saveScreenshotButton")?.show();
   }
 
-  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
+  if (
+    res.wpm === 0 &&
+    !difficultyFailed &&
+    res.testDuration >= 5 &&
+    getSarcasticResultMessage()
+  ) {
     const roundedTime = Math.round(res.testDuration);
 
     const messages = [
@@ -1079,7 +1095,7 @@ export async function update(
     getCustomTextIndicator()?.isLong ?? false,
   );
 
-  if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
+  if (Config.alwaysShowWordsHistory && canQuickRestart && !getGlarsesMode()) {
     void TestUI.toggleResultWords(true);
   }
   AdController.updateFooterAndVerticalAds(true);
@@ -1100,7 +1116,7 @@ export async function update(
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
-  TestState.setResultCalculating(false);
+  setResultCalculating(false);
   qs("#words")?.empty();
   ChartController.result.resize();
 }
@@ -1382,7 +1398,7 @@ qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
 configEvent.subscribe(async ({ key }) => {
   if (
     ["typingSpeedUnit", "startGraphsAtZero"].includes(key) &&
-    TestState.resultVisible
+    getResultVisible()
   ) {
     resultAnnotation = [];
 

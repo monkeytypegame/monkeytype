@@ -23,7 +23,7 @@ import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
-import * as TestState from "../test-state";
+import { getActiveWordIndex } from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
@@ -69,8 +69,8 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Backspace" &&
     !isCorrect &&
     (currentInput !== "" ||
-      getInputForWord(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1)?.textWithCommit ||
+      getInputForWord(getActiveWordIndex() - 1) !==
+        TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
     qs("#words")?.addClass("read_ahead_disabled");
@@ -395,11 +395,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
-        const index = Math.floor(
-          (TestState.activeWordIndex + 1) / wordsPerLayout,
-        );
+        const index = Math.floor((getActiveWordIndex() + 1) / wordsPerLayout);
         const mod =
-          wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
+          wordsPerLayout - ((getActiveWordIndex() + 1) % wordsPerLayout);
 
         if (layouts[index] as string) {
           if (mod <= 3 && (layouts[index + 1] as string)) {

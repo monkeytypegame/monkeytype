@@ -68,33 +68,35 @@ function LeaderboardPosition(props: {
   const format = getFormatting;
 
   return (
-    <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
-      <span class="text-center md:col-span-2 lg:col-span-1">
-        All-Time English Leaderboards
-      </span>
-      <Show when={props.top15 !== undefined}>
-        <div class="grid grid-cols-2 gap-x-4">
-          <div class="justify-self-end">15 seconds</div>
-          <div class="row-span-2 text-3xl text-text">
-            {format().rank(props.top15?.rank)}
+    <Show when={props.top15 !== undefined || props.top60 !== undefined}>
+      <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
+        <span class="text-center md:col-span-2 lg:col-span-1">
+          All-Time English Leaderboards
+        </span>
+        <Show when={props.top15 !== undefined}>
+          <div class="grid grid-cols-2 gap-x-4">
+            <div class="justify-self-end">15 seconds</div>
+            <div class="row-span-2 text-3xl text-text">
+              {format().rank(props.top15?.rank)}
+            </div>
+            <div class="justify-self-end text-xs">
+              {formatTopPercentage(props.top15)}
+            </div>
           </div>
-          <div class="justify-self-end text-xs">
-            {formatTopPercentage(props.top15)}
+        </Show>
+        <Show when={props.top60 !== undefined}>
+          <div class="grid grid-cols-2 gap-x-4">
+            <div class="justify-self-end">60 seconds</div>
+            <div class="row-span-2 text-3xl text-text">
+              {format().rank(props.top60?.rank)}
+            </div>
+            <div class="justify-self-end text-xs">
+              {formatTopPercentage(props.top60)}
+            </div>
           </div>
-        </div>
-      </Show>
-      <Show when={props.top60 !== undefined}>
-        <div class="grid grid-cols-2 gap-x-4">
-          <div class="justify-self-end">60 seconds</div>
-          <div class="row-span-2 text-3xl text-text">
-            {format().rank(props.top60?.rank)}
-          </div>
-          <div class="justify-self-end text-xs">
-            {formatTopPercentage(props.top60)}
-          </div>
-        </div>
-      </Show>
-    </div>
+        </Show>
+      </div>
+    </Show>
   );
 }
 

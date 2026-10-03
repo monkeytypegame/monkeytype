@@ -53,10 +53,7 @@ export function Register(): JSXElement {
       });
     }
 
-    if (
-      disposableEmailModule &&
-      disposableEmailModule.isDisposableEmail !== undefined
-    ) {
+    if (disposableEmailModule?.isDisposableEmail !== undefined) {
       try {
         if (disposableEmailModule.isDisposableEmail(email)) {
           messages.push({

@@ -90,8 +90,7 @@ async function getLatest(): Promise<PSA[] | null> {
       if (
         maintenanceData !== undefined &&
         maintenanceData.length > 0 &&
-        maintenanceData[0] !== undefined &&
-        maintenanceData[0].status === "INPROGRESS"
+        maintenanceData[0]?.status === "INPROGRESS"
       ) {
         addBanner({
           level: "error",

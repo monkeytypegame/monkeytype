@@ -21,7 +21,6 @@ import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { Page } from "../../common/Page";
 import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
-import { AnimationFpsLimit } from "./custom-setting/AnimationFpsLimit";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
@@ -102,6 +101,7 @@ export function SettingsPage(): JSXElement {
             <SearchableAutoSetting key="strictSpace" />
             <SearchableAutoSetting key="oppositeShiftMode" />
             <SearchableAutoSetting key="stopOnError" />
+            <SearchableAutoSetting key="deleteOnError" />
             <SearchableAutoSetting key="confidenceMode" />
             <SearchableAutoSetting key="quickEnd" />
             <SearchableAutoSetting key="indicateTypos" />
@@ -189,10 +189,10 @@ export function SettingsPage(): JSXElement {
             <SearchableAutoSetting key="showOutOfFocusWarning" />
             <SearchableAutoSetting key="capsLockWarning" />
             <SearchableAutoSetting key="showAverage" />
+            <SearchableAutoSetting key="ads" />
           </Section>
           <Section title="danger zone">
             <ImportExport />
-            <SearchableAutoSetting key="ads" />
             <SearchableSetting
               key="cookies"
               title="update cookie preferences"
@@ -211,7 +211,25 @@ export function SettingsPage(): JSXElement {
                 </Button>
               }
             />
-            <AnimationFpsLimit />
+            <SearchableSetting
+              key="theRest"
+              title="the rest"
+              description="Niche settings that only affect minor functionality. Most people will never need to touch these."
+              fa={{
+                icon: "fa-sliders-h",
+              }}
+              extraSearchKeywords="animation fps limit sarcastic result message"
+              inputs={
+                <Button
+                  class="w-full"
+                  onClick={() => {
+                    showModal("TheRest");
+                  }}
+                >
+                  open
+                </Button>
+              }
+            />
             <SearchableSetting
               key="resetSettings"
               title="reset settings"

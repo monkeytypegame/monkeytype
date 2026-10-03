@@ -1,12 +1,16 @@
 import { Config } from "../../config/store";
-import * as TestState from "../../test/test-state";
 import * as TestUI from "../../test/test-ui";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
-import { wordsHaveNewline } from "../../states/test";
+import {
+  isTestRestarting,
+  getActiveWordIndex,
+  isResultCalculating,
+  wordsHaveNewline,
+} from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { getCurrentInput } from "../../test/events/data";
@@ -18,7 +22,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (TestState.testRestarting) {
+  if (isTestRestarting()) {
     return true;
   }
 
@@ -26,7 +30,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (TestState.resultCalculating) {
+  if (isResultCalculating()) {
     return true;
   }
 
@@ -56,13 +60,17 @@ export function onBeforeInsertText(data: string): boolean {
   });
 
   //prevent separator from being inserted if input is empty
-  //allow if strict space is enabled
-  if (
-    isSpace(data) &&
-    inputValue === "" &&
-    Config.difficulty === "normal" &&
-    !Config.strictSpace
-  ) {
+  //some conditions may override this
+  //the hard delete on error variants need the separator to reach onInsertText
+  //so it can be counted as a mistake and send the user back a word - it can
+  //never be a mistake in zen, so dont let it through there
+  const deleteOnErrorIsHard =
+    Config.mode !== "zen" &&
+    (Config.deleteOnError === "letter_hard" ||
+      Config.deleteOnError === "word_hard");
+  const allowFirstSeparator =
+    Config.strictSpace || Config.difficulty !== "normal" || deleteOnErrorIsHard;
+  if (isSpace(data) && inputValue === "" && !allowFirstSeparator) {
     return true;
   }
 
@@ -93,6 +101,7 @@ export function onBeforeInsertText(data: string): boolean {
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
+    !Config.deleteOnError.includes("hard") &&
     inputIsLongerThanOrEqualToWord &&
     !goingToNextWord &&
     Config.mode !== "zen"
@@ -101,9 +110,7 @@ export function onBeforeInsertText(data: string): boolean {
     // because this check is expensive (causes layout reflows)
 
     // if there is pending word data, we need to account for that
-    const pendingWordData = TestUI.pendingWordData.get(
-      TestState.activeWordIndex,
-    );
+    const pendingWordData = TestUI.pendingWordData.get(getActiveWordIndex());
     const { top: topAfterAppend, height: heightAfterAppend } =
       TestUI.getActiveWordTopAndHeightWithDifferentData(
         (pendingWordData ?? inputValue) + data,

@@ -1,10 +1,11 @@
 import { Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getCompositionText, isOutOfFocus } from "../../../states/test";
+import { getCompositionText, testFocusState } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 
 export function CompositionDisplay() {
+  const isOutOfFocus = () => testFocusState() !== "focused";
   return (
     <Show when={getConfig.compositionDisplay === "below"}>
       <div

@@ -174,7 +174,7 @@ function convertStringToValue<T extends unknown | undefined>(
     // oxlint-disable-next-line typescript/no-unsafe-member-access
     field.form.options.defaultValues?.[field.name];
   if (defaultValue === undefined || defaultValue === null) return newValue as T;
-  if (newValue === "") return undefined;
+  if (newValue === "" && typeof defaultValue !== "string") return undefined;
   if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
 
   return newValue as T;
