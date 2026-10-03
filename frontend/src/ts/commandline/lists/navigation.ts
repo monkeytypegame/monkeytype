@@ -1,4 +1,4 @@
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command, withValidation } from "../types";

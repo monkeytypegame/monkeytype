@@ -1,10 +1,7 @@
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import * as Replay from "./replay-ui";
-import {
-  getActivePage,
-  isAuthenticated,
-  setIsScreenshotting,
-} from "../states/core";
+import { isAuthenticated, setIsScreenshotting } from "../states/core";
+import { getActivePage } from "../states/router";
 import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as DB from "../db";
 import { format } from "date-fns/format";
@@ -19,6 +16,7 @@ import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { download as downloadFile } from "../utils/misc";
 import { getResultVisible } from "../states/test";
+import { onTestPageClick } from "../elements/test-page";
 
 let revealReplay = false;
 
@@ -329,7 +327,7 @@ export async function download(): Promise<void> {
   }
 }
 
-qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
+onTestPageClick("#saveScreenshotButton", (event) => {
   if (event.shiftKey) {
     void download();
   } else {

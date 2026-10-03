@@ -20,7 +20,7 @@ import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import * as Hangul from "hangul-js";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import { getActivePage } from "../states/core";
+import { getActivePage } from "../states/router";
 import Format from "../singletons/format";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
@@ -46,13 +46,7 @@ import * as Joining from "./break-joining";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ThemeController from "../controllers/theme-controller";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
-import {
-  ElementsWithUtils,
-  ElementWithUtils,
-  qs,
-  qsa,
-  lazyQsr,
-} from "../utils/dom";
+import { ElementsWithUtils, ElementWithUtils, qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
@@ -79,15 +73,16 @@ import {
 } from "./events/stats";
 import * as ConnectionState from "../legacy-states/connection";
 import * as TestInitFailed from "../elements/test-init-failed";
+import { onTestPageClick, testPageRef } from "../elements/test-page";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
   { rejectSkippedCalls: false },
 );
 
-const wordsEl = lazyQsr(".pageTest #words");
-const wordsWrapperEl = lazyQsr(".pageTest #wordsWrapper");
-const resultWordsHistoryEl = lazyQsr(".pageTest #resultWordsHistory");
+const wordsEl = testPageRef(".pageTest #words");
+const wordsWrapperEl = testPageRef(".pageTest #wordsWrapper");
+const resultWordsHistoryEl = testPageRef(".pageTest #resultWordsHistory");
 
 export let activeWordTop = 0;
 export let activeWordHeight = 0;
@@ -1922,7 +1917,7 @@ export function init(): void {
   });
 }
 
-qs(".pageTest")?.onChild("click", "#copyWordsListButton", async () => {
+onTestPageClick("#copyWordsListButton", async () => {
   const eventLog = getLastEventLog();
   if (eventLog === null) return;
   let words;
@@ -1938,7 +1933,7 @@ qs(".pageTest")?.onChild("click", "#copyWordsListButton", async () => {
   await copyToClipboard(words);
 });
 
-qs(".pageTest")?.onChild("click", "#copyMissedWordsListButton", async () => {
+onTestPageClick("#copyMissedWordsListButton", async () => {
   const eventLog = getLastEventLog();
   if (eventLog === null) return;
   let words;
@@ -1950,7 +1945,7 @@ qs(".pageTest")?.onChild("click", "#copyMissedWordsListButton", async () => {
   await copyToClipboard(words);
 });
 
-qs(".pageTest")?.onChild("click", "#copySlowWordsListButton", () => {
+onTestPageClick("#copySlowWordsListButton", () => {
   const eventLog = getLastEventLog();
   if (eventLog === null) return;
 
@@ -2030,7 +2025,7 @@ async function copyToClipboard(
   }
 }
 
-qs(".pageTest")?.onChild("click", "#toggleBurstHeatmap", async () => {
+onTestPageClick("#toggleBurstHeatmap", async () => {
   setConfig("burstHeatmap", !Config.burstHeatmap);
   ResultWordHighlight.destroy();
 });
@@ -2039,11 +2034,11 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-qs(".pageTest")?.onChild("click", "#showWordHistoryButton", () => {
+onTestPageClick("#showWordHistoryButton", () => {
   void toggleResultWords();
 });
 
-qs(".pageTest")?.onChild("click", "#wordsWrapper", () => {
+onTestPageClick("#wordsWrapper", () => {
   focusWords();
 });
 

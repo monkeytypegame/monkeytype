@@ -1,9 +1,16 @@
 import { JSXElement, onMount } from "solid-js";
 
+import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import { initResultChart } from "../../../controllers/chart-controller";
+import { createEffectOn } from "../../../hooks/effects";
+import { blurInputElement } from "../../../input/input-element";
 import { initInputListeners } from "../../../input/listeners";
+import { getActivePage, getRoutePage } from "../../../states/router";
+import { resetIncompleteTests } from "../../../states/test";
 import * as Caret from "../../../test/caret";
+import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
+import * as TestLogic from "../../../test/test-logic";
 import * as TestUI from "../../../test/test-ui";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
@@ -18,9 +25,10 @@ import { Premid } from "./Premid";
 import { TestConfig } from "./TestConfig";
 
 /**
- * Renders the children of the static `.page.pageTest` element.
- * Internals are still vanilla - this only owns the markup and binds the
- * vanilla listeners once it exists. Must stay mounted for the app's lifetime.
+ * Renders the children of the `.page.pageTest` element.
+ * Internals are still vanilla - this only owns the markup, binds the
+ * vanilla listeners once it exists and runs the show/hide logic.
+ * Must stay mounted for the app's lifetime.
  */
 export function TestPage(): JSXElement {
   onMount(() => {
@@ -29,6 +37,23 @@ export function TestPage(): JSXElement {
     initResultChart();
     initInputListeners();
     TestUI.init();
+  });
+
+  // stop typing as soon as the user navigates away, before the page fades out
+  createEffectOn(getRoutePage, (page, prev) => {
+    if (page !== "test" && prev === "test") blurInputElement();
+  });
+
+  createEffectOn(getActivePage, (page, prev) => {
+    if (page === "test" && prev !== "test") {
+      updateFooterAndVerticalAds(false);
+      resetIncompleteTests();
+      void TestLogic.restart({ noAnim: true });
+    } else if (page !== "test" && prev === "test") {
+      void TestLogic.restart({ noAnim: true });
+      void Funbox.clear();
+      updateFooterAndVerticalAds(true);
+    }
   });
 
   return (

@@ -114,20 +114,27 @@ type ResultChart = ChartWithUpdateColors<
   "wpm" | "raw" | "error" | "burst"
 >;
 
-// created lazily - #wpmChart is rendered by the TestPage component
-export let result: ResultChart;
+// on a detached canvas until the TestPage mounts (see elements/test-page.ts),
+// recreated on every mount since #wpmChart is rendered by it
+export let result: ResultChart = createResultChart(
+  document.createElement("canvas"),
+);
 
+/** (Re)creates the result chart on the current #wpmChart canvas. */
 export function initResultChart(): void {
-  result = createResultChart();
+  result.destroy();
+  result = createResultChart(
+    document.querySelector("#wpmChart") as HTMLCanvasElement,
+  );
 }
 
-function createResultChart(): ResultChart {
+function createResultChart(canvas: HTMLCanvasElement): ResultChart {
   return new ChartWithUpdateColors<
     "line" | "scatter",
     number[],
     string,
     "wpm" | "raw" | "error" | "burst"
-  >(document.querySelector("#wpmChart") as HTMLCanvasElement, {
+  >(canvas, {
     type: "line",
     data: {
       labels: [],

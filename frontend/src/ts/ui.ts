@@ -4,11 +4,8 @@ import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  getGlobalOffsetTop,
-} from "./states/core";
+import { getCustomTextIndicator, getGlobalOffsetTop } from "./states/core";
+import { getActivePage } from "./states/router";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";

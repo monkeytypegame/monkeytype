@@ -1,6 +1,6 @@
 import * as Sound from "../controllers/sound-controller";
 import * as Arrays from "../utils/arrays";
-import { qs, lazyQsr } from "../utils/dom";
+import { qs } from "../utils/dom";
 import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import {
@@ -9,6 +9,7 @@ import {
   getInputForWord,
 } from "./events/data";
 import { getInputHistory, getWpmHistory } from "./events/stats";
+import { onTestPageClick, testPageRef } from "../elements/test-page";
 
 type ReplayAction =
   | "correctLetter"
@@ -37,7 +38,7 @@ let stopwatchList: NodeJS.Timeout[] = [];
 const toggleButton = (): Element | undefined =>
   document.getElementById("playpauseReplayButton")?.children[0];
 
-const replayEl = lazyQsr(".pageTest #resultReplay");
+const replayEl = testPageRef(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
@@ -343,7 +344,7 @@ function playReplay(): void {
   );
 }
 
-qs(".pageTest")?.onChild("click", "#playpauseReplayButton", () => {
+onTestPageClick("#playpauseReplayButton", () => {
   const btn = toggleButton();
   if (btn?.className === "fas fa-play") {
     playReplay();
@@ -352,7 +353,7 @@ qs(".pageTest")?.onChild("click", "#playpauseReplayButton", () => {
   }
 });
 
-qs(".pageTest")?.onChild("click", "#replayWords letter", (event) => {
+onTestPageClick("#replayWords letter", (event) => {
   pauseReplay();
   const replayWords = qs("#replayWords");
 
@@ -369,6 +370,6 @@ qs(".pageTest")?.onChild("click", "#replayWords letter", (event) => {
   loadOldReplay();
 });
 
-qs(".pageTest")?.onChild("click", "#watchReplayButton", () => {
+onTestPageClick("#watchReplayButton", () => {
   toggleReplayDisplay();
 });

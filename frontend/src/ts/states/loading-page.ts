@@ -1,4 +1,4 @@
-import { createMemo } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { sleep } from "../utils/misc";
@@ -81,4 +81,92 @@ export async function updateLoadingPageBar(
  */
 export function resetLoadingPage(): void {
   setState(initialState);
+}
+
+/**
+ * Whether the loading page is covering the current page.
+ * "error" keeps it shown until the next navigation.
+ */
+export const [getLoadingScreen, setLoadingScreen] = createSignal<
+  "hidden" | "visible" | "error"
+>("visible");
+
+type LoadingBarKeyframe = {
+  /** Percentage of the bar to fill. */
+  percentage: number;
+  /** Duration in milliseconds for the keyframe animation. */
+  durationMs: number;
+  /** Text to display below the loading bar. */
+  text?: string;
+};
+
+export type RouteLoading = {
+  /** Evaluated before loading - the loading page is only shown when this is true. */
+  shouldShow: () => boolean;
+  load: () => Promise<void>;
+} & (
+  | { style: "spinner" }
+  | {
+      style: "bar";
+      /** Shown in order while `load` runs. Cut short if `load` finishes first. */
+      keyframes: LoadingBarKeyframe[];
+    }
+);
+
+/**
+ * Shows the loading page while `loading.load` runs. On failure the loading page
+ * switches to its error state (cleared on the next navigation) instead of
+ * throwing, so the router still resolves.
+ * @param label used in the error message, eg. "the account page"
+ */
+export async function withLoading(
+  label: string,
+  loading: RouteLoading,
+): Promise<void> {
+  if (getLoadingScreen() === "error") return;
+  if (!loading.shouldShow()) return;
+
+  setLoadingScreen("visible");
+
+  try {
+    if (loading.style === "spinner") {
+      showLoadingPageSpinner();
+      await loading.load();
+      return;
+    }
+
+    showLoadingPageBar();
+    await updateLoadingPageBar(0, 0);
+    updateLoadingPageText("");
+    await loadWithKeyframes(loading.load(), loading.keyframes);
+    void updateLoadingPageBar(100, 125);
+    updateLoadingPageText("Done");
+  } catch (error) {
+    setLoadingScreen("error");
+    showLoadingPageError();
+    updateLoadingPageText(
+      `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+async function loadWithKeyframes(
+  loadPromise: Promise<void>,
+  keyframes: LoadingBarKeyframe[],
+): Promise<void> {
+  let done = false;
+
+  const keyframePromise = (async () => {
+    for (const keyframe of keyframes) {
+      if (done) break;
+      if (keyframe.text !== undefined) updateLoadingPageText(keyframe.text);
+      await updateLoadingPageBar(keyframe.percentage, keyframe.durationMs);
+    }
+  })();
+
+  await Promise.race([
+    keyframePromise,
+    loadPromise.finally(() => (done = true)),
+  ]);
+  await loadPromise;
 }

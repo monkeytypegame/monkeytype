@@ -6,16 +6,15 @@ import {
 } from "../states/notifications";
 import { showQuoteRateModal } from "../states/quote-rate";
 import { showQuoteReportModal } from "../states/quote-report";
-import { navigate } from "../controllers/route-controller";
+import { navigate } from "../router/navigate";
 import { getMode2 } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getCurrentQuote } from "../states/test";
 import { showEditResultTagsModal } from "../states/edit-result-tags";
 import { showModal } from "../states/modals";
+import { onTestPageClick } from "../elements/test-page";
 
-const testPage = qs(".pageTest");
-
-testPage?.onChild("click", ".tags .editTagsButton", () => {
+onTestPageClick(".tags .editTagsButton", () => {
   if (__nonReactive.getTags().length > 0) {
     const resultid =
       qs(".pageTest .tags .editTagsButton")?.getAttribute("data-result-id") ??
@@ -29,7 +28,7 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
   }
 });
 
-testPage?.onChild("click", "#rateQuoteButton", async () => {
+onTestPageClick("#rateQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote rating popup: no quote");
@@ -38,7 +37,7 @@ testPage?.onChild("click", "#rateQuoteButton", async () => {
   showQuoteRateModal(currentQuote);
 });
 
-testPage?.onChild("click", "#reportQuoteButton", async () => {
+onTestPageClick("#reportQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote report popup: no quote");
@@ -47,7 +46,7 @@ testPage?.onChild("click", "#reportQuoteButton", async () => {
   showQuoteReportModal(currentQuote?.id);
 });
 
-testPage?.onChild("click", "#practiseWordsButton", () => {
+onTestPageClick("#practiseWordsButton", () => {
   if (Config.mode === "zen") {
     showNoticeNotification("Practice words is unsupported in zen mode");
     return;
@@ -55,7 +54,7 @@ testPage?.onChild("click", "#practiseWordsButton", () => {
   showModal("PractiseWords");
 });
 
-testPage?.onChild("click", "#dailyLeaderboardRank", async () => {
+onTestPageClick("#dailyLeaderboardRank", async () => {
   void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,

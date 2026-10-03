@@ -16,7 +16,8 @@ import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getActivePage, getCustomTextIndicator } from "./core";
+import { getCustomTextIndicator } from "./core";
+import { getActivePage } from "./router";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 

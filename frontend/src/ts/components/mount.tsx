@@ -1,8 +1,10 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { RouterProvider } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
 import { queryClient } from "../queries";
+import { router } from "../router";
 import { qsa } from "../utils/dom";
 import { Theme } from "./core/Theme";
 import { DevTools } from "./dev/DevTools";
@@ -11,34 +13,26 @@ import { Footer } from "./layout/footer/Footer";
 import { Header } from "./layout/header/Header";
 import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
-import { NotFoundPage } from "./pages/404Page";
-import { AboutPage } from "./pages/AboutPage";
-import { AccountSettingsPage } from "./pages/account-settings/AccountSettingsPage";
-import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
-import { FriendsPage } from "./pages/connections/FriendsPage";
-import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
-import { LoadingPage } from "./pages/LoadingPage";
-import { LoginPage } from "./pages/login/LoginPage";
-import { ProfilePage } from "./pages/profile/ProfilePage";
-import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
-import { SettingsPage } from "./pages/settings/SettingsPage";
+import { Pages } from "./pages/Pages";
 import { BarTimerProgress } from "./pages/test/live-stats/BarTimerProgress";
-import { TestPage } from "./pages/test/TestPage";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
-  // first - other components and vanilla modules depend on its DOM
-  testpage: () => <TestPage />,
+  // first - other components and vanilla modules depend on page DOM
+  pages: () => (
+    // pages render outside the router's matches so they don't wait on route loads
+    <RouterProvider
+      router={router}
+      InnerWrap={(props) => (
+        <>
+          <Pages />
+          {props.children}
+        </>
+      )}
+    />
+  ),
   footer: () => <Footer />,
-  aboutpage: () => <AboutPage />,
-  settingspage: () => <SettingsPage />,
-  accountpage: () => <AccountPage />,
-  loadingpage: () => <LoadingPage />,
-  loginpage: () => <LoginPage />,
-  leaderboardpage: () => <LeaderboardPage />,
-  profilepage: () => <ProfilePage />,
-  profilesearchpage: () => <ProfileSearchPage />,
   myprofile: () => <MyProfile />,
   modals: () => <Modals />,
   popups: () => <Popups />,
@@ -47,9 +41,6 @@ const components: Record<string, () => JSXElement> = {
   header: () => <Header />,
   devtools: () => <DevTools />,
   commandlinehotkey: () => <CommandlineHotkey />,
-  friendspage: () => <FriendsPage />,
-  notfoundpage: () => <NotFoundPage />,
-  accountsettingspage: () => <AccountSettingsPage />,
   bartimerprogress: () => <BarTimerProgress />,
 };
 

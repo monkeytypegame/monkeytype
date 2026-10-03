@@ -2,6 +2,7 @@ import { JSXElement, ParentProps, Show } from "solid-js";
 import { z } from "zod";
 import { serialize } from "zod-urlsearchparams";
 
+import { replaceSearch } from "../../router/navigate";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -115,8 +116,7 @@ function DeepLinkButton(props: { key: string }) {
             highlight: props.key,
           },
         });
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.replaceState({}, "", newUrl);
+        replaceSearch("/settings", urlParams);
 
         navigator.clipboard
           .writeText(window.location.toString())

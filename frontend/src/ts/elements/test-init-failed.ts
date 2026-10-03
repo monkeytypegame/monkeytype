@@ -1,8 +1,8 @@
-import { lazyQsr } from "../utils/dom";
+import { testPageRef } from "./test-page";
 
-const elem = lazyQsr(".pageTest #testInitFailed");
-const testElem = lazyQsr(".pageTest #typingTest");
-const errorElem = lazyQsr(".pageTest #testInitFailed .error");
+const elem = testPageRef(".pageTest #testInitFailed");
+const testElem = testPageRef(".pageTest #typingTest");
+const errorElem = testPageRef(".pageTest #testInitFailed .error");
 
 export function show(): void {
   elem().show();

@@ -4,11 +4,12 @@ import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
-import { ElementWithUtils, lazyQsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
+import { testPageRef } from "./test-page";
 
-const wordsCache = lazyQsr("#words");
-const wordsWrapperCache = lazyQsr("#wordsWrapper");
+const wordsCache = testPageRef("#words");
+const wordsWrapperCache = testPageRef("#wordsWrapper");
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;

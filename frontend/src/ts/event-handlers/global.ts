@@ -1,8 +1,7 @@
 import * as Misc from "../utils/misc";
-import * as PageTransition from "../legacy-states/page-transition";
 import { Config } from "../config/store";
 import { showErrorNotification } from "../states/notifications";
-import { getActivePage } from "../states/core";
+import { getActivePage, isPageTransitioning } from "../states/router";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import { isInputElementFocused } from "../input/input-element";
@@ -10,7 +9,7 @@ import { getResultVisible } from "../states/test";
 import { isDevEnvironment } from "../utils/env";
 
 document.addEventListener("keydown", (e) => {
-  if (PageTransition.get()) return;
+  if (isPageTransitioning()) return;
   if (e.key === undefined) return;
 
   if (isDevEnvironment()) {

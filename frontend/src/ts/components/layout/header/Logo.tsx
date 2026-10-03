@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
-import { getActivePage } from "../../../states/core";
+import { getActivePage } from "../../../states/router";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";

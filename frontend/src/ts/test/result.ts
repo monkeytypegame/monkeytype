@@ -70,6 +70,7 @@ import {
   getRawHistory,
   getTimerBoundaryLabels,
 } from "./events/stats";
+import { onTestPageClick } from "../elements/test-page";
 
 let result: CompletedEvent;
 let minChartVal: number;
@@ -1309,39 +1310,35 @@ export function updateTagsAfterEdit(
   );
 }
 
-qs(".pageTest")?.onChild(
-  "click",
-  "#result .chart .chartLegend button",
-  async (event) => {
-    const $target = event.childTarget as HTMLElement;
-    const id = $target.getAttribute("data-id");
+onTestPageClick("#result .chart .chartLegend button", async (event) => {
+  const $target = event.childTarget as HTMLElement;
+  const id = $target.getAttribute("data-id");
 
-    if (id === "scale") {
-      setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
-      return;
-    }
+  if (id === "scale") {
+    setConfig("startGraphsAtZero", !Config.startGraphsAtZero);
+    return;
+  }
 
-    if (
-      id !== "raw" &&
-      id !== "burst" &&
-      id !== "errors" &&
-      id !== "pbLine" &&
-      id !== "tagPbLine"
-    ) {
-      return;
-    }
-    const vis = resultChartDataVisibility.get();
-    vis[id] = !vis[id];
-    resultChartDataVisibility.set(vis);
+  if (
+    id !== "raw" &&
+    id !== "burst" &&
+    id !== "errors" &&
+    id !== "pbLine" &&
+    id !== "tagPbLine"
+  ) {
+    return;
+  }
+  const vis = resultChartDataVisibility.get();
+  vis[id] = !vis[id];
+  resultChartDataVisibility.set(vis);
 
-    updateResultChartDataVisibility();
-    updateMinMaxChartValues();
-    applyMinMaxChartValues();
-    ChartController.result.update();
-  },
-);
+  updateResultChartDataVisibility();
+  updateMinMaxChartValues();
+  applyMinMaxChartValues();
+  ChartController.result.update();
+});
 
-qs(".pageTest")?.onChild("click", "#favoriteQuoteButton", async () => {
+onTestPageClick("#favoriteQuoteButton", async () => {
   if (quoteLang === undefined || quoteId === "") {
     showErrorNotification("Could not get quote stats!");
     return;

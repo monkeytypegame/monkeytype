@@ -1,8 +1,8 @@
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { applyReducedMotion } from "../../utils/misc";
-import { lazyQsr } from "../../utils/dom";
+import { testPageRef } from "../../elements/test-page";
 
-const timerEl = lazyQsr("#typingTest #layoutfluidTimer");
+const timerEl = testPageRef("#typingTest #layoutfluidTimer");
 
 export function show(): void {
   timerEl().animate({

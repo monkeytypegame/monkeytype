@@ -1,5 +1,5 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { getActivePage } from "./core";
+import { getActivePage } from "./router";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";

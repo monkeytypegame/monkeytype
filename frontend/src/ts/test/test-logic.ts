@@ -21,11 +21,8 @@ import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import * as Result from "./result";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  isAuthenticated,
-} from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
+import { getActivePage, isPageTransitioning } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -63,7 +60,6 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
@@ -132,11 +128,12 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
+import { onTestPageClick } from "../elements/test-page";
 
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (PageTransition.get()) {
+  if (isPageTransitioning()) {
     return false;
   }
 
@@ -1254,11 +1251,11 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
+onTestPageClick("#testInitFailed button.restart", () => {
   void restart();
 });
 
-qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
+onTestPageClick("#restartTestButton", () => {
   if (isResultCalculating()) return;
   if (
     isTestActive() &&
@@ -1273,17 +1270,13 @@ qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   }
 });
 
-qs(".pageTest")?.onChild(
-  "click",
-  "#retrySavingResultButton",
-  retrySavingResult,
-);
+onTestPageClick("#retrySavingResultButton", retrySavingResult);
 
-qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
+onTestPageClick("#nextTestButton", () => {
   void restart();
 });
 
-qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
+onTestPageClick("#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;

@@ -9,6 +9,7 @@ import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
 import { qsr } from "../utils/dom";
+import { createPlaceholder } from "../elements/test-page";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -44,8 +45,12 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-// created lazily - #caret is rendered by the TestPage component
-export let caret: Caret;
+// placeholder until the TestPage mounts (see elements/test-page.ts),
+// recreated on every mount since #caret is rendered by it
+export let caret = new Caret(
+  createPlaceholder("div", "caret"),
+  Config.caretStyle,
+);
 
 export function initElement(): void {
   caret = new Caret(qsr("#caret"), Config.caretStyle);

@@ -18,7 +18,11 @@
     <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
     <div id="app" class="content-grid focus hidden">
       <mount data-component="header"></mount>
-      <main class="full-width content-grid" style="height: 100%">
+      <main
+        class="full-width content-grid"
+        style="height: 100%"
+        data-component="pages"
+      >
         <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v focus">
           <div class="icon"><i class="fas fa-ad"></i></div>
           <div id="ad-vertical-left"></div>
@@ -26,56 +30,6 @@
         <div id="ad-vertical-right-wrapper" class="ad advertisement ad-v focus">
           <div class="icon"><i class="fas fa-ad"></i></div>
           <div id="ad-vertical-right"></div>
-        </div>
-        <div
-          class="page pageLoading grid h-full w-full place-self-center content-center items-center gap-4 text-center"
-          id="pageLoading"
-        >
-          <mount data-component="loadingpage" class="contents"></mount>
-        </div>
-
-        <div class="page pageAbout hidden full-width" id="pageAbout">
-          <mount data-component="aboutpage"></mount>
-        </div>
-
-        <div class="page pageSettings hidden" id="pageSettings">
-          <mount data-component="settingspage"></mount>
-        </div>
-
-        <div class="page pageAccount hidden" id="pageAccount">
-          <mount data-component="accountpage"></mount>
-        </div>
-        <div class="page pageLogin hidden" id="pageLogin">
-          <mount data-component="loginpage"></mount>
-        </div>
-        <div class="page pageProfile hidden" id="pageProfile">
-          <mount data-component="profilepage"></mount>
-        </div>
-
-        <div class="page pageProfileSearch hidden" id="pageProfileSearch">
-          <mount data-component="profilesearchpage"></mount>
-        </div>
-
-        <div
-          class="page pageTest full-width content-grid hidden"
-          data-component="testpage"
-          data-nosnippet
-        ></div>
-
-        <div class="page page404 hidden" id="page404">
-          <mount data-component="notfoundpage"></mount>
-        </div>
-
-        <div class="page pageAccountSettings hidden" id="pageAccountSettings">
-          <mount data-component="accountsettingspage"></mount>
-        </div>
-
-        <div class="page pageFriends hidden" id="pageFriends">
-          <mount data-component="friendspage"></mount>
-        </div>
-
-        <div class="page pageLeaderboards hidden" id="pageLeaderboards">
-          <mount data-component="leaderboardpage"></mount>
         </div>
       </main>
       <mount data-component="footer"></mount>

@@ -7,6 +7,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { getSnapshot } from "./snapshot";
+import { replaceSearch } from "../router/navigate";
 
 export const pageSize = 50;
 
@@ -122,8 +123,7 @@ export function updateGetParameters(
     schema: LeaderboardUrlParamsSchema,
     data: params,
   });
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
+  replaceSearch("/leaderboards", urlParams);
 }
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {

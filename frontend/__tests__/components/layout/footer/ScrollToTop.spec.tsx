@@ -3,10 +3,10 @@ import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { ScrollToTop } from "../../../../src/ts/components/layout/footer/ScrollToTop";
-import * as CoreSignals from "../../../../src/ts/states/core";
+import * as RouterSignals from "../../../../src/ts/states/router";
 
 describe("ScrollToTop", () => {
-  const getActivePageMock = vi.spyOn(CoreSignals, "getActivePage");
+  const getActivePageMock = vi.spyOn(RouterSignals, "getActivePage");
   beforeEach(() => {
     getActivePageMock.mockClear().mockReturnValue("account");
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });

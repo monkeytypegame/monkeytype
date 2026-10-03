@@ -1,10 +1,11 @@
 import { applyReducedMotion } from "../../utils/misc";
-import { lazyQsr, qs } from "../../utils/dom";
+import { qs } from "../../utils/dom";
+import { testPageRef } from "../../elements/test-page";
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
-const timerEl = lazyQsr("#typingTest #memoryTimer");
+const timerEl = testPageRef("#typingTest #memoryTimer");
 
 export function show(): void {
   timerEl().animate({

@@ -1,5 +1,5 @@
 import * as Caret from "./caret";
-import * as PageTransition from "../legacy-states/page-transition";
+import { isPageTransitioning } from "../states/router";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
 import { qsa, ElementsWithUtils } from "../utils/dom";
@@ -33,9 +33,16 @@ function initializeCache(): void {
 
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
+// value of a set() call still waiting for its animation frame
+let pendingValue: boolean | undefined;
+
 export function set(value: boolean, withCursor = false): void {
-  if (value === getFocus()) return;
+  // compare against the pending value too, otherwise set(false) right after
+  // set(true) is ignored and the pending set(true) still applies
+  if (value === (pendingValue ?? getFocus())) return;
+  pendingValue = value;
   requestDebouncedAnimationFrame("focus.set", () => {
+    pendingValue = undefined;
     initializeCache();
     cache.cursor = qsa("body, button, a");
 
@@ -67,7 +74,7 @@ export function set(value: boolean, withCursor = false): void {
 }
 
 document.addEventListener("mousemove", function (event) {
-  if (PageTransition.get()) return;
+  if (isPageTransitioning()) return;
   if (!getFocus()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

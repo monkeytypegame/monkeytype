@@ -5,7 +5,7 @@ import {
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createSignal } from "solid-js";
 import { createEffectOn } from "../hooks/effects";
-import { getActivePage } from "./core";
+import { getActivePage } from "./router";
 
 type ModifierState = {
   shift: boolean;

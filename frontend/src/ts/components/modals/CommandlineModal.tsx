@@ -25,7 +25,6 @@ import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
 } from "../../states/commandline";
-import { getActivePage } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   clearModalStack,
@@ -35,6 +34,7 @@ import {
   hideModalAndClearChain as storeClearChain,
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
+import { getActivePage } from "../../states/router";
 import { setTestFocusState } from "../../states/test";
 import * as Focus from "../../test/focus";
 import { FaObject } from "../../types/font-awesome";

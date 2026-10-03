@@ -21,6 +21,7 @@ import {
   isTestActive,
   setPaceCaretWpm,
 } from "../states/test";
+import { createPlaceholder } from "../elements/test-page";
 
 type Settings = {
   wpm: number;
@@ -37,8 +38,12 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-// created lazily - #paceCaret is rendered by the TestPage component
-export let caret: Caret;
+// placeholder until the TestPage mounts (see elements/test-page.ts),
+// recreated on every mount since #paceCaret is rendered by it
+export let caret = new Caret(
+  createPlaceholder("div", "paceCaret"),
+  Config.paceCaretStyle,
+);
 
 export function initElement(): void {
   caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);

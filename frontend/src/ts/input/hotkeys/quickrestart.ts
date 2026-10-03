@@ -1,8 +1,8 @@
 import { isAnyPopupVisible } from "../../utils/misc";
 
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import { restartTestEvent } from "../../events/test";
-import { getActivePage } from "../../states/core";
+import { getActivePage } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
