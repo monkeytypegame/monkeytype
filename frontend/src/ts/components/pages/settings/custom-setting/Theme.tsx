@@ -1,4 +1,5 @@
 import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
+import { tryCatch } from "@monkeytype/util/trycatch";
 import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
@@ -373,28 +374,19 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
                   message: "Name is required",
                 };
               }
-              editCustomTheme({
-                themeId: props.theme._id,
-                name,
-                colors: updateColors
-                  ? convertThemeToCustomColors(untrack(() => getTheme()))
-                  : untrack(() => props.theme.colors),
-              })
-                .then(() => {
-                  showSuccessNotification("Updated");
-                })
-                .catch(() => {
-                  showErrorNotification(
-                    e instanceof Error
-                      ? e.message
-                      : "Failed to update custom theme",
-                  );
-                });
-
-              return {
-                status: "success",
-                showNotification: false,
-              };
+              const { error } = await tryCatch(
+                editCustomTheme({
+                  themeId: props.theme._id,
+                  name,
+                  colors: updateColors
+                    ? convertThemeToCustomColors(untrack(() => getTheme()))
+                    : untrack(() => props.theme.colors),
+                }),
+              );
+              if (error !== null) {
+                return { status: "error", message: error.message };
+              }
+              return { status: "success", message: "Updated" };
             },
           });
         }}
@@ -418,13 +410,13 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
             text: `Are you sure you want to delete the custom theme "${replaceUnderscoresWithSpaces(props.theme.name)}"? This action cannot be undone.`,
             buttonText: "delete",
             execFn: async () => {
-              void deleteCustomTheme({
-                themeId: props.theme._id,
-              });
-              return {
-                status: "success",
-                message: "Custom theme deleted",
-              };
+              const { error } = await tryCatch(
+                deleteCustomTheme({ themeId: props.theme._id }),
+              );
+              if (error !== null) {
+                return { status: "error", message: error.message };
+              }
+              return { status: "success", message: "Custom theme deleted" };
             },
           });
         }}
