@@ -33,6 +33,7 @@ import { Button } from "../../common/Button";
 import { DiscordAvatar } from "../../common/DiscordAvatar";
 import { UserBadge } from "../../common/UserBadge";
 import { UserFlags } from "../../common/UserFlags";
+import { XIcon } from "../../common/XIcon";
 import { EditProfile } from "../../modals/EditProfileModal";
 
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
@@ -525,7 +526,7 @@ function Socials(props: {
           <Show when={props.socials?.twitter}>
             <Button
               variant="text"
-              fa={{ icon: "fa-twitter", variant: "brand", fixedWidth: true }}
+              icon={<XIcon fixedWidth />}
               href={`https://x.com/${props.socials?.twitter}`}
               balloon={{ text: props.socials?.twitter ?? "" }}
             />
