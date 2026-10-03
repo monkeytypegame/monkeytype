@@ -235,7 +235,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       }
     }
 
-    if (customTextSettings.pipeDelimiter) {
+    if (customTextSettings.pipeDelimiter !== undefined) {
       CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
     }
     //convert legacy values
