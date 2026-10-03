@@ -269,7 +269,7 @@ const ansiLayoutSchema = commonLayoutSchema
         row2: z.array(KeyLegendsSchema).length(13),
         row3: z.array(KeyLegendsSchema).length(11),
         row4: z.array(KeyLegendsSchema).length(10),
-        row5: z.array(KeyLegendsSchema).min(1).max(2),
+        row5: z.array(KeyLegendsSchema).length(1),
       })
       .strict(),
   })
@@ -284,7 +284,7 @@ const isoLayoutSchema = commonLayoutSchema
         row2: z.array(KeyLegendsSchema).length(12),
         row3: z.array(KeyLegendsSchema).length(12),
         row4: z.array(KeyLegendsSchema).length(11),
-        row5: z.array(KeyLegendsSchema).min(1).max(2),
+        row5: z.array(KeyLegendsSchema).length(1),
       })
       .strict(),
   })
