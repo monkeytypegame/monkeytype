@@ -242,6 +242,7 @@ export const LayoutNameSchema = z.enum(
     "nokwts",
     "vylet_v4",
     "armenian_hm_qwerty",
+    "russian+qwerty",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
