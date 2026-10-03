@@ -127,7 +127,7 @@
     "vite-plugin-minify": "2.1.0",
     "vite-plugin-pwa": "1.1.0",
     "vite-plugin-solid": "2.11.11",
-    "vitest": "4.1.0"
+    "vitest": "4.1.11"
   },
   "lint-staged": {
     "*": [
