@@ -34,6 +34,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import { googleSignUpEvent } from "./events/google-sign-up";
 import { addBanner } from "./states/banners";
 import { setUserId, setUserVerified } from "./states/core";
+import { lastAuthenticationState } from "./legacy-states/last-authentication";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -110,6 +111,10 @@ export function isAuthAvailable(): boolean {
 export async function signOut(): Promise<void> {
   console.log("auth signout");
   await Auth?.signOut();
+  lastAuthenticationState.set({
+    isLoggedIn: false,
+    timestamp: Date.now(),
+  });
 }
 
 export async function signInWithEmailAndPassword(
@@ -130,7 +135,6 @@ export async function signInWithEmailAndPassword(
       "Failed to sign in with email and password",
     );
   }
-
   return result;
 }
 
@@ -146,6 +150,10 @@ export function setUserState(
   } else {
     setUserId(options.uid);
     setUserVerified(options.emailVerified);
+    lastAuthenticationState.set({
+      isLoggedIn: true,
+      timestamp: Date.now(),
+    });
   }
 }
 
