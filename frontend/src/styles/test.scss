@@ -424,6 +424,12 @@
     }
   }
 
+  &.typed-effect-fall {
+    .word.typed:not(.error) {
+      opacity: 0;
+    }
+  }
+
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
@@ -491,6 +497,17 @@
       }
     }
   }
+}
+
+.word.fall-clone {
+  display: inline-block;
+  position: absolute;
+  // #typingTest is a content grid, span all of it so the offsets line up
+  grid-column: full-width;
+  white-space: nowrap;
+  margin: 0;
+  pointer-events: none;
+  z-index: 1000;
 }
 
 .word {
