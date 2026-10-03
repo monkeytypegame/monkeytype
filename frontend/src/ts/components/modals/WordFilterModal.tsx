@@ -122,7 +122,7 @@ type FilterFormValues = {
 
 type FilterResult = { words: string[] } | { error: string };
 
-function filterWordList(
+export function filterWordList(
   value: FilterFormValues,
   words: string[],
 ): FilterResult {
@@ -134,7 +134,12 @@ function filterWordList(
   const match = new RegExp("^/(?<pattern>.*?)/(?<flags>[gimydsuv]*)$").exec(
     value.regex,
   ) ?? { groups: { pattern: value.regex, flags: "" } };
-  const reglit = new RegExp(match.groups?.pattern ?? "", match.groups?.flags);
+  let reglit: RegExp;
+  try {
+    reglit = new RegExp(match.groups?.pattern ?? "", match.groups?.flags);
+  } catch {
+    return { error: "Invalid regex" };
+  }
 
   let filterin = Misc.escapeRegExp(value.include.trim());
   filterin = filterin.replace(/\s+/gi, "|");
