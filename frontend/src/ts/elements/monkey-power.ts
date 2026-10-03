@@ -170,9 +170,9 @@ function render(): void {
 
 export function reset(immediate = false): void {
   if (!isSafeNumber(ctx.resetTimeOut)) return;
+  clearTimeout(ctx.resetTimeOut);
   delete ctx.resetTimeOut;
 
-  clearTimeout(ctx.resetTimeOut);
   body.setStyle({
     transition: "all .25s, transform 0.8s",
     transform: "translate(0,0)",
@@ -196,10 +196,11 @@ function startRender(): void {
 }
 
 function randomColor(): string {
-  const r = Math.floor(Math.random() * 256).toString(16);
-  const g = Math.floor(Math.random() * 256).toString(16);
-  const b = Math.floor(Math.random() * 256).toString(16);
-  return `#${r}${g}${b}`;
+  const hex = (): string =>
+    Math.floor(Math.random() * 256)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${hex()}${hex()}${hex()}`;
 }
 
 /**
@@ -252,3 +253,5 @@ export async function addPower(good = true, extra = false): Promise<void> {
     startRender();
   });
 }
+
+export const __testing = { randomColor };
