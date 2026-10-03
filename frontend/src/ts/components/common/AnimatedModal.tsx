@@ -1,3 +1,4 @@
+import { JSAnimation } from "animejs";
 import {
   JSXElement,
   ParentProps,
@@ -67,6 +68,15 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   // Stays true for the duration of the hide animation, so the modal is still
   // mounted while it animates out. Cleared once the animation has finished.
   const [contentMounted, setContentMounted] = createSignal(false);
+
+  // Animations started by the current show, kept so that a hide arriving
+  // mid-animation can cancel them instead of queueing behind them.
+  let showAnimations: JSAnimation[] = [];
+
+  // Drives `display` on the dialog. This has to be a signal rather than a class
+  // toggle: the class is built with `cn`, and twMerge would drop a `hidden`
+  // from it in favour of the `flex` the base class needs.
+  const [isDisplayed, setIsDisplayed] = createSignal(false);
   const renderContent = (): boolean => visibility() || contentMounted();
 
   // Handle open/close with animations
@@ -78,7 +88,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       if (visible) {
         setContentMounted(true);
         void showModal(isChained);
-      } else if (dialogEl()?.native.open) {
+      } else if (contentMounted()) {
         void hideModal(isChained);
       }
     },
@@ -94,14 +104,24 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
     // After await, the element may have been removed from the DOM
     if (!dialogEl()?.native.isConnected) return;
 
+    // `beforeShow` can take a while - the modal may have been hidden again
+    if (!visibility()) return;
+
+    showAnimations = [];
+
     // Open the dialog
-    dialogEl()?.show();
-    dialogEl()?.setStyle({});
+    setIsDisplayed(true);
+    // clear the opacity left behind by the previous hide animation
+    dialogEl()?.setStyle({ opacity: "" });
     if (props.mode === "dialog") {
       dialogEl()?.native.show();
     } else {
       dialogEl()?.native?.showModal();
     }
+
+    // focus right away rather than on animation complete, otherwise anything
+    // typed during the show animation is lost
+    focusFirstInput();
 
     const modalAnimDuration = applyReducedMotion(
       (props.customAnimations?.show?.modal?.duration ??
@@ -120,11 +140,14 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
 
       // Wrapper animation
       if (animMode !== "none") {
-        dialogEl()?.animate({
+        const wrapperAnimation = dialogEl()?.animate({
           opacity: [0, 1],
           duration: wrapperDuration,
           ease: "easeOut",
         });
+        if (wrapperAnimation !== undefined) {
+          showAnimations.push(wrapperAnimation);
+        }
       }
 
       // Modal animation
@@ -159,22 +182,23 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         }
         modalEl()?.setStyle(initialStyle);
 
-        modalEl()?.animate({
+        const modalAnimation = modalEl()?.animate({
           ...animParams,
           duration: modalAnimDuration,
           easing: "ease-out",
           fill: "forwards",
           onComplete: () => {
-            focusFirstInput();
             void handleAfterShow();
           },
         });
+        if (modalAnimation !== undefined) {
+          showAnimations.push(modalAnimation);
+        }
       } else {
         modalEl()?.setStyle({
           opacity: "1",
           marginTop: "0",
         });
-        focusFirstInput();
         void handleAfterShow();
       }
     } else if (animMode === "modalOnly") {
@@ -182,7 +206,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         opacity: "1",
       });
 
-      modalEl()
+      const modalAnimation = modalEl()
         ?.setStyle({
           opacity: "0",
           marginTop: "1rem",
@@ -192,16 +216,23 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           marginTop: ["1rem", "0"],
           duration: modalAnimDuration,
           onComplete: () => {
-            focusFirstInput();
             void handleAfterShow();
           },
         });
+      if (modalAnimation !== undefined) {
+        showAnimations.push(modalAnimation);
+      }
     }
   };
 
   const hideModal = async (isChained: boolean): Promise<void> => {
-    // Guard: only hide if visible and not already animating
     if (dialogEl() === undefined || modalEl() === undefined) return;
+
+    // interrupt the show animation, so hiding never waits for it to finish
+    for (const animation of showAnimations) {
+      animation.cancel();
+    }
+    showAnimations = [];
 
     await props.beforeHide?.();
 
@@ -248,13 +279,13 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
           duration: wrapperDuration,
           onComplete: async () => {
             dialogEl()?.native.close();
-            dialogEl()?.hide();
+            setIsDisplayed(false);
             await handleAfterHide();
           },
         });
       } else {
         dialogEl()?.native.close();
-        dialogEl()?.hide();
+        setIsDisplayed(false);
         await handleAfterHide();
       }
     } else if (animMode === "modalOnly") {
@@ -264,7 +295,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         duration: modalAnimDuration,
         onComplete: async () => {
           dialogEl()?.native.close();
-          dialogEl()?.hide();
+          setIsDisplayed(false);
           await handleAfterHide();
         },
       });
@@ -297,16 +328,21 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
   };
 
   const handleKeyDown = (e: KeyboardEvent): void => {
-    if (e.key === "Escape" && visibility()) {
-      if (props.closeOnEscape === false) return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (props.onEscape) {
-        props.onEscape(e);
-      } else {
-        storeHideModal(props.id);
-      }
+    if (e.key !== "Escape" || !visibility()) return;
+
+    // always swallow escape: letting the native dialog handle it would close
+    // the element without the store knowing, leaving the two out of sync
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (props.onEscape !== undefined) {
+      props.onEscape(e);
+      return;
     }
+
+    if (props.closeOnEscape === false) return;
+
+    storeHideModal(props.id);
   };
 
   const handleBackdropClick = (e: MouseEvent): void => {
@@ -331,14 +367,15 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
       id={`${props.id as string}Modal`}
       ref={dialogRef}
       class={cn(
-        "fixed top-0 left-0 z-1000 m-0 hidden h-screen max-h-screen w-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
+        "fixed top-0 left-0 z-1000 m-0 max-h-screen max-w-screen border-none bg-[rgba(0,0,0,0.5)] p-8 backdrop:bg-transparent",
         "flex h-full w-full items-center justify-center",
         props.wrapperClass,
       )}
       style={{
-        display: "none",
+        display: isDisplayed() ? undefined : "none",
       }}
       onKeyDown={handleKeyDown}
+      onCancel={(e) => e.preventDefault()}
       onMouseDown={handleBackdropClick}
     >
       {/*
@@ -349,6 +386,7 @@ export function AnimatedModal(props: AnimatedModalProps): JSXElement {
         <div
           class={cn(
             "modal pointer-events-auto grid h-max max-h-full w-full max-w-md gap-4 overflow-auto overscroll-y-none rounded-double bg-bg p-4 text-text ring-4 ring-sub-alt sm:p-8",
+            "focus:outline-none",
             props.modalClass,
           )}
           ref={modalRef}
