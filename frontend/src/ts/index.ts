@@ -16,7 +16,6 @@ import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
-import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
@@ -60,6 +59,9 @@ Object.defineProperty(window, "Math", {
   enumerable: true,
 });
 
+// mount before anything that might touch component-rendered DOM (eg. test page)
+mountComponents();
+
 applyEngineSettings();
 void loadFromLocalStorage();
 void fetchLatestVersion().then((data) => {
@@ -96,5 +98,3 @@ addToGlobal({
   lastEventLog: () => getLastEventLog(),
   currentEventLog: buildEventLog,
 });
-
-mountComponents();

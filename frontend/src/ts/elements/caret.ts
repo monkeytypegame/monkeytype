@@ -4,11 +4,11 @@ import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils, lazyQsr } from "../utils/dom";
 import * as TestWords from "../test/test-words";
 
-const wordsCache = qsr("#words");
-const wordsWrapperCache = qsr("#wordsWrapper");
+const wordsCache = lazyQsr("#words");
+const wordsWrapperCache = lazyQsr("#wordsWrapper");
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -284,7 +284,7 @@ export class Caret {
   }): void {
     if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      const word = wordsCache.qs(
+      const word = wordsCache().qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
       const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
@@ -462,7 +462,7 @@ export class Caret {
     let top = 0;
 
     const tapeOffset =
-      wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+      wordsWrapperCache().getOffsetWidth() * (Config.tapeMargin / 100);
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
@@ -490,7 +490,7 @@ export class Caret {
         left += letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
+          left += wordsWrapperCache().getOffsetWidth() - tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
           left += options.word.getOffsetWidth();
@@ -500,7 +500,7 @@ export class Caret {
           left += width * -1;
         }
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
+          left += wordsWrapperCache().getOffsetWidth() - tapeOffset;
         } else {
           left += letter.getOffsetLeft();
           left += options.word.getOffsetLeft();

@@ -1,20 +1,20 @@
 import { applyReducedMotion } from "../../utils/misc";
-import { qs } from "../../utils/dom";
+import { lazyQsr, qs } from "../../utils/dom";
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
-const timerEl = qs("#typingTest #memoryTimer");
+const timerEl = lazyQsr("#typingTest #memoryTimer");
 
 export function show(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 1,
     duration: applyReducedMotion(125),
   });
 }
 
 export function hide(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 0,
     duration: applyReducedMotion(125),
   });
@@ -46,5 +46,5 @@ export function start(time: number): void {
 }
 
 export function update(sec: number): void {
-  timerEl?.setText(`Timer left to memorise all words: ${sec}s`);
+  timerEl().setText(`Timer left to memorise all words: ${sec}s`);
 }

@@ -44,7 +44,12 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-export const caret = new Caret(qsr("#caret"), Config.caretStyle);
+// created lazily - #caret is rendered by the TestPage component
+export let caret: Caret;
+
+export function initElement(): void {
+  caret = new Caret(qsr("#caret"), Config.caretStyle);
+}
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {
