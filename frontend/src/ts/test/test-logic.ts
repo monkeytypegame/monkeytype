@@ -1,3 +1,5 @@
+import { KeySelectionError } from "../practice/errors";
+import { getKeySelection } from "../practice/selection";
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
@@ -173,6 +175,18 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
+let testKeySelection = getKeySelection();
+let testKeySelectionSettings = "";
+function keySelectionSettings(): string {
+  return JSON.stringify([
+    getKeySelection(),
+    Config.mode,
+    Config.language,
+    Config.numbers,
+    Config.punctuation,
+  ]);
+}
+
 export async function restart(options = {} as RestartOptions): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
@@ -183,6 +197,10 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   };
 
   options = { ...defaultOptions, ...options };
+
+  const selectionChanged =
+    (testKeySelection !== null || getKeySelection() !== null) &&
+    keySelectionSettings() !== testKeySelectionSettings;
 
   // guards
 
@@ -235,11 +253,11 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
     // close out the abandoned test
 
-    if (isRepeated()) {
+    if (isRepeated() && !selectionChanged) {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
+    if (Config.resultSaving && testKeySelection === null) {
       // Finalize the abandoned test before measuring it: logging the timer
       // "end" event gives getAfkDuration its interval boundaries, so idle time
       // is actually subtracted. Without it AFK is always 0 and the full
@@ -252,12 +270,15 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
     }
   }
 
+  if (selectionChanged) options.withSameWordset = false;
+
   const currentQuote = getCurrentQuote();
   if (
     Config.mode === "quote" &&
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
+    !selectionChanged &&
     (isTestActive() || failReason !== "")
   ) {
     options.withSameWordset = true;
@@ -352,6 +373,8 @@ let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
+  testKeySelection = getKeySelection();
+  testKeySelectionSettings = keySelectionSettings();
   console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount > 3) {
@@ -487,6 +510,11 @@ async function init(): Promise<boolean> {
     ({ allRightToLeft, allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
+    if (e instanceof KeySelectionError) {
+      TestInitFailed.show(e.message);
+      setIsTestRestarting(false);
+      return false;
+    }
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
@@ -863,7 +891,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  let dontSave = false;
+  let dontSave = getKeySelection() !== null;
 
   if (countUndefined(ce) > 0) {
     console.log(ce);
@@ -975,7 +1003,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // test is valid
 
   if (isRepeated() || difficultyFailed) {
-    if (Config.resultSaving) {
+    if (Config.resultSaving && getKeySelection() === null) {
       pushIncompleteTest({
         acc: completedEvent.acc,
         seconds: getIncompleteTestSeconds(eventLog),
@@ -985,7 +1013,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const customTextName = getCustomTextIndicator()?.name ?? "";
   const isLong = getCustomTextIndicator()?.isLong === true;
-  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+  if (
+    getKeySelection() === null &&
+    Config.mode === "custom" &&
+    customTextName !== "" &&
+    isLong
+  ) {
     // Let's update the custom text progress
     if (
       getBailedOut() ||

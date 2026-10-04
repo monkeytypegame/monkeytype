@@ -2,9 +2,12 @@ import { createMemo } from "solid-js";
 
 import { useActiveTagsLiveQuery } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
+import { presetLabel } from "../../../../practice/presets";
+import { getKeySelection } from "../../../../practice/selection";
 import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
+import { showModal } from "../../../../states/modals";
 import {
   getFocus,
   getLoadedChallenge,
@@ -27,38 +30,49 @@ import { PbNotice } from "./PbNotice";
 
 export function TestModesNotice() {
   return (
-    <div
-      class={cn(
-        "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
-        {
-          "opacity-0": getFocus(),
-        },
-      )}
-    >
-      <Repeated />
-      <ResultSaving />
-      <QuickRestart />
-      <LongText />
-      <LoadedChallenge />
-      <ZenMode />
-      <Language />
-      <Difficulty />
-      <BlindMode />
-      <LazyMode />
-      <PaceCaretNotice />
-      <AverageNotice />
-      <PbNotice />
-      <MinSpeed />
-      <MinAcc />
-      <MinBurst />
-      <Funbox />
-      <ConfidenceMode />
-      <StopOnError />
-      <DeleteOnError />
-      <Layout />
-      <OppositeShift />
-      <Tags />
-    </div>
+    <>
+      <div class="flex justify-center text-sm text-sub">
+        <Notice
+          class="max-w-full whitespace-normal"
+          when={getKeySelection() !== null}
+          icon="fa-keyboard"
+          onClick={() => showModal("KeySelection")}
+          text={`${presetLabel(getKeySelection()?.preset ?? "")} · ${getKeySelection()?.characters.join(" ") ?? ""} · unranked`}
+        />
+      </div>
+      <div
+        class={cn(
+          "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
+          {
+            "opacity-0": getFocus(),
+          },
+        )}
+      >
+        <Repeated />
+        <ResultSaving />
+        <QuickRestart />
+        <LongText />
+        <LoadedChallenge />
+        <ZenMode />
+        <Language />
+        <Difficulty />
+        <BlindMode />
+        <LazyMode />
+        <PaceCaretNotice />
+        <AverageNotice />
+        <PbNotice />
+        <MinSpeed />
+        <MinAcc />
+        <MinBurst />
+        <Funbox />
+        <ConfidenceMode />
+        <StopOnError />
+        <DeleteOnError />
+        <Layout />
+        <OppositeShift />
+        <Tags />
+      </div>
+    </>
   );
 }
 
@@ -115,7 +129,11 @@ function QuickRestart() {
 function LongText() {
   return (
     <Notice
-      when={getConfig.mode === "custom" && getCustomTextIndicator()?.isLong}
+      when={
+        getKeySelection() === null &&
+        getConfig.mode === "custom" &&
+        getCustomTextIndicator()?.isLong
+      }
       icon="fa-book"
     >
       {getCustomTextIndicator()?.name} (

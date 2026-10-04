@@ -6,6 +6,7 @@ import { getConfig } from "../../../config/store";
 import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
+import { getKeySelection } from "../../../practice/selection";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import {
@@ -16,7 +17,7 @@ import {
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
-import { Anime, AnimeShow } from "../../common/anime";
+import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
 const variables = cn(
@@ -93,35 +94,30 @@ function PuncAndNum(): JSXElement {
   const buttons = ["punctuation", "numbers"] as const;
 
   return (
-    <Anime
-      class="mr-(--card-gap) w-max place-self-end"
-      animation={{
-        opacity: getConfig.mode === "zen" ? 0 : 1,
-        // marginRight: getConfig.mode === "zen" ? "0" : "var(--card-gap)",
-        duration: durationMs,
-      }}
-    >
-      <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
-        <div class={cardClass}>
-          <For each={buttons}>
-            {(configKey) => (
-              <TCButton
-                fa={configMetadata[configKey].fa}
-                text={configMetadata[configKey].displayString ?? configKey}
-                active={getConfig[configKey]}
-                disabled={
-                  getConfig.mode === "zen" || getConfig.mode === "quote"
-                }
-                onClick={() => {
-                  setConfig(configKey, !getConfig[configKey]);
-                  restartTestEvent.dispatch();
-                }}
-              />
-            )}
-          </For>
-        </div>
-      </AnimeShow>
-    </Anime>
+    <div class="mr-(--card-gap) w-max place-self-end">
+      <div class={cardClass}>
+        <For each={buttons}>
+          {(configKey) => (
+            <TCButton
+              fa={configMetadata[configKey].fa}
+              text={configMetadata[configKey].displayString ?? configKey}
+              active={getConfig[configKey]}
+              disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
+              onClick={() => {
+                setConfig(configKey, !getConfig[configKey]);
+                restartTestEvent.dispatch();
+              }}
+            />
+          )}
+        </For>
+        <TCButton
+          fa={{ icon: "fa-keyboard" }}
+          text="keys"
+          active={getKeySelection() !== null}
+          onClick={() => showModal("KeySelection")}
+        />
+      </div>
+    </div>
   );
 }
 

@@ -128,24 +128,26 @@ class QuotesController {
     this.queueIndex = 0;
   }
 
-  getRandomQuote(): Quote | null {
-    if (this.quoteQueue.length === 0) {
+  getRandomQuote(matches?: (quote: Quote) => boolean): Quote | null {
+    if (this.quoteQueue.length === 0) return null;
+    const nextMatch = (): Quote | null => {
+      while (this.queueIndex < this.quoteQueue.length) {
+        const quote = this.quoteQueue[this.queueIndex++] as Quote;
+        if (matches === undefined || matches(quote)) return quote;
+      }
       return null;
-    }
-
-    if (this.queueIndex >= this.quoteQueue.length) {
-      this.queueIndex = 0;
-      shuffle(this.quoteQueue);
-    }
-
-    const randomQuote = this.quoteQueue[this.queueIndex] as Quote;
-
-    this.queueIndex += 1;
-
-    return randomQuote;
+    };
+    const quote = nextMatch();
+    if (quote !== null) return quote;
+    this.queueIndex = 0;
+    shuffle(this.quoteQueue);
+    return nextMatch();
   }
 
-  getRandomFavoriteQuote(language: Language): Quote | null {
+  getRandomFavoriteQuote(
+    language: Language,
+    matches?: (quote: Quote) => boolean,
+  ): Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return null;
@@ -171,6 +173,14 @@ class QuotesController {
       return null;
     }
 
+    if (matches !== undefined) {
+      const matching = quoteIds
+        .map((id) => this.getQuoteById(Number(id)))
+        .filter(
+          (quote): quote is Quote => quote !== undefined && matches(quote),
+        );
+      return matching.length === 0 ? null : randomElementFromArray(matching);
+    }
     const randomQuoteId = randomElementFromArray(quoteIds);
     const randomQuote = this.getQuoteById(parseInt(randomQuoteId, 10));
 

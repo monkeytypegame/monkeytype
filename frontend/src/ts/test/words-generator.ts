@@ -1,3 +1,10 @@
+import { KeySelectionError } from "../practice/errors";
+import {
+  getKeySelection,
+  effectiveCharacters,
+  matchesSelection,
+} from "../practice/selection";
+import { DrillSequence } from "../practice/drills";
 import { Config } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import * as CustomText from "./custom-text";
@@ -28,6 +35,7 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import {
+  getLoadedChallenge,
   getSelectedQuoteId,
   getCurrentQuote,
   isRepeated,
@@ -533,6 +541,11 @@ async function getQuoteWordList(
   hideLoaderBar();
 
   if (quotesCollection.length === 0) {
+    if (getKeySelection() !== null) {
+      throw new KeySelectionError(
+        "No quotes are available for this language. Choose another language or mode, or clear key selection.",
+      );
+    }
     setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
@@ -541,6 +554,23 @@ async function getQuoteWordList(
     );
   }
 
+  const selected = getKeySelection();
+  const quoteText = (quote: Quote): string =>
+    (Config.britishEnglish &&
+    quote.britishText !== undefined &&
+    quote.britishText !== ""
+      ? quote.britishText
+      : quote.text
+    )
+      .replace(/ +/gm, " ")
+      .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
+      .replace(/…/g, "...")
+      .trim();
+  const matches =
+    selected === null
+      ? undefined
+      : (quote: Quote): boolean =>
+          matchesSelection(quoteText(quote), selected.characters);
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
@@ -548,40 +578,49 @@ async function getQuoteWordList(
       setQuoteLengthAll();
       throw new WordGenError(`Quote ${getSelectedQuoteId()} does not exist`);
     }
+    if (matches && !matches(targetQuote)) {
+      throw new KeySelectionError(
+        "This quote does not match your keys. Select more keys or clear the selection.",
+      );
+    }
     rq = targetQuote;
   } else if (Config.quoteLength.includes(-3)) {
     const randomQuote = QuotesController.getRandomFavoriteQuote(
       Config.language,
+      matches,
     );
     if (randomQuote === null) {
+      if (selected !== null) {
+        throw new KeySelectionError(
+          "No complete quotes match your keys. Add uppercase letters and punctuation, or clear the selection.",
+        );
+      }
       setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
     rq = randomQuote;
   } else {
-    const randomQuote = QuotesController.getRandomQuote();
+    const randomQuote = QuotesController.getRandomQuote(matches);
     if (randomQuote === null) {
+      if (selected !== null) {
+        throw new KeySelectionError(
+          "No complete quotes match your keys. Add uppercase letters and punctuation, or clear the selection.",
+        );
+      }
       setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
     rq = randomQuote;
   }
 
-  rq.language = Strings.removeLanguageSize(Config.language);
-  rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  rq.text = rq.text.replace(/…/g, "...");
-  rq.text = rq.text.trim();
-
-  if (
-    rq.britishText !== undefined &&
-    rq.britishText !== "" &&
-    Config.britishEnglish
-  ) {
-    rq.textSplit = rq.britishText.split(" ");
-  } else {
-    rq.textSplit = rq.text.split(" ");
-  }
+  // Keep the cached source intact, and test exactly the text that was filtered.
+  const text = quoteText(rq);
+  rq = {
+    ...rq,
+    language: Strings.removeLanguageSize(Config.language),
+    text,
+    textSplit: text.split(" "),
+  };
 
   setCurrentQuote(rq as QuoteWithTextSplit);
 
@@ -597,6 +636,8 @@ async function getQuoteWordList(
   return currentQuote.textSplit;
 }
 
+let drillSequence: DrillSequence | null = null;
+let drillSequenceKey = "";
 let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
@@ -615,7 +656,17 @@ let previousRandomQuote: QuoteWithTextSplit | null = null;
 export async function generateWords(
   language: LanguageObject,
 ): Promise<GenerateWordsReturn> {
+  const selection = getKeySelection();
+  if (
+    selection !== null &&
+    (Config.funbox.length > 0 || getLoadedChallenge() !== null)
+  ) {
+    throw new KeySelectionError(
+      "Clear key selection to use funboxes or challenges.",
+    );
+  }
   if (!isRepeated()) {
+    drillSequence = null;
     previousGetNextWordReturns = [];
   }
   previousRandomQuote = getCurrentQuote();
@@ -634,6 +685,44 @@ export async function generateWords(
     allJoiningScript: language.joiningScript ?? false,
   };
 
+  if (
+    selection !== null &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    const characters = effectiveCharacters(
+      selection.characters,
+      Config.numbers,
+      Config.punctuation,
+    );
+    if (characters.length === 0) {
+      throw new KeySelectionError(
+        "No selected keys are enabled. Turn on numbers or punctuation, or choose more keys.",
+      );
+    }
+    if (selection.style !== "words") {
+      const letters = characters.filter((char) => /\p{L}/u.test(char));
+      ret.allRightToLeft =
+        letters.length > 0 &&
+        letters.every((char) => Strings.isWordRightToLeft(char, false)[0]);
+      // Like custom text, character drills can contain any script independently
+      // of the selected dictionary. Allow adjacent glyphs to join where needed.
+      ret.allJoiningScript = true;
+    }
+    const sequenceKey = JSON.stringify([selection, characters, language.name]);
+    if (drillSequence === null || drillSequenceKey !== sequenceKey) {
+      drillSequence = new DrillSequence(
+        { ...selection, characters },
+        language.words,
+      );
+      drillSequenceKey = sequenceKey;
+    }
+    for (let index = 0; index < getLimit(); index++) {
+      ret.words.push(appendCommitCharacter(drillSequence.tokenAt(index)));
+      ret.sectionIndexes.push(index);
+    }
+    return ret;
+  }
+  drillSequence = null;
   isCurrentlyUsingFunboxSection = isFunboxActiveWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
@@ -642,6 +731,16 @@ export async function generateWords(
   let wordList = language.words;
   if (Config.mode === "custom") {
     wordList = CustomText.getText();
+    if (selection !== null) {
+      wordList = wordList.filter((text) =>
+        matchesSelection(text, selection.characters),
+      );
+      if (wordList.length === 0) {
+        throw new KeySelectionError(
+          "No custom text matches your keys. Edit the text or choose more keys.",
+        );
+      }
+    }
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
   } else if (Config.mode === "zen") {
@@ -752,6 +851,18 @@ export async function getNextWord(
   previousWord: string | undefined,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
+  if (
+    drillSequence !== null &&
+    getKeySelection() !== null &&
+    (Config.mode === "time" || Config.mode === "words")
+  ) {
+    const wordRaw = drillSequence.tokenAt(wordIndex);
+    return {
+      word: appendCommitCharacter(wordRaw),
+      wordRaw,
+      sectionIndex: wordIndex,
+    };
+  }
   console.debug("Getting next word", {
     isRepeated: isRepeated(),
     currentWordset,
@@ -908,6 +1019,22 @@ export async function getNextWord(
 
   if (/ /g.test(randomWord)) {
     throw new WordGenError("Random word contains spaces");
+  }
+
+  const selected = getKeySelection();
+  if (selected !== null) {
+    if (!matchesSelection(randomWord, selected.characters)) {
+      throw new KeySelectionError(
+        "Text contains an unselected key. Choose more keys or clear the selection.",
+      );
+    }
+    const ret = {
+      word: appendCommitCharacter(randomWord),
+      wordRaw: randomWord,
+      sectionIndex,
+    };
+    previousGetNextWordReturns.push(ret);
+    return ret;
   }
 
   const usingFunboxWithGetWord = isFunboxActiveWithFunction("getWord");

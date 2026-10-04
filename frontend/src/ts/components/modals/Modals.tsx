@@ -10,6 +10,7 @@ import { CustomWordAmountModal } from "./CustomWordAmountModal";
 import { EditResultTagsModal } from "./EditResultTagsModal";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
 import { GoogleSignupModal } from "./GoogleSignUpModal";
+import { KeySelectionModal } from "./KeySelectionModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { PbTablesModal } from "./PbTablesModal";
@@ -31,6 +32,7 @@ import { VersionHistoryModal } from "./VersionHistoryModal";
 export function Modals(): JSXElement {
   return (
     <>
+      <KeySelectionModal />
       <CommandlineModal />
       <VersionHistoryModal />
       <ContactModal />

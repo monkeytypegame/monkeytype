@@ -9,6 +9,7 @@ import { For, JSXElement, Show } from "solid-js";
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
 import { restartTestEvent } from "../../events/test";
+import { getKeySelection } from "../../practice/selection";
 import { isAuthenticated } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -118,6 +119,11 @@ export function MobileTestConfigModal(): JSXElement {
   return (
     <AnimatedModal id="MobileTestConfig" modalClass="grid gap-4">
       <div class="grid gap-2">
+        <MCButton
+          text="keys"
+          active={getKeySelection() !== null}
+          onClick={() => showModal("KeySelection")}
+        />
         <MCButton
           text="punctuation"
           active={getConfig.punctuation && !isPunctuationDisabled()}
