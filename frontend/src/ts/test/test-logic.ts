@@ -1,4 +1,5 @@
 import Ape from "../ape";
+import { batch } from "solid-js";
 import * as TestUI from "./test-ui";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
@@ -884,8 +885,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
-  setLastEventLog(eventLog);
-  setLastResult(structuredClone(completedEvent));
+  batch(() => {
+    setLastEventLog(eventLog);
+    setLastResult(structuredClone(completedEvent));
+  });
 
   ///////// completed event ready
 
