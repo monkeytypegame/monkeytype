@@ -1,0 +1,394 @@
+# Edit image names, hostname, database connections and ingress class before use.
+# MongoDB and Redis must already exist; this file deploys only the application.
+# All resources use the existing namespace "example".
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monkeytype-connections
+  namespace: example
+type: Opaque
+stringData:
+  DB_URI: mongodb://monkeytype-mongodb:27017
+  DB_USERNAME: REPLACE_WITH_MONGODB_USERNAME
+  DB_PASSWORD: REPLACE_WITH_MONGODB_PASSWORD
+  # Percent-encode reserved characters in the Redis password.
+  REDIS_URI: redis://:REPLACE_WITH_URL_ENCODED_REDIS_PASSWORD@monkeytype-redis:6379/0
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monkeytype-backend-config
+  namespace: example
+data:
+  AUTH_PROVIDER: local
+  MODE: prod
+  PORT: "5005"
+  DB_NAME: monkeytype
+  # Match the database in which your MongoDB login was created.
+  DB_AUTH_SOURCE: admin
+  FRONTEND_URL: https://monkeytype.example.internal
+  BYPASS_ANTICHEAT: "true"
+  BYPASS_EMAILCLIENT: "true"
+  LOG_FOLDER_PATH: /app/backend/dist/logs
+  backend-configuration.json: |
+    {
+      "configuration": {
+        "results": { "savingEnabled": true },
+        "users": {
+          "signUp": true,
+          "profiles": { "enabled": true },
+          "xp": { "enabled": true, "gainMultiplier": 1 }
+        },
+        "dailyLeaderboards": {
+          "enabled": true,
+          "maxResults": 250,
+          "leaderboardExpirationTimeInDays": 1,
+          "validModeRules": [
+            { "language": "english", "mode": "time", "mode2": "15" },
+            { "language": "english", "mode": "time", "mode2": "60" }
+          ]
+        },
+        "leaderboards": { "minTimeTyping": 0 }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monkeytype-frontend-config
+  namespace: example
+data:
+  nginx.conf: |
+    worker_processes 1;
+    pid /tmp/nginx.pid;
+    error_log /dev/stderr warn;
+    events { worker_connections 1024; }
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        access_log /dev/stdout;
+        sendfile on;
+        client_body_temp_path /tmp/client_temp;
+        proxy_temp_path /tmp/proxy_temp;
+        fastcgi_temp_path /tmp/fastcgi_temp;
+        uwsgi_temp_path /tmp/uwsgi_temp;
+        scgi_temp_path /tmp/scgi_temp;
+
+        map $http_x_forwarded_proto $external_scheme {
+            default $scheme;
+            https https;
+        }
+
+        server {
+            listen 8080;
+            server_name _;
+            root /usr/share/nginx/html;
+
+            # Replace with the actual trusted ingress proxy source CIDR(s).
+            # Until configured, authentication limits share the proxy's IP.
+            set_real_ip_from 127.0.0.1;
+            real_ip_header X-Forwarded-For;
+            real_ip_recursive on;
+
+            add_header Content-Security-Policy "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; frame-src 'none'; worker-src 'self' blob:; base-uri 'self'; form-action 'self'" always;
+
+            location = /healthz {
+                access_log off;
+                return 200 "ok\n";
+            }
+
+            location /api/ {
+                proxy_pass http://monkeytype-backend:5005/;
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $remote_addr;
+                proxy_set_header CF-Connecting-IP "";
+                proxy_set_header X-Forwarded-Proto $external_scheme;
+            }
+
+            location / {
+                try_files $uri $uri/ /index.html;
+            }
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monkeytype-backend
+  namespace: example
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: monkeytype
+    app.kubernetes.io/component: backend
+  ports:
+    - name: http
+      port: 5005
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monkeytype-frontend
+  namespace: example
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: monkeytype
+    app.kubernetes.io/component: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monkeytype-backend
+  namespace: example
+spec:
+  replicas: 1
+  # Avoid running duplicate in-process scheduled jobs during an update.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: monkeytype
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: monkeytype
+        app.kubernetes.io/component: backend
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: backend
+          image: docker.io/vaxops/monkeytype-local-backend:local-auth-v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5005
+          env:
+            - name: AUTH_PROVIDER
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: AUTH_PROVIDER },
+                }
+            - name: MODE
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: MODE },
+                }
+            - name: PORT
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: PORT },
+                }
+            - name: DB_NAME
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: DB_NAME },
+                }
+            - name: DB_AUTH_SOURCE
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: DB_AUTH_SOURCE },
+                }
+            - name: FRONTEND_URL
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: FRONTEND_URL },
+                }
+            - name: BYPASS_ANTICHEAT
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: BYPASS_ANTICHEAT },
+                }
+            - name: BYPASS_EMAILCLIENT
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    {
+                      name: monkeytype-backend-config,
+                      key: BYPASS_EMAILCLIENT,
+                    },
+                }
+            - name: LOG_FOLDER_PATH
+              valueFrom:
+                {
+                  configMapKeyRef:
+                    { name: monkeytype-backend-config, key: LOG_FOLDER_PATH },
+                }
+          envFrom:
+            - secretRef:
+                name: monkeytype-connections
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { cpu: "2", memory: 1Gi }
+          startupProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 20
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: configuration
+              mountPath: /app/backend/dist/backend-configuration.json
+              subPath: backend-configuration.json
+              readOnly: true
+            - name: logs
+              mountPath: /app/backend/dist/logs
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: configuration
+          configMap:
+            name: monkeytype-backend-config
+            items:
+              - key: backend-configuration.json
+                path: backend-configuration.json
+        - name: logs
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monkeytype-frontend
+  namespace: example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: monkeytype
+      app.kubernetes.io/component: frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: monkeytype
+        app.kubernetes.io/component: frontend
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frontend
+          image: docker.io/vaxops/monkeytype-local-frontend:local-auth-v1
+          imagePullPolicy: IfNotPresent
+          # Bypass the stock nginx entrypoint's configuration-writing scripts.
+          command: [nginx]
+          args: [-g, "daemon off;"]
+          ports:
+            - name: http
+              containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 128Mi }
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 20
+          volumeMounts:
+            - name: configuration
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: configuration
+          configMap:
+            name: monkeytype-frontend-config
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monkeytype
+  namespace: example
+spec:
+  # Change to an IngressClass installed in your cluster.
+  ingressClassName: example
+  tls:
+    - hosts: [monkeytype.example.internal]
+      secretName: monkeytype-tls
+  rules:
+    - host: monkeytype.example.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: monkeytype-frontend
+                port:
+                  name: http
+---
+# Requires a CNI that enforces NetworkPolicy. The API has no external Ingress.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monkeytype-backend
+  namespace: example
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: monkeytype
+      app.kubernetes.io/component: backend
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: monkeytype
+              app.kubernetes.io/component: frontend
+      ports:
+        - protocol: TCP
+          port: 5005

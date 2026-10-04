@@ -114,6 +114,8 @@ docker compose -f docker/docker-compose.local.yml up --build -d
 
 Open `http://localhost:8080`. Registration, login, profiles, saved results, XP progression, all-time leaderboards and daily English 15/60-second leaderboards are enabled. The first build downloads dependencies and images. Backend/databases use an internal Docker network without internet access; the frontend has a separate network for its published localhost port. Its content security policy restricts browser resource requests to this instance. MongoDB stores accounts, password hashes and results; Redis stores sessions and daily rankings. No Firebase credentials, reCAPTCHA or email server are required.
 
+For Kubernetes frontend/backend manifests and plain `docker build` commands, see [the Kubernetes deployment guide](../docker/k8s/README.md). MongoDB and Redis are managed separately in that deployment.
+
 Local accounts use email addresses as login identifiers; ownership is not verified. Password recovery is handled by the administrator. Passwords use salted scrypt hashes, sessions use HttpOnly cookies, and changing a password/email or revoking tokens invalidates all devices. Social login, ads, analytics, error telemetry and GitHub release fetching are disabled in local mode. Firebase remains the default provider for the standard deployment.
 
 Change feature settings in `docker/backend-configuration.local.json` and restart the backend. Set `HTTP_PORT` and matching `BASE_URL` when changing the localhost port. Registration can be disabled with `users.signUp`; existing users can still log in.
