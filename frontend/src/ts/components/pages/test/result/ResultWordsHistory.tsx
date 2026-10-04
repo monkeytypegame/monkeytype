@@ -22,13 +22,6 @@ import {
 } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/events/stats";
-import { cn } from "../../../../utils/cn";
-import { blendTwoHexColors } from "../../../../utils/colors";
-import { get as getTypingSpeedUnit } from "../../../../utils/typing-speed-units";
-import { AnimeShow } from "../../../common/anime";
-import { buildBalloonHtmlProperties } from "../../../common/Balloon";
-import { Fa } from "../../../common/Fa";
-import * as ResultWordHighlight from "./result-word-highlight";
 import {
   buildWordsHistory,
   copyMissedWordsList,
@@ -37,7 +30,14 @@ import {
   HistoryWord,
   isWordsHistoryAnimated,
   isWordsHistoryOpen,
-} from "./words-history";
+} from "../../../../test/words-history";
+import { cn } from "../../../../utils/cn";
+import { blendTwoHexColors } from "../../../../utils/colors";
+import { get as getTypingSpeedUnit } from "../../../../utils/typing-speed-units";
+import { AnimeShow } from "../../../common/anime";
+import { buildBalloonHtmlProperties } from "../../../common/Balloon";
+import { Fa } from "../../../common/Fa";
+import * as ResultWordHighlight from "./result-word-highlight";
 
 type Heatmap = {
   steps: { val: number; colorId: number }[];

@@ -1,5 +1,5 @@
 import * as TestLogic from "../../test/test-logic";
-import { toggleResultWords } from "../../components/pages/test/result/words-history";
+import { toggleResultWords } from "../../test/words-history";
 import {
   showErrorNotification,
   showSuccessNotification,

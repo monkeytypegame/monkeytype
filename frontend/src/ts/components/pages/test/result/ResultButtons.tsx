@@ -8,12 +8,12 @@ import {
   captureAndDownload,
 } from "../../../../test/screenshot";
 import { repeatTest, restart } from "../../../../test/test-logic";
+import { toggleResultWords } from "../../../../test/words-history";
 import { FaObject } from "../../../../types/font-awesome";
 import { cn } from "../../../../utils/cn";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import { toggleReplayDisplay } from "./replay";
-import { toggleResultWords } from "./words-history";
 
 export function ResultButtons(props: {
   glarses: boolean;

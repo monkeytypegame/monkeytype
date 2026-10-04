@@ -33,10 +33,7 @@ import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
-import {
-  closeResultWords,
-  toggleResultWords,
-} from "../components/pages/test/result/words-history";
+import { closeResultWords, toggleResultWords } from "./words-history";
 import {
   getActivePage,
   getCustomTextIndicator,
