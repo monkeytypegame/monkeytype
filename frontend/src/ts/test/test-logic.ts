@@ -28,7 +28,6 @@ import {
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
 import * as AdController from "../controllers/ad-controller";
-import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../legacy-states/connection";
 import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
@@ -1194,7 +1193,6 @@ async function showResult(
   void AdController.renderResult();
   setResultCalculating(false);
   TestUI.clearWords();
-  ChartController.result.resize();
 }
 
 async function saveResult(

@@ -5,14 +5,18 @@ import type {
 
 import { getFunbox } from "@monkeytype/funbox";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { Chart, type PluginChartOptions } from "chart.js";
 import {
-  createEffect,
+  Chart,
+  type ChartData as ChartJsData,
+  type ChartOptions,
+  type ScriptableContext,
+  type TooltipItem,
+} from "chart.js";
+import {
   createMemo,
   createSignal,
   For,
   JSXElement,
-  onMount,
   Show,
   untrack,
 } from "solid-js";
@@ -22,8 +26,8 @@ import { useTagsLiveQuery } from "../../../../collections/tags";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
-import * as ChartController from "../../../../controllers/chart-controller";
 import * as DB from "../../../../db";
+import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
 import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
@@ -41,16 +45,22 @@ import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
   getTimerBoundaryLabels,
+  getWordIndexesForSecond,
 } from "../../../../test/events/stats";
 import { EventLog } from "../../../../test/events/types";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
-import { smoothWithValueWindow } from "../../../../utils/arrays";
+import {
+  lastElementFromArray,
+  smoothWithValueWindow,
+} from "../../../../utils/arrays";
 import { cn } from "../../../../utils/cn";
+import { blendTwoHexColors } from "../../../../utils/colors";
 import {
   get as getTypingSpeedUnit,
   TypingSpeedUnitSettings,
 } from "../../../../utils/typing-speed-units";
+import { ChartJs } from "../../../common/ChartJs";
 import { Fa } from "../../../common/Fa";
 import * as ResultWordHighlight from "./result-word-highlight";
 
@@ -346,9 +356,195 @@ export function toggleFakeChartData(): void {
   showSuccessNotification(isFakeChartData() ? "on" : "off");
 }
 
+let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
+
+function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
+  if (prevTooltipItem === ti) return "";
+  const eventLog = getLastEventLog();
+  if (eventLog === null) return "";
+
+  prevTooltipItem = ti;
+  try {
+    const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
+    const unique = [
+      ...new Set(getWordIndexesForSecond(eventLog, keypressIndex)),
+    ];
+    const first = unique[0];
+    const last = lastElementFromArray(unique);
+    if (first === undefined || last === undefined) return "";
+    void ResultWordHighlight.highlightWordsInRange(first, last);
+  } catch {}
+  return "";
+}
+
+function errorPointRadius(size: number) {
+  return (context: ScriptableContext<"line" | "scatter">): number => {
+    const value = context.dataset.data[context.dataIndex] as number;
+    return (value ?? 0) <= 0 ? 0 : size;
+  };
+}
+
+type ChartConfig = {
+  data: ChartJsData<"line" | "scatter", number[], string>;
+  options: ChartOptions<"line" | "scatter">;
+};
+
+function buildChartConfig(
+  data: ChartData,
+  vis: ChartDataVisibility,
+  annotations: AnnotationOptions<"line">[],
+  min: number,
+  max: number,
+  unit: TypingSpeedUnitSettings,
+  theme: Theme,
+): ChartConfig {
+  const rawColor = `${theme.main}99`;
+  const burstFill = blendTwoHexColors(theme.subAlt, `${theme.subAlt}00`, 0.5);
+
+  return {
+    data: {
+      labels: data.labels,
+      datasets: [
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: getConfig.typingSpeedUnit,
+          data: data.wpm,
+          borderColor: theme.main,
+          backgroundColor: "transparent",
+          pointBackgroundColor: theme.main,
+          pointBorderColor: theme.main,
+          borderWidth: 3,
+          yAxisID: "wpm",
+          order: 2,
+          pointRadius: 1,
+        },
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "raw",
+          data: data.raw,
+          hidden: !vis.raw,
+          borderColor: rawColor,
+          backgroundColor: "transparent",
+          pointBackgroundColor: rawColor,
+          pointBorderColor: rawColor,
+          borderWidth: 2,
+          yAxisID: "raw",
+          borderDash: [8, 8],
+          order: 3,
+          pointRadius: 0,
+        },
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "errors",
+          data: data.err,
+          hidden: !vis.errors,
+          borderColor: theme.error,
+          backgroundColor: theme.error,
+          pointBackgroundColor: theme.error,
+          pointBorderColor: theme.error,
+          borderWidth: 2,
+          order: 1,
+          yAxisID: "error",
+          type: "scatter",
+          pointStyle: "crossRot",
+          pointRadius: errorPointRadius(3),
+          pointHoverRadius: errorPointRadius(5),
+        },
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "burst",
+          data: data.burst,
+          hidden: !vis.burst,
+          borderColor: theme.sub,
+          backgroundColor: burstFill,
+          pointBackgroundColor: theme.sub,
+          pointBorderColor: theme.sub,
+          borderWidth: 3,
+          yAxisID: "burst",
+          order: 4,
+          pointRadius: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          axis: "x",
+          ticks: { autoSkip: true, autoSkipPadding: 20 },
+          display: true,
+          title: { display: false, text: "Seconds" },
+        },
+        wpm: {
+          axis: "y",
+          display: true,
+          title: { display: true, text: unit.fullUnitString },
+          beginAtZero: true,
+          min,
+          max,
+          ticks: { autoSkip: true, autoSkipPadding: 20 },
+          grid: { display: true },
+        },
+        raw: {
+          axis: "y",
+          display: false,
+          title: { display: true, text: "Raw Words per Minute" },
+          beginAtZero: true,
+          min,
+          max,
+          ticks: { autoSkip: true, autoSkipPadding: 20 },
+          grid: { display: false },
+        },
+        burst: {
+          axis: "y",
+          display: false,
+          title: { display: true, text: "Burst Words per Minute" },
+          beginAtZero: true,
+          min,
+          max,
+          ticks: { autoSkip: true, autoSkipPadding: 20 },
+          grid: { display: false },
+        },
+        error: {
+          axis: "y",
+          display: true,
+          position: "right",
+          title: { display: true, text: "Errors" },
+          beginAtZero: true,
+          max: Math.max(...data.err),
+          ticks: { precision: 0, autoSkip: true, autoSkipPadding: 20 },
+          grid: { display: false },
+        },
+      },
+      plugins: {
+        annotation: { annotations },
+        tooltip: {
+          animation: { duration: 250 },
+          mode: "index",
+          intersect: false,
+          callbacks: { afterLabel: highlightWordsForTooltip },
+        },
+      },
+    },
+  };
+}
+
+const emptyChartData: ChartData = {
+  labels: [],
+  wpm: [],
+  raw: [],
+  burst: [],
+  err: [],
+};
+
 export function ResultChart(props: { hidden: boolean }): JSXElement {
-  let canvasRef: HTMLCanvasElement | undefined;
   const tags = useTagsLiveQuery();
+  let chart: Chart<"line" | "scatter", number[]> | undefined;
 
   // read once per result - saveResult() overwrites the local pb with this result
   const localPbWpm = createMemo(() => {
@@ -356,23 +552,22 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
     return result === null ? 0 : untrack(() => getLocalPbWpm(result));
   });
 
-  onMount(() => {
-    if (canvasRef === undefined) throw new Error("Result chart canvas not set");
-    ChartController.initResultChart(canvasRef);
-  });
-
-  createEffect(() => {
-    // only build while visible - getLastResult() outlives the result screen, and
-    // showResult() shows it after the details and tags are set, so this runs once per result
-    if (!isResultShown()) return;
-    const result = getLastResult();
-    if (result === null) return;
-
-    const eventLog = getLastEventLog();
+  const chartConfig = createMemo((prev: ChartConfig | undefined) => {
     const unit = getTypingSpeedUnit(getConfig.typingSpeedUnit);
     const theme = getTheme();
-    const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
     const vis = getChartDataVisibility();
+
+    // only build while visible - getLastResult() outlives the result screen, and
+    // showResult() shows it after the details and tags are set, so this runs once per result
+    const result = getLastResult();
+    if (!isResultShown() || result === null) {
+      return (
+        prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
+      );
+    }
+
+    const eventLog = getLastEventLog();
+    const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
     const tagNames = new Map((tags() ?? []).map((t) => [t._id, t.name]));
     const tagPbs = resultState.tags.flatMap((tag) =>
       tag.chartPb !== undefined
@@ -401,34 +596,19 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
       getConfig.startGraphsAtZero,
     );
     const label = funboxLabel(result, min, theme, fontFamily);
+    const annotations = label !== undefined ? [...pbLines, label] : pbLines;
 
-    untrack(() => {
-      const chart = ChartController.result;
-      chart.data.labels = data.labels;
-
-      chart.getDataset("wpm").data = data.wpm;
-      chart.getDataset("wpm").label = getConfig.typingSpeedUnit;
-      chart.getDataset("raw").data = data.raw;
-      chart.getDataset("raw").hidden = !vis.raw;
-      chart.getDataset("burst").data = data.burst;
-      chart.getDataset("burst").hidden = !vis.burst;
-      chart.getDataset("error").data = data.err;
-      chart.getDataset("error").hidden = !vis.errors;
-
-      chart.getScale("wpm").title.text = unit.fullUnitString;
-      for (const id of ["wpm", "raw", "burst"] as const) {
-        chart.getScale(id).min = min;
-        chart.getScale(id).max = max;
-      }
-      chart.getScale("error").max = Math.max(...data.err);
-
-      ((chart.options as PluginChartOptions<"line" | "scatter">).plugins
-        .annotation.annotations as AnnotationOptions<"line">[]) =
-        label !== undefined ? [...pbLines, label] : pbLines;
-
-      chart.update();
-    });
+    return buildChartConfig(data, vis, annotations, min, max, unit, theme);
   });
+
+  // the canvas has no size while the result is hidden
+  createEffectOn(
+    isResultShown,
+    (shown) => {
+      if (shown) chart?.resize();
+    },
+    { defer: true },
+  );
 
   return (
     <div class={cn("chart", { hidden: props.hidden })}>
@@ -477,15 +657,23 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
           )}
         </For>
       </div>
-      <canvas
-        id="wpmChart"
-        ref={(el) => (canvasRef = el)}
+      <div
+        class="h-full"
         onMouseEnter={() => ResultWordHighlight.setIsHoverChart(true)}
         onMouseLeave={() => {
           ResultWordHighlight.setIsHoverChart(false);
           ResultWordHighlight.clear();
         }}
-      ></canvas>
+      >
+        <ChartJs
+          name="Result"
+          type="line"
+          immediate
+          data={chartConfig().data}
+          options={chartConfig().options}
+          onChartInit={(c) => (chart = c)}
+        />
+      </div>
     </div>
   );
 }
