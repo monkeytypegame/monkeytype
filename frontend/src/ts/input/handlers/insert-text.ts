@@ -296,7 +296,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   });
 
   // this needs to be called after event logging
-  WeakSpot.updateScore(data, correct);
+  WeakSpot.updateScore(currentWord);
 
   // delete on error
   // skipped when the input was stopped - nothing was inserted to delete
