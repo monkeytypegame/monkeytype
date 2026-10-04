@@ -127,14 +127,25 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const changedFiles = await github.paginate(
-              github.rest.pulls.listFiles,
-              {
+            let changedFiles;
+            if (context.payload.pull_request) {
+              changedFiles = await github.paginate(
+                github.rest.pulls.listFiles,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.payload.pull_request.number,
+                }
+              );
+            } else {
+              // push: compare against previous head (max 300 files)
+              const { data } = await github.rest.repos.compareCommitsWithBasehead({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-              }
-            );
+                basehead: `${context.payload.before}...${context.payload.after}`,
+              });
+              changedFiles = data.files ?? [];
+            }
             const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
             if (files.length > 0) {
               require('fs').writeFileSync('/tmp/changed-files.txt', files.join('\0'));
