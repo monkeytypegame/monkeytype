@@ -25,33 +25,6 @@
       }
     }
   }
-  .pageTest {
-    #result .wrapper {
-      .stats {
-        grid-template-columns: 1fr;
-        grid-template-areas: "wpm" "acc";
-        width: max-content;
-        justify-items: start;
-        justify-self: center;
-      }
-      .morestats {
-        justify-self: unset;
-        width: unset;
-
-        .group .bottom::after {
-          transform: none;
-          left: 0;
-        }
-      }
-      .buttons {
-        grid-template-columns: 1fr 1fr;
-        grid-auto-flow: unset;
-        #nextTestButton {
-          grid-column: span 2;
-        }
-      }
-    }
-  }
 
   .popupWrapper .modal,
   .modalWrapper .modal {

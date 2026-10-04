@@ -30,53 +30,21 @@ import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { CompletedResult } from "../../../../states/test";
-import { getAccuracy } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
+import { bottomClass, speedBalloon, topClass } from "./result-stats";
 
 type Props = {
   result: CompletedResult;
-  eventLog: EventLog;
-  hidden: boolean;
 };
 
-export function ResultStats(props: Props): JSXElement {
+export function ResultSecondaryStats(props: Props): JSXElement {
   const format = () => getFormatting();
   const decimals = () => getConfig.alwaysShowDecimalPlaces;
-  const unit = () => getConfig.typingSpeedUnit;
-
-  const speedText = (wpm: number): string =>
-    wpm >= 1000 ? "Infinite" : format().typingSpeed(wpm);
-
-  const speedBalloon = (wpm: number): string | undefined => {
-    if (decimals()) {
-      return unit() !== "wpm" ? `${wpm.toFixed(2)} wpm` : undefined;
-    }
-    let text = format().typingSpeed(wpm, {
-      showDecimalPlaces: true,
-      suffix: ` ${unit()}`,
-    });
-    if (unit() !== "wpm") text += ` (${wpm.toFixed(2)} wpm)`;
-    return text;
-  };
-
-  const accCounts = createMemo(() => getAccuracy(props.eventLog));
-
-  const accBalloon = (): string | undefined => {
-    const counts = accCounts();
-    const countsText = `${counts.correct} correct\n${counts.incorrect} incorrect`;
-    if (decimals()) return countsText;
-    const acc =
-      props.result.acc === 100
-        ? "100%"
-        : format().percentage(props.result.acc, { showDecimalPlaces: true });
-    return `${acc}\n${countsText}`;
-  };
 
   const consistencyBalloon = (): string =>
     decimals()
@@ -108,105 +76,104 @@ export function ResultStats(props: Props): JSXElement {
   const other = createMemo(() => getOther(props.result, resultState.details));
 
   return (
-    <>
-      <div class={cn("stats", { hidden: props.hidden })}>
-        <div class="group wpm">
-          <div class="top">
-            <div class="text">{unit()}</div>
-            <Crown />
-          </div>
-          <Balloon class="bottom" text={speedBalloon(props.result.wpm)}>
-            {speedText(props.result.wpm)}
-          </Balloon>
+    <div
+      class={cn(
+        "mb-4 grid grid-flow-col items-start justify-between gap-2 gap-x-8 md:col-span-2",
+        "max-lg:grid-cols-[repeat(3,max-content)] max-lg:grid-rows-[1fr_1fr]",
+        "max-md:grid-cols-2 max-md:grid-rows-[1fr_1fr_1fr] max-md:justify-items-start max-md:gap-4",
+        "max-xs:grid-flow-row max-xs:grid-cols-1 max-xs:grid-rows-none",
+      )}
+    >
+      <div>
+        <div class={topClass}>test type</div>
+        <div class={cn(bottomClass, "text-base leading-[1.25]")}>
+          <Lines lines={testType()} />
         </div>
-        <div class="group acc">
-          <div class="top">acc</div>
-          <Balloon class="bottom" text={accBalloon()} break>
-            {props.result.acc === 100
-              ? "100%"
-              : format().accuracy(props.result.acc)}
-          </Balloon>
-        </div>
+        <Tags />
       </div>
-      <div class={cn("stats morestats", { hidden: props.hidden })}>
-        <div class="group testType">
-          <div class="top">test type</div>
-          <div class="bottom">
-            <Lines lines={testType()} />
+      <Show when={other().length > 0}>
+        <div>
+          <div class={cn(topClass, "flex items-center")}>other</div>
+          <div class={cn(bottomClass, "text-base leading-4")}>
+            <Lines lines={other()} />
           </div>
-          <Tags />
         </div>
-        <Show when={other().length > 0}>
-          <div class="group info">
-            <div class="top">other</div>
-            <div class="bottom">
-              <Lines lines={other()} />
-            </div>
-          </div>
-        </Show>
+      </Show>
 
-        <div class="group raw">
-          <div class="top">raw</div>
-          <Balloon class="bottom" text={speedBalloon(props.result.rawWpm)}>
-            {format().typingSpeed(props.result.rawWpm)}
-          </Balloon>
-        </div>
-        <div class="group key">
-          <div class="top">characters</div>
-          <Balloon
-            class="bottom"
-            text={"correct\nincorrect\nextra\nmissed"}
-            break
-          >
-            {props.result.charStats.join("/")}
-          </Balloon>
-        </div>
-
-        <div class="group flat consistency">
-          <div class="top">consistency</div>
-          <Balloon class="bottom" text={consistencyBalloon()}>
-            {format().percentage(props.result.consistency)}
-          </Balloon>
-        </div>
-        <div class="group time">
-          <div class="top">time</div>
-          <Balloon class="bottom" text={timeBalloon()}>
-            <div class="text">{timeText()}</div>
-            <div class="afk">
-              {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
-            </div>
-            <div class="timeToday">{resultState.timeToday}</div>
-          </Balloon>
-        </div>
-
-        <AnimeShow
-          when={resultState.dailyLeaderboardRank !== undefined}
-          duration={250}
-          class="group dailyLeaderboard"
+      <div>
+        <div class={topClass}>raw</div>
+        <Balloon
+          class={cn(bottomClass, mobileBalloonClass)}
+          text={speedBalloon(props.result.rawWpm)}
         >
-          <div class="top">daily leaderboard</div>
-          <Balloon
-            text="Show daily leaderboard"
-            class="bottom cursor-pointer"
-            onClick={() => {
-              void navigate(
-                `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
-              );
-            }}
-          >
-            {format().rank(resultState.dailyLeaderboardRank, {
-              fallback: "",
-            })}
-          </Balloon>
-        </AnimeShow>
-
-        <Show when={resultState.details?.quote}>
-          {(quote) => <QuoteSource quote={quote()} />}
-        </Show>
+          {format().typingSpeed(props.result.rawWpm)}
+        </Balloon>
       </div>
-    </>
+      <div>
+        <div class={topClass}>characters</div>
+        <Balloon
+          class={cn(bottomClass, mobileBalloonClass)}
+          text={"correct\nincorrect\nextra\nmissed"}
+          break
+        >
+          {props.result.charStats.join("/")}
+        </Balloon>
+      </div>
+
+      <div>
+        <div class={topClass}>consistency</div>
+        <Balloon
+          class={cn(bottomClass, mobileBalloonClass)}
+          text={consistencyBalloon()}
+        >
+          {format().percentage(props.result.consistency)}
+        </Balloon>
+      </div>
+      <div>
+        <div class={topClass}>time</div>
+        <Balloon
+          class={cn(bottomClass, mobileBalloonClass)}
+          text={timeBalloon()}
+        >
+          <div>{timeText()}</div>
+          <div class={timeNoteClass}>
+            {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
+          </div>
+          <div class={timeNoteClass}>{resultState.timeToday}</div>
+        </Balloon>
+      </div>
+
+      <AnimeShow
+        when={resultState.dailyLeaderboardRank !== undefined}
+        duration={250}
+        class="max-w-52 whitespace-nowrap"
+      >
+        <div class={topClass}>daily leaderboard</div>
+        <Balloon
+          text="Show daily leaderboard"
+          class={cn(bottomClass, mobileBalloonClass, "cursor-pointer")}
+          onClick={() => {
+            void navigate(
+              `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
+            );
+          }}
+        >
+          {format().rank(resultState.dailyLeaderboardRank, {
+            fallback: "",
+          })}
+        </Balloon>
+      </AnimeShow>
+
+      <Show when={resultState.details?.quote}>
+        {(quote) => <QuoteSource quote={quote()} />}
+      </Show>
+    </div>
   );
 }
+
+// on narrow screens the stats sit at the left edge, so left align their balloons
+const mobileBalloonClass = "max-sm:after:left-0 max-sm:after:[transform:none]";
+const timeNoteClass = "ml-[0.2rem] text-[0.75rem] leading-[0.75rem] text-sub";
 
 function Lines(props: { lines: string[] }): JSXElement {
   return (
@@ -220,23 +187,6 @@ function Lines(props: { lines: string[] }): JSXElement {
         </>
       )}
     </For>
-  );
-}
-
-function Crown(): JSXElement {
-  return (
-    <AnimeShow when={resultState.crown.visible}>
-      <Balloon
-        class={cn("crown", resultState.crown.type)}
-        text={resultState.crown.text}
-        length={resultState.crown.wide ? "medium" : undefined}
-      >
-        <Fa icon="fa-question" />
-        <Fa icon="fa-crown" />
-        <Fa icon="fa-slash" />
-        <Fa icon="fa-exclamation-triangle" />
-      </Balloon>
-    </AnimeShow>
   );
 }
 
@@ -263,11 +213,11 @@ function Tags(): JSXElement {
 
   return (
     <Show when={tagNames().size > 0}>
-      <div class="tags mt-2">
-        <div class="top">
+      <div class="mt-2">
+        <div class={cn(topClass, "flex items-center")}>
           <span>tags</span>
           <Balloon
-            class={cn("textButton editTagsButton", {
+            class={cn("textButton ml-[0.5em] px-[0.25em] py-0", {
               invisible: resultState.resultId === "",
             })}
             text="Edit tags"
@@ -278,17 +228,14 @@ function Tags(): JSXElement {
             <Fa icon="fa-pen" fixedWidth />
           </Balloon>
         </div>
-        <div class="bottom">
-          <Show
-            when={tags().length > 0}
-            fallback={<div class="noTags">no tags</div>}
-          >
+        <div class={cn(bottomClass, "text-base leading-[1.25]")}>
+          <Show when={tags().length > 0} fallback={<div>no tags</div>}>
             <For each={tags()}>
               {(tag) => (
                 <Balloon text={tag.balloon}>
                   {tag.name}
                   <Show when={tag.isPb}>
-                    <Fa icon="fa-crown" />
+                    <Fa icon="fa-crown" class="ml-2" />
                   </Show>
                 </Balloon>
               )}
@@ -302,14 +249,16 @@ function Tags(): JSXElement {
 
 function QuoteSource(props: { quote: Quote }): JSXElement {
   return (
-    <div class="group source">
-      <div class="top">
+    <div class="max-w-120">
+      <div class={cn(topClass, "flex items-center")}>
         <span class="mr-[0.5em]">source</span>
         <Show when={isAuthenticated()}>
           <QuoteButtons quote={props.quote} />
         </Show>
       </div>
-      <div class="bottom">{props.quote.source}</div>
+      <div class={cn(bottomClass, "text-base leading-4")}>
+        {props.quote.source}
+      </div>
     </div>
   );
 }
@@ -376,7 +325,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
       <Balloon
         inline
         id="reportQuoteButton"
-        class="textButton"
+        class="textButton px-1 py-0"
         text="Report quote"
         onClick={() => showQuoteReportModal(props.quote.id)}
       >
@@ -385,7 +334,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
       <Balloon
         inline
         id="favoriteQuoteButton"
-        class="textButton"
+        class="textButton px-1 py-0"
         text="Favorite quote"
         onClick={() => void toggleFavorite()}
       >
@@ -399,7 +348,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
       <Balloon
         inline
         id="rateQuoteButton"
-        class="textButton"
+        class="textButton gap-1 px-1 py-0"
         text="Rate quote"
         onClick={() => showQuoteRateModal(props.quote)}
       >

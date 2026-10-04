@@ -291,8 +291,13 @@ type LegendItem = {
   text: string;
   icon?: FaSolidIcon;
   line?: "solid" | "dashed";
+  // color while active, sub otherwise
+  color?: string;
   visible?: () => boolean;
 };
+
+const legendButtonClass =
+  "text inline-grid grid-cols-[auto_1fr] items-center px-[1em] py-[0.5em] text-sub [--legend-color:var(--color-sub)] hover:bg-sub-alt hover:text-text active:text-sub";
 
 const hasTagPbLines = (): boolean =>
   resultState.tags.some((tag) => tag.chartPb !== undefined);
@@ -310,9 +315,19 @@ const legend: LegendItem[] = [
     icon: "fa-tag",
     visible: () => isAuthenticated() && hasTagPbLines(),
   },
-  { id: "raw", text: "raw", line: "dashed" },
+  {
+    id: "raw",
+    text: "raw",
+    line: "dashed",
+    color: "[--legend-color:var(--color-main)]",
+  },
   { id: "burst", text: "burst", line: "solid" },
-  { id: "errors", text: "errors", icon: "fa-times" },
+  {
+    id: "errors",
+    text: "errors",
+    icon: "fa-times",
+    color: "[--legend-color:var(--color-error)]",
+  },
 ];
 
 type ChartDataVisibility = {
@@ -541,7 +556,6 @@ const emptyChartData: ChartData = {
 export function ResultChart(props: {
   result: CompletedResult;
   eventLog: EventLog;
-  hidden: boolean;
 }): JSXElement {
   const tags = useTagsLiveQuery();
   let chart: Chart<"line" | "scatter", number[]> | undefined;
@@ -610,54 +624,65 @@ export function ResultChart(props: {
   );
 
   return (
-    <div class={cn("chart", { hidden: props.hidden })}>
-      <div class="chartLegend">
+    <div class={cn("group/chart relative h-[200px] w-full")}>
+      <div class="duration-half pointer-events-none absolute right-0 -bottom-[0.75em] flex cursor-pointer rounded bg-bg p-[0.25em] text-[0.75em] opacity-0 transition-opacity group-hover/chart:pointer-events-auto group-hover/chart:opacity-100">
         <button
           type="button"
-          class="text active"
+          class={legendButtonClass}
           tabIndex="-1"
-          data-id="scale"
           onClick={() =>
             setConfig("startGraphsAtZero", !getConfig.startGraphsAtZero)
           }
         >
-          <Fa icon="fa-chart-line" />
-          <div class="text">scale</div>
+          <Fa icon="fa-chart-line" class="leading-0 text-(--legend-color)" />
+          <div class="pointer-events-none">scale</div>
         </button>
         <For each={legend}>
-          {(item) => (
-            <button
-              type="button"
-              class={cn("text", {
-                active: getChartDataVisibility()[item.id],
-                hidden: item.visible !== undefined && !item.visible(),
-              })}
-              tabIndex="-1"
-              data-id={item.id}
-              onClick={() =>
-                setChartDataVisibility((vis) => ({
-                  ...vis,
-                  [item.id]: !vis[item.id],
-                }))
-              }
-            >
-              <Show
-                when={item.icon}
-                fallback={
-                  <div
-                    class={cn("line", { dashed: item.line === "dashed" })}
-                  ></div>
+          {(item) => {
+            const active = (): boolean => getChartDataVisibility()[item.id];
+            return (
+              <button
+                type="button"
+                class={cn(
+                  legendButtonClass,
+                  active() ? item.color : "line-through",
+                  {
+                    hidden: item.visible !== undefined && !item.visible(),
+                  },
+                )}
+                tabIndex="-1"
+                onClick={() =>
+                  setChartDataVisibility((vis) => ({
+                    ...vis,
+                    [item.id]: !vis[item.id],
+                  }))
                 }
               >
-                {(icon) => <Fa icon={icon()} />}
-              </Show>
-              <div class="text">{item.text}</div>
-            </button>
-          )}
+                <Show
+                  when={item.icon}
+                  fallback={
+                    <div
+                      class={cn(
+                        "duration-half pointer-events-none h-[0.25em] w-[1.5em] rounded-half transition-[background]",
+                        item.line === "dashed"
+                          ? "bg-[linear-gradient(90deg,var(--legend-color)_40%,transparent_40%_60%,var(--legend-color)_60%)]"
+                          : "bg-(--legend-color)",
+                      )}
+                    ></div>
+                  }
+                >
+                  {(icon) => (
+                    <Fa icon={icon()} class="leading-0 text-(--legend-color)" />
+                  )}
+                </Show>
+                <div class="pointer-events-none">{item.text}</div>
+              </button>
+            );
+          }}
         </For>
       </div>
       <div
-        class="h-full"
+        class="h-full [&_canvas]:h-full"
         onMouseEnter={() => ResultWordHighlight.setIsHoverChart(true)}
         onMouseLeave={() => {
           ResultWordHighlight.setIsHoverChart(false);

@@ -16,16 +16,18 @@ import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import { toggleReplayDisplay } from "./replay";
 
-export function ResultButtons(props: {
-  glarses: boolean;
-  hidden: boolean;
-}): JSXElement {
+export function ResultButtons(props: { glarses: boolean }): JSXElement {
   const isShiftHeld = createKeyHold("Shift");
 
   return (
-    <div class={cn("buttons", { hidden: props.hidden })}>
+    <div
+      class={cn(
+        "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
+      )}
+    >
       <ResultButton
         id="nextTestButton"
+        class="max-sm:col-span-2"
         text="Next test"
         fa={{ icon: "fa-chevron-right" }}
         onClick={() => void restart()}
@@ -63,6 +65,7 @@ export function ResultButtons(props: {
         />
         <ResultButton
           id="saveScreenshotButton"
+          class="max-sm:col-span-2"
           text={"Copy screenshot to clipboard\n(shift click to download)"}
           fa={
             isShiftHeld()
@@ -84,6 +87,7 @@ export function ResultButtons(props: {
 
 function ResultButton(props: {
   id: string;
+  class?: string;
   text: string;
   fa: FaObject;
   onClick: (event: MouseEvent) => void;
@@ -91,7 +95,7 @@ function ResultButton(props: {
   return (
     <button
       type="button"
-      class="text"
+      class={cn("text px-[2em] py-[1em]", props.class)}
       id={props.id}
       {...buildBalloonHtmlProperties({
         text: props.text,

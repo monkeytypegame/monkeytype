@@ -1,6 +1,7 @@
 import { format } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import { getConfig } from "../../../../config/store";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { isResultShown, resultState } from "../../../../states/result";
@@ -13,8 +14,9 @@ import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
 import { ResultButtons } from "./ResultButtons";
 import { ResultChart } from "./ResultChart";
+import { ResultMainStats } from "./ResultMainStats";
 import { ResultReplay } from "./ResultReplay";
-import { ResultStats } from "./ResultStats";
+import { ResultSecondaryStats } from "./ResultSecondaryStats";
 import { ResultWordsHistory } from "./ResultWordsHistory";
 
 export function TestResult(): JSXElement {
@@ -27,92 +29,78 @@ export function TestResult(): JSXElement {
   return (
     <div
       id="result"
-      class={cn("content-grid full-width", {
+      class={cn("content-grid full-width outline-none", {
         hidden: !isResultShown(),
-        noBalloons: getIsScreenshotting(),
       })}
       tabIndex="-1"
     >
-      <Show
-        when={lastTest()}
-        fallback={
-          <>
-            <div class="mx-auto">Missing last test result data.</div>
-            <Button
-              class="mx-auto mt-4 w-max px-4 py-2"
-              text="Restart"
-              fa={{ icon: "fa-chevron-right" }}
-              onClick={() => void restart()}
-            />
-          </>
-        }
-      >
-        {(test) => (
-          <>
-            <div class="wrapper">
-              <Show when={getGlarsesMode()}>
-                <div class="col-span-2 pb-8 text-center text-[2rem]">
-                  <Fa icon="fa-check" />
-                </div>
-              </Show>
-              <Show when={!getGlarsesMode()}>
-                <ResultStats
+      <Show when={getGlarsesMode()}>
+        <div class="col-span-full pb-8 text-center text-[2rem]">
+          <Fa icon="fa-check" />
+        </div>
+      </Show>
+      <Show when={!getGlarsesMode()}>
+        <Show
+          when={lastTest()}
+          fallback={
+            <>
+              <div class="mx-auto">Missing last test result data.</div>
+              <Button
+                class="mx-auto mt-4 w-max px-4 py-2"
+                text="Restart"
+                fa={{ icon: "fa-chevron-right" }}
+                onClick={() => void restart()}
+              />
+            </>
+          }
+        >
+          {(test) => (
+            <div id="resultWrapper">
+              <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
+                <ResultMainStats
                   result={test().result}
                   eventLog={test().eventLog}
-                  hidden={getGlarsesMode()}
                 />
                 <ResultChart
                   result={test().result}
                   eventLog={test().eventLog}
-                  hidden={getGlarsesMode()}
-                />
-              </Show>
-
-              <div class="bottom">
-                <Show when={!getGlarsesMode()}>
-                  <ResultWordsHistory eventLog={test().eventLog} />
-
-                  <ResultReplay />
-                </Show>
-                <Show when={resultState.canRetrySaving}>
-                  <div class="grid w-full justify-center">
-                    <Button
-                      type="button"
-                      class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
-                      id="retrySavingResultButton"
-                      onClick={() => void retrySavingResult()}
-                      text="Retry saving result"
-                      fa={{ icon: "fa-redo" }}
-                    />
-                  </div>
-                </Show>
-                <ResultButtons
-                  glarses={getGlarsesMode()}
-                  hidden={getIsScreenshotting()}
                 />
               </div>
-              <Show
-                when={
-                  !isAuthenticated() &&
-                  !getGlarsesMode() &&
-                  !getIsScreenshotting()
-                }
-              >
-                <div class="loginTip">
+
+              <ResultSecondaryStats result={test().result} />
+
+              <ResultWordsHistory eventLog={test().eventLog} />
+
+              <ResultReplay />
+              <Show when={resultState.canRetrySaving}>
+                <div class="grid w-full justify-center">
+                  <Button
+                    type="button"
+                    class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
+                    id="retrySavingResultButton"
+                    onClick={() => void retrySavingResult()}
+                    text="Retry saving result"
+                    fa={{ icon: "fa-redo" }}
+                  />
+                </div>
+              </Show>
+              <Show when={!isAuthenticated() && !getIsScreenshotting()}>
+                <div class="mb-4 text-center text-sub">
                   <a href="/login" router-link>
                     Sign in
                   </a>{" "}
                   to save your result
                 </div>
               </Show>
+              <ResultButtons glarses={getGlarsesMode()} />
               <Show when={getIsScreenshotting()}>
                 <Watermark />
               </Show>
             </div>
-            <ResultAds />
-          </>
-        )}
+          )}
+        </Show>
       </Show>
+      <ResultAds />
     </div>
   );
 }
@@ -121,7 +109,7 @@ export function TestResult(): JSXElement {
 function Watermark(): JSXElement {
   const date = format(new Date(), "dd MMM yyyy HH:mm");
   return (
-    <div class="ssWatermark">
+    <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
       <Show when={getSnapshot()}>
         {(snapshot) => (
           <>
@@ -129,12 +117,12 @@ function Watermark(): JSXElement {
               {snapshot().name}
               <UserFlags {...snapshot()} iconsOnly />
             </span>
-            <span class="pipe">|</span>
+            <span>|</span>
           </>
         )}
       </Show>
       <span>{date}</span>
-      <span class="pipe">|</span>
+      <span>|</span>
       <span>monkeytype.com</span>
     </div>
   );
@@ -145,7 +133,11 @@ function Watermark(): JSXElement {
  */
 function ResultAds(): JSXElement {
   return (
-    <div class={cn("full-width mt-4", { hidden: getIsScreenshotting() })}>
+    <div
+      class={cn("full-width mt-4", {
+        hidden: getIsScreenshotting() || getConfig.ads !== "off",
+      })}
+    >
       <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
         <div class="iconAndText">
           <div class="icon">

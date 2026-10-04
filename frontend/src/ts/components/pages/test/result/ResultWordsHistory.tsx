@@ -13,11 +13,9 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isResultWordsJoiningScript } from "../../../../states/result";
 import {
   getResultVisible,
   isErrorBorderDisabled,
-  isLanguageRightToLeft,
 } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/events/stats";
@@ -38,6 +36,7 @@ import { AnimeShow } from "../../../common/anime";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import * as ResultWordHighlight from "./result-word-highlight";
+import { letterClass, wordClass, wordsClass } from "./result-words";
 
 type Heatmap = {
   steps: { val: number; colorId: number }[];
@@ -131,12 +130,15 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
     >
       <div
         id="resultWordsHistory"
-        class={isErrorBorderDisabled() ? "noErrorBorder" : undefined}
+        class={cn("relative mb-4 text-sub", {
+          "[&_.word.error]:[text-shadow:none]": isErrorBorderDisabled(),
+        })}
       >
-        <div class="title">
+        <div class="mb-1 flex items-center select-none">
           <span>input history</span>
           <TitleButton
             id="copyWordsListButton"
+            class="ml-[0.5em]"
             text="Copy words list"
             icon="fa-align-left"
             onClick={() => void copyWordsList()}
@@ -158,12 +160,12 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
           />
           <Show when={heatmap()}>
             {(map) => (
-              <div class="heatmapLegend">
-                <div class="boxes">
+              <div class="ml-2 inline-grid w-min grid-cols-[auto_auto_auto] gap-4 text-[0.75rem] text-sub">
+                <div class="grid grid-cols-[repeat(5,1fr)]">
                   <For each={map().legend}>
                     {(text, i) => (
                       <div
-                        class="box"
+                        class="grid h-4 place-content-center px-2 py-[0.1rem] leading-[0.75rem] whitespace-nowrap text-bg first:rounded-l last:rounded-r"
                         style={{ background: map().colors[i()] }}
                       >
                         <div>{text}</div>
@@ -175,12 +177,7 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
             )}
           </Show>
         </div>
-        <div
-          class={cn("words", {
-            rightToLeftTest: isLanguageRightToLeft(),
-            joiningScript: isResultWordsJoiningScript(),
-          })}
-        >
+        <div class={wordsClass()}>
           <For each={words()}>
             {(word) => <Word word={word} heatmap={heatmap()} />}
           </For>
@@ -192,6 +189,7 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
 
 function TitleButton(props: {
   id?: string;
+  class?: string;
   text: string;
   icon: "fa-align-left" | "fa-times" | "fa-tachometer-alt" | "fa-fire-alt";
   onClick: () => void;
@@ -200,7 +198,7 @@ function TitleButton(props: {
     <button
       type="button"
       id={props.id}
-      class="textButton inline-block"
+      class={cn("textButton inline-block px-[0.25em] py-0", props.class)}
       tabIndex="-1"
       {...buildBalloonHtmlProperties({ text: props.text })}
       onClick={() => props.onClick()}
@@ -237,6 +235,9 @@ function Word(props: {
     props.heatmap === null
       ? undefined
       : getWordColor(props.word.burst, props.heatmap);
+  // letters take the heatmap color instead of their own
+  const heatmapInherit = (): boolean =>
+    color() !== undefined && props.word.burst !== undefined;
 
   const speed = (): string => {
     const burst = props.word.burst;
@@ -250,10 +251,9 @@ function Word(props: {
 
   return (
     <div
-      class={cn("word", {
+      class={cn(wordClass, {
         nocursor: props.word.input !== "",
         error: props.word.error,
-        heatmapInherit: color() !== undefined && props.word.burst !== undefined,
       })}
       style={{ color: color() }}
       // read by result-word-highlight
@@ -263,7 +263,12 @@ function Word(props: {
     >
       <For each={props.word.letters}>
         {(letter) => (
-          <Dynamic component="letter" class={letter.class}>
+          <Dynamic
+            component="letter"
+            class={cn(letterClass(letter), {
+              "text-inherit": heatmapInherit(),
+            })}
+          >
             {letter.char}
           </Dynamic>
         )}

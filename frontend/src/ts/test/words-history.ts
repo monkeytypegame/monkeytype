@@ -34,9 +34,11 @@ export function closeResultWords(): void {
   setWordsHistoryOpen(false);
 }
 
-type HistoryLetter = {
+export type HistoryLetter = {
   char: string;
-  class?: string;
+  state?: "correct" | "corrected" | "incorrect";
+  extra?: boolean;
+  extraCorrected?: boolean;
 };
 
 export type HistoryWord = {
@@ -80,9 +82,7 @@ function buildWordLetters(
     const extraCorrected =
       c >= targetChars.length - 1 &&
       c + 1 === inputChars.length &&
-      historyWord.length > inputChars.length
-        ? " extraCorrected"
-        : "";
+      historyWord.length > inputChars.length;
 
     let displayLetter = inputChar ?? targetChar ?? "";
     if (displayLetter === " ") {
@@ -92,23 +92,21 @@ function buildWordLetters(
     if (Config.mode === "zen" || targetChar !== undefined) {
       if (Config.mode === "zen" || inputChar === targetChar) {
         if (correctedChar === inputChar || correctedChar === undefined) {
-          out.push({ char: displayLetter, class: `correct${extraCorrected}` });
+          out.push({ char: displayLetter, state: "correct", extraCorrected });
         } else {
-          out.push({
-            char: displayLetter,
-            class: `corrected${extraCorrected}`,
-          });
+          out.push({ char: displayLetter, state: "corrected", extraCorrected });
         }
       } else if (inputChar === undefined) {
         out.push({ char: targetChar ?? "" });
       } else {
         out.push({
           char: targetChar ?? "",
-          class: `incorrect${extraCorrected}`,
+          state: "incorrect",
+          extraCorrected,
         });
       }
     } else {
-      out.push({ char: displayLetter, class: "incorrect extra" });
+      out.push({ char: displayLetter, state: "incorrect", extra: true });
     }
   }
   return out;

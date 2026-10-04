@@ -48,7 +48,7 @@ function revert(): void {
 async function captureResult(): Promise<Blob | null> {
   prepare();
   try {
-    const src = qs("#result .wrapper");
+    const src = qs("#resultWrapper");
     if (src === null) {
       console.error("Result wrapper not found for screenshot");
       showErrorNotification("Screenshot target element not found");
