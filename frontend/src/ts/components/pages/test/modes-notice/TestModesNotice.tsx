@@ -1,15 +1,11 @@
 import { createMemo } from "solid-js";
 
 import { useActiveTagsLiveQuery } from "../../../../collections/tags";
-import * as Commandline from "../../../../commandline/commandline";
 import { getConfig } from "../../../../config/store";
 import { presetLabel } from "../../../../practice/presets";
 import { getKeySelection } from "../../../../practice/selection";
-import {
-  getCustomTextIndicator,
-  getFormatting,
-  showCommandLineForConfig,
-} from "../../../../states/core";
+import { showCommandline } from "../../../../states/commandline";
+import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
 import { showModal } from "../../../../states/modals";
 import {
@@ -187,7 +183,7 @@ function Language() {
         when={getConfig.funbox.includes("polyglot")}
         icon="fa-globe-americas"
         onClick={() =>
-          Commandline.show({ commandOverride: "setCustomPolyglotCustom" })
+          showCommandline({ commandOverride: "setCustomPolyglotCustom" })
         }
         text={getConfig.customPolyglot
           .map((lang) => getLanguageDisplayString(lang, true))
@@ -204,7 +200,7 @@ function Difficulty() {
         getConfig.difficulty === "expert" || getConfig.difficulty === "master"
       }
       icon={getConfig.difficulty === "expert" ? "fa-star-half-alt" : "fa-star"}
-      onClick={() => showCommandLineForConfig("difficulty")}
+      onClick={() => showCommandline({ subgroupOverride: "difficulty" })}
       text={getConfig.difficulty}
     />
   );

@@ -1,6 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
+import { showCommandline } from "../../../states/commandline";
 import { getIsScreenshotting } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
@@ -28,7 +29,7 @@ export function Overlays(): JSXElement {
           },
         )}
         onClick={() => {
-          showModal("Commandline");
+          showCommandline();
         }}
         tabIndex="-1"
       >

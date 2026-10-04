@@ -18,7 +18,7 @@ import {
 } from "../states/notifications";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import { getQuoteStats } from "../states/quote-rate";
-import * as GlarsesMode from "../legacy-states/glarses-mode";
+import { getGlarsesMode } from "../states/glarses-mode";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
@@ -51,6 +51,8 @@ import {
 } from "../collections/tags";
 import { Language } from "@monkeytype/schemas/languages";
 import { canQuickRestart as canQuickRestartFn } from "../utils/quick-restart";
+import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
+import { getSmoothedBurst, setSmoothedBurst } from "../states/smoothed-burst";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 import { blurInputElement } from "../input/input-element";
@@ -74,15 +76,14 @@ let result: CompletedEvent;
 let minChartVal: number;
 let maxChartVal: number;
 
-let useSmoothedBurst = true;
 let useFakeChartData = false;
 
 let quoteLang: Language | undefined;
 let quoteId = "";
 
 export function toggleSmoothedBurst(): void {
-  useSmoothedBurst = !useSmoothedBurst;
-  showSuccessNotification(useSmoothedBurst ? "on" : "off");
+  setSmoothedBurst(!getSmoothedBurst());
+  showSuccessNotification(getSmoothedBurst() ? "on" : "off");
   if (getResultVisible()) {
     void updateChartData().then(() => {
       ChartController.result.update("resize");
@@ -132,7 +133,7 @@ async function updateChartData(): Promise<void> {
   let smoothedBurst = Arrays.smoothWithValueWindow(
     result.chartData.burst,
     1,
-    useSmoothedBurst ? valueWindow : 0,
+    getSmoothedBurst() ? valueWindow : 0,
   );
 
   const chartData3 = [
@@ -1017,9 +1018,9 @@ export async function update(
     qs("#result .stats .infoAndTags")?.show();
   }
 
-  if (GlarsesMode.get()) {
+  if (getGlarsesMode()) {
     qs("main #result .noStressMessage")?.remove();
-    qs("main #result")?.prependHtml(`
+    qs("main #result .wrapper")?.prependHtml(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -1060,7 +1061,12 @@ export async function update(
     qs("main #result #saveScreenshotButton")?.show();
   }
 
-  if (res.wpm === 0 && !difficultyFailed && res.testDuration >= 5) {
+  if (
+    res.wpm === 0 &&
+    !difficultyFailed &&
+    res.testDuration >= 5 &&
+    getSarcasticResultMessage()
+  ) {
     const roundedTime = Math.round(res.testDuration);
 
     const messages = [
@@ -1094,7 +1100,7 @@ export async function update(
     getCustomTextIndicator()?.isLong ?? false,
   );
 
-  if (Config.alwaysShowWordsHistory && canQuickRestart && !GlarsesMode.get()) {
+  if (Config.alwaysShowWordsHistory && canQuickRestart && !getGlarsesMode()) {
     void TestUI.toggleResultWords(true);
   }
   AdController.updateFooterAndVerticalAds(true);

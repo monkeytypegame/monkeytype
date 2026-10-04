@@ -27,7 +27,12 @@
           <div class="icon"><i class="fas fa-ad"></i></div>
           <div id="ad-vertical-right"></div>
         </div>
-        <load src="html/pages/loading.html" />
+        <div
+          class="page pageLoading grid h-full w-full place-self-center content-center items-center gap-4 text-center"
+          id="pageLoading"
+        >
+          <mount data-component="loadingpage" class="contents"></mount>
+        </div>
 
         <div class="page pageAbout hidden full-width" id="pageAbout">
           <mount data-component="aboutpage"></mount>

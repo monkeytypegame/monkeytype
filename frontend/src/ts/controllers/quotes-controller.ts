@@ -129,17 +129,19 @@ class QuotesController {
   }
 
   getRandomQuote(matches?: (quote: Quote) => boolean): Quote | null {
-    const predicate = matches ?? (() => true);
-    let index = this.quoteQueue.findIndex(
-      (quote, index) => index >= this.queueIndex && predicate(quote),
-    );
-    if (index === -1) {
-      shuffle(this.quoteQueue);
-      index = this.quoteQueue.findIndex(predicate);
-    }
-    if (index === -1) return null;
-    this.queueIndex = index + 1;
-    return this.quoteQueue[index] as Quote;
+    if (this.quoteQueue.length === 0) return null;
+    const nextMatch = (): Quote | null => {
+      while (this.queueIndex < this.quoteQueue.length) {
+        const quote = this.quoteQueue[this.queueIndex++] as Quote;
+        if (matches === undefined || matches(quote)) return quote;
+      }
+      return null;
+    };
+    const quote = nextMatch();
+    if (quote !== null) return quote;
+    this.queueIndex = 0;
+    shuffle(this.quoteQueue);
+    return nextMatch();
   }
 
   getRandomFavoriteQuote(

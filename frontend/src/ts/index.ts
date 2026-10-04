@@ -16,7 +16,6 @@ import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import { onAuthStateChanged } from "./auth";
-import { enable } from "./legacy-states/glarses-mode";
 import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
@@ -82,7 +81,9 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  glarsesMode: enable,
+  glarsesMode: () => {
+    console.log("Moved to settings > danger zone > the rest");
+  },
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst: Result.toggleSmoothedBurst,
