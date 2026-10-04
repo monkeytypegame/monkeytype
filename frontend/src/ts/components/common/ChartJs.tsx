@@ -25,8 +25,8 @@ import chartAnnotation from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 import { createDeferred, JSXElement, onCleanup, onMount } from "solid-js";
 
+import { getConfig } from "../../config/store";
 import { Theme } from "../../constants/themes";
-import { configEvent } from "../../events/config";
 import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../states/theme";
@@ -54,11 +54,12 @@ Chart.register(
 Chart.defaults.elements.line.tension = 0.5;
 Chart.defaults.elements.line.fill = "origin";
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "fontFamily") {
-    Chart.defaults.font.family = newValue.replace(/_/g, " ");
-  }
-});
+createEffectOn(
+  () => getConfig.fontFamily,
+  (font) => {
+    Chart.defaults.font.family = font.replace(/_/g, " ");
+  },
+);
 
 type ChartJSProps<
   T extends ChartType = ChartType,
