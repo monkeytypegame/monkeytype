@@ -1,20 +1,21 @@
 import { applyReducedMotion } from "../../utils/misc";
-import { qs } from "../../utils/dom";
+import { lazyQsr } from "../../utils/dom";
+import { setWordsWrapperHidden } from "../../states/test";
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
-const timerEl = qs("#typingTest #memoryTimer");
+const timerEl = lazyQsr("#typingTest #memoryTimer");
 
 export function show(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 1,
     duration: applyReducedMotion(125),
   });
 }
 
 export function hide(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 0,
     duration: applyReducedMotion(125),
   });
@@ -40,11 +41,11 @@ export function start(time: number): void {
     memoryTimer === 0 ? hide() : update(memoryTimer);
     if (memoryTimer <= 0) {
       reset();
-      qs("#wordsWrapper")?.hide();
+      setWordsWrapperHidden(true);
     }
   }, 1000);
 }
 
 export function update(sec: number): void {
-  timerEl?.setText(`Timer left to memorise all words: ${sec}s`);
+  timerEl().setText(`Timer left to memorise all words: ${sec}s`);
 }

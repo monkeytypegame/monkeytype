@@ -6,7 +6,7 @@ import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -37,7 +37,16 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+// created lazily - #paceCaret is rendered by the TestPage component
+export let caret: Caret;
+
+export function initElement(refs: {
+  caret: ElementWithUtils;
+  words: ElementWithUtils;
+  wordsWrapper: ElementWithUtils;
+}): void {
+  caret = new Caret(refs.caret, Config.paceCaretStyle, refs);
+}
 
 let lastTestWpm = 0;
 
