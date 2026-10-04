@@ -668,7 +668,6 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
         <ChartJs
           name="Result"
           type="line"
-          immediate
           data={chartConfig().data}
           options={chartConfig().options}
           onChartInit={(c) => (chart = c)}

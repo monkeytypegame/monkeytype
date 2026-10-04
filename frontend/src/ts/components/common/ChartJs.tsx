@@ -69,8 +69,8 @@ type ChartJSProps<
   type: T;
   data: ChartData<T, TData>;
   options?: ChartOptions<T>;
-  // apply data updates immediately instead of waiting for idle (up to 500ms)
-  immediate?: boolean;
+  // wait for idle (up to 500ms) before applying data updates - for charts that are expensive to redraw
+  deferUpdates?: boolean;
   onChartInit?: (chart: Chart<T, TData>) => void;
 };
 
@@ -110,7 +110,7 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
   const deferredData = createDeferred(() => props.data, { timeoutMs: 500 });
 
   createEffectOn(
-    () => (props.immediate ? props.data : deferredData()),
+    () => (props.deferUpdates ? deferredData() : props.data),
     (data) => updateChart(data),
     { defer: true },
   );
