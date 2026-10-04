@@ -3,13 +3,16 @@ import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
 import { getConfig } from "../../../../config/store";
 import { showModal } from "../../../../states/modals";
 import { showNoticeNotification } from "../../../../states/notifications";
+import {
+  captureAndCopyToClipboard,
+  captureAndDownload,
+} from "../../../../test/screenshot";
 import { repeatTest, restart } from "../../../../test/test-logic";
 import { FaObject } from "../../../../types/font-awesome";
 import { cn } from "../../../../utils/cn";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import { toggleReplayDisplay } from "./replay";
-import { captureAndCopyToClipboard, captureAndDownload } from "./screenshot";
 import { toggleResultWords } from "./words-history";
 
 export function ResultButtons(props: {

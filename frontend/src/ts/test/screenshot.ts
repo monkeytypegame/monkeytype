@@ -1,19 +1,19 @@
-import { setIsScreenshotting } from "../../../../states/core";
-import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
+import { setIsScreenshotting } from "../states/core";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "../../../../states/notifications";
-import { getActiveFunboxesWithFunction } from "../../../../test/funbox/list";
-import * as Replay from "./replay";
-import { qs, qsa } from "../../../../utils/dom";
-import { download as downloadFile } from "../../../../utils/misc";
-import { convertRemToPixels } from "../../../../utils/numbers";
+} from "../states/notifications";
+import { getActiveFunboxesWithFunction } from "./funbox/list";
+import * as Replay from "../components/pages/test/result/replay";
+import { qs, qsa } from "../utils/dom";
+import { download as downloadFile } from "../utils/misc";
+import { convertRemToPixels } from "../utils/numbers";
 import {
   canvasToBlob,
   captureElement,
   copyImageToClipboard,
-} from "../../../../utils/screenshot";
+} from "../utils/screenshot";
 
 function prepare(): void {
   showLoaderBar(true);

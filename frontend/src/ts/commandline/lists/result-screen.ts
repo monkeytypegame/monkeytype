@@ -8,7 +8,7 @@ import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import * as ResultScreenshot from "../../components/pages/test/result/screenshot";
+import * as ResultScreenshot from "../../test/screenshot";
 import { getInputHistory } from "../../test/events/stats";
 import { getLastEventLog, getResultVisible } from "../../states/test";
 import { showModal } from "../../states/modals";
