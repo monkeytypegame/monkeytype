@@ -5,7 +5,6 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/test";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
@@ -14,7 +13,7 @@ import "./ui";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
-import * as Result from "./test/result";
+import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
 import "./controllers/route-controller";
 import "./elements/no-css";
@@ -88,7 +87,7 @@ addToGlobal({
   },
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleSmoothedBurst: Result.toggleSmoothedBurst,
+  toggleSmoothedBurst,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,

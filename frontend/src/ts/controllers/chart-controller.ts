@@ -1,4 +1,4 @@
-import * as ResultWordHighlight from "../elements/result-word-highlight";
+import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 
 import {
   BarController,
@@ -114,20 +114,20 @@ type ResultChart = ChartWithUpdateColors<
   "wpm" | "raw" | "error" | "burst"
 >;
 
-// created lazily - #wpmChart is rendered by the TestPage component
+// created lazily - the canvas is rendered by the ResultChart component
 export let result: ResultChart;
 
-export function initResultChart(): void {
-  result = createResultChart();
+export function initResultChart(canvas: HTMLCanvasElement): void {
+  result = createResultChart(canvas);
 }
 
-function createResultChart(): ResultChart {
+function createResultChart(canvas: HTMLCanvasElement): ResultChart {
   return new ChartWithUpdateColors<
     "line" | "scatter",
     number[],
     string,
     "wpm" | "raw" | "error" | "burst"
-  >(document.querySelector("#wpmChart") as HTMLCanvasElement, {
+  >(canvas, {
     type: "line",
     data: {
       labels: [],
