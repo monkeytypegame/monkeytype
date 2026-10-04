@@ -5,6 +5,7 @@ import { initInputListeners } from "../../../input/listeners";
 import * as Caret from "../../../test/caret";
 import * as PaceCaret from "../../../test/pace-caret";
 import * as TestUI from "../../../test/test-ui";
+import { ElementWithUtils } from "../../../utils/dom";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
 import { Keymap } from "./Keymap";
@@ -23,9 +24,32 @@ import { TestConfig } from "./TestConfig";
  * vanilla listeners once it exists. Must stay mounted for the app's lifetime.
  */
 export function TestPage(): JSXElement {
+  let wordsWrapperRef: HTMLDivElement | undefined;
+  let wordsRef: HTMLDivElement | undefined;
+  let caretRef: HTMLDivElement | undefined;
+  let paceCaretRef: HTMLDivElement | undefined;
+
   onMount(() => {
-    Caret.initElement();
-    PaceCaret.initElement();
+    if (
+      wordsWrapperRef === undefined ||
+      wordsRef === undefined ||
+      caretRef === undefined ||
+      paceCaretRef === undefined
+    ) {
+      throw new Error("TestPage refs not set");
+    }
+    const words = new ElementWithUtils(wordsRef);
+    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
+    Caret.initElement({
+      caret: new ElementWithUtils(caretRef),
+      words,
+      wordsWrapper,
+    });
+    PaceCaret.initElement({
+      caret: new ElementWithUtils(paceCaretRef),
+      words,
+      wordsWrapper,
+    });
     initResultChart();
     initInputListeners();
     TestUI.init();
@@ -66,7 +90,12 @@ export function TestPage(): JSXElement {
         <div class="full-width">
           <LiveStatsMini />
         </div>
-        <div id="wordsWrapper" class="content-grid full-width" translate="no">
+        <div
+          id="wordsWrapper"
+          ref={(el) => (wordsWrapperRef = el)}
+          class="content-grid full-width"
+          translate="no"
+        >
           <textarea
             id="wordsInput"
             class="full-width"
@@ -88,9 +117,21 @@ export function TestPage(): JSXElement {
           <div class="contents">
             <OutOfFocusWarning />
           </div>
-          <div id="paceCaret" class="full-width default hidden"></div>
-          <div id="caret" class="full-width default"></div>
-          <div id="words" class="full-width"></div>
+          <div
+            id="paceCaret"
+            ref={(el) => (paceCaretRef = el)}
+            class="full-width default hidden"
+          ></div>
+          <div
+            id="caret"
+            ref={(el) => (caretRef = el)}
+            class="full-width default"
+          ></div>
+          <div
+            id="words"
+            ref={(el) => (wordsRef = el)}
+            class="full-width"
+          ></div>
         </div>
 
         <div>

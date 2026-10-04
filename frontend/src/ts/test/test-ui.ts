@@ -69,6 +69,11 @@ import {
   setTestFocusState,
   showOutOfFocusWarning,
   getResultVisible,
+  isWordsHidden,
+  isWordsWrapperHidden,
+  setWordsWrapperHidden,
+  isReadAheadDisabled,
+  isErrorBorderDisabled,
 } from "../states/test";
 import { createEffect } from "solid-js";
 import {
@@ -89,8 +94,8 @@ const wordsEl = lazyQsr(".pageTest #words");
 const wordsWrapperEl = lazyQsr(".pageTest #wordsWrapper");
 const resultWordsHistoryEl = lazyQsr(".pageTest #resultWordsHistory");
 
-export let activeWordTop = 0;
-export let activeWordHeight = 0;
+let activeWordTop = 0;
+let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
 let lineTransition = false;
 
@@ -130,12 +135,19 @@ export function keepWordsInputInTheCenter(force = false): void {
   });
 }
 
-export function getWordElement(index: number): ElementWithUtils | null {
+function getWordElement(index: number): ElementWithUtils | null {
   const el = wordsEl().qs(`.word[data-wordindex='${index}']`);
   return el;
 }
 
-export function getActiveWordElement(): ElementWithUtils | null {
+/**
+ * False once a word has scrolled off (line jump / tape removes it from the DOM).
+ */
+export function isWordRendered(index: number): boolean {
+  return getWordElement(index) !== null;
+}
+
+function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
@@ -614,7 +626,7 @@ export function updateWordsWrapperHeight(force = false): void {
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
 
-  wordsWrapperEl().show();
+  setWordsWrapperHidden(false);
 
   const wordComputedStyle = window.getComputedStyle(activeWordEl.native);
   const wordMargin =
@@ -726,7 +738,7 @@ export function addWord(
 // can be made before the actual update happens. This map keeps track of the
 // latest input for each word and is used in before-insert-text to
 // make sure the currently typed word will not overflow to the next line
-export let pendingWordData: Map<number, string> = new Map();
+const pendingWordData: Map<number, string> = new Map();
 
 const TAB_ICON = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
 const NEWLINE_ICON = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
@@ -1617,7 +1629,24 @@ function showHideTestRestartButton(showHide: boolean): void {
   }
 }
 
-export function getActiveWordTopAndHeightWithDifferentData(data: string): {
+/**
+ * Whether appending `data` to the active word would push it onto the next line
+ * or wrap its letters. Expensive - causes layout reflows.
+ */
+export function wouldActiveWordOverflow(
+  inputValue: string,
+  data: string,
+): boolean {
+  // pending (not yet rendered) input has to be accounted for
+  const pending = pendingWordData.get(getActiveWordIndex());
+  const { top, height } = getActiveWordTopAndHeightWithDifferentData(
+    (pending ?? inputValue) + data,
+  );
+  // word jumped to next line, or letters wrapped to next line
+  return top > activeWordTop || height > activeWordHeight;
+}
+
+function getActiveWordTopAndHeightWithDifferentData(data: string): {
   top: number;
   height: number;
 } {
@@ -1874,6 +1903,11 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   showWords();
 }
 
+/** Frees the test words DOM once the result is shown. */
+export function clearWords(): void {
+  wordsEl().empty();
+}
+
 export function onTestFinish(): void {
   Caret.hide();
   setTestFocusState("focused");
@@ -1895,6 +1929,21 @@ export function init(): void {
     } else {
       wordsEl().setStyle({ transition: "none" })?.removeClass("blurred");
     }
+  });
+
+  createEffect(() => {
+    wordsEl().toggleClass("hidden", isWordsHidden());
+  });
+  createEffect(() => {
+    wordsWrapperEl().toggleClass("hidden", isWordsWrapperHidden());
+  });
+  createEffect(() => {
+    wordsEl().toggleClass("read_ahead_disabled", isReadAheadDisabled());
+  });
+  createEffect(() => {
+    const disabled = isErrorBorderDisabled();
+    wordsEl().toggleClass("noErrorBorder", disabled);
+    resultWordsHistoryEl().toggleClass("noErrorBorder", disabled);
   });
 
   qs(".pageTest #result #wpmChart")?.on("mouseleave", () => {

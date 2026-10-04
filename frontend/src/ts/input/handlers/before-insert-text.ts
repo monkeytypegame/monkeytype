@@ -7,7 +7,6 @@ import { isAwaitingNextWord } from "../state";
 import * as SlowTimer from "../../legacy-states/slow-timer";
 import {
   isTestRestarting,
-  getActiveWordIndex,
   isResultCalculating,
   wordsHaveNewline,
 } from "../../states/test";
@@ -109,18 +108,7 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    // if there is pending word data, we need to account for that
-    const pendingWordData = TestUI.pendingWordData.get(getActiveWordIndex());
-    const { top: topAfterAppend, height: heightAfterAppend } =
-      TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? inputValue) + data,
-      );
-    if (topAfterAppend > TestUI.activeWordTop) {
-      //word jumped to next line
-      return true;
-    }
-    if (heightAfterAppend > TestUI.activeWordHeight) {
-      // letters wrapped to next line
+    if (TestUI.wouldActiveWordOverflow(inputValue, data)) {
       return true;
     }
   }

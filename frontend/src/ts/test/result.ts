@@ -965,7 +965,6 @@ export async function update(
     ?.addClass("far");
   qs(".pageTest #result #rateQuoteButton .rating")?.setText("");
   qs(".pageTest #result #rateQuoteButton")?.hide();
-  qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (isAuthenticated()) {
@@ -1117,7 +1116,7 @@ export async function update(
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
   setResultCalculating(false);
-  qs("#words")?.empty();
+  TestUI.clearWords();
   ChartController.result.resize();
 }
 

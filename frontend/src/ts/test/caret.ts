@@ -8,7 +8,7 @@ import {
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -47,8 +47,12 @@ export function updatePosition(noAnim = false): void {
 // created lazily - #caret is rendered by the TestPage component
 export let caret: Caret;
 
-export function initElement(): void {
-  caret = new Caret(qsr("#caret"), Config.caretStyle);
+export function initElement(refs: {
+  caret: ElementWithUtils;
+  words: ElementWithUtils;
+  wordsWrapper: ElementWithUtils;
+}): void {
+  caret = new Caret(refs.caret, Config.caretStyle, refs);
 }
 
 configEvent.subscribe(({ key }) => {
