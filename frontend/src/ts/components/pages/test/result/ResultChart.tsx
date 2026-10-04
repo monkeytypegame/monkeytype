@@ -36,11 +36,7 @@ import {
   isResultShown,
   resultState,
 } from "../../../../states/result";
-import {
-  CompletedResult,
-  getLastEventLog,
-  getLastResult,
-} from "../../../../states/test";
+import { CompletedResult, getLastEventLog } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
@@ -542,14 +538,18 @@ const emptyChartData: ChartData = {
   err: [],
 };
 
-export function ResultChart(props: { hidden: boolean }): JSXElement {
+export function ResultChart(props: {
+  result: CompletedResult;
+  eventLog: EventLog;
+  hidden: boolean;
+}): JSXElement {
   const tags = useTagsLiveQuery();
   let chart: Chart<"line" | "scatter", number[]> | undefined;
 
   // read once per result - saveResult() overwrites the local pb with this result
   const localPbWpm = createMemo(() => {
-    const result = getLastResult();
-    return result === null ? 0 : untrack(() => getLocalPbWpm(result));
+    const result = props.result;
+    return untrack(() => getLocalPbWpm(result));
   });
 
   const chartConfig = createMemo((prev: ChartConfig | undefined) => {
@@ -557,16 +557,15 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
     const theme = getTheme();
     const vis = getChartDataVisibility();
 
-    // only build while visible - getLastResult() outlives the result screen, and
+    // only build while visible - the result outlives the result screen, and
     // showResult() shows it after the details and tags are set, so this runs once per result
-    const result = getLastResult();
-    if (!isResultShown() || result === null) {
+    if (!isResultShown()) {
       return (
         prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
       );
     }
 
-    const eventLog = getLastEventLog();
+    const result = props.result;
     const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
     const tagNames = new Map((tags() ?? []).map((t) => [t._id, t.name]));
     const tagPbs = resultState.tags.flatMap((tag) =>
@@ -577,7 +576,7 @@ export function ResultChart(props: { hidden: boolean }): JSXElement {
 
     const data = buildChartData(
       result,
-      eventLog,
+      props.eventLog,
       unit,
       getSmoothedBurst(),
       isFakeChartData(),

@@ -15,13 +15,13 @@ import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
 import { isResultWordsJoiningScript } from "../../../../states/result";
 import {
-  getLastEventLog,
   getResultVisible,
   isErrorBorderDisabled,
   isLanguageRightToLeft,
 } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/events/stats";
+import { EventLog } from "../../../../test/events/types";
 import {
   buildWordsHistory,
   copyMissedWordsList,
@@ -46,10 +46,8 @@ type Heatmap = {
   legend: string[];
 };
 
-function buildHeatmap(): Heatmap | null {
+function buildHeatmap(eventLog: EventLog): Heatmap | null {
   if (!getConfig.burstHeatmap) return null;
-  const eventLog = getLastEventLog();
-  if (eventLog === null) return null;
 
   const typingSpeedUnit = getTypingSpeedUnit(getConfig.typingSpeedUnit);
   const burstlist = getWordBurstHistory(eventLog)
@@ -103,14 +101,13 @@ function buildHeatmap(): Heatmap | null {
   return { steps, colors, unreachedColor, legend };
 }
 
-export function ResultWordsHistory(): JSXElement {
-  const heatmap = createMemo(buildHeatmap);
+export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
+  const heatmap = createMemo(() => buildHeatmap(props.eventLog));
 
   // built on open, kept while closing so the slide out isn't empty
   const words = createMemo<HistoryWord[]>((prev) => {
     if (!isWordsHistoryOpen()) return prev;
-    const eventLog = getLastEventLog();
-    if (eventLog === null) return prev;
+    const eventLog = props.eventLog;
     return untrack(() => buildWordsHistory(eventLog));
   }, []);
 

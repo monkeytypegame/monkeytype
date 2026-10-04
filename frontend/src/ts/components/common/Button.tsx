@@ -19,6 +19,7 @@ type BaseProps = {
   dataset?: Record<string, string>;
   active?: boolean;
   tabIndex?: number;
+  id?: string;
 };
 
 export type ButtonProps = BaseProps & {

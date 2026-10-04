@@ -29,12 +29,9 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
-import {
-  CompletedResult,
-  getLastEventLog,
-  getLastResult,
-} from "../../../../states/test";
+import { CompletedResult } from "../../../../states/test";
 import { getAccuracy } from "../../../../test/events/stats";
+import { EventLog } from "../../../../test/events/types";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -43,181 +40,171 @@ import { Balloon } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 
 type Props = {
+  result: CompletedResult;
+  eventLog: EventLog;
   hidden: boolean;
 };
 
 export function ResultStats(props: Props): JSXElement {
+  const format = () => getFormatting();
+  const decimals = () => getConfig.alwaysShowDecimalPlaces;
+  const unit = () => getConfig.typingSpeedUnit;
+
+  const speedText = (wpm: number): string =>
+    wpm >= 1000 ? "Infinite" : format().typingSpeed(wpm);
+
+  const speedBalloon = (wpm: number): string | undefined => {
+    if (decimals()) {
+      return unit() !== "wpm" ? `${wpm.toFixed(2)} wpm` : undefined;
+    }
+    let text = format().typingSpeed(wpm, {
+      showDecimalPlaces: true,
+      suffix: ` ${unit()}`,
+    });
+    if (unit() !== "wpm") text += ` (${wpm.toFixed(2)} wpm)`;
+    return text;
+  };
+
+  const accCounts = createMemo(() => getAccuracy(props.eventLog));
+
+  const accBalloon = (): string | undefined => {
+    const counts = accCounts();
+    const countsText = `${counts.correct} correct\n${counts.incorrect} incorrect`;
+    if (decimals()) return countsText;
+    const acc =
+      props.result.acc === 100
+        ? "100%"
+        : format().percentage(props.result.acc, { showDecimalPlaces: true });
+    return `${acc}\n${countsText}`;
+  };
+
+  const consistencyBalloon = (): string =>
+    decimals()
+      ? format().percentage(props.result.keyConsistency, {
+          showDecimalPlaces: true,
+          suffix: " key",
+        })
+      : `${props.result.consistency}% (${props.result.keyConsistency}% key)`;
+
+  const afkPercent = (): number =>
+    roundTo2((props.result.afkDuration / props.result.testDuration) * 100 || 0);
+
+  const timeText = (): string => {
+    const duration = props.result.testDuration;
+    const rounded = decimals() ? roundTo2(duration) : Math.round(duration);
+    if (duration > 61) return secondsToString(rounded);
+    return decimals() ? `${rounded.toFixed(2)}s` : `${rounded}s`;
+  };
+
+  const timeBalloon = (): string => {
+    const afk = `${props.result.afkDuration}s afk ${afkPercent()}%`;
+    if (decimals()) return afk;
+    return `${roundTo2(props.result.testDuration)}s (${afk})`;
+  };
+
+  const testType = createMemo(() =>
+    getTestType(props.result, resultState.details),
+  );
+  const other = createMemo(() => getOther(props.result, resultState.details));
+
   return (
-    <Show when={getLastResult()}>
-      {(result) => {
-        const format = () => getFormatting();
-        const decimals = () => getConfig.alwaysShowDecimalPlaces;
-        const unit = () => getConfig.typingSpeedUnit;
-
-        const speedText = (wpm: number): string =>
-          wpm >= 1000 ? "Infinite" : format().typingSpeed(wpm);
-
-        const speedBalloon = (wpm: number): string | undefined => {
-          if (decimals()) {
-            return unit() !== "wpm" ? `${wpm.toFixed(2)} wpm` : undefined;
-          }
-          let text = format().typingSpeed(wpm, {
-            showDecimalPlaces: true,
-            suffix: ` ${unit()}`,
-          });
-          if (unit() !== "wpm") text += ` (${wpm.toFixed(2)} wpm)`;
-          return text;
-        };
-
-        const accCounts = createMemo(() => {
-          const eventLog = getLastEventLog();
-          return eventLog === null ? undefined : getAccuracy(eventLog);
-        });
-
-        const accBalloon = (): string | undefined => {
-          const counts = accCounts();
-          if (counts === undefined) return undefined;
-          const countsText = `${counts.correct} correct\n${counts.incorrect} incorrect`;
-          if (decimals()) return countsText;
-          const acc =
-            result().acc === 100
+    <>
+      <div class={cn("stats", { hidden: props.hidden })}>
+        <div class="group wpm">
+          <div class="top">
+            <div class="text">{unit()}</div>
+            <Crown />
+          </div>
+          <Balloon class="bottom" text={speedBalloon(props.result.wpm)}>
+            {speedText(props.result.wpm)}
+          </Balloon>
+        </div>
+        <div class="group acc">
+          <div class="top">acc</div>
+          <Balloon class="bottom" text={accBalloon()} break>
+            {props.result.acc === 100
               ? "100%"
-              : format().percentage(result().acc, { showDecimalPlaces: true });
-          return `${acc}\n${countsText}`;
-        };
-
-        const consistencyBalloon = (): string =>
-          decimals()
-            ? format().percentage(result().keyConsistency, {
-                showDecimalPlaces: true,
-                suffix: " key",
-              })
-            : `${result().consistency}% (${result().keyConsistency}% key)`;
-
-        const afkPercent = (): number =>
-          roundTo2((result().afkDuration / result().testDuration) * 100 || 0);
-
-        const timeText = (): string => {
-          const duration = result().testDuration;
-          const rounded = decimals()
-            ? roundTo2(duration)
-            : Math.round(duration);
-          if (duration > 61) return secondsToString(rounded);
-          return decimals() ? `${rounded.toFixed(2)}s` : `${rounded}s`;
-        };
-
-        const timeBalloon = (): string => {
-          const afk = `${result().afkDuration}s afk ${afkPercent()}%`;
-          if (decimals()) return afk;
-          return `${roundTo2(result().testDuration)}s (${afk})`;
-        };
-
-        const testType = createMemo(() =>
-          getTestType(result(), resultState.details),
-        );
-        const other = createMemo(() => getOther(result(), resultState.details));
-
-        return (
-          <>
-            <div class={cn("stats", { hidden: props.hidden })}>
-              <div class="group wpm">
-                <div class="top">
-                  <div class="text">{unit()}</div>
-                  <Crown />
-                </div>
-                <Balloon class="bottom" text={speedBalloon(result().wpm)}>
-                  {speedText(result().wpm)}
-                </Balloon>
-              </div>
-              <div class="group acc">
-                <div class="top">acc</div>
-                <Balloon class="bottom" text={accBalloon()} break>
-                  {result().acc === 100
-                    ? "100%"
-                    : format().accuracy(result().acc)}
-                </Balloon>
-              </div>
+              : format().accuracy(props.result.acc)}
+          </Balloon>
+        </div>
+      </div>
+      <div class={cn("stats morestats", { hidden: props.hidden })}>
+        <div class="group testType">
+          <div class="top">test type</div>
+          <div class="bottom">
+            <Lines lines={testType()} />
+          </div>
+          <Tags />
+        </div>
+        <Show when={other().length > 0}>
+          <div class="group info">
+            <div class="top">other</div>
+            <div class="bottom">
+              <Lines lines={other()} />
             </div>
-            <div class={cn("stats morestats", { hidden: props.hidden })}>
-              <div class="group testType">
-                <div class="top">test type</div>
-                <div class="bottom">
-                  <Lines lines={testType()} />
-                </div>
-                <Tags />
-              </div>
-              <Show when={other().length > 0}>
-                <div class="group info">
-                  <div class="top">other</div>
-                  <div class="bottom">
-                    <Lines lines={other()} />
-                  </div>
-                </div>
-              </Show>
+          </div>
+        </Show>
 
-              <div class="group raw">
-                <div class="top">raw</div>
-                <Balloon class="bottom" text={speedBalloon(result().rawWpm)}>
-                  {format().typingSpeed(result().rawWpm)}
-                </Balloon>
-              </div>
-              <div class="group key">
-                <div class="top">characters</div>
-                <Balloon
-                  class="bottom"
-                  text={"correct\nincorrect\nextra\nmissed"}
-                  break
-                >
-                  {result().charStats.join("/")}
-                </Balloon>
-              </div>
+        <div class="group raw">
+          <div class="top">raw</div>
+          <Balloon class="bottom" text={speedBalloon(props.result.rawWpm)}>
+            {format().typingSpeed(props.result.rawWpm)}
+          </Balloon>
+        </div>
+        <div class="group key">
+          <div class="top">characters</div>
+          <Balloon
+            class="bottom"
+            text={"correct\nincorrect\nextra\nmissed"}
+            break
+          >
+            {props.result.charStats.join("/")}
+          </Balloon>
+        </div>
 
-              <div class="group flat consistency">
-                <div class="top">consistency</div>
-                <Balloon class="bottom" text={consistencyBalloon()}>
-                  {format().percentage(result().consistency)}
-                </Balloon>
-              </div>
-              <div class="group time">
-                <div class="top">time</div>
-                <Balloon class="bottom" text={timeBalloon()}>
-                  <div class="text">{timeText()}</div>
-                  <div class="afk">
-                    {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
-                  </div>
-                  <div class="timeToday">{resultState.timeToday}</div>
-                </Balloon>
-              </div>
-
-              <AnimeShow
-                when={resultState.dailyLeaderboardRank !== undefined}
-                duration={250}
-                class="group dailyLeaderboard"
-              >
-                <div class="top">daily leaderboard</div>
-                <Balloon
-                  text="Show daily leaderboard"
-                  class="bottom cursor-pointer"
-                  onClick={() => {
-                    void navigate(
-                      `/leaderboards?type=daily&language=${result().language}&mode2=${result().mode2}&goToUserPage=true`,
-                    );
-                  }}
-                >
-                  {format().rank(resultState.dailyLeaderboardRank, {
-                    fallback: "",
-                  })}
-                </Balloon>
-              </AnimeShow>
-
-              <Show when={resultState.details?.quote}>
-                {(quote) => <QuoteSource quote={quote()} />}
-              </Show>
+        <div class="group flat consistency">
+          <div class="top">consistency</div>
+          <Balloon class="bottom" text={consistencyBalloon()}>
+            {format().percentage(props.result.consistency)}
+          </Balloon>
+        </div>
+        <div class="group time">
+          <div class="top">time</div>
+          <Balloon class="bottom" text={timeBalloon()}>
+            <div class="text">{timeText()}</div>
+            <div class="afk">
+              {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
             </div>
-          </>
-        );
-      }}
-    </Show>
+            <div class="timeToday">{resultState.timeToday}</div>
+          </Balloon>
+        </div>
+
+        <AnimeShow
+          when={resultState.dailyLeaderboardRank !== undefined}
+          duration={250}
+          class="group dailyLeaderboard"
+        >
+          <div class="top">daily leaderboard</div>
+          <Balloon
+            text="Show daily leaderboard"
+            class="bottom cursor-pointer"
+            onClick={() => {
+              void navigate(
+                `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
+              );
+            }}
+          >
+            {format().rank(resultState.dailyLeaderboardRank, {
+              fallback: "",
+            })}
+          </Balloon>
+        </AnimeShow>
+
+        <Show when={resultState.details?.quote}>
+          {(quote) => <QuoteSource quote={quote()} />}
+        </Show>
+      </div>
+    </>
   );
 }
 
@@ -336,7 +323,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
   // fills quoteStats() in states/quote-rate, which the rate modal also updates
   // keyed on the details too, since restart clears stats and a repeated quote is the same object.
-  // not getLastResult() - it's set before the details, so it would fetch the previous quote
+  // not the result - it's set before the details, so it would fetch the previous quote
   const [statsRequest] = createResource(
     () => ({ quote: props.quote, details: resultState.details }),
     async ({ quote }) => getQuoteStats(quote),
