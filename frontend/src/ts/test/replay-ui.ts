@@ -1,6 +1,6 @@
 import * as Sound from "../controllers/sound-controller";
 import * as Arrays from "../utils/arrays";
-import { qs, qsr } from "../utils/dom";
+import { qs, lazyQsr } from "../utils/dom";
 import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import {
@@ -37,7 +37,7 @@ let stopwatchList: NodeJS.Timeout[] = [];
 const toggleButton = (): Element | undefined =>
   document.getElementById("playpauseReplayButton")?.children[0];
 
-const replayEl = qsr(".pageTest #resultReplay");
+const replayEl = lazyQsr(".pageTest #resultReplay");
 
 function getWordsList(): string[] {
   if (Config.mode === "zen") return getInputHistory(buildEventLog());
@@ -259,11 +259,11 @@ function loadOldReplay(): number {
 }
 
 function toggleReplayDisplay(): void {
-  if (replayEl.isHidden()) {
+  if (replayEl().isHidden()) {
     refreshReplayFromEvents();
     initializeReplayPrompt();
     loadOldReplay();
-    void replayEl.slideDown(250);
+    void replayEl().slideDown(250);
   } else {
     if (
       (toggleButton()?.parentNode as Element)?.getAttribute("aria-label") !==
@@ -271,7 +271,7 @@ function toggleReplayDisplay(): void {
     ) {
       pauseReplay();
     }
-    void replayEl.slideUp(250);
+    void replayEl().slideUp(250);
   }
 }
 
@@ -343,7 +343,7 @@ function playReplay(): void {
   );
 }
 
-qs(".pageTest #playpauseReplayButton")?.on("click", () => {
+qs(".pageTest")?.onChild("click", "#playpauseReplayButton", () => {
   const btn = toggleButton();
   if (btn?.className === "fas fa-play") {
     playReplay();
@@ -352,7 +352,7 @@ qs(".pageTest #playpauseReplayButton")?.on("click", () => {
   }
 });
 
-qs("#replayWords")?.onChild("click", "letter", (event) => {
+qs(".pageTest")?.onChild("click", "#replayWords letter", (event) => {
   pauseReplay();
   const replayWords = qs("#replayWords");
 

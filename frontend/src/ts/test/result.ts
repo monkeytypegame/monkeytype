@@ -965,7 +965,6 @@ export async function update(
     ?.addClass("far");
   qs(".pageTest #result #rateQuoteButton .rating")?.setText("");
   qs(".pageTest #result #rateQuoteButton")?.hide();
-  qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
   if (isAuthenticated()) {
@@ -1117,7 +1116,7 @@ export async function update(
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
   setResultCalculating(false);
-  qs("#words")?.empty();
+  TestUI.clearWords();
   ChartController.result.resize();
 }
 
@@ -1309,10 +1308,11 @@ export function updateTagsAfterEdit(
   );
 }
 
-qsa(".pageTest #result .chart .chartLegend button")?.on(
+qs(".pageTest")?.onChild(
   "click",
+  "#result .chart .chartLegend button",
   async (event) => {
-    const $target = event.target as HTMLElement;
+    const $target = event.childTarget as HTMLElement;
     const id = $target.getAttribute("data-id");
 
     if (id === "scale") {
@@ -1340,7 +1340,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
   },
 );
 
-qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
+qs(".pageTest")?.onChild("click", "#favoriteQuoteButton", async () => {
   if (quoteLang === undefined || quoteId === "") {
     showErrorNotification("Could not get quote stats!");
     return;
