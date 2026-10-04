@@ -1,0 +1,45 @@
+FROM node:24.11.0-alpine3.22 AS dependencies
+WORKDIR /app
+RUN npm install -g pnpm@11.21.0
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY packages packages
+COPY frontend/package.json frontend/package.json
+COPY frontend/storybook/package.json frontend/storybook/package.json
+COPY backend/package.json backend/package.json
+RUN --mount=type=cache,id=monkeytype-pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+
+FROM dependencies AS builder
+COPY frontend frontend
+COPY backend backend
+COPY .oxlintrc.json .oxlintrc.json
+COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
+COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
+ENV AUTH_PROVIDER=local BACKEND_URL=/api RECAPTCHA_SITE_KEY=
+RUN pnpm turbo run build --filter=@monkeytype/frontend --filter=@monkeytype/backend
+RUN pnpm deploy --legacy --filter @monkeytype/backend --prod /prod/backend
+# Legacy deploy retains workspace links pointing outside the exported directory.
+# Replace only these build-artifact links with portable package exports.
+RUN set -eu; for package in util schemas contracts challenges funbox; do \
+    rm /prod/backend/node_modules/@monkeytype/$package && \
+    mkdir /prod/backend/node_modules/@monkeytype/$package && \
+    cp /app/packages/$package/package.json /prod/backend/node_modules/@monkeytype/$package/ && \
+    cp -R /app/packages/$package/dist /prod/backend/node_modules/@monkeytype/$package/dist; \
+    done
+
+FROM node:24.11.0-alpine3.22 AS backend
+WORKDIR /app/backend/dist
+COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
+COPY --from=builder /prod/backend/dist /app/backend/dist
+COPY --from=builder /prod/backend/email-templates /app/backend/email-templates
+COPY --from=builder /prod/backend/redis-scripts /app/backend/redis-scripts
+COPY --from=builder /prod/backend/private /app/backend/private
+RUN mkdir -p logs && chown node:node logs
+RUN echo local > server.version
+ENV MODE=prod AUTH_PROVIDER=local BYPASS_ANTICHEAT=true BYPASS_EMAILCLIENT=true
+USER node
+EXPOSE 5005
+CMD ["node", "server.js"]
+
+FROM nginx:mainline-alpine AS frontend
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+COPY docker/frontend/nginx-local.conf /etc/nginx/conf.d/default.conf

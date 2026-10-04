@@ -19,6 +19,9 @@ import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 import { createIndicies as connectionsDbSetup } from "./dal/connections";
 import { getErrorMessage } from "./utils/error";
+import { isLocalAuth, validateAuthProvider } from "./utils/auth-provider";
+import { initLocalAuth } from "./services/local-auth";
+import { initializeTypingStats } from "./dal/public";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -28,19 +31,28 @@ async function bootServer(port: number): Promise<Server> {
     await db.connect();
     Logger.success("Connected to database");
 
-    Logger.info("Initializing Firebase app instance...");
-    initFirebaseAdmin();
+    validateAuthProvider();
+    if (!isLocalAuth()) {
+      Logger.info("Initializing Firebase app instance...");
+      initFirebaseAdmin();
+    }
 
     Logger.info("Fetching live configuration...");
     await getLiveConfiguration();
     Logger.success("Live configuration fetched");
     await updateFromConfigurationFile();
 
-    Logger.info("Initializing email client...");
-    await EmailClient.init();
+    if (!isLocalAuth()) {
+      Logger.info("Initializing email client...");
+      await EmailClient.init();
+    }
 
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
+    if (isLocalAuth()) {
+      await initLocalAuth();
+      await initializeTypingStats();
+    }
 
     if (RedisClient.isConnected()) {
       Logger.success("Connected to redis");

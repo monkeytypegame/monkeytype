@@ -10,6 +10,7 @@ import {
   isUsingAuthenticationReactive,
   ProviderAuthMethod,
 } from "../../../auth";
+import { isLocalAuth } from "../../../firebase";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";
@@ -22,8 +23,10 @@ export function AuthenticationTab() {
   return (
     <>
       <PasswordAuthentication />
-      <ProviderAuthentication authMethod="google" />
-      <ProviderAuthentication authMethod="github" />
+      <Show when={!isLocalAuth()}>
+        <ProviderAuthentication authMethod="google" />
+        <ProviderAuthentication authMethod="github" />
+      </Show>
       <RevokeAllTokens />
     </>
   );

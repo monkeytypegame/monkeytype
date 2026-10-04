@@ -1,0 +1,96 @@
+# Run from the repository root:
+# docker compose -f docker/docker-compose.local.yml up --build -d
+name: monkeytype-local
+services:
+  monkeytype-frontend:
+    image: monkeytype-local-frontend:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.local
+      target: frontend
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8080}:80"
+    networks: [local, frontend]
+    depends_on:
+      monkeytype-backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  monkeytype-backend:
+    image: monkeytype-local-backend:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.local
+      target: backend
+    environment:
+      AUTH_PROVIDER: local
+      DB_NAME: monkeytype
+      DB_URI: mongodb://monkeytype-mongodb:27017
+      REDIS_URI: redis://monkeytype-redis:6379
+      FRONTEND_URL: ${BASE_URL:-http://localhost:8080}
+    volumes:
+      - ./backend-configuration.local.json:/app/backend/dist/backend-configuration.json:ro
+    networks: [local]
+    depends_on:
+      monkeytype-mongodb:
+        condition: service_healthy
+      monkeytype-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:5005/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  monkeytype-mongodb:
+    image: mongo:5.0.13
+    volumes: [mongo-data:/data/db]
+    networks: [local]
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongo",
+          "--quiet",
+          "--eval",
+          "quit(db.runCommand({ping:1}).ok ? 0 : 1)",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  monkeytype-redis:
+    image: redis:6.2.6
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redis-data:/data]
+    networks: [local]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mongo-data:
+  redis-data:
+
+# Backend/databases have no internet access. A separate frontend network permits
+# Docker Desktop to publish the localhost port; browser requests are same-origin.
+networks:
+  local:
+    internal: true
+  frontend:

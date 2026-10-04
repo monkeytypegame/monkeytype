@@ -16,6 +16,18 @@ export function envConfig(options: {
 }): Plugin {
   return {
     name: "virtual-env-config",
+    transformIndexHtml: {
+      order: "post",
+      handler(html) {
+        if (options.env["AUTH_PROVIDER"] !== "local") return html;
+        return html
+          .replace(
+            /<script\s+src="https:\/\/www\.google\.com\/recaptcha\/api\.js\?render=explicit"[\s\S]*?<\/script>/g,
+            "",
+          )
+          .replace(/<link[^>]*rel="preconnect"[^>]*>/g, "");
+      },
+    },
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
       return;
@@ -24,6 +36,8 @@ export function envConfig(options: {
       if (id === resolvedVirtualModuleId) {
         const devConfig: EnvConfig = {
           isDevelopment: true,
+          authProvider:
+            options.env["AUTH_PROVIDER"] === "local" ? "local" : "firebase",
           backendUrl: fallback(
             options.env["BACKEND_URL"],
             "http://localhost:5005",
@@ -36,6 +50,8 @@ export function envConfig(options: {
 
         const prodConfig: EnvConfig = {
           isDevelopment: false,
+          authProvider:
+            options.env["AUTH_PROVIDER"] === "local" ? "local" : "firebase",
           backendUrl: fallback(
             options.env["BACKEND_URL"],
             "https://api.monkeytype.com",
