@@ -1,4 +1,12 @@
-import { children, JSXElement, ParentProps, Show } from "solid-js";
+import {
+  children,
+  createSignal,
+  JSXElement,
+  onCleanup,
+  onMount,
+  ParentProps,
+  Show,
+} from "solid-js";
 import { z } from "zod";
 import { serialize } from "zod-urlsearchparams";
 
@@ -52,12 +60,33 @@ export function Setting(props: SettingProps): JSXElement {
   const inputs = children(() => props.inputs);
   const fullWidthInputs = children(() => props.fullWidthInputs);
   const content = children(() => props.children);
+
+  // deep link highlight from the `?highlight=` param
+  let ref: HTMLDivElement | undefined;
+  const [highlighted, setHighlighted] = createSignal(false);
+  onMount(() => {
+    if (props.key === undefined) return;
+    const highlight = new URLSearchParams(window.location.search).get(
+      "highlight",
+    );
+    if (highlight !== props.key) return;
+
+    // wait for the page fade in
+    const timeout = setTimeout(() => {
+      ref?.scrollIntoView({ block: "center", behavior: "auto" });
+      setHighlighted(true);
+    }, 250);
+    onCleanup(() => clearTimeout(timeout));
+  });
+
   return (
     <div
+      ref={(el) => (ref = el)}
       class={cn(
         "group grid gap-2",
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
+        highlighted() && "settings-highlight",
         props.class,
       )}
       {...("key" in props && props.key !== undefined

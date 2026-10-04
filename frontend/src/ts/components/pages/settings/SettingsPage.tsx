@@ -1,11 +1,4 @@
-import {
-  createResource,
-  createSignal,
-  JSXElement,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { createResource, createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
 import { resetConfig } from "../../../config/lifecycle";
@@ -55,8 +48,6 @@ import { SearchableSetting } from "./SearchableSetting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
-  onMount(() => highlightSettingFromUrl());
-
   const [hasLocalBg] = createResource(
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),
@@ -398,26 +389,4 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
       </AnimeShow>
     </div>
   );
-}
-
-/**
- * Scrolls to and highlights the setting from the `?highlight=` param (deep links).
- */
-function highlightSettingFromUrl(): void {
-  const highlight = new URLSearchParams(window.location.search).get(
-    "highlight",
-  );
-  if (highlight === null) return;
-
-  const element = document.querySelector<HTMLElement>(
-    `#pageSettings [data-setting-key="${CSS.escape(highlight)}"]`,
-  );
-  if (element === null) return;
-
-  // wait for the page fade in
-  const timeout = setTimeout(() => {
-    element.scrollIntoView({ block: "center", behavior: "auto" });
-    element.classList.add("settings-highlight");
-  }, 250);
-  onCleanup(() => clearTimeout(timeout));
 }
