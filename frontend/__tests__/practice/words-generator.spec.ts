@@ -120,6 +120,18 @@ describe("key selection in the test generator", () => {
       (await generateWords(language)).words.every((word) => /^z+ $/.test(word)),
     ).toBe(true);
   });
+  it("uses the selected script for drills instead of the dictionary direction", async () => {
+    choose("abc");
+    expect(
+      (await generateWords({ ...language, rightToLeft: true })).allRightToLeft,
+    ).toBe(false);
+    choose("اب");
+    const rtl = await generateWords(language);
+    expect(rtl.allRightToLeft).toBe(true);
+    expect(rtl.allJoiningScript).toBe(true);
+    choose("aا");
+    expect((await generateWords(language)).allRightToLeft).toBe(false);
+  });
   it("keeps zen free-form", async () => {
     Config.mode = "zen";
     choose("a");
@@ -136,6 +148,67 @@ describe("key selection in the test generator", () => {
     await expect(generateWords(language)).rejects.toThrow(
       "Clear key selection",
     );
+  });
+  it("normalizes British quote text before filtering and preserves the cached source", async () => {
+    Config.mode = "quote";
+    Config.language = "german";
+    Config.britishEnglish = true;
+    Config.quoteLength = [-2];
+    setSelectedQuoteId(10);
+    vi.mocked(cachedFetchJson).mockResolvedValue({
+      language: "german",
+      groups: [[0, 100]],
+      quotes: [
+        {
+          id: 10,
+          text: "Original.",
+          britishText: "  A…  a\r\nA  ",
+          source: "fixture",
+          length: 12,
+        },
+      ],
+    });
+    choose("Aa.");
+    const generated = await generateWords({ ...language, name: "german" });
+    expect(generated.words).toEqual(["A... ", "a\n", "A "]);
+    expect(generated.hasNewline).toBe(true);
+    expect(QuotesController.getQuoteById(10)?.text).toBe("Original.");
+    expect(QuotesController.getQuoteById(10)?.britishText).toBe(
+      "  A…  a\r\nA  ",
+    );
+  });
+  it("keeps quote mode and the selection when a language has no quotes", async () => {
+    Config.mode = "quote";
+    Config.language = "french";
+    Config.quoteLength = [0];
+    vi.mocked(cachedFetchJson).mockResolvedValue({
+      language: "french",
+      groups: [],
+      quotes: [],
+    });
+    choose("a");
+    await expect(
+      generateWords({ ...language, name: "french" }),
+    ).rejects.toThrow("No quotes are available");
+    expect(Config.mode).toBe("quote");
+    expect(Config.quoteLength).toEqual([0]);
+  });
+  it("cycles through matching quotes before repeating one", async () => {
+    vi.mocked(cachedFetchJson).mockResolvedValue({
+      language: "spanish",
+      groups: [[0, 100]],
+      quotes: [
+        { id: 20, text: "a a", source: "fixture", length: 3 },
+        { id: 21, text: "a aa", source: "fixture", length: 4 },
+        { id: 22, text: "other", source: "fixture", length: 5 },
+      ],
+    });
+    await QuotesController.getQuotes("spanish", [0]);
+    const matches = (quote: { id: number }): boolean => quote.id !== 22;
+    const first = QuotesController.getRandomQuote(matches);
+    const second = QuotesController.getRandomQuote(matches);
+    expect(new Set([first?.id, second?.id])).toEqual(new Set([20, 21]));
+    expect(QuotesController.getRandomQuote(() => false)).toBeNull();
   });
   it("keeps matching quotes complete, rejects mismatches, and can clear the filter", async () => {
     Config.mode = "quote";

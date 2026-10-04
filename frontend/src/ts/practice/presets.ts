@@ -1,4 +1,4 @@
-import { fingerLabels } from "./layouts";
+import { fingerLabels, keyCharacters } from "./layouts";
 import { PracticeConfig, PracticeKey } from "./types";
 
 export const presetGroups: Record<string, { id: string; label: string }[]> = {
@@ -83,10 +83,7 @@ export function charactersForPreset(
   return [
     ...new Set(
       selected.flatMap((key) => {
-        const variants =
-          layer === "both"
-            ? key.variants
-            : [key.variants[layer === "shift" ? 1 : 0]];
+        const variants = keyCharacters(key, layer);
         return variants.filter((char): char is string => {
           if (char === undefined || !inCategory(char, category)) return false;
           if (preset === "brackets") return "()[]{}<>".includes(char);

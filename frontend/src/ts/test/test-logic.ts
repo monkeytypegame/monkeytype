@@ -1003,7 +1003,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // test is valid
 
   if (isRepeated() || difficultyFailed) {
-    if (Config.resultSaving) {
+    if (Config.resultSaving && getKeySelection() === null) {
       pushIncompleteTest({
         acc: completedEvent.acc,
         seconds: getIncompleteTestSeconds(eventLog),

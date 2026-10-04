@@ -541,6 +541,11 @@ async function getQuoteWordList(
   hideLoaderBar();
 
   if (quotesCollection.length === 0) {
+    if (getKeySelection() !== null) {
+      throw new KeySelectionError(
+        "No quotes are available for this language. Choose another language or mode, or clear key selection.",
+      );
+    }
     setConfig("mode", "words");
     throw new WordGenError(
       `No ${Config.language
@@ -550,19 +555,22 @@ async function getQuoteWordList(
   }
 
   const selected = getKeySelection();
+  const quoteText = (quote: Quote): string =>
+    (Config.britishEnglish &&
+    quote.britishText !== undefined &&
+    quote.britishText !== ""
+      ? quote.britishText
+      : quote.text
+    )
+      .replace(/ +/gm, " ")
+      .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
+      .replace(/…/g, "...")
+      .trim();
   const matches =
     selected === null
       ? undefined
       : (quote: Quote): boolean =>
-          matchesSelection(
-            (Config.britishEnglish &&
-            quote.britishText !== undefined &&
-            quote.britishText !== ""
-              ? quote.britishText
-              : quote.text
-            ).replace(/…/g, "..."),
-            selected.characters,
-          );
+          matchesSelection(quoteText(quote), selected.characters);
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
@@ -605,21 +613,14 @@ async function getQuoteWordList(
     rq = randomQuote;
   }
 
-  rq.language = Strings.removeLanguageSize(Config.language);
-  rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  rq.text = rq.text.replace(/…/g, "...");
-  rq.text = rq.text.trim();
-
-  if (
-    rq.britishText !== undefined &&
-    rq.britishText !== "" &&
-    Config.britishEnglish
-  ) {
-    rq.textSplit = rq.britishText.split(" ");
-  } else {
-    rq.textSplit = rq.text.split(" ");
-  }
+  // Keep the cached source intact, and test exactly the text that was filtered.
+  const text = quoteText(rq);
+  rq = {
+    ...rq,
+    language: Strings.removeLanguageSize(Config.language),
+    text,
+    textSplit: text.split(" "),
+  };
 
   setCurrentQuote(rq as QuoteWithTextSplit);
 
@@ -697,6 +698,15 @@ export async function generateWords(
       throw new KeySelectionError(
         "No selected keys are enabled. Turn on numbers or punctuation, or choose more keys.",
       );
+    }
+    if (selection.style !== "words") {
+      const letters = characters.filter((char) => /\p{L}/u.test(char));
+      ret.allRightToLeft =
+        letters.length > 0 &&
+        letters.every((char) => Strings.isWordRightToLeft(char, false)[0]);
+      // Like custom text, character drills can contain any script independently
+      // of the selected dictionary. Allow adjacent glyphs to join where needed.
+      ret.allJoiningScript = true;
     }
     const sequenceKey = JSON.stringify([selection, characters, language.name]);
     if (drillSequence === null || drillSequenceKey !== sequenceKey) {

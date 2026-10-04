@@ -1,5 +1,5 @@
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { Finger, PracticeKey } from "./types";
+import { Finger, PracticeConfig, PracticeKey } from "./types";
 
 export const fingerLabels: Record<Finger, string> = {
   lp: "left pinky",
@@ -65,18 +65,28 @@ export function getKeys(layout: LayoutObject, name: string): PracticeKey[] {
       id: `${row}-${column}`,
       row,
       column,
-      variants: [
-        ...new Set(
-          variants
-            .slice(0, 2)
-            .filter((char) => char.length === 1 && /\S/u.test(char)),
-        ),
-      ],
+      // Preserve layer positions, including empty and duplicate entries.
+      variants: variants.slice(0, 2),
       finger: hasVerifiedMapping(name) ? fingers[row]?.[column] : undefined,
     })),
   );
 }
 
+export function keyCharacters(
+  key: PracticeKey,
+  layer: PracticeConfig["layer"],
+): string[] {
+  const variants =
+    layer === "both" ? key.variants : [key.variants[layer === "shift" ? 1 : 0]];
+  return [
+    ...new Set(
+      variants.filter(
+        (char): char is string => char?.length === 1 && /\S/u.test(char),
+      ),
+    ),
+  ];
+}
+
 export function availableCharacters(keys: PracticeKey[]): string[] {
-  return [...new Set(keys.flatMap((key) => key.variants))];
+  return [...new Set(keys.flatMap((key) => keyCharacters(key, "both")))];
 }

@@ -7,6 +7,7 @@ import { restartTestEvent } from "../../events/test";
 import { generateExercise } from "../../practice/generator";
 import {
   getKeys,
+  keyCharacters,
   fingerLabels,
   hasVerifiedMapping,
 } from "../../practice/layouts";
@@ -65,14 +66,7 @@ export function KeySelectionModal() {
     return data === undefined ? [] : getKeys(data, draft().layout);
   });
   const available = createMemo(() =>
-    keys().flatMap((key) =>
-      draft().layer === "both"
-        ? key.variants
-        : key.variants.slice(
-            draft().layer === "shift" ? 1 : 0,
-            draft().layer === "shift" ? 2 : 1,
-          ),
-    ),
+    keys().flatMap((key) => keyCharacters(key, draft().layer)),
   );
   const preview = createMemo(() => {
     nonce();
@@ -290,13 +284,7 @@ export function KeySelectionModal() {
                 <For each={keys().filter((key) => key.row === row)}>
                   {(key) => (
                     <div class="flex min-w-9 flex-1 flex-col gap-1">
-                      <For
-                        each={key.variants.filter(
-                          (_, index) =>
-                            draft().layer === "both" ||
-                            index === (draft().layer === "shift" ? 1 : 0),
-                        )}
-                      >
+                      <For each={keyCharacters(key, draft().layer)}>
                         {(char) => (
                           <button
                             type="button"

@@ -2,7 +2,11 @@ import { describe, it, expect } from "vitest";
 import { LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import qwerty from "../../static/layouts/qwerty.json";
 import colemak from "../../static/layouts/colemak.json";
-import { getKeys } from "../../src/ts/practice/layouts";
+import {
+  getKeys,
+  keyCharacters,
+  availableCharacters,
+} from "../../src/ts/practice/layouts";
 import {
   selectPreset,
   charactersForPreset,
@@ -20,6 +24,36 @@ const keys = getKeys(LayoutObjectSchema.parse(qwerty), "qwerty");
 const sorted = (text: string[]): string => [...text].sort().join("");
 
 describe("physical selections", () => {
+  it("preserves shifted slots when a layout repeats or omits its base character", () => {
+    const layout = LayoutObjectSchema.parse(qwerty);
+    layout.keys.row1 = [
+      ["ط", "ط"],
+      ["", "X"],
+      [" ", "Y"],
+      ["Enter", "Z"],
+    ];
+    const alternate = getKeys(layout, "persian_standard").filter(
+      (key) => key.row === 0,
+    );
+    expect(alternate.flatMap((key) => keyCharacters(key, "base"))).toEqual([
+      "ط",
+    ]);
+    expect(alternate.flatMap((key) => keyCharacters(key, "shift"))).toEqual([
+      "ط",
+      "X",
+      "Y",
+      "Z",
+    ]);
+    expect(availableCharacters(alternate)).toEqual(["ط", "X", "Y", "Z"]);
+    expect(
+      charactersForPreset(alternate, {
+        ...defaultConfig,
+        preset: "custom",
+        layer: "shift",
+      }),
+    ).toEqual(["ط", "X", "Y", "Z"]);
+  });
+
   it.each([
     ["lp", "qaz"],
     ["lr", "wsx"],
