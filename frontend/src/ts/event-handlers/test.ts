@@ -29,7 +29,7 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
   }
 });
 
-qs(".pageTest #rateQuoteButton")?.on("click", async () => {
+testPage?.onChild("click", "#rateQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote rating popup: no quote");
@@ -38,7 +38,7 @@ qs(".pageTest #rateQuoteButton")?.on("click", async () => {
   showQuoteRateModal(currentQuote);
 });
 
-qs(".pageTest #reportQuoteButton")?.on("click", async () => {
+testPage?.onChild("click", "#reportQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote report popup: no quote");
@@ -55,7 +55,7 @@ testPage?.onChild("click", "#practiseWordsButton", () => {
   showModal("PractiseWords");
 });
 
-qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
+testPage?.onChild("click", "#dailyLeaderboardRank", async () => {
   void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,
