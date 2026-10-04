@@ -12,6 +12,7 @@ import * as ResultScreenshot from "../../test/screenshot";
 import { getInputHistory } from "../../test/events/stats";
 import { getLastEventLog, getResultVisible } from "../../states/test";
 import { showModal } from "../../states/modals";
+import { captureAndCopyToClipboard } from "../../test/screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -110,7 +111,7 @@ const commands: Command[] = [
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void ResultScreenshot.captureAndCopyToClipboard();
+        void captureAndCopyToClipboard();
       }, 500);
     },
     available: (): boolean => {
