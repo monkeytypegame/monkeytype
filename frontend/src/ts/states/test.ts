@@ -62,6 +62,15 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
+// #words / #wordsWrapper are still vanilla; test/test-ui applies these to them.
+// Other modules write here instead of touching the DOM directly.
+export const [isWordsHidden, setWordsHidden] = createSignal(false);
+export const [isWordsWrapperHidden, setWordsWrapperHidden] =
+  createSignal(false);
+export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
+export const [isErrorBorderDisabled, setErrorBorderDisabled] =
+  createSignal(false);
+
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);

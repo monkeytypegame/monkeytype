@@ -6,12 +6,12 @@ import {
 } from "../states/notifications";
 import { showQuoteRateModal } from "../states/quote-rate";
 import { showQuoteReportModal } from "../states/quote-report";
-import * as PractiseWordsModal from "../modals/practise-words";
 import { navigate } from "../controllers/route-controller";
 import { getMode2 } from "../utils/misc";
 import { qs } from "../utils/dom";
 import { getCurrentQuote } from "../states/test";
 import { showEditResultTagsModal } from "../states/edit-result-tags";
+import { showModal } from "../states/modals";
 
 const testPage = qs(".pageTest");
 
@@ -29,7 +29,7 @@ testPage?.onChild("click", ".tags .editTagsButton", () => {
   }
 });
 
-qs(".pageTest #rateQuoteButton")?.on("click", async () => {
+testPage?.onChild("click", "#rateQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote rating popup: no quote");
@@ -38,7 +38,7 @@ qs(".pageTest #rateQuoteButton")?.on("click", async () => {
   showQuoteRateModal(currentQuote);
 });
 
-qs(".pageTest #reportQuoteButton")?.on("click", async () => {
+testPage?.onChild("click", "#reportQuoteButton", async () => {
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
     showErrorNotification("Failed to show quote report popup: no quote");
@@ -52,10 +52,10 @@ testPage?.onChild("click", "#practiseWordsButton", () => {
     showNoticeNotification("Practice words is unsupported in zen mode");
     return;
   }
-  PractiseWordsModal.show();
+  showModal("PractiseWords");
 });
 
-qs(".pageTest #dailyLeaderboardRank")?.on("click", async () => {
+testPage?.onChild("click", "#dailyLeaderboardRank", async () => {
   void navigate(
     `/leaderboards?type=daily&language=${Config.language}&mode2=${getMode2(
       Config,

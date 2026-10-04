@@ -23,7 +23,12 @@ import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
-import { getActiveWordIndex } from "../../states/test";
+import {
+  getActiveWordIndex,
+  setReadAheadDisabled,
+  setWordsHidden,
+  setWordsWrapperHidden,
+} from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
@@ -73,9 +78,9 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
         TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
-    qs("#words")?.addClass("read_ahead_disabled");
+    setReadAheadDisabled(true);
   } else if (event.key === " ") {
-    qs("#words")?.removeClass("read_ahead_disabled");
+    setReadAheadDisabled(false);
   }
 }
 
@@ -491,7 +496,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   memory: {
     applyConfig(): void {
-      qs("#wordsWrapper")?.hide();
+      setWordsWrapperHidden(true);
       setConfig("showAllLines", true, {
         nosave: true,
       });
@@ -510,11 +515,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
     start(): void {
       MemoryTimer.reset();
-      qs("#words")?.hide();
+      setWordsHidden(true);
     },
     restart(): void {
       MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      qs("#words")?.show();
+      setWordsHidden(false);
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }
