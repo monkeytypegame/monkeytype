@@ -157,14 +157,13 @@ export const getKeymapLayout = createMemo<{
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
   const isMirrored = getConfig.funbox.includes("layout_mirror");
   const isUpsideDown = getConfig.funbox.includes("upside_down_layout");
-  
+
   return {
-  layout,
-  layoutNameDisplayString,
-  isMirrored,
-  isUpsideDown,
-};
-  
+    layout,
+    layoutNameDisplayString,
+    isMirrored,
+    isUpsideDown,
+  };
 });
 
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<

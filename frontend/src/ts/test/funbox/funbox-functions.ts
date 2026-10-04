@@ -380,23 +380,23 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   upside_down_layout: {
-  applyConfig(): void {
-    let layout = Config.layout;
-    if (Config.layout === "default") {
-      layout = "qwerty";
-    }
-    setConfig("layout", layout, {
-      nosave: true,
-    });
-    setConfig("keymapLayout", "overrideSync", {
-      nosave: true,
-    });
+    applyConfig(): void {
+      let layout = Config.layout;
+      if (Config.layout === "default") {
+        layout = "qwerty";
+      }
+      setConfig("layout", layout, {
+        nosave: true,
+      });
+      setConfig("keymapLayout", "overrideSync", {
+        nosave: true,
+      });
+    },
+    rememberSettings(): void {
+      save("keymapMode", Config.keymapMode);
+      save("layout", Config.layout);
+    },
   },
-  rememberSettings(): void {
-    save("keymapMode", Config.keymapMode);
-    save("layout", Config.layout);
-  },
-},
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid[0] ?? "qwerty";
