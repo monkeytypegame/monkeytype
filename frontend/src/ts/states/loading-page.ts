@@ -3,8 +3,8 @@ import { createMemo, createSignal } from "solid-js";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { sleep } from "../utils/misc";
 
-/** Which indicator the loading page is currently showing. */
-type LoadingIndicator = "spinner" | "bar" | "error";
+/** Which indicator the loading page shows while loading (a failed load shows the error instead). */
+type LoadingIndicator = "spinner" | "bar";
 
 /** Where the bar fill should animate to, and how long it should take getting there. */
 type LoadingBarTarget = {
@@ -27,33 +27,15 @@ const initialState: LoadingPageState = {
 
 const [
   getState,
-  {
-    showLoadingPageSpinner,
-    showLoadingPageError,
-    showLoadingPageBar,
-    updateLoadingPageText,
-    setBarTarget,
-    set: setState,
-  },
+  { showLoadingPage, updateLoadingPageText, setBarTarget, set: setState },
 ] = createSignalWithSetters<LoadingPageState>(initialState)({
-  showLoadingPageSpinner: (set) =>
-    set((prev) => ({ ...prev, indicator: "spinner", text: null })),
-  showLoadingPageError: (set) =>
-    set((prev) => ({ ...prev, indicator: "error", text: null })),
-  showLoadingPageBar: (set) =>
-    set((prev) => ({ ...prev, indicator: "bar", text: null })),
+  showLoadingPage: (set, indicator: LoadingIndicator) =>
+    set((prev) => ({ ...prev, indicator, text: null })),
   updateLoadingPageText: (set, text: string) =>
     set((prev) => ({ ...prev, text })),
   setBarTarget: (set, barTarget: LoadingBarTarget) =>
     set((prev) => ({ ...prev, barTarget })),
 });
-
-export {
-  showLoadingPageBar,
-  showLoadingPageError,
-  showLoadingPageSpinner,
-  updateLoadingPageText,
-};
 
 // memos rather than reading the state object directly, so that - for example -
 // a text change doesn't make the bar effect re-run and restart its animation
@@ -127,15 +109,14 @@ export async function withLoading(
   if (!loading.shouldShow()) return;
 
   setLoadingScreen("visible");
+  showLoadingPage(loading.style);
 
   try {
     if (loading.style === "spinner") {
-      showLoadingPageSpinner();
       await loading.load();
       return;
     }
 
-    showLoadingPageBar();
     await updateLoadingPageBar(0, 0);
     updateLoadingPageText("");
     await loadWithKeyframes(loading.load(), loading.keyframes);
@@ -143,7 +124,6 @@ export async function withLoading(
     updateLoadingPageText("Done");
   } catch (error) {
     setLoadingScreen("error");
-    showLoadingPageError();
     updateLoadingPageText(
       `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
     );

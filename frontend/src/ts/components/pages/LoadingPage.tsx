@@ -5,6 +5,7 @@ import {
   getLoadingPageBarTarget,
   getLoadingPageIndicator,
   getLoadingPageText,
+  getLoadingScreen,
 } from "../../states/loading-page";
 import { cn } from "../../utils/cn";
 import { Fa } from "../common/Fa";
@@ -26,17 +27,15 @@ export function LoadingPage(): JSXElement {
     onCleanup(() => animation.pause());
   });
 
+  const shown = (): "spinner" | "bar" | "error" =>
+    getLoadingScreen() === "error" ? "error" : getLoadingPageIndicator();
   const spinnerClass = (): string =>
-    cn("text-[2rem] text-main", {
-      hidden: getLoadingPageIndicator() !== "spinner",
-    });
+    cn("text-[2rem] text-main", { hidden: shown() !== "spinner" });
   const errorClass = (): string =>
-    cn("text-[2rem] text-error", {
-      hidden: getLoadingPageIndicator() !== "error",
-    });
+    cn("text-[2rem] text-error", { hidden: shown() !== "error" });
   const barClass = (): string =>
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
-      hidden: getLoadingPageIndicator() !== "bar",
+      hidden: shown() !== "bar",
     });
   const textClass = (): string =>
     cn("h-[1.25em]", { hidden: getLoadingPageText() === null });

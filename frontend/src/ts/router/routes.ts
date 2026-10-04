@@ -47,16 +47,23 @@ function guestOnly(): void {
   if (isAuthenticated()) redirect({ to: "/account", throw: true });
 }
 
-/** Parses raw search params (see `parseSearch` in router/index.ts) with a zod schema, `undefined` if invalid. */
-function parseSearch<T extends z.ZodObject<z.ZodRawShape>>(
+/**
+ * Passes the parsed search params (`undefined` if invalid) to `read`, only when
+ * entering the route - the page writes its state back to the url, which reloads
+ * the route.
+ */
+function readSearchOnEnter<T extends z.ZodObject<z.ZodRawShape>>(
   schema: T,
-  search: Record<string, unknown>,
-): z.infer<T> | undefined {
-  const parsed = parseUrlSearchParams({
-    schema,
-    input: new URLSearchParams(search as Record<string, string>),
-  });
-  return parsed.success ? parsed.data : undefined;
+  read: (params: z.infer<T> | undefined) => void,
+): (ctx: { search: Record<string, unknown>; cause: string }) => void {
+  return ({ search, cause }) => {
+    if (cause !== "enter") return;
+    const parsed = parseUrlSearchParams({
+      schema,
+      input: new URLSearchParams(search as Record<string, string>),
+    });
+    read(parsed.success ? parsed.data : undefined);
+  };
 }
 
 // renders nothing - pages are rendered by <Pages> (see components/pages/Pages.tsx)
@@ -92,13 +99,10 @@ const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
-  beforeLoad: ({ search, cause }) => {
-    // only on enter - the page writes its state back to the url (which reloads the route)
-    if (cause !== "enter") return;
-    readLeaderboardGetParameters(
-      parseSearch(LeaderboardUrlParamsSchema, search),
-    );
-  },
+  beforeLoad: readSearchOnEnter(
+    LeaderboardUrlParamsSchema,
+    readLeaderboardGetParameters,
+  ),
   loader: async () =>
     withLoading("the leaderboards page", {
       style: "spinner",
@@ -152,17 +156,18 @@ const account = createRoute({
     }),
 });
 
+const readAccountSettingsSearch = readSearchOnEnter(
+  AccountSettingsUrlParamsSchema,
+  readAccountSettingsGetParameters,
+);
+
 const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
-  beforeLoad: ({ search, cause }) => {
+  beforeLoad: (ctx) => {
     requireAuth();
-    // only on enter - the page writes its state back to the url (which reloads the route)
-    if (cause !== "enter") return;
-    readAccountSettingsGetParameters(
-      parseSearch(AccountSettingsUrlParamsSchema, search),
-    );
+    readAccountSettingsSearch(ctx);
   },
 });
 

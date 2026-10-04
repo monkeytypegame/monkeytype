@@ -52,10 +52,11 @@ export async function navigate(
     return;
   }
 
+  // trailing slashes are stripped by the router (`trailingSlash: "never"`)
   const target = new URL(url, window.location.origin);
-  const pathname = target.pathname.replace(/\/$/, "") || "/";
-
-  await router.navigate({ href: pathname + target.search + target.hash });
+  await router.navigate({
+    href: target.pathname + target.search + target.hash,
+  });
 }
 
 /**

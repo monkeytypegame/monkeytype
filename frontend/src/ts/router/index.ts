@@ -18,6 +18,7 @@ import { setOnAuthStateChange } from "./user-data";
 
 export const router = createRouter({
   routeTree,
+  trailingSlash: "never",
   // keep search params as plain strings - routes parse them with zod themselves,
   // and existing links (eg. ?mode2=15) must keep their format
   parseSearch: (searchStr) =>

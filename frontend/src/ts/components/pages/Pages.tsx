@@ -1,11 +1,12 @@
 import {
   batch,
+  Component,
   createSignal,
   JSXElement,
-  Match,
   ParentProps,
-  Switch,
+  Show,
 } from "solid-js";
+import { Dynamic } from "solid-js/web";
 
 import { createEffectOn } from "../../hooks/effects";
 import { getLoadingScreen } from "../../states/loading-page";
@@ -16,6 +17,7 @@ import {
   setPageTransitioning,
 } from "../../states/router";
 import { cn } from "../../utils/cn";
+import { capitalizeFirstLetter } from "../../utils/strings";
 import { Anime } from "../common/anime";
 import { NotFoundPage } from "./404Page";
 import { AboutPage } from "./AboutPage";
@@ -29,6 +31,28 @@ import { ProfilePage } from "./profile/ProfilePage";
 import { ProfileSearchPage } from "./profile/ProfileSearchPage";
 import { SettingsPage } from "./settings/SettingsPage";
 import { TestPage } from "./test/TestPage";
+
+// the test page is rendered separately (see TestPageShell)
+const pages: Record<
+  Exclude<PageName, "test">,
+  { component: Component; class?: string }
+> = {
+  loading: {
+    component: LoadingPage,
+    class:
+      "grid h-full w-full content-center items-center gap-4 place-self-center text-center",
+  },
+  about: { component: AboutPage, class: "full-width" },
+  settings: { component: SettingsPage },
+  account: { component: AccountPage },
+  login: { component: LoginPage },
+  profile: { component: ProfilePage },
+  profileSearch: { component: ProfileSearchPage },
+  "404": { component: NotFoundPage },
+  accountSettings: { component: AccountSettingsPage },
+  friends: { component: FriendsPage },
+  leaderboards: { component: LeaderboardPage },
+};
 
 // duration of the page fade out and of the fade in
 const fadeDuration = 125;
@@ -53,6 +77,11 @@ function mount(page: PageName): void {
     setFadePhase("in");
   });
 }
+
+const nonTestPage = (): Exclude<PageName, "test"> | undefined => {
+  const page = mountedPage();
+  return page === "test" ? undefined : page;
+};
 
 /** Called when the mounted page finishes fading in or out. */
 function onFadeComplete(): void {
@@ -84,66 +113,17 @@ export function Pages(): JSXElement {
   return (
     <>
       <TestPageShell />
-      <Switch>
-        <Match when={mountedPage() === "loading"}>
-          <PageFade
-            id="pageLoading"
-            class="page pageLoading grid h-full w-full content-center items-center gap-4 place-self-center text-center"
-          >
-            <LoadingPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "about"}>
-          <PageFade id="pageAbout" class="page pageAbout full-width">
-            <AboutPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "settings"}>
-          <PageFade id="pageSettings" class="page pageSettings">
-            <SettingsPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "account"}>
-          <PageFade id="pageAccount" class="page pageAccount">
-            <AccountPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "login"}>
-          <PageFade id="pageLogin" class="page pageLogin">
-            <LoginPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "profile"}>
-          <PageFade id="pageProfile" class="page pageProfile">
-            <ProfilePage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "profileSearch"}>
-          <PageFade id="pageProfileSearch" class="page pageProfileSearch">
-            <ProfileSearchPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "404"}>
-          <PageFade id="page404" class="page page404">
-            <NotFoundPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "accountSettings"}>
-          <PageFade id="pageAccountSettings" class="page pageAccountSettings">
-            <AccountSettingsPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "friends"}>
-          <PageFade id="pageFriends" class="page pageFriends">
-            <FriendsPage />
-          </PageFade>
-        </Match>
-        <Match when={mountedPage() === "leaderboards"}>
-          <PageFade id="pageLeaderboards" class="page pageLeaderboards">
-            <LeaderboardPage />
-          </PageFade>
-        </Match>
-      </Switch>
+      {/* keyed so each page gets a fresh fade wrapper */}
+      <Show when={nonTestPage()} keyed>
+        {(page) => {
+          const id = `page${capitalizeFirstLetter(page)}`;
+          return (
+            <PageFade id={id} class={cn("page", id, pages[page].class)}>
+              <Dynamic component={pages[page].component} />
+            </PageFade>
+          );
+        }}
+      </Show>
     </>
   );
 }
