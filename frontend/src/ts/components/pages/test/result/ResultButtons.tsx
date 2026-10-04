@@ -1,4 +1,5 @@
-import { createSignal, JSXElement, onCleanup, Show } from "solid-js";
+import { createKeyHold } from "@tanstack/solid-hotkeys";
+import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { showModal } from "../../../../states/modals";
@@ -19,18 +20,7 @@ export function ResultButtons(props: {
   glarses: boolean;
   hidden: boolean;
 }): JSXElement {
-  const [isShiftHeld, setShiftHeld] = createSignal(false);
-
-  const onKey = (event: KeyboardEvent): void => {
-    if (event.key !== "Shift") return;
-    setShiftHeld(event.type === "keydown");
-  };
-  document.addEventListener("keydown", onKey);
-  document.addEventListener("keyup", onKey);
-  onCleanup(() => {
-    document.removeEventListener("keydown", onKey);
-    document.removeEventListener("keyup", onKey);
-  });
+  const isShiftHeld = createKeyHold("Shift");
 
   return (
     <div class={cn("buttons", { hidden: props.hidden })}>
@@ -80,7 +70,6 @@ export function ResultButtons(props: {
               : { icon: "fa-image", variant: "regular" }
           }
           onClick={(event) => {
-            setShiftHeld(false);
             if (event.shiftKey) {
               void captureAndDownload();
             } else {
