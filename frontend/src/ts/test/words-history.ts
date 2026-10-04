@@ -2,28 +2,28 @@ import * as Hangul from "hangul-js";
 import { createSignal } from "solid-js";
 import { z } from "zod";
 
-import { Config } from "../../../../config/store";
-import * as ResultWordHighlight from "./result-word-highlight";
+import { Config } from "../config/store";
+import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import {
   getKoreanStatus,
   getLastEventLog,
   getResultVisible,
-} from "../../../../states/test";
+} from "../states/test";
 import {
   showErrorNotification,
   showNoticeNotification,
-} from "../../../../states/notifications";
-import { showSimpleModal } from "../../../../states/simple-modal";
-import * as Strings from "../../../../utils/strings";
-import * as CustomText from "../../../../test/custom-text";
+} from "../states/notifications";
+import { showSimpleModal } from "../states/simple-modal";
+import * as Strings from "../utils/strings";
+import * as CustomText from "./custom-text";
 import {
   getCorrectedWordsHistory,
   getInputHistory,
   getMissedWords,
   getWordBurstHistory,
-} from "../../../../test/events/stats";
-import * as TestWords from "../../../../test/test-words";
-import { EventLog } from "../../../../test/events/types";
+} from "./events/stats";
+import * as TestWords from "./test-words";
+import { EventLog } from "./events/types";
 
 const [isWordsHistoryOpen, setWordsHistoryOpen] = createSignal(false);
 const [isWordsHistoryAnimated, setWordsHistoryAnimated] = createSignal(true);
