@@ -8,7 +8,7 @@ import {
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import { createPlaceholder } from "../elements/test-page";
 
 export function stopAnimation(): void {
@@ -50,10 +50,18 @@ export function updatePosition(noAnim = false): void {
 export let caret = new Caret(
   createPlaceholder("div", "caret"),
   Config.caretStyle,
+  {
+    words: createPlaceholder("div"),
+    wordsWrapper: createPlaceholder("div"),
+  },
 );
 
-export function initElement(): void {
-  caret = new Caret(qsr("#caret"), Config.caretStyle);
+export function initElement(refs: {
+  caret: ElementWithUtils;
+  words: ElementWithUtils;
+  wordsWrapper: ElementWithUtils;
+}): void {
+  caret = new Caret(refs.caret, Config.caretStyle, refs);
 }
 
 configEvent.subscribe(({ key }) => {

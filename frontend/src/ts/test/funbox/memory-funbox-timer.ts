@@ -1,5 +1,5 @@
 import { applyReducedMotion } from "../../utils/misc";
-import { qs } from "../../utils/dom";
+import { setWordsWrapperHidden } from "../../states/test";
 import { testPageRef } from "../../elements/test-page";
 
 let memoryTimer: number | null = null;
@@ -41,7 +41,7 @@ export function start(time: number): void {
     memoryTimer === 0 ? hide() : update(memoryTimer);
     if (memoryTimer <= 0) {
       reset();
-      qs("#wordsWrapper")?.hide();
+      setWordsWrapperHidden(true);
     }
   }, 1000);
 }

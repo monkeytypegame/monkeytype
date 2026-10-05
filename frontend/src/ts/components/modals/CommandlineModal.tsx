@@ -44,6 +44,7 @@ import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
+import { ThemeBubbles } from "../common/ThemeBubbles";
 
 const MODAL_ID = "Commandline";
 
@@ -152,36 +153,6 @@ function CommandIcon(props: {
         </div>
       </Show>
     </Show>
-  );
-}
-
-function ThemeBubbles(props: { customData: Record<string, string | boolean> }) {
-  const color = (key: string): string => String(props.customData[key] ?? "");
-
-  return (
-    <>
-      <div
-        class={cn("mr-1", props.customData["isFavorite"] !== true && "hidden")}
-      >
-        <Fa icon="fa-star" />
-      </div>
-      <div
-        class="grid grid-flow-col place-content-center gap-[0.5em] rounded-[1em]"
-        style={{
-          background: color("bg"),
-          outline: `0.25rem solid ${color("bg")}`,
-        }}
-      >
-        <For each={["main", "sub", "text"]}>
-          {(key) => (
-            <div
-              class="h-[1em] w-[1em] rounded-full"
-              style={{ background: color(key) }}
-            ></div>
-          )}
-        </For>
-      </div>
-    </>
   );
 }
 
@@ -918,7 +889,23 @@ export function CommandlineModal(): JSXElement {
                     {command.display}
                   </div>
                   <Show when={isThemeCommand}>
-                    <ThemeBubbles customData={command.customData ?? {}} />
+                    <div
+                      class={cn(
+                        "mr-1",
+                        command.customData?.["isFavorite"] !== true && "hidden",
+                      )}
+                    >
+                      <Fa icon="fa-star" />
+                    </div>
+                    <ThemeBubbles
+                      inset
+                      colors={{
+                        bg: String(command.customData?.["bg"]),
+                        main: String(command.customData?.["main"]),
+                        sub: String(command.customData?.["sub"]),
+                        text: String(command.customData?.["text"]),
+                      }}
+                    />
                   </Show>
                 </div>
               );

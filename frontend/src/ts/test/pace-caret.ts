@@ -6,7 +6,8 @@ import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
+import { createPlaceholder } from "../elements/test-page";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -21,7 +22,6 @@ import {
   isTestActive,
   setPaceCaretWpm,
 } from "../states/test";
-import { createPlaceholder } from "../elements/test-page";
 
 type Settings = {
   wpm: number;
@@ -43,10 +43,18 @@ let settings: Settings | null = null;
 export let caret = new Caret(
   createPlaceholder("div", "paceCaret"),
   Config.paceCaretStyle,
+  {
+    words: createPlaceholder("div"),
+    wordsWrapper: createPlaceholder("div"),
+  },
 );
 
-export function initElement(): void {
-  caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+export function initElement(refs: {
+  caret: ElementWithUtils;
+  words: ElementWithUtils;
+  wordsWrapper: ElementWithUtils;
+}): void {
+  caret = new Caret(refs.caret, Config.paceCaretStyle, refs);
 }
 
 let lastTestWpm = 0;
