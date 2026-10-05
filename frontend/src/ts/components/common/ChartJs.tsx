@@ -30,6 +30,7 @@ import { Theme } from "../../constants/themes";
 import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { getTheme } from "../../states/theme";
+import { cn } from "../../utils/cn";
 
 Chart.register(
   BarController,
@@ -69,6 +70,7 @@ type ChartJSProps<
   type: T;
   data: ChartData<T, TData>;
   options?: ChartOptions<T>;
+  class?: string;
   // wait for idle (up to 500ms) before applying data updates - for charts that are expensive to redraw
   deferUpdates?: boolean;
   onChartInit?: (chart: Chart<T, TData>) => void;
@@ -119,7 +121,12 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
     chart?.destroy();
   });
 
-  return <canvas class="chartCanvas" ref={canvasRef}></canvas>;
+  return (
+    <canvas
+      class={cn("chartCanvas", props.class ?? "")}
+      ref={canvasRef}
+    ></canvas>
+  );
 }
 
 function addColorsToOptions<TType extends ChartType = ChartType>(

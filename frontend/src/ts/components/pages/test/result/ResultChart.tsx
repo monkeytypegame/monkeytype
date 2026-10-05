@@ -56,6 +56,7 @@ import {
   get as getTypingSpeedUnit,
   TypingSpeedUnitSettings,
 } from "../../../../utils/typing-speed-units";
+import { Button } from "../../../common/Button";
 import { ChartJs } from "../../../common/ChartJs";
 import { Fa } from "../../../common/Fa";
 import * as ResultWordHighlight from "./result-word-highlight";
@@ -291,13 +292,9 @@ type LegendItem = {
   text: string;
   icon?: FaSolidIcon;
   line?: "solid" | "dashed";
-  // color while active, sub otherwise
-  color?: string;
+  legendColor: string;
   visible?: () => boolean;
 };
-
-const legendButtonClass =
-  "text inline-grid grid-cols-[auto_1fr] items-center px-[1em] py-[0.5em] text-sub [--legend-color:var(--color-sub)] hover:bg-sub-alt hover:text-text active:text-sub";
 
 const hasTagPbLines = (): boolean =>
   resultState.tags.some((tag) => tag.chartPb !== undefined);
@@ -307,26 +304,33 @@ const legend: LegendItem[] = [
     id: "pbLine",
     text: "pb",
     icon: "fa-crown",
+    legendColor: "[--legend-color:var(--sub-color)]",
     visible: () => isAuthenticated(),
   },
   {
     id: "tagPbLine",
     text: "tag pb",
     icon: "fa-tag",
+    legendColor: "[--legend-color:var(--sub-color)]",
     visible: () => isAuthenticated() && hasTagPbLines(),
   },
   {
     id: "raw",
     text: "raw",
     line: "dashed",
-    color: "[--legend-color:var(--color-main)]",
+    legendColor: "[--legend-color:var(--color-main)]",
   },
-  { id: "burst", text: "burst", line: "solid" },
+  {
+    id: "burst",
+    text: "burst",
+    line: "solid",
+    legendColor: "[--legend-color:var(--sub-color)]",
+  },
   {
     id: "errors",
     text: "errors",
     icon: "fa-times",
-    color: "[--legend-color:var(--color-error)]",
+    legendColor: "[--legend-color:var(--color-error)]",
   },
 ];
 
@@ -624,32 +628,37 @@ export function ResultChart(props: {
   );
 
   return (
-    <div class={cn("group/chart relative h-[200px] w-full")}>
-      <div class="duration-half pointer-events-none absolute right-0 -bottom-[0.75em] flex cursor-pointer rounded bg-bg p-[0.25em] text-[0.75em] opacity-0 transition-opacity group-hover/chart:pointer-events-auto group-hover/chart:opacity-100">
-        <button
+    <div class={cn("group/chart relative h-50 w-full")}>
+      <div
+        class={cn(
+          "pointer-events-none absolute right-0 bottom-[-0.75em] flex rounded bg-bg p-[0.25em] text-em-xs transition-opacity",
+          "opacity-0 group-hover/chart:pointer-events-auto group-hover/chart:opacity-100",
+        )}
+      >
+        <Button
           type="button"
-          class={legendButtonClass}
+          variant="text"
+          class="px-3 [--legend-color:var(--color-sub)] hover:bg-sub-alt"
           tabIndex="-1"
           onClick={() =>
             setConfig("startGraphsAtZero", !getConfig.startGraphsAtZero)
           }
-        >
-          <Fa icon="fa-chart-line" class="leading-0 text-(--legend-color)" />
-          <div class="pointer-events-none">scale</div>
-        </button>
+          text="scale"
+          fa={{
+            icon: "fa-chart-line",
+            class: "text-sub",
+          }}
+        />
+
         <For each={legend}>
           {(item) => {
             const active = (): boolean => getChartDataVisibility()[item.id];
             return (
-              <button
-                type="button"
-                class={cn(
-                  legendButtonClass,
-                  active() ? item.color : "line-through",
-                  {
-                    hidden: item.visible !== undefined && !item.visible(),
-                  },
-                )}
+              <Button
+                variant="text"
+                class={cn("px-3 hover:bg-sub-alt", item.legendColor, {
+                  hidden: item.visible !== undefined && !item.visible(),
+                })}
                 tabIndex="-1"
                 onClick={() =>
                   setChartDataVisibility((vis) => ({
@@ -658,31 +667,36 @@ export function ResultChart(props: {
                   }))
                 }
               >
-                <Show
-                  when={item.icon}
-                  fallback={
-                    <div
-                      class={cn(
-                        "duration-half pointer-events-none h-[0.25em] w-[1.5em] rounded-half transition-[background]",
-                        item.line === "dashed"
-                          ? "bg-[linear-gradient(90deg,var(--legend-color)_40%,transparent_40%_60%,var(--legend-color)_60%)]"
-                          : "bg-(--legend-color)",
-                      )}
-                    ></div>
-                  }
-                >
+                <Show when={item.icon}>
                   {(icon) => (
                     <Fa icon={icon()} class="leading-0 text-(--legend-color)" />
                   )}
                 </Show>
-                <div class="pointer-events-none">{item.text}</div>
-              </button>
+                <Show when={!item.icon}>
+                  <div
+                    class={cn(
+                      "duration-half pointer-events-none h-[0.25em] w-[1.5em] rounded-half transition-[background]",
+                      item.line === "dashed"
+                        ? "bg-[linear-gradient(90deg,var(--legend-color)_40%,transparent_40%_60%,var(--legend-color)_60%)]"
+                        : "bg-(--legend-color)",
+                    )}
+                  ></div>
+                </Show>
+                <div
+                  class={cn(
+                    "pointer-events-none",
+                    !active() ? "line-through" : "",
+                  )}
+                >
+                  {item.text}
+                </div>
+              </Button>
             );
           }}
         </For>
       </div>
       <div
-        class="h-full [&_canvas]:h-full"
+        class="h-full"
         onMouseEnter={() => ResultWordHighlight.setIsHoverChart(true)}
         onMouseLeave={() => {
           ResultWordHighlight.setIsHoverChart(false);
@@ -690,6 +704,7 @@ export function ResultChart(props: {
         }}
       >
         <ChartJs
+          class="h-full"
           name="Result"
           type="line"
           data={chartConfig().data}

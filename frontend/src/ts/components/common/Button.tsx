@@ -18,7 +18,7 @@ type BaseProps = {
   onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
-  tabIndex?: number;
+  tabIndex?: number | string;
   id?: string;
 };
 
