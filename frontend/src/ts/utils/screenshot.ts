@@ -59,6 +59,8 @@ export async function captureElement(
       // skipping hidden elements (THAT IS SO IMPORTANT!)
       filter: (el: Node): boolean => {
         if (!(el instanceof HTMLElement)) return true;
+        // dev only, thousands of nodes, makes capture ~10x slower
+        if (el.id === "tanstack_devtools") return false;
         const cs = getComputedStyle(el);
         return !(el.classList.contains("hidden") || cs.display === "none");
       },
