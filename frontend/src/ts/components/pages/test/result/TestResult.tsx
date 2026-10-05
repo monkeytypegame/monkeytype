@@ -48,7 +48,7 @@ export function TestResult(): JSXElement {
         }
       >
         {(test) => (
-          <div id="resultWrapper">
+          <div id="resultScreenshotTarget">
             <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats
