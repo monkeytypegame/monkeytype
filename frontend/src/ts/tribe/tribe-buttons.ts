@@ -1,5 +1,5 @@
 import * as TribeState from "../tribe/tribe-state";
-import { ElementsWithUtils, qsa } from "../utils/dom";
+import { ElementsWithUtils, qs, qsa } from "../utils/dom";
 import tribeSocket from "./tribe-socket";
 import { ROOM_STATE } from "./types";
 
@@ -128,47 +128,46 @@ export function update(): void {
   }
 }
 
-buttonsElements()
-  .qs(".userAfkButton")
-  ?.on("click", () => {
-    const self = TribeState.getSelf();
-    if (!self) return;
-    tribeSocket.out.room.afkUpdate(!self.isAfk);
-  });
+// delegated - the result screen buttons are rendered after module load
+function onButtonClick(query: string, handler: () => void): void {
+  qs("html")?.onChild(
+    "click",
+    `.pageTribe .tribePage.lobby .lobbyButtons ${query}, .pageTest #tribeResultBottom .buttons ${query}`,
+    handler,
+  );
+}
 
-buttonsElements()
-  .qs(".leaveRoomButton")
-  ?.on("click", () => {
-    tribeSocket.out.room.leave();
-  });
+onButtonClick(".userAfkButton", () => {
+  const self = TribeState.getSelf();
+  if (!self) return;
+  tribeSocket.out.room.afkUpdate(!self.isAfk);
+});
 
-buttonsElements()
-  .qs(".userReadyButton")
-  ?.on("click", () => {
+onButtonClick(".leaveRoomButton", () => {
+  tribeSocket.out.room.leave();
+});
+
+onButtonClick(".userReadyButton", () => {
+  tribeSocket.out.room.readyUpdate();
+});
+
+onButtonClick(".backToLobbyButton", () => {
+  tribeSocket.out.room.backToLobby();
+});
+
+onButtonClick(".autoReadyButton", () => {
+  TribeState.setAutoReady(!TribeState.getAutoReady());
+
+  const tribeRoomState = TribeState.getRoom()?.state;
+  if (
+    TribeState.getAutoReady() &&
+    tribeRoomState !== undefined &&
+    ["LOBBY", "SHOWING_RESULTS", "READY_TO_CONTINUE"].includes(
+      tribeRoomState,
+    ) &&
+    TribeState.getSelf()?.isReady !== true
+  ) {
     tribeSocket.out.room.readyUpdate();
-  });
-
-buttonsElements()
-  .qs(".backToLobbyButton")
-  ?.on("click", () => {
-    tribeSocket.out.room.backToLobby();
-  });
-
-buttonsElements()
-  .qs(".autoReadyButton")
-  ?.on("click", (e) => {
-    TribeState.setAutoReady(!TribeState.getAutoReady());
-
-    const tribeRoomState = TribeState.getRoom()?.state;
-    if (
-      TribeState.getAutoReady() &&
-      tribeRoomState !== undefined &&
-      ["LOBBY", "SHOWING_RESULTS", "READY_TO_CONTINUE"].includes(
-        tribeRoomState,
-      ) &&
-      TribeState.getSelf()?.isReady !== true
-    ) {
-      tribeSocket.out.room.readyUpdate();
-    }
-    update();
-  });
+  }
+  update();
+});

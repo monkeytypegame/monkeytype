@@ -93,13 +93,14 @@ export function update(page?: string): void {
   });
 }
 
-qs("document")?.onChild(
+qs("html")?.onChild(
   "click",
   ".pageTribe .lobby .userlist .list .user .userSettings, .pageTest #result #tribeResultBottom .userlist .list .user .userSettings",
   (e) => {
-    const userId = (e.currentTarget as HTMLElement | null)?.getAttribute(
+    const userId = (e.childTarget as HTMLElement | null)?.getAttribute(
       "userid",
-    ) as string;
+    );
+    if (userId === null || userId === undefined) return;
     setTribeUserSettingsUserId(userId);
     showModal("TribeUserSettings");
   },

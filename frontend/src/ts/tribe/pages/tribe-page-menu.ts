@@ -99,7 +99,7 @@ qs(".pageTribe .menu .devRoom")?.on("click", (e) => {
   tribeSocket.out.dev?.room();
 });
 
-qs(".pageTribe .menu .matchmaking .buttons button")?.on("click", (e) => {
+qsa(".pageTribe .menu .matchmaking .buttons button").on("click", (e) => {
   const queue =
     (e.currentTarget as HTMLElement | null)?.getAttribute("queue") ?? "";
   toggleQueue(parseInt(queue));

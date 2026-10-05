@@ -4,7 +4,7 @@ import * as TribeButtons from "../tribe-buttons";
 import tribeSocket from "../tribe-socket";
 import { RoomConfig } from "../types";
 import { configMetadata } from "../../config/metadata";
-import { qsa, qsr } from "../../utils/dom";
+import { ElementsWithUtils, qs, qsa, qsr } from "../../utils/dom";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -15,12 +15,13 @@ import { z } from "zod";
 const configButtonEls = qsa(
   ".pageTribe .tribePage.lobby .currentConfig button",
 );
-const roomCodeEls = qsa(
-  ".pageTribe .tribePage.lobby .inviteLink .code .text, .pageTest #result #tribeResultBottom .inviteLink .code .text",
-);
-const roomLinkEls = qsa(
-  ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link",
-);
+// queried lazily - the result screen elements are rendered after module load
+const roomCodeSelector =
+  ".pageTribe .tribePage.lobby .inviteLink .code .text, .pageTest #result #tribeResultBottom .inviteLink .code .text";
+const roomLinkSelector =
+  ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link";
+const roomCodeEls = (): ElementsWithUtils => qsa(roomCodeSelector);
+const roomLinkEls = (): ElementsWithUtils => qsa(roomLinkSelector);
 const visibilityButtonEl = qsr(
   ".pageTribe .tribePage.lobby .visibilityAndName .visibility button",
 );
@@ -38,8 +39,8 @@ const currentConfigGroupEls = qsr(
 );
 
 export function reset(): void {
-  roomCodeEls.setText("");
-  roomLinkEls.setText("");
+  roomCodeEls().setText("");
+  roomLinkEls().setText("");
 }
 
 export function disableConfigButtons(): void {
@@ -279,8 +280,8 @@ export async function init(): Promise<void> {
   if (!room) return;
   reset();
   const link = `${location.origin}/tribe/${room.id}`;
-  roomCodeEls.setText(room.id);
-  roomLinkEls.setText(link);
+  roomCodeEls().setText(room.id);
+  roomLinkEls().setText(link);
 
   TribeUserList.update("lobby");
   TribeButtons.update();
@@ -291,22 +292,21 @@ export async function init(): Promise<void> {
   enableNameVisibilityButtons();
 }
 
-roomCodeEls
-  .on("mouseenter", function (e) {
-    if (e.currentTarget !== null) {
-      (e.currentTarget as HTMLElement).style.color =
-        `#${(e.currentTarget as HTMLElement).innerText}`;
-    }
+qs("html")
+  ?.onChild("mouseover", roomCodeSelector, (e) => {
+    const el = e.childTarget as HTMLElement | null;
+    if (el !== null) el.style.color = `#${el.innerText}`;
   })
-  .on("mouseleave", function (e) {
-    if (e.currentTarget !== null) {
-      (e.currentTarget as HTMLElement).style.color = "";
-    }
+  .onChild("mouseout", roomCodeSelector, (e) => {
+    const el = e.childTarget as HTMLElement | null;
+    if (el !== null) el.style.color = "";
   });
 
-roomLinkEls.on("click", async () => {
+qs("html")?.onChild("click", roomLinkSelector, async (e) => {
   try {
-    await navigator.clipboard.writeText(roomLinkEls[0]?.native.innerText ?? "");
+    await navigator.clipboard.writeText(
+      (e.childTarget as HTMLElement | null)?.innerText ?? "",
+    );
     showSuccessNotification("Code copied");
   } catch (e) {
     showErrorNotification(`Could not copy to clipboard: ${String(e)}`);

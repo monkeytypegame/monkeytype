@@ -880,10 +880,10 @@ TribeSocket.in.room.finalPositions((data) => {
   }
 });
 
-qs(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
-  .pageTest #tribeResultBottom .buttons .startTestButton`)?.on(
+qs("html")?.onChild(
   "click",
-  (_e) => {
+  ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton, .pageTest #tribeResultBottom .buttons .startTestButton",
+  () => {
     initRace();
   },
 );

@@ -128,14 +128,22 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-//https://portswigger.net/web-security/cross-site-scripting/preventing
 export function escapeHTML<T extends string | null | undefined>(str: T): T {
   if (str === null || str === undefined) {
     return str;
   }
-  return str.replace(/[^\w. ]/gi, function (c) {
-    return `&#${c.charCodeAt(0)};`;
-  }) as T;
+
+  const escapeMap: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+  };
+
+  return str.replace(/[&<>"'/`]/g, (char) => escapeMap[char] as string) as T;
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {

@@ -40,6 +40,7 @@ describe("ConfigMeta", () => {
         "britishEnglish",
         "funbox",
         "customLayoutfluid",
+        "customPolyglot",
         "strictSpace",
         "stopOnError",
         "lazyMode",

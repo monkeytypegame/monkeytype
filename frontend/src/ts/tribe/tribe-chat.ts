@@ -327,7 +327,7 @@ qs(".pageTest")?.onChild(
   },
 );
 
-qs("document")?.on("keydown", (e) => {
+qs("html")?.on("keydown", (e) => {
   if (!TribeState.isInARoom()) return;
 
   if (TribeState.getRoomState() === TribeTypes.ROOM_STATE.LOBBY) {
@@ -335,9 +335,7 @@ qs("document")?.on("keydown", (e) => {
       e.key === "/" &&
       !qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.isFocused()
     ) {
-      qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.dispatch(
-        "focus",
-      );
+      qs<HTMLInputElement>(".pageTribe .lobby .chat .input input")?.focus();
       e.preventDefault();
     }
   } else if (
@@ -356,7 +354,7 @@ qs("document")?.on("keydown", (e) => {
     ) {
       qs<HTMLInputElement>(
         ".pageTest #result #tribeResultBottom .chat .input input",
-      )?.dispatch("focus");
+      )?.focus();
       e.preventDefault();
     }
   }
