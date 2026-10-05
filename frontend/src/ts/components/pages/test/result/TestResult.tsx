@@ -29,10 +29,9 @@ export function TestResult(): JSXElement {
   return (
     <div
       id="result"
-      class={cn("content-grid full-width outline-none", {
+      class={cn("content-grid full-width", {
         hidden: !isResultShown(),
       })}
-      tabIndex="-1"
     >
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">

@@ -1181,10 +1181,12 @@ async function showResult(
   qs(".pageTest .loading")?.hide();
   setResultShown(true);
 
-  const resultEl = qs("#result");
-  resultEl?.focus({ preventScroll: true });
+  const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
+  resultPrefocusTarget?.focus({ preventScroll: true });
 
-  await Misc.promiseAnimate("#result", {
+  const resultEl = qs("#result");
+
+  void resultEl?.promiseAnimate?.({
     opacity: [0, 1],
     duration: Misc.applyReducedMotion(125),
   });

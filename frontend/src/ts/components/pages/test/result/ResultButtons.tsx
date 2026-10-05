@@ -25,6 +25,11 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
         "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
       )}
     >
+      <div
+        id="resultButtonsPrefocusTarget"
+        class="focus:outline-none focus-visible:outline-none"
+        tabIndex="-1"
+      ></div>
       <ResultButton
         id="nextTestButton"
         class="max-sm:col-span-2"

@@ -10,7 +10,7 @@ import { cn } from "../../../../utils/cn";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
-import { speedBalloon } from "./result-stats";
+import { speedBalloon } from "./speed-balloon";
 
 type Props = {
   result: CompletedResult;

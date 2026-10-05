@@ -35,8 +35,9 @@ import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
+import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
-import { bottomClass, speedBalloon, topClass } from "./result-stats";
+import { speedBalloon } from "./speed-balloon";
 
 type Props = {
   result: CompletedResult;
@@ -85,34 +86,34 @@ export function ResultSecondaryStats(props: Props): JSXElement {
       )}
     >
       <div>
-        <div class={topClass}>test type</div>
-        <div class={cn(bottomClass, "text-base leading-[1.25]")}>
+        <div class="text-sub">test type</div>
+        <div class="text-main">
           <Lines lines={testType()} />
         </div>
         <Tags />
       </div>
       <Show when={other().length > 0}>
         <div>
-          <div class={cn(topClass, "flex items-center")}>other</div>
-          <div class={cn(bottomClass, "text-base leading-4")}>
+          <div class="text-sub">other</div>
+          <div class="text-main">
             <Lines lines={other()} />
           </div>
         </div>
       </Show>
 
       <div>
-        <div class={topClass}>raw</div>
+        <div class="text-sub">raw</div>
         <Balloon
-          class={cn(bottomClass, mobileBalloonClass)}
+          class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={speedBalloon(props.result.rawWpm)}
         >
           {format().typingSpeed(props.result.rawWpm)}
         </Balloon>
       </div>
       <div>
-        <div class={topClass}>characters</div>
+        <div class="text-sub">characters</div>
         <Balloon
-          class={cn(bottomClass, mobileBalloonClass)}
+          class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={"correct\nincorrect\nextra\nmissed"}
           break
         >
@@ -121,18 +122,18 @@ export function ResultSecondaryStats(props: Props): JSXElement {
       </div>
 
       <div>
-        <div class={topClass}>consistency</div>
+        <div class="text-sub">consistency</div>
         <Balloon
-          class={cn(bottomClass, mobileBalloonClass)}
+          class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={consistencyBalloon()}
         >
           {format().percentage(props.result.consistency)}
         </Balloon>
       </div>
       <div>
-        <div class={topClass}>time</div>
+        <div class="text-sub">time</div>
         <Balloon
-          class={cn(bottomClass, mobileBalloonClass)}
+          class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={timeBalloon()}
         >
           <div>{timeText()}</div>
@@ -148,10 +149,14 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         duration={250}
         class="max-w-52 whitespace-nowrap"
       >
-        <div class={topClass}>daily leaderboard</div>
+        <div class="text-sub">daily leaderboard</div>
         <Balloon
           text="Show daily leaderboard"
-          class={cn(bottomClass, mobileBalloonClass, "cursor-pointer")}
+          class={cn(
+            "text-[2em] leading-[1em] text-main",
+            mobileBalloonClass,
+            "cursor-pointer",
+          )}
           onClick={() => {
             void navigate(
               `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
@@ -214,25 +219,24 @@ function Tags(): JSXElement {
   return (
     <Show when={tagNames().size > 0}>
       <div class="mt-2">
-        <div class={cn(topClass, "flex items-center")}>
+        <div class={cn("text-sub", "flex items-center")}>
           <span>tags</span>
-          <Balloon
-            class={cn("textButton ml-[0.5em] px-[0.25em] py-0", {
-              invisible: resultState.resultId === "",
-            })}
-            text="Edit tags"
-            position="right"
-            role="button"
+          <Button
+            variant="text"
+            fa={{ icon: "fa-pen", fixedWidth: true }}
             onClick={openEditModal}
-          >
-            <Fa icon="fa-pen" fixedWidth />
-          </Balloon>
+            balloon={{
+              text: "Edit tags",
+              position: "right",
+            }}
+            class="-my-2 p-1"
+          />
         </div>
-        <div class={cn(bottomClass, "text-base leading-[1.25]")}>
+        <div class="text-main">
           <Show when={tags().length > 0} fallback={<div>no tags</div>}>
             <For each={tags()}>
               {(tag) => (
-                <Balloon text={tag.balloon}>
+                <Balloon text={tag.balloon} class="flex">
                   {tag.name}
                   <Show when={tag.isPb}>
                     <Fa icon="fa-crown" class="ml-2" />
@@ -250,15 +254,13 @@ function Tags(): JSXElement {
 function QuoteSource(props: { quote: Quote }): JSXElement {
   return (
     <div class="max-w-120">
-      <div class={cn(topClass, "flex items-center")}>
-        <span class="mr-[0.5em]">source</span>
+      <div class={cn("text-sub", "flex items-center")}>
+        <span class="mr-2">source</span>
         <Show when={isAuthenticated()}>
           <QuoteButtons quote={props.quote} />
         </Show>
       </div>
-      <div class={cn(bottomClass, "text-base leading-4")}>
-        {props.quote.source}
-      </div>
+      <div class="text-main">{props.quote.source}</div>
     </div>
   );
 }
@@ -322,44 +324,36 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
 
   return (
     <>
-      <Balloon
-        inline
-        id="reportQuoteButton"
-        class="textButton px-1 py-0"
-        text="Report quote"
+      <Button
+        variant="text"
+        class="-my-1 p-1"
+        balloon={{ text: "Report quote" }}
+        fa={{ icon: "fa-flag", fixedWidth: true }}
         onClick={() => showQuoteReportModal(props.quote.id)}
-      >
-        <Fa icon="fa-flag" fixedWidth class="icon" />
-      </Balloon>
-      <Balloon
-        inline
-        id="favoriteQuoteButton"
-        class="textButton px-1 py-0"
-        text="Favorite quote"
+      />
+      <Button
+        variant="text"
+        class="-my-1 p-1"
+        balloon={{ text: "Favorite quote" }}
+        fa={{
+          icon: "fa-heart",
+          variant: isFavorite() ? "solid" : "regular",
+          fixedWidth: true,
+        }}
         onClick={() => void toggleFavorite()}
-      >
-        <Fa
-          icon="fa-heart"
-          variant={isFavorite() ? "solid" : "regular"}
-          fixedWidth
-          class="icon"
-        />
-      </Balloon>
-      <Balloon
-        inline
-        id="rateQuoteButton"
-        class="textButton gap-1 px-1 py-0"
-        text="Rate quote"
+      />
+      <Button
+        variant="text"
+        class="-my-1 p-1"
+        balloon={{ text: "Rate quote" }}
+        fa={{
+          icon: "fa-star",
+          variant: isRated() ? "solid" : "regular",
+          fixedWidth: true,
+        }}
+        text={rating()}
         onClick={() => showQuoteRateModal(props.quote)}
-      >
-        <Fa
-          icon="fa-star"
-          variant={isRated() ? "solid" : "regular"}
-          fixedWidth
-          class="icon"
-        />
-        <span class="rating">{rating()}</span>
-      </Balloon>
+      />
     </>
   );
 }
