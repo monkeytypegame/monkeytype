@@ -41,6 +41,7 @@ import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
+import { ThemeBubbles } from "../../../common/ThemeBubbles";
 import { SearchableSetting } from "../SearchableSetting";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
@@ -503,11 +504,16 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
           isActive() && "opacity-100",
         )}
       >
-        <div class="grid grid-cols-3 gap-2 rounded-full bg-(--bg) p-1.5">
-          <div class="h-4 w-4 rounded-full bg-(--main)"></div>
-          <div class="h-4 w-4 rounded-full bg-(--sub)"></div>
-          <div class="h-4 w-4 rounded-full bg-(--text)"></div>
-        </div>
+        <ThemeBubbles
+          inset={false}
+          colors={{
+            bg: props.theme.bg,
+            main: props.theme.main,
+            sub: props.theme.sub,
+            text: props.theme.text,
+          }}
+          class="mr-1"
+        />
       </div>
     </button>
   );
