@@ -1,6 +1,7 @@
-import { JSXElement, onMount } from "solid-js";
+import { JSXElement, onMount, Show } from "solid-js";
 
 import { initInputListeners } from "../../../input/listeners";
+import { getShowResult } from "../../../states/result";
 import * as Caret from "../../../test/caret";
 import * as PaceCaret from "../../../test/pace-caret";
 import * as TestUI from "../../../test/test-ui";
@@ -162,7 +163,9 @@ export function TestPage(): JSXElement {
       <div class="loading hidden">
         <i class="fas fa-circle-notch fa-spin"></i>
       </div>
-      <TestResult />
+      <Show when={getShowResult()}>
+        <TestResult />
+      </Show>
     </>
   );
 }

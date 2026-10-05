@@ -63,7 +63,7 @@ import {
 import { createEffect } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
 import * as TestInitFailed from "../elements/test-init-failed";
-import { setResultShown, setResultWordsJoiningScript } from "../states/result";
+import { setShowResult, setResultWordsJoiningScript } from "../states/result";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -1519,7 +1519,7 @@ export async function fadeInAfterRestart(noAnim: boolean): Promise<void> {
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
-  setResultShown(false);
+  setShowResult(false);
   qs("#typingTest")?.setStyle({ opacity: "0" }).show();
   getInputElement().style.left = "0";
   Focus.set(false);

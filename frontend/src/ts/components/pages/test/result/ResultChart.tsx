@@ -33,7 +33,7 @@ import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
   getSmoothedBurst,
-  isResultShown,
+  getShowResult,
   resultState,
 } from "../../../../states/result";
 import { CompletedResult, getLastEventLog } from "../../../../states/test";
@@ -577,7 +577,7 @@ export function ResultChart(props: {
 
     // only build while visible - the result outlives the result screen, and
     // showResult() shows it after the details and tags are set, so this runs once per result
-    if (!isResultShown()) {
+    if (!getShowResult()) {
       return (
         prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
       );
@@ -620,7 +620,7 @@ export function ResultChart(props: {
 
   // the canvas has no size while the result is hidden
   createEffectOn(
-    isResultShown,
+    getShowResult,
     (shown) => {
       if (shown) chart?.resize();
     },

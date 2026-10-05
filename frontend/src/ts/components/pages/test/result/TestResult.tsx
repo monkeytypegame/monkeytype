@@ -4,7 +4,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 import { getConfig } from "../../../../config/store";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
-import { isResultShown, resultState } from "../../../../states/result";
+import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
 import { restart, retrySavingResult } from "../../../../test/test-logic";
@@ -27,12 +27,7 @@ export function TestResult(): JSXElement {
   });
 
   return (
-    <div
-      id="result"
-      class={cn("content-grid full-width", {
-        hidden: !isResultShown(),
-      })}
-    >
+    <div id="result" class={cn("content-grid full-width")}>
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">
           <Fa icon="fa-check" />

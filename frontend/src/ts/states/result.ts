@@ -70,7 +70,7 @@ export const [resultState, setResultState] = createStore<ResultState>({
 });
 
 // visibility of the #result element. Fade in/out is still animated imperatively.
-export const [isResultShown, setResultShown] = createSignal(false);
+export const [getShowResult, setShowResult] = createSignal(false);
 
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });

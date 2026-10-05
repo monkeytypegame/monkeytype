@@ -111,7 +111,7 @@ import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import {
   ResultDetails,
-  setResultShown,
+  setShowResult,
   resultState,
   setResultState,
   setCrownType,
@@ -1179,7 +1179,7 @@ async function showResult(
   void Funbox.clear();
 
   qs(".pageTest .loading")?.hide();
-  setResultShown(true);
+  setShowResult(true);
 
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
   resultPrefocusTarget?.focus({ preventScroll: true });
