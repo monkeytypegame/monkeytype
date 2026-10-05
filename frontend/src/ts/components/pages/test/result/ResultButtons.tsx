@@ -20,73 +20,77 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
   const isShiftHeld = createKeyHold("Shift");
 
   return (
-    <div
-      class={cn(
-        "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
-      )}
-    >
+    <>
       <div
         id="resultButtonsPrefocusTarget"
         class="focus:outline-none focus-visible:outline-none"
         tabIndex="-1"
       ></div>
-      <ResultButton
-        id="nextTestButton"
-        class="max-sm:col-span-2"
-        text="Next test"
-        fa={{ icon: "fa-chevron-right" }}
-        onClick={() => void restart()}
-      />
-      <ResultButton
-        id="restartTestButtonWithSameWordset"
-        text="Repeat test"
-        fa={{ icon: "fa-sync-alt" }}
-        onClick={repeatTest}
-      />
-      <ResultButton
-        id="practiseWordsButton"
-        text="Practice words"
-        fa={{ icon: "fa-exclamation-triangle" }}
-        onClick={() => {
-          if (getConfig.mode === "zen") {
-            showNoticeNotification("Practice words is unsupported in zen mode");
-            return;
-          }
-          showModal("PractiseWords");
-        }}
-      />
-      <Show when={!props.glarses}>
+      <div
+        class={cn(
+          "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
+        )}
+      >
         <ResultButton
-          id="showWordHistoryButton"
-          text="Toggle words history"
-          fa={{ icon: "fa-align-left" }}
-          onClick={() => toggleResultWords()}
-        />
-        <ResultButton
-          id="watchReplayButton"
-          text="Watch replay"
-          fa={{ icon: "fa-backward" }}
-          onClick={toggleReplayDisplay}
-        />
-        <ResultButton
-          id="saveScreenshotButton"
+          id="nextTestButton"
           class="max-sm:col-span-2"
-          text={"Copy screenshot to clipboard\n(shift click to download)"}
-          fa={
-            isShiftHeld()
-              ? { icon: "fa-download" }
-              : { icon: "fa-image", variant: "regular" }
-          }
-          onClick={(event) => {
-            if (event.shiftKey) {
-              void captureAndDownload();
-            } else {
-              void captureAndCopyToClipboard();
+          text="Next test"
+          fa={{ icon: "fa-chevron-right" }}
+          onClick={() => void restart()}
+        />
+        <ResultButton
+          id="restartTestButtonWithSameWordset"
+          text="Repeat test"
+          fa={{ icon: "fa-sync-alt" }}
+          onClick={repeatTest}
+        />
+        <ResultButton
+          id="practiseWordsButton"
+          text="Practice words"
+          fa={{ icon: "fa-exclamation-triangle" }}
+          onClick={() => {
+            if (getConfig.mode === "zen") {
+              showNoticeNotification(
+                "Practice words is unsupported in zen mode",
+              );
+              return;
             }
+            showModal("PractiseWords");
           }}
         />
-      </Show>
-    </div>
+        <Show when={!props.glarses}>
+          <ResultButton
+            id="showWordHistoryButton"
+            text="Toggle words history"
+            fa={{ icon: "fa-align-left" }}
+            onClick={() => toggleResultWords()}
+          />
+          <ResultButton
+            id="watchReplayButton"
+            text="Watch replay"
+            fa={{ icon: "fa-backward" }}
+            onClick={toggleReplayDisplay}
+          />
+          <ResultButton
+            id="saveScreenshotButton"
+            class="max-sm:col-span-2"
+            text={"Copy screenshot to clipboard\n(shift click to download)"}
+            fa={
+              isShiftHeld()
+                ? { icon: "fa-download" }
+                : { icon: "fa-image", variant: "regular" }
+            }
+            onClick={(event) => {
+              if (event.shiftKey) {
+                void captureAndDownload();
+              } else {
+                void captureAndCopyToClipboard();
+              }
+            }}
+          />
+        </Show>
+      </div>
+    </>
   );
 }
 

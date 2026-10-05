@@ -38,23 +38,23 @@ export function TestResult(): JSXElement {
           <Fa icon="fa-check" />
         </div>
       </Show>
-      <Show when={!getGlarsesMode()}>
-        <Show
-          when={lastTest()}
-          fallback={
-            <>
-              <div class="mx-auto">Missing last test result data.</div>
-              <Button
-                class="mx-auto mt-4 w-max px-4 py-2"
-                text="Restart"
-                fa={{ icon: "fa-chevron-right" }}
-                onClick={() => void restart()}
-              />
-            </>
-          }
-        >
-          {(test) => (
-            <div id="resultWrapper">
+      <Show
+        when={lastTest()}
+        fallback={
+          <>
+            <div class="mx-auto">Missing last test result data.</div>
+            <Button
+              class="mx-auto mt-4 w-max px-4 py-2"
+              text="Restart"
+              fa={{ icon: "fa-chevron-right" }}
+              onClick={() => void restart()}
+            />
+          </>
+        }
+      >
+        {(test) => (
+          <div id="resultWrapper">
+            <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats
                   result={test().result}
@@ -91,13 +91,13 @@ export function TestResult(): JSXElement {
                   to save your result
                 </div>
               </Show>
-              <ResultButtons glarses={getGlarsesMode()} />
-              <Show when={getIsScreenshotting()}>
-                <Watermark />
-              </Show>
-            </div>
-          )}
-        </Show>
+            </Show>
+            <ResultButtons glarses={getGlarsesMode()} />
+            <Show when={getIsScreenshotting()}>
+              <Watermark />
+            </Show>
+          </div>
+        )}
       </Show>
       <ResultAds />
     </div>
