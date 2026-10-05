@@ -9,7 +9,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { updateTagsAfterEdit } from "../../test/result";
+import { setResultTagsAfterEdit } from "../../states/result";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { createErrorMessage } from "../../utils/error";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -77,7 +77,7 @@ export function EditResultTagsModal() {
             newTagIds,
             afterUpdate: ({ tagPbs }) => {
               if (selected.source === "resultPage") {
-                updateTagsAfterEdit(newTagIds, tagPbs);
+                setResultTagsAfterEdit(newTagIds, tagPbs);
               }
             },
           })

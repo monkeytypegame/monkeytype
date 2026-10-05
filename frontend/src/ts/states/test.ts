@@ -75,10 +75,11 @@ export const [isErrorBorderDisabled, setErrorBorderDisabled] =
 export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
-export const [getLastResult, setLastResult] = createSignal<Omit<
-  CompletedEvent,
-  "hash" | "uid"
-> | null>(null);
+// a finished test's result, before the server adds hash and uid
+export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
+
+export const [getLastResult, setLastResult] =
+  createSignal<CompletedResult | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
