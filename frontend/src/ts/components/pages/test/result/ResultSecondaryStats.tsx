@@ -202,7 +202,7 @@ function Tags(): JSXElement {
   );
 
   const openEditModal = (): void => {
-    if (tagNames().size === 0) return;
+    if (tagNames().size === 0 || resultState.resultId === "") return;
     showEditResultTagsModal({
       _id: resultState.resultId,
       tags: resultState.tags.map((t) => t.id),
@@ -229,7 +229,7 @@ function Tags(): JSXElement {
               text: "Edit tags",
               position: "right",
             }}
-            class="-my-2 p-1"
+            class={cn("-my-2 p-1", resultState.resultId === "" && "invisible")}
           />
         </div>
         <div class="text-main">

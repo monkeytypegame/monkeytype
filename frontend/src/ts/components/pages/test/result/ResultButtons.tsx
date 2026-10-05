@@ -2,6 +2,7 @@ import { createKeyHold } from "@tanstack/solid-hotkeys";
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { getIsScreenshotting } from "../../../../states/core";
 import { showModal } from "../../../../states/modals";
 import { showNoticeNotification } from "../../../../states/notifications";
 import {
@@ -29,6 +30,7 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
       <div
         class={cn(
           "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
+          getIsScreenshotting() && "hidden",
         )}
       >
         <ResultButton
