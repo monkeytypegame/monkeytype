@@ -134,7 +134,7 @@ function ResultAds(): JSXElement {
   return (
     <div
       class={cn("full-width mt-4", {
-        hidden: getIsScreenshotting() || getConfig.ads !== "off",
+        hidden: getIsScreenshotting() || getConfig.ads === "off",
       })}
     >
       <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
