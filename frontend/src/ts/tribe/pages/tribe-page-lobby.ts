@@ -238,12 +238,12 @@ const configOrder: Record<
     text: (config) => config.customPolyglot.join(","),
     showIf: (config) => config.funbox.includes("polyglot"),
   },
-  strictSpace: {
-    commandsKey: "strictSpace",
-    icon: "fas fa-arrows-alt-h",
-    label: "Strict Space",
-    text: (config) => (config.strictSpace ? "on" : "off"),
-  },
+  // strictSpace: {
+  //   commandsKey: "strictSpace",
+  //   icon: "fas fa-arrows-alt-h",
+  //   label: "Strict Space",
+  //   text: (config) => (config.strictSpace ? "on" : "off"),
+  // },
   // confidenceMode: {
   //   commandsKey: "confidenceMode",
   //   icon: "fas fa-check-circle",

@@ -148,13 +148,13 @@ export function update(page: string, userId: string): void {
     return;
   }
 
-  el.qs(`.player[id=${userId}] .wpm`)?.setText(
+  el.qs(`.player[id="${userId}"] .wpm`)?.setText(
     `${Math.round(user?.progress?.wpm ?? 0)}`,
   );
-  el.qs(`.player[id=${userId}] .acc`)?.setText(
+  el.qs(`.player[id="${userId}"] .acc`)?.setText(
     `${Math.floor(user.progress?.acc ?? 0)}%`,
   );
-  el.qs(`.player[id=${userId}] .bar`)?.animate({
+  el.qs(`.player[id="${userId}"] .bar`)?.animate({
     width:
       Config.mode === "time" || isConfigInfinite(room.config)
         ? `${user.progress?.wpmProgress}%`
@@ -182,7 +182,7 @@ export function completeBar(page: string, userId: string): void {
     return;
   }
 
-  el.qs(`.player[id=${userId}] .bar`)?.animate({
+  el.qs(`.player[id="${userId}"] .bar`)?.animate({
     width: "100%",
     duration: SlowTimer.get() ? 0 : 500,
     ease: "linear",
@@ -212,14 +212,14 @@ export function fadeUser(
     return;
   }
 
-  el.qs(`.player[id=${userId}]`)?.addClass("faded");
+  el.qs(`.player[id="${userId}"]`)?.addClass("faded");
 
   if (changeColor !== undefined) {
     const theme = getTheme();
     const color = theme[changeColor];
     if (color === undefined) return;
     if (el === undefined) return;
-    el.qs(`.player[id=${userId}] .bar`)?.setStyle({
+    el.qs(`.player[id="${userId}"] .bar`)?.setStyle({
       backgroundColor: color,
     });
   }

@@ -530,7 +530,6 @@ export const configMetadata = {
     fa: { icon: "fa-minus" },
     displayString: "strict space",
     changeRequiresRestart: true,
-    tribeBlocked: true,
     group: "input",
     description:
       "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",

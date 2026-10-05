@@ -27,7 +27,7 @@ import {
   getLiveCachedTestSeconds,
   getLiveCachedTimerStartMs,
 } from "./events/live-cache";
-import { getChars, getKeypressesPerSecond } from "./events/stats";
+import { getChars } from "./events/stats";
 import { calculateWpm } from "../utils/numbers";
 import {
   getActiveWordIndex,
@@ -312,12 +312,12 @@ function timerStep(now: number, catchingUp: boolean): void {
     const failed = checkIfFailed(wpmAndRaw, acc);
     if (!failed) checkIfTimeIsUp(testTime);
 
-    //todo: live cache this?
-    const keypresses = getKeypressesPerSecond(eventLog);
+    // per-second counts only cover completed intervals, so check the whole log
+    const hasKeypresses = eventLog.events.some(
+      (e) => e.type === "input" && e.data.inputType === "insertText",
+    );
 
-    const totalKeypresses = keypresses.reduce((acc, val) => acc + val, 0);
-
-    if (testTime >= 3 && totalKeypresses === 0) {
+    if (testTime >= 3 && !hasKeypresses) {
       timerEvent.dispatch({ key: "finish" });
     }
   }

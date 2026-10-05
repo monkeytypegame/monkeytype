@@ -113,6 +113,10 @@ export function reset(where: "lobby" | "result"): void {
   }
 }
 
+export function clearHistory(): void {
+  chatHistory.length = 0;
+}
+
 export async function fill(where: "lobby" | "result"): Promise<void> {
   reset(where);
   for (let i = 0; i < chatHistory.length; i++) {

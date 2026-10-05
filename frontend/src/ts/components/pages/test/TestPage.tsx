@@ -75,7 +75,7 @@ export function TestPage(): JSXElement {
         </div>
       </div>
       <div id="typingTest" class="content-grid full-width-padding">
-        <div class="tribeBars hidden"></div>
+        <table class="tribeBars hidden"></table>
         <div>
           <CapsWarning />
         </div>

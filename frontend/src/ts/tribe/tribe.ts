@@ -172,6 +172,7 @@ async function reset(): Promise<void> {
   qs("#result #tribeResultBottom")?.addClass("hidden");
   TribeUserList.reset();
   TribeResults.reset();
+  TribeChat.clearHistory();
   TribeChat.reset("lobby");
   TribeChat.reset("result");
   TribeBars.hide();

@@ -55,7 +55,7 @@ export function LiveStatsMini() {
         </AnimeShow>
       </div>
       <div
-        class="tribeDelta pointer-events-none absolute right-0 mt-[-1.25em] hidden leading-[1em]"
+        class="tribeDelta pointer-events-none absolute top-0 right-0 hidden leading-[1em]"
         style={{
           "font-size": `${getConfig.fontSize}rem`,
           opacity: getConfig.timerOpacity,

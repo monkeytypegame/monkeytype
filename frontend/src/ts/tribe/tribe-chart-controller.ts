@@ -11,261 +11,264 @@ import { showErrorNotification } from "../states/notifications";
 
 const charts: Record<string, Chart> = {};
 
-const settings: ChartConfiguration = {
-  type: "line",
-  data: {
-    labels: [1, 2, 3],
-    datasets: [
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "wpm",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "wpm",
-        order: 2,
-        pointRadius: 1,
-        tension: 0.5,
-        fill: "origin",
-      },
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "burst",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "burst",
-        order: 4,
-        pointRadius: 1,
-        tension: 0.5,
-        fill: "origin",
-      },
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "errors",
-        data: [],
-        borderColor: "rgba(255, 125, 125, 1)",
-        pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
-        order: 1,
-        yAxisID: "error",
-        type: "scatter",
-        pointStyle: "crossRot",
-        pointRadius: function (context): number {
-          const index = context.dataIndex;
-          const value = context.dataset.data[index] as number;
-          return (value ?? 0) <= 0 ? 0 : 3;
+// fresh object per chart - contains functions, so it cannot be structuredClone-d
+function getSettings(): ChartConfiguration {
+  return {
+    type: "line",
+    data: {
+      labels: [1, 2, 3],
+      datasets: [
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "wpm",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 2,
+          yAxisID: "wpm",
+          order: 2,
+          pointRadius: 1,
+          tension: 0.5,
+          fill: "origin",
         },
-        pointHoverRadius: function (context): number {
-          const index = context.dataIndex;
-          const value = context.dataset.data[index] as number;
-          return (value ?? 0) <= 0 ? 0 : 5;
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "burst",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 2,
+          yAxisID: "burst",
+          order: 4,
+          pointRadius: 1,
+          tension: 0.5,
+          fill: "origin",
         },
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      intersect: false,
-      mode: "index",
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "errors",
+          data: [],
+          borderColor: "rgba(255, 125, 125, 1)",
+          pointBackgroundColor: "rgba(255, 125, 125, 1)",
+          borderWidth: 2,
+          order: 1,
+          yAxisID: "error",
+          type: "scatter",
+          pointStyle: "crossRot",
+          pointRadius: function (context): number {
+            const index = context.dataIndex;
+            const value = context.dataset.data[index] as number;
+            return (value ?? 0) <= 0 ? 0 : 3;
+          },
+          pointHoverRadius: function (context): number {
+            const index = context.dataIndex;
+            const value = context.dataset.data[index] as number;
+            return (value ?? 0) <= 0 ? 0 : 5;
+          },
+        },
+      ],
     },
-    layout: {
-      padding: {
-        left: 5,
-        right: 5,
-        top: 5,
-        bottom: 5,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+        mode: "index",
       },
-    },
-    // tooltips: {
-    //   titleFontFamily: "Roboto Mono",
-    //   bodyFontFamily: "Roboto Mono",
-    //   mode: "index",
-    //   intersect: false,
-    //   enabled: false,
-    //   custom: function (tooltipModel: unknown) {
-    //     // Tooltip Element
-    //     let tooltipEl = document.getElementById("tribeMiniChartCustomTooltip");
-
-    //     // Create element on first render
-    //     if (!tooltipEl) {
-    //       tooltipEl = document.createElement("div");
-    //       tooltipEl.id = "tribeMiniChartCustomTooltip";
-    //       tooltipEl.innerHTML = "<div></div>";
-    //       document.body.appendChild(tooltipEl);
-    //     }
-
-    //     // Hide if no tooltip
-    //     if (tooltipModel.opacity === 0) {
-    //       tooltipEl.style.opacity = "0";
-    //       return;
-    //     }
-
-    //     // Set caret Position
-    //     tooltipEl.classList.remove("above", "below", "no-transform");
-    //     if (tooltipModel.yAlign) {
-    //       tooltipEl.classList.add(tooltipModel.yAlign);
-    //     } else {
-    //       tooltipEl.classList.add("no-transform");
-    //     }
-
-    //     function getBody(bodyItem) {
-    //       return bodyItem.lines;
-    //     }
-
-    //     // Set Text
-    //     if (tooltipModel.body) {
-    //       const titleLines = tooltipModel.title || [];
-    //       const bodyLines = tooltipModel.body.map(getBody);
-
-    //       let innerHtml = "";
-
-    //       titleLines.forEach(function (title: string) {
-    //         innerHtml += "<div>" + title + "</div>";
-    //       });
-    //       // innerHtml += '</thead><tbody>';
-
-    //       bodyLines.forEach(function (body, _i) {
-    //         // var colors = tooltipModel.labelColors[i];
-    //         // var style = 'background:' + colors.backgroundColor;
-    //         // style += '; border-color:' + colors.borderColor;
-    //         // style += '; border-width: 2px';
-    //         // var span = '<span style="' + style + '"></span>';
-    //         innerHtml += "<div>" + body + "</div>";
-    //         // innerHtml += '<tr><td>' + span + body + '</td></tr>';
-    //       });
-    //       // innerHtml += '</tbody>';
-
-    //       const tableRoot = tooltipEl.querySelector("div");
-    //       tableRoot.innerHTML = innerHtml;
-    //     }
-
-    //     // `this` will be the overall tooltip
-    //     const position = this._chart.canvas.getBoundingClientRect();
-
-    //     // Display, position, and set styles for font
-    //     tooltipEl.style.opacity = "1";
-    //     tooltipEl.style.position = "absolute";
-    //     tooltipEl.style.left =
-    //       position.left +
-    //       window.pageXOffset +
-    //       tooltipModel.caretX -
-    //       tooltipEl.offsetWidth +
-    //       "px";
-    //     tooltipEl.style.top =
-    //       position.top + window.pageYOffset + tooltipModel.caretY + "px";
-    //     // tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
-    //     tooltipEl.style.fontSize = "0.75rem";
-    //     tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
-    //     tooltipEl.style.padding =
-    //       tooltipModel.yPadding + "px " + tooltipModel.xPadding + "px";
-    //     tooltipEl.style.pointerEvents = "none";
-    //     tooltipEl.style.background = "rgba(0,0,0,.75)";
-    //     tooltipEl.style.borderRadius = "0.5rem";
-    //     tooltipEl.style.color = "white";
-    //     tooltipEl.style.zIndex = "999";
-    //     tooltipEl.style.transition = "left 0.25s, top 0.25s, opacity 0.25s";
-    //   },
-    // },
-    // legend: {
-    //   display: false,
-    //   labels: {
-    //     defaultFontFamily: "Roboto Mono",
-    //   },
-    // },
-    scales: {
-      x: {
-        axis: "x",
-        ticks: {
-          // fontFamily: "Roboto Mono",
-          autoSkip: true,
-          autoSkipPadding: 40,
-          display: false,
+      layout: {
+        padding: {
+          left: 5,
+          right: 5,
+          top: 5,
+          bottom: 5,
         },
-        display: true,
-        // scaleLabel: {
-        //   display: false,
-        //   labelString: "Seconds",
-        //   fontFamily: "Roboto Mono",
-        // },
-        grid: {
+      },
+      // tooltips: {
+      //   titleFontFamily: "Roboto Mono",
+      //   bodyFontFamily: "Roboto Mono",
+      //   mode: "index",
+      //   intersect: false,
+      //   enabled: false,
+      //   custom: function (tooltipModel: unknown) {
+      //     // Tooltip Element
+      //     let tooltipEl = document.getElementById("tribeMiniChartCustomTooltip");
+
+      //     // Create element on first render
+      //     if (!tooltipEl) {
+      //       tooltipEl = document.createElement("div");
+      //       tooltipEl.id = "tribeMiniChartCustomTooltip";
+      //       tooltipEl.innerHTML = "<div></div>";
+      //       document.body.appendChild(tooltipEl);
+      //     }
+
+      //     // Hide if no tooltip
+      //     if (tooltipModel.opacity === 0) {
+      //       tooltipEl.style.opacity = "0";
+      //       return;
+      //     }
+
+      //     // Set caret Position
+      //     tooltipEl.classList.remove("above", "below", "no-transform");
+      //     if (tooltipModel.yAlign) {
+      //       tooltipEl.classList.add(tooltipModel.yAlign);
+      //     } else {
+      //       tooltipEl.classList.add("no-transform");
+      //     }
+
+      //     function getBody(bodyItem) {
+      //       return bodyItem.lines;
+      //     }
+
+      //     // Set Text
+      //     if (tooltipModel.body) {
+      //       const titleLines = tooltipModel.title || [];
+      //       const bodyLines = tooltipModel.body.map(getBody);
+
+      //       let innerHtml = "";
+
+      //       titleLines.forEach(function (title: string) {
+      //         innerHtml += "<div>" + title + "</div>";
+      //       });
+      //       // innerHtml += '</thead><tbody>';
+
+      //       bodyLines.forEach(function (body, _i) {
+      //         // var colors = tooltipModel.labelColors[i];
+      //         // var style = 'background:' + colors.backgroundColor;
+      //         // style += '; border-color:' + colors.borderColor;
+      //         // style += '; border-width: 2px';
+      //         // var span = '<span style="' + style + '"></span>';
+      //         innerHtml += "<div>" + body + "</div>";
+      //         // innerHtml += '<tr><td>' + span + body + '</td></tr>';
+      //       });
+      //       // innerHtml += '</tbody>';
+
+      //       const tableRoot = tooltipEl.querySelector("div");
+      //       tableRoot.innerHTML = innerHtml;
+      //     }
+
+      //     // `this` will be the overall tooltip
+      //     const position = this._chart.canvas.getBoundingClientRect();
+
+      //     // Display, position, and set styles for font
+      //     tooltipEl.style.opacity = "1";
+      //     tooltipEl.style.position = "absolute";
+      //     tooltipEl.style.left =
+      //       position.left +
+      //       window.pageXOffset +
+      //       tooltipModel.caretX -
+      //       tooltipEl.offsetWidth +
+      //       "px";
+      //     tooltipEl.style.top =
+      //       position.top + window.pageYOffset + tooltipModel.caretY + "px";
+      //     // tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
+      //     tooltipEl.style.fontSize = "0.75rem";
+      //     tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+      //     tooltipEl.style.padding =
+      //       tooltipModel.yPadding + "px " + tooltipModel.xPadding + "px";
+      //     tooltipEl.style.pointerEvents = "none";
+      //     tooltipEl.style.background = "rgba(0,0,0,.75)";
+      //     tooltipEl.style.borderRadius = "0.5rem";
+      //     tooltipEl.style.color = "white";
+      //     tooltipEl.style.zIndex = "999";
+      //     tooltipEl.style.transition = "left 0.25s, top 0.25s, opacity 0.25s";
+      //   },
+      // },
+      // legend: {
+      //   display: false,
+      //   labels: {
+      //     defaultFontFamily: "Roboto Mono",
+      //   },
+      // },
+      scales: {
+        x: {
+          axis: "x",
+          ticks: {
+            // fontFamily: "Roboto Mono",
+            autoSkip: true,
+            autoSkipPadding: 40,
+            display: false,
+          },
           display: true,
-          drawTicks: false,
-          tickLength: 0,
+          // scaleLabel: {
+          //   display: false,
+          //   labelString: "Seconds",
+          //   fontFamily: "Roboto Mono",
+          // },
+          grid: {
+            display: true,
+            drawTicks: false,
+            tickLength: 0,
+          },
         },
-      },
-      wpm: {
-        min: 0,
-        axis: "y",
-        display: true,
-        // scaleLabel: {
-        //   display: false,
-        //   labelString: "Words per Minute",
-        //   fontFamily: "Roboto Mono",
-        // },
-        ticks: {
-          // fontFamily: "Roboto Mono",
-          // beginAtZero: true,
-          // min: 0,
-          autoSkip: true,
-          autoSkipPadding: 40,
-          display: false,
-        },
-        grid: {
+        wpm: {
+          min: 0,
+          axis: "y",
           display: true,
-          drawTicks: false,
-          // tickMarkLength: 0,
+          // scaleLabel: {
+          //   display: false,
+          //   labelString: "Words per Minute",
+          //   fontFamily: "Roboto Mono",
+          // },
+          ticks: {
+            // fontFamily: "Roboto Mono",
+            // beginAtZero: true,
+            // min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+            display: false,
+          },
+          grid: {
+            display: true,
+            drawTicks: false,
+            // tickMarkLength: 0,
+          },
         },
-      },
-      burst: {
-        min: 0,
-        axis: "y",
-        display: false,
-        // scaleLabel: {
-        //   display: true,
-        //   labelString: "Raw Words per Minute",
-        //   fontFamily: "Roboto Mono",
-        // },
-        ticks: {
-          // fontFamily: "Roboto Mono",
-          // beginAtZero: true,
-          // min: 0,
-          autoSkip: true,
-          autoSkipPadding: 40,
-        },
-        grid: {
+        burst: {
+          min: 0,
+          axis: "y",
           display: false,
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: "Raw Words per Minute",
+          //   fontFamily: "Roboto Mono",
+          // },
+          ticks: {
+            // fontFamily: "Roboto Mono",
+            // beginAtZero: true,
+            // min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          grid: {
+            display: false,
+          },
         },
-      },
-      error: {
-        min: 0,
-        axis: "y",
-        display: false,
-        position: "right",
-        // scaleLabel: {
-        //   display: true,
-        //   labelString: "Errors",
-        //   fontFamily: "Roboto Mono",
-        // },
-        ticks: {
-          // precision: 0,
-          // fontFamily: "Roboto Mono",
-          // beginAtZero: true,
-          autoSkip: true,
-          autoSkipPadding: 40,
-        },
-        grid: {
+        error: {
+          min: 0,
+          axis: "y",
           display: false,
+          position: "right",
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: "Errors",
+          //   fontFamily: "Roboto Mono",
+          // },
+          ticks: {
+            // precision: 0,
+            // fontFamily: "Roboto Mono",
+            // beginAtZero: true,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          grid: {
+            display: false,
+          },
         },
       },
     },
-  },
-};
+  };
+}
 
 async function fillData(chart: Chart, userId: string): Promise<void> {
   const labels: number[] = [];
@@ -314,7 +317,7 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
     errToShow.pop();
   }
 
-  const c = chart as unknown as typeof settings;
+  const c = chart as unknown as ChartConfiguration;
 
   c.data.labels = labels;
   //@ts-expect-error tribe
@@ -369,7 +372,7 @@ export async function drawChart(userId: string): Promise<void> {
   try {
     if (charts[userId]) return;
     const element = qsa<HTMLCanvasElement>(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`,
+      `.pageTest #result #tribeResults table tbody tr[id="${userId}"] .minichart canvas`,
     )[0];
 
     const room = TribeState.getRoom();
@@ -377,16 +380,16 @@ export async function drawChart(userId: string): Promise<void> {
       return;
     }
 
-    const chart = new Chart(element.native, structuredClone(settings));
+    const chart = new Chart(element.native, getSettings());
 
     await fillData(chart, userId);
 
     charts[userId] = chart;
     qsa(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart`,
+      `.pageTest #result #tribeResults table tbody tr[id="${userId}"] .minichart`,
     ).removeClass("hidden");
     qsa(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .progress`,
+      `.pageTest #result #tribeResults table tbody tr[id="${userId}"] .progress`,
     ).addClass("hidden");
     return;
   } catch (e) {

@@ -103,7 +103,7 @@ export function updateBar(
   if (!room) return;
   if (page === "result") {
     const el = qs(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`,
+      `.pageTest #result #tribeResults table tbody tr[id="${userId}"] .progress .bar`,
     );
     const user = room.users[userId];
     if (!user) return;
@@ -131,7 +131,9 @@ export function updateWpmAndAcc(
   const room = TribeState.getRoom();
   if (!room) return;
   if (page === "result") {
-    const el = qs(`.pageTest #result #tribeResults table tbody tr#${userId}`);
+    const el = qs(
+      `.pageTest #result #tribeResults table tbody tr[id="${userId}"]`,
+    );
     const user = room.users[userId];
     if (!user) return;
     el?.qs(".wpm .text")?.setText(`${wpm}`);
