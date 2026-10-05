@@ -979,7 +979,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
   },
   "250hours": {
     display: "250 hours",
-    discordRoleId: "799825381733433344",
+    discordRoleId: "1546973537800036422",
     initialCount: 32,
     category: "other",
     description: "Achieve 250 hours of typing.",
