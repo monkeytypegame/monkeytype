@@ -2,13 +2,11 @@ import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as TribeTypes from "./types";
 import { createElementWithUtils, qsr } from "../utils/dom";
-import * as TestState from "../test/test-state";
 import { EasingParam } from "animejs";
 import { Caret } from "../elements/caret";
 import { Config } from "../config/store";
 import { configEvent } from "../events/config";
-
-const wordsWrapper = qsr(".pageTest #wordsWrapper");
+import { isDirectionReversed, isLanguageRightToLeft } from "../states/test";
 
 const carets: Map<string, Caret> = new Map();
 
@@ -32,9 +30,16 @@ export function init(): void {
       `<div class="caretName ${Config.tribeCarets === "noNames" ? "hidden" : ""}">${name}</div>`,
     );
 
+    const wordsWrapper = qsr(".pageTest #wordsWrapper");
     wordsWrapper.append(caretEl);
 
-    carets.set(socketId, new Caret(caretEl, "default"));
+    carets.set(
+      socketId,
+      new Caret(caretEl, "default", {
+        words: qsr(".pageTest #words"),
+        wordsWrapper,
+      }),
+    );
   }
 }
 
@@ -45,8 +50,8 @@ export function resetAllPositions(): void {
     caret.goTo({
       wordIndex: 0,
       letterIndex: 0,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: false,
     });
     setError(socketId, false);
@@ -63,8 +68,8 @@ export function updateAndAnimate(
     carets.get(socketId)?.goTo({
       wordIndex: d.wordIndex,
       letterIndex: d.letterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration: getRoom()?.updateRate ?? 500,

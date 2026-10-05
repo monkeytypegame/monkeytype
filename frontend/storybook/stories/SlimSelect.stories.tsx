@@ -1,6 +1,7 @@
-import preview from "#.storybook/preview";
 import { createSignal } from "solid-js";
 import { fn } from "storybook/test";
+
+import preview from "#.storybook/preview";
 
 import SlimSelect from "../../src/ts/components/ui/SlimSelect";
 

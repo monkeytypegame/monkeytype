@@ -1,3 +1,4 @@
+// oxlint-disable no-unused-vars -- addResult is temporarily stubbed on this branch
 import * as ResultDAL from "../../dal/result";
 import {
   isDevEnvironment,
@@ -129,14 +130,6 @@ export async function getLastResult(
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
-}
-
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
 }
 
 export async function updateTags(

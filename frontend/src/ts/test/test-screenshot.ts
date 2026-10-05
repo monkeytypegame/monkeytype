@@ -16,10 +16,10 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import { convertRemToPixels } from "../utils/numbers";
-import * as TestState from "./test-state";
 import { qs, qsa } from "../utils/dom";
 import { getTheme } from "../states/theme";
 import { download as downloadFile } from "../utils/misc";
+import { getResultVisible } from "../states/test";
 
 let revealReplay = false;
 
@@ -351,7 +351,7 @@ qs(".pageTest")?.onChild("click", "#saveScreenshotButton", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (!(TestState.resultVisible && getActivePage() === "test")) return;
+  if (!(getResultVisible() && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
     ?.removeClass(["far", "fa-image"])
@@ -359,7 +359,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keyup", (event) => {
-  if (!(TestState.resultVisible && getActivePage() === "test")) return;
+  if (!(getResultVisible() && getActivePage() === "test")) return;
   if (event.key !== "Shift") return;
   qs("#result #saveScreenshotButton i")
     ?.removeClass(["fas", "fa-download"])

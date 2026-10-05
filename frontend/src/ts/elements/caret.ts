@@ -4,11 +4,8 @@ import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
-
-const wordsCache = qsr("#words");
-const wordsWrapperCache = qsr("#wordsWrapper");
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -31,6 +28,8 @@ export function toggleCaretDebug(): void {
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
+  private wordsEl: ElementWithUtils;
+  private wordsWrapperEl: ElementWithUtils;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
   private readyToResetMarginLeft: boolean = false;
@@ -41,9 +40,15 @@ export class Caret {
   private marginTopAnimation: JSAnimation | null = null;
   private marginLeftAnimation: JSAnimation | null = null;
 
-  constructor(element: ElementWithUtils, style: CaretStyle) {
+  constructor(
+    element: ElementWithUtils,
+    style: CaretStyle,
+    refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
+  ) {
     this.id = element.native.id;
     this.element = element;
+    this.wordsEl = refs.words;
+    this.wordsWrapperEl = refs.wordsWrapper;
     this.setStyle(style);
     if (this.id === "caret") {
       this.isMainCaret = true;
@@ -288,7 +293,7 @@ export class Caret {
   }): void {
     if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      const word = wordsCache.qs(
+      const word = this.wordsEl.qs(
         `.word[data-wordindex="${options.wordIndex}"]`,
       );
       const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
@@ -466,7 +471,7 @@ export class Caret {
     let top = 0;
 
     const tapeOffset =
-      wordsWrapperCache.getOffsetWidth() * (Config.tapeMargin / 100);
+      this.wordsWrapperEl.getOffsetWidth() * (Config.tapeMargin / 100);
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
@@ -494,7 +499,7 @@ export class Caret {
         left += letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
+          left += this.wordsWrapperEl.getOffsetWidth() - tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
           left += options.word.getOffsetWidth();
@@ -504,7 +509,7 @@ export class Caret {
           left += width * -1;
         }
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += wordsWrapperCache.getOffsetWidth() - tapeOffset;
+          left += this.wordsWrapperEl.getOffsetWidth() - tapeOffset;
         } else {
           left += letter.getOffsetLeft();
           left += options.word.getOffsetLeft();

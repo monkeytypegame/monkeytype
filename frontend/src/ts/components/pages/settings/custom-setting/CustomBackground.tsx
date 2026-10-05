@@ -7,6 +7,7 @@ import { createResource, JSXElement, For, Show } from "solid-js";
 
 import {
   configMetadata,
+  ConfigMetadataObject,
   getOptionSearchKeywords,
 } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
@@ -142,12 +143,7 @@ export function CustomBackground(): JSXElement {
               <form.Field
                 name="customBackground"
                 validators={{
-                  onChange: ({ value }) => {
-                    const val = value;
-                    return fromSchema(CustomBackgroundSchema)({
-                      value: val,
-                    });
-                  },
+                  onChange: fromSchema(CustomBackgroundSchema),
                   onBlur: () => {
                     void form.handleSubmit();
                   },
@@ -168,7 +164,13 @@ export function CustomBackground(): JSXElement {
           <div class="grid grid-cols-[repeat(auto-fit,minmax(4rem,1fr))] gap-2">
             <For each={getOptions(ConfigSchema.shape.customBackgroundSize)}>
               {(option) => {
-                const displayString = String(option);
+                const optionMeta = (configMetadata as ConfigMetadataObject)
+                  .customBackgroundSize.optionsMetadata as Record<
+                  string,
+                  { displayString?: string }
+                >;
+                const displayString =
+                  optionMeta?.[option]?.displayString ?? option;
                 return (
                   <Button
                     active={getConfig.customBackgroundSize === option}

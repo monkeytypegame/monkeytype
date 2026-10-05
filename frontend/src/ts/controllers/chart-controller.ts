@@ -65,7 +65,7 @@ import { getTheme } from "../states/theme";
 import { Theme } from "../constants/themes";
 import { createDebouncedEffectOn } from "../hooks/effects";
 import { getWordIndexesForSecond } from "../test/events/stats";
-import { lastEventLog } from "../test/test-state";
+import { getLastEventLog } from "../states/test";
 import { typedKeys } from "@monkeytype/util/objects";
 
 export class ChartWithUpdateColors<
@@ -107,204 +107,221 @@ export class ChartWithUpdateColors<
 }
 
 let prevTi: TooltipItem<"line" | "scatter"> | undefined;
-export const result = new ChartWithUpdateColors<
+type ResultChart = ChartWithUpdateColors<
   "line" | "scatter",
   number[],
   string,
   "wpm" | "raw" | "error" | "burst"
->(document.querySelector("#wpmChart") as HTMLCanvasElement, {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "wpm",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 3,
-        yAxisID: "wpm",
-        order: 2,
-        pointRadius: 1,
-      },
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "raw",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "raw",
-        borderDash: [8, 8],
-        order: 3,
-        pointRadius: 0,
-      },
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "errors",
-        data: [],
-        borderColor: "rgba(255, 125, 125, 1)",
-        pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
-        order: 1,
-        yAxisID: "error",
-        type: "scatter",
-        pointStyle: "crossRot",
-        pointRadius: function (context): number {
-          const index = context.dataIndex;
-          const value = context.dataset.data[index] as number;
-          return (value ?? 0) <= 0 ? 0 : 3;
+>;
+
+// created lazily - #wpmChart is rendered by the TestPage component
+export let result: ResultChart;
+
+export function initResultChart(): void {
+  result = createResultChart();
+}
+
+function createResultChart(): ResultChart {
+  return new ChartWithUpdateColors<
+    "line" | "scatter",
+    number[],
+    string,
+    "wpm" | "raw" | "error" | "burst"
+  >(document.querySelector("#wpmChart") as HTMLCanvasElement, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "wpm",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 3,
+          yAxisID: "wpm",
+          order: 2,
+          pointRadius: 1,
         },
-        pointHoverRadius: function (context): number {
-          const index = context.dataIndex;
-          const value = context.dataset.data[index] as number;
-          return (value ?? 0) <= 0 ? 0 : 5;
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "raw",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 2,
+          yAxisID: "raw",
+          borderDash: [8, 8],
+          order: 3,
+          pointRadius: 0,
         },
-      },
-      {
-        //@ts-expect-error the type is defined incorrectly, have to ignore the error
-        clip: false,
-        label: "burst",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 3,
-        yAxisID: "burst",
-        order: 4,
-        pointRadius: 1,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        axis: "x",
-        ticks: {
-          autoSkip: true,
-          autoSkipPadding: 20,
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "errors",
+          data: [],
+          borderColor: "rgba(255, 125, 125, 1)",
+          pointBackgroundColor: "rgba(255, 125, 125, 1)",
+          borderWidth: 2,
+          order: 1,
+          yAxisID: "error",
+          type: "scatter",
+          pointStyle: "crossRot",
+          pointRadius: function (context): number {
+            const index = context.dataIndex;
+            const value = context.dataset.data[index] as number;
+            return (value ?? 0) <= 0 ? 0 : 3;
+          },
+          pointHoverRadius: function (context): number {
+            const index = context.dataIndex;
+            const value = context.dataset.data[index] as number;
+            return (value ?? 0) <= 0 ? 0 : 5;
+          },
         },
-        display: true,
-        title: {
-          display: false,
-          text: "Seconds",
+        {
+          //@ts-expect-error the type is defined incorrectly, have to ignore the error
+          clip: false,
+          label: "burst",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 3,
+          yAxisID: "burst",
+          order: 4,
+          pointRadius: 1,
         },
-      },
-      wpm: {
-        axis: "y",
-        display: true,
-        title: {
-          display: true,
-          text: "Words per Minute",
-        },
-        beginAtZero: true,
-        min: 0,
-        ticks: {
-          autoSkip: true,
-          autoSkipPadding: 20,
-        },
-        grid: {
-          display: true,
-        },
-      },
-      raw: {
-        axis: "y",
-        display: false,
-        title: {
-          display: true,
-          text: "Raw Words per Minute",
-        },
-        beginAtZero: true,
-        min: 0,
-        ticks: {
-          autoSkip: true,
-          autoSkipPadding: 20,
-        },
-        grid: {
-          display: false,
-        },
-      },
-      burst: {
-        axis: "y",
-        display: false,
-        title: {
-          display: true,
-          text: "Burst Words per Minute",
-        },
-        beginAtZero: true,
-        min: 0,
-        ticks: {
-          autoSkip: true,
-          autoSkipPadding: 20,
-        },
-        grid: {
-          display: false,
-        },
-      },
-      error: {
-        axis: "y",
-        display: true,
-        position: "right",
-        title: {
-          display: true,
-          text: "Errors",
-        },
-        beginAtZero: true,
-        ticks: {
-          precision: 0,
-          autoSkip: true,
-          autoSkipPadding: 20,
-        },
-        grid: {
-          display: false,
-        },
-      },
+      ],
     },
-    plugins: {
-      annotation: {
-        annotations: [],
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          axis: "x",
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          display: true,
+          title: {
+            display: false,
+            text: "Seconds",
+          },
+        },
+        wpm: {
+          axis: "y",
+          display: true,
+          title: {
+            display: true,
+            text: "Words per Minute",
+          },
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          grid: {
+            display: true,
+          },
+        },
+        raw: {
+          axis: "y",
+          display: false,
+          title: {
+            display: true,
+            text: "Raw Words per Minute",
+          },
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          grid: {
+            display: false,
+          },
+        },
+        burst: {
+          axis: "y",
+          display: false,
+          title: {
+            display: true,
+            text: "Burst Words per Minute",
+          },
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          grid: {
+            display: false,
+          },
+        },
+        error: {
+          axis: "y",
+          display: true,
+          position: "right",
+          title: {
+            display: true,
+            text: "Errors",
+          },
+          beginAtZero: true,
+          ticks: {
+            precision: 0,
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          grid: {
+            display: false,
+          },
+        },
       },
-      tooltip: {
-        animation: { duration: 250 },
-        mode: "index",
-        intersect: false,
-        callbacks: {
-          afterLabel: function (ti): string {
-            if (prevTi === ti) return "";
-            if (lastEventLog === null) return "";
+      plugins: {
+        annotation: {
+          annotations: [],
+        },
+        tooltip: {
+          animation: { duration: 250 },
+          mode: "index",
+          intersect: false,
+          callbacks: {
+            afterLabel: function (ti): string {
+              if (prevTi === ti) return "";
+              const eventLog = getLastEventLog();
+              if (eventLog === null) return "";
 
-            prevTi = ti;
-            try {
-              const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-              const wordsToHighlight = getWordIndexesForSecond(
-                lastEventLog,
-                keypressIndex,
-              );
+              prevTi = ti;
+              try {
+                const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
+                const wordsToHighlight = getWordIndexesForSecond(
+                  eventLog,
+                  keypressIndex,
+                );
 
-              const unique = [...new Set(wordsToHighlight)];
-              const firstHighlightWordIndex = unique[0];
-              const lastHighlightWordIndex =
-                Arrays.lastElementFromArray(unique);
-              if (
-                firstHighlightWordIndex === undefined ||
-                lastHighlightWordIndex === undefined
-              ) {
-                return "";
-              }
-              void ResultWordHighlight.highlightWordsInRange(
-                firstHighlightWordIndex,
-                lastHighlightWordIndex,
-              );
-            } catch {}
-            return "";
+                const unique = [...new Set(wordsToHighlight)];
+                const firstHighlightWordIndex = unique[0];
+                const lastHighlightWordIndex =
+                  Arrays.lastElementFromArray(unique);
+                if (
+                  firstHighlightWordIndex === undefined ||
+                  lastHighlightWordIndex === undefined
+                ) {
+                  return "";
+                }
+                void ResultWordHighlight.highlightWordsInRange(
+                  firstHighlightWordIndex,
+                  lastHighlightWordIndex,
+                );
+              } catch {}
+              return "";
+            },
           },
         },
       },
     },
-  },
-});
+  });
+}
 
 export type OtherChartData = {
   x: number;

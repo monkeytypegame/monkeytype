@@ -6,7 +6,7 @@ import { getActivePage } from "../states/core";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import { isInputElementFocused } from "../input/input-element";
-import * as TestState from "../test/test-state";
+import { getResultVisible } from "../states/test";
 import { isDevEnvironment } from "../utils/env";
 import * as TribeState from "../tribe/tribe-state";
 
@@ -25,7 +25,7 @@ document.addEventListener("keydown", (e) => {
   }
 
   const pageTestActive: boolean = getActivePage() === "test";
-  if (pageTestActive && !TestState.resultVisible && !isInputElementFocused()) {
+  if (pageTestActive && !getResultVisible() && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive
     // and we don't want to call it during the test

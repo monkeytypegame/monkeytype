@@ -669,6 +669,16 @@
   }
 }
 
+.pageTest #typingTest .tribeDelta {
+  color: var(--sub-color);
+  &.bad {
+    color: var(--error-color);
+  }
+  &.good {
+    color: var(--main-color);
+  }
+}
+
 .pageTest #typingTest #tribeDeltaBar {
   width: 50%;
   height: 0.25rem;

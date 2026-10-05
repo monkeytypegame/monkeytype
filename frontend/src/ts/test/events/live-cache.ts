@@ -48,9 +48,18 @@ export function getLiveCachedMsSinceLastInputEvent(): number | null {
   return cache.msSinceLastInputEvent.value;
 }
 
+export function getLiveCachedTimerStartMs(): number | null {
+  return cache.timerStartMs;
+}
+
 export function getLiveCachedTestDurationMs(now: number): number {
   if (cache.timerStartMs === null) {
     throw new Error("Timer start ms not found in cache");
   }
   return now - cache.timerStartMs;
+}
+
+export function getLiveCachedTestSeconds(now: number): number {
+  const startMs = cache.timerStartMs ?? now;
+  return Math.floor((now - startMs) / 1000);
 }

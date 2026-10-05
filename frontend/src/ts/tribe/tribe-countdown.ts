@@ -1,32 +1,35 @@
-import { qs } from "../utils/dom";
+import { ElementWithUtils, qs } from "../utils/dom";
 
-const el = qs(".pageTest #typingTest .tribeCountdown");
-const el2 = qs(".pageTest #typingTest .tribeCountdown2");
+// queried lazily - test page dom is rendered after module load
+const getEl = (): ElementWithUtils | null =>
+  qs(".pageTest #typingTest .tribeCountdown");
+const getEl2 = (): ElementWithUtils | null =>
+  qs(".pageTest #typingTest .tribeCountdown2");
 
 export function update(value: string): void {
-  el?.setText(value);
+  getEl()?.setText(value);
 }
 
 export function show(faded = false): void {
-  el?.removeClass("hidden");
+  getEl()?.removeClass("hidden");
   if (faded) {
-    el?.addClass("faded");
+    getEl()?.addClass("faded");
   }
 }
 
 export function hide(): void {
-  el?.addClass("hidden");
-  el?.removeClass("faded");
+  getEl()?.addClass("hidden");
+  getEl()?.removeClass("faded");
 }
 
 export function update2(value: string): void {
-  el2?.setText(value);
+  getEl2()?.setText(value);
 }
 
 export function show2(): void {
-  el2?.removeClass("hidden");
+  getEl2()?.removeClass("hidden");
 }
 
 export function hide2(): void {
-  el2?.addClass("hidden");
+  getEl2()?.addClass("hidden");
 }

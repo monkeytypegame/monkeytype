@@ -25,6 +25,7 @@ import {
 import * as tribeConfigCheck from "../../tribe/tribe-config-check";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
+import { setWordsWrapperHidden } from "../../states/test";
 import { configEvent } from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
@@ -75,7 +76,7 @@ export async function clear(): Promise<boolean> {
 
   qsa(".funBoxTheme").remove();
 
-  qs("#wordsWrapper")?.show();
+  setWordsWrapperHidden(false);
   MemoryTimer.reset();
   return true;
 }
@@ -108,7 +109,7 @@ export async function activate(
   await setFunboxBodyClasses();
   await applyFunboxCSS();
 
-  qs("#wordsWrapper")?.show();
+  setWordsWrapperHidden(false);
 
   const { data: language, error } = await tryCatch(
     JSONData.getCurrentLanguage(Config.language),

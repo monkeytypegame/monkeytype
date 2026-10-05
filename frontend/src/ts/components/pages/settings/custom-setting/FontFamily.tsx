@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import {
   configMetadata,
+  ConfigMetadataObject,
   getOptionSearchKeywords,
 } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
@@ -126,13 +127,11 @@ export function FontFamily(): JSXElement {
           <div class="grid grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))] gap-2">
             <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
               {(option) => {
-                const optionsMeta = configMetadata.fontFamily
-                  .optionsMetadata as
-                  | Record<string, { displayString?: string }>
-                  | undefined;
-                const match = optionsMeta?.[String(option)];
+                const optionsMeta = (configMetadata as ConfigMetadataObject)
+                  .fontFamily.optionsMetadata;
+                const match = optionsMeta?.[option];
                 const displayString =
-                  match?.displayString ?? String(option).replace(/_/g, " ");
+                  match?.displayString ?? option.replace(/_/g, " ");
 
                 const fontFamily = () => {
                   if (option === "Comic_Sans_MS") {

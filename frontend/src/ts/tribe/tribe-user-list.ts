@@ -1,9 +1,10 @@
 import * as TribeState from "./tribe-state";
-import * as TribeUserSettingsPopup from "../modals/tribe-user-settings";
 import tribeSocket from "./tribe-socket";
 import { User } from "./types";
 import { getAvatarElement } from "../utils/discord-avatar";
 import { qs } from "../utils/dom";
+import { showModal } from "../states/modals";
+import { setTribeUserSettingsUserId } from "../states/tribe";
 
 export function reset(page?: string): void {
   if (page === undefined) {
@@ -99,6 +100,7 @@ qs("document")?.onChild(
     const userId = (e.currentTarget as HTMLElement | null)?.getAttribute(
       "userid",
     ) as string;
-    TribeUserSettingsPopup.show(userId);
+    setTribeUserSettingsUserId(userId);
+    showModal("TribeUserSettings");
   },
 );

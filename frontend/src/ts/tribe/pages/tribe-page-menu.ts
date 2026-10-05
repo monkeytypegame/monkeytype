@@ -1,6 +1,7 @@
 import tribeSocket from "../tribe-socket";
 import { getTribeConfig } from "../tribe-config";
 import { qs, qsa } from "../../utils/dom";
+import { showModal } from "../../states/modals";
 
 export const queues = [false, false, false, false];
 
@@ -84,6 +85,10 @@ export function getQ(): number[] {
   });
   return ret;
 }
+
+qs(".pageTribe .menu .customRooms #browseCustomRooms")?.on("click", () => {
+  showModal("TribeBrowsePublicRooms");
+});
 
 qs(".pageTribe .menu .customRooms #createCustomRoom")?.on("click", (e) => {
   disableButtons();

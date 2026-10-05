@@ -13,7 +13,6 @@ import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
-import * as TestState from "../test/test-state";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as TribeState from "./tribe-state";
@@ -26,7 +25,6 @@ import * as TribeAutoJoin from "./tribe-auto-join";
 import { authPromise } from "../firebase";
 import * as Result from "../test/result";
 import { qs } from "../utils/dom";
-import * as Time from "../legacy-states/time";
 
 import { ColorName } from "../constants/themes";
 import { isDevEnvironment } from "../utils/env";
@@ -42,12 +40,17 @@ import { timerEvent } from "../events/timer";
 import { Config } from "../config/store";
 import { showSimpleModal } from "../states/simple-modal";
 import { z } from "zod";
-import { isTestActive } from "../states/test";
+import {
+  getActiveWordIndex,
+  getResultVisible,
+  isTestActive,
+} from "../states/test";
 import { buildEventLog, getCurrentInput } from "../test/events/data";
 import { getChars, getKeypressesPerSecond } from "../test/events/stats";
 import {
   getLiveCachedAccuracy,
   getLiveCachedTestDurationMs,
+  getLiveCachedTestSeconds,
 } from "../test/events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 
@@ -676,7 +679,8 @@ TribeSocket.in.room.progressUpdate((data) => {
     // const inputLen = TestInput.input.current.length;
     const inputLen = getCurrentInput().length;
     if (Config.mode === "time") {
-      progress = 100 - ((Time.get() + 1) / Config.time) * 100;
+      progress =
+        100 - ((getLiveCachedTestSeconds(now) + 1) / Config.time) * 100;
     } else {
       const currentWordLen =
         TestWords.words.getCurrent()?.textWithCommit.length ?? 0;
@@ -691,9 +695,7 @@ TribeSocket.in.room.progressUpdate((data) => {
         outof = Config.words;
       }
 
-      const wordsProgress = Math.floor(
-        (TestState.activeWordIndex / outof) * 100,
-      );
+      const wordsProgress = Math.floor((getActiveWordIndex() / outof) * 100);
 
       progress = wordsProgress + globalWordProgress;
     }
@@ -711,7 +713,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       raw: wpmAndRaw.raw,
       acc,
       progress,
-      wordIndex: TestState.activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       letterIndex: inputLen,
       afk: lastKeypressesCountIs0,
     });
@@ -780,7 +782,7 @@ TribeSocket.in.room.userResult((data) => {
       TribeResults.updateBar("result", data.userId, 100);
     }
   }
-  if (!isTestActive() && TestState.resultVisible) {
+  if (!isTestActive() && getResultVisible()) {
     TribeCarets.destroyAll();
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");

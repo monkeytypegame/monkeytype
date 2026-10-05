@@ -1,11 +1,13 @@
 import * as TribeState from "../tribe/tribe-state";
-import { qsa } from "../utils/dom";
+import { ElementsWithUtils, qsa } from "../utils/dom";
 import tribeSocket from "./tribe-socket";
 import { ROOM_STATE } from "./types";
 
-const buttonsElements = qsa(
-  ".pageTribe .tribePage.lobby .lobbyButtons, .pageTest #tribeResultBottom .buttons",
-);
+// queried lazily - test page dom is rendered after module load
+const buttonsElements = (): ElementsWithUtils =>
+  qsa(
+    ".pageTribe .tribePage.lobby .lobbyButtons, .pageTest #tribeResultBottom .buttons",
+  );
 
 function buildFunctions(query: string): {
   show: () => void;
@@ -16,22 +18,22 @@ function buildFunctions(query: string): {
 } {
   return {
     show: () => {
-      buttonsElements.qs(query)?.show();
+      buttonsElements().qs(query)?.show();
     },
     hide: () => {
-      buttonsElements.qs(query)?.hide();
+      buttonsElements().qs(query)?.hide();
     },
     enable: () => {
-      buttonsElements.qs(query)?.enable();
+      buttonsElements().qs(query)?.enable();
     },
     disable: () => {
-      buttonsElements.qs(query)?.disable();
+      buttonsElements().qs(query)?.disable();
     },
     setActive: (active: boolean) => {
       if (active) {
-        buttonsElements.qs(query)?.addClass("active");
+        buttonsElements().qs(query)?.addClass("active");
       } else {
-        buttonsElements.qs(query)?.removeClass("active");
+        buttonsElements().qs(query)?.removeClass("active");
       }
     },
   };
@@ -126,37 +128,47 @@ export function update(): void {
   }
 }
 
-buttonsElements.qs(".userAfkButton")?.on("click", () => {
-  const self = TribeState.getSelf();
-  if (!self) return;
-  tribeSocket.out.room.afkUpdate(!self.isAfk);
-});
+buttonsElements()
+  .qs(".userAfkButton")
+  ?.on("click", () => {
+    const self = TribeState.getSelf();
+    if (!self) return;
+    tribeSocket.out.room.afkUpdate(!self.isAfk);
+  });
 
-buttonsElements.qs(".leaveRoomButton")?.on("click", () => {
-  tribeSocket.out.room.leave();
-});
+buttonsElements()
+  .qs(".leaveRoomButton")
+  ?.on("click", () => {
+    tribeSocket.out.room.leave();
+  });
 
-buttonsElements.qs(".userReadyButton")?.on("click", () => {
-  tribeSocket.out.room.readyUpdate();
-});
-
-buttonsElements.qs(".backToLobbyButton")?.on("click", () => {
-  tribeSocket.out.room.backToLobby();
-});
-
-buttonsElements.qs(".autoReadyButton")?.on("click", (e) => {
-  TribeState.setAutoReady(!TribeState.getAutoReady());
-
-  const tribeRoomState = TribeState.getRoom()?.state;
-  if (
-    TribeState.getAutoReady() &&
-    tribeRoomState !== undefined &&
-    ["LOBBY", "SHOWING_RESULTS", "READY_TO_CONTINUE"].includes(
-      tribeRoomState,
-    ) &&
-    TribeState.getSelf()?.isReady !== true
-  ) {
+buttonsElements()
+  .qs(".userReadyButton")
+  ?.on("click", () => {
     tribeSocket.out.room.readyUpdate();
-  }
-  update();
-});
+  });
+
+buttonsElements()
+  .qs(".backToLobbyButton")
+  ?.on("click", () => {
+    tribeSocket.out.room.backToLobby();
+  });
+
+buttonsElements()
+  .qs(".autoReadyButton")
+  ?.on("click", (e) => {
+    TribeState.setAutoReady(!TribeState.getAutoReady());
+
+    const tribeRoomState = TribeState.getRoom()?.state;
+    if (
+      TribeState.getAutoReady() &&
+      tribeRoomState !== undefined &&
+      ["LOBBY", "SHOWING_RESULTS", "READY_TO_CONTINUE"].includes(
+        tribeRoomState,
+      ) &&
+      TribeState.getSelf()?.isReady !== true
+    ) {
+      tribeSocket.out.room.readyUpdate();
+    }
+    update();
+  });

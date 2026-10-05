@@ -1,18 +1,17 @@
 import { Config, ConfigKey } from "@monkeytype/schemas/configs";
-import AnimatedModal from "../utils/animated-modal";
 import { Validation } from "../types/validation";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 
 export type CommandExecOptions<T> = {
   input?: T;
-  commandlineModal: AnimatedModal;
 };
 
 export type Command = {
   id: string;
   display: string;
-  singleListDisplay?: string;
+  /** display of the parent command, only set for commands built into the single list */
+  singleListParentDisplay?: string;
   singleListDisplayNoIcon?: string;
   subgroup?: CommandsSubgroup;
   found?: boolean;
@@ -23,7 +22,6 @@ export type Command = {
   input?: boolean;
   visible?: boolean;
   minimumSearchQuery?: string;
-  customStyle?: string;
   opensModal?: boolean;
   defaultValue?: () => string;
   configKey?: keyof Config;

@@ -1,10 +1,14 @@
 import { Config } from "../config/store";
 import { getCurrentInput } from "./events/data";
-import * as TestState from "../test/test-state";
+import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
+} from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import * as CompositionState from "../legacy-states/composition";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 
 export function stopAnimation(): void {
   caret.stopBlinking();
@@ -24,23 +28,32 @@ export function resetPosition(): void {
   caret.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
 
 export function updatePosition(noAnim = false): void {
   caret.goTo({
-    wordIndex: TestState.activeWordIndex,
+    wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + CompositionState.getData().length,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }
 
-export const caret = new Caret(qsr("#caret"), Config.caretStyle);
+// created lazily - #caret is rendered by the TestPage component
+export let caret: Caret;
+
+export function initElement(refs: {
+  caret: ElementWithUtils;
+  words: ElementWithUtils;
+  wordsWrapper: ElementWithUtils;
+}): void {
+  caret = new Caret(refs.caret, Config.caretStyle, refs);
+}
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {

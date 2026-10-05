@@ -22,15 +22,11 @@ import * as TribeCarets from "./tribe/tribe-carets";
 import * as TribeSocket from "./tribe/tribe-socket";
 
 import { onAuthStateChanged } from "./auth";
-import { enable } from "./legacy-states/glarses-mode";
-import "./test/caps-warning";
-import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
 import "./test/tts";
-import "./modals/tribe-browse-public-rooms";
 import { addToGlobal } from "./utils/misc";
 
 import * as Focus from "./test/focus";
@@ -49,7 +45,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
-import { lastEventLog } from "./test/test-state";
+import { getLastEventLog } from "./states/test";
 import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
@@ -70,6 +66,9 @@ Object.defineProperty(window, "Math", {
   configurable: false,
   enumerable: true,
 });
+
+// mount before anything that might touch component-rendered DOM (eg. test page)
+mountComponents();
 
 applyEngineSettings();
 void loadFromLocalStorage();
@@ -92,7 +91,9 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  glarsesMode: enable,
+  glarsesMode: () => {
+    console.log("Moved to settings > danger zone > the rest");
+  },
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst: Result.toggleSmoothedBurst,
@@ -102,7 +103,7 @@ addToGlobal({
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => lastEventLog,
+  lastEventLog: () => getLastEventLog(),
   currentEventLog: buildEventLog,
   createTribeRoom: TribeSocket.default.out.room.create,
   ...(isDevEnvironment()
@@ -114,5 +115,3 @@ addToGlobal({
       }
     : {}),
 });
-
-mountComponents();

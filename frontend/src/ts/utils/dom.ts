@@ -61,7 +61,7 @@ function handleReady(): void {
 
   //call deferred callbacks and empty the list
   //flush the list in a loop in case callbacks were added during the execution
-  while (readyList && readyList.length) {
+  while (readyList !== undefined && readyList.length > 0) {
     const callbacks = readyList;
     readyList = [];
     callbacks.forEach((it) => {
@@ -125,6 +125,19 @@ export function qsr<T extends HTMLElement = HTMLElement>(
     throw new Error(`Required element not found: ${selector}`);
   }
   return new ElementWithUtils(el);
+}
+
+/**
+ * Lazy Query Selector Required
+ *
+ * Like qsr, but defers the query until the first call and caches the result.
+ * Use for module-level refs to elements that may not exist at import time.
+ */
+export function lazyQsr<T extends HTMLElement = HTMLElement>(
+  selector: string,
+): () => ElementWithUtils<T> {
+  let el: ElementWithUtils<T> | undefined;
+  return () => (el ??= qsr<T>(selector));
 }
 
 /**
@@ -405,7 +418,7 @@ export class ElementWithUtils<T extends HTMLElement = HTMLElement> {
       while (
         childTarget !== null &&
         childTarget !== this.native && //stop on parent
-        this.native.contains(childTarget) //stop above parent
+        this.native?.contains(childTarget) //stop above parent
       ) {
         if (typeof handler === "function") {
           handler.call(

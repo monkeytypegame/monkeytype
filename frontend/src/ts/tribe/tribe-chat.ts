@@ -40,32 +40,30 @@ const lobbyChatSuggestions2 = new InputSuggestions(
   ["Enter", "Tab"],
 );
 
-const resultChatSuggestions1 = new InputSuggestions(
-  qsr(".pageTest #result #tribeResultBottom .chat .input input"),
-  "@",
-  "",
-  3,
-  0,
-  "top",
-  ["Enter", "Tab"],
-);
+// created lazily - test page dom is rendered after module load
+let resultChatSuggestions: [InputSuggestions, InputSuggestions] | undefined;
 
-const resultChatSuggestions2 = new InputSuggestions(
-  qsr(".pageTest #result #tribeResultBottom .chat .input input"),
-  ":",
-  ":",
-  3,
-  1,
-  "top",
-  ["Enter", "Tab"],
-);
+function getResultChatSuggestions(): [InputSuggestions, InputSuggestions] {
+  if (resultChatSuggestions === undefined) {
+    const input = qsr<HTMLInputElement>(
+      ".pageTest #result #tribeResultBottom .chat .input input",
+    );
+    resultChatSuggestions = [
+      new InputSuggestions(input, "@", "", 3, 0, "top", ["Enter", "Tab"]),
+      new InputSuggestions(input, ":", ":", 3, 1, "top", ["Enter", "Tab"]),
+    ];
+    resultChatSuggestions[0].applyEventListeners();
+    resultChatSuggestions[1].applyEventListeners();
+  }
+  return resultChatSuggestions;
+}
 
 export function isAnyChatSuggestionVisible(): boolean {
   return (
     lobbyChatSuggestions1.isVisible() ||
     lobbyChatSuggestions2.isVisible() ||
-    resultChatSuggestions1.isVisible() ||
-    resultChatSuggestions2.isVisible()
+    getResultChatSuggestions()[0].isVisible() ||
+    getResultChatSuggestions()[1].isVisible()
   );
 }
 
@@ -85,7 +83,7 @@ void getEmojiList().then((emojis) => {
     }
   }
   lobbyChatSuggestions2.setData(dataToSet);
-  resultChatSuggestions2.setData(dataToSet);
+  getResultChatSuggestions()[1].setData(dataToSet);
 });
 
 export function updateSuggestionData(): void {
@@ -100,7 +98,7 @@ export function updateSuggestionData(): void {
     };
   }
   lobbyChatSuggestions1.setData(dataToSet);
-  resultChatSuggestions1.setData(dataToSet);
+  getResultChatSuggestions()[0].setData(dataToSet);
 }
 
 export function reset(where: "lobby" | "result"): void {
@@ -110,8 +108,8 @@ export function reset(where: "lobby" | "result"): void {
     lobbyChatSuggestions2.destroy();
   } else if (where === "result") {
     qs(".pageTest #result #tribeResultBottom .chat .messages")?.empty();
-    resultChatSuggestions1.destroy();
-    resultChatSuggestions2.destroy();
+    getResultChatSuggestions()[0].destroy();
+    getResultChatSuggestions()[1].destroy();
   }
 }
 
@@ -315,8 +313,9 @@ qs(".pageTribe .tribePage.lobby .chat .input input")?.on("keyup", (e) => {
   }
 });
 
-qs(".pageTest #result #tribeResultBottom .chat .input input")?.on(
+qs(".pageTest")?.onChild(
   "keyup",
+  "#result #tribeResultBottom .chat .input input",
   (e) => {
     if (e.key === "Enter") {
       if (isAnyChatSuggestionVisible()) return;
@@ -378,8 +377,9 @@ qs(".pageTribe .tribePage.lobby .chat .input input")?.on("input", (_e) => {
   }
 });
 
-qs(".pageTest #result #tribeResultBottom .chat .input input")?.on(
+qs(".pageTest")?.onChild(
   "input",
+  "#result #tribeResultBottom .chat .input input",
   (_e) => {
     const val = qs<HTMLInputElement>(
       ".pageTest #result #tribeResultBottom .chat .input input",
@@ -409,9 +409,17 @@ qs(".pageTribe .lobby .chat .messages")?.on("scroll", (_e) => {
   }
 });
 
-qs(".pageTest #result #tribeResultBottom .chat .messages")?.on(
+// scroll doesn't bubble - listen in capture phase on the static page element
+qs(".pageTest")?.native.addEventListener(
   "scroll",
-  (_e) => {
+  (e) => {
+    if (
+      !(e.target as HTMLElement | null)?.matches?.(
+        "#result #tribeResultBottom .chat .messages",
+      )
+    ) {
+      return;
+    }
     const el = qsa(".pageTest #result #tribeResultBottom .chat .messages")[0];
     if (el === undefined) return;
     const scrollHeight = el.native.scrollHeight;
@@ -423,9 +431,15 @@ qs(".pageTest #result #tribeResultBottom .chat .messages")?.on(
       shouldScrollChat = true;
     }
   },
+  true,
 );
 
 lobbyChatSuggestions1.applyEventListeners();
 lobbyChatSuggestions2.applyEventListeners();
-resultChatSuggestions1.applyEventListeners();
-resultChatSuggestions2.applyEventListeners();
+qs(".pageTest")?.onChild(
+  "focusin",
+  "#result #tribeResultBottom .chat .input input",
+  () => {
+    getResultChatSuggestions();
+  },
+);

@@ -1,29 +1,29 @@
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { applyReducedMotion } from "../../utils/misc";
-import { qs } from "../../utils/dom";
+import { lazyQsr } from "../../utils/dom";
 
-const timerEl = qs("#typingTest #layoutfluidTimer");
+const timerEl = lazyQsr("#typingTest #layoutfluidTimer");
 
 export function show(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 1,
     duration: applyReducedMotion(125),
   });
 }
 
 export function hide(): void {
-  timerEl?.animate({
+  timerEl().animate({
     opacity: 0,
     duration: applyReducedMotion(125),
   });
 }
 
 export function instantHide(): void {
-  timerEl?.setStyle({ opacity: "0" });
+  timerEl().setStyle({ opacity: "0" });
 }
 
 export function updateTime(sec: number, layout: string): void {
-  timerEl?.setText(`${capitalizeFirstLetter(layout)} in: ${sec}s`);
+  timerEl().setText(`${capitalizeFirstLetter(layout)} in: ${sec}s`);
 }
 
 export function updateWords(words: number, layout: string): void {
@@ -32,5 +32,5 @@ export function updateWords(words: number, layout: string): void {
   if (words === 1) {
     str = `${layoutName} starting next word`;
   }
-  timerEl?.setText(str);
+  timerEl().setText(str);
 }

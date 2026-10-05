@@ -4,12 +4,7 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
-vi.mock("../../../src/ts/test/test-state", () => ({
-  activeWordIndex: 0,
-  bailedOut: false,
-  resultCalculating: false,
-  koreanStatus: false,
-}));
+const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../src/ts/config/store", () => ({
   Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
@@ -51,6 +46,10 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 
 vi.mock("../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
+  getActiveWordIndex: () => mockState.activeWordIndex,
+  isResultCalculating: () => false,
+  getBailedOut: () => false,
+  getKoreanStatus: () => false,
 }));
 
 import {
@@ -61,7 +60,11 @@ import {
   buildEventLog,
   __testing,
 } from "../../../src/ts/test/events/data";
-import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
+import {
+  findInputValueMismatches,
+  getEventsForWord,
+  getEventsPerWord,
+} from "../../../src/ts/test/events/helpers";
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
@@ -84,13 +87,13 @@ import {
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
+  InputEventNoMs,
   KeydownEventData,
   KeyupEventData,
   TimerEventData,
 } from "../../../src/ts/test/events/types";
 import { Config } from "../../../src/ts/config/store";
 import { Keycode } from "../../../src/ts/constants/keys";
-import * as TestState from "../../../src/ts/test/test-state";
 import { words as TestWords } from "../../../src/ts/test/test-words";
 import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
 
@@ -197,7 +200,7 @@ describe("stats.ts", () => {
     (Config as { funbox: string[] }).funbox = [];
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
-    (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+    mockState.activeWordIndex = 0;
     TestWords.reset();
     inputPerWord.clear();
   });
@@ -1152,7 +1155,7 @@ describe("stats.ts", () => {
   describe("getChars", () => {
     it("counts all correct for a perfectly typed word", () => {
       pushWords("hello");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       for (let i = 0; i < 5; i++) {
@@ -1173,7 +1176,7 @@ describe("stats.ts", () => {
 
     it("counts incorrect chars", () => {
       pushWords("ab");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1194,7 +1197,7 @@ describe("stats.ts", () => {
 
     it("counts extra chars", () => {
       pushWords("ab");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1219,7 +1222,7 @@ describe("stats.ts", () => {
 
     it("counts missed chars for completed non-last words", () => {
       pushWords("hello", "world");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hel" then space (incomplete first word)
@@ -1265,7 +1268,7 @@ describe("stats.ts", () => {
       // Japanese IME commits words with the ideographic space U+3000, while the
       // target word separator is a regular space — normalize so it still counts
       pushWords("しり", "かこ");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent(
@@ -1305,7 +1308,7 @@ describe("stats.ts", () => {
   describe("getWpmHistory", () => {
     it("returns wpm at each timer boundary", () => {
       pushWords("hello");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 0;
+      mockState.activeWordIndex = 0;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hello" in first second — 5 correct word chars
@@ -1326,7 +1329,7 @@ describe("stats.ts", () => {
 
     it("returns cumulative wpm across boundaries", () => {
       pushWords("ab", "cd");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "ab " in first second — correct word
@@ -1371,7 +1374,7 @@ describe("stats.ts", () => {
     it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
       (Config as { funbox: string[] }).funbox = ["nospace"];
       pushWords("ab", "cd");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "ab" then "cd" with no space between (nospace mode)
@@ -1405,7 +1408,7 @@ describe("stats.ts", () => {
 
     it("counts multiline word as correct when target ends in newline", () => {
       pushWords("hello\n", "world");
-      (TestState as { activeWordIndex: number }).activeWordIndex = 1;
+      mockState.activeWordIndex = 1;
 
       logTestEvent("timer", 1000, timer("start", 0));
       // type "hello\n"
@@ -1893,6 +1896,198 @@ describe("stats.ts", () => {
       );
 
       expect(getCorrectedWordsHistory(buildEventLog())).toEqual(["test "]);
+    });
+  });
+
+  // the deleteOnError config deletes input from within the insertText handler;
+  // these mirror the event sequences it emits (see input/handlers/insert-text)
+  describe("delete on error", () => {
+    function inputEventsForWord(wordIndex: number): InputEventNoMs[] {
+      return getEventsForWord(getAllTestEvents(), wordIndex).filter(
+        (e): e is InputEventNoMs => e.type === "input",
+      );
+    }
+
+    it("letter mode deletes the incorrect char and the one before it", () => {
+      pushWords("hello", "world");
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1100, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "e", charIndex: 1 }),
+      );
+      logTestEvent(
+        "input",
+        1120,
+        input({ wordIndex: 0, data: "x", charIndex: 2, correct: false }),
+      );
+      logTestEvent("input", 1120, {
+        wordIndex: 0,
+        charIndex: 3,
+        inputType: "deleteContentBackward",
+        automatic: true,
+        inputValue: "he",
+      });
+      logTestEvent("input", 1120, {
+        wordIndex: 0,
+        charIndex: 2,
+        inputType: "deleteContentBackward",
+        automatic: true,
+        inputValue: "h",
+      });
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      expect(findInputValueMismatches(inputEventsForWord(0))).toEqual([]);
+      expect(getInputHistory(buildEventLog())[0]).toBe("h");
+      // the mistake still counts against accuracy
+      const acc = getAccuracy(buildEventLog());
+      expect(acc.correct).toBe(2);
+      expect(acc.incorrect).toBe(1);
+      // and is still visible in the corrected history
+      expect(getCorrectedWordsHistory(buildEventLog())[0]).toBe("hex");
+    });
+
+    it("letter mode deletes only the incorrect char at the start of a word", () => {
+      pushWords("hello", "world");
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ wordIndex: 0, data: "x", correct: false }),
+      );
+      logTestEvent("input", 1100, {
+        wordIndex: 0,
+        charIndex: 1,
+        inputType: "deleteContentBackward",
+        automatic: true,
+        inputValue: "",
+      });
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      expect(findInputValueMismatches(inputEventsForWord(0))).toEqual([]);
+      expect(getInputHistory(buildEventLog())[0]).toBe("");
+    });
+
+    it("word mode clears the whole word", () => {
+      pushWords("hello", "world");
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1100, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "e", charIndex: 1 }),
+      );
+      logTestEvent(
+        "input",
+        1120,
+        input({ wordIndex: 0, data: "x", charIndex: 2, correct: false }),
+      );
+      logTestEvent("input", 1120, {
+        wordIndex: 0,
+        charIndex: 3,
+        inputType: "deleteWordBackward",
+        automatic: true,
+        inputValue: "",
+      });
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      expect(findInputValueMismatches(inputEventsForWord(0))).toEqual([]);
+      expect(getInputHistory(buildEventLog())[0]).toBe("");
+      expect(getCorrectedWordsHistory(buildEventLog())[0]).toBe("hex");
+    });
+
+    it("hard mode regresses to the previous word on a first-char mistake", () => {
+      pushWords("hello", "world");
+      logTestEvent("timer", 1000, timer("start", 0));
+      for (const [i, char] of [..."hello"].entries()) {
+        logTestEvent(
+          "input",
+          1100 + i * 10,
+          input({ wordIndex: 0, data: char, charIndex: i }),
+        );
+      }
+      logTestEvent(
+        "input",
+        1150,
+        input({ wordIndex: 0, data: " ", charIndex: 5, commitsWord: true }),
+      );
+
+      mockState.activeWordIndex = 1;
+      logTestEvent(
+        "input",
+        1200,
+        input({ wordIndex: 1, data: "x", correct: false }),
+      );
+      // the incorrect char is deleted from the word it was typed in...
+      logTestEvent("input", 1200, {
+        wordIndex: 1,
+        charIndex: 1,
+        inputType: "deleteContentBackward",
+        automatic: true,
+        inputValue: "",
+      });
+      // ...then the regression lands on the previous word, separator removed
+      mockState.activeWordIndex = 0;
+      logTestEvent("input", 1200, {
+        wordIndex: 0,
+        charIndex: 5,
+        inputType: "deleteContentBackward",
+        automatic: true,
+        inputValue: "hello",
+      });
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      expect(findInputValueMismatches(inputEventsForWord(0))).toEqual([]);
+      expect(findInputValueMismatches(inputEventsForWord(1))).toEqual([]);
+      const history = getInputHistory(buildEventLog());
+      expect(history[0]).toBe("hello");
+      expect(history[1]).toBe("");
+    });
+
+    it("marks its deletions as automatic, the user's own are not", () => {
+      pushWords("hello", "world");
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1100, input({ wordIndex: 0, data: "h" }));
+      logTestEvent(
+        "input",
+        1110,
+        input({ wordIndex: 0, data: "x", charIndex: 1, correct: false }),
+      );
+      // the two deletions delete-on-error triggered
+      logTestEvent("input", 1110, {
+        wordIndex: 0,
+        charIndex: 2,
+        inputType: "deleteContentBackward",
+        inputValue: "h",
+        automatic: true,
+      });
+      logTestEvent("input", 1110, {
+        wordIndex: 0,
+        charIndex: 1,
+        inputType: "deleteContentBackward",
+        inputValue: "",
+        automatic: true,
+      });
+      // one the user pressed themselves afterwards
+      logTestEvent("input", 1300, {
+        wordIndex: 0,
+        charIndex: 0,
+        inputType: "deleteContentBackward",
+        inputValue: "",
+      });
+      logTestEvent("timer", 5000, timer("end", 4));
+
+      const deletes = inputEventsForWord(0).filter((e) =>
+        e.data.inputType.startsWith("delete"),
+      );
+      expect(deletes.map((e) => e.data.automatic)).toEqual([
+        true,
+        true,
+        undefined,
+      ]);
+      // the flag is informational - it does not change what is derived
+      expect(getInputHistory(buildEventLog())[0]).toBe("");
     });
   });
 });

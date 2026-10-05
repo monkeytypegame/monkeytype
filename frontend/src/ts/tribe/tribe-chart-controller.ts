@@ -373,7 +373,7 @@ export async function drawChart(userId: string): Promise<void> {
     )[0];
 
     const room = TribeState.getRoom();
-    if (!room || !room.users[userId]?.result || element === undefined) {
+    if (!room?.users[userId]?.result || element === undefined) {
       return;
     }
 

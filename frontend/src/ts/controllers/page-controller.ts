@@ -8,6 +8,13 @@ import {
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import * as PageTribe from "../pages/tribe";
+import {
+  showLoadingPageBar,
+  showLoadingPageError,
+  showLoadingPageSpinner,
+  updateLoadingPageBar,
+  updateLoadingPageText,
+} from "../states/loading-page";
 import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
@@ -207,13 +214,13 @@ async function showSyncLoading({
     const currentOffset = fillOffset * i;
     const options = loadingOptions[i] as LoadingOptions;
     if (options.style === "bar") {
-      await PageLoading.showBar();
+      showLoadingPageBar();
       if (i === 0) {
-        await PageLoading.updateBar(0, 0);
-        PageLoading.updateText("");
+        await updateLoadingPageBar(0, 0);
+        updateLoadingPageText("");
       }
     } else {
-      PageLoading.showSpinner();
+      showLoadingPageSpinner();
     }
 
     if (options.style === "bar") {
@@ -222,8 +229,8 @@ async function showSyncLoading({
         fillDivider,
         currentOffset,
       );
-      void PageLoading.updateBar(100, 125);
-      PageLoading.updateText("Done");
+      void updateLoadingPageBar(100, 125);
+      updateLoadingPageText("Done");
     } else {
       await options.loadingPromise();
     }
@@ -260,9 +267,9 @@ async function getLoadingPromiseWithBarKeyframes(
     for (const keyframe of loadingOptions.keyframes) {
       if (localAbortController.signal.aborted) break;
       if (keyframe.text !== undefined) {
-        PageLoading.updateText(keyframe.text);
+        updateLoadingPageText(keyframe.text);
       }
-      await PageLoading.updateBar(
+      await updateLoadingPageBar(
         fillOffset + keyframe.percentage / fillDivider,
         keyframe.durationMs,
       );
@@ -368,8 +375,8 @@ export async function change(
     pages.loading.element.addClass("active");
     setActivePage(pages.loading.id);
     Focus.set(false);
-    PageLoading.showError();
-    PageLoading.updateText(
+    showLoadingPageError();
+    updateLoadingPageText(
       `Failed to load the ${nextPage.id} page: ${
         error instanceof Error ? error.message : String(error)
       }`,
