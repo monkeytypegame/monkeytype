@@ -60,37 +60,15 @@ export function TestResult(): JSXElement {
                   eventLog={test().eventLog}
                 />
               </div>
-
               <ResultSecondaryStats result={test().result} />
-
               <ResultWordsHistory eventLog={test().eventLog} />
-
               <ResultReplay />
-              <Show when={resultState.canRetrySaving}>
-                <div class="grid w-full justify-center">
-                  <Button
-                    type="button"
-                    class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
-                    id="retrySavingResultButton"
-                    onClick={() => void retrySavingResult()}
-                    text="Retry saving result"
-                    fa={{ icon: "fa-redo" }}
-                  />
-                </div>
-              </Show>
-              <Show when={!isAuthenticated() && !getIsScreenshotting()}>
-                <div class="mb-4 text-center text-sub">
-                  <a href="/login" router-link>
-                    Sign in
-                  </a>{" "}
-                  to save your result
-                </div>
-              </Show>
+              <RetrySavingButton />
+              <LoginPrompt />
             </Show>
             <ResultButtons glarses={getGlarsesMode()} />
-            <Show when={getIsScreenshotting()}>
-              <Watermark />
-            </Show>
+
+            <Watermark />
           </div>
         )}
       </Show>
@@ -99,26 +77,62 @@ export function TestResult(): JSXElement {
   );
 }
 
-// only mounted while screenshotting
-function Watermark(): JSXElement {
-  const date = format(new Date(), "dd MMM yyyy HH:mm");
+function LoginPrompt(): JSXElement {
   return (
-    <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
-      <Show when={getSnapshot()}>
-        {(snapshot) => (
-          <>
-            <span>
-              {snapshot().name}
-              <UserFlags {...snapshot()} iconsOnly />
-            </span>
+    <Show when={!isAuthenticated() && !getIsScreenshotting()}>
+      <div class="mb-4 text-center text-sub">
+        <a href="/login" router-link>
+          Sign in
+        </a>{" "}
+        to save your result
+      </div>
+    </Show>
+  );
+}
+
+function RetrySavingButton(): JSXElement {
+  return (
+    <Show when={resultState.canRetrySaving}>
+      <div class="grid w-full justify-center">
+        <Button
+          type="button"
+          class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
+          id="retrySavingResultButton"
+          onClick={() => void retrySavingResult()}
+          text="Retry saving result"
+          fa={{ icon: "fa-redo" }}
+        />
+      </div>
+    </Show>
+  );
+}
+
+function Watermark(): JSXElement {
+  return (
+    <Show when={getIsScreenshotting()}>
+      {(_) => {
+        // created per screenshot so the date is current
+        const date = format(new Date(), "dd MMM yyyy HH:mm");
+        return (
+          <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
+            <Show when={getSnapshot()}>
+              {(snapshot) => (
+                <>
+                  <span>
+                    {snapshot().name}
+                    <UserFlags {...snapshot()} iconsOnly />
+                  </span>
+                  <span>|</span>
+                </>
+              )}
+            </Show>
+            <span>{date}</span>
             <span>|</span>
-          </>
-        )}
-      </Show>
-      <span>{date}</span>
-      <span>|</span>
-      <span>monkeytype.com</span>
-    </div>
+            <span>monkeytype.com</span>
+          </div>
+        );
+      }}
+    </Show>
   );
 }
 
