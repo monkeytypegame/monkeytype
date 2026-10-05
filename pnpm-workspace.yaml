@@ -17,6 +17,7 @@ allowBuilds:
   protobufjs: true
   re2: true
   ssh2: true
+  tesseract.js: false
 
 overrides:
   "postcss": "8.5.8"
