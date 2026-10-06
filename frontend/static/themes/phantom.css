@@ -81,7 +81,7 @@ footer button:hover {
 }
 
 [data-ui-element="logoSubtext"],
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {
   animation: phantom-glow 3s linear infinite;

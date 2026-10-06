@@ -46,21 +46,27 @@ export function ResultMainStats(props: Props): JSXElement {
         "md:grid-cols-1 md:justify-items-start",
       )}
     >
-      <div class="text-[2rem]">
+      <div class="text-[2rem]" data-ui-element="resultStat">
         <div class="flex items-center leading-[0.5em] text-sub">
           <div>{unit()}</div>
           <Crown />
         </div>
         <Balloon
+          data-ui-element="resultStatValue"
           class="text-[2em] text-main"
           text={speedBalloon(props.result.wpm)}
         >
           {speedText(props.result.wpm)}
         </Balloon>
       </div>
-      <div class="text-[2rem]">
+      <div class="text-[2rem]" data-ui-element="resultStat">
         <div class="leading-[0.5em] text-sub">acc</div>
-        <Balloon class="text-[2em] text-main" text={accBalloon()} break>
+        <Balloon
+          data-ui-element="resultStatValue"
+          class="text-[2em] text-main"
+          text={accBalloon()}
+          break
+        >
           {props.result.acc === 100
             ? "100%"
             : format().accuracy(props.result.acc)}

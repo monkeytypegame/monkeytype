@@ -85,34 +85,36 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         "max-xs:grid-flow-row max-xs:grid-cols-1 max-xs:grid-rows-none",
       )}
     >
-      <div>
+      <div data-ui-element="resultStat">
         <div class="text-sub">test type</div>
-        <div class="text-main">
+        <div class="text-main" data-ui-element="resultStatValue">
           <Lines lines={testType()} />
         </div>
         <Tags />
       </div>
       <Show when={other().length > 0}>
-        <div>
+        <div data-ui-element="resultStat">
           <div class="text-sub">other</div>
-          <div class="text-main">
+          <div class="text-main" data-ui-element="resultStatValue">
             <Lines lines={other()} />
           </div>
         </div>
       </Show>
 
-      <div>
+      <div data-ui-element="resultStat">
         <div class="text-sub">raw</div>
         <Balloon
+          data-ui-element="resultStatValue"
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={speedBalloon(props.result.rawWpm)}
         >
           {format().typingSpeed(props.result.rawWpm)}
         </Balloon>
       </div>
-      <div>
+      <div data-ui-element="resultStat">
         <div class="text-sub">characters</div>
         <Balloon
+          data-ui-element="resultStatValue"
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={"correct\nincorrect\nextra\nmissed"}
           break
@@ -121,18 +123,20 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         </Balloon>
       </div>
 
-      <div>
+      <div data-ui-element="resultStat">
         <div class="text-sub">consistency</div>
         <Balloon
+          data-ui-element="resultStatValue"
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={consistencyBalloon()}
         >
           {format().percentage(props.result.consistency)}
         </Balloon>
       </div>
-      <div>
+      <div data-ui-element="resultStat">
         <div class="text-sub">time</div>
         <Balloon
+          data-ui-element="resultStatValue"
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={timeBalloon()}
         >
@@ -151,6 +155,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
       >
         <div class="text-sub">daily leaderboard</div>
         <Balloon
+          data-ui-element="resultStatValue"
           text="Show daily leaderboard"
           class={cn(
             "text-[2em] leading-[1em] text-main",
@@ -232,7 +237,7 @@ function Tags(): JSXElement {
             class={cn("-my-2 p-1", resultState.resultId === "" && "invisible")}
           />
         </div>
-        <div class="text-main">
+        <div class="text-main" data-ui-element="resultStatValue">
           <Show when={tags().length > 0} fallback={<div>no tags</div>}>
             <For each={tags()}>
               {(tag) => (
@@ -253,14 +258,16 @@ function Tags(): JSXElement {
 
 function QuoteSource(props: { quote: Quote }): JSXElement {
   return (
-    <div class="max-w-120">
+    <div class="max-w-120" data-ui-element="resultStat">
       <div class={cn("text-sub", "flex items-center")}>
         <span class="mr-2">source</span>
         <Show when={isAuthenticated()}>
           <QuoteButtons quote={props.quote} />
         </Show>
       </div>
-      <div class="text-main">{props.quote.source}</div>
+      <div class="text-main" data-ui-element="resultStatValue">
+        {props.quote.source}
+      </div>
     </div>
   );
 }
