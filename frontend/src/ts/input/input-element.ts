@@ -48,7 +48,7 @@ export function replaceInputElementLastValueChar(char: string): void {
 }
 
 export function isInputElementFocused(): boolean {
-  return document.activeElement === getInputElement();
+  return el !== undefined && document.activeElement === el;
 }
 
 export function focusInputElement(preventScroll = false): void {

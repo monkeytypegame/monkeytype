@@ -20,9 +20,7 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     updateFooterAndVerticalAds(false);
+    // the test itself is restarted when TestPage mounts (bindTestElements)
     resetIncompleteTests();
-    void TestLogic.restart({
-      noAnim: true,
-    });
   },
 });

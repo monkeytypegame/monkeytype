@@ -28,7 +28,6 @@ import { TestPage } from "./pages/test/TestPage";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
-  // first - other components and vanilla modules depend on its DOM
   testpage: () => <TestPage />,
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,

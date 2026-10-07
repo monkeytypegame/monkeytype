@@ -1,6 +1,7 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import { getActivePage } from "../../../states/core";
 import { getShowResult } from "../../../states/result";
 import {
   getFocus,
@@ -31,12 +32,23 @@ import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 
 /**
- * Renders the children of the static `.page.pageTest` element.
- * Internals are still vanilla - this owns the markup and hands its elements
- * to the vanilla modules on mount (see bindTestElements), unbinding them
- * on cleanup.
+ * Renders the children of the static `.page.pageTest` element, only while
+ * the test page is active.
  */
 export function TestPage(): JSXElement {
+  return (
+    <Show when={getActivePage() === "test"}>
+      <TypingTest />
+    </Show>
+  );
+}
+
+/**
+ * Internals are still vanilla - this owns the markup and hands its elements
+ * to the vanilla modules on mount (see bindTestElements), unbinding them
+ * on cleanup. Mounting starts a fresh test.
+ */
+function TypingTest(): JSXElement {
   let wordsWrapperRef: HTMLDivElement | undefined;
   let wordsRef: HTMLDivElement | undefined;
   let caretRef: HTMLDivElement | undefined;

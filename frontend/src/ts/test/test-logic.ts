@@ -251,6 +251,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   // guards
 
+  // not on the test page - TestPage restarts on mount
+  if (!TestUI.isMounted()) return;
+
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
     showNoticeNotification(

@@ -8,8 +8,8 @@ import * as TestUI from "./test-ui";
 
 /**
  * Hands TestPage's elements to the vanilla test modules. Call on every mount;
- * everything bound here is undone when `signal` aborts. A remount restarts
- * the test, since the previously rendered words are gone.
+ * everything bound here is undone when `signal` aborts. Mounting starts a
+ * fresh test, since any previously rendered words are gone.
  */
 export function bindTestElements(
   refs: {
@@ -26,18 +26,24 @@ export function bindTestElements(
 
   const words = new ElementWithUtils(refs.words);
   const wordsWrapper = new ElementWithUtils(refs.wordsWrapper);
-  Caret.initElement({
-    caret: new ElementWithUtils(refs.caret),
-    words,
-    wordsWrapper,
-  });
-  PaceCaret.initElement({
-    caret: new ElementWithUtils(refs.paceCaret),
-    words,
-    wordsWrapper,
-  });
+  Caret.initElement(
+    {
+      caret: new ElementWithUtils(refs.caret),
+      words,
+      wordsWrapper,
+    },
+    signal,
+  );
+  PaceCaret.initElement(
+    {
+      caret: new ElementWithUtils(refs.paceCaret),
+      words,
+      wordsWrapper,
+    },
+    signal,
+  );
 
   initInputListeners(signal);
-  const isRemount = TestUI.init({ words, wordsWrapper }, signal);
-  if (isRemount) void restart({ noAnim: true });
+  TestUI.init({ words, wordsWrapper }, signal);
+  void restart({ noAnim: true });
 }

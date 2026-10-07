@@ -67,7 +67,10 @@ export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
 // rendered by TestPage, registered via init() on every mount
 let wordsRef: ElementWithUtils | undefined;
 let wordsWrapperRef: ElementWithUtils | undefined;
-let hasMounted = false;
+
+export function isMounted(): boolean {
+  return wordsRef !== undefined;
+}
 
 function wordsEl(): ElementWithUtils {
   if (wordsRef === undefined) throw new Error("#words not mounted");
@@ -1074,8 +1077,8 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     wordsEl().setStyle({
       marginLeft: `${currentWordsMargin + widthRemoved}px`,
     });
-    Caret.caret.handleTapeWordsRemoved(widthRemoved);
-    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
+    Caret.caret?.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret?.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1120,8 +1123,8 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     ease,
   };
 
-  Caret.caret.handleTapeScroll(caretScrollOptions);
-  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
+  Caret.caret?.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret?.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     wordsEl().animate({
@@ -1207,8 +1210,8 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
       newMarginTop,
       duration: Config.smoothLineScroll ? duration : 0,
     };
-    Caret.caret.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+    Caret.caret?.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret?.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1577,20 +1580,13 @@ export function onTestFinish(): void {
 }
 
 /**
- * Binds listeners and effects that need the test page DOM.
- * Called once the TestPage component has mounted.
- */
-/**
  * Binds test-ui to TestPage's elements. Call on every mount; effects are
  * owned by the caller, listeners are removed via `signal`.
- * Returns true if this is a remount (elements were replaced).
  */
 export function init(
   refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
   signal: AbortSignal,
-): boolean {
-  const isRemount = hasMounted;
-  hasMounted = true;
+): void {
   wordsRef = refs.words;
   wordsWrapperRef = refs.wordsWrapper;
   signal.addEventListener("abort", () => {
@@ -1645,8 +1641,6 @@ export function init(
     },
     { signal },
   );
-
-  return isRemount;
 }
 
 addEventListener("resize", () => {
@@ -1674,6 +1668,8 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "compositionDisplay" && newValue === "below") {
     setCompositionText(" ");
   }
+  // not on the test page - the next mount renders with the new config
+  if (!isMounted()) return;
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
       key ?? "",

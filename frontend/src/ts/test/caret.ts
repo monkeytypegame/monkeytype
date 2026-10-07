@@ -11,21 +11,21 @@ import * as CompositionState from "../legacy-states/composition";
 import { ElementWithUtils } from "../utils/dom";
 
 export function stopAnimation(): void {
-  caret.stopBlinking();
+  caret?.stopBlinking();
 }
 
 export function startAnimation(): void {
-  caret.startBlinking();
+  caret?.startBlinking();
 }
 
 export function hide(): void {
-  caret.hide();
+  caret?.hide();
 }
 
 export function resetPosition(): void {
-  caret.stopAllAnimations();
-  caret.clearMargins();
-  caret.goTo({
+  caret?.stopAllAnimations();
+  caret?.clearMargins();
+  caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
     isLanguageRightToLeft: isLanguageRightToLeft(),
@@ -35,7 +35,7 @@ export function resetPosition(): void {
 }
 
 export function updatePosition(noAnim = false): void {
-  caret.goTo({
+  caret?.goTo({
     wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + CompositionState.getData().length,
     isLanguageRightToLeft: isLanguageRightToLeft(),
@@ -44,29 +44,37 @@ export function updatePosition(noAnim = false): void {
   });
 }
 
-// created lazily - #caret is rendered by the TestPage component
-export let caret: Caret;
+// #caret is rendered by TestPage, set via initElement() on every mount
+export let caret: Caret | undefined;
 
-export function initElement(refs: {
-  caret: ElementWithUtils;
-  words: ElementWithUtils;
-  wordsWrapper: ElementWithUtils;
-}): void {
-  caret = new Caret(refs.caret, Config.caretStyle, refs);
+export function initElement(
+  refs: {
+    caret: ElementWithUtils;
+    words: ElementWithUtils;
+    wordsWrapper: ElementWithUtils;
+  },
+  signal: AbortSignal,
+): void {
+  const created = new Caret(refs.caret, Config.caretStyle, refs);
+  caret = created;
+  signal.addEventListener("abort", () => {
+    // a remount may have created a new caret already
+    if (caret === created) caret = undefined;
+  });
 }
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {
-    caret.setStyle(Config.caretStyle);
+    caret?.setStyle(Config.caretStyle);
     updatePosition(true);
   }
   if (key === "smoothCaret") {
-    caret.updateBlinkingAnimation();
+    caret?.updateBlinkingAnimation();
   }
 });
 
 export function show(noAnim = false): void {
-  caret.show();
+  caret?.show();
   updatePosition(noAnim);
   startAnimation();
 }
