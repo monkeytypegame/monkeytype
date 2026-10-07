@@ -11,12 +11,10 @@ export const page = new Page({
   element: qsr(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {
+    TestLogic.stop();
     blurInputElement();
   },
   afterHide: async (): Promise<void> => {
-    void TestLogic.restart({
-      noAnim: true,
-    });
     void Funbox.clear();
     updateFooterAndVerticalAds(true);
   },
