@@ -8,7 +8,11 @@ import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { getResultVisible, getFocus } from "../../../states/test";
+import {
+  getResultVisible,
+  getFocus,
+  isTestRestarting,
+} from "../../../states/test";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
@@ -76,7 +80,10 @@ function TCButton(props: {
       fa={props.fa ? { ...props.fa, fixedWidth: true } : undefined}
       text={props.text}
       active={props.active}
-      onClick={props.onClick}
+      onClick={() => {
+        if (isTestRestarting()) return;
+        props.onClick();
+      }}
       disabled={getFocus() || getResultVisible() || props.disabled}
     />
   );

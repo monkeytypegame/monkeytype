@@ -1,33 +1,24 @@
-const elem = document.querySelector<HTMLElement>(".pageTest #testInitFailed");
-const testElem = document.querySelector<HTMLElement>(".pageTest #typingTest");
-const errorElem = document.querySelector<HTMLElement>(
-  ".pageTest #testInitFailed .error",
-);
+import { lazyQsr } from "../utils/dom";
+
+const elem = lazyQsr(".pageTest #testInitFailed");
+const testElem = lazyQsr(".pageTest #typingTest");
+const errorElem = lazyQsr(".pageTest #testInitFailed .error");
 
 export function show(): void {
-  if (elem && testElem) {
-    elem.classList.remove("hidden");
-    testElem.classList.add("hidden");
-  }
+  elem().show();
+  testElem().hide();
 }
 
 function hideError(): void {
-  if (errorElem) {
-    errorElem.classList.add("hidden");
-  }
+  errorElem().hide();
 }
 
 export function showError(text: string): void {
-  if (errorElem) {
-    errorElem.classList.remove("hidden");
-    errorElem.innerText = text;
-  }
+  errorElem().show().setText(text);
 }
 
 export function hide(): void {
-  if (elem && testElem) {
-    hideError();
-    elem.classList.add("hidden");
-    testElem.classList.remove("hidden");
-  }
+  hideError();
+  elem().hide();
+  testElem().show();
 }

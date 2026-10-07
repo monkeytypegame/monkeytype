@@ -39,9 +39,8 @@ export function onBeforeDelete(event: InputEvent): void {
       return;
     }
 
-    // this is nested because we only wanna pull the element from the dom if needed
-    const previousWordElement = TestUI.getWordElement(getActiveWordIndex() - 1);
-    if (previousWordElement === null) {
+    // this is nested because we only wanna check the dom if needed
+    if (!TestUI.isWordRendered(getActiveWordIndex() - 1)) {
       event.preventDefault();
       return;
     }
