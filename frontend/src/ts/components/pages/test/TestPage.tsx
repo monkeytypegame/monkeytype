@@ -1,11 +1,6 @@
-// @refresh reload
-// vanilla test code holds refs into this tree (see onMount), so a hot
-// remount would orphan them. full reload instead until test-ui is solid.
-// todo: remove this once test-ui is solid
-import { JSXElement, onMount, Show } from "solid-js";
+import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { initInputListeners } from "../../../input/listeners";
 import { getShowResult } from "../../../states/result";
 import {
   getFocus,
@@ -14,12 +9,9 @@ import {
   isResultLoading,
   isTestInitFailed,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
-import * as PaceCaret from "../../../test/pace-caret";
+import { bindTestElements } from "../../../test/bind-test-elements";
 import { onRestartButtonClick } from "../../../test/test-logic";
-import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
-import { ElementWithUtils } from "../../../utils/dom";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -40,38 +32,42 @@ import { TestInitFailed } from "./TestInitFailed";
 
 /**
  * Renders the children of the static `.page.pageTest` element.
- * Internals are still vanilla - this only owns the markup and binds the
- * vanilla listeners once it exists. Must stay mounted for the app's lifetime.
+ * Internals are still vanilla - this owns the markup and hands its elements
+ * to the vanilla modules on mount (see bindTestElements), unbinding them
+ * on cleanup.
  */
 export function TestPage(): JSXElement {
   let wordsWrapperRef: HTMLDivElement | undefined;
   let wordsRef: HTMLDivElement | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
+  let inputRef: HTMLTextAreaElement | undefined;
 
   onMount(() => {
+    // registered first so a throw below still cleans up
+    const controller = new AbortController();
+    onCleanup(() => controller.abort());
+
     if (
       wordsWrapperRef === undefined ||
       wordsRef === undefined ||
       caretRef === undefined ||
-      paceCaretRef === undefined
+      paceCaretRef === undefined ||
+      inputRef === undefined
     ) {
       throw new Error("TestPage refs not set");
     }
-    const words = new ElementWithUtils(wordsRef);
-    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
-    Caret.initElement({
-      caret: new ElementWithUtils(caretRef),
-      words,
-      wordsWrapper,
-    });
-    PaceCaret.initElement({
-      caret: new ElementWithUtils(paceCaretRef),
-      words,
-      wordsWrapper,
-    });
-    initInputListeners();
-    TestUI.init();
+
+    bindTestElements(
+      {
+        words: wordsRef,
+        wordsWrapper: wordsWrapperRef,
+        caret: caretRef,
+        paceCaret: paceCaretRef,
+        input: inputRef,
+      },
+      controller.signal,
+    );
   });
 
   return (
@@ -115,6 +111,7 @@ export function TestPage(): JSXElement {
         >
           <textarea
             id="wordsInput"
+            ref={(el) => (inputRef = el)}
             class="full-width"
             autocomplete="off"
             // oxlint-disable-next-line react/no-unknown-property
