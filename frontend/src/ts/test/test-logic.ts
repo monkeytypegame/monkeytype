@@ -75,6 +75,9 @@ import {
   setWordsHaveTab,
   getResultVisible,
   CompletedResult,
+  setResultLoading,
+  setTestInitError,
+  setTestInitFailed,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -107,7 +110,6 @@ import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import {
   ResultDetails,
@@ -378,11 +380,9 @@ async function init(): Promise<boolean> {
   if (testReinitCount > 3) {
     if (lastInitError) {
       void Sentry.captureException(lastInitError);
-      TestInitFailed.showError(
-        `${lastInitError.name}: ${lastInitError.message}`,
-      );
+      setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
-    TestInitFailed.show();
+    setTestInitFailed(true);
     setIsTestRestarting(false);
     return false;
   }
@@ -832,7 +832,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     duration: Misc.applyReducedMotion(125),
   });
   qs(".pageTest #typingTest")?.hide();
-  qs(".pageTest .loading")?.show();
+  setResultLoading(true);
   await Misc.sleep(0); //allow ui update
 
   TestUI.onTestFinish();
@@ -1178,7 +1178,7 @@ async function showResult(
   AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
 
-  qs(".pageTest .loading")?.hide();
+  setResultLoading(false);
   setShowResult(true);
 
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
@@ -1343,11 +1343,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
-  void restart();
-});
-
-qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
+export function onRestartButtonClick(): void {
   if (isResultCalculating()) return;
   if (
     isTestActive() &&
@@ -1360,7 +1356,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   } else {
     void restart();
   }
-});
+}
 
 export function repeatTest(): void {
   if (Config.mode === "zen") {

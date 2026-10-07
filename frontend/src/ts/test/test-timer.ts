@@ -14,7 +14,6 @@ import * as Caret from "./caret";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import { timerEvent } from "../events/timer";
 import { highlight } from "../events/keymap";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -33,7 +32,10 @@ import {
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
+  setLayoutfluidTimerText,
+  setLayoutfluidTimerVisible,
 } from "../states/test";
+import { capitalizeFirstLetter } from "../utils/strings";
 
 let emittedTicks = 0;
 let stopped = true;
@@ -151,23 +153,23 @@ function layoutfluid(time: number): void {
     const switchTime = Config.time / layouts.length;
     const index = Math.floor(time / switchTime);
     const layout = layouts[index];
-    const flooredSwitchTimes = [];
+    const flooredSwitchTimes: number[] = [];
 
     for (let i = 1; i < layouts.length; i++) {
       flooredSwitchTimes.push(Math.floor(switchTime * i));
     }
 
-    if (flooredSwitchTimes.includes(time + 3)) {
-      LayoutfluidFunboxTimer.show();
-      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 2)) {
-      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 1)) {
-      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1] as string);
+    const secondsUntilSwitch = [3, 2, 1].find((sec) =>
+      flooredSwitchTimes.includes(time + sec),
+    );
+    if (secondsUntilSwitch !== undefined) {
+      const nextLayout = capitalizeFirstLetter(layouts[index + 1] as string);
+      setLayoutfluidTimerText(`${nextLayout} in: ${secondsUntilSwitch}s`);
+      setLayoutfluidTimerVisible(true);
     }
 
     if (Config.layout !== layout && layout !== undefined) {
-      LayoutfluidFunboxTimer.hide();
+      setLayoutfluidTimerVisible(false);
       setConfig("layout", layout as Layout, {
         nosave: true,
       });

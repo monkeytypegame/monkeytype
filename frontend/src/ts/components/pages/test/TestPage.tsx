@@ -1,23 +1,42 @@
+// @refresh reload
+// vanilla test code holds refs into this tree (see onMount), so a hot
+// remount would orphan them. full reload instead until test-ui is solid.
+// todo: remove this once test-ui is solid
 import { JSXElement, onMount, Show } from "solid-js";
 
+import { getConfig } from "../../../config/store";
 import { initInputListeners } from "../../../input/listeners";
 import { getShowResult } from "../../../states/result";
+import {
+  getFocus,
+  getLayoutfluidTimerText,
+  isLayoutfluidTimerVisible,
+  isResultLoading,
+  isTestInitFailed,
+} from "../../../states/test";
 import * as Caret from "../../../test/caret";
 import * as PaceCaret from "../../../test/pace-caret";
+import { onRestartButtonClick } from "../../../test/test-logic";
 import * as TestUI from "../../../test/test-ui";
+import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import { Button } from "../../common/Button";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
+import { FunboxTimer } from "./FunboxTimer";
 import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
 import { LiveStatsTextBottom } from "./live-stats/LiveStatsTextBottom";
 import { LiveStatsTextTop } from "./live-stats/LiveStatsTextTop";
+import { MemoryFunboxTimer } from "./MemoryFunboxTimer";
 import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
+import { TestInitFailed } from "./TestInitFailed";
 
 /**
  * Renders the children of the static `.page.pageTest` element.
@@ -61,25 +80,23 @@ export function TestPage(): JSXElement {
         <TestConfig />
       </div>
 
-      <div id="testInitFailed" class="content-grid hidden">
-        <div class="message">
-          <div class="text">
-            Test initialization failed. Please try different settings or
-            refreshing the page. If the problem persists, please contact
-            support.
-          </div>
-          <div class="error"></div>
-          <button type="button" class="active restart">
-            <i class="fas fa-fw fa-redo-alt"></i> Restart
-          </button>
-        </div>
-      </div>
-      <div id="typingTest" class="content-grid full-width-padding">
+      {/* TODO: inline display instead of class/Show because test-ui/test-logic
+          still toggle classes on #typingTest and hold refs into it. Switch to a
+          class binding (or Show) once that's moved to signals. */}
+      <div
+        id="typingTest"
+        class="content-grid full-width-padding"
+        style={{ display: isTestInitFailed() ? "none" : undefined }}
+      >
         <div>
           <CapsWarning />
         </div>
-        <div id="memoryTimer">Time left to memorise all words: 0s</div>
-        <div id="layoutfluidTimer">Time left to memorise all words: 0s</div>
+        <MemoryFunboxTimer />
+        <FunboxTimer
+          id="layoutfluidTimer"
+          visible={isLayoutfluidTimerVisible()}
+          text={getLayoutfluidTimerText()}
+        />
         <div>
           <TestModesNotice />
         </div>
@@ -144,15 +161,26 @@ export function TestPage(): JSXElement {
           <Monkey />
         </div>
 
-        <button
-          type="button"
-          id="restartTestButton"
-          aria-label="Restart Test"
-          data-balloon-pos="down"
-          class="text"
-        >
-          <i class="fas fa-fw fa-redo-alt"></i>
-        </button>
+        <Button
+          variant="text"
+          dataset={{ "data-ui-element": "restartTestButton" }}
+          class={cn(
+            "mx-auto mt-4 w-max px-8 py-4 text-base transition-opacity",
+            "focus:opacity-100 focus:transition-none",
+            getConfig.quickRestart !== "off" && "hidden",
+            "pointer-coarse:block", //always show the button if using a pointer-coarse device
+            getFocus() && "opacity-0", //always hide if we are focused
+          )}
+          balloon={{
+            text: "Restart Test",
+            position: "down",
+          }}
+          fa={{
+            icon: "fa-redo-alt",
+            fixedWidth: true,
+          }}
+          onClick={onRestartButtonClick}
+        />
         <div>
           <LiveStatsTextBottom />
         </div>
@@ -160,9 +188,14 @@ export function TestPage(): JSXElement {
           <Premid />
         </div>
       </div>
-      <div class="loading hidden">
-        <i class="fas fa-circle-notch fa-spin"></i>
-      </div>
+      <Show when={isTestInitFailed()}>
+        <TestInitFailed />
+      </Show>
+      <Show when={isResultLoading()}>
+        <div class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0">
+          <LoadingCircle />
+        </div>
+      </Show>
       <Show when={getShowResult()}>
         <TestResult />
       </Show>

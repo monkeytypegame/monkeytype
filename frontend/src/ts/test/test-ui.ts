@@ -31,9 +31,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as SlowTimer from "../legacy-states/slow-timer";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ThemeController from "../controllers/theme-controller";
-import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import {
   ElementsWithUtils,
   ElementWithUtils,
@@ -59,10 +57,12 @@ import {
   setWordsWrapperHidden,
   isReadAheadDisabled,
   isErrorBorderDisabled,
+  setLayoutfluidTimerVisible,
+  setTestInitError,
+  setTestInitFailed,
 } from "../states/test";
 import { createEffect } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
-import * as TestInitFailed from "../elements/test-init-failed";
 import { setShowResult, setResultWordsJoiningScript } from "../states/result";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -1280,14 +1280,6 @@ function updateWordsWidth(): void {
   }
 }
 
-function showHideTestRestartButton(showHide: boolean): void {
-  if (showHide) {
-    qs(".pageTest #restartTestButton")?.show();
-  } else {
-    qs(".pageTest #restartTestButton")?.hide();
-  }
-}
-
 /**
  * Whether appending `data` to the active word would push it onto the next line
  * or wrap its letters. Expensive - causes layout reflows.
@@ -1530,13 +1522,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     burst: undefined,
     seconds: undefined,
   });
-  LayoutfluidFunboxTimer.instantHide();
-  focusWords(true);
+  setLayoutfluidTimerVisible(false);
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
-  MemoryFunboxTimer.reset();
   Caret.resetPosition();
-  TestInitFailed.hide();
+  setTestInitFailed(false);
+  setTestInitError(null);
+  focusWords(true);
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1638,9 +1630,6 @@ document.addEventListener("visibilitychange", () => {
 });
 
 configEvent.subscribe(({ key, newValue }) => {
-  if (key === "quickRestart") {
-    showHideTestRestartButton(newValue === "off");
-  }
   if (key === "showOutOfFocusWarning" && !newValue) {
     setTestFocusState("focused");
   }
