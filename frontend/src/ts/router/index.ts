@@ -1,7 +1,6 @@
 import { createRouter } from "@tanstack/solid-router";
 
 import * as AdController from "../controllers/ad-controller";
-import { setLoadingPageError } from "../states/loading-page";
 import {
   dispatchPageTransition,
   getRoutePage,
@@ -49,8 +48,10 @@ router.subscribe("onResolved", () => {
   const failedMatch = router.state.matches.find((m) => m.status === "error");
   if (failedMatch !== undefined) {
     const error: unknown = failedMatch.error;
-    setLoadingPageError(error instanceof Error ? error.message : String(error));
-    dispatchPageTransition({ type: "routeFailed" });
+    dispatchPageTransition({
+      type: "routeFailed",
+      message: error instanceof Error ? error.message : String(error),
+    });
   } else {
     const page = router.state.matches.at(-1)?.staticData.page;
     if (page === undefined) return;

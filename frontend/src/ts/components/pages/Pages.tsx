@@ -3,9 +3,8 @@ import { Dynamic } from "solid-js/web";
 
 import {
   dispatchPageTransition,
-  getActivePage,
+  getMountedPage,
   getPageFadePhase,
-  PageName,
 } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
@@ -23,7 +22,9 @@ import { ProfileSearchPage } from "./profile/ProfileSearchPage";
 import { SettingsPage } from "./settings/SettingsPage";
 import { TestPage } from "./test/TestPage";
 
-const pages: Record<PageName, { component: Component; class?: string }> = {
+type PageConfig = { component: Component; class?: string };
+
+const pages = {
   loading: {
     component: LoadingPage,
     class:
@@ -40,7 +41,9 @@ const pages: Record<PageName, { component: Component; class?: string }> = {
   accountSettings: { component: AccountSettingsPage },
   friends: { component: FriendsPage },
   leaderboards: { component: LeaderboardPage },
-};
+} satisfies Record<string, PageConfig>;
+
+export type PageName = keyof typeof pages;
 
 // duration of the page fade out and of the fade in
 const fadeDuration = 125;
@@ -54,13 +57,14 @@ const fadeDuration = 125;
 export function Pages(): JSXElement {
   return (
     // keyed so each page gets a fresh fade wrapper
-    <Show when={getActivePage()} keyed>
+    <Show when={getMountedPage()} keyed>
       {(page) => {
+        const config: PageConfig = pages[page];
         const id = `page${capitalizeFirstLetter(page)}`;
         return (
           <Anime
             id={id}
-            class={cn("page", id, pages[page].class)}
+            class={cn("page", id, config.class)}
             ref={(el) => {
               if (page === "test") el.setAttribute("data-nosnippet", "");
             }}
@@ -72,7 +76,7 @@ export function Pages(): JSXElement {
                 dispatchPageTransition({ type: "fadeCompleted" }),
             }}
           >
-            <Dynamic component={pages[page].component} />
+            <Dynamic component={config.component} />
           </Anime>
         );
       }}

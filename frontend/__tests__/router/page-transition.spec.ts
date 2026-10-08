@@ -20,6 +20,10 @@ const nav: PageTransitionEvent = {
   pathChanged: true,
 };
 const fade: PageTransitionEvent = { type: "fadeCompleted" };
+const loadFailed: PageTransitionEvent = {
+  type: "routeFailed",
+  message: "oops",
+};
 
 /** Initial load straight onto the test page, fully faded in. */
 const onTest = run([
@@ -167,11 +171,11 @@ describe("page transition", () => {
 
   it("a failed load keeps the error up and ends the transition", () => {
     const state = run(
-      [nav, { type: "loadingShown" }, fade, { type: "routeFailed" }],
+      [nav, { type: "loadingShown" }, fade, loadFailed],
       onTest,
     );
     expect(state).toMatchObject({
-      loadingScreen: "error",
+      loadingScreen: { type: "error", message: "oops" },
       routePage: "loading",
       mountedPage: "loading",
       transitioning: false,
@@ -180,12 +184,12 @@ describe("page transition", () => {
 
   it("the next navigation clears the error", () => {
     const failed = run(
-      [nav, { type: "loadingShown" }, fade, { type: "routeFailed" }],
+      [nav, { type: "loadingShown" }, fade, loadFailed],
       onTest,
     );
     const state = run([nav, { type: "routeResolved", page: "about" }], failed);
     expect(state).toMatchObject({
-      loadingScreen: "hidden",
+      loadingScreen: { type: "hidden" },
       fadePhase: "out",
       transitioning: true,
     });

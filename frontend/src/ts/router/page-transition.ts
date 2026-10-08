@@ -8,8 +8,8 @@ import type { PageName } from "../states/router";
 export type PageTransitionState = {
   /** The page of the last resolved route ("loading" if loading failed). */
   routePage: PageName;
-  /** Whether the loading page covers the route. "error" stays until the next navigation. */
-  loadingScreen: "hidden" | "visible" | "error";
+  /** Whether the loading page covers the route. An error stays until the next navigation. */
+  loadingScreen: LoadingScreen;
   /**
    * The page currently rendered. Lags behind the target page: it only changes
    * once the previous page has faded out.
@@ -22,19 +22,24 @@ export type PageTransitionState = {
   transitioning: boolean;
 };
 
+export type LoadingScreen =
+  | { type: "hidden" }
+  | { type: "visible" }
+  | { type: "error"; message: string };
+
 export type PageTransitionEvent =
   /** A navigation started. Search param updates and auth reloads have `pathChanged: false`. */
   | { type: "navigationStarted"; pathChanged: boolean }
   /** A route loader needs the loading page. */
   | { type: "loadingShown" }
   | { type: "routeResolved"; page: PageName }
-  | { type: "routeFailed" }
+  | { type: "routeFailed"; message: string }
   /** The mounted page finished fading in or out. */
   | { type: "fadeCompleted" };
 
 export const initialPageTransitionState: PageTransitionState = {
   routePage: "loading",
-  loadingScreen: "visible",
+  loadingScreen: { type: "visible" },
   mountedPage: "loading",
   fadePhase: "in",
   fadeSettled: false,
@@ -43,7 +48,7 @@ export const initialPageTransitionState: PageTransitionState = {
 
 /** The page that should be on screen - the loading page covers the route while it loads. */
 export function getTargetPage(state: PageTransitionState): PageName {
-  return state.loadingScreen === "hidden" ? state.routePage : "loading";
+  return state.loadingScreen.type === "hidden" ? state.routePage : "loading";
 }
 
 export function transitionPage(
@@ -74,23 +79,25 @@ function applyEvent(
         ...state,
         // a failed load keeps the error up until the next navigation
         loadingScreen:
-          state.loadingScreen === "error" ? "hidden" : state.loadingScreen,
+          state.loadingScreen.type === "error"
+            ? { type: "hidden" }
+            : state.loadingScreen,
         // search param updates and auth reloads don't block input
         transitioning: state.transitioning || event.pathChanged,
       };
     case "loadingShown":
-      return { ...state, loadingScreen: "visible" };
+      return { ...state, loadingScreen: { type: "visible" } };
     case "routeResolved":
       return {
         ...state,
-        loadingScreen: "hidden",
+        loadingScreen: { type: "hidden" },
         routePage: event.page,
       };
     case "routeFailed":
       // the loading page shows the error, nothing will fade in to end it
       return {
         ...state,
-        loadingScreen: "error",
+        loadingScreen: { type: "error", message: event.message },
         routePage: "loading",
         transitioning: false,
       };

@@ -7,14 +7,15 @@ import {
   ParentProps,
   Show,
 } from "solid-js";
-import { z } from "zod";
-import { serialize } from "zod-urlsearchparams";
 
-import { replaceSearch } from "../../router/navigate";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import {
+  getHighlightedSetting,
+  settingsSearch,
+} from "../../states/settings-search";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -65,11 +66,9 @@ export function Setting(props: SettingProps): JSXElement {
   let ref: HTMLDivElement | undefined;
   const [highlighted, setHighlighted] = createSignal(false);
   onMount(() => {
-    if (props.key === undefined) return;
-    const highlight = new URLSearchParams(window.location.search).get(
-      "highlight",
-    );
-    if (highlight !== props.key) return;
+    if (props.key === undefined || getHighlightedSetting() !== props.key) {
+      return;
+    }
 
     // wait for the page fade in
     const timeout = setTimeout(() => {
@@ -142,15 +141,7 @@ function DeepLinkButton(props: { key: string }) {
       variant="text"
       fa={{ icon: "fa-link" }}
       onClick={() => {
-        const urlParams = serialize({
-          schema: z.object({
-            highlight: z.string(),
-          }),
-          data: {
-            highlight: props.key,
-          },
-        });
-        replaceSearch("/settings", urlParams);
+        settingsSearch.write({ highlight: props.key });
 
         navigator.clipboard
           .writeText(window.location.toString())

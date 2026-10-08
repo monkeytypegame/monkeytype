@@ -60,15 +60,16 @@ export async function navigate(
 }
 
 /**
- * Replace the search params of `pathname` without adding a history entry, eg.
- * to reflect page state in the url. Does nothing if the url is no longer on
- * `pathname` (eg. the page is fading out after navigating away) or if nothing
- * changed - the route reloads on every url change, which can re-trigger the
- * caller.
+ * Replace the search params of the current url without adding a history entry.
+ * Does nothing while navigating to another path, or if nothing changed - the
+ * route reloads on every url change. Use createSearchParams (search-params.ts)
+ * rather than calling this directly.
  */
-export function replaceSearch(pathname: string, search: URLSearchParams): void {
+export function replaceSearch(search: URLSearchParams): void {
   if (router === undefined) return;
-  if (window.location.pathname !== pathname) return;
+  const { location, resolvedLocation } = router.state;
+  if (location.pathname !== resolvedLocation?.pathname) return;
+  const pathname = location.pathname;
   const query = search.toString();
   const url = `${pathname}${query === "" ? "" : `?${query}`}`;
   if (url === pathname + window.location.search) return;

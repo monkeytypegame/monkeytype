@@ -1,10 +1,9 @@
 import { createSignal } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
-import { replaceSearch } from "../router/navigate";
+import { createSearchParams } from "../router/search-params";
 import { FaSolidIcon } from "../types/font-awesome";
 import { isAuthenticated } from "./core";
-import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 
 export const [getLastGeneratedApeKey, setLastGeneratedApeKey] = createSignal<
   string | undefined
@@ -30,15 +29,6 @@ export const accountSettingsTabs: Record<
   dangerZone: { text: "danger zone", icon: "fa-exclamation-triangle" },
 };
 
-export const AccountSettingsUrlParamsSchema = z
-  .object({
-    tab: AccountSettingsTabSchema,
-  })
-  .partial();
-export type AccountSettingsUrlParams = z.infer<
-  typeof AccountSettingsUrlParamsSchema
->;
-
 export const [getCurrentTab, setCurrentTab] =
   createSignal<AccountSettingsTab>("account");
 
@@ -52,20 +42,12 @@ createEffectOn(isAuthenticated, (hasUser) => {
   }
 });
 
-export function readAccountSettingsGetParameters(
-  params: AccountSettingsUrlParams | undefined,
-): void {
-  if (params?.tab === undefined) return;
+export const accountSettingsSearch = createSearchParams(
+  "accountSettings",
+  z.object({ tab: AccountSettingsTabSchema }).partial(),
+  (params) => {
+    if (params?.tab !== undefined) setCurrentTab(params.tab);
+  },
+);
 
-  setCurrentTab(params.tab);
-}
-
-createEffectOn(getCurrentTab, (tab) => {
-  const data: AccountSettingsUrlParams = { tab };
-
-  const urlParams = serializeUrlSearchParams({
-    schema: AccountSettingsUrlParamsSchema,
-    data,
-  });
-  replaceSearch("/account-settings", urlParams);
-});
+createEffectOn(getCurrentTab, (tab) => accountSettingsSearch.write({ tab }));

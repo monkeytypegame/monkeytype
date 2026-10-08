@@ -17,7 +17,7 @@ import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getCustomTextIndicator } from "./core";
-import { getActivePage } from "./router";
+import { getMountedPage } from "./router";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
@@ -155,7 +155,7 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
 }>({});
 
 createEffect(() => {
-  getActivePage(); // depend on active page
+  getMountedPage(); // depend on mounted page
   setIsLongTest(
     !canQuickRestart(
       getConfig.mode,

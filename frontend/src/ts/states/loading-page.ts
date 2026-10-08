@@ -66,11 +66,6 @@ export function resetLoadingPage(): void {
   setState(initialState);
 }
 
-/** Message for the error state, which the router enters when a route fails to load. */
-export function setLoadingPageError(message: string): void {
-  updateLoadingPageText(message);
-}
-
 type LoadingBarKeyframe = {
   /** Percentage of the bar to fill. */
   percentage: number;

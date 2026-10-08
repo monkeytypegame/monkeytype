@@ -6,7 +6,7 @@ import {
   getLoadingPageIndicator,
   getLoadingPageText,
 } from "../../states/loading-page";
-import { getLoadingScreen } from "../../states/router";
+import { getLoadingError } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { Fa } from "../common/Fa";
 
@@ -28,7 +28,8 @@ export function LoadingPage(): JSXElement {
   });
 
   const shown = (): "spinner" | "bar" | "error" =>
-    getLoadingScreen() === "error" ? "error" : getLoadingPageIndicator();
+    getLoadingError() !== null ? "error" : getLoadingPageIndicator();
+  const text = (): string | null => getLoadingError() ?? getLoadingPageText();
   const spinnerClass = (): string =>
     cn("text-[2rem] text-main", { hidden: shown() !== "spinner" });
   const errorClass = (): string =>
@@ -37,8 +38,7 @@ export function LoadingPage(): JSXElement {
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
       hidden: shown() !== "bar",
     });
-  const textClass = (): string =>
-    cn("h-[1.25em]", { hidden: getLoadingPageText() === null });
+  const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between loads and is always there to animate
@@ -56,9 +56,9 @@ export function LoadingPage(): JSXElement {
           class="h-full w-1/2 rounded bg-main"
         ></div>
       </div>
-      {/* innerHTML because load errors pass <br> separated messages to updateLoadingPageText */}
+      {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}
-      <div class={textClass()} innerHTML={getLoadingPageText() ?? ""}></div>
+      <div class={textClass()} innerHTML={text() ?? ""}></div>
     </>
   );
 }

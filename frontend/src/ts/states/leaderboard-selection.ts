@@ -2,12 +2,11 @@ import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
 import { Accessor, createEffect, createSignal, Setter } from "solid-js";
 import { z } from "zod";
-import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { getSnapshot } from "./snapshot";
-import { replaceSearch } from "../router/navigate";
+import { createSearchParams } from "../router/search-params";
 
 export const pageSize = 50;
 
@@ -32,7 +31,7 @@ const SpeedSelection = z.object({
 export const SelectionSchema = SpeedSelection.or(XpSelection);
 export type Selection = z.infer<typeof SelectionSchema>;
 
-export const LeaderboardUrlParamsSchema = z
+const LeaderboardUrlParamsSchema = z
   .object({
     type: z.enum(["allTime", "daily", "weekly"]),
     mode: ModeSchema.optional(),
@@ -45,7 +44,7 @@ export const LeaderboardUrlParamsSchema = z
     goToUserPage: z.boolean().optional(),
   })
   .partial();
-export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
+type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
 
 const [getSelectionLs, setSelection] = lsSelection();
 export const [getPage, setPage] = createSignal(0);
@@ -68,9 +67,13 @@ export const getSelection = (): Selection => {
 
 export { setSelection };
 
-export function readLeaderboardGetParameters(
-  params: LeaderboardUrlParams | undefined,
-): void {
+export const leaderboardSearch = createSearchParams(
+  "leaderboards",
+  LeaderboardUrlParamsSchema,
+  readGetParameters,
+);
+
+function readGetParameters(params: LeaderboardUrlParams | undefined): void {
   if (params?.type === undefined) return;
 
   let newSelection: Partial<Selection> = {
@@ -119,11 +122,7 @@ export function updateGetParameters(
     params.friendsOnly = true;
   }
 
-  const urlParams = serializeUrlSearchParams({
-    schema: LeaderboardUrlParamsSchema,
-    data: params,
-  });
-  replaceSearch("/leaderboards", urlParams);
+  leaderboardSearch.write(params);
 }
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {

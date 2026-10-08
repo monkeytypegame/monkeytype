@@ -6,19 +6,7 @@ import {
   transitionPage,
 } from "../router/page-transition";
 
-export type PageName =
-  | "loading"
-  | "test"
-  | "settings"
-  | "about"
-  | "account"
-  | "login"
-  | "profile"
-  | "profileSearch"
-  | "404"
-  | "accountSettings"
-  | "leaderboards"
-  | "friends";
+export type { PageName } from "../components/pages/Pages";
 
 const [getState, setState] = createSignal(initialPageTransitionState);
 
@@ -39,10 +27,10 @@ export const getRoutePage = createMemo(() => getState().routePage);
  * page doesn't react to the navigation while it's still visible.
  * Is "loading" while the loading page is shown.
  */
-export const getActivePage = createMemo(() => getState().mountedPage);
+export const getMountedPage = createMemo(() => getState().mountedPage);
 
-/** Whether the test page is on screen (see getActivePage). */
-export const isTestPageActive = createMemo(() => getActivePage() === "test");
+/** Whether the test page is on screen (see getMountedPage). */
+export const isTestPageActive = createMemo(() => getMountedPage() === "test");
 
 /**
  * True while a route is loading and while the page fade is running
@@ -50,7 +38,10 @@ export const isTestPageActive = createMemo(() => getActivePage() === "test");
  */
 export const isPageTransitioning = createMemo(() => getState().transitioning);
 
-/** Whether the loading page covers the route. "error" stays until the next navigation. */
-export const getLoadingScreen = createMemo(() => getState().loadingScreen);
+/** Why the last route failed to load, shown on the loading page until the next navigation. */
+export const getLoadingError = createMemo(() => {
+  const screen = getState().loadingScreen;
+  return screen.type === "error" ? screen.message : null;
+});
 
 export const getPageFadePhase = createMemo(() => getState().fadePhase);

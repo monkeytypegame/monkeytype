@@ -1,6 +1,4 @@
 import { createRootRoute, createRoute, redirect } from "@tanstack/solid-router";
-import { z } from "zod";
-import { safeParse as parseUrlSearchParams } from "zod-urlsearchparams";
 
 import {
   configurationPromise as serverConfigurationPromise,
@@ -14,16 +12,11 @@ import {
 import { isResultsReady, waitForResultsReady } from "../collections/results";
 import { getSnapshot } from "../db";
 import { isAuthAvailable } from "../firebase";
-import {
-  AccountSettingsUrlParamsSchema,
-  readAccountSettingsGetParameters,
-} from "../states/account-settings";
+import { accountSettingsSearch } from "../states/account-settings";
 import { isAuthenticated, setSelectedProfileName } from "../states/core";
-import {
-  LeaderboardUrlParamsSchema,
-  readLeaderboardGetParameters,
-} from "../states/leaderboard-selection";
+import { leaderboardSearch } from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
+import { settingsSearch } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import { waitForUserData } from "./user-data";
@@ -45,25 +38,6 @@ function requireAuth(): void {
 function guestOnly(): void {
   if (!isAuthAvailable()) redirect({ to: "/", throw: true });
   if (isAuthenticated()) redirect({ to: "/account", throw: true });
-}
-
-/**
- * Passes the parsed search params (`undefined` if invalid) to `read`, only when
- * entering the route - the page writes its state back to the url, which reloads
- * the route.
- */
-function readSearchOnEnter<T extends z.ZodObject<z.ZodRawShape>>(
-  schema: T,
-  read: (params: z.infer<T> | undefined) => void,
-): (ctx: { search: Record<string, unknown>; cause: string }) => void {
-  return ({ search, cause }) => {
-    if (cause !== "enter") return;
-    const parsed = parseUrlSearchParams({
-      schema,
-      input: new URLSearchParams(search as Record<string, string>),
-    });
-    read(parsed.success ? parsed.data : undefined);
-  };
 }
 
 // renders nothing - pages are rendered by <Pages> (see components/pages/Pages.tsx)
@@ -99,10 +73,7 @@ const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
-  beforeLoad: readSearchOnEnter(
-    LeaderboardUrlParamsSchema,
-    readLeaderboardGetParameters,
-  ),
+  beforeLoad: leaderboardSearch.readOnEnter,
   loader: async () =>
     withLoading("the leaderboards page", {
       style: "spinner",
@@ -123,6 +94,7 @@ const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
   staticData: { page: "settings" },
+  beforeLoad: settingsSearch.readOnEnter,
 });
 
 const login = createRoute({
@@ -156,18 +128,13 @@ const account = createRoute({
     }),
 });
 
-const readAccountSettingsSearch = readSearchOnEnter(
-  AccountSettingsUrlParamsSchema,
-  readAccountSettingsGetParameters,
-);
-
 const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
   beforeLoad: (ctx) => {
     requireAuth();
-    readAccountSettingsSearch(ctx);
+    accountSettingsSearch.readOnEnter(ctx);
   },
 });
 
