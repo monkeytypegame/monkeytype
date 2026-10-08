@@ -12,6 +12,7 @@ import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
 import { COMPATIBILITY_CHECK_HEADER } from "@monkeytype/contracts";
 import { createETagGenerator } from "./utils/etag";
 import { v4RequestBody } from "./middlewares/utility";
+import { isLocalAuth } from "./utils/auth-provider";
 
 const etagFn = createETagGenerator({ weak: true });
 
@@ -20,7 +21,14 @@ function buildApp(): express.Application {
 
   app.use(urlencoded({ extended: true }));
   app.use(json());
-  app.use(cors({ exposedHeaders: [COMPATIBILITY_CHECK_HEADER] }));
+  app.use(
+    cors({
+      exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
+      ...(isLocalAuth()
+        ? { origin: process.env["FRONTEND_URL"], credentials: true }
+        : {}),
+    }),
+  );
   app.use(helmet());
 
   app.set("trust proxy", 1);

@@ -2,6 +2,7 @@ import { contract } from "@monkeytype/contracts/index";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
+import localAuth from "./local-auth";
 import { join } from "path";
 import quotes from "./quotes";
 import results from "./results";
@@ -65,6 +66,7 @@ const router = s.router(contract, {
 export function addApiRoutes(app: Application): void {
   applyDevApiRoutes(app);
   applyApiRoutes(app);
+  app.use("/auth", localAuth);
   applyTsRestApiRoutes(app);
 
   app.use((req, res) => {

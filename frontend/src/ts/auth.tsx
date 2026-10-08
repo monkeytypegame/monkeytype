@@ -15,7 +15,6 @@ import {
   updateEmail,
   updateProfile,
   User,
-  User as UserType,
 } from "firebase/auth";
 import { createMemo } from "solid-js";
 import { z, ZodString } from "zod";
@@ -30,6 +29,9 @@ import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
   getAuthenticatedUser,
+  getFirebaseUser,
+  isLocalAuth,
+  type AuthenticatedUser,
   isAuthAvailable,
   resetIgnoreAuthCallback,
   signInWithEmailAndPassword,
@@ -37,6 +39,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import * as LocalAuth from "./local-auth";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
@@ -96,7 +99,7 @@ export type AuthResult =
 type ReauthSuccess = {
   status: "success";
   message: string;
-  user: User;
+  user: AuthenticatedUser;
 };
 
 type ReauthFailed = {
@@ -209,7 +212,7 @@ async function getDataAndInit(): Promise<boolean> {
   }
 }
 
-export async function loadUser(_user: UserType): Promise<void> {
+export async function loadUser(_user: AuthenticatedUser): Promise<void> {
   if (!(await getDataAndInit())) {
     signOut();
     return;
@@ -219,7 +222,7 @@ export async function loadUser(_user: UserType): Promise<void> {
 
 export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
-  user: UserType | null,
+  user: AuthenticatedUser | null,
 ): Promise<void> {
   console.debug(`account controller ready`);
 
@@ -300,13 +303,16 @@ export async function addAuthProvider(
         password: string;
       },
 ): Promise<void> {
+  if (isLocalAuth()) {
+    throw new Error("Additional authentication providers are disabled");
+  }
   if (!isAuthAvailable()) {
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   const authMethod = options.authMethod;
 
-  const user = getAuthenticatedUser();
+  const user = getFirebaseUser();
   const providerName = getAuthMethodDisplay(authMethod);
 
   if (!user) return;
@@ -344,7 +350,7 @@ async function addPasswordProvider(
     options.email,
     options.password,
   );
-  await linkWithCredential(reauth.user, credential);
+  await linkWithCredential(user, credential);
   await updateEmail(user, options.email);
   const response = await Ape.users.updateEmail({
     body: {
@@ -388,7 +394,11 @@ export async function removeAuthProvider(
     };
   }
   try {
-    await unlink(reauth.user, getProviderId(authMethod));
+    const user = getFirebaseUser();
+    if (user === null || isLocalAuth()) {
+      throw new Error("Additional authentication providers are disabled");
+    }
+    await unlink(user, getProviderId(authMethod));
     updateAuthenticatedUser();
   } catch (e) {
     const message = createErrorMessage(
@@ -429,6 +439,11 @@ export async function signUp(
   }
 
   try {
+    if (isLocalAuth()) {
+      await LocalAuth.signUp(name, email, password);
+      showSuccessNotification("Account created");
+      return { success: true };
+    }
     const createdAuthUser = await createUserWithEmailAndPassword(
       email,
       password,
@@ -499,6 +514,11 @@ export async function reauthenticate(
   const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
+    if (isLocalAuth()) {
+      if (options.password === undefined) throw new Error("Password required");
+      await LocalAuth.reauthenticate(options.password);
+      return { status: "success", message: "Reauthenticated", user };
+    }
     if (authMethod === undefined) {
       return {
         status: "error",
@@ -518,7 +538,9 @@ export async function reauthenticate(
         user.email as string,
         options.password,
       );
-      await reauthenticateWithCredential(user, credential);
+      const firebaseUser = getFirebaseUser();
+      if (firebaseUser === null) throw new Error("User is not signed in");
+      await reauthenticateWithCredential(firebaseUser, credential);
     } else {
       const provider = getAuthProvider(authMethod);
       if (provider === undefined) {
@@ -527,7 +549,9 @@ export async function reauthenticate(
           message: `Authentication ${authMethod} is missing a provider`,
         };
       }
-      await reauthenticateWithPopup(user, provider);
+      const firebaseUser = getFirebaseUser();
+      if (firebaseUser === null) throw new Error("User is not signed in");
+      await reauthenticateWithPopup(firebaseUser, provider);
     }
 
     return {
@@ -593,7 +617,7 @@ export function isUsingAuthenticationReactive(authMethod: AuthMethod): boolean {
  */
 export function getPasswordSchema(options?: { isNew: boolean }): ZodString {
   if (!options?.isNew) return PasswordSchema;
-  if (isDevEnvironment()) return z.string().min(6);
+  if (isDevEnvironment() && !isLocalAuth()) return z.string().min(6);
   return NewPasswordSchema;
 }
 

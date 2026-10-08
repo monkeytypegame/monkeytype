@@ -50,12 +50,17 @@
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SENTRY", "AUTH_PROVIDER"],
       "outputs": ["dist/**"]
     },
     "@monkeytype/frontend#dev": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SERVER_OPEN"],
+      "env": [
+        "BACKEND_URL",
+        "RECAPTCHA_SITE_KEY",
+        "SERVER_OPEN",
+        "AUTH_PROVIDER"
+      ],
       "persistent": true
     },
     "@monkeytype/backend#dev": {
