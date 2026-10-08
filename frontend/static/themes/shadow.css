@@ -21,7 +21,7 @@ header [data-ui-element="logoText"] {
   }
 }
 
-#result .stats .group,
+[data-ui-element="resultStat"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {

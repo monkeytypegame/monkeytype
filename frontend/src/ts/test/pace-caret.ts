@@ -7,7 +7,6 @@ import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
 import { ElementWithUtils } from "../utils/dom";
-import { createPlaceholder } from "../elements/test-page";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -38,23 +37,23 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-// placeholder until the TestPage mounts (see elements/test-page.ts),
-// recreated on every mount since #paceCaret is rendered by it
-export let caret = new Caret(
-  createPlaceholder("div", "paceCaret"),
-  Config.paceCaretStyle,
-  {
-    words: createPlaceholder("div"),
-    wordsWrapper: createPlaceholder("div"),
-  },
-);
+// #paceCaret is rendered by TestPage, set via initElement() on every mount
+export let caret: Caret | undefined;
 
-export function initElement(refs: {
-  caret: ElementWithUtils;
-  words: ElementWithUtils;
-  wordsWrapper: ElementWithUtils;
-}): void {
-  caret = new Caret(refs.caret, Config.paceCaretStyle, refs);
+export function initElement(
+  refs: {
+    caret: ElementWithUtils;
+    words: ElementWithUtils;
+    wordsWrapper: ElementWithUtils;
+  },
+  signal: AbortSignal,
+): void {
+  const created = new Caret(refs.caret, Config.paceCaretStyle, refs);
+  caret = created;
+  signal.addEventListener("abort", () => {
+    // a remount may have created a new caret already
+    if (caret === created) caret = undefined;
+  });
 }
 
 let lastTestWpm = 0;
@@ -69,11 +68,11 @@ export function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !isPaceRepeat()) return;
   if (Config.mode === "zen") return;
 
-  caret.hide();
-  caret.stopAllAnimations();
-  caret.clearMargins();
+  caret?.hide();
+  caret?.stopAllAnimations();
+  caret?.clearMargins();
 
-  caret.goTo({
+  caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
     isLanguageRightToLeft: isLanguageRightToLeft(),
@@ -83,7 +82,7 @@ export function resetCaretPosition(): void {
 }
 
 export async function init(): Promise<void> {
-  caret.hide();
+  caret?.hide();
   const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
@@ -146,8 +145,8 @@ export async function update(expectedStepEnd: number): Promise<void> {
     return;
   }
 
-  if (caret.isHidden()) {
-    caret.show();
+  if (caret?.isHidden()) {
+    caret?.show();
   }
 
   incrementLetterIndex();
@@ -157,7 +156,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const absoluteStepEnd = startTimestamp + expectedStepEnd;
     const duration = absoluteStepEnd - now;
 
-    caret.goTo({
+    caret?.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
       isLanguageRightToLeft: isLanguageRightToLeft(),
@@ -182,7 +181,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     );
   } catch (e) {
     console.error(e);
-    caret.hide();
+    caret?.hide();
     return;
   }
 }
@@ -243,7 +242,7 @@ function incrementLetterIndex(): void {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    caret.hide();
+    caret?.hide();
     return;
   }
 }
@@ -278,6 +277,6 @@ export function start(): void {
 configEvent.subscribe(({ key }) => {
   if (key === "paceCaret") void init();
   if (key === "paceCaretStyle") {
-    caret.setStyle(Config.paceCaretStyle);
+    caret?.setStyle(Config.paceCaretStyle);
   }
 });

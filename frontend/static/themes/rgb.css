@@ -72,7 +72,7 @@
 }
 
 [data-ui-element="logoSubtext"],
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 #words.flipped .word,

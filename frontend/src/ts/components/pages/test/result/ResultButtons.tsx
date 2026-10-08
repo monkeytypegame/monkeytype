@@ -34,14 +34,14 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
         )}
       >
         <ResultButton
-          id="nextTestButton"
+          data-ui-element="restartTestButton"
           class="max-sm:col-span-2"
           text="Next test"
           fa={{ icon: "fa-chevron-right" }}
           onClick={() => void restart()}
         />
         <ResultButton
-          id="restartTestButtonWithSameWordset"
+          data-ui-element="restartTestButtonWithSameWordset"
           text="Repeat test"
           fa={{ icon: "fa-sync-alt" }}
           onClick={repeatTest}
@@ -97,17 +97,19 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
 }
 
 function ResultButton(props: {
-  id: string;
+  id?: string;
   class?: string;
   text: string;
   fa: FaObject;
   onClick: (event: MouseEvent) => void;
+  "data-ui-element"?: string;
 }): JSXElement {
   return (
     <button
       type="button"
       class={cn("text px-[2em] py-[1em]", props.class)}
       id={props.id}
+      data-ui-element={props["data-ui-element"]}
       {...buildBalloonHtmlProperties({
         text: props.text,
         position: "down",

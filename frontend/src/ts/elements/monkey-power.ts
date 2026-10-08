@@ -2,9 +2,8 @@ import * as SlowTimer from "../legacy-states/slow-timer";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 import { getTheme } from "../states/theme";
-import { testPageRef } from "./test-page";
 
 const html = qsr("html");
 const body = qsr("body");
@@ -37,8 +36,6 @@ type CTX = {
 /**
  * @type {CTX} ctx
  */
-const caretEl = testPageRef("#caret");
-
 const ctx: CTX = {
   particles: [],
   rendering: false,
@@ -225,10 +222,12 @@ export async function addPower(good = true, extra = false): Promise<void> {
     }
 
     // Sparks
-    const offset = caretEl().native.getBoundingClientRect();
+    // looked up each time - #caret is re-rendered if TestPage remounts
+    const caretEl = qs("#caret");
+    const offset = caretEl?.native.getBoundingClientRect();
     const coords = [
       offset?.left ?? 0,
-      (offset?.top ?? 0) + caretEl().native.offsetHeight / 2,
+      (offset?.top ?? 0) + (caretEl?.native.offsetHeight ?? 0) / 2,
     ];
 
     for (

@@ -47,7 +47,7 @@
 
 [data-ui-element="logoSubtext"],
 [data-ui-element="logo"]:hover h1,
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {

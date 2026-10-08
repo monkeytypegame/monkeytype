@@ -97,7 +97,8 @@ function onFadeComplete(): void {
 
 /**
  * Renders the page for the active route, fading the previous one out first.
- * The test page is never unmounted (vanilla code holds references into it).
+ * The test page shell is always rendered; TestPage mounts its content only
+ * while it is the active page.
  */
 export function Pages(): JSXElement {
   createEffectOn(targetPage, (next) => {

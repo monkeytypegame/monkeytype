@@ -47,24 +47,6 @@
 .pageTest {
   position: relative;
 
-  #testInitFailed {
-    margin-top: 2rem;
-    font-size: 1rem;
-    text-align: center;
-    .message {
-      max-width: 800px;
-      grid-area: content;
-      justify-self: center;
-    }
-    .error {
-      margin-top: 2rem;
-    }
-    button {
-      padding: 1rem 2rem;
-      margin-top: 2rem;
-    }
-  }
-
   #typingTest {
     position: relative;
     width: 100%;
@@ -572,29 +554,6 @@
   contain: strict;
 }
 
-.pageTest > .loading {
-  text-align: center;
-  & > i {
-    font-size: 2rem;
-    color: var(--main-color);
-  }
-  opacity: 0;
-  &:not(.hidden) {
-    animation-name: fadeIn;
-    animation-duration: 0.125s;
-    animation-delay: 0.5s;
-    animation-fill-mode: forwards;
-    animation-timing-function: ease;
-  }
-}
-
-#restartTestButton {
-  font-size: 1rem;
-  margin: 1rem auto 0 auto;
-  display: flex;
-  padding: 1em 2em;
-}
-
 .pageTest {
   height: 100%;
   display: grid;
@@ -618,34 +577,6 @@
 
     --c-dot: var(--text-color);
     --c-dot--error: var(--error-color);
-  }
-  #memoryTimer,
-  #layoutfluidTimer {
-    font-size: 1rem;
-    background: var(--main-color);
-    color: var(--bg-color);
-    padding: 1rem;
-    border-radius: var(--roundness);
-    /* width: min-content; */
-    text-align: center;
-    width: max-content;
-    /* justify-self: center; */
-    left: 50%;
-    position: absolute;
-    transform: translateX(-50%);
-    top: -6rem;
-    user-select: none;
-    pointer-events: none;
-    opacity: 0;
-  }
-}
-
-main.focus .pageTest {
-  #restartTestButton {
-    opacity: 0 !important;
-    &:focus-visible {
-      opacity: 1 !important;
-    }
   }
 }
 

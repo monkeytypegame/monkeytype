@@ -1,82 +1,109 @@
-import { JSXElement, onMount, Show } from "solid-js";
+import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
+import { getConfig } from "../../../config/store";
 import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import { createEffectOn } from "../../../hooks/effects";
 import { blurInputElement } from "../../../input/input-element";
-import { initInputListeners } from "../../../input/listeners";
 import { getShowResult } from "../../../states/result";
 import { getActivePage, getRoutePage } from "../../../states/router";
-import { resetIncompleteTests } from "../../../states/test";
-import * as Caret from "../../../test/caret";
+import {
+  getFocus,
+  getLayoutfluidTimerText,
+  isLayoutfluidTimerVisible,
+  isResultLoading,
+  isTestInitFailed,
+  resetIncompleteTests,
+} from "../../../states/test";
+import { bindTestElements } from "../../../test/bind-test-elements";
 import * as Funbox from "../../../test/funbox/funbox";
-import * as PaceCaret from "../../../test/pace-caret";
-import * as TestLogic from "../../../test/test-logic";
-import * as TestUI from "../../../test/test-ui";
-import { ElementWithUtils } from "../../../utils/dom";
+import { onRestartButtonClick, stop } from "../../../test/test-logic";
+import { cn } from "../../../utils/cn";
+import { Button } from "../../common/Button";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
+import { FunboxTimer } from "./FunboxTimer";
 import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
 import { LiveStatsTextBottom } from "./live-stats/LiveStatsTextBottom";
 import { LiveStatsTextTop } from "./live-stats/LiveStatsTextTop";
+import { MemoryFunboxTimer } from "./MemoryFunboxTimer";
 import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
+import { TestInitFailed } from "./TestInitFailed";
 
 /**
- * Renders the children of the `.page.pageTest` element.
- * Internals are still vanilla - this only owns the markup, binds the
- * vanilla listeners once it exists and runs the show/hide logic.
+ * Renders the children of the `.page.pageTest` element, only while the test
+ * page is active, and runs the show/hide logic.
  */
 export function TestPage(): JSXElement {
-  let wordsWrapperRef: HTMLDivElement | undefined;
-  let wordsRef: HTMLDivElement | undefined;
-  let caretRef: HTMLDivElement | undefined;
-  let paceCaretRef: HTMLDivElement | undefined;
-
-  onMount(() => {
-    if (
-      wordsWrapperRef === undefined ||
-      wordsRef === undefined ||
-      caretRef === undefined ||
-      paceCaretRef === undefined
-    ) {
-      throw new Error("TestPage refs not set");
-    }
-    const words = new ElementWithUtils(wordsRef);
-    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
-    Caret.initElement({
-      caret: new ElementWithUtils(caretRef),
-      words,
-      wordsWrapper,
-    });
-    PaceCaret.initElement({
-      caret: new ElementWithUtils(paceCaretRef),
-      words,
-      wordsWrapper,
-    });
-    initInputListeners();
-    TestUI.init();
-  });
-
   // stop typing as soon as the user navigates away, before the page fades out
   createEffectOn(getRoutePage, (page, prev) => {
-    if (page !== "test" && prev === "test") blurInputElement();
+    if (page !== "test" && prev === "test") {
+      stop();
+      blurInputElement();
+    }
   });
 
   createEffectOn(getActivePage, (page, prev) => {
     if (page === "test" && prev !== "test") {
       updateFooterAndVerticalAds(false);
+      // the test itself is restarted when TypingTest mounts (bindTestElements)
       resetIncompleteTests();
-      void TestLogic.restart({ noAnim: true });
     } else if (page !== "test" && prev === "test") {
-      void TestLogic.restart({ noAnim: true });
       void Funbox.clear();
       updateFooterAndVerticalAds(true);
     }
+  });
+
+  return (
+    <Show when={getActivePage() === "test"}>
+      <TypingTest />
+    </Show>
+  );
+}
+
+/**
+ * Internals are still vanilla - this owns the markup and hands its elements
+ * to the vanilla modules on mount (see bindTestElements), unbinding them
+ * on cleanup. Mounting starts a fresh test.
+ */
+function TypingTest(): JSXElement {
+  let wordsWrapperRef: HTMLDivElement | undefined;
+  let wordsRef: HTMLDivElement | undefined;
+  let caretRef: HTMLDivElement | undefined;
+  let paceCaretRef: HTMLDivElement | undefined;
+  let inputRef: HTMLTextAreaElement | undefined;
+
+  onMount(() => {
+    // registered first so a throw below still cleans up
+    const controller = new AbortController();
+    onCleanup(() => controller.abort());
+
+    if (
+      wordsWrapperRef === undefined ||
+      wordsRef === undefined ||
+      caretRef === undefined ||
+      paceCaretRef === undefined ||
+      inputRef === undefined
+    ) {
+      throw new Error("TestPage refs not set");
+    }
+
+    bindTestElements(
+      {
+        words: wordsRef,
+        wordsWrapper: wordsWrapperRef,
+        caret: caretRef,
+        paceCaret: paceCaretRef,
+        input: inputRef,
+      },
+      controller.signal,
+    );
   });
 
   return (
@@ -85,25 +112,23 @@ export function TestPage(): JSXElement {
         <TestConfig />
       </div>
 
-      <div id="testInitFailed" class="content-grid hidden">
-        <div class="message">
-          <div class="text">
-            Test initialization failed. Please try different settings or
-            refreshing the page. If the problem persists, please contact
-            support.
-          </div>
-          <div class="error"></div>
-          <button type="button" class="active restart">
-            <i class="fas fa-fw fa-redo-alt"></i> Restart
-          </button>
-        </div>
-      </div>
-      <div id="typingTest" class="content-grid full-width-padding">
+      {/* TODO: inline display instead of class/Show because test-ui/test-logic
+          still toggle classes on #typingTest and hold refs into it. Switch to a
+          class binding (or Show) once that's moved to signals. */}
+      <div
+        id="typingTest"
+        class="content-grid full-width-padding"
+        style={{ display: isTestInitFailed() ? "none" : undefined }}
+      >
         <div>
           <CapsWarning />
         </div>
-        <div id="memoryTimer">Time left to memorise all words: 0s</div>
-        <div id="layoutfluidTimer">Time left to memorise all words: 0s</div>
+        <MemoryFunboxTimer />
+        <FunboxTimer
+          id="layoutfluidTimer"
+          visible={isLayoutfluidTimerVisible()}
+          text={getLayoutfluidTimerText()}
+        />
         <div>
           <TestModesNotice />
         </div>
@@ -122,6 +147,7 @@ export function TestPage(): JSXElement {
         >
           <textarea
             id="wordsInput"
+            ref={(el) => (inputRef = el)}
             class="full-width"
             autocomplete="off"
             // oxlint-disable-next-line react/no-unknown-property
@@ -168,15 +194,26 @@ export function TestPage(): JSXElement {
           <Monkey />
         </div>
 
-        <button
-          type="button"
-          id="restartTestButton"
-          aria-label="Restart Test"
-          data-balloon-pos="down"
-          class="text"
-        >
-          <i class="fas fa-fw fa-redo-alt"></i>
-        </button>
+        <Button
+          variant="text"
+          dataset={{ "data-ui-element": "restartTestButton" }}
+          class={cn(
+            "mx-auto mt-4 w-max px-8 py-4 text-base transition-opacity",
+            "focus:opacity-100 focus:transition-none",
+            getConfig.quickRestart !== "off" && "hidden",
+            "pointer-coarse:block", //always show the button if using a pointer-coarse device
+            getFocus() && "opacity-0", //always hide if we are focused
+          )}
+          balloon={{
+            text: "Restart Test",
+            position: "down",
+          }}
+          fa={{
+            icon: "fa-redo-alt",
+            fixedWidth: true,
+          }}
+          onClick={onRestartButtonClick}
+        />
         <div>
           <LiveStatsTextBottom />
         </div>
@@ -184,9 +221,14 @@ export function TestPage(): JSXElement {
           <Premid />
         </div>
       </div>
-      <div class="loading hidden">
-        <i class="fas fa-circle-notch fa-spin"></i>
-      </div>
+      <Show when={isTestInitFailed()}>
+        <TestInitFailed />
+      </Show>
+      <Show when={isResultLoading()}>
+        <div class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0">
+          <LoadingCircle />
+        </div>
+      </Show>
       <Show when={getShowResult()}>
         <TestResult />
       </Show>

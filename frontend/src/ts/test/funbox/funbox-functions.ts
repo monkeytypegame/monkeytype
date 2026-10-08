@@ -15,9 +15,7 @@ import {
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import { getCurrentInput, getInputForWord } from "../events/data";
-import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
-import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
@@ -28,6 +26,9 @@ import {
   setReadAheadDisabled,
   setWordsHidden,
   setWordsWrapperHidden,
+  setLayoutfluidTimerText,
+  setLayoutfluidTimerVisible,
+  setMemoryTimerDuration,
 } from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
@@ -406,23 +407,27 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 
         if (layouts[index] as string) {
           if (mod <= 3 && (layouts[index + 1] as string)) {
-            LayoutfluidFunboxTimer.show();
-            LayoutfluidFunboxTimer.updateWords(
-              mod,
-              layouts[index + 1] as string,
+            const nextLayout = Strings.capitalizeFirstLetter(
+              (layouts[index + 1] as string).replace(/_/g, " "),
             );
+            setLayoutfluidTimerText(
+              mod === 1
+                ? `${nextLayout} starting next word`
+                : `${nextLayout} in: ${mod} words`,
+            );
+            setLayoutfluidTimerVisible(true);
           } else {
-            LayoutfluidFunboxTimer.hide();
+            setLayoutfluidTimerVisible(false);
           }
           if (mod === wordsPerLayout) {
             setConfig("layout", layouts[index] as Layout);
             setConfig("keymapLayout", layouts[index] as KeymapLayout);
             if (mod > 3) {
-              LayoutfluidFunboxTimer.hide();
+              setLayoutfluidTimerVisible(false);
             }
           }
         } else {
-          LayoutfluidFunboxTimer.hide();
+          setLayoutfluidTimerVisible(false);
         }
         setTimeout(() => {
           highlight(
@@ -496,11 +501,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     start(): void {
-      MemoryTimer.reset();
+      setMemoryTimerDuration(null);
       setWordsHidden(true);
     },
     restart(): void {
-      MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
+      setMemoryTimerDuration(Math.round(Math.pow(TestWords.words.length, 1.2)));
       setWordsHidden(false);
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");

@@ -72,6 +72,9 @@ import {
   setWordsHaveTab,
   getResultVisible,
   CompletedResult,
+  setResultLoading,
+  setTestInitError,
+  setTestInitFailed,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -103,7 +106,6 @@ import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
-import * as TestInitFailed from "../elements/test-init-failed";
 import { canQuickRestart } from "../utils/quick-restart";
 import {
   ResultDetails,
@@ -149,7 +151,6 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
-import { onTestPageClick } from "../elements/test-page";
 
 let failReason = "";
 
@@ -182,6 +183,48 @@ export function startTest(now: number): boolean {
   return true;
 }
 
+function recordIncompleteTest(): void {
+  if (!Config.resultSaving) return;
+  // Finalize the abandoned test before measuring it: logging the timer
+  // "end" event gives getAfkDuration its interval boundaries, so idle time
+  // is actually subtracted. Without it AFK is always 0 and the full
+  // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+  TestTimer.clear(true);
+  const liveEventLog = buildEventLog();
+  const tt = getIncompleteTestSeconds(liveEventLog);
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  pushIncompleteTest({ acc, seconds: tt });
+}
+
+function resetTestState(): void {
+  resetTestEvents();
+  TestTimer.clear();
+  setIsTestInvalid(false);
+  resetModifierState();
+  setTestActive(false);
+  Replay.pauseReplay();
+  setBailedOut(false);
+  PaceCaret.reset();
+  setKoreanStatus(false);
+  clearQuoteStats();
+  CompositionState.setComposing(false);
+  CompositionState.setData("");
+  Strings.clearWordDirectionCache();
+  testReinitCount = 0;
+  failReason = "";
+}
+
+/**
+ * Stops the current test without generating a new one (e.g. when leaving the
+ * test page). Ignores the no_quit funbox.
+ */
+export function stop(): void {
+  if (isTestRestarting() || isResultCalculating()) return;
+
+  if (isTestActive()) recordIncompleteTest();
+  resetTestState();
+}
+
 type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
@@ -203,6 +246,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   options = { ...defaultOptions, ...options };
 
   // guards
+
+  // not on the test page - TestPage restarts on mount
+  if (!TestUI.isMounted()) return;
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -257,17 +303,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
-      // Finalize the abandoned test before measuring it: logging the timer
-      // "end" event gives getAfkDuration its interval boundaries, so idle time
-      // is actually subtracted. Without it AFK is always 0 and the full
-      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
-      TestTimer.clear(true);
-      const liveEventLog = buildEventLog();
-      const tt = getIncompleteTestSeconds(liveEventLog);
-      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
-      pushIncompleteTest({ acc, seconds: tt });
-    }
+    recordIncompleteTest();
   }
 
   const currentQuote = getCurrentQuote();
@@ -309,21 +345,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   // reset state
 
-  resetTestEvents();
-  TestTimer.clear();
-  setIsTestInvalid(false);
-  resetModifierState();
-  setTestActive(false);
-  Replay.pauseReplay();
-  setBailedOut(false);
-  PaceCaret.reset();
-  setKoreanStatus(false);
-  clearQuoteStats();
-  CompositionState.setComposing(false);
-  CompositionState.setData("");
-  Strings.clearWordDirectionCache();
-  testReinitCount = 0;
-  failReason = "";
+  resetTestState();
 
   const repeatWithPace =
     (Config.repeatedPace && options.withSameWordset) ?? false;
@@ -375,11 +397,9 @@ async function init(): Promise<boolean> {
   if (testReinitCount > 3) {
     if (lastInitError) {
       void Sentry.captureException(lastInitError);
-      TestInitFailed.showError(
-        `${lastInitError.name}: ${lastInitError.message}`,
-      );
+      setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
-    TestInitFailed.show();
+    setTestInitFailed(true);
     setIsTestRestarting(false);
     return false;
   }
@@ -829,7 +849,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     duration: Misc.applyReducedMotion(125),
   });
   qs(".pageTest #typingTest")?.hide();
-  qs(".pageTest .loading")?.show();
+  setResultLoading(true);
   await Misc.sleep(0); //allow ui update
 
   TestUI.onTestFinish();
@@ -1175,7 +1195,7 @@ async function showResult(
   AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
 
-  qs(".pageTest .loading")?.hide();
+  setResultLoading(false);
   setShowResult(true);
 
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
@@ -1340,11 +1360,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-onTestPageClick("#testInitFailed button.restart", () => {
-  void restart();
-});
-
-onTestPageClick("#restartTestButton", () => {
+export function onRestartButtonClick(): void {
   if (isResultCalculating()) return;
   if (
     isTestActive() &&
@@ -1357,7 +1373,7 @@ onTestPageClick("#restartTestButton", () => {
   } else {
     void restart();
   }
-});
+}
 
 export function repeatTest(): void {
   if (Config.mode === "zen") {
