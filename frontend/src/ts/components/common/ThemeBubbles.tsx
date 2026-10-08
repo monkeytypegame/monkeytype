@@ -1,8 +1,9 @@
 import { ColorHexValue } from "@monkeytype/schemas/configs";
-import { For } from "solid-js";
 
 import { cn } from "../../utils/cn";
 
+// rendered for every theme on the settings page - colors are passed down as
+// css vars in a single style binding so the bubbles themselves stay static
 export function ThemeBubbles(props: {
   inset: boolean;
   colors: {
@@ -13,28 +14,23 @@ export function ThemeBubbles(props: {
   };
   class?: string;
 }) {
-  const color = (key: string): string =>
-    props.colors[key as keyof typeof props.colors];
-
   return (
     <div
       class={cn(
-        "grid grid-flow-col place-content-center gap-1 rounded-full p-1",
+        "grid grid-flow-col place-content-center gap-1 rounded-full bg-(--bubble-bg) p-1",
         props.inset && "-my-1",
         props.class,
       )}
       style={{
-        background: color("bg"),
+        "--bubble-bg": props.colors.bg,
+        "--bubble-main": props.colors.main,
+        "--bubble-sub": props.colors.sub,
+        "--bubble-text": props.colors.text,
       }}
     >
-      <For each={["main", "sub", "text"]}>
-        {(key) => (
-          <div
-            class="h-[1em] w-[1em] rounded-full"
-            style={{ background: color(key) }}
-          ></div>
-        )}
-      </For>
+      <div class="size-[1em] rounded-full bg-(--bubble-main)"></div>
+      <div class="size-[1em] rounded-full bg-(--bubble-sub)"></div>
+      <div class="size-[1em] rounded-full bg-(--bubble-text)"></div>
     </div>
   );
 }

@@ -434,6 +434,8 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
   );
 }
 
+// rendered ~200 times on the settings page - kept to as few elements and
+// reactive bindings as possible
 function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
   const isActive = () => getConfig.theme === props.theme.name;
   const isFav = () => getConfig.favThemes.includes(props.theme.name);
@@ -462,59 +464,32 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
     >
       <div
         class={cn(
-          "align-center place-self-start opacity-0 transition-[opacity,color,background] duration-125 group-hover/theme:opacity-100",
+          "grid place-self-start rounded-full bg-(--bg) p-1 opacity-0 transition-[opacity,color] duration-125 group-hover/theme:opacity-100 hover:text-(--text)",
           isFav() && "opacity-100",
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isFav()) {
+            setConfig(
+              "favThemes",
+              getConfig.favThemes.filter((t) => t !== props.theme.name),
+            );
+          } else {
+            setConfig("favThemes", [...getConfig.favThemes, props.theme.name]);
+          }
+        }}
       >
-        <div
-          class={cn(
-            "grid justify-center",
-            "rounded-full bg-(--bg) p-1",
-            // "group-hover/theme:text-(--text)",
-            "transition-[opacity,color,background] duration-125",
-            "hover:text-(--text)",
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (isFav()) {
-              setConfig(
-                "favThemes",
-                getConfig.favThemes.filter((t) => t !== props.theme.name),
-              );
-            } else {
-              setConfig("favThemes", [
-                ...getConfig.favThemes,
-                props.theme.name,
-              ]);
-            }
-          }}
-        >
-          <Fa
-            icon="fa-star"
-            variant={isFav() ? "solid" : "regular"}
-            fixedWidth
-            class="transition-[opacity,color,background] duration-125"
-          />
-        </div>
+        <Fa icon="fa-star" variant={isFav() ? "solid" : "regular"} fixedWidth />
       </div>
       <div>{replaceUnderscoresWithSpaces(props.theme.name)}</div>
-      <div
+      <ThemeBubbles
+        inset={false}
+        colors={props.theme}
         class={cn(
-          "place-self-end self-center opacity-0 transition-opacity duration-125 group-hover/theme:opacity-100",
+          "mr-1 place-self-end self-center opacity-0 transition-opacity duration-125 group-hover/theme:opacity-100",
           isActive() && "opacity-100",
         )}
-      >
-        <ThemeBubbles
-          inset={false}
-          colors={{
-            bg: props.theme.bg,
-            main: props.theme.main,
-            sub: props.theme.sub,
-            text: props.theme.text,
-          }}
-          class="mr-1"
-        />
-      </div>
+      />
     </button>
   );
 }
