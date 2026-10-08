@@ -13,7 +13,7 @@ import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
-import { mirrorLayoutKeys } from "../utils/key-converter";
+import { mirrorLayoutKeys, upsideDownLayout } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { getActivePage, getCustomTextIndicator } from "./core";
@@ -170,6 +170,7 @@ export const getKeymapLayout = createMemo<{
   layout: string;
   layoutNameDisplayString: string;
   isMirrored: boolean;
+  isUpsideDown: boolean;
 }>(() => {
   const isOverride = getConfig.keymapLayout === "overrideSync";
   const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
@@ -177,8 +178,14 @@ export const getKeymapLayout = createMemo<{
   const layout = raw === "default" ? "qwerty" : raw;
   const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
   const isMirrored = getConfig.funbox.includes("layout_mirror");
+  const isUpsideDown = getConfig.funbox.includes("upside_down_layout");
 
-  return { layout: layout, layoutNameDisplayString, isMirrored };
+  return {
+    layout,
+    layoutNameDisplayString,
+    isMirrored,
+    isUpsideDown,
+  };
 });
 
 const [getKeymapHighlightKey, setKeymapHighlightKey] = createSignal<
@@ -211,10 +218,12 @@ keymapEvent.useListener(({ mode, key, correct }) => {
 const getInputLayout = createMemo<{
   layout: string;
   isMirrored: boolean;
+  isUpsideDown: boolean;
 }>(() => {
   return {
     layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
     isMirrored: getConfig.funbox.includes("layout_mirror"),
+    isUpsideDown: getConfig.funbox.includes("upside_down_layout"),
   };
 });
 
@@ -222,6 +231,9 @@ const [inputLayoutObject, inputLayoutPromise] = useResourceWithPromise(
   getInputLayout,
   async (layout) => {
     const result = await getLayout(layout.layout);
+    if (layout.isUpsideDown) {
+      return upsideDownLayout(result);
+    }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);
     }
@@ -233,12 +245,16 @@ const [keymapLayoutObject, keymapLayoutPromise] = useResourceWithPromise(
   getKeymapLayout,
   async (layout) => {
     const result = await getLayout(layout.layout);
+    if (layout.isUpsideDown) {
+      return upsideDownLayout(result);
+    }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);
     }
     return result;
   },
 );
+
 export { keymapLayoutObject };
 
 /**

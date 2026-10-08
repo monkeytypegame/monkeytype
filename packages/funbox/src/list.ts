@@ -144,6 +144,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["applyConfig", "rememberSettings"],
     name: "layout_mirror",
   },
+  upside_down_layout: {
+    description: "Flips your keyboard layout upside down.",
+    canGetPb: true,
+    difficultyLevel: 3,
+    properties: ["changesLayout"],
+    frontendFunctions: ["applyConfig", "rememberSettings"],
+    name: "upside_down_layout",
+  },
   layoutfluid: {
     description:
       "Switch between layouts specified below proportionately to the length of the test.",
