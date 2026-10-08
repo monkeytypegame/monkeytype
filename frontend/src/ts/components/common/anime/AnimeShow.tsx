@@ -1,5 +1,5 @@
 import { AnimationParams } from "animejs";
-import { JSXElement, ParentProps, Show } from "solid-js";
+import { JSXElement, onMount, ParentProps, Show } from "solid-js";
 
 import { Anime, AnimeProps } from "./Anime";
 import { AnimePresence } from "./AnimePresence";
@@ -11,6 +11,8 @@ import { AnimePresence } from "./AnimePresence";
  *
  * @prop when - Controls visibility
  * @prop slide - If true, animates height instead of opacity
+ * @prop animateOnMount - If false, content shown on mount appears without
+ *   animating; only later toggles animate (default: true)
  * @prop duration - Animation duration in ms (default: 250)
  *
  * @example
@@ -31,6 +33,7 @@ export function AnimeShow(
   props: ParentProps<{
     when: boolean;
     slide?: true;
+    animateOnMount?: boolean;
     duration?: number;
     class?: string;
     animeProps?: Partial<AnimeProps>;
@@ -38,21 +41,44 @@ export function AnimeShow(
 ): JSXElement {
   const duration = () => props.duration ?? 125;
 
+  // read when the content is created - content created after mount always
+  // animates in
+  let isMounted = false;
+  onMount(() => (isMounted = true));
+  const shouldAnimateIn = (): boolean =>
+    isMounted || (props.animateOnMount ?? true);
+
   return (
     <Show
       when={props.slide}
       fallback={
         <AnimePresence exitBeforeEnter>
           <Show when={props.when}>
-            <Anime
-              initial={{ opacity: 0 } as Partial<AnimationParams>}
-              animate={{ opacity: 1, duration: duration() } as AnimationParams}
-              exit={{ opacity: 0, duration: duration() } as AnimationParams}
-              {...props.animeProps}
-              class={props.class}
-            >
-              {props.children}
-            </Anime>
+            {(() => {
+              const animateIn = shouldAnimateIn();
+              return (
+                <Anime
+                  initial={
+                    animateIn
+                      ? ({ opacity: 0 } as Partial<AnimationParams>)
+                      : undefined
+                  }
+                  animate={
+                    animateIn
+                      ? ({
+                          opacity: 1,
+                          duration: duration(),
+                        } as AnimationParams)
+                      : undefined
+                  }
+                  exit={{ opacity: 0, duration: duration() } as AnimationParams}
+                  {...props.animeProps}
+                  class={props.class}
+                >
+                  {props.children}
+                </Anime>
+              );
+            })()}
           </Show>
         </AnimePresence>
       }
@@ -61,21 +87,28 @@ export function AnimeShow(
         <Show when={props.when}>
           {(() => {
             let ref: HTMLElement | undefined;
+            const animateIn = shouldAnimateIn();
             return (
               <Anime
                 ref={(el) => (ref = el)}
-                initial={{ height: 0 } as Partial<AnimationParams>}
+                initial={
+                  animateIn
+                    ? ({ height: 0 } as Partial<AnimationParams>)
+                    : undefined
+                }
                 animate={
-                  {
-                    height: "auto",
-                    duration: duration(),
-                    onBegin: () => {
-                      if (ref) ref.style.overflow = "hidden";
-                    },
-                    onComplete: () => {
-                      if (ref) ref.style.overflow = "";
-                    },
-                  } as AnimationParams
+                  animateIn
+                    ? ({
+                        height: "auto",
+                        duration: duration(),
+                        onBegin: () => {
+                          if (ref) ref.style.overflow = "hidden";
+                        },
+                        onComplete: () => {
+                          if (ref) ref.style.overflow = "";
+                        },
+                      } as AnimationParams)
+                    : undefined
                 }
                 exit={
                   {

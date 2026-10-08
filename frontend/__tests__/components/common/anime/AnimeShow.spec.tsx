@@ -113,7 +113,7 @@ describe("AnimeShow", () => {
       expect(screen.queryByTestId("slide-content")).not.toBeInTheDocument();
     });
 
-    it("animates height in slide mode", () => {
+    it("animates height on mount in slide mode", () => {
       render(() => (
         <AnimeShow when={true} slide>
           <div>content</div>
@@ -124,6 +124,70 @@ describe("AnimeShow", () => {
         ([, params]) => params.height !== undefined,
       );
       expect(heightCalls.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("animateOnMount prop", () => {
+    const opacityCalls = (): unknown[] =>
+      mockAnimate.mock.calls.filter(
+        ([, params]) => params.opacity !== undefined,
+      );
+    const heightCalls = (): unknown[] =>
+      mockAnimate.mock.calls.filter(
+        ([, params]) => params.height !== undefined,
+      );
+
+    it("animates opacity on mount by default", () => {
+      render(() => (
+        <AnimeShow when={true}>
+          <div>content</div>
+        </AnimeShow>
+      ));
+      expect(opacityCalls().length).toBeGreaterThan(0);
+    });
+
+    it("does not animate opacity on mount when false", () => {
+      render(() => (
+        <AnimeShow when={true} animateOnMount={false}>
+          <div data-testid="content">content</div>
+        </AnimeShow>
+      ));
+      expect(screen.getByTestId("content")).toBeInTheDocument();
+      expect(opacityCalls()).toHaveLength(0);
+    });
+
+    it("does not animate height on mount when false in slide mode", () => {
+      render(() => (
+        <AnimeShow when={true} slide animateOnMount={false}>
+          <div data-testid="content">content</div>
+        </AnimeShow>
+      ));
+      expect(screen.getByTestId("content")).toBeInTheDocument();
+      expect(heightCalls()).toHaveLength(0);
+    });
+
+    it("still animates opacity when shown after mount", () => {
+      const [when, setWhen] = createSignal(false);
+      render(() => (
+        <AnimeShow when={when()} animateOnMount={false}>
+          <div>content</div>
+        </AnimeShow>
+      ));
+
+      setWhen(true);
+      expect(opacityCalls().length).toBeGreaterThan(0);
+    });
+
+    it("still animates height when shown after mount in slide mode", () => {
+      const [when, setWhen] = createSignal(false);
+      render(() => (
+        <AnimeShow when={when()} slide animateOnMount={false}>
+          <div>content</div>
+        </AnimeShow>
+      ));
+
+      setWhen(true);
+      expect(heightCalls().length).toBeGreaterThan(0);
     });
   });
 
