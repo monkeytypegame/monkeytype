@@ -14,8 +14,21 @@ const tanstackSolidNoExternal: (string | RegExp)[] = [
   /@tanstack\/solid-.*/,
 ];
 
+const resolve = {
+  alias: [
+    // it has no `exports` map, so node loads its cjs build, which requires the
+    // cjs zod - its instanceof checks then fail against the esm zod our schemas
+    // use, and every value gets json+base64 encoded. vite (the app) uses `module`
+    {
+      find: /^zod-urlsearchparams$/,
+      replacement: "zod-urlsearchparams/dist/index.mjs",
+    },
+  ],
+};
+
 export const projects: UserWorkspaceConfig[] = [
   {
+    resolve,
     ssr: {
       noExternal: tanstackSolidNoExternal,
     },
@@ -35,6 +48,7 @@ export const projects: UserWorkspaceConfig[] = [
     plugins,
   },
   {
+    resolve,
     ssr: {
       noExternal: tanstackSolidNoExternal,
     },
@@ -47,6 +61,7 @@ export const projects: UserWorkspaceConfig[] = [
     plugins,
   },
   {
+    resolve,
     ssr: {
       noExternal: tanstackSolidNoExternal,
     },
