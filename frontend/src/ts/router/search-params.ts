@@ -1,3 +1,4 @@
+import { untrack } from "solid-js";
 import { z } from "zod";
 import {
   safeParse as parseUrlSearchParams,
@@ -13,7 +14,7 @@ export type SearchParams<T extends z.ZodObject<z.ZodRawShape>> = {
     search: Record<string, unknown>;
     cause: string;
   }) => void;
-  /** Reflects `data` in the url, without a history entry. Ignored unless `page` is the current route. */
+  /** Reflects `data` in the url, without a history entry. Ignored unless `page` is the current route. Untracked. */
   write: (data: z.infer<T>) => void;
 };
 
@@ -36,9 +37,12 @@ export function createSearchParams<T extends z.ZodObject<z.ZodRawShape>>(
       });
       read(parsed.success ? parsed.data : undefined);
     },
-    write: (data) => {
-      if (getRoutePage() !== page) return;
-      replaceSearch(serializeUrlSearchParams({ schema, data }));
-    },
+    // untracked - callers write from effects, which must not depend on the
+    // router state the write itself changes
+    write: (data) =>
+      untrack(() => {
+        if (getRoutePage() !== page) return;
+        replaceSearch(serializeUrlSearchParams({ schema, data }));
+      }),
   };
 }
