@@ -382,6 +382,7 @@ function Section(props: { title: string; children: JSXElement }): JSXElement {
       <AnimeShow
         when={isOpen() || isSettingsSearchActive()}
         slide
+        animateOnMount={false}
         class="grid gap-8"
       >
         {props.children}
