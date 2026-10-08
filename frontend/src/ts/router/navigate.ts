@@ -63,13 +63,14 @@ export async function navigate(
  * Replace the search params of `pathname` without adding a history entry, eg.
  * to reflect page state in the url. Does nothing if the url is no longer on
  * `pathname` (eg. the page is fading out after navigating away) or if nothing
- * changed - the router reloads the route on every url change, which can
- * re-trigger the caller.
+ * changed - the route reloads on every url change, which can re-trigger the
+ * caller.
  */
 export function replaceSearch(pathname: string, search: URLSearchParams): void {
+  if (router === undefined) return;
   if (window.location.pathname !== pathname) return;
   const query = search.toString();
   const url = `${pathname}${query === "" ? "" : `?${query}`}`;
   if (url === pathname + window.location.search) return;
-  window.history.replaceState({}, "", url);
+  void router.navigate({ href: url, replace: true, resetScroll: false });
 }

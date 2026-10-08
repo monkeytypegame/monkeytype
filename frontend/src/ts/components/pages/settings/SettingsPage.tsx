@@ -11,7 +11,6 @@ import {
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { getActivePage } from "../../../states/router";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
@@ -55,47 +54,6 @@ export function SettingsPage(): JSXElement {
 
   return (
     <div class="grid gap-8">
-      <Show when={getActivePage() === "settings"}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc faucibus
-        in nibh in iaculis. Suspendisse semper venenatis dignissim. Aliquam
-        consequat non lorem in blandit. Sed finibus magna quis tellus
-        consectetur tristique. Suspendisse molestie cursus malesuada. Nunc augue
-        lorem, placerat non bibendum id, ullamcorper vitae leo. Phasellus
-        feugiat mauris quam. Nam blandit leo leo, ut maximus purus dapibus a.
-        Cras egestas sit amet velit a imperdiet. Curabitur sed metus pretium,
-        maximus dolor vel, facilisis neque. Suspendisse potenti. Aliquam in nunc
-        purus. Pellentesque eleifend elit non ex dignissim condimentum. Mauris
-        non malesuada ligula. Integer mollis eu erat id semper. In quis nibh vel
-        mi rutrum interdum id quis velit. Nunc vel commodo elit. Nullam at
-        lectus ipsum. Sed vel turpis nulla. Aenean at dui quis lorem consequat
-        vehicula vehicula non eros. Nam aliquet posuere felis ac pretium.
-        Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
-        cubilia curae; Integer maximus, metus pharetra facilisis ultricies, est
-        libero sodales lorem, a commodo nisl lacus vel metus. In sit amet rutrum
-        orci, ut euismod magna. Vestibulum et laoreet nisl. Vivamus non ante sed
-        mi congue tincidunt vel eu ligula. Ut imperdiet ligula in nunc hendrerit
-        fermentum. Etiam est est, egestas nec porttitor nec, hendrerit nec mi.
-        In ultricies enim et feugiat volutpat. Praesent aliquam justo ut urna
-        dictum maximus. Vestibulum ac dictum lectus, nec cursus tortor. Aenean
-        dui leo, bibendum non nunc nec, faucibus tempor orci. Nam vestibulum
-        aliquet mauris, id condimentum risus hendrerit vel. Aenean viverra
-        pulvinar libero in sodales. Vivamus tincidunt odio eget tellus semper
-        dapibus. Morbi ac pretium massa. Nullam efficitur enim quis arcu egestas
-        maximus. Suspendisse id euismod dolor. Quisque orci enim, molestie at
-        lectus ac, tincidunt consequat elit. Cras at condimentum leo. Etiam
-        convallis eros ut porta sodales. Nullam purus massa, hendrerit ut arcu
-        a, feugiat gravida nisi. Suspendisse eget ornare mauris. Phasellus
-        interdum lacus nec metus cursus luctus non quis neque. Phasellus
-        pharetra posuere sem non ultrices. Vestibulum et interdum est, a tempus
-        quam. Curabitur tempor varius sem ac accumsan. Nulla quis sem et magna
-        dictum interdum. Nam feugiat, massa non iaculis varius, metus neque
-        ornare dolor, sed pellentesque nisl libero id purus. Class aptent taciti
-        sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-        Integer maximus nunc nec hendrerit pellentesque. Aenean consequat
-        ultrices ultricies. Suspendisse sagittis sem lacinia libero semper
-        semper.{" "}
-      </Show>
-
       {/* while filtering, only the matching settings stay visible; everything
             else is hidden with css so nothing unmounts while typing */}
       <QuickNav class={cn(isSettingsSearchActive() && "hidden")} />

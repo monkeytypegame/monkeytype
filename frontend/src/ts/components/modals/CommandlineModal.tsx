@@ -34,7 +34,7 @@ import {
   hideModalAndClearChain as storeClearChain,
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
-import { getActivePage } from "../../states/router";
+import { isTestPageActive } from "../../states/router";
 import { setTestFocusState } from "../../states/test";
 import * as Focus from "../../test/focus";
 import { FaObject } from "../../types/font-awesome";
@@ -691,7 +691,7 @@ export function CommandlineModal(): JSXElement {
     setWarning(null);
     hideCheckingIcon();
     addCommandlineBackground();
-    if (getActivePage() !== "test") {
+    if (!isTestPageActive()) {
       (document.activeElement as HTMLElement | undefined)?.blur();
     }
     isAnimating = false;

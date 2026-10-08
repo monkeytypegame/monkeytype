@@ -5,7 +5,7 @@ import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import { createEffectOn } from "../../../hooks/effects";
 import { blurInputElement } from "../../../input/input-element";
 import { getShowResult } from "../../../states/result";
-import { getActivePage, getRoutePage } from "../../../states/router";
+import { getRoutePage } from "../../../states/router";
 import {
   getFocus,
   getLayoutfluidTimerText,
@@ -37,8 +37,8 @@ import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 
 /**
- * Renders the children of the `.page.pageTest` element, only while the test
- * page is active, and runs the show/hide logic.
+ * Renders the children of the `.page.pageTest` element. Mounted only while
+ * the test page is active.
  */
 export function TestPage(): JSXElement {
   // stop typing as soon as the user navigates away, before the page fades out
@@ -49,22 +49,18 @@ export function TestPage(): JSXElement {
     }
   });
 
-  createEffectOn(getActivePage, (page, prev) => {
-    if (page === "test" && prev !== "test") {
-      updateFooterAndVerticalAds(false);
-      // the test itself is restarted when TypingTest mounts (bindTestElements)
-      resetIncompleteTests();
-    } else if (page !== "test" && prev === "test") {
-      void Funbox.clear();
-      updateFooterAndVerticalAds(true);
-    }
+  onMount(() => {
+    updateFooterAndVerticalAds(false);
+    // the test itself is restarted when TypingTest mounts (bindTestElements)
+    resetIncompleteTests();
   });
 
-  return (
-    <Show when={getActivePage() === "test"}>
-      <TypingTest />
-    </Show>
-  );
+  onCleanup(() => {
+    void Funbox.clear();
+    updateFooterAndVerticalAds(true);
+  });
+
+  return <TypingTest />;
 }
 
 /**

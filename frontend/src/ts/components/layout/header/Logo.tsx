@@ -1,7 +1,7 @@
 import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
-import { getActivePage } from "../../../states/router";
+import { isTestPageActive } from "../../../states/router";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
@@ -19,7 +19,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") restartTestEvent.dispatch();
+        if (isTestPageActive()) restartTestEvent.dispatch();
       }}
     >
       <svg

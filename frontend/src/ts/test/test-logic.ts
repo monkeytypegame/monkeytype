@@ -36,7 +36,7 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { getActivePage, isPageTransitioning } from "../states/router";
+import { isPageTransitioning, isTestPageActive } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -421,7 +421,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     await Funbox.activate();
   }
 
@@ -1417,7 +1417,7 @@ restartTestEvent.subscribe((event) => void restart(event));
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

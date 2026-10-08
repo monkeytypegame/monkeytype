@@ -4,7 +4,7 @@ import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
 import { wordsHaveNewline, wordsHaveTab, isLongTest } from "./test";
-import { getActivePage } from "./router";
+import { getActivePage, isTestPageActive } from "./router";
 import { NoKey } from "../input/hotkeys/utils";
 
 export const quickRestartHotkeyMap: Record<QuickRestart, Hotkey> = {
@@ -27,7 +27,7 @@ createEffect(() => {
 });
 
 function updateHotkeys(): Hotkeys {
-  const isOnTestPage = getActivePage() === "test";
+  const isOnTestPage = isTestPageActive();
 
   const quickRestartIsTab = getConfig.quickRestart === "tab";
   const quickRestartIsEnter = getConfig.quickRestart === "enter";

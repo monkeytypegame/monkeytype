@@ -6,9 +6,9 @@ import { ScrollToTop } from "../../../../src/ts/components/layout/footer/ScrollT
 import * as RouterSignals from "../../../../src/ts/states/router";
 
 describe("ScrollToTop", () => {
-  const getActivePageMock = vi.spyOn(RouterSignals, "getActivePage");
+  const isTestPageActiveMock = vi.spyOn(RouterSignals, "isTestPageActive");
   beforeEach(() => {
-    getActivePageMock.mockClear().mockReturnValue("account");
+    isTestPageActiveMock.mockClear().mockReturnValue(false);
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
   });
 
@@ -48,14 +48,14 @@ describe("ScrollToTop", () => {
   });
 
   it("stays invisible on test page at scroll 0", () => {
-    getActivePageMock.mockReturnValue("test");
+    isTestPageActiveMock.mockReturnValue(true);
     const { button } = renderElement();
 
     expect(button).toHaveClass("opacity-0");
   });
 
   it("stays invisible on test page even with scroll > 100", () => {
-    getActivePageMock.mockReturnValue("test");
+    isTestPageActiveMock.mockReturnValue(true);
     const { button } = renderElement();
     scrollTo(150);
 

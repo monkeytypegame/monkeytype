@@ -9,7 +9,7 @@ import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { getActivePage } from "../states/router";
+import { isTestPageActive } from "../states/router";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
@@ -318,7 +318,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    getActivePage() !== "test" ||
+    !isTestPageActive() ||
     getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -528,7 +528,7 @@ export function appendEmptyWordElement(index: number): void {
 }
 
 export function updateWordsInputPosition(): void {
-  if (getActivePage() !== "test") return;
+  if (!isTestPageActive()) return;
   const isTestRightToLeft = isDirectionReversed()
     ? !isLanguageRightToLeft()
     : isLanguageRightToLeft();
@@ -608,7 +608,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isTestPageActive() || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -947,7 +947,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isTestPageActive() || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1555,7 +1555,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -1679,7 +1679,7 @@ configEvent.subscribe(({ key, newValue }) => {
     void updateHintsPositionDebounced();
   }
   if (key === "highlightMode") {
-    if (getActivePage() === "test") {
+    if (isTestPageActive()) {
       updateWordLetters({
         input: getCurrentInput(),
         wordIndex: getActiveWordIndex(),

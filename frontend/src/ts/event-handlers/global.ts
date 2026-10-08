@@ -1,7 +1,7 @@
 import * as Misc from "../utils/misc";
 import { Config } from "../config/store";
 import { showErrorNotification } from "../states/notifications";
-import { getActivePage, isPageTransitioning } from "../states/router";
+import { isPageTransitioning, isTestPageActive } from "../states/router";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { focusWords } from "../test/test-ui";
 import { isInputElementFocused } from "../input/input-element";
@@ -22,7 +22,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  const pageTestActive: boolean = getActivePage() === "test";
+  const pageTestActive: boolean = isTestPageActive();
   if (pageTestActive && !getResultVisible() && !isInputElementFocused()) {
     const popupVisible: boolean = Misc.isAnyPopupVisible();
     // this is nested because isAnyPopupVisible is a bit expensive

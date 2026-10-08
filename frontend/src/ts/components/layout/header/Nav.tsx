@@ -22,7 +22,7 @@ import {
   setAnimatedLevel,
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
-import { getActivePage } from "../../../states/router";
+import { isTestPageActive } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
@@ -94,7 +94,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") restartTestEvent.dispatch();
+          if (isTestPageActive()) restartTestEvent.dispatch();
         }}
       />
       <Button

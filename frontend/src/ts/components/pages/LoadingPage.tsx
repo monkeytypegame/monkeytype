@@ -5,8 +5,8 @@ import {
   getLoadingPageBarTarget,
   getLoadingPageIndicator,
   getLoadingPageText,
-  getLoadingScreen,
 } from "../../states/loading-page";
+import { getLoadingScreen } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { Fa } from "../common/Fa";
 

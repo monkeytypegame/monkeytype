@@ -1,7 +1,8 @@
-import { createMemo, createSignal } from "solid-js";
+import { createMemo } from "solid-js";
 
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { sleep } from "../utils/misc";
+import { dispatchPageTransition } from "./router";
 
 /** Which indicator the loading page shows while loading (a failed load shows the error instead). */
 type LoadingIndicator = "spinner" | "bar";
@@ -65,13 +66,10 @@ export function resetLoadingPage(): void {
   setState(initialState);
 }
 
-/**
- * Whether the loading page is covering the current page.
- * "error" keeps it shown until the next navigation.
- */
-export const [getLoadingScreen, setLoadingScreen] = createSignal<
-  "hidden" | "visible" | "error"
->("visible");
+/** Message for the error state, which the router enters when a route fails to load. */
+export function setLoadingPageError(message: string): void {
+  updateLoadingPageText(message);
+}
 
 type LoadingBarKeyframe = {
   /** Percentage of the bar to fill. */
@@ -96,19 +94,17 @@ export type RouteLoading = {
 );
 
 /**
- * Shows the loading page while `loading.load` runs. On failure the loading page
- * switches to its error state (cleared on the next navigation) instead of
- * throwing, so the router still resolves.
+ * Shows the loading page while `loading.load` runs. Throws on failure, so the
+ * route fails and the router shows the error on the loading page.
  * @param label used in the error message, eg. "the account page"
  */
 export async function withLoading(
   label: string,
   loading: RouteLoading,
 ): Promise<void> {
-  if (getLoadingScreen() === "error") return;
   if (!loading.shouldShow()) return;
 
-  setLoadingScreen("visible");
+  dispatchPageTransition({ type: "loadingShown" });
   showLoadingPage(loading.style);
 
   try {
@@ -123,9 +119,9 @@ export async function withLoading(
     void updateLoadingPageBar(100, 125);
     updateLoadingPageText("Done");
   } catch (error) {
-    setLoadingScreen("error");
-    updateLoadingPageText(
+    throw new Error(
       `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
     );
   }
 }
