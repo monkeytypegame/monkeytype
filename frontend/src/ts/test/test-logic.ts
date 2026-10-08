@@ -19,7 +19,7 @@ import * as DB from "../db";
 import * as Replay from "../components/pages/test/result/replay";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
-import * as ChallengeContoller from "../controllers/challenge-controller";
+import * as ChallengeController from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import {
   getPbEligibility,
@@ -1082,7 +1082,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       resetIncompleteTests();
 
       if (!completedEvent.bailedOut) {
-        const challenge = ChallengeContoller.verify(completedEvent);
+        const challenge = ChallengeController.verify(completedEvent);
         if (challenge !== null) completedEvent.challenge = challenge;
       }
 
