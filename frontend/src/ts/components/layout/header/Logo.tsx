@@ -1,25 +1,25 @@
+import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
-import { getActivePage } from "../../../states/core";
+import { isTestPageActive } from "../../../states/router";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
 export function Logo(): JSXElement {
   return (
-    <a
-      href={`${location.origin}/`}
+    <Link
+      to="/"
       class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:**:data-[ui-element='logoSubtext']:text-transparent"
       aria-label="Monkeytype Home"
-      router-link
       style={{
         "box-sizing": "content-box",
         "font-family": "Lexend Deca ,sans-serif",
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") restartTestEvent.dispatch();
+        if (isTestPageActive()) restartTestEvent.dispatch();
       }}
     >
       <svg
@@ -62,6 +62,6 @@ export function Logo(): JSXElement {
           monkeytype
         </h1>
       </div>
-    </a>
+    </Link>
   );
 }

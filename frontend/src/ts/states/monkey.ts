@@ -1,5 +1,5 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { getActivePage } from "./core";
+import { isTestPageActive } from "./router";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
@@ -14,7 +14,7 @@ export { getMonkeyState };
 createEffect(() => {
   setMonkeyState({ left: false, right: false });
 
-  if (getActivePage() === "test" && getConfig.monkey) {
+  if (isTestPageActive() && getConfig.monkey) {
     const onKeyDown = (e: KeyboardEvent): void => handleKey(e, true);
     const onKeyUp = (e: KeyboardEvent): void => handleKey(e, false);
 

@@ -15,8 +15,8 @@ import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import { navigate } from "../../../../controllers/route-controller";
 import * as DB from "../../../../db";
+import { navigate } from "../../../../router/navigate";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";

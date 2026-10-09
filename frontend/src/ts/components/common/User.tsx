@@ -129,9 +129,9 @@ export function User(props: Props): JSXElement {
         <Show when={props.linkToProfile ?? false} fallback={props.user.name}>
           <Button
             variant="text"
-            href={`/profile/${props.user.name}`}
+            to="/profile/$uidOrName"
+            params={{ uidOrName: props.user.name }}
             text={props.user.name}
-            router-link
             class="px-0"
           />
         </Show>

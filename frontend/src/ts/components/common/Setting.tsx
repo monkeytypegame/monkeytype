@@ -1,11 +1,21 @@
-import { children, JSXElement, ParentProps, Show } from "solid-js";
-import { z } from "zod";
-import { serialize } from "zod-urlsearchparams";
+import {
+  children,
+  createSignal,
+  JSXElement,
+  onCleanup,
+  onMount,
+  ParentProps,
+  Show,
+} from "solid-js";
 
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import {
+  getHighlightedSetting,
+  settingsSearch,
+} from "../../states/settings-search";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -51,12 +61,31 @@ export function Setting(props: SettingProps): JSXElement {
   const inputs = children(() => props.inputs);
   const fullWidthInputs = children(() => props.fullWidthInputs);
   const content = children(() => props.children);
+
+  // deep link highlight from the `?highlight=` param
+  let ref: HTMLDivElement | undefined;
+  const [highlighted, setHighlighted] = createSignal(false);
+  onMount(() => {
+    if (props.key === undefined || getHighlightedSetting() !== props.key) {
+      return;
+    }
+
+    // wait for the page fade in
+    const timeout = setTimeout(() => {
+      ref?.scrollIntoView({ block: "center", behavior: "auto" });
+      setHighlighted(true);
+    }, 250);
+    onCleanup(() => clearTimeout(timeout));
+  });
+
   return (
     <div
+      ref={(el) => (ref = el)}
       class={cn(
         "group grid gap-2",
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
+        highlighted() && "settings-highlight",
         props.class,
       )}
       {...("key" in props && props.key !== undefined
@@ -112,16 +141,7 @@ function DeepLinkButton(props: { key: string }) {
       variant="text"
       fa={{ icon: "fa-link" }}
       onClick={() => {
-        const urlParams = serialize({
-          schema: z.object({
-            highlight: z.string(),
-          }),
-          data: {
-            highlight: props.key,
-          },
-        });
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.replaceState({}, "", newUrl);
+        settingsSearch.write({ highlight: props.key });
 
         navigator.clipboard
           .writeText(window.location.toString())

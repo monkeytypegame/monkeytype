@@ -1,4 +1,5 @@
-import { JSXElement, Show } from "solid-js";
+import { Link, RegisteredRouter, RoutePaths } from "@tanstack/solid-router";
+import { JSXElement, Match, Show, Switch } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
@@ -11,7 +12,6 @@ type BaseProps = {
   variant?: "text" | "button";
   children?: JSXElement;
   balloon?: BalloonProps;
-  "router-link"?: true;
   onClick?: (e: MouseEvent) => void;
   type?: HTMLButtonElement["type"];
   onMouseEnter?: (e: MouseEvent) => void;
@@ -25,20 +25,34 @@ type BaseProps = {
 export type ButtonProps = BaseProps & {
   type?: "button" | "submit" | "reset";
   href?: never;
+  to?: never;
   sameTarget?: true;
   disabled?: boolean;
   danger?: boolean;
 };
 
+/** External link, opens in a new tab (unless it's a `#` anchor). */
 type AnchorProps = BaseProps & {
   href: string;
+  to?: never;
   // onClick?: never;
   disabled?: never;
   type?: never;
 };
 
-export function Button(props: ButtonProps | AnchorProps): JSXElement {
-  const isAnchor = (): boolean => "href" in props;
+/** In-app link, navigates through the router. */
+type LinkProps = BaseProps & {
+  to: RoutePaths<RegisteredRouter["routeTree"]>;
+  params?: Record<string, string>;
+  href?: never;
+  disabled?: never;
+  type?: never;
+};
+
+export function Button(
+  props: ButtonProps | AnchorProps | LinkProps,
+): JSXElement {
+  const isAnchor = (): boolean => "href" in props || "to" in props;
   const isActive = (): boolean =>
     (!isAnchor() && !("href" in props) && props.active) ?? false;
 
@@ -85,8 +99,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
   };
 
   return (
-    <Show
-      when={isAnchor()}
+    <Switch
       fallback={
         <button
           // oxlint-disable-next-line button-has-type
@@ -97,7 +110,6 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           onMouseEnter={(e) => props.onMouseEnter?.(e)}
           onMouseLeave={(e) => props.onMouseLeave?.(e)}
           {...balloonHtmlProps()}
-          {...(props["router-link"] ? { "router-link": "" } : {})}
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
@@ -108,31 +120,43 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         </button>
       }
     >
-      <a
-        id={props.id}
-        class={getClasses()}
-        href={props.href}
-        target={
-          props["router-link"] || props.href?.startsWith("#")
-            ? undefined
-            : "_blank"
-        }
-        rel={
-          props["router-link"] || props.href?.startsWith("#")
-            ? undefined
-            : "noreferrer noopener"
-        }
-        {...balloonHtmlProps()}
-        {...(props["router-link"] ? { "router-link": "" } : {})}
-        onClick={(e) => props.onClick?.(e)}
-        onMouseEnter={(e) => props.onMouseEnter?.(e)}
-        onMouseLeave={(e) => props.onMouseLeave?.(e)}
-        data-ui-variant={variant()}
-        data-ui-element="button"
-        {...props.dataset}
-      >
-        {content}
-      </a>
-    </Show>
+      <Match when={"to" in props && (props as LinkProps)}>
+        {(linkProps) => (
+          <Link
+            id={props.id}
+            class={getClasses()}
+            to={linkProps().to}
+            params={linkProps().params}
+            {...balloonHtmlProps()}
+            onClick={(e) => props.onClick?.(e)}
+            onMouseEnter={(e) => props.onMouseEnter?.(e)}
+            onMouseLeave={(e) => props.onMouseLeave?.(e)}
+            data-ui-variant={variant()}
+            data-ui-element="button"
+            {...props.dataset}
+          >
+            {content}
+          </Link>
+        )}
+      </Match>
+      <Match when={"href" in props}>
+        <a
+          id={props.id}
+          class={getClasses()}
+          href={props.href}
+          target={props.href?.startsWith("#") ? undefined : "_blank"}
+          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          {...balloonHtmlProps()}
+          onClick={(e) => props.onClick?.(e)}
+          onMouseEnter={(e) => props.onMouseEnter?.(e)}
+          onMouseLeave={(e) => props.onMouseLeave?.(e)}
+          data-ui-variant={variant()}
+          data-ui-element="button"
+          {...props.dataset}
+        >
+          {content}
+        </a>
+      </Match>
+    </Switch>
   );
 }

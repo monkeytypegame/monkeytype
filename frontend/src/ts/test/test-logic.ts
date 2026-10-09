@@ -35,11 +35,8 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  isAuthenticated,
-} from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
+import { isPageTransitioning, isTestPageActive } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -82,7 +79,6 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import * as PageTransition from "../legacy-states/page-transition";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
@@ -159,7 +155,7 @@ import { nthElementFromArray } from "../utils/arrays";
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (PageTransition.get()) {
+  if (isPageTransitioning()) {
     return false;
   }
 
@@ -425,7 +421,7 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     await Funbox.activate();
   }
 
@@ -1421,7 +1417,7 @@ restartTestEvent.subscribe((event) => void restart(event));
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

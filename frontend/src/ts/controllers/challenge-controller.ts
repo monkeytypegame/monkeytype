@@ -215,7 +215,6 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       showNoticeNotification("Challenge not found or missing settings");
       setTimeout(() => {
         qs("header .config")?.show();
-        qs(".page.pageTest")?.show();
       }, 250);
       return false;
     }
@@ -350,7 +349,6 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
     }
     notitext = settings.message;
     qs("header .config")?.show();
-    qs(".page.pageTest")?.show();
 
     if (notitext === undefined) {
       showSuccessNotification(`Challenge '${challenge.display}' loaded.`);

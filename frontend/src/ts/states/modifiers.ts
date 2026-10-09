@@ -5,7 +5,7 @@ import {
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createSignal } from "solid-js";
 import { createEffectOn } from "../hooks/effects";
-import { getActivePage } from "./core";
+import { getMountedPage } from "./router";
 
 type ModifierState = {
   shift: boolean;
@@ -51,7 +51,7 @@ onCapsLockChange((state) => setCapsLockOn(state));
 
 const listeners: Array<{ remove: () => void }> = [];
 
-createEffectOn(getActivePage, (page) => {
+createEffectOn(getMountedPage, (page) => {
   // Clean up listeners from previous page.
   for (const listener of listeners) {
     listener.remove();

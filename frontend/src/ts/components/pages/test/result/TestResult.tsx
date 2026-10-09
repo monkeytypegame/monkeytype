@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
@@ -81,10 +82,7 @@ function LoginPrompt(): JSXElement {
   return (
     <Show when={!isAuthenticated() && !getIsScreenshotting()}>
       <div class="mb-4 text-center text-sub">
-        <a href="/login" router-link>
-          Sign in
-        </a>{" "}
-        to save your result
+        <Link to="/login">Sign in</Link> to save your result
       </div>
     </Show>
   );

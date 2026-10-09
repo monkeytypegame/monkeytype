@@ -1,6 +1,6 @@
 import { getChallenges } from "@monkeytype/challenges";
 import * as ChallengeController from "../../controllers/challenge-controller";
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";

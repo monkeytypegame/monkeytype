@@ -15,7 +15,6 @@ import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
-import "./controllers/route-controller";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";

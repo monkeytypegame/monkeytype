@@ -1,8 +1,8 @@
 import { isAnyPopupVisible } from "../../utils/misc";
 
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import { restartTestEvent } from "../../events/test";
-import { getActivePage } from "../../states/core";
+import { isTestPageActive } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
@@ -15,7 +15,7 @@ function quickRestart(e: KeyboardEvent): void {
 
   e.preventDefault();
 
-  if (getActivePage() === "test") {
+  if (isTestPageActive()) {
     restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
   } else {
     void navigate("");

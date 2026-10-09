@@ -1,17 +1,22 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getActivePage } from "../../../states/core";
+import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
+import { createEffectOn } from "../../../hooks/effects";
+import { blurInputElement } from "../../../input/input-element";
 import { getShowResult } from "../../../states/result";
+import { getRoutePage } from "../../../states/router";
 import {
   getFocus,
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
   isResultLoading,
   isTestInitFailed,
+  resetIncompleteTests,
 } from "../../../states/test";
 import { bindTestElements } from "../../../test/bind-test-elements";
-import { onRestartButtonClick } from "../../../test/test-logic";
+import * as Funbox from "../../../test/funbox/funbox";
+import { onRestartButtonClick, stop } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -32,15 +37,30 @@ import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 
 /**
- * Renders the children of the static `.page.pageTest` element, only while
+ * Renders the children of the `.page.pageTest` element. Mounted only while
  * the test page is active.
  */
 export function TestPage(): JSXElement {
-  return (
-    <Show when={getActivePage() === "test"}>
-      <TypingTest />
-    </Show>
-  );
+  // stop typing as soon as the user navigates away, before the page fades out
+  createEffectOn(getRoutePage, (page, prev) => {
+    if (page !== "test" && prev === "test") {
+      stop();
+      blurInputElement();
+    }
+  });
+
+  onMount(() => {
+    updateFooterAndVerticalAds(false);
+    // the test itself is restarted when TypingTest mounts (bindTestElements)
+    resetIncompleteTests();
+  });
+
+  onCleanup(() => {
+    void Funbox.clear();
+    updateFooterAndVerticalAds(true);
+  });
+
+  return <TypingTest />;
 }
 
 /**

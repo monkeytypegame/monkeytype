@@ -1,6 +1,6 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
-import { getActivePage } from "../../../states/core";
+import { isTestPageActive } from "../../../states/router";
 import { scrollToTop } from "../../../utils/misc";
 import { Fa } from "../../common/Fa";
 
@@ -8,7 +8,7 @@ export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
 
   const handleScroll = (): void => {
-    if (getActivePage() === "test") return;
+    if (isTestPageActive()) return;
 
     const scroll = window.scrollY;
     setVisible(scroll > 100);
@@ -33,8 +33,8 @@ export function ScrollToTop(): JSXElement {
         tabIndex="-1"
         type="button"
         classList={{
-          "opacity-0": getActivePage() === "test" || !visible(),
-          "pointer-events-none": getActivePage() === "test" || !visible(),
+          "opacity-0": isTestPageActive() || !visible(),
+          "pointer-events-none": isTestPageActive() || !visible(),
         }}
         onClick={() => {
           setVisible(false);

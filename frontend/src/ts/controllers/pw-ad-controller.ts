@@ -4,7 +4,7 @@
 //@ts-nocheck too many errors from 3rd party ad code
 
 import { Config } from "../config/store";
-import { getActivePage } from "../states/core";
+import { isTestPageActive } from "../states/router";
 import { getResultVisible } from "../states/test";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
@@ -207,7 +207,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (getActivePage() === "test" && !getResultVisible()) {
+  if (isTestPageActive() && !getResultVisible()) {
     ramp.destroyUnits("all");
     return;
   }
