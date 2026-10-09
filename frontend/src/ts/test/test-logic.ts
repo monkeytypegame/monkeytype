@@ -268,6 +268,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   if (isTestRestarting() || isResultCalculating()) {
     options.event?.preventDefault();
+    if (isTestRestarting() && !options.isQuickRestart) {
+      queuedRestart = { ...options, event: undefined };
+    }
     return;
   }
   if (isTestActive()) {
@@ -376,6 +379,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   if (!initResult) {
     setIsTestRestarting(false);
+    runQueuedRestart();
     return;
   }
 
@@ -389,6 +393,17 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   await TestUI.fadeInAfterRestart(noAnim);
   setIsTestRestarting(false);
+  runQueuedRestart();
+}
+
+let queuedRestart: RestartOptions | null = null;
+
+// config changed while a restart was running, run again so the new settings apply
+function runQueuedRestart(): void {
+  if (queuedRestart === null) return;
+  const options = queuedRestart;
+  queuedRestart = null;
+  void restart(options);
 }
 
 let lastInitError: Error | null = null;
