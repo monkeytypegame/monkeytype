@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
-import { getCharFromEvent } from "../../test/layout-emulator";
+import { getCharFromEvent, mayEmulateChar } from "../../test/layout-emulator";
 import { emulateInsertText } from "./insert-text";
 import {
   showNoticeNotification,
@@ -153,13 +153,13 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     return;
   }
 
-  if (Config.layout !== "default") {
+  if (Config.layout !== "default" && mayEmulateChar(event)) {
+    event.preventDefault();
     const emulatedChar = await getCharFromEvent(event);
     if (emulatedChar !== null) {
       await emulateInsertText({ data: emulatedChar, now });
-      event.preventDefault();
-      return;
     }
+    return;
   }
 
   if (event.key === "Tab") {
