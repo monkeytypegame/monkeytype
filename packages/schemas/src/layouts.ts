@@ -239,6 +239,7 @@ export const LayoutNameSchema = z.enum(
     "GralmakS",
     "vitrimak",
     "miligram",
+    "APT_v5",
     "nokwts",
     "vylet_v4",
     "armenian_hm_qwerty",
