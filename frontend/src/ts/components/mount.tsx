@@ -1,5 +1,5 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { RouterProvider } from "@tanstack/solid-router";
+import { RouterContextProvider, RouterProvider } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 import { render } from "solid-js/web";
 
@@ -49,7 +49,10 @@ function mountToMountpoint(name: string, component: () => JSXElement): void {
     render(
       () => (
         <QueryClientProvider client={queryClient}>
-          {component()}
+          {/* lets <Link> etc. work in roots outside the RouterProvider */}
+          <RouterContextProvider router={router}>
+            {component}
+          </RouterContextProvider>
         </QueryClientProvider>
       ),
       mountPoint.native,

@@ -1,15 +1,23 @@
 import { createRouter } from "@tanstack/solid-router";
 
 import * as AdController from "../controllers/ad-controller";
+import { showNoticeNotification } from "../states/notifications";
 import {
   dispatchPageTransition,
   getRoutePage,
+  isPageTransitioning,
   PageName,
 } from "../states/router";
+import {
+  isResultCalculating,
+  isTestActive,
+  isTestRestarting,
+} from "../states/test";
 import * as Focus from "../test/focus";
+import { isFunboxActive } from "../test/funbox/list";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
-import { navigate, setRouter } from "./navigate";
+import { setRouter } from "./navigate";
 import { routeTree } from "./routes";
 import { setOnAuthStateChange } from "./user-data";
 
@@ -30,7 +38,36 @@ export const router = createRouter({
   },
 });
 
+declare module "@tanstack/solid-router" {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
+  interface Register {
+    router: typeof router;
+  }
+}
+
 setRouter(router);
+
+// guards every navigation - links, navigate(), back/forward.
+// redirects and replaceSearch bypass it (ignoreBlocker)
+router.history.block({
+  enableBeforeUnload: false,
+  blockerFn: ({ nextLocation }) => {
+    if (isTestRestarting() || isResultCalculating() || isPageTransitioning()) {
+      console.debug(
+        `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${isPageTransitioning()})`,
+      );
+      return true;
+    }
+    if (isTestActive() && isFunboxActive("no_quit")) {
+      showNoticeNotification(
+        "No quit funbox is active. Please finish the test.",
+        { important: true },
+      );
+      return true;
+    }
+    return false;
+  },
+});
 setOnAuthStateChange(() => void router.invalidate());
 
 router.subscribe("onBeforeLoad", (event) => {
@@ -72,21 +109,6 @@ router.subscribe("onResolved", () => {
   Focus.set(false);
   void AdController.reinstate();
 });
-
-/**
- * Handles clicks on `[router-link]` anchors (still used in vanilla markup).
- */
-export function initRouter(): () => void {
-  const onClick = (e: MouseEvent): void => {
-    if (!(e.target instanceof Element)) return;
-    const target = e.target.closest<HTMLAnchorElement>("a[router-link]");
-    if (target === null || target.href === "") return;
-    e.preventDefault();
-    void navigate(target.href);
-  };
-  document.body.addEventListener("click", onClick);
-  return () => document.body.removeEventListener("click", onClick);
-}
 
 function updatePageTitle(page: PageName): void {
   if (page === "test") {

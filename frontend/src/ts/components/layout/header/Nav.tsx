@@ -87,8 +87,7 @@ export function Nav(): JSXElement {
           icon: "fa-keyboard",
           fixedWidth: true,
         }}
-        router-link
-        href="/"
+        to="/"
         class={buttonClass()}
         dataset={{
           "data-nav-item": "test",
@@ -103,12 +102,11 @@ export function Nav(): JSXElement {
           icon: "fa-crown",
           fixedWidth: true,
         }}
-        router-link
         dataset={{
           "data-nav-item": "leaderboards",
         }}
         class={buttonClass()}
-        href="/leaderboards"
+        to="/leaderboards"
         onMouseEnter={() => {
           prefetchLeaderboardPage();
         }}
@@ -123,8 +121,7 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "about",
         }}
-        href="/about"
-        router-link
+        to="/about"
         onMouseEnter={() => {
           prefetchAboutPage();
         }}
@@ -136,11 +133,10 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         class={buttonClass()}
-        href="/settings"
+        to="/settings"
         dataset={{
           "data-nav-item": "settings",
         }}
-        router-link
       />
       <div class="grow"></div>
       <Button
@@ -174,7 +170,7 @@ export function Nav(): JSXElement {
               <Show when={showLoginButton()}>
                 <Button
                   variant="text"
-                  href="/login"
+                  to="/login"
                   dataset={{
                     "data-nav-item": "login",
                   }}
@@ -183,7 +179,6 @@ export function Nav(): JSXElement {
                     variant: "regular",
                     fixedWidth: true,
                   }}
-                  router-link
                   class={buttonClass()}
                 />
               </Show>
@@ -226,8 +221,7 @@ export function Nav(): JSXElement {
                     "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",
                     { "opacity-(--nav-focus-opacity)": getFocus() },
                   )}
-                  href="/account"
-                  router-link
+                  to="/account"
                   dataset={{
                     "data-nav-item": "account",
                   }}

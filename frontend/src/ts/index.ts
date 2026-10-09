@@ -15,7 +15,6 @@ import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
-import { initRouter } from "./router";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
@@ -60,7 +59,6 @@ Object.defineProperty(window, "Math", {
 
 // mount before anything that might touch component-rendered DOM (eg. test page)
 mountComponents();
-initRouter();
 
 applyEngineSettings();
 void loadFromLocalStorage();

@@ -1,4 +1,11 @@
 import { cleanup, render } from "@solidjs/testing-library";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterContextProvider,
+} from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -204,21 +211,6 @@ describe("Button component", () => {
     expect(button).toHaveAttribute("data-balloon-pos", "down");
   });
 
-  it("applies router-link to button", () => {
-    const { container } = render(() => (
-      <Button
-        onClick={() => {
-          //
-        }}
-        text="Hello"
-        router-link
-      />
-    ));
-
-    const button = container.querySelector("button");
-    expect(button).toHaveAttribute("router-link", "");
-  });
-
   it("applies balloon to anchor with default position", () => {
     const { container } = render(() => (
       <Button
@@ -247,13 +239,39 @@ describe("Button component", () => {
     expect(anchor).toHaveAttribute("data-balloon-pos", "down");
   });
 
-  it("applies router-link to anchor", () => {
+  it("renders a router link when to is provided", () => {
+    const root = createRootRoute();
+    const router = createRouter({
+      routeTree: root.addChildren([
+        createRoute({ getParentRoute: () => root, path: "/settings" }),
+        createRoute({
+          getParentRoute: () => root,
+          path: "/profile/$uidOrName",
+        }),
+      ]),
+      history: createMemoryHistory(),
+    });
+
     const { container } = render(() => (
-      <Button href="http://example.com" text="Hello" router-link />
+      <RouterContextProvider router={router}>
+        {() => (
+          <>
+            <Button to="/settings" text="Settings" />
+            <Button
+              to="/profile/$uidOrName"
+              params={{ uidOrName: "miodec" }}
+              text="Profile"
+            />
+          </>
+        )}
+      </RouterContextProvider>
     ));
 
-    const anchor = container.querySelector("a");
-    expect(anchor).toHaveAttribute("router-link", "");
+    const [settings, profile] = container.querySelectorAll("a");
+    expect(settings).toHaveAttribute("href", "/settings");
+    expect(settings).not.toHaveAttribute("target");
+    expect(settings).toHaveAttribute("data-ui-element", "button");
+    expect(profile).toHaveAttribute("href", "/profile/miodec");
   });
 
   it("applies disabled to button", () => {

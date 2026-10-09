@@ -295,9 +295,8 @@ function AccountSettingsNotice(): JSXElement {
         </div>
         <Button
           text="go to account settings"
-          href="/account-settings"
+          to="/account-settings"
           class="col-span-2 p-4 md:col-span-1"
-          router-link
           onClick={() => {
             setDismissed(true);
           }}

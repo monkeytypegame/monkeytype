@@ -18,8 +18,7 @@ export function NotFoundPage() {
           <Button
             fa={{ icon: "fa-home" }}
             text="Go Home"
-            router-link
-            href="/"
+            to="/"
             class="px-8 py-4"
           />
         </div>
