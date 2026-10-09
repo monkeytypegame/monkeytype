@@ -179,6 +179,19 @@ export class PolyglotWordset extends Wordset {
   }
 }
 
+const l33tMap: Record<string, string> = {
+  a: "4",
+  e: "3",
+
+  g: "6",
+  i: "1",
+  l: "1",
+  o: "0",
+  s: "5",
+  t: "7",
+  z: "2",
+};
+
 const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
     getWord(): string {
@@ -658,6 +671,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  l33t: {
+    alterText(word: string): string {
+      return word.replace(/[a-zA-Z]/g, (ch) => {
+        return l33tMap[ch.toLowerCase()] ?? ch;
+      });
     },
   },
   polyglot: {
