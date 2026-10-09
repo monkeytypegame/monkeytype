@@ -65,14 +65,20 @@ createEffectOn(getActivePage, (page) => {
     const onKeyDown = (e: KeyboardEvent): void => handleModifierState(e, true);
     const onKeyUp = (e: KeyboardEvent): void => handleModifierState(e, false);
 
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
+    // Capture phase, so the state is up to date before the input handlers
+    // (e.g. opposite shift mode) read it.
+    document.addEventListener("keydown", onKeyDown, { capture: true });
+    document.addEventListener("keyup", onKeyUp, { capture: true });
 
     listeners.push(
       {
-        remove: (): void => document.removeEventListener("keydown", onKeyDown),
+        remove: (): void =>
+          document.removeEventListener("keydown", onKeyDown, { capture: true }),
       },
-      { remove: (): void => document.removeEventListener("keyup", onKeyUp) },
+      {
+        remove: (): void =>
+          document.removeEventListener("keyup", onKeyUp, { capture: true }),
+      },
     );
   }
 });
@@ -82,5 +88,12 @@ function handleModifierState(e: KeyboardEvent, updateValue: boolean): void {
   if (e.code === "ShiftRight") updateModifierState({ rightShift: updateValue });
   if (e.code === "AltRight" || e.code === "AltLeft") {
     updateModifierState({ alt: updateValue });
+  }
+
+  // Windows doesn't fire keyup for the first released shift while both are
+  // held, leaving it stuck. shiftKey is reliable, so resync from it.
+  const { leftShift, rightShift } = getModifierState();
+  if (!e.shiftKey && (leftShift || rightShift)) {
+    updateModifierState({ leftShift: false, rightShift: false });
   }
 }
