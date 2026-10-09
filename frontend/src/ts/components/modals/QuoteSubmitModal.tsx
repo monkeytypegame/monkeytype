@@ -4,7 +4,6 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
 import Ape from "../../ape";
-import { Config } from "../../config/store";
 import { LanguageGroupNames } from "../../constants/languages";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
@@ -13,6 +12,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import { getQuotesLanguage } from "../../utils/misc";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Captcha } from "../ui/form/Captcha";
@@ -35,7 +35,7 @@ export function QuoteSubmitModal(): JSXElement {
     text: g.replace(/_/g, " "),
   }));
 
-  const language = removeLanguageSize(Config.language) as string;
+  const language = removeLanguageSize(getQuotesLanguage()) as string;
 
   const form = createForm(() => ({
     defaultValues: {
@@ -78,7 +78,7 @@ export function QuoteSubmitModal(): JSXElement {
       defaultValues: {
         text: "",
         source: "",
-        language: removeLanguageSize(Config.language),
+        language: removeLanguageSize(getQuotesLanguage()),
         captcha: "",
       },
     });
