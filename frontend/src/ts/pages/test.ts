@@ -11,20 +11,16 @@ export const page = new Page({
   element: qsr(".page.pageTest"),
   path: "/",
   beforeHide: async (): Promise<void> => {
+    TestLogic.stop();
     blurInputElement();
   },
   afterHide: async (): Promise<void> => {
-    void TestLogic.restart({
-      noAnim: true,
-    });
     void Funbox.clear();
     updateFooterAndVerticalAds(true);
   },
   beforeShow: async (): Promise<void> => {
     updateFooterAndVerticalAds(false);
+    // the test itself is restarted when TestPage mounts (bindTestElements)
     resetIncompleteTests();
-    void TestLogic.restart({
-      noAnim: true,
-    });
   },
 });

@@ -32,13 +32,7 @@ import * as SlowTimer from "../legacy-states/slow-timer";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
-import {
-  ElementsWithUtils,
-  ElementWithUtils,
-  qs,
-  qsa,
-  lazyQsr,
-} from "../utils/dom";
+import { ElementsWithUtils, ElementWithUtils, qs, qsa } from "../utils/dom";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
@@ -70,8 +64,25 @@ export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   { rejectSkippedCalls: false },
 );
 
-const wordsEl = lazyQsr(".pageTest #words");
-const wordsWrapperEl = lazyQsr(".pageTest #wordsWrapper");
+// rendered by TestPage, registered via init() on every mount
+let wordsRef: ElementWithUtils | undefined;
+let wordsWrapperRef: ElementWithUtils | undefined;
+
+export function isMounted(): boolean {
+  return wordsRef !== undefined;
+}
+
+function wordsEl(): ElementWithUtils {
+  if (wordsRef === undefined) throw new Error("#words not mounted");
+  return wordsRef;
+}
+
+function wordsWrapperEl(): ElementWithUtils {
+  if (wordsWrapperRef === undefined) {
+    throw new Error("#wordsWrapper not mounted");
+  }
+  return wordsWrapperRef;
+}
 
 let activeWordTop = 0;
 let activeWordHeight = 0;
@@ -726,7 +737,8 @@ function displayTypedChar(char: string | undefined): string {
   return char ?? "";
 }
 
-export async function updateWordLetters({
+// deferred to the next animation frame - not awaitable
+export function updateWordLetters({
   wordIndex,
   input,
   compositionData,
@@ -734,7 +746,7 @@ export async function updateWordLetters({
   wordIndex: number;
   input: string;
   compositionData: string;
-}): Promise<void> {
+}): void {
   pendingWordData.set(wordIndex, input);
   requestDebouncedAnimationFrame(
     `test-ui.updateWordLetters.${wordIndex}`,
@@ -1065,8 +1077,8 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     wordsEl().setStyle({
       marginLeft: `${currentWordsMargin + widthRemoved}px`,
     });
-    Caret.caret.handleTapeWordsRemoved(widthRemoved);
-    PaceCaret.caret.handleTapeWordsRemoved(widthRemoved);
+    Caret.caret?.handleTapeWordsRemoved(widthRemoved);
+    PaceCaret.caret?.handleTapeWordsRemoved(widthRemoved);
   }
 
   /* calculate current word width to add to #words margin */
@@ -1111,8 +1123,8 @@ export async function scrollTape(noAnimation = false): Promise<void> {
     ease,
   };
 
-  Caret.caret.handleTapeScroll(caretScrollOptions);
-  PaceCaret.caret.handleTapeScroll(caretScrollOptions);
+  Caret.caret?.handleTapeScroll(caretScrollOptions);
+  PaceCaret.caret?.handleTapeScroll(caretScrollOptions);
 
   if (Config.smoothLineScroll) {
     wordsEl().animate({
@@ -1198,8 +1210,8 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
       newMarginTop,
       duration: Config.smoothLineScroll ? duration : 0,
     };
-    Caret.caret.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret.handleLineJump(caretLineJumpOptions);
+    Caret.caret?.handleLineJump(caretLineJumpOptions);
+    PaceCaret.caret?.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -1375,7 +1387,7 @@ export function afterTestTextInput(
     input = input.replace(/ $/, "");
   }
 
-  void updateWordLetters({
+  updateWordLetters({
     input,
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
@@ -1385,7 +1397,7 @@ export function afterTestTextInput(
 }
 
 export function afterTestCompositionUpdate(): void {
-  void updateWordLetters({
+  updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
@@ -1395,7 +1407,7 @@ export function afterTestCompositionUpdate(): void {
 }
 
 export function afterTestDelete(): void {
-  void updateWordLetters({
+  updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
     compositionData: CompositionState.getData(),
@@ -1413,7 +1425,7 @@ export function beforeTestWordChange(
   correct: boolean | null,
 ): void {
   if (direction === "back") {
-    void updateWordLetters({
+    updateWordLetters({
       input: getCurrentInput(),
       wordIndex: getActiveWordIndex(),
       compositionData: CompositionState.getData(),
@@ -1568,10 +1580,21 @@ export function onTestFinish(): void {
 }
 
 /**
- * Binds listeners and effects that need the test page DOM.
- * Called once the TestPage component has mounted.
+ * Binds test-ui to TestPage's elements. Call on every mount; effects are
+ * owned by the caller, listeners are removed via `signal`.
  */
-export function init(): void {
+export function init(
+  refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
+  signal: AbortSignal,
+): void {
+  wordsRef = refs.words;
+  wordsWrapperRef = refs.wordsWrapper;
+  signal.addEventListener("abort", () => {
+    // a remount may have registered new elements already
+    if (wordsRef === refs.words) wordsRef = undefined;
+    if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
+  });
+
   // #words is still vanilla; the warning itself is Solid (OutOfFocusWarning.tsx).
   // show/hideOutOfFocus live in states/test so commandline needn't import test-ui.
   createEffect(() => {
@@ -1595,20 +1618,29 @@ export function init(): void {
     wordsEl().toggleClass("noErrorBorder", isErrorBorderDisabled());
   });
 
-  qs("#wordsInput")?.on("focus", () => {
-    if (!isInputElementFocused()) return;
-    if (!getResultVisible() && Config.showOutOfFocusWarning) {
-      setTestFocusState("focused");
-    }
-    Caret.show(true);
-  });
+  const inputEl = getInputElement();
+  inputEl.addEventListener(
+    "focus",
+    () => {
+      if (!isInputElementFocused()) return;
+      if (!getResultVisible() && Config.showOutOfFocusWarning) {
+        setTestFocusState("focused");
+      }
+      Caret.show(true);
+    },
+    { signal },
+  );
 
-  qs("#wordsInput")?.on("focusout", () => {
-    if (!isInputElementFocused()) {
-      setTestFocusState("unfocused");
-    }
-    Caret.hide();
-  });
+  inputEl.addEventListener(
+    "focusout",
+    () => {
+      if (!isInputElementFocused()) {
+        setTestFocusState("unfocused");
+      }
+      Caret.hide();
+    },
+    { signal },
+  );
 }
 
 addEventListener("resize", () => {
@@ -1636,6 +1668,8 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "compositionDisplay" && newValue === "below") {
     setCompositionText(" ");
   }
+  // not on the test page - the next mount renders with the new config
+  if (!isMounted()) return;
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
       key ?? "",
@@ -1645,7 +1679,7 @@ configEvent.subscribe(({ key, newValue }) => {
   }
   if (key === "highlightMode") {
     if (getActivePage() === "test") {
-      void updateWordLetters({
+      updateWordLetters({
         input: getCurrentInput(),
         wordIndex: getActiveWordIndex(),
         compositionData: CompositionState.getData(),

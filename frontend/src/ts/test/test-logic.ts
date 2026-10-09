@@ -187,6 +187,48 @@ export function startTest(now: number): boolean {
   return true;
 }
 
+function recordIncompleteTest(): void {
+  if (!Config.resultSaving) return;
+  // Finalize the abandoned test before measuring it: logging the timer
+  // "end" event gives getAfkDuration its interval boundaries, so idle time
+  // is actually subtracted. Without it AFK is always 0 and the full
+  // wall-clock lifetime (incl. unbounded idle) leaks into the result.
+  TestTimer.clear(true);
+  const liveEventLog = buildEventLog();
+  const tt = getIncompleteTestSeconds(liveEventLog);
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  pushIncompleteTest({ acc, seconds: tt });
+}
+
+function resetTestState(): void {
+  resetTestEvents();
+  TestTimer.clear();
+  setIsTestInvalid(false);
+  resetModifierState();
+  setTestActive(false);
+  Replay.pauseReplay();
+  setBailedOut(false);
+  PaceCaret.reset();
+  setKoreanStatus(false);
+  clearQuoteStats();
+  CompositionState.setComposing(false);
+  CompositionState.setData("");
+  Strings.clearWordDirectionCache();
+  testReinitCount = 0;
+  failReason = "";
+}
+
+/**
+ * Stops the current test without generating a new one (e.g. when leaving the
+ * test page). Ignores the no_quit funbox.
+ */
+export function stop(): void {
+  if (isTestRestarting() || isResultCalculating()) return;
+
+  if (isTestActive()) recordIncompleteTest();
+  resetTestState();
+}
+
 type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
@@ -208,6 +250,9 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
   options = { ...defaultOptions, ...options };
 
   // guards
+
+  // not on the test page - TestPage restarts on mount
+  if (!TestUI.isMounted()) return;
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -262,17 +307,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
       options.withSameWordset = true;
     }
 
-    if (Config.resultSaving) {
-      // Finalize the abandoned test before measuring it: logging the timer
-      // "end" event gives getAfkDuration its interval boundaries, so idle time
-      // is actually subtracted. Without it AFK is always 0 and the full
-      // wall-clock lifetime (incl. unbounded idle) leaks into the result.
-      TestTimer.clear(true);
-      const liveEventLog = buildEventLog();
-      const tt = getIncompleteTestSeconds(liveEventLog);
-      const acc = Numbers.roundTo2(getLiveCachedAccuracy());
-      pushIncompleteTest({ acc, seconds: tt });
-    }
+    recordIncompleteTest();
   }
 
   const currentQuote = getCurrentQuote();
@@ -314,21 +349,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   // reset state
 
-  resetTestEvents();
-  TestTimer.clear();
-  setIsTestInvalid(false);
-  resetModifierState();
-  setTestActive(false);
-  Replay.pauseReplay();
-  setBailedOut(false);
-  PaceCaret.reset();
-  setKoreanStatus(false);
-  clearQuoteStats();
-  CompositionState.setComposing(false);
-  CompositionState.setData("");
-  Strings.clearWordDirectionCache();
-  testReinitCount = 0;
-  failReason = "";
+  resetTestState();
 
   const repeatWithPace =
     (Config.repeatedPace && options.withSameWordset) ?? false;

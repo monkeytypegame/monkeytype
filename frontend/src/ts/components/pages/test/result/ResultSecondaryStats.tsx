@@ -141,10 +141,12 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           text={timeBalloon()}
         >
           <div>{timeText()}</div>
-          <div class={timeNoteClass}>
+          <div class={timeNoteClass} data-ui-element="resultStatSubValue">
             {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
           </div>
-          <div class={timeNoteClass}>{resultState.timeToday}</div>
+          <div class={timeNoteClass} data-ui-element="resultStatSubValue">
+            {resultState.timeToday}
+          </div>
         </Balloon>
       </div>
 
