@@ -14,6 +14,7 @@ export function Fa(props: FaProps): JSXElement {
   const variant = (): string => props.variant ?? "solid";
   return (
     <i
+      aria-hidden="true"
       class={cn(
         props.icon,
         {

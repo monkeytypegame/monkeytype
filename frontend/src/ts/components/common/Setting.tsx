@@ -108,6 +108,7 @@ export function Setting(props: SettingProps): JSXElement {
 function DeepLinkButton(props: { key: string }) {
   return (
     <Button
+      aria-label="Copy link to this setting"
       class="-m-2 p-2 opacity-0 group-hover:opacity-100"
       variant="text"
       fa={{ icon: "fa-link" }}

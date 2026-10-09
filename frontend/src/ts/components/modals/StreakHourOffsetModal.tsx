@@ -95,6 +95,7 @@ export function StreakHourOffsetModal() {
             children={(field) => (
               <>
                 <Button
+                  aria-label="Decrease offset"
                   fa={{ icon: "fa-chevron-left" }}
                   class="w-full"
                   disabled={clampOffset(field().state.value) <= -11}
@@ -114,6 +115,7 @@ export function StreakHourOffsetModal() {
                   alwaysShowFieldIndicator={true}
                 />
                 <Button
+                  aria-label="Increase offset"
                   fa={{ icon: "fa-chevron-right" }}
                   class="w-full"
                   disabled={clampOffset(field().state.value) >= 12}

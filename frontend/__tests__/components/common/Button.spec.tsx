@@ -270,4 +270,48 @@ describe("Button component", () => {
     const button = container.querySelector("button");
     expect(button).toBeDisabled();
   });
+
+  it("applies aria-label to icon-only button without a balloon", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          /** */
+        }}
+        fa={{ icon: "fa-trash" }}
+        aria-label="Delete"
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toHaveAccessibleName("Delete");
+    expect(button).not.toHaveAttribute("data-balloon-pos");
+    expect(button?.querySelector("i")).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("applies aria-label to anchor", () => {
+    const { container } = render(() => (
+      <Button href="/settings" fa={{ icon: "fa-cog" }} aria-label="Settings" />
+    ));
+
+    const anchor = container.querySelector("a");
+    expect(anchor).toHaveAccessibleName("Settings");
+    expect(anchor).not.toHaveAttribute("data-balloon-pos");
+  });
+
+  it("uses balloon text over aria-label", () => {
+    const { container } = render(() => (
+      <Button
+        onClick={() => {
+          /** */
+        }}
+        fa={{ icon: "fa-trash" }}
+        aria-label="Delete"
+        balloon={{ text: "Delete preset" }}
+      />
+    ));
+
+    const button = container.querySelector("button");
+    expect(button).toHaveAttribute("aria-label", "Delete preset");
+    expect(button).toHaveAttribute("data-balloon-pos", "up");
+  });
 });

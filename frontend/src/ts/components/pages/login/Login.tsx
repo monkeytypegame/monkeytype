@@ -72,6 +72,7 @@ export function Login(): JSXElement {
       />
       <div class="grid grid-cols-2 gap-4">
         <Button
+          aria-label="Sign in with Google"
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
             void trySignIn(
@@ -85,6 +86,7 @@ export function Login(): JSXElement {
           disabled={!getLoginPageInputsEnabled()}
         />
         <Button
+          aria-label="Sign in with GitHub"
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
             void trySignIn(

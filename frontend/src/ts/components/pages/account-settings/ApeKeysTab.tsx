@@ -78,6 +78,9 @@ function getColumns(): DataTableColumnDef<ApeKeyEntry>[] {
       header: "active",
       cell: (info) => (
         <Button
+          aria-label={
+            info.row.original.enabled ? "Disable ape key" : "Enable ape key"
+          }
           variant="text"
           fa={
             info.row.original.enabled
