@@ -17,7 +17,6 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { showSimpleModal } from "../../states/simple-modal";
-import { toggleUserFakeChartData } from "../../test/result";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { setMediaQueryDebugLevel } from "../../ui";
@@ -25,6 +24,7 @@ import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
 const [mediaQueryDebugLevel, setLocalMediaQueryDebugLevel] = createSignal(0);
 
@@ -155,7 +155,7 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-chart-bar",
       label: () => "Toggle Fake Chart Data",
-      onClick: toggleUserFakeChartData,
+      onClick: toggleFakeChartData,
     },
     {
       icon: "fa-i-cursor",

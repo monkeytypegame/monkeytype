@@ -35,11 +35,11 @@ footer a:hover,
 footer a:hover > i,
 footer button:hover,
 footer button:hover > i,
+[data-ui-element="restartTestButton"]:hover > i,
+[data-ui-element="restartTestButtonWithSameWordset"]:hover > i,
 footer button:hover > .relative > i,
-#restartTestButton:hover > i,
 #showWordHistoryButton:hover > i,
 #saveScreenshotButton:hover > i,
-#restartTestButtonWithSameWordset:hover > i,
 #nextTestButton:hover > i,
 #practiseWordsButton:hover > i,
 #watchReplayButton:hover > i,
@@ -61,12 +61,6 @@ footer button:hover > .relative > i,
   -webkit-text-fill-color: transparent;
   animation: rainbow-gradient 5s alternate ease-in-out infinite;
   transition: all 1s ease;
-}
-
-#liveStatsTextTop.timerMain,
-#liveStatsTextBottom.timerMain,
-#liveStatsMini.timerMain {
-  animation: rainbow-infinite-loop 30s linear infinite;
 }
 
 #words {

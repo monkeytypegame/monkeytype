@@ -21,7 +21,7 @@ export function BlockedUsersTab() {
   return (
     <Section
       title="blocked users"
-      fa={{ icon: "fa-user-shield" }}
+      fa={{ icon: "fa-ban" }}
       fullWidth
       description=<>Blocked users cannot send you friend requests.</>
     >

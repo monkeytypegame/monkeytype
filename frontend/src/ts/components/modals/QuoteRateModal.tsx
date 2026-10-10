@@ -18,7 +18,6 @@ import {
   getRatingAverage,
 } from "../../states/quote-rate";
 import { cn } from "../../utils/cn";
-import { qs } from "../../utils/dom";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
@@ -122,9 +121,6 @@ export function QuoteRateModal(): JSXElement {
     if (currentStats) {
       const avg = getRatingAverage(currentStats);
       updateQuoteStats({ ...currentStats, average: avg });
-      qs(".pageTest #result #rateQuoteButton .rating")?.setText(avg.toFixed(1));
-      qs(".pageTest #result #rateQuoteButton .icon")?.removeClass("far");
-      qs(".pageTest #result #rateQuoteButton .icon")?.addClass("fas");
     }
   };
 

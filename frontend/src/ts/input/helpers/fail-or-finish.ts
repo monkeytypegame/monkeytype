@@ -96,10 +96,13 @@ export function checkIfFinished(options: {
     allWordsGenerated,
   } = options;
   const wordIsCorrect = testInputWithData === currentWord;
+  // stop on error and delete on error both take the last character back, so
+  // quick end must not finish the test on a character that is about to go away
   const shouldQuickEnd =
     Config.quickEnd &&
     currentWord.length === testInputWithData.length &&
-    Config.stopOnError === "off";
+    Config.stopOnError === "off" &&
+    Config.deleteOnError === "off";
   if (
     allWordsTyped &&
     allWordsGenerated &&

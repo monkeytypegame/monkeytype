@@ -135,7 +135,7 @@ export function verifyPermissions<
 function getRequiredPermissionIds(
   metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
-  if (metadata === undefined || metadata.requirePermission === undefined) {
+  if (metadata?.requirePermission === undefined) {
     return undefined;
   }
 

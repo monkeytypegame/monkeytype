@@ -95,7 +95,7 @@ export function DataTable<TData extends Object, TValue = any>(
 
   const [rowSelection, setRowSelection] = createSignal({});
   createEffect(() => {
-    if (!props.rowSelection || props.rowSelection.activeRow === undefined) {
+    if (props.rowSelection?.activeRow === undefined) {
       setRowSelection({});
     } else {
       const activeId = props.rowSelection.activeRow();

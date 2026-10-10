@@ -23,7 +23,10 @@ import {
   incrementDailyLeaderboard,
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
-import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import {
+  getDailyLeaderboard,
+  purgeUserFromDailyLeaderboards,
+} from "../../utils/daily-leaderboards";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -157,14 +160,6 @@ export async function getLastResult(
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
-}
-
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
 }
 
 export async function updateTags(
@@ -326,6 +321,16 @@ export async function addResult(
     ResultDAL.getLastResultTimestamp(uid),
   );
 
+  // Abandoned-test time (incompleteTestSeconds/incompleteTests) is client
+  // supplied. When a previous result exists it is bounded to real elapsed time
+  // by the result-spacing check below. When it does not (new account, or all
+  // results deleted) there is nothing to bound it against, so it must not be
+  // credited toward timeTyping / XP / leaderboard eligibility.
+  if (!isSafeNumber(lastResultTimestamp)) {
+    completedEvent.incompleteTestSeconds = 0;
+    completedEvent.incompleteTests = [];
+  }
+
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
@@ -386,11 +391,21 @@ export async function addResult(
               subject: "Banned",
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            await UserDAL.addToInbox(
-              uid,
-              [mail],
-              req.ctx.configuration.users.inbox,
-            );
+            await Promise.all([
+              UserDAL.addToInbox(
+                uid,
+                [mail],
+                req.ctx.configuration.users.inbox,
+              ),
+              purgeUserFromDailyLeaderboards(
+                uid,
+                req.ctx.configuration.dailyLeaderboards,
+              ),
+              WeeklyXpLeaderboard.purgeUserFromXpLeaderboards(
+                uid,
+                req.ctx.configuration.leaderboards.weeklyXp,
+              ),
+            ]);
             user.banned = true;
           }
         }

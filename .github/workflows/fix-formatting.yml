@@ -1,7 +1,11 @@
 name: Fix formatting
 
+# SECURITY: this runs on pull_request_target with a write token.
+# Never install or execute anything from the PR checkout (package.json,
+# lockfile, oxfmt.config.ts, vite.config.ts, ...). The formatter version and
+# config are taken from the base branch; the PR is only treated as data.
+
 env:
-  PNPM_VERSION: "10.28.1"
   NODE_VERSION: "24.11.0"
 
 permissions:
@@ -17,28 +21,39 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.label.name == 'format'
     steps:
-      - name: Checkout code
+      - name: Checkout base config
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name}}
+          persist-credentials: false
+          sparse-checkout: |
+            package.json
+            .oxfmtrc.json
+            frontend/src/styles/tailwind.css
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout PR
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.sha }}
+          path: pr
+          persist-credentials: false
+          # PR files are only formatted, never executed
+          allow-unsafe-pr-checkout: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
+      - name: Install oxfmt from base branch version
+        run: |
+          OXFMT_VERSION=$(node -p "require('./package.json').devDependencies.oxfmt")
+          npm install --prefix "$RUNNER_TEMP/oxfmt" --no-save --ignore-scripts --no-audit --no-fund "oxfmt@$OXFMT_VERSION"
 
-      - name: Install formatter
-        run: pnpm install -D -w oxfmt --ignore-scripts
-
-      - name: Get changed files
+      - name: Get changed files and write to temp
         id: get-changed-files
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const changedFiles = await github.paginate(
@@ -49,19 +64,48 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+            const files = changedFiles.filter(file=> file.status !== "removed").map(file => file.filename);
+            if (files.length > 0) {
+              require('fs').writeFileSync('/tmp/changed-files.txt', files.join('\0'));
+              core.setOutput('has-files', 'true');
+            }
 
+      # only regular files inside pr/ - oxfmt follows symlinks and would write
+      # through them to files outside the checkout.
+      # explicit base config + no nested config: prevents loading JS configs
+      # from the PR. `--` stops filenames being parsed as options.
       - name: Fix formatting
-        env:
-          CHANGED_FILES: ${{ steps.get-changed-files.outputs.result }}
+        if: steps.get-changed-files.outputs.has-files == 'true'
+        working-directory: pr
         run: |
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "$CHANGED_FILES" | tr ' ' '\n' | xargs pnpm oxfmt --no-error-on-unmatched-pattern
-          fi
+          root=$(pwd -P)
+          while IFS= read -r -d '' f; do
+            [ -f "$f" ] && [ ! -L "$f" ] || continue
+            case "$(realpath -e -- "$f")" in
+              "$root"/*) printf '%s\0' "$f" ;;
+            esac
+          done < /tmp/changed-files.txt > /tmp/files-to-format.txt
+
+          xargs -0 -r "$RUNNER_TEMP/oxfmt/node_modules/.bin/oxfmt" \
+            --config ../.oxfmtrc.json \
+            --disable-nested-config \
+            --no-error-on-unmatched-pattern \
+            -- < /tmp/files-to-format.txt
+
+      # credentials only added after all PR-derived content has been processed
+      - name: Configure push credentials
+        working-directory: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $AUTH"
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          repository: pr
           commit_message: "fix formatting"
 
       - name: Remove label

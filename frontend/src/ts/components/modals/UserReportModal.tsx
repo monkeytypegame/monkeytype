@@ -42,6 +42,7 @@ export function UserReportModal() {
     <AnimatedModal
       modalClass="max-w-3xl"
       id="UserReport"
+      mode="dialog"
       title={`Report user ${getUserToReport()?.name}`}
     >
       <p>

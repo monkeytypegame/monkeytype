@@ -1,7 +1,11 @@
 import { Config } from "../../config/store";
 import * as TestUI from "../../test/test-ui";
 import * as PaceCaret from "../../test/pace-caret";
-import * as TestState from "../../test/test-state";
+import {
+  decreaseActiveWordIndex,
+  getActiveWordIndex,
+  increaseActiveWordIndex,
+} from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
 import * as TestWords from "../../test/test-words";
 import {
@@ -42,7 +46,7 @@ export async function goToNextWord({
   }
 
   if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
-    const burst = getWordBurst(buildEventLog(), TestState.activeWordIndex, now);
+    const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
     ret.lastBurst = burst;
   }
 
@@ -51,10 +55,10 @@ export async function goToNextWord({
     TestWords.words.getCurrent()?.textWithCommit ?? "",
   );
 
-  const nextWord = TestWords.words.get(TestState.activeWordIndex + 1)?.text;
+  const nextWord = TestWords.words.get(getActiveWordIndex() + 1)?.text;
   if (nextWord !== undefined) Funbox.toggleScript(nextWord);
 
-  const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+  const lastWord = getActiveWordIndex() >= TestWords.words.length - 1;
   if (lastWord) {
     setAwaitingNextWord(true);
     showLoaderBar();
@@ -66,11 +70,11 @@ export async function goToNextWord({
   }
 
   if (
-    TestState.activeWordIndex < TestWords.words.length - 1 ||
+    getActiveWordIndex() < TestWords.words.length - 1 ||
     Config.mode === "zen"
   ) {
     ret.increasedWordIndex = true;
-    TestState.increaseActiveWordIndex();
+    increaseActiveWordIndex();
   }
 
   setInputElementValue("");
@@ -80,16 +84,16 @@ export async function goToNextWord({
 }
 
 export function goToPreviousWord(inputType: DeleteInputType): void {
-  if (TestState.activeWordIndex === 0) {
+  if (getActiveWordIndex() === 0) {
     setInputElementValue("");
     return;
   }
 
   TestUI.beforeTestWordChange("back", null);
 
-  TestState.decreaseActiveWordIndex();
+  decreaseActiveWordIndex();
 
-  const word = TestWords.words.get(TestState.activeWordIndex)?.text;
+  const word = TestWords.words.get(getActiveWordIndex())?.text;
   if (word !== undefined) Funbox.toggleScript(word);
 
   const nospaceEnabled = isFunboxActiveWithProperty("nospace");
@@ -97,7 +101,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
   if (inputType === "deleteWordBackward") {
     setInputElementValue("");
   } else if (inputType === "deleteContentBackward") {
-    const word = getInputForWord(TestState.activeWordIndex);
+    const word = getInputForWord(getActiveWordIndex());
     if (nospaceEnabled) {
       // nospace has no separator, so the prior word's commit was its last
       // letter; a single backspace deletes that letter (same as non-nospace

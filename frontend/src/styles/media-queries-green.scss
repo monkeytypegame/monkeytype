@@ -4,17 +4,6 @@
   .content-grid {
     --content-max-width: 768px;
   }
-  .pageTest {
-    #result .wrapper .stats.morestats {
-      display: grid;
-      grid-template-columns: repeat(3, max-content);
-      grid-template-rows: 1fr 1fr;
-    }
-    #liveStatsTextTop,
-    #liveStatsTextBottom {
-      font-size: 7rem;
-    }
-  }
 
   .testActivity {
     --gap-size: 0.1em;

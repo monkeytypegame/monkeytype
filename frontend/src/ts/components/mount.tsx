@@ -18,21 +18,22 @@ import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { FriendsPage } from "./pages/connections/FriendsPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
+import { LoadingPage } from "./pages/LoadingPage";
 import { LoginPage } from "./pages/login/LoginPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { ProfileSearchPage } from "./pages/profile/ProfileSearchPage";
 import { SettingsPage } from "./pages/settings/SettingsPage";
-import { Keymap } from "./pages/test/Keymap";
-import { TestModesNotice } from "./pages/test/modes-notice/TestModesNotice";
-import { Monkey } from "./pages/test/Monkey";
-import { TestConfig } from "./pages/test/TestConfig";
+import { BarTimerProgress } from "./pages/test/live-stats/BarTimerProgress";
+import { TestPage } from "./pages/test/TestPage";
 import { Popups } from "./popups/Popups";
 
 const components: Record<string, () => JSXElement> = {
+  testpage: () => <TestPage />,
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
   settingspage: () => <SettingsPage />,
   accountpage: () => <AccountPage />,
+  loadingpage: () => <LoadingPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
   profilepage: () => <ProfilePage />,
@@ -44,14 +45,11 @@ const components: Record<string, () => JSXElement> = {
   theme: () => <Theme />,
   header: () => <Header />,
   devtools: () => <DevTools />,
-  testconfig: () => <TestConfig />,
   commandlinehotkey: () => <CommandlineHotkey />,
-  testmodesnotice: () => <TestModesNotice />,
   friendspage: () => <FriendsPage />,
   notfoundpage: () => <NotFoundPage />,
   accountsettingspage: () => <AccountSettingsPage />,
-  keymap: () => <Keymap />,
-  monkey: () => <Monkey />,
+  bartimerprogress: () => <BarTimerProgress />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {
@@ -69,6 +67,6 @@ function mountToMountpoint(name: string, component: () => JSXElement): void {
 
 export function mountComponents(): void {
   for (const [query, component] of Object.entries(components)) {
-    mountToMountpoint(`mount[data-component=${query}]`, component);
+    mountToMountpoint(`[data-component=${query}]`, component);
   }
 }

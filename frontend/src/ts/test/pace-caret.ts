@@ -3,17 +3,20 @@ import { Config } from "../config/store";
 import * as DB from "../db";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
-import { qsr } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
+  isDirectionReversed,
+  isLanguageRightToLeft,
+  getActiveWordIndex,
   getCurrentQuote,
+  getResultVisible,
   isPaceRepeat,
   isTestActive,
   setPaceCaretWpm,
@@ -34,7 +37,24 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+// #paceCaret is rendered by TestPage, set via initElement() on every mount
+export let caret: Caret | undefined;
+
+export function initElement(
+  refs: {
+    caret: ElementWithUtils;
+    words: ElementWithUtils;
+    wordsWrapper: ElementWithUtils;
+  },
+  signal: AbortSignal,
+): void {
+  const created = new Caret(refs.caret, Config.paceCaretStyle, refs);
+  caret = created;
+  signal.addEventListener("abort", () => {
+    // a remount may have created a new caret already
+    if (caret === created) caret = undefined;
+  });
+}
 
 let lastTestWpm = 0;
 
@@ -48,21 +68,21 @@ export function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !isPaceRepeat()) return;
   if (Config.mode === "zen") return;
 
-  caret.hide();
-  caret.stopAllAnimations();
-  caret.clearMargins();
+  caret?.hide();
+  caret?.stopAllAnimations();
+  caret?.clearMargins();
 
-  caret.goTo({
+  caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
+    isLanguageRightToLeft: isLanguageRightToLeft(),
+    isDirectionReversed: isDirectionReversed(),
     animate: false,
   });
 }
 
 export async function init(): Promise<void> {
-  caret.hide();
+  caret?.hide();
   const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
@@ -121,12 +141,12 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || TestState.resultVisible) {
+  if (currentSettings === null || !isTestActive() || getResultVisible()) {
     return;
   }
 
-  if (caret.isHidden()) {
-    caret.show();
+  if (caret?.isHidden()) {
+    caret?.show();
   }
 
   incrementLetterIndex();
@@ -136,11 +156,11 @@ export async function update(expectedStepEnd: number): Promise<void> {
     const absoluteStepEnd = startTimestamp + expectedStepEnd;
     const duration = absoluteStepEnd - now;
 
-    caret.goTo({
+    caret?.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
+      isLanguageRightToLeft: isLanguageRightToLeft(),
+      isDirectionReversed: isDirectionReversed(),
       animate: true,
       animationOptions: {
         duration,
@@ -161,7 +181,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     );
   } catch (e) {
     console.error(e);
-    caret.hide();
+    caret?.hide();
     return;
   }
 }
@@ -222,7 +242,7 @@ function incrementLetterIndex(): void {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    caret.hide();
+    caret?.hide();
     return;
   }
 }
@@ -230,20 +250,19 @@ function incrementLetterIndex(): void {
 export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
-      settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === true &&
+      settings?.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = undefined;
+      settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
+      settings.wordsStatus[getActiveWordIndex()] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestState.activeWordIndex] = true;
+      settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
     }
   }
@@ -258,6 +277,6 @@ export function start(): void {
 configEvent.subscribe(({ key }) => {
   if (key === "paceCaret") void init();
   if (key === "paceCaretStyle") {
-    caret.setStyle(Config.paceCaretStyle);
+    caret?.setStyle(Config.paceCaretStyle);
   }
 });

@@ -9,7 +9,6 @@ import {
   toggleFunbox as configToggleFunbox,
   setConfig,
 } from "../../config/setters";
-import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -24,6 +23,10 @@ import {
 } from "./list";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
+import {
+  setMemoryTimerDuration,
+  setWordsWrapperHidden,
+} from "../../states/test";
 import { configEvent } from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
@@ -68,8 +71,8 @@ export async function clear(): Promise<boolean> {
 
   qsa(".funBoxTheme").remove();
 
-  qs("#wordsWrapper")?.show();
-  MemoryTimer.reset();
+  setWordsWrapperHidden(false);
+  setMemoryTimerDuration(null);
   return true;
 }
 
@@ -97,11 +100,11 @@ export async function activate(
     return false;
   }
 
-  MemoryTimer.reset();
+  setMemoryTimerDuration(null);
   await setFunboxBodyClasses();
   await applyFunboxCSS();
 
-  qs("#wordsWrapper")?.show();
+  setWordsWrapperHidden(false);
 
   const { data: language, error } = await tryCatch(
     JSONData.getCurrentLanguage(Config.language),

@@ -5,7 +5,6 @@ import "./dev/signal-tracker";
 import "solid-devtools";
 
 import "./event-handlers/global";
-import "./event-handlers/test";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
@@ -14,11 +13,8 @@ import "./ui";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
-import * as Result from "./test/result";
+import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
-import { enable } from "./legacy-states/glarses-mode";
-import "./test/caps-warning";
-import "./input/listeners";
 import "./controllers/route-controller";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
@@ -40,7 +36,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
-import { lastEventLog } from "./test/test-state";
+import { getLastEventLog } from "./states/test";
 import { buildEventLog } from "./test/events/data";
 
 // Lock Math.random
@@ -61,6 +57,9 @@ Object.defineProperty(window, "Math", {
   configurable: false,
   enumerable: true,
 });
+
+// mount before anything that might touch component-rendered DOM (eg. test page)
+mountComponents();
 
 applyEngineSettings();
 void loadFromLocalStorage();
@@ -83,18 +82,18 @@ void init(onAuthStateChanged).then(() => {
 addToGlobal({
   snapshot: DB.getSnapshot,
   config: Config,
-  glarsesMode: enable,
+  glarsesMode: () => {
+    console.log("Moved to settings > danger zone > the rest");
+  },
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
-  toggleSmoothedBurst: Result.toggleSmoothedBurst,
+  toggleSmoothedBurst,
   egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,
   qs: qs,
   qsa: qsa,
   qsr: qsr,
-  lastEventLog: () => lastEventLog,
+  lastEventLog: () => getLastEventLog(),
   currentEventLog: buildEventLog,
 });
-
-mountComponents();

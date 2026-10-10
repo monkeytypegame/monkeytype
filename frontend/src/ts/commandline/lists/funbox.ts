@@ -13,7 +13,7 @@ const list: Command[] = [
     sticky: true,
     exec: (): void => {
       if (Funbox.setFunbox([])) {
-        TestLogic.restart();
+        void TestLogic.restart();
       }
     },
   },
@@ -34,7 +34,7 @@ for (const funbox of getAllFunboxes()) {
     configValueMode: "include",
     exec: (): void => {
       Funbox.toggleFunbox(funbox.name);
-      TestLogic.restart();
+      void TestLogic.restart();
     },
   });
 }

@@ -9,11 +9,7 @@
 
     <!-- theme component adds to the head element, don't move to head.html -->
     <mount data-component="theme"></mount>
-    <div id="barTimerProgress" class="timerMain">
-      <div class="opacityWrapper" style="opacity: 0">
-        <div class="bar"></div>
-      </div>
-    </div>
+    <mount data-component="bartimerprogress"></mount>
     <mount data-component="modals" id="solidmodals"></mount>
     <mount data-component="popups" id="solidpopups"></mount>
     <div id="popups">
@@ -31,7 +27,12 @@
           <div class="icon"><i class="fas fa-ad"></i></div>
           <div id="ad-vertical-right"></div>
         </div>
-        <load src="html/pages/loading.html" />
+        <div
+          class="page pageLoading grid h-full w-full place-self-center content-center items-center gap-4 text-center"
+          id="pageLoading"
+        >
+          <mount data-component="loadingpage" class="contents"></mount>
+        </div>
 
         <div class="page pageAbout hidden full-width" id="pageAbout">
           <mount data-component="aboutpage"></mount>
@@ -55,7 +56,11 @@
           <mount data-component="profilesearchpage"></mount>
         </div>
 
-        <load src="html/pages/test.html" />
+        <div
+          class="page pageTest full-width content-grid hidden"
+          data-component="testpage"
+          data-nosnippet
+        ></div>
 
         <div class="page page404 hidden" id="page404">
           <mount data-component="notfoundpage"></mount>

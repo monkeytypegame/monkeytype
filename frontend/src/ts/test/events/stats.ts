@@ -56,9 +56,12 @@ export function getTimerBoundaries(eventLog: EventLog): number[] {
     if (event.type !== "timer") continue;
     if (event.data.event === "end") {
       endMs = event.testMs;
-      // end event's `timer` field is Time.get() at finish — the canonical
-      // tick count, immune to step-event drift/early-fire artifacts
-      tickCount = event.data.timer;
+      // Derive tick count from wall-clock (testMs) rather than the end event's
+      // Time.get(). The rAF-driven timer freezes on a suspended/backgrounded
+      // tab, so Time.get() can undercount real elapsed seconds (it stays 0 for
+      // a fully-frozen tab) — testMs, from performance.now(), always reflects
+      // true wall-clock. For healthy/mildly-stalled tests the two agree.
+      tickCount = Math.floor(endMs / 1000);
     }
   }
   if (endMs === undefined) return [];

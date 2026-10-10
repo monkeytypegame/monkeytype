@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import ts from "typescript";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
@@ -50,35 +49,19 @@ if (entryPoints.length === 0) {
   process.exit(1);
 }
 
-// --- Import extraction (type-aware) ---
+// --- Import extraction ---
 
-const tsConfig: ts.CompilerOptions = {
-  module: ts.ModuleKind.ESNext,
-  target: ts.ScriptTarget.ESNext,
-  jsx: ts.JsxEmit.Preserve,
-  sourceMap: false,
-  declaration: false,
-  isolatedModules: true,
-};
-
+// Matches value `import`/`export ... from` statements and side-effect imports.
+// `import type ...` / `export type ...` don't match (the `type` keyword sits
+// where the specifier list or quote is expected), so type-only imports are
+// excluded — which is what we want for a runtime dependency graph.
 const JS_IMPORT_RE =
   /(?:import|export)\s+(?:(?:\{[^}]*\}|[\w*]+(?:\s*,\s*\{[^}]*\})?)\s+from\s+)?["']([^"']+)["']/g;
 
 function extractImports(filePath: string): string[] {
   const content = fs.readFileSync(filePath, "utf-8");
-  let outputText: string;
-  try {
-    ({ outputText } = ts.transpileModule(content, {
-      compilerOptions: tsConfig,
-      fileName: filePath,
-    }));
-  } catch {
-    // Some files (e.g. declaration files) can't be transpiled — fall back to
-    // regex on the original source, which still strips type-only imports.
-    outputText = content;
-  }
   const specifiers: string[] = [];
-  for (const match of outputText.matchAll(JS_IMPORT_RE)) {
+  for (const match of content.matchAll(JS_IMPORT_RE)) {
     const spec = match[1];
     if (spec !== undefined) specifiers.push(spec);
   }
