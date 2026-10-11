@@ -1,7 +1,26 @@
 import { describe, it, expect } from "vitest";
-import { CustomBackgroundSchema } from "@monkeytype/schemas/configs";
+import {
+  CustomBackgroundSchema,
+  FontSizeSchema,
+} from "@monkeytype/schemas/configs";
 
 describe("config schema", () => {
+  describe("FontSizeSchema", () => {
+    it.for([0.5, 1, 1.25, 1.5, 2, 3, 4, 15, 20])(
+      "accepts font size %s",
+      (fontSize) => {
+        expect(FontSizeSchema.safeParse(fontSize).success).toBe(true);
+      },
+    );
+
+    it.for([0, -1, 20.01, 100000, Infinity, NaN])(
+      "rejects font size %s",
+      (fontSize) => {
+        expect(FontSizeSchema.safeParse(fontSize).success).toBe(false);
+      },
+    );
+  });
+
   describe("CustomBackgroundSchema", () => {
     it.for([
       {
