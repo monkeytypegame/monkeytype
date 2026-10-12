@@ -10,6 +10,8 @@ If a page load fails (`ERR_CONNECTION_REFUSED`, "This site can't be reached"), s
 
 New tabs open on `chrome://newtab`, which rejects `javascript_tool` and screenshots. Navigate to `http://localhost:3000` first, then interact.
 
+Before testing anything animated (page fades, anime.js, carets), check `document.visibilityState`. In a `hidden` tab Chrome pauses `requestAnimationFrame`, so fades never finish and pages look stuck at opacity 0. If it's `hidden`, ask the user to bring the Chrome window to the front.
+
 ## `window.__mt` (dev only)
 
 Defined in `frontend/src/ts/dev/expose.ts`; absent in production builds. Wait for it after load:
@@ -28,7 +30,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
 | `getSignal(name)` / `setSignal(name, value)` | read/write a tracked signal by exact name |
 
-Use these instead of `import("/node_modules/...")` from the page — Vite dep paths don't resolve from injected scripts.
+Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state, and after hot reloads `signals()` / `getSignal()` can read a stale instance. After editing code, do a full reload before trusting tracked signals.
 
 Older globals from `frontend/src/ts/index.ts` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`.
 
