@@ -5,7 +5,7 @@ import {
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createSignal } from "solid-js";
 import { createEffectOn } from "../hooks/effects";
-import { getMountedPage } from "./router";
+import { isTestPageActive } from "./router";
 
 type ModifierState = {
   shift: boolean;
@@ -51,7 +51,7 @@ onCapsLockChange((state) => setCapsLockOn(state));
 
 const listeners: Array<{ remove: () => void }> = [];
 
-createEffectOn(getMountedPage, (page) => {
+createEffectOn(isTestPageActive, (active) => {
   // Clean up listeners from previous page.
   for (const listener of listeners) {
     listener.remove();
@@ -61,7 +61,7 @@ createEffectOn(getMountedPage, (page) => {
 
   resetModifierState();
 
-  if (page === "test") {
+  if (active) {
     const onKeyDown = (e: KeyboardEvent): void => handleModifierState(e, true);
     const onKeyUp = (e: KeyboardEvent): void => handleModifierState(e, false);
 

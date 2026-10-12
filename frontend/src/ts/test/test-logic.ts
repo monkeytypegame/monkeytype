@@ -36,7 +36,7 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { isPageTransitioning, isTestPageActive } from "../states/router";
+import { getRoutePage, isTestPageActive } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -155,9 +155,8 @@ import { nthElementFromArray } from "../utils/arrays";
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (isPageTransitioning()) {
-    return false;
-  }
+  // eg. typing while the test page fades out after navigating away
+  if (getRoutePage() !== "test") return false;
 
   if (isAuthenticated()) {
     void AnalyticsController.log("testStarted");

@@ -5,11 +5,9 @@ import { authEvent } from "../events/auth";
 import { showNoticeNotification } from "../states/notifications";
 import {
   getRoutePage,
-  isPageTransitioning,
   PageName,
   setLoadingError,
   setLoadingPageShown,
-  setRouteLoading,
   setRoutePage,
 } from "../states/router";
 import {
@@ -55,9 +53,9 @@ setRouter(router);
 router.history.block({
   enableBeforeUnload: false,
   blockerFn: ({ nextLocation }) => {
-    if (isTestRestarting() || isResultCalculating() || isPageTransitioning()) {
+    if (isTestRestarting() || isResultCalculating()) {
       console.debug(
-        `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${isPageTransitioning()})`,
+        `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()})`,
       );
       return true;
     }
@@ -81,9 +79,7 @@ authEvent.subscribe((event) => {
   isFirstAuthState = false;
 });
 
-router.subscribe("onBeforeLoad", (event) => {
-  // search param updates and auth reloads don't block input
-  if (event.pathChanged) setRouteLoading(true);
+router.subscribe("onBeforeLoad", () => {
   setLoadingError(null);
 });
 
@@ -103,7 +99,6 @@ router.subscribe("onResolved", () => {
     setRoutePage(page);
   }
   setLoadingPageShown(false);
-  setRouteLoading(false);
 
   updateOpenGraphUrl();
 

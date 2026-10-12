@@ -21,7 +21,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | Member | Use |
 | --- | --- |
 | `navigate(url)` | client-side route change |
-| `getMountedPage()` | currently mounted page name |
+| `getTargetPage()` | page that should be on screen (loading page while a route loads) |
 | `getRoutePage()` | page name for current route |
 | `getConfig` / `setConfig(key, value)` | read/write config |
 | `showModal(id)` | open a modal by `ModalId` |

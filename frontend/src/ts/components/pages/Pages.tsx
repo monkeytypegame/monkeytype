@@ -1,13 +1,7 @@
-import { Component, JSXElement, Show } from "solid-js";
+import { Component, createSignal, JSXElement, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
-import { createEffectOn } from "../../hooks/effects";
-import {
-  getMountedPage,
-  getTargetPage,
-  setMountedPage,
-  setPageFading,
-} from "../../states/router";
+import { getTargetPage } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { Anime } from "../common/anime";
@@ -51,19 +45,17 @@ export type PageName = keyof typeof pages;
 const fadeDuration = 125;
 
 /**
- * Renders the active page, fading the previous one out first. The previous
- * page stays mounted (and alive) while it fades out, so pages never see a
- * navigation while they're visible, and slow pages (eg. settings) don't mount
- * during a fade.
+ * Renders the target page, fading the previous one out first. The next page
+ * only mounts once the previous one has faded out, so slow pages (eg.
+ * settings) don't mount during a fade.
  */
 export function Pages(): JSXElement {
-  createEffectOn(getTargetPage, (target) => {
-    if (target !== getMountedPage()) setPageFading(true);
-  });
+  // lags behind the target page until the fade out completes
+  const [getShownPage, setShownPage] = createSignal(getTargetPage());
 
   return (
     // keyed so each page gets a fresh fade wrapper
-    <Show when={getMountedPage()} keyed>
+    <Show when={getShownPage()} keyed>
       {(page) => {
         const config: PageConfig = pages[page];
         const id = `page${capitalizeFirstLetter(page)}`;
@@ -78,12 +70,9 @@ export function Pages(): JSXElement {
             animation={{
               opacity: getTargetPage() === page ? 1 : 0,
               duration: fadeDuration,
-              onComplete: () => {
-                // swap to whatever the target is by now, so rapid navigation
-                // ends up on the last page
-                if (getTargetPage() !== page) setMountedPage(getTargetPage());
-                else setPageFading(false);
-              },
+              // swap to whatever the target is by now, so rapid navigation
+              // ends up on the last page
+              onComplete: () => setShownPage(getTargetPage()),
             }}
           >
             <Dynamic component={config.component} />
