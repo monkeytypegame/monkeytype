@@ -31,7 +31,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
 | `getSignal(name)` / `setSignal(name, value)` | read/write a tracked signal by exact name |
 
-Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state, and after hot reloads `signals()` / `getSignal()` can read a stale instance. After editing code, do a full reload before trusting tracked signals.
+Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state.
 
 Older globals from `frontend/src/ts/index.ts` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`.
 

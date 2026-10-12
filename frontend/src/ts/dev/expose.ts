@@ -33,8 +33,8 @@ const mt = {
   signals: (filter = "") =>
     trackedSignals
       .filter((s) => s.name.includes(filter) || s.source.includes(filter))
-      .map((s) => ({ name: s.name, source: s.source, value: s.get() })),
-  getSignal: (name: string) => findSignal(name).get(),
+      .map((s) => ({ name: s.name, source: s.source, value: s.peek() })),
+  getSignal: (name: string) => findSignal(name).peek(),
   setSignal: (name: string, value: unknown) => findSignal(name).set(value),
 };
 
