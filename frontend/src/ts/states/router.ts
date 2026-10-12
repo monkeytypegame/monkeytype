@@ -36,5 +36,13 @@ export const getTargetPage = createMemo(() =>
     : getRoutePage(),
 );
 
-/** Whether the test page is mounted. Set by TestPage. */
-export const [isTestPageActive, setTestPageActive] = createSignal(false);
+/**
+ * Whether the resolved route is the test page. Reactive. For vanilla code -
+ * components use tanstack's useMatchRoute.
+ */
+export function isTestRoute(): boolean {
+  const router = getRouter();
+  if (router === undefined) return false;
+  void router.state.location; // track navigations
+  return router.matchRoute({ to: "/" }, { includeSearch: false }) !== false;
+}

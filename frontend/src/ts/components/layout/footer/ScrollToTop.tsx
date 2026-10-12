@@ -1,15 +1,16 @@
+import { useMatchRoute } from "@tanstack/solid-router";
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
-import { isTestPageActive } from "../../../states/router";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import { Fa } from "../../common/Fa";
 
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
+  const isTestRoute = useMatchRoute()({ to: "/", includeSearch: false });
 
   const handleScroll = (): void => {
-    if (isTestPageActive()) return;
+    if (isTestRoute() !== false) return;
 
     const scroll = window.scrollY;
     setVisible(scroll > 100);
@@ -30,7 +31,8 @@ export function ScrollToTop(): JSXElement {
         class={cn(
           "breakout pointer-events-auto mb-8 grid h-16 w-16 place-self-end rounded-full bg-sub-alt text-[2rem] text-sub ring-8 ring-bg hover:bg-text hover:text-bg",
           {
-            "pointer-events-none opacity-0": isTestPageActive() || !visible(),
+            "pointer-events-none opacity-0":
+              isTestRoute() !== false || !visible(),
           },
         )}
         style={{

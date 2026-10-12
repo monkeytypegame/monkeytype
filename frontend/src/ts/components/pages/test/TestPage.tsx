@@ -5,7 +5,7 @@ import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import { createEffectOn } from "../../../hooks/effects";
 import { blurInputElement } from "../../../input/input-element";
 import { getShowResult } from "../../../states/result";
-import { getRoutePage, setTestPageActive } from "../../../states/router";
+import { getRoutePage } from "../../../states/router";
 import {
   getFocus,
   getLayoutfluidTimerText,
@@ -41,9 +41,6 @@ import { TestInitFailed } from "./TestInitFailed";
  * the test page is active.
  */
 export function TestPage(): JSXElement {
-  // set before TypingTest mounts, its restart checks it
-  setTestPageActive(true);
-
   // stop typing as soon as the user navigates away, before the page fades out
   createEffectOn(getRoutePage, (page, prev) => {
     if (page !== "test" && prev === "test") {
@@ -59,7 +56,6 @@ export function TestPage(): JSXElement {
   });
 
   onCleanup(() => {
-    setTestPageActive(false);
     void Funbox.clear();
     updateFooterAndVerticalAds(true);
   });

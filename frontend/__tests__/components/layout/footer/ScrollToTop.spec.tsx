@@ -2,13 +2,18 @@ import { render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+const { isTestRouteMock } = vi.hoisted(() => ({
+  isTestRouteMock: vi.fn<() => Record<string, never> | false>(),
+}));
+vi.mock("@tanstack/solid-router", () => ({
+  useMatchRoute: () => () => isTestRouteMock,
+}));
+
 import { ScrollToTop } from "../../../../src/ts/components/layout/footer/ScrollToTop";
-import * as RouterSignals from "../../../../src/ts/states/router";
 
 describe("ScrollToTop", () => {
-  const isTestPageActiveMock = vi.spyOn(RouterSignals, "isTestPageActive");
   beforeEach(() => {
-    isTestPageActiveMock.mockClear().mockReturnValue(false);
+    isTestRouteMock.mockClear().mockReturnValue(false);
     Object.defineProperty(window, "scrollY", { value: 0, writable: true });
   });
 
@@ -48,14 +53,14 @@ describe("ScrollToTop", () => {
   });
 
   it("stays invisible on test page at scroll 0", () => {
-    isTestPageActiveMock.mockReturnValue(true);
+    isTestRouteMock.mockReturnValue({});
     const { button } = renderElement();
 
     expect(button).toHaveClass("opacity-0");
   });
 
   it("stays invisible on test page even with scroll > 100", () => {
-    isTestPageActiveMock.mockReturnValue(true);
+    isTestRouteMock.mockReturnValue({});
     const { button } = renderElement();
     scrollTo(150);
 
