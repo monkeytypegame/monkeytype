@@ -14,6 +14,7 @@ import {
   CustomThemeSchema,
   FavoriteQuotesSchema,
   MonkeyMailSchema,
+  PasswordSchema,
   ResultFiltersSchema,
   StreakHourOffsetSchema,
   TagNameSchema,
@@ -88,7 +89,7 @@ export const UpdateEmailRequestSchema = z.object({
 export type UpdateEmailRequest = z.infer<typeof UpdateEmailRequestSchema>;
 
 export const UpdatePasswordRequestSchema = z.object({
-  newPassword: z.string().min(6),
+  newPassword: PasswordSchema,
 });
 export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequestSchema>;
 
