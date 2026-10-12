@@ -1,18 +1,17 @@
 import type { AnyRouter } from "@tanstack/solid-router";
+import { createSignal } from "solid-js";
 
-// set by router/index.ts - kept separate so vanilla modules can navigate
-// without importing the route tree
-let router: AnyRouter | undefined;
-
-export function setRouter(r: AnyRouter): void {
-  router = r;
-}
+// set by router/index.ts - kept separate so vanilla modules can navigate and
+// read router state without importing the route tree. router.state is
+// reactive (backed by solid signals)
+export const [getRouter, setRouter] = createSignal<AnyRouter>();
 
 /**
  * Navigation guards live in the router's history blocker (router/index.ts).
  * @param url path (optionally with search and hash) or full url on this origin
  */
 export async function navigate(url: string): Promise<void> {
+  const router = getRouter();
   if (router === undefined) {
     console.error(`navigate: ${url} ignored, router not initialised`);
     return;
@@ -32,6 +31,7 @@ export async function navigate(url: string): Promise<void> {
  * rather than calling this directly.
  */
 export function replaceSearch(search: URLSearchParams): void {
+  const router = getRouter();
   if (router === undefined) return;
   const { location, resolvedLocation } = router.state;
   if (location.pathname !== resolvedLocation?.pathname) return;

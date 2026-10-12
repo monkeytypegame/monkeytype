@@ -3,13 +3,7 @@ import { createRouter } from "@tanstack/solid-router";
 import * as AdController from "../controllers/ad-controller";
 import { authEvent } from "../events/auth";
 import { showNoticeNotification } from "../states/notifications";
-import {
-  getRoutePage,
-  PageName,
-  setLoadingError,
-  setLoadingPageShown,
-  setRoutePage,
-} from "../states/router";
+import { getRoutePage, PageName, setLoadingPageShown } from "../states/router";
 import {
   isResultCalculating,
   isTestActive,
@@ -79,25 +73,10 @@ authEvent.subscribe((event) => {
   isFirstAuthState = false;
 });
 
-router.subscribe("onBeforeLoad", () => {
-  setLoadingError(null);
-});
-
 let isInitialLoad = true;
+let prevPage: PageName = "loading";
 
 router.subscribe("onResolved", () => {
-  const prevPage = getRoutePage();
-
-  const failedMatch = router.state.matches.find((m) => m.status === "error");
-  if (failedMatch !== undefined) {
-    const error: unknown = failedMatch.error;
-    setLoadingError(error instanceof Error ? error.message : String(error));
-    setRoutePage("loading");
-  } else {
-    const page = router.state.matches.at(-1)?.staticData.page;
-    if (page === undefined) return;
-    setRoutePage(page);
-  }
   setLoadingPageShown(false);
 
   updateOpenGraphUrl();
@@ -109,6 +88,7 @@ router.subscribe("onResolved", () => {
 
   const page = getRoutePage();
   if (page === prevPage) return;
+  prevPage = page;
 
   updatePageTitle(page);
   Focus.set(false);
