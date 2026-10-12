@@ -333,6 +333,20 @@ const plugin = {
         };
       },
     }),
+    "no-classlist": defineRule({
+      createOnce(context) {
+        return {
+          JSXAttribute(node) {
+            if (node.name?.name !== "classList") return;
+            context.report({
+              node,
+              message:
+                'Use `class={cn(...)}` instead of `classList`, e.g. `class={cn("base", { active: isActive() })}`.',
+            });
+          },
+        };
+      },
+    }),
   },
 };
 
