@@ -2,10 +2,8 @@ import { Config } from "./config/store";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
-import { debounce, throttle } from "throttle-debounce";
-import * as TestUI from "./test/test-ui";
+import { throttle } from "throttle-debounce";
 import { getCustomTextIndicator, getGlobalOffsetTop } from "./states/core";
-import { isTestPageActive } from "./states/router";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
@@ -15,7 +13,8 @@ import fileStorage from "./utils/file-storage";
 import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
-import { getResultVisible, isTestActive } from "./states/test";
+import { isTestActive } from "./states/test";
+import * as TestUI from "./test/test-ui";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -111,31 +110,13 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedEvent = debounce(250, () => {
-  if (isTestPageActive() && !getResultVisible()) {
-    if (Config.tapeMode !== "off") {
-      void TestUI.scrollTape();
-    } else {
-      void TestUI.centerActiveLine();
-      void TestUI.updateHintsPositionDebounced();
-    }
-    setTimeout(() => {
-      // page may have changed during the delay
-      if (!isTestPageActive()) return;
-      TestUI.updateWordsInputPosition();
-      TestUI.focusWords();
-      Caret.show();
-    }, 250);
-  }
-});
-
 const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
+// the test page re-centers the words after resizing (see TestUI.init)
 window.addEventListener("resize", () => {
   throttledEvent();
-  debouncedEvent();
 });
 
 createEffect(() => {

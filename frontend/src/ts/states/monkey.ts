@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup } from "solid-js";
-import { isTestPageActive } from "./router";
+import { createEffectOn } from "../hooks/effects";
+import { createSignal } from "solid-js";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
@@ -11,22 +11,34 @@ const [getMonkeyState, setMonkeyState] = createSignal<{
 
 export { getMonkeyState };
 
-createEffect(() => {
+function resetMonkeyState(): void {
   setMonkeyState({ left: false, right: false });
+}
 
-  if (isTestPageActive() && getConfig.monkey) {
-    const onKeyDown = (e: KeyboardEvent): void => handleKey(e, true);
-    const onKeyUp = (e: KeyboardEvent): void => handleKey(e, false);
+createEffectOn(
+  () => getConfig.monkey,
+  () => resetMonkeyState(),
+);
 
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
-
-    onCleanup(() => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("keyup", onKeyUp);
-    });
-  }
-});
+/** Tracks the typing hands. Called by bindTestElements while the test page is mounted. */
+export function listenForMonkeyKeys(signal: AbortSignal): void {
+  resetMonkeyState();
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (getConfig.monkey) handleKey(e, true);
+    },
+    { signal },
+  );
+  document.addEventListener(
+    "keyup",
+    (e) => {
+      if (getConfig.monkey) handleKey(e, false);
+    },
+    { signal },
+  );
+  signal.addEventListener("abort", resetMonkeyState);
+}
 
 const middleKeysState = { left: false, right: false, last: "right" };
 function handleKey(event: KeyboardEvent, isKeyDown: boolean): void {

@@ -1,9 +1,11 @@
 import { registerInputElement } from "../input/input-element";
 import { initInputListeners } from "../input/listeners";
+import { listenForModifierKeys } from "../states/modifiers";
+import { listenForMonkeyKeys } from "../states/monkey";
 import { ElementWithUtils } from "../utils/dom";
 import * as Caret from "./caret";
 import * as PaceCaret from "./pace-caret";
-import { restart } from "./test-logic";
+import { restart, restartOnRefocus } from "./test-logic";
 import * as TestUI from "./test-ui";
 
 /**
@@ -45,5 +47,8 @@ export function bindTestElements(
 
   initInputListeners(signal);
   TestUI.init({ words, wordsWrapper }, signal);
+  restartOnRefocus(signal);
+  listenForModifierKeys(signal);
+  listenForMonkeyKeys(signal);
   void restart({ noAnim: true });
 }

@@ -1,45 +1,5 @@
-import * as Misc from "../utils/misc";
-import { Config } from "../config/store";
 import { showErrorNotification } from "../states/notifications";
-import { isTestPageActive } from "../states/router";
-import { ModifierKeys } from "../constants/modifier-keys";
-import { focusWords } from "../test/test-ui";
-import { isInputElementFocused } from "../input/input-element";
-import { getResultVisible } from "../states/test";
 import { isDevEnvironment } from "../utils/env";
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === undefined) return;
-
-  if (isDevEnvironment()) {
-    if (
-      (document.activeElement as HTMLElement | undefined)?.dataset[
-        "uiElement"
-      ] === "signalDevtoolsInput"
-    ) {
-      return;
-    }
-  }
-
-  const pageTestActive: boolean = isTestPageActive();
-  if (pageTestActive && !getResultVisible() && !isInputElementFocused()) {
-    const popupVisible: boolean = Misc.isAnyPopupVisible();
-    // this is nested because isAnyPopupVisible is a bit expensive
-    // and we don't want to call it during the test
-    if (
-      !popupVisible &&
-      !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
-      !e.metaKey &&
-      !e.ctrlKey
-    ) {
-      //autofocus
-      focusWords();
-      if (Config.showOutOfFocusWarning) {
-        e.preventDefault();
-      }
-    }
-  }
-});
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {

@@ -9,7 +9,9 @@ import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { isTestPageActive } from "../states/router";
+import { debounce } from "throttle-debounce";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
@@ -318,7 +320,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    !isTestPageActive() ||
+    !isMounted() ||
     getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -528,7 +530,7 @@ export function appendEmptyWordElement(index: number): void {
 }
 
 export function updateWordsInputPosition(): void {
-  if (!isTestPageActive()) return;
+  if (!isMounted()) return;
   const isTestRightToLeft = isDirectionReversed()
     ? !isLanguageRightToLeft()
     : isLanguageRightToLeft();
@@ -608,7 +610,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 export function updateWordsWrapperHeight(force = false): void {
-  if (!isTestPageActive() || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -947,7 +949,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (!isTestPageActive() || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1555,7 +1557,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (isTestPageActive()) {
+  // the page may have unmounted during the restart
+  if (isMounted()) {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -1642,6 +1645,54 @@ export function init(
     },
     { signal },
   );
+
+  // autofocus the words when typing anywhere on the page
+  document.addEventListener("keydown", autofocusWords, { signal });
+
+  const recenter = debounce(250, () => {
+    if (getResultVisible()) return;
+    if (Config.tapeMode !== "off") {
+      void scrollTape();
+    } else {
+      void centerActiveLine();
+      void updateHintsPositionDebounced();
+    }
+    setTimeout(() => {
+      if (signal.aborted) return;
+      updateWordsInputPosition();
+      focusWords();
+      Caret.show();
+    }, 250);
+  });
+  window.addEventListener("resize", () => recenter(), { signal });
+  signal.addEventListener("abort", () => recenter.cancel());
+}
+
+function autofocusWords(e: KeyboardEvent): void {
+  if (e.key === undefined) return;
+  if (
+    isDevEnvironment() &&
+    (document.activeElement as HTMLElement | undefined)?.dataset[
+      "uiElement"
+    ] === "signalDevtoolsInput"
+  ) {
+    return;
+  }
+  if (getResultVisible() || isInputElementFocused()) return;
+
+  // this is nested because isAnyPopupVisible is a bit expensive
+  // and we don't want to call it during the test
+  if (
+    !Misc.isAnyPopupVisible() &&
+    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+    !e.metaKey &&
+    !e.ctrlKey
+  ) {
+    focusWords();
+    if (Config.showOutOfFocusWarning) {
+      e.preventDefault();
+    }
+  }
 }
 
 addEventListener("resize", () => {
@@ -1679,13 +1730,11 @@ configEvent.subscribe(({ key, newValue }) => {
     void updateHintsPositionDebounced();
   }
   if (key === "highlightMode") {
-    if (isTestPageActive()) {
-      updateWordLetters({
-        input: getCurrentInput(),
-        wordIndex: getActiveWordIndex(),
-        compositionData: CompositionState.getData(),
-      });
-    }
+    updateWordLetters({
+      input: getCurrentInput(),
+      wordIndex: getActiveWordIndex(),
+      compositionData: CompositionState.getData(),
+    });
   }
   if (
     [

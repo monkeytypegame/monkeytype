@@ -4,8 +4,6 @@ import {
 } from "@leonabcd123/modern-caps-lock";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createSignal } from "solid-js";
-import { createEffectOn } from "../hooks/effects";
-import { isTestPageActive } from "./router";
 
 type ModifierState = {
   shift: boolean;
@@ -49,33 +47,18 @@ export { isCapsLockOn };
 
 onCapsLockChange((state) => setCapsLockOn(state));
 
-const listeners: Array<{ remove: () => void }> = [];
-
-createEffectOn(isTestPageActive, (active) => {
-  // Clean up listeners from previous page.
-  for (const listener of listeners) {
-    listener.remove();
-  }
-  // Ensure modifier state doesn't get stuck if keyup happens off-page.
-  listeners.length = 0;
-
+/** Tracks shift and alt. Called by bindTestElements while the test page is mounted. */
+export function listenForModifierKeys(signal: AbortSignal): void {
   resetModifierState();
-
-  if (active) {
-    const onKeyDown = (e: KeyboardEvent): void => handleModifierState(e, true);
-    const onKeyUp = (e: KeyboardEvent): void => handleModifierState(e, false);
-
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
-
-    listeners.push(
-      {
-        remove: (): void => document.removeEventListener("keydown", onKeyDown),
-      },
-      { remove: (): void => document.removeEventListener("keyup", onKeyUp) },
-    );
-  }
-});
+  document.addEventListener("keydown", (e) => handleModifierState(e, true), {
+    signal,
+  });
+  document.addEventListener("keyup", (e) => handleModifierState(e, false), {
+    signal,
+  });
+  // don't get stuck if a keyup happens off-page
+  signal.addEventListener("abort", resetModifierState);
+}
 
 function handleModifierState(e: KeyboardEvent, updateValue: boolean): void {
   if (e.code === "ShiftLeft") updateModifierState({ leftShift: updateValue });

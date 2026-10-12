@@ -36,7 +36,7 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { getRoutePage, isTestPageActive } from "../states/router";
+import { getRoutePage } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -420,7 +420,8 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (isTestPageActive()) {
+  // the page may have unmounted while loading the language
+  if (TestUI.isMounted()) {
     await Funbox.activate();
   }
 
@@ -1384,39 +1385,38 @@ export function repeatTest(): void {
   });
 }
 
-// little roadblock for basic cheating
-window.addEventListener("focus", () => {
-  if (
-    !isTestActive() &&
-    !getResultVisible() &&
-    (Config.mode === "time" || Config.mode === "words")
-  ) {
-    void restart({
-      noAnim: true,
-    });
-  }
-});
-
-// little roadblock for basic cheating
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return;
-  if (
-    !isTestActive() &&
-    !getResultVisible() &&
-    (Config.mode === "time" || Config.mode === "words")
-  ) {
-    void restart({
-      noAnim: true,
-    });
-  }
-});
+/**
+ * Little roadblock for basic cheating - restarts an unstarted test when the
+ * window regains focus. Called by bindTestElements while the test page is mounted.
+ */
+export function restartOnRefocus(signal: AbortSignal): void {
+  const restartIfNotStarted = (): void => {
+    if (
+      !isTestActive() &&
+      !getResultVisible() &&
+      (Config.mode === "time" || Config.mode === "words")
+    ) {
+      void restart({
+        noAnim: true,
+      });
+    }
+  };
+  window.addEventListener("focus", restartIfNotStarted, { signal });
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (document.visibilityState === "visible") restartIfNotStarted();
+    },
+    { signal },
+  );
+}
 
 restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (isTestPageActive()) {
+  if (TestUI.isMounted()) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (
