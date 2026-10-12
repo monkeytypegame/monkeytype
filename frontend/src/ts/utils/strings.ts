@@ -402,6 +402,51 @@ export function replaceUnderscoresWithSpaces(text: string): string {
   return text.replace(/_/g, " ");
 }
 
+/**
+ * Strips all Markdown syntax from a string, returning plain text only.
+ * Handles: code blocks, inline code, images, links, headings, bold/italic,
+ * strikethrough, blockquotes, horizontal rules, list markers, task lists,
+ * tables, and HTML tags.
+ * @param text The Markdown string to strip.
+ * @returns The plain text with all Markdown syntax removed.
+ */
+export function stripMarkdown(text: string): string {
+  // 1. Remove fenced code blocks (with optional language specifier)
+  text = text.replace(/```[\s\S]*?```/g, "");
+  // 2. Remove inline code
+  text = text.replace(/`([^`]+)`/g, "$1");
+  // 3. Remove images (keep alt text)
+  text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1");
+  // 4. Remove links (keep text)
+  text = text.replace(/\[([^\]]*)\]\([^)]+\)/g, "$1");
+  // 5. Remove strikethrough markers
+  text = text.replace(/~~([^~]+)~~/g, "$1");
+  // 6. Remove heading markers
+  text = text.replace(/^#{1,6}\s+/gm, "");
+  // 7. Remove bold/italic markers (2+ consecutive, not single chars)
+  text = text.replace(/\*{2,}|_{2,}/g, "");
+  // 8. Remove blockquote markers
+  text = text.replace(/^>\s*/gm, "");
+  // 9. Remove horizontal rules
+  text = text.replace(/^[\-*_*]{3,}\s*$/gm, "");
+  // 10. Remove task list markers (bare or prefixed with -*/+)
+  text = text.replace(/^\s*[-*+]\s*\[[ xX]\]\s+/gm, "");
+  text = text.replace(/^\s*\[[ xX]\]\s+/gm, "");
+  // 11. Remove unordered list markers
+  text = text.replace(/^\s*[-*+]\s+/gm, "");
+  // 12. Remove ordered list markers
+  text = text.replace(/^\s*[\d]+\.\s+/gm, "");
+  // 13. Remove table pipe characters
+  text = text.replace(/\|/g, "");
+  // 14. Remove HTML tags
+  text = text.replace(/<[^>]+>/g, "");
+  // 15. Normalize whitespace
+  text = text.replace(/[\r\n]+/g, "\n");
+  text = text.replace(/ +/g, " ");
+  text = text.trim();
+  return text;
+}
+
 export function replaceSpacesWithUnderscores(text: string): string {
   return text.replace(/ /g, "_");
 }
