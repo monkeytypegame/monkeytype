@@ -57,6 +57,10 @@ Object.defineProperty(window, "Math", {
   enumerable: true,
 });
 
+if (import.meta.env.DEV) {
+  void import("./dev/expose");
+}
+
 // mount before anything that might touch component-rendered DOM (eg. test page)
 mountComponents();
 
