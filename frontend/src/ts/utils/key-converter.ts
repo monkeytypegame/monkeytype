@@ -97,12 +97,15 @@ export function mirrorLayoutKeys(layout: LayoutObject): LayoutObject {
  * @returns layout Layout object from our JSON data (e.g., layouts["qwerty"])
  */
 export function upsideDownLayout(layout: LayoutObject): LayoutObject {
+  const space = [" "];
+  const empty: string[] = [];
+  const newRow1 = new Array<string[]>(13).fill(empty);
   const upside_down_keys: LayoutObject["keys"] = {
-    row1: [...layout.keys.row5].reverse(),
-    row2: [...layout.keys.row4].reverse(),
+    row1: newRow1.fill(space, 3, 9),
+    row2: [...[...layout.keys.row4].reverse(), empty, empty, empty],
     row3: [...layout.keys.row3].reverse(),
-    row4: [...layout.keys.row2].reverse(),
-    row5: [...layout.keys.row1].reverse(),
+    row4: [...layout.keys.row2.slice(0, 10)].reverse(),
+    row5: [empty],
   };
 
   const layoutCopy = { ...layout, keys: upside_down_keys };
