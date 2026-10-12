@@ -1,7 +1,7 @@
 import { createMemo, createSignal, onCleanup } from "solid-js";
 import { z } from "zod";
 
-import { createSearchParams } from "../router/search-params";
+import { parseSearch, writeSearch } from "../router/search-params";
 
 // the current settings filter query, shared between the search input and the
 // settings/sections that hide themselves when they don't match
@@ -15,11 +15,15 @@ export const [getHighlightedSetting, setHighlightedSetting] = createSignal<
   string | undefined
 >(undefined);
 
-export const settingsSearch = createSearchParams(
-  "settings",
-  z.object({ highlight: z.string() }).partial(),
-  (params) => setHighlightedSetting(params?.highlight),
-);
+const SettingsSearchSchema = z.object({ highlight: z.string() }).partial();
+
+export function readSettingsSearch(search: Record<string, unknown>): void {
+  setHighlightedSetting(parseSearch(SettingsSearchSchema, search)?.highlight);
+}
+
+export function writeSettingsSearch(highlight: string): void {
+  writeSearch("settings", SettingsSearchSchema, { highlight });
+}
 
 // registry of every searchable setting's haystack getter. settings register on
 // mount and clean up on unmount, so best-match scoring sees only live settings.

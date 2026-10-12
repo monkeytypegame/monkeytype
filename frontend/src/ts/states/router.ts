@@ -1,47 +1,42 @@
 import { createMemo, createSignal } from "solid-js";
 
-import {
-  initialPageTransitionState,
-  PageTransitionEvent,
-  transitionPage,
-} from "../router/page-transition";
+import type { PageName } from "../components/pages/Pages";
 
-export type { PageName } from "../components/pages/Pages";
+export type { PageName };
 
-const [getState, setState] = createSignal(initialPageTransitionState);
+/** The page of the last resolved route ("loading" if loading failed). */
+export const [getRoutePage, setRoutePage] = createSignal<PageName>("loading");
 
-/** Feeds the router, the loading page and the page fade into the transition (see router/page-transition.ts). */
-export function dispatchPageTransition(event: PageTransitionEvent): void {
-  setState((state) => transitionPage(state, event));
-}
+/** True from the start of a path change until its route resolves. */
+export const [isRouteLoading, setRouteLoading] = createSignal(true);
 
-/**
- * The page of the last resolved route ("loading" if loading failed). Changes
- * as soon as the route resolves - use it to react to navigation straight away.
- */
-export const getRoutePage = createMemo(() => getState().routePage);
-
-/**
- * The page currently on screen. Lags behind getRoutePage: it only changes once
- * the previous page has faded out and the next one is mounted, so the outgoing
- * page doesn't react to the navigation while it's still visible.
- * Is "loading" while the loading page is shown.
- */
-export const getMountedPage = createMemo(() => getState().mountedPage);
-
-/** Whether the test page is on screen (see getMountedPage). */
-export const isTestPageActive = createMemo(() => getMountedPage() === "test");
-
-/**
- * True while a route is loading and while the page fade is running
- * (including the initial load).
- */
-export const isPageTransitioning = createMemo(() => getState().transitioning);
+/** Set by withLoading when a route loader needs the loading page. */
+export const [isLoadingPageShown, setLoadingPageShown] = createSignal(true);
 
 /** Why the last route failed to load, shown on the loading page until the next navigation. */
-export const getLoadingError = createMemo(() => {
-  const screen = getState().loadingScreen;
-  return screen.type === "error" ? screen.message : null;
-});
+export const [getLoadingError, setLoadingError] = createSignal<string | null>(
+  null,
+);
 
-export const getPageFadePhase = createMemo(() => getState().fadePhase);
+/**
+ * The page currently on screen. Lags behind getTargetPage: it only changes
+ * once the previous page has faded out (see Pages.tsx).
+ */
+export const [getMountedPage, setMountedPage] =
+  createSignal<PageName>("loading");
+
+/** True while the mounted page is fading out or in. */
+export const [isPageFading, setPageFading] = createSignal(true);
+
+/** The page that should be on screen - the loading page covers the route while it loads. */
+export const getTargetPage = createMemo(() =>
+  isLoadingPageShown() || getLoadingError() !== null
+    ? "loading"
+    : getRoutePage(),
+);
+
+export const isTestPageActive = createMemo(() => getMountedPage() === "test");
+
+/** True while a route is loading and while the page fade is running. */
+export const isPageTransitioning = (): boolean =>
+  isRouteLoading() || isPageFading();

@@ -11,15 +11,16 @@ import {
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
 import { getSnapshot } from "../db";
+import { authEvent } from "../events/auth";
 import { isAuthAvailable } from "../firebase";
-import { accountSettingsSearch } from "../states/account-settings";
+import { readAccountSettingsSearch } from "../states/account-settings";
 import { isAuthenticated, setSelectedProfileName } from "../states/core";
-import { leaderboardSearch } from "../states/leaderboard-selection";
+import { readLeaderboardSearch } from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
-import { settingsSearch } from "../states/settings-search";
+import { readSettingsSearch } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
-import { waitForUserData } from "./user-data";
+import { promiseWithResolvers } from "../utils/misc";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -28,6 +29,41 @@ declare module "@tanstack/solid-router" {
   interface StaticDataRouteOption {
     page?: PageName;
   }
+}
+
+const { promise: firstAuthState, resolve: resolveFirstAuthState } =
+  promiseWithResolvers();
+
+let pendingUserData: Promise<void> | undefined;
+
+authEvent.subscribe((event) => {
+  if (event.type !== "authStateChanged") return;
+
+  if (event.data.isUserSignedIn) {
+    pendingUserData = event.data.loadPromise;
+  }
+  // awaited by waitForUserData during the initial load
+  resolveFirstAuthState();
+});
+
+/**
+ * Waits until the auth state is known, then shows the loading bar while the
+ * user data downloads (only once per sign in).
+ */
+async function waitForUserData(): Promise<void> {
+  await firstAuthState;
+
+  const userData = pendingUserData;
+  if (userData === undefined) return;
+  pendingUserData = undefined;
+
+  await withLoading("user data", {
+    style: "bar",
+    load: async () => userData,
+    keyframes: [
+      { percentage: 90, durationMs: 1000, text: "Downloading user data..." },
+    ],
+  });
 }
 
 function requireAuth(): void {
@@ -73,15 +109,18 @@ const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
-  beforeLoad: leaderboardSearch.readOnEnter,
-  loader: async () =>
-    withLoading("the leaderboards page", {
+  beforeLoad: ({ search, cause }) => {
+    if (cause === "enter") readLeaderboardSearch(search);
+  },
+  loader: async () => {
+    if (getServerConfiguration() !== undefined) return;
+    await withLoading("the leaderboards page", {
       style: "spinner",
-      shouldShow: () => getServerConfiguration() === undefined,
       load: async () => {
         await serverConfigurationPromise;
       },
-    }),
+    });
+  },
 });
 
 const about = createRoute({
@@ -94,7 +133,9 @@ const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
   staticData: { page: "settings" },
-  beforeLoad: settingsSearch.readOnEnter,
+  beforeLoad: ({ search, cause }) => {
+    if (cause === "enter") readSettingsSearch(search);
+  },
 });
 
 const login = createRoute({
@@ -109,10 +150,10 @@ const account = createRoute({
   path: "/account",
   staticData: { page: "account" },
   beforeLoad: requireAuth,
-  loader: async () =>
-    withLoading("the account page", {
+  loader: async () => {
+    if (isResultsReady()) return;
+    await withLoading("the account page", {
       style: "bar",
-      shouldShow: () => !isResultsReady(),
       load: async () => {
         if (getSnapshot() === null || getSnapshot() === undefined) {
           throw new Error(
@@ -125,16 +166,17 @@ const account = createRoute({
       keyframes: [
         { percentage: 90, durationMs: 2000, text: "Downloading results..." },
       ],
-    }),
+    });
+  },
 });
 
 const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
-  beforeLoad: (ctx) => {
+  beforeLoad: ({ search, cause }) => {
     requireAuth();
-    accountSettingsSearch.readOnEnter(ctx);
+    if (cause === "enter") readAccountSettingsSearch(search);
   },
 });
 
@@ -159,24 +201,25 @@ const friends = createRoute({
   staticData: { page: "friends" },
   beforeLoad: requireAuth,
   loader: async () => {
-    await withLoading("the friends page", {
-      style: "bar",
-      shouldShow: () => !isConnectionsReady(),
-      load: async () => {
-        await Promise.all([
-          serverConfigurationPromise,
-          waitForConnectionsReady(),
-        ]);
-      },
-      keyframes: [
-        { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
-        {
-          percentage: 50,
-          durationMs: 1500,
-          text: "Downloading friend requests...",
+    if (!isConnectionsReady()) {
+      await withLoading("the friends page", {
+        style: "bar",
+        load: async () => {
+          await Promise.all([
+            serverConfigurationPromise,
+            waitForConnectionsReady(),
+          ]);
         },
-      ],
-    });
+        keyframes: [
+          { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
+          {
+            percentage: 50,
+            durationMs: 1500,
+            text: "Downloading friend requests...",
+          },
+        ],
+      });
+    }
     await invalidateConnections();
   },
 });

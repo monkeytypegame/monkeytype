@@ -1,12 +1,16 @@
 import { createRouter } from "@tanstack/solid-router";
 
 import * as AdController from "../controllers/ad-controller";
+import { authEvent } from "../events/auth";
 import { showNoticeNotification } from "../states/notifications";
 import {
-  dispatchPageTransition,
   getRoutePage,
   isPageTransitioning,
   PageName,
+  setLoadingError,
+  setLoadingPageShown,
+  setRouteLoading,
+  setRoutePage,
 } from "../states/router";
 import {
   isResultCalculating,
@@ -19,7 +23,6 @@ import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { setRouter } from "./navigate";
 import { routeTree } from "./routes";
-import { setOnAuthStateChange } from "./user-data";
 
 export const router = createRouter({
   routeTree,
@@ -68,13 +71,20 @@ router.history.block({
     return false;
   },
 });
-setOnAuthStateChange(() => void router.invalidate());
+
+// re-run guards and loaders when the user signs in or out. The initial load
+// waits for the first auth state itself (see waitForUserData in routes.ts)
+let isFirstAuthState = true;
+authEvent.subscribe((event) => {
+  if (event.type !== "authStateChanged") return;
+  if (!isFirstAuthState) void router.invalidate();
+  isFirstAuthState = false;
+});
 
 router.subscribe("onBeforeLoad", (event) => {
-  dispatchPageTransition({
-    type: "navigationStarted",
-    pathChanged: event.pathChanged,
-  });
+  // search param updates and auth reloads don't block input
+  if (event.pathChanged) setRouteLoading(true);
+  setLoadingError(null);
 });
 
 let isInitialLoad = true;
@@ -85,15 +95,15 @@ router.subscribe("onResolved", () => {
   const failedMatch = router.state.matches.find((m) => m.status === "error");
   if (failedMatch !== undefined) {
     const error: unknown = failedMatch.error;
-    dispatchPageTransition({
-      type: "routeFailed",
-      message: error instanceof Error ? error.message : String(error),
-    });
+    setLoadingError(error instanceof Error ? error.message : String(error));
+    setRoutePage("loading");
   } else {
     const page = router.state.matches.at(-1)?.staticData.page;
     if (page === undefined) return;
-    dispatchPageTransition({ type: "routeResolved", page });
+    setRoutePage(page);
   }
+  setLoadingPageShown(false);
+  setRouteLoading(false);
 
   updateOpenGraphUrl();
 

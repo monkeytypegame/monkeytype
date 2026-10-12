@@ -1,8 +1,7 @@
-import { createMemo } from "solid-js";
+import { createSignal } from "solid-js";
 
-import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { sleep } from "../utils/misc";
-import { dispatchPageTransition } from "./router";
+import { setLoadingPageShown } from "./router";
 
 /** Which indicator the loading page shows while loading (a failed load shows the error instead). */
 type LoadingIndicator = "spinner" | "bar";
@@ -13,36 +12,14 @@ type LoadingBarTarget = {
   durationMs: number;
 };
 
-type LoadingPageState = {
-  indicator: LoadingIndicator;
-  /** `null` hides the text line; an empty string shows it, holding its space. */
-  text: string | null;
-  barTarget: LoadingBarTarget | null;
-};
-
-const initialState: LoadingPageState = {
-  indicator: "spinner",
-  text: null,
-  barTarget: null,
-};
-
-const [
-  getState,
-  { showLoadingPage, updateLoadingPageText, setBarTarget, set: setState },
-] = createSignalWithSetters<LoadingPageState>(initialState)({
-  showLoadingPage: (set, indicator: LoadingIndicator) =>
-    set((prev) => ({ ...prev, indicator, text: null })),
-  updateLoadingPageText: (set, text: string) =>
-    set((prev) => ({ ...prev, text })),
-  setBarTarget: (set, barTarget: LoadingBarTarget) =>
-    set((prev) => ({ ...prev, barTarget })),
-});
-
-// memos rather than reading the state object directly, so that - for example -
-// a text change doesn't make the bar effect re-run and restart its animation
-export const getLoadingPageIndicator = createMemo(() => getState().indicator);
-export const getLoadingPageText = createMemo(() => getState().text);
-export const getLoadingPageBarTarget = createMemo(() => getState().barTarget);
+export const [getLoadingPageIndicator, setLoadingPageIndicator] =
+  createSignal<LoadingIndicator>("spinner");
+/** `null` hides the text line; an empty string shows it, holding its space. */
+export const [getLoadingPageText, setLoadingPageText] = createSignal<
+  string | null
+>(null);
+export const [getLoadingPageBarTarget, setLoadingPageBarTarget] =
+  createSignal<LoadingBarTarget | null>(null);
 
 /**
  * Points the bar fill at `percentage` and resolves after `durationMs`, so a
@@ -54,7 +31,7 @@ export async function updateLoadingPageBar(
   percentage: number,
   durationMs: number,
 ): Promise<void> {
-  setBarTarget({ percentage, durationMs });
+  setLoadingPageBarTarget({ percentage, durationMs });
   await sleep(durationMs);
 }
 
@@ -63,7 +40,9 @@ export async function updateLoadingPageBar(
  * tests - in the app every load sets the state it needs before showing the page.
  */
 export function resetLoadingPage(): void {
-  setState(initialState);
+  setLoadingPageIndicator("spinner");
+  setLoadingPageText(null);
+  setLoadingPageBarTarget(null);
 }
 
 type LoadingBarKeyframe = {
@@ -76,8 +55,6 @@ type LoadingBarKeyframe = {
 };
 
 export type RouteLoading = {
-  /** Evaluated before loading - the loading page is only shown when this is true. */
-  shouldShow: () => boolean;
   load: () => Promise<void>;
 } & (
   | { style: "spinner" }
@@ -97,10 +74,9 @@ export async function withLoading(
   label: string,
   loading: RouteLoading,
 ): Promise<void> {
-  if (!loading.shouldShow()) return;
-
-  dispatchPageTransition({ type: "loadingShown" });
-  showLoadingPage(loading.style);
+  setLoadingPageShown(true);
+  setLoadingPageIndicator(loading.style);
+  setLoadingPageText(null);
 
   try {
     if (loading.style === "spinner") {
@@ -109,10 +85,10 @@ export async function withLoading(
     }
 
     await updateLoadingPageBar(0, 0);
-    updateLoadingPageText("");
+    setLoadingPageText("");
     await loadWithKeyframes(loading.load(), loading.keyframes);
     void updateLoadingPageBar(100, 125);
-    updateLoadingPageText("Done");
+    setLoadingPageText("Done");
   } catch (error) {
     throw new Error(
       `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
@@ -130,7 +106,7 @@ async function loadWithKeyframes(
   const keyframePromise = (async () => {
     for (const keyframe of keyframes) {
       if (done) break;
-      if (keyframe.text !== undefined) updateLoadingPageText(keyframe.text);
+      if (keyframe.text !== undefined) setLoadingPageText(keyframe.text);
       await updateLoadingPageBar(keyframe.percentage, keyframe.durationMs);
     }
   })();

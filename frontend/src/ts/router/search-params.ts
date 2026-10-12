@@ -1,48 +1,30 @@
 import { untrack } from "solid-js";
 import { z } from "zod";
-import {
-  safeParse as parseUrlSearchParams,
-  serialize as serializeUrlSearchParams,
-} from "zod-urlsearchparams";
+import { safeParse, serialize } from "zod-urlsearchparams";
 
 import { getRoutePage, PageName } from "../states/router";
 import { replaceSearch } from "./navigate";
 
-export type SearchParams<T extends z.ZodObject<z.ZodRawShape>> = {
-  /** Route `beforeLoad` hook - passes the url params to `read` when entering the route. */
-  readOnEnter: (ctx: {
-    search: Record<string, unknown>;
-    cause: string;
-  }) => void;
-  /** Reflects `data` in the url, without a history entry. Ignored unless `page` is the current route. Untracked. */
-  write: (data: z.infer<T>) => void;
-};
+type Schema = z.ZodObject<z.ZodRawShape>;
 
-/**
- * Two-way binding between a page's state and its url search params.
- * @param read called with the parsed params (`undefined` if invalid) when
- * entering the route - not on later url changes, which are the page's own writes
- */
-export function createSearchParams<T extends z.ZodObject<z.ZodRawShape>>(
+/** Parses a route's search params, `undefined` if invalid. */
+export function parseSearch<T extends Schema>(
+  schema: T,
+  search: Record<string, unknown>,
+): z.infer<T> | undefined {
+  const parsed = safeParse({
+    schema,
+    input: new URLSearchParams(search as Record<string, string>),
+  });
+  return parsed.success ? parsed.data : undefined;
+}
+
+/** Reflects `data` in the url, without a history entry. Ignored unless `page` is the current route. */
+export function writeSearch<T extends Schema>(
   page: PageName,
   schema: T,
-  read: (params: z.infer<T> | undefined) => void,
-): SearchParams<T> {
-  return {
-    readOnEnter: ({ search, cause }) => {
-      if (cause !== "enter") return;
-      const parsed = parseUrlSearchParams({
-        schema,
-        input: new URLSearchParams(search as Record<string, string>),
-      });
-      read(parsed.success ? parsed.data : undefined);
-    },
-    // untracked - callers write from effects, which must not depend on the
-    // router state the write itself changes
-    write: (data) =>
-      untrack(() => {
-        if (getRoutePage() !== page) return;
-        replaceSearch(serializeUrlSearchParams({ schema, data }));
-      }),
-  };
+  data: z.infer<T>,
+): void {
+  if (untrack(getRoutePage) !== page) return;
+  replaceSearch(serialize({ schema, data }));
 }

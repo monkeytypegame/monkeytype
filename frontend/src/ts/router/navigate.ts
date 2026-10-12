@@ -28,7 +28,7 @@ export async function navigate(url: string): Promise<void> {
 /**
  * Replace the search params of the current url without adding a history entry.
  * Does nothing while navigating to another path, or if nothing changed - the
- * route reloads on every url change. Use createSearchParams (search-params.ts)
+ * route reloads on every url change. Use writeSearch (search-params.ts)
  * rather than calling this directly.
  */
 export function replaceSearch(search: URLSearchParams): void {

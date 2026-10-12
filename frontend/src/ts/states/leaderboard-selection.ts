@@ -6,7 +6,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { getSnapshot } from "./snapshot";
-import { createSearchParams } from "../router/search-params";
+import { parseSearch, writeSearch } from "../router/search-params";
 
 export const pageSize = 50;
 
@@ -67,13 +67,8 @@ export const getSelection = (): Selection => {
 
 export { setSelection };
 
-export const leaderboardSearch = createSearchParams(
-  "leaderboards",
-  LeaderboardUrlParamsSchema,
-  readGetParameters,
-);
-
-function readGetParameters(params: LeaderboardUrlParams | undefined): void {
+export function readLeaderboardSearch(search: Record<string, unknown>): void {
+  const params = parseSearch(LeaderboardUrlParamsSchema, search);
   if (params?.type === undefined) return;
 
   let newSelection: Partial<Selection> = {
@@ -122,7 +117,7 @@ export function updateGetParameters(
     params.friendsOnly = true;
   }
 
-  leaderboardSearch.write(params);
+  writeSearch("leaderboards", LeaderboardUrlParamsSchema, params);
 }
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {

@@ -1,10 +1,12 @@
 import { Component, JSXElement, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
+import { createEffectOn } from "../../hooks/effects";
 import {
-  dispatchPageTransition,
   getMountedPage,
-  getPageFadePhase,
+  getTargetPage,
+  setMountedPage,
+  setPageFading,
 } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
@@ -52,9 +54,13 @@ const fadeDuration = 125;
  * Renders the active page, fading the previous one out first. The previous
  * page stays mounted (and alive) while it fades out, so pages never see a
  * navigation while they're visible, and slow pages (eg. settings) don't mount
- * during a fade. See router/page-transition.ts for when pages swap.
+ * during a fade.
  */
 export function Pages(): JSXElement {
+  createEffectOn(getTargetPage, (target) => {
+    if (target !== getMountedPage()) setPageFading(true);
+  });
+
   return (
     // keyed so each page gets a fresh fade wrapper
     <Show when={getMountedPage()} keyed>
@@ -70,10 +76,14 @@ export function Pages(): JSXElement {
             }}
             initial={{ opacity: 0 }}
             animation={{
-              opacity: getPageFadePhase() === "in" ? 1 : 0,
+              opacity: getTargetPage() === page ? 1 : 0,
               duration: fadeDuration,
-              onComplete: () =>
-                dispatchPageTransition({ type: "fadeCompleted" }),
+              onComplete: () => {
+                // swap to whatever the target is by now, so rapid navigation
+                // ends up on the last page
+                if (getTargetPage() !== page) setMountedPage(getTargetPage());
+                else setPageFading(false);
+              },
             }}
           >
             <Dynamic component={config.component} />

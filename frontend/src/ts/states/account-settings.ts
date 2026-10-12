@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
-import { createSearchParams } from "../router/search-params";
+import { parseSearch, writeSearch } from "../router/search-params";
 import { FaSolidIcon } from "../types/font-awesome";
 import { isAuthenticated } from "./core";
 
@@ -42,12 +42,17 @@ createEffectOn(isAuthenticated, (hasUser) => {
   }
 });
 
-export const accountSettingsSearch = createSearchParams(
-  "accountSettings",
-  z.object({ tab: AccountSettingsTabSchema }).partial(),
-  (params) => {
-    if (params?.tab !== undefined) setCurrentTab(params.tab);
-  },
-);
+const AccountSettingsSearchSchema = z
+  .object({ tab: AccountSettingsTabSchema })
+  .partial();
 
-createEffectOn(getCurrentTab, (tab) => accountSettingsSearch.write({ tab }));
+export function readAccountSettingsSearch(
+  search: Record<string, unknown>,
+): void {
+  const tab = parseSearch(AccountSettingsSearchSchema, search)?.tab;
+  if (tab !== undefined) setCurrentTab(tab);
+}
+
+createEffectOn(getCurrentTab, (tab) =>
+  writeSearch("accountSettings", AccountSettingsSearchSchema, { tab }),
+);
