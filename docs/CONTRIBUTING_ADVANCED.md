@@ -46,7 +46,7 @@ You can use docker to run the frontend and backend. This will take care of OS-sp
 
 ### Firebase (optional)
 
-The account system will not let you create an account without a Firebase project. You can skip this if you don't think you will need it (you can always set it up later)
+The account system will not let you create an account without a Firebase project. You can skip this if you don't think you will need it (you can always set it up later).
 
 1. Create a Firebase account if you already haven't done so.
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
@@ -79,7 +79,7 @@ The account system will not let you create an account without a Firebase project
 
 ### Config file
 
-Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`.
 
 - If you skipped the Firebase step, you can leave the fields blank
 - Otherwise:
@@ -101,10 +101,9 @@ BACKEND_URL="http://<Your IP>:5005"
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
-
    - The backend Docker scripts read port bindings from this file. If `27017`, `6379`, or `5005` are already in use on your machine, update `DOCKER_DB_PORT`, `DOCKER_REDIS_PORT`, and `DOCKER_SERVER_PORT` before starting Docker.
 
-2. Setup the database server
+2. Set up the database server
 
 | Manual                                                                                                                                                                                                                                                         | Docker (recommended)                                                                                                                                                        |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -150,7 +149,7 @@ If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
 ## Standards and Guidelines
 
-Code formatting and linting is enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically runs every time you make a commit.
+Code formatting and linting are enforced by [Oxc (Oxfmt and Oxlint)](https://github.com/oxc-project/oxc), which automatically runs every time you make a commit.
 
 For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
