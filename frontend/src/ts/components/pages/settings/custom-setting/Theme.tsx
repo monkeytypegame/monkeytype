@@ -495,8 +495,6 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
 }
 
 function Picker(props: { color: ColorName }): JSXElement {
-  let colorInputRef: HTMLInputElement | undefined = undefined;
-
   const text = () => {
     if (props.color === "bg") return "background";
     if (props.color === "main") return "main";
@@ -564,13 +562,12 @@ function Picker(props: { color: ColorName }): JSXElement {
           updateThemeColor(props.color, value);
         }}
       />
-      <div class="grid">
+      <div class="relative">
         <input
-          ref={(el) => (colorInputRef = el)}
           type="color"
           value={getTheme()[props.color]}
           onInput={debouncedInput}
-          class="pointer-events-none col-[1/1] row-[1/1] m-0 h-full w-0 p-0 opacity-0"
+          class="peer pointer-events-auto absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
           // onChange={(e) => {
           //   const current = [...getConfig.customThemeColors];
           //   current[colorIndex()] = e.currentTarget.value;
@@ -582,9 +579,8 @@ function Picker(props: { color: ColorName }): JSXElement {
         />
         <Button
           class={cn(
-            `col-[1/1] row-[1/1]`,
             `bg-(--picker-${props.color}) text-(--picker-bg)`,
-            `hover:bg-(--picker-text)`,
+            `peer-hover:bg-(--picker-text)`,
             props.color === "bg" && "bg-(--picker-subAlt) text-(--picker-text)",
             props.color === "subAlt" && "text-(--picker-text)",
           )}
@@ -592,7 +588,6 @@ function Picker(props: { color: ColorName }): JSXElement {
             icon: "fa-palette",
             fixedWidth: true,
           }}
-          onClick={() => colorInputRef?.click()}
         />
       </div>
     </div>
