@@ -120,6 +120,8 @@ const debouncedEvent = debounce(250, () => {
       void TestUI.updateHintsPositionDebounced();
     }
     setTimeout(() => {
+      // page may have changed during the delay
+      if (!isTestPageActive()) return;
       TestUI.updateWordsInputPosition();
       TestUI.focusWords();
       Caret.show();
