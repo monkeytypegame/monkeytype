@@ -1,4 +1,5 @@
-import { createMemo, createSignal } from "solid-js";
+import { useMatchRoute } from "@tanstack/solid-router";
+import { Accessor, createMemo, createSignal } from "solid-js";
 
 import type { PageName } from "../components/pages/Pages";
 import { getRouter } from "../router/navigate";
@@ -38,11 +39,17 @@ export const getTargetPage = createMemo(() =>
 
 /**
  * Whether the resolved route is the test page. Reactive. For vanilla code -
- * components use tanstack's useMatchRoute.
+ * components use useIsTestRoute.
  */
 export function isTestRoute(): boolean {
   const router = getRouter();
   if (router === undefined) return false;
   void router.state.location; // track navigations
   return router.matchRoute({ to: "/" }, { includeSearch: false }) !== false;
+}
+
+/** Component version of isTestRoute, through tanstack's useMatchRoute. */
+export function useIsTestRoute(): Accessor<boolean> {
+  const match = useMatchRoute()({ to: "/", includeSearch: false });
+  return () => match() !== false;
 }

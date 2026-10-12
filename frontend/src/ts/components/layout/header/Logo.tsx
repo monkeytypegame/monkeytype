@@ -1,13 +1,14 @@
-import { Link, useMatchRoute } from "@tanstack/solid-router";
+import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
+import { useIsTestRoute } from "../../../states/router";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
 export function Logo(): JSXElement {
-  const isTestRoute = useMatchRoute()({ to: "/", includeSearch: false });
+  const isTestRoute = useIsTestRoute();
   return (
     <Link
       to="/"
@@ -19,7 +20,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (isTestRoute() !== false) restartTestEvent.dispatch();
+        if (isTestRoute()) restartTestEvent.dispatch();
       }}
     >
       <svg

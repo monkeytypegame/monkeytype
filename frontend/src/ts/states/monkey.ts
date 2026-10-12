@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
+import { listenForKeyState } from "../utils/key-state";
 
 const [getMonkeyState, setMonkeyState] = createSignal<{
   left: boolean;
@@ -15,29 +16,17 @@ function resetMonkeyState(): void {
   setMonkeyState({ left: false, right: false });
 }
 
-createEffectOn(
-  () => getConfig.monkey,
-  () => resetMonkeyState(),
-);
+createEffectOn(() => getConfig.monkey, resetMonkeyState);
 
 /** Tracks the typing hands. Called by bindTestElements while the test page is mounted. */
 export function listenForMonkeyKeys(signal: AbortSignal): void {
-  resetMonkeyState();
-  document.addEventListener(
-    "keydown",
-    (e) => {
-      if (getConfig.monkey) handleKey(e, true);
+  listenForKeyState(
+    signal,
+    (e, isKeyDown) => {
+      if (getConfig.monkey) handleKey(e, isKeyDown);
     },
-    { signal },
+    resetMonkeyState,
   );
-  document.addEventListener(
-    "keyup",
-    (e) => {
-      if (getConfig.monkey) handleKey(e, false);
-    },
-    { signal },
-  );
-  signal.addEventListener("abort", resetMonkeyState);
 }
 
 const middleKeysState = { left: false, right: false, last: "right" };

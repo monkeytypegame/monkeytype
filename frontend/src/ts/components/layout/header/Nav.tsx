@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/solid-query";
-import { useMatchRoute } from "@tanstack/solid-router";
 import {
   createMemo,
   createSignal,
@@ -23,6 +22,7 @@ import {
   setAnimatedLevel,
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
+import { useIsTestRoute } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
@@ -36,7 +36,7 @@ import { AccountMenu } from "./AccountMenu";
 import { AccountXpBar } from "./AccountXpBar";
 
 export function Nav(): JSXElement {
-  const isTestRoute = useMatchRoute()({ to: "/", includeSearch: false });
+  const isTestRoute = useIsTestRoute();
   const [getAccountMenuOpen, setAccountMenuOpen] = createSignal(false);
   const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
   const [accountMenuRef, accountMenuEl] = useRefWithUtils<HTMLDivElement>();
@@ -94,7 +94,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (isTestRoute() !== false) restartTestEvent.dispatch();
+          if (isTestRoute()) restartTestEvent.dispatch();
         }}
       />
       <Button

@@ -4,6 +4,7 @@ import {
 } from "@leonabcd123/modern-caps-lock";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createSignal } from "solid-js";
+import { listenForKeyState } from "../utils/key-state";
 
 type ModifierState = {
   shift: boolean;
@@ -49,15 +50,7 @@ onCapsLockChange((state) => setCapsLockOn(state));
 
 /** Tracks shift and alt. Called by bindTestElements while the test page is mounted. */
 export function listenForModifierKeys(signal: AbortSignal): void {
-  resetModifierState();
-  document.addEventListener("keydown", (e) => handleModifierState(e, true), {
-    signal,
-  });
-  document.addEventListener("keyup", (e) => handleModifierState(e, false), {
-    signal,
-  });
-  // don't get stuck if a keyup happens off-page
-  signal.addEventListener("abort", resetModifierState);
+  listenForKeyState(signal, handleModifierState, resetModifierState);
 }
 
 function handleModifierState(e: KeyboardEvent, updateValue: boolean): void {

@@ -12,8 +12,10 @@ type LoadingBarTarget = {
   durationMs: number;
 };
 
+const initialIndicator: LoadingIndicator = "spinner";
+
 export const [getLoadingPageIndicator, setLoadingPageIndicator] =
-  createSignal<LoadingIndicator>("spinner");
+  createSignal<LoadingIndicator>(initialIndicator);
 /** `null` hides the text line; an empty string shows it, holding its space. */
 export const [getLoadingPageText, setLoadingPageText] = createSignal<
   string | null
@@ -40,7 +42,7 @@ export async function updateLoadingPageBar(
  * tests - in the app every load sets the state it needs before showing the page.
  */
 export function resetLoadingPage(): void {
-  setLoadingPageIndicator("spinner");
+  setLoadingPageIndicator(initialIndicator);
   setLoadingPageText(null);
   setLoadingPageBarTarget(null);
 }

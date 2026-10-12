@@ -1,5 +1,4 @@
 import { intersect } from "@monkeytype/util/arrays";
-import { useMatchRoute } from "@tanstack/solid-router";
 import {
   For,
   JSXElement,
@@ -35,6 +34,7 @@ import {
   hideModalAndClearChain as storeClearChain,
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
+import { useIsTestRoute } from "../../states/router";
 import { setTestFocusState } from "../../states/test";
 import * as Focus from "../../test/focus";
 import { FaObject } from "../../types/font-awesome";
@@ -180,7 +180,7 @@ function fontFamilyPreview(command: Command): string | undefined {
 }
 
 export function CommandlineModal(): JSXElement {
-  const isTestRoute = useMatchRoute()({ to: "/", includeSearch: false });
+  const isTestRoute = useIsTestRoute();
   let inputEl: HTMLInputElement | undefined;
   let suggestionsEl: HTMLDivElement | undefined;
 
@@ -692,7 +692,7 @@ export function CommandlineModal(): JSXElement {
     setWarning(null);
     hideCheckingIcon();
     addCommandlineBackground();
-    if (isTestRoute() === false) {
+    if (!isTestRoute()) {
       (document.activeElement as HTMLElement | undefined)?.blur();
     }
     isAnimating = false;
