@@ -1,12 +1,13 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, createEffect, createSignal, Setter } from "solid-js";
+import { useNavigate, useSearch } from "@tanstack/solid-router";
+import { Accessor, createEffect, createMemo, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
+import { keepLastSearch } from "../router/search-params";
 import { getSnapshot } from "./snapshot";
-import { createSearchState } from "../router/search-params";
 
 export const pageSize = 50;
 
@@ -31,100 +32,123 @@ const SpeedSelection = z.object({
 export const SelectionSchema = SpeedSelection.or(XpSelection);
 export type Selection = z.infer<typeof SelectionSchema>;
 
-const LeaderboardUrlParamsSchema = z
-  .object({
-    type: z.enum(["allTime", "daily", "weekly"]),
-    mode: ModeSchema.optional(),
-    mode2: z.string().optional(),
-    language: LanguageSchema.optional(),
-    yesterday: z.boolean().optional(),
-    lastWeek: z.boolean().optional(),
-    friendsOnly: z.boolean().optional(),
-    page: z.number().optional(),
-    goToUserPage: z.boolean().optional(),
-  })
-  .partial();
-type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
+/** A boolean search param: written as "t", read as "t" or "true". */
+const SearchFlagSchema = z
+  .union([z.boolean(), z.enum(["t", "true", "f", "false"])])
+  .transform((value) => value === true || value === "t" || value === "true")
+  .optional()
+  .catch(undefined);
 
-const [getSelectionLs, setSelection] = lsSelection();
-export const [getPage, setPage] = createSignal(0);
-export const [getGoToUserPage, setGoToUserPage] = createSignal(false);
-
-// Reset friendsOnly when connections are disabled
-createEffect(() => {
-  if (
-    getSelectionLs().friendsOnly &&
-    (getSnapshot() === undefined ||
-      getServerConfiguration()?.connections.enabled === false)
-  ) {
-    setSelection((old) => ({ ...old, friendsOnly: false }));
-  }
+/**
+ * The leaderboards url search params. Takes strings in (see the router's
+ * search serializer); an invalid value is dropped, falling back to its default.
+ */
+export const LeaderboardSearchSchema = z.object({
+  type: z.enum(["allTime", "daily", "weekly"]).optional().catch(undefined),
+  mode: ModeSchema.optional().catch(undefined),
+  mode2: z.string().optional().catch(undefined),
+  language: LanguageSchema.optional().catch(undefined),
+  yesterday: SearchFlagSchema,
+  lastWeek: SearchFlagSchema,
+  friendsOnly: SearchFlagSchema,
+  /** 1-based */
+  page: z.coerce.number().int().min(1).optional().catch(undefined),
+  /** jump to the page containing the user once their rank is known */
+  goToUserPage: SearchFlagSchema,
 });
+export type LeaderboardSearch = z.infer<typeof LeaderboardSearchSchema>;
 
-export const getSelection = (): Selection => {
-  return getSelectionLs();
-};
+// the last shown selection, used when opening the leaderboards without one
+const [getLastSelection, setLastSelection] = lsSelection();
 
-export { setSelection };
-
-export const leaderboardSearch = createSearchState(
-  "leaderboards",
-  LeaderboardUrlParamsSchema,
-  readLeaderboardSearch,
-);
-
-function readLeaderboardSearch(params: LeaderboardUrlParams): void {
-  if (params.type === undefined) return;
-
-  let newSelection: Partial<Selection> = {
-    type: params.type,
-    friendsOnly: params.friendsOnly ?? false,
-  };
-
-  if (params.type === "weekly") {
-    newSelection.previous = params.lastWeek ?? false;
-  } else {
-    newSelection.mode = params.mode ?? "time";
-    newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "english";
-    newSelection.previous =
-      params.type === "daily" && (params.yesterday ?? false);
-  }
-
-  setSelection({ ...getSelection(), ...newSelection } as Selection);
-
-  if (params.goToUserPage === true) {
-    setGoToUserPage(true);
-  } else if (params.page !== undefined) {
-    setPage(Math.max(0, params.page - 1));
-  }
-}
-
-export function updateGetParameters(
+/** The search params showing `selection` on the 0-based `page`. */
+export function toLeaderboardSearch(
   selection: Selection,
-  pageNumber: number,
-): void {
-  const params: LeaderboardUrlParams = {
+  page = 0,
+): LeaderboardSearch {
+  const previous = selection.previous ? true : undefined;
+  return {
     type: selection.type,
     mode: selection.mode,
     mode2: selection.mode2,
     language: selection.language,
-    page: pageNumber + 1,
+    page: page + 1,
+    lastWeek: selection.type === "weekly" ? previous : undefined,
+    yesterday: selection.type === "daily" ? previous : undefined,
+    friendsOnly: selection.friendsOnly ? true : undefined,
   };
-
-  if (selection.type === "weekly" && selection.previous) {
-    params.lastWeek = true;
-  }
-  if (selection.type === "daily" && selection.previous) {
-    params.yesterday = true;
-  }
-  if (selection.friendsOnly) {
-    params.friendsOnly = true;
-  }
-
-  leaderboardSearch.write(params);
 }
 
+/** Search params with the last shown selection, if `search` has no selection. */
+export function getMissingLeaderboardSearch(
+  search: LeaderboardSearch,
+): LeaderboardSearch | undefined {
+  if (search.type !== undefined) return undefined;
+  return toLeaderboardSearch(getLastSelection());
+}
+
+function toSelection(search: LeaderboardSearch): Selection {
+  if (search.type === undefined) return getLastSelection();
+  const friendsOnly =
+    (search.friendsOnly ?? false) &&
+    getSnapshot() !== undefined &&
+    getServerConfiguration()?.connections.enabled !== false;
+
+  if (search.type === "weekly") {
+    return { type: "weekly", friendsOnly, previous: search.lastWeek ?? false };
+  }
+  return {
+    type: search.type,
+    friendsOnly,
+    mode: search.mode ?? "time",
+    mode2: search.mode2 ?? "15",
+    language: search.language ?? "english",
+    previous: search.type === "daily" && (search.yesterday ?? false),
+  };
+}
+
+/**
+ * The leaderboards selection and page, kept in the url. Writes replace the
+ * url (no history entry) and are ignored once the leaderboards route is left.
+ */
+// oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
+export function useLeaderboardSearch() {
+  const navigate = useNavigate();
+  const current = useSearch({
+    from: "/app/leaderboards",
+    shouldThrow: false,
+  });
+  const search = keepLastSearch<LeaderboardSearch>(current, {});
+  const selection = createMemo(() => toSelection(search()));
+
+  // remember the selection for the next visit
+  createEffect(() => setLastSelection(selection()));
+
+  const write = (
+    next: (prev: LeaderboardSearch) => LeaderboardSearch,
+  ): void => {
+    if (current() === undefined) return;
+    void navigate({
+      to: "/leaderboards",
+      search: next,
+      replace: true,
+      resetScroll: false,
+    });
+  };
+
+  return {
+    selection,
+    /** 0-based */
+    page: (): number => (search().page ?? 1) - 1,
+    goToUserPage: (): boolean => search().goToUserPage ?? false,
+    /** Shows `selection` from its first page. */
+    setSelection: (selection: Selection): void =>
+      write(() => toLeaderboardSearch(selection)),
+    /** Shows the 0-based `page`. */
+    setPage: (page: number): void =>
+      write((prev) => ({ ...prev, page: page + 1, goToUserPage: undefined })),
+  };
+}
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
     key: "leaderboardSelector",

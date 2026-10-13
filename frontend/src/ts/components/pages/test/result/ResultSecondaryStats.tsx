@@ -170,7 +170,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             type: "daily",
             language: props.result.language,
             mode2: props.result.mode2,
-            goToUserPage: "true",
+            goToUserPage: true,
           }}
         >
           {format().rank(resultState.dailyLeaderboardRank, {

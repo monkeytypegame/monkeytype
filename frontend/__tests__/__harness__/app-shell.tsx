@@ -32,6 +32,8 @@
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
  *   them, `pageElement()` its wrapper. `pageMounts()` records each page
  *   content mount and whether it was attached to the document by then.
+ *   `pageContent` adds content to a stub, eg. a probe calling the page's
+ *   search hook.
  * - Fades: `settle()` finishes them all. For fade ordering use
  *   `runningFades()` / `finishFade()` (finishes the oldest running fade) and
  *   `flush()` (timers and one animation frame - fade ins start on a frame).
@@ -43,12 +45,15 @@ import "./mock-static";
 import { cleanup, render } from "@solidjs/testing-library";
 import { hashKey, QueryClient, QueryKey } from "@tanstack/solid-query";
 import { createMemoryHistory } from "@tanstack/solid-router";
+import { JSXElement } from "solid-js";
 import { vi } from "vitest";
 
 import type { RouterAuth } from "../../src/ts/router/context";
 
 import { AppShell } from "../../src/ts/components/AppShell";
 import { __testing as configTesting } from "../../src/ts/config/testing";
+import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
+import { setSnapshot } from "../../src/ts/db";
 import { AppRouter, createAppRouter } from "../../src/ts/router/create-router";
 import { setRouter } from "../../src/ts/router/navigate";
 import { resetLoadingPage } from "../../src/ts/states/loading-page";
@@ -64,10 +69,51 @@ export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
 
-const { fades, pageMounts } = vi.hoisted(() => ({
-  fades: [] as Fade[],
-  pageMounts: [] as PageMount[],
+const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
+  // blocking data the account and friends routes wait for, ready by default
+  function readiness(): {
+    ready: boolean;
+    waiting: (() => void)[];
+    set: (ready: boolean) => void;
+    wait: () => Promise<void>;
+  } {
+    const state = {
+      ready: true,
+      waiting: [] as (() => void)[],
+      set: (ready: boolean) => {
+        state.ready = ready;
+        if (!ready) return;
+        for (const resolve of state.waiting.splice(0)) resolve();
+      },
+      wait: async () => {
+        if (state.ready) return;
+        return new Promise<void>((resolve) => state.waiting.push(resolve));
+      },
+    };
+    return state;
+  }
+  return {
+    fades: [] as Fade[],
+    pageMounts: [] as PageMount[],
+    pageContent: new Map<string, () => JSXElement>(),
+    blockingData: { results: readiness(), friends: readiness() },
+  };
+});
+
+// results and friends are collections synced outside the router context
+vi.mock(import("../../src/ts/collections/results"), async (importOriginal) => ({
+  ...(await importOriginal()),
+  isResultsReady: () => blockingData.results.ready,
+  waitForResultsReady: blockingData.results.wait,
 }));
+vi.mock(
+  import("../../src/ts/collections/connections"),
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    isConnectionsReady: () => blockingData.friends.ready,
+    waitForConnectionsReady: blockingData.friends.wait,
+  }),
+);
 
 vi.mock("animejs", () => ({
   animate: (
@@ -96,10 +142,11 @@ vi.mock("animejs", () => ({
   },
 }));
 
-// stub pages render their name and record whether they mounted attached
+// stub pages render their name (plus any pageContent) and record whether
+// they mounted attached
 function stubPage(
   name: string,
-): () => Promise<Record<string, () => HTMLElement>> {
+): () => Promise<Record<string, () => JSXElement>> {
   return async () => {
     const { onMount } = await import("solid-js");
     const page = name.replace(/Page$/, "");
@@ -108,7 +155,7 @@ function stubPage(
         const el = document.createElement("span");
         el.textContent = name;
         onMount(() => pageMounts.push({ page, attached: el.isConnected }));
-        return el;
+        return [el, pageContent.get(name)?.()];
       },
     };
   };
@@ -270,6 +317,15 @@ export type RenderAppOptions = {
   queryData?: [QueryKey, unknown][];
   /** Query functions replacing the app's, by query key (see createTestQueryClient). */
   queryResponses?: [QueryKey, () => Promise<unknown>][];
+  /** Account results download. Default "ready". */
+  results?: "ready" | "pending";
+  /** Friends download. Default "ready". */
+  friends?: "ready" | "pending";
+  /**
+   * Extra content for stub pages by component name (eg. `LeaderboardPage`),
+   * rendered inside the page - for probes using the page's hooks.
+   */
+  pageContent?: Record<string, () => JSXElement>;
 };
 
 export type App = {
@@ -288,8 +344,13 @@ export type App = {
   pageElement: () => HTMLElement | null;
   /** Page contents mounted so far, oldest first (stub page names, eg. "About"). */
   pageMounts: () => readonly PageMount[];
-  /** Waits for the router to be idle and finishes all page fades. */
-  settle: () => Promise<void>;
+  /**
+   * Waits for the router to be idle and finishes all page fades.
+   * `waitForRouter: false` finishes the fades of a navigation still loading.
+   */
+  settle: (options?: { waitForRouter?: boolean }) => Promise<void>;
+  /** Finishes pending blocking data downloads. */
+  blockingData: { loadResults: () => void; loadFriends: () => void };
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
   finishFade: () => number;
@@ -326,6 +387,15 @@ export function renderApp(options: RenderAppOptions = {}): App {
   for (const [key, fetch] of options.queryResponses ?? []) {
     queryClient.respond(key, fetch);
   }
+  blockingData.results.set(options.results !== "pending");
+  blockingData.friends.set(options.friends !== "pending");
+  // the account route checks the user data downloaded
+  setSnapshot(options.auth === "signedIn" ? getDefaultSnapshot() : undefined, {
+    dispatchEvent: false,
+  });
+  for (const [name, content] of Object.entries(options.pageContent ?? {})) {
+    pageContent.set(name, content);
+  }
   // the router resets scroll on navigation, jsdom doesn't implement it
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
 
@@ -345,14 +415,16 @@ export function renderApp(options: RenderAppOptions = {}): App {
     return fade.opacity;
   }
 
-  async function settle(): Promise<void> {
+  async function settle({ waitForRouter = true } = {}): Promise<void> {
     // a finished fade can start another, and a resolved route can start a fade
     for (let i = 0; i < 100; i++) {
-      await vi.waitFor(() => {
-        if (router.state.status !== "idle" || router.state.isLoading) {
-          throw new Error("router busy");
-        }
-      });
+      if (waitForRouter) {
+        await vi.waitFor(() => {
+          if (router.state.status !== "idle" || router.state.isLoading) {
+            throw new Error("router busy");
+          }
+        });
+      }
       await flush();
       if (fades.length === 0) return;
       while (fades.length > 0) finishFade();
@@ -378,6 +450,10 @@ export function renderApp(options: RenderAppOptions = {}): App {
     pageElement: () => container.querySelector<HTMLElement>(".page"),
     pageMounts: () => pageMounts,
     settle,
+    blockingData: {
+      loadResults: () => blockingData.results.set(true),
+      loadFriends: () => blockingData.friends.set(true),
+    },
     runningFades: () => fades,
     finishFade,
     test: testControls,
@@ -389,12 +465,14 @@ export function cleanupApp(): void {
   cleanup();
   fades.length = 0;
   pageMounts.length = 0;
+  pageContent.clear();
   setRouter(undefined);
   resetLoadingPage();
   setTestActive(false);
   setIsTestRestarting(false);
   setResultCalculating(false);
   configTesting.replaceConfig({});
+  setSnapshot(undefined, { dispatchEvent: false });
 }
 
 function pageName(el: Element): string {
