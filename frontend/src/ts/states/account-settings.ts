@@ -1,7 +1,8 @@
+import { useNavigate, useSearch } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
-import { createSearchState } from "../router/search-params";
+import { keepLastSearch } from "../router/search-params";
 import { FaSolidIcon } from "../types/font-awesome";
 import { isAuthenticated } from "./core";
 
@@ -29,9 +30,6 @@ export const accountSettingsTabs: Record<
   dangerZone: { text: "danger zone", icon: "fa-exclamation-triangle" },
 };
 
-export const [getCurrentTab, setCurrentTab] =
-  createSignal<AccountSettingsTab>("account");
-
 export const [isApeKeysDenied, setApeKeysDenied] = createSignal<
   boolean | undefined
 >(undefined);
@@ -42,12 +40,35 @@ createEffectOn(isAuthenticated, (hasUser) => {
   }
 });
 
-export const accountSettingsSearch = createSearchState(
-  "accountSettings",
-  z.object({ tab: AccountSettingsTabSchema }).partial(),
-  (data) => {
-    if (data.tab !== undefined) setCurrentTab(data.tab);
-  },
-);
+/** The account settings url search params, taking strings in. */
+export const AccountSettingsSearchSchema = z.object({
+  tab: AccountSettingsTabSchema.optional().catch(undefined),
+});
+type AccountSettingsSearch = z.infer<typeof AccountSettingsSearchSchema>;
 
-createEffectOn(getCurrentTab, (tab) => accountSettingsSearch.write({ tab }));
+/**
+ * The account settings tab, kept in the url. Writes replace the url (no
+ * history entry) and are ignored once the route is left.
+ */
+// oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
+export function useAccountSettingsTab() {
+  const navigate = useNavigate();
+  const current = useSearch({
+    from: "/app/account-settings",
+    shouldThrow: false,
+  });
+  const search = keepLastSearch<AccountSettingsSearch>(current, {});
+
+  return {
+    tab: (): AccountSettingsTab => search().tab ?? "account",
+    setTab: (tab: AccountSettingsTab): void => {
+      if (current() === undefined) return;
+      void navigate({
+        to: "/account-settings",
+        search: { tab },
+        replace: true,
+        resetScroll: false,
+      });
+    },
+  };
+}

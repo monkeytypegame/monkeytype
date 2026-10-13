@@ -69,8 +69,7 @@
     "stemmer": "2.0.1",
     "tailwind-merge": "3.6.0",
     "throttle-debounce": "5.0.2",
-    "zod": "3.23.8",
-    "zod-urlsearchparams": "0.0.16"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@actions/core": "3.0.1",

@@ -82,21 +82,31 @@ type BalloonLinkProps<
   TMaskTo
 >;
 
-export function Balloon(props: Props & { to?: never }): JSXElement;
 /**
- * In-app link with a balloon: a real anchor (href, cmd/ctrl+click opens a new
- * tab) that navigates through the router with typed `to`, `params` and `search`.
+ * Overloads live on a call-signature type rather than as `function`
+ * overloads: the dev-only solid-refresh transform rewrites component
+ * declarations to `const`, which breaks overload signatures.
  */
-export function Balloon<
-  TRouter extends AnyRouter = RegisteredRouter,
-  const TFrom extends string = string,
-  const TTo extends string | undefined = undefined,
-  const TMaskFrom extends string = TFrom,
-  const TMaskTo extends string = "",
->(props: BalloonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>): JSXElement;
-export function Balloon(
+type BalloonComponent = {
+  (props: Props & { to?: never }): JSXElement;
+  /**
+   * In-app link with a balloon: a real anchor (href, cmd/ctrl+click opens a new
+   * tab) that navigates through the router with typed `to`, `params` and `search`.
+   */
+  <
+    TRouter extends AnyRouter = RegisteredRouter,
+    const TFrom extends string = string,
+    const TTo extends string | undefined = undefined,
+    const TMaskFrom extends string = TFrom,
+    const TMaskTo extends string = "",
+  >(
+    props: BalloonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>,
+  ): JSXElement;
+};
+
+export const Balloon: BalloonComponent = (
   props: Props | BalloonLinkProps<AnyRouter, string, string, string, string>,
-): JSXElement {
+): JSXElement => {
   return (
     <Show
       when={"to" in props}
@@ -105,7 +115,7 @@ export function Balloon(
       <BalloonLink {...(props as BalloonLinkProps)} />
     </Show>
   );
-}
+};
 
 function BalloonElement(props: Props): JSXElement {
   const [local, rest] = splitProps(props, [

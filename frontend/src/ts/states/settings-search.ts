@@ -1,7 +1,8 @@
+import { useRouter, useSearch } from "@tanstack/solid-router";
 import { createMemo, createSignal, onCleanup } from "solid-js";
 import { z } from "zod";
 
-import { createSearchState } from "../router/search-params";
+import { keepLastSearch } from "../router/search-params";
 
 // the current settings filter query, shared between the search input and the
 // settings/sections that hide themselves when they don't match
@@ -10,16 +11,38 @@ export const [getSettingsSearch, setSettingsSearch] = createSignal("");
 export const isSettingsSearchActive = (): boolean =>
   getSettingsSearch().trim() !== "";
 
-// the setting deep linked with `?highlight=`, read when entering the page
-export const [getHighlightedSetting, setHighlightedSetting] = createSignal<
-  string | undefined
->(undefined);
+/** The settings url search params, taking strings in. */
+export const SettingsSearchSchema = z.object({
+  /** the deep linked setting */
+  highlight: z.string().optional().catch(undefined),
+});
+type SettingsSearch = z.infer<typeof SettingsSearchSchema>;
 
-export const settingsSearch = createSearchState(
-  "settings",
-  z.object({ highlight: z.string() }).partial(),
-  (data) => setHighlightedSetting(data.highlight),
-);
+/** The setting deep linked with `?highlight=`, and deep links to settings. */
+// oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
+export function useSettingsHighlight() {
+  const router = useRouter();
+  const current = useSearch({ from: "/app/settings", shouldThrow: false });
+  const search = keepLastSearch<SettingsSearch>(current, {});
+
+  return {
+    highlighted: (): string | undefined => search().highlight,
+    /**
+     * Shows a deep link to the setting `key` in the url (without a history
+     * entry) and returns it.
+     */
+    linkTo: (key: string): string => {
+      const options = {
+        to: "/settings",
+        search: { highlight: key },
+        replace: true,
+        resetScroll: false,
+      } as const;
+      if (current() !== undefined) void router.navigate(options);
+      return window.location.origin + router.buildLocation(options).href;
+    },
+  };
+}
 
 // registry of every searchable setting's haystack getter. settings register on
 // mount and clean up on unmount, so best-match scoring sees only live settings.
