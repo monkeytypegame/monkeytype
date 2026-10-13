@@ -9,7 +9,7 @@ import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import { configEvent } from "../events/config";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { debounce } from "throttle-debounce";
+import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
@@ -1664,8 +1664,19 @@ export function init(
       Caret.show();
     }, 250);
   });
-  window.addEventListener("resize", () => recenter(), { signal });
-  signal.addEventListener("abort", () => recenter.cancel());
+  const hideCaret = throttle(250, () => Caret.hide());
+  window.addEventListener(
+    "resize",
+    () => {
+      hideCaret();
+      recenter();
+    },
+    { signal },
+  );
+  signal.addEventListener("abort", () => {
+    hideCaret.cancel();
+    recenter.cancel();
+  });
 }
 
 function autofocusWords(e: KeyboardEvent): void {

@@ -1,8 +1,6 @@
 import { Config } from "./config/store";
-import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
-import { throttle } from "throttle-debounce";
 import { getCustomTextIndicator, getGlobalOffsetTop } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
@@ -108,15 +106,6 @@ window.addEventListener("beforeunload", (event) => {
       event.returnValue = "";
     }
   }
-});
-
-const throttledEvent = throttle(250, () => {
-  Caret.hide();
-});
-
-// the test page re-centers the words after resizing (see TestUI.init)
-window.addEventListener("resize", () => {
-  throttledEvent();
 });
 
 createEffect(() => {
