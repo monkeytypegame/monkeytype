@@ -1,9 +1,6 @@
-import { createRouter } from "@tanstack/solid-router";
-
 import * as AdController from "../controllers/ad-controller";
-import { authEvent } from "../events/auth";
+import { queryClient } from "../queries";
 import { showNoticeNotification } from "../states/notifications";
-import { hideLoadingPage } from "../states/loading-page";
 import { getRoutePage, PageName } from "../states/router";
 import {
   isResultCalculating,
@@ -15,24 +12,10 @@ import { isFunboxActive } from "../test/funbox/list";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { setRouter } from "./navigate";
-import { routeTree } from "./routes";
+import { routerAuth } from "./auth";
+import { createAppRouter } from "./create-router";
 
-export const router = createRouter({
-  routeTree,
-  // pages are rendered by <Pages>, a failed load shows its error on the loading page
-  defaultErrorComponent: () => null,
-  trailingSlash: "never",
-  // keep search params as plain strings - routes parse them with zod themselves,
-  // and existing links (eg. ?mode2=15) must keep their format
-  parseSearch: (searchStr) =>
-    Object.fromEntries(new URLSearchParams(searchStr)),
-  stringifySearch: (search) => {
-    const str = new URLSearchParams(
-      search as Record<string, string>,
-    ).toString();
-    return str === "" ? "" : `?${str}`;
-  },
-});
+export const router = createAppRouter({ queryClient, auth: routerAuth });
 
 declare module "@tanstack/solid-router" {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
@@ -65,21 +48,10 @@ router.history.block({
   },
 });
 
-// re-run guards and loaders when the user signs in or out. The initial load
-// waits for the first auth state itself (see waitForUserData in routes.ts)
-let isFirstAuthState = true;
-authEvent.subscribe((event) => {
-  if (event.type !== "authStateChanged") return;
-  if (!isFirstAuthState) void router.invalidate();
-  isFirstAuthState = false;
-});
-
 let isInitialLoad = true;
 let prevPage: PageName = "loading";
 
 router.subscribe("onResolved", () => {
-  hideLoadingPage();
-
   updateOpenGraphUrl();
 
   if (isInitialLoad) {

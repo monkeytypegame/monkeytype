@@ -11,6 +11,7 @@
   "files": ["vitest.d.ts"],
   "include": [
     "./__harness__/**/*.ts",
+    "./__harness__/**/*.tsx",
     "./**/*.spec.ts",
     "./**/*.spec.tsx",
     "./**/*.jsdom-spec.ts",
