@@ -399,9 +399,10 @@ describe("app shell routing", () => {
     async function failUserData(url: string): Promise<App> {
       const app = renderApp({ url, auth: "pending" });
       await flush();
-      app.auth.signIn({
-        userData: Promise.reject(new Error("server is down")),
-      });
+      const userData = Promise.reject(new Error("server is down"));
+      // the router takes the download later - don't flag it as unhandled
+      userData.catch(() => undefined);
+      app.auth.signIn({ userData });
       await app.settle();
       return app;
     }
