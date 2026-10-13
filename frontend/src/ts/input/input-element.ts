@@ -57,6 +57,8 @@ export function focusInputElement(preventScroll = false): void {
   });
 }
 
+// no-op once unmounted: TestPage's cleanup blurs after the typing test
+// unregistered its input
 export function blurInputElement(): void {
-  getInputElement().blur();
+  el?.blur();
 }
