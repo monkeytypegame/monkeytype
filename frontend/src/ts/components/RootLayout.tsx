@@ -4,7 +4,7 @@ import { animate } from "animejs";
 import { children, JSXElement, Show } from "solid-js";
 
 import { isLoadingBarShown } from "../states/loading-page";
-import { isNavigating, isPendingShown } from "../states/router";
+import { isPendingShown } from "../states/router";
 import { applyReducedMotion } from "../utils/misc";
 import { LoadingRoutePage } from "./pages/Page";
 
@@ -22,13 +22,14 @@ async function fade(el: HTMLElement, opacity: number): Promise<void> {
 }
 
 /**
- * Whether the loading page covers the routed page: while a loading step's bar
- * shows, and while the router shows a pending route (first load, a navigation
- * slower than its pendingMs: spinner). One loading page element for both, so
- * a slow navigation running into a loading step doesn't fade between two.
+ * Whether the loading page covers the routed page: while the loading bar is
+ * up (a loading step until "Done"), and while the router shows a pending
+ * route (first load, a navigation slower than its pendingMs: spinner). One
+ * loading page element for both, so a slow navigation running into a loading
+ * step doesn't fade between two.
  */
 function isLoadingShown(): boolean {
-  return isPendingShown() || (isNavigating() && isLoadingBarShown());
+  return isPendingShown() || isLoadingBarShown();
 }
 
 /**

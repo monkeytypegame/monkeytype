@@ -2,6 +2,10 @@ import type { QueryKey } from "@tanstack/solid-query";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  getLeaderboardQueryOptions,
+  getRankQueryOptions,
+} from "../../src/ts/queries/leaderboards";
 import { getUserProfile } from "../../src/ts/queries/profile";
 import {
   getContributorsQueryOptions,
@@ -30,6 +34,13 @@ function retryButton(app: App): HTMLButtonElement {
   ].find((el) => el.textContent?.includes("Retry"));
   if (button === undefined) throw new Error("no Retry button");
   return button;
+}
+
+// the loading bar fills up from its last step to "Done" (125ms) before the
+// loading page leaves
+async function waitForDone(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  await flush();
 }
 
 // a response that never arrives, recording that the fetch started
@@ -250,6 +261,24 @@ describe("app shell routing", () => {
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
 
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("keeps the loading page up until the bar finished at done", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.loadResults();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+      // the bar takes 125ms to fill up from the last step
+      expect(app.runningFades()).toEqual([]);
+
+      await waitForDone();
+      expect(app.runningFades().map((fade) => fade.opacity)).toEqual([0]);
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -608,7 +637,7 @@ describe("app shell routing", () => {
       expect(app.finishFade()).toBe(1);
 
       userData.resolve();
-      await flush();
+      await waitForDone();
       expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.finishFade()).toBe(0);
 
@@ -639,14 +668,83 @@ describe("app shell routing", () => {
       );
     });
 
-    it("retries the load and shows the page when it succeeds", async () => {
-      const app = await failUserData("/settings");
-      expect(app.shownPage()).toBe("loading");
+    it("downloads the user data again on Retry and shows the page once it arrived", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const retried = deferred();
+      const downloads = [
+        Promise.reject(new Error("server is down")),
+        retried.promise,
+      ];
+      // the router takes the download later - don't flag it as unhandled
+      downloads[0]?.catch(() => undefined);
+      app.auth.signIn({
+        // each call is one download
+        userData: async () => downloads.shift(),
+      });
+      await app.settle();
+      expect(app.loadingIndicator()).toBe("error");
 
       retryButton(app).click();
-      await app.settle();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading user data...");
+      });
 
+      retried.resolve();
+      await app.settle();
       expect(app.pagesInDom()).toEqual(["settings"]);
+    });
+
+    it("retries a failed results download", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.failResults(new Error("server is down"));
+      await app.settle();
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the account page: server is down",
+      );
+
+      retryButton(app).click();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading results...");
+      });
+
+      app.blockingData.loadResults();
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["account"]);
+    });
+
+    it("retries a failed friends download", async () => {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friends: "pending",
+        queryData: [[serverConfigurationKey, {}]],
+      });
+      await app.settle();
+      void app.navigate({ to: "/friends" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.failFriends(new Error("server is down"));
+      await app.settle();
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the friends page: server is down",
+      );
+
+      retryButton(app).click();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading friends...");
+      });
+
+      app.blockingData.loadFriends();
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["friends"]);
     });
   });
 
@@ -712,6 +810,29 @@ describe("app shell routing", () => {
 
       expect(app.shownPage()).toBe("test");
       expect(app.test.isRunning()).toBe(true);
+    });
+
+    it("starts a test when typing while the test page reloads in place", async () => {
+      const app = renderApp({ url: "/", auth: "signedOut" });
+      await app.settle();
+
+      // signing in reloads the test page's routes
+      app.auth.signIn();
+      expect(app.router.state.status).toBe("pending");
+      app.test.type();
+
+      expect(app.test.isRunning()).toBe(true);
+    });
+
+    it("starts no test when typing while leaving the test page", async () => {
+      const app = renderApp({ url: "/" });
+      await app.settle();
+
+      void app.navigate({ to: "/about" });
+      await flush();
+      app.test.type();
+
+      expect(app.test.isRunning()).toBe(false);
     });
 
     it.each([
@@ -795,18 +916,35 @@ describe("app shell routing", () => {
       ]);
     });
 
-    it("preloads nothing with preloading turned off", async () => {
-      const contributors = slowResponse(getContributorsQueryOptions().queryKey);
+    it("starts the leaderboard and rank fetches of the hovered selection", async () => {
+      const selection = {
+        type: "allTime",
+        mode: "time",
+        mode2: "60",
+        language: "english",
+        friendsOnly: false,
+        previous: false,
+      } as const;
+      const entries = slowResponse(
+        getLeaderboardQueryOptions({ ...selection, page: 1 }).queryKey,
+      );
+      const rank = slowResponse(getRankQueryOptions(selection).queryKey);
       const app = renderApp({
         url: "/settings",
-        preload: false,
-        queryResponses: [contributors.response],
+        auth: "signedIn",
+        queryData: [[serverConfigurationKey, {}]],
+        queryResponses: [entries.response, rank.response],
       });
       await app.settle();
 
-      await app.hover({ to: "/about" });
+      await app.hover({
+        to: "/leaderboards",
+        search: { type: "allTime", mode: "time", mode2: "60", page: 2 },
+      });
 
-      expect(contributors.started()).toBe(false);
+      expect(app.shownPage()).toBe("settings");
+      expect(entries.started()).toBe(true);
+      expect(rank.started()).toBe(true);
     });
 
     it("switches preloading off and on from the debug handle", async () => {

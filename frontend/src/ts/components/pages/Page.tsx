@@ -1,8 +1,10 @@
+import { useMatch } from "@tanstack/solid-router";
 import {
   Component,
   createSignal,
   JSXElement,
   onCleanup,
+  onMount,
   Show,
   Suspense,
 } from "solid-js";
@@ -28,14 +30,19 @@ type PageProps = {
  */
 export function Page(props: PageProps): JSXElement {
   const [isAttached, setAttached] = createSignal(false);
+  let pageEl: HTMLElement | undefined;
   let frame: number | undefined;
+  let isDisposed = false;
   onCleanup(() => {
+    isDisposed = true;
     if (frame !== undefined) cancelAnimationFrame(frame);
   });
 
-  const waitUntilAttached = (el: HTMLElement): void => {
+  // runs before the fade inserts the wrapper: wait until it is attached
+  onMount(() => {
     const check = (): void => {
-      if (el.isConnected) {
+      if (isDisposed) return;
+      if (pageEl?.isConnected === true) {
         frame = undefined;
         setAttached(true);
         return;
@@ -43,7 +50,7 @@ export function Page(props: PageProps): JSXElement {
       frame = requestAnimationFrame(check);
     };
     queueMicrotask(check);
-  };
+  });
 
   const id = (): string => `page${capitalizeFirstLetter(props.name)}`;
 
@@ -52,7 +59,7 @@ export function Page(props: PageProps): JSXElement {
       id={id()}
       class={cn("page", id(), props.class)}
       data-nosnippet={props.name === "test" ? "" : undefined}
-      ref={waitUntilAttached}
+      ref={(el) => (pageEl = el)}
     >
       <Show when={isAttached()}>
         {/* last-resort net: the router wraps every match in Suspense
@@ -67,7 +74,28 @@ export function Page(props: PageProps): JSXElement {
   );
 }
 
-/** A route component rendering `content` as page `name`. */
+/**
+ * A route component rendering `content` as the page its route names in
+ * `staticData.page` (the one place a route's page is named).
+ */
+export function routePage(
+  content: Component,
+  options: { class?: string } = {},
+): Component {
+  return () => {
+    // read once: the page keeps its name while it fades out
+    const name = useMatch({
+      strict: false,
+      select: (match) => match.staticData.page,
+    })();
+    if (name === undefined) {
+      throw new Error("A route rendering a page needs staticData.page");
+    }
+    return <Page name={name} content={content} class={options.class} />;
+  };
+}
+
+/** A component rendering `content` as page `name` (eg. a route's not found or pending component). */
 export function pageComponent(
   name: PageName,
   content: Component,

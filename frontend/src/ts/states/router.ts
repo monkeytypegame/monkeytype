@@ -1,4 +1,3 @@
-import type { RouteIds } from "@tanstack/solid-router";
 import { createMemo, createRoot } from "solid-js";
 
 import type { AppRouter } from "../router/create-router";
@@ -19,24 +18,13 @@ export type PageName =
   | "friends"
   | "leaderboards";
 
-type RouteId = RouteIds<AppRouter["routeTree"]>;
-
-// routes that render no page of their own
-type PagelessRouteId = "__root__" | "/app" | "/app/verify";
-
-/** The page each route renders. */
-const pageOfRoute: Record<Exclude<RouteId, PagelessRouteId>, PageName> = {
-  "/app/": "test",
-  "/app/leaderboards": "leaderboards",
-  "/app/about": "about",
-  "/app/settings": "settings",
-  "/app/login": "login",
-  "/app/account": "account",
-  "/app/account-settings": "accountSettings",
-  "/app/profile": "profileSearch",
-  "/app/profile/$uidOrName": "profile",
-  "/app/friends": "friends",
-};
+declare module "@tanstack/solid-router" {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
+  interface StaticDataRouteOption {
+    /** The page the route renders (its component is a `routePage`). */
+    page?: PageName;
+  }
+}
 
 function getMatches(): AppRouter["state"]["matches"] {
   return getRouter()?.state.matches ?? [];
@@ -53,12 +41,9 @@ function getMatches(): AppRouter["state"]["matches"] {
 export const getRoutePage = createRoot(() =>
   createMemo((): PageName => {
     const matches = getMatches();
-    // private, but the only trace of a global not found (no route matched)
-    if (matches.some((match) => match._notFound === true)) return "404";
+    if (isNotFound(matches)) return "404";
     if (matches.some((match) => match.status !== "success")) return "loading";
-    const routeId = matches.at(-1)?.routeId;
-    if (routeId === undefined || !(routeId in pageOfRoute)) return "loading";
-    return pageOfRoute[routeId as keyof typeof pageOfRoute];
+    return matches.at(-1)?.staticData.page ?? "loading";
   }),
 );
 
@@ -69,11 +54,37 @@ export const getRoutePage = createRoot(() =>
  */
 export function isPendingShown(): boolean {
   const matches = getMatches();
-  if (matches.some((match) => match._notFound === true)) return false;
+  if (isNotFound(matches)) return false;
   return matches.some((match) => match.status === "pending");
+}
+
+/**
+ * Whether the url matched no route (the root renders the 404 page). Reads
+ * the router's private `_notFound` flag: no public api tells a global not
+ * found apart (match status stays "success", its prefix routes "pending").
+ * Keep this the only place reading it.
+ */
+function isNotFound(matches: ReturnType<typeof getMatches>): boolean {
+  return matches.some((match) => match._notFound === true);
 }
 
 /** Whether a navigation is in progress (the loading page may cover the current page). */
 export function isNavigating(): boolean {
   return getRouter()?.state.status === "pending";
+}
+
+/**
+ * Whether typing may start a test: the test page is shown, and no
+ * navigation is leaving it (eg. typing while it fades out). A reload in
+ * place (eg. signing in) doesn't stop it.
+ */
+export function canStartTest(): boolean {
+  return getRoutePage() === "test" && !isLeavingPage();
+}
+
+// a navigation to another path is in progress
+function isLeavingPage(): boolean {
+  const state = getRouter()?.state;
+  if (state?.status !== "pending") return false;
+  return state.location.pathname !== state.resolvedLocation?.pathname;
 }

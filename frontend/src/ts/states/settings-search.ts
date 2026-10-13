@@ -1,8 +1,8 @@
-import { useRouter, useSearch } from "@tanstack/solid-router";
+import { useRouter } from "@tanstack/solid-router";
 import { createMemo, createSignal, onCleanup } from "solid-js";
 import { z } from "zod";
 
-import { keepLastSearch } from "../router/search-params";
+import { useRouteSearch } from "../router/search-params";
 
 // the current settings filter query, shared between the search input and the
 // settings/sections that hide themselves when they don't match
@@ -16,14 +16,12 @@ export const SettingsSearchSchema = z.object({
   /** the deep linked setting */
   highlight: z.string().optional().catch(undefined),
 });
-type SettingsSearch = z.infer<typeof SettingsSearchSchema>;
 
 /** The setting deep linked with `?highlight=`, and deep links to settings. */
 // oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
 export function useSettingsHighlight() {
   const router = useRouter();
-  const current = useSearch({ from: "/app/settings", shouldThrow: false });
-  const search = keepLastSearch<SettingsSearch>(current, {});
+  const { search, replace } = useRouteSearch("/settings");
 
   return {
     highlighted: (): string | undefined => search().highlight,
@@ -32,14 +30,12 @@ export function useSettingsHighlight() {
      * entry) and returns it.
      */
     linkTo: (key: string): string => {
-      const options = {
+      replace(() => ({ highlight: key }));
+      const { href } = router.buildLocation({
         to: "/settings",
         search: { highlight: key },
-        replace: true,
-        resetScroll: false,
-      } as const;
-      if (current() !== undefined) void router.navigate(options);
-      return window.location.origin + router.buildLocation(options).href;
+      });
+      return window.location.origin + href;
     },
   };
 }

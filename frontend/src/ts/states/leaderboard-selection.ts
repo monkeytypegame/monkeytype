@@ -1,12 +1,11 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { useNavigate, useSearch } from "@tanstack/solid-router";
 import { Accessor, createEffect, createMemo, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
-import { keepLastSearch } from "../router/search-params";
+import { useRouteSearch } from "../router/search-params";
 import { getSnapshot } from "./snapshot";
 
 export const pageSize = 50;
@@ -87,7 +86,8 @@ export function getMissingLeaderboardSearch(
   return toLeaderboardSearch(getLastSelection());
 }
 
-function toSelection(search: LeaderboardSearch): Selection {
+/** The selection `search` shows (friends only needs a signed in user). */
+export function toSelection(search: LeaderboardSearch): Selection {
   if (search.type === undefined) return getLastSelection();
   const friendsOnly =
     (search.friendsOnly ?? false) &&
@@ -113,28 +113,11 @@ function toSelection(search: LeaderboardSearch): Selection {
  */
 // oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
 export function useLeaderboardSearch() {
-  const navigate = useNavigate();
-  const current = useSearch({
-    from: "/app/leaderboards",
-    shouldThrow: false,
-  });
-  const search = keepLastSearch<LeaderboardSearch>(current, {});
+  const { search, replace: write } = useRouteSearch("/leaderboards");
   const selection = createMemo(() => toSelection(search()));
 
   // remember the selection for the next visit
   createEffect(() => setLastSelection(selection()));
-
-  const write = (
-    next: (prev: LeaderboardSearch) => LeaderboardSearch,
-  ): void => {
-    if (current() === undefined) return;
-    void navigate({
-      to: "/leaderboards",
-      search: next,
-      replace: true,
-      resetScroll: false,
-    });
-  };
 
   return {
     selection,

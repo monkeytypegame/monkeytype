@@ -7,8 +7,11 @@ export type RouterAuth = {
   isSignedIn: () => boolean;
   /** Resolves once the first auth state is known. */
   waitForFirstState: () => Promise<void>;
-  /** The user data download started by the last sign in. Handed out once. */
-  takeUserDataDownload: () => Promise<void> | undefined;
+  /**
+   * The user data download of the last sign in, until it succeeded. After a
+   * failed one it starts a new one (Retry). undefined if there's none.
+   */
+  userDataDownload: () => Promise<void> | undefined;
   /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
   onChange: (listener: () => void) => () => void;
 };

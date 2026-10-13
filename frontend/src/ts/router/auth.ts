@@ -3,19 +3,22 @@ import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { promiseWithResolvers } from "../utils/misc";
 import type { RouterAuth } from "./context";
+import { createUserDataDownload } from "./user-data-download";
 
 const { promise: firstAuthState, resolve: resolveFirstAuthState } =
   promiseWithResolvers();
 
 let isFirstAuthState = true;
-let pendingUserData: Promise<void> | undefined;
+const userData = createUserDataDownload();
 const listeners = new Set<() => void>();
 
 authEvent.subscribe((event) => {
   if (event.type !== "authStateChanged") return;
 
   if (event.data.isUserSignedIn) {
-    pendingUserData = event.data.loadPromise;
+    userData.start(event.data.loadPromise, event.data.reloadUserData);
+  } else {
+    userData.clear();
   }
 
   if (isFirstAuthState) {
@@ -31,11 +34,7 @@ export const routerAuth: RouterAuth = {
   isAvailable: isAuthAvailable,
   isSignedIn: isAuthenticated,
   waitForFirstState: async () => firstAuthState,
-  takeUserDataDownload: (): Promise<void> | undefined => {
-    const userData = pendingUserData;
-    pendingUserData = undefined;
-    return userData;
-  },
+  userDataDownload: userData.get,
   onChange: (listener) => {
     listeners.add(listener);
     return () => listeners.delete(listener);
