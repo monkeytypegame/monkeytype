@@ -32,6 +32,8 @@
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
  *   them, `pageElement()` its wrapper. `pageMounts()` records each page
  *   content mount and whether it was attached to the document by then.
+ *   `pageContent` adds content to a stub, eg. a probe calling the page's
+ *   search hook.
  * - Fades: `settle()` finishes them all. For fade ordering use
  *   `runningFades()` / `finishFade()` (finishes the oldest running fade) and
  *   `flush()` (timers and one animation frame - fade ins start on a frame).
@@ -43,6 +45,7 @@ import "./mock-static";
 import { cleanup, render } from "@solidjs/testing-library";
 import { hashKey, QueryClient, QueryKey } from "@tanstack/solid-query";
 import { createMemoryHistory } from "@tanstack/solid-router";
+import { JSXElement } from "solid-js";
 import { vi } from "vitest";
 
 import type { RouterAuth } from "../../src/ts/router/context";
@@ -57,9 +60,10 @@ export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
 
-const { fades, pageMounts } = vi.hoisted(() => ({
+const { fades, pageMounts, pageContent } = vi.hoisted(() => ({
   fades: [] as Fade[],
   pageMounts: [] as PageMount[],
+  pageContent: new Map<string, () => JSXElement>(),
 }));
 
 vi.mock("animejs", () => ({
@@ -89,10 +93,11 @@ vi.mock("animejs", () => ({
   },
 }));
 
-// stub pages render their name and record whether they mounted attached
+// stub pages render their name (plus any pageContent) and record whether
+// they mounted attached
 function stubPage(
   name: string,
-): () => Promise<Record<string, () => HTMLElement>> {
+): () => Promise<Record<string, () => JSXElement>> {
   return async () => {
     const { onMount } = await import("solid-js");
     const page = name.replace(/Page$/, "");
@@ -101,7 +106,7 @@ function stubPage(
         const el = document.createElement("span");
         el.textContent = name;
         onMount(() => pageMounts.push({ page, attached: el.isConnected }));
-        return el;
+        return [el, pageContent.get(name)?.()];
       },
     };
   };
@@ -255,6 +260,11 @@ export type RenderAppOptions = {
   queryData?: [QueryKey, unknown][];
   /** Query functions replacing the app's, by query key (see createTestQueryClient). */
   queryResponses?: [QueryKey, () => Promise<unknown>][];
+  /**
+   * Extra content for stub pages by component name (eg. `LeaderboardPage`),
+   * rendered inside the page - for probes using the page's hooks.
+   */
+  pageContent?: Record<string, () => JSXElement>;
 };
 
 export type App = {
@@ -290,6 +300,9 @@ export function renderApp(options: RenderAppOptions = {}): App {
   }
   for (const [key, fetch] of options.queryResponses ?? []) {
     queryClient.respond(key, fetch);
+  }
+  for (const [name, content] of Object.entries(options.pageContent ?? {})) {
+    pageContent.set(name, content);
   }
   // the router resets scroll on navigation, jsdom doesn't implement it
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
@@ -353,6 +366,7 @@ export function cleanupApp(): void {
   cleanup();
   fades.length = 0;
   pageMounts.length = 0;
+  pageContent.clear();
   setRouter(undefined);
   resetLoadingPage();
 }

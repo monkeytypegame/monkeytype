@@ -24,16 +24,18 @@ import { SettingsPage } from "../components/pages/settings/SettingsPage";
 import { TestPage } from "../components/pages/test/TestPage";
 import { RootLayout } from "../components/RootLayout";
 import { getSnapshot } from "../db";
-import { accountSettingsSearch } from "../states/account-settings";
+import { AccountSettingsSearchSchema } from "../states/account-settings";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
 import { setSelectedProfileName } from "../states/core";
-import { leaderboardSearch } from "../states/leaderboard-selection";
+import {
+  getMissingLeaderboardSearch,
+  LeaderboardSearchSchema,
+} from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
-import { settingsSearch } from "../states/settings-search";
+import { SettingsSearchSchema } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
-import { readSearchOnEnter } from "./search-params";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -118,7 +120,20 @@ const leaderboards = createRoute({
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
   component: pageComponent("leaderboards", LeaderboardPage),
-  beforeLoad: readSearchOnEnter(leaderboardSearch),
+  validateSearch: LeaderboardSearchSchema,
+  // no loaderDeps: the loader doesn't read the search, so selection changes
+  // don't re-run it. A loader that does lists only what it reads in loaderDeps
+  beforeLoad: ({ search }) => {
+    const missing = getMissingLeaderboardSearch(search);
+    if (missing !== undefined) {
+      redirect({
+        to: "/leaderboards",
+        search: missing,
+        replace: true,
+        throw: true,
+      });
+    }
+  },
   loader: async ({ context: { queryClient } }) => {
     const serverConfiguration = getServerConfigurationQueryOptions();
     if (queryClient.getQueryData(serverConfiguration.queryKey) !== undefined) {
@@ -145,7 +160,7 @@ const settings = createRoute({
   path: "/settings",
   staticData: { page: "settings" },
   component: pageComponent("settings", SettingsPage),
-  beforeLoad: readSearchOnEnter(settingsSearch),
+  validateSearch: SettingsSearchSchema,
 });
 
 const login = createRoute({
@@ -187,10 +202,8 @@ const accountSettings = createRoute({
   path: "/account-settings",
   staticData: { page: "accountSettings" },
   component: pageComponent("accountSettings", AccountSettingsPage),
-  beforeLoad: (ctx) => {
-    requireAuth(ctx.context.auth);
-    readSearchOnEnter(accountSettingsSearch)(ctx);
-  },
+  validateSearch: AccountSettingsSearchSchema,
+  beforeLoad: ({ context }) => requireAuth(context.auth),
 });
 
 const profileSearch = createRoute({
