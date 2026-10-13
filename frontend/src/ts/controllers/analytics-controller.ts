@@ -6,6 +6,7 @@ import {
 import { getAnalytics } from "../firebase";
 import { createErrorMessage } from "../utils/error";
 import { qs } from "../utils/dom";
+import { envConfig } from "virtual:env-config";
 
 let analytics: AnalyticsType;
 
@@ -21,6 +22,7 @@ export async function log(
 }
 
 export function activateAnalytics(): void {
+  if (envConfig.authProvider === "local") return;
   if (analytics !== undefined) {
     console.warn("Analytics already activated");
     return;

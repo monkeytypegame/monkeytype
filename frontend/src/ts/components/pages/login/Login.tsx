@@ -1,5 +1,5 @@
 import { createForm } from "@tanstack/solid-form";
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import {
   AuthResult,
@@ -7,6 +7,7 @@ import {
   signIn,
   signInWithProvider,
 } from "../../../auth";
+import { isLocalAuth } from "../../../firebase";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -70,34 +71,36 @@ export function Login(): JSXElement {
         }}
         class="p-0"
       />
-      <div class="grid grid-cols-2 gap-4">
-        <Button
-          fa={{ icon: "fa-google", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signInWithProvider("google", {
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("google"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
-        <Button
-          fa={{ icon: "fa-github", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signInWithProvider("github", {
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("github"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
-      </div>
+      <Show when={!isLocalAuth()}>
+        <div class="grid grid-cols-2 gap-4">
+          <Button
+            fa={{ icon: "fa-google", variant: "brand" }}
+            onClick={() =>
+              void trySignIn(
+                async () =>
+                  signInWithProvider("google", {
+                    rememberMe: form.getFieldValue("rememberMe"),
+                  }),
+                getAuthMethodDisplay("google"),
+              )
+            }
+            disabled={!getLoginPageInputsEnabled()}
+          />
+          <Button
+            fa={{ icon: "fa-github", variant: "brand" }}
+            onClick={() =>
+              void trySignIn(
+                async () =>
+                  signInWithProvider("github", {
+                    rememberMe: form.getFieldValue("rememberMe"),
+                  }),
+                getAuthMethodDisplay("github"),
+              )
+            }
+            disabled={!getLoginPageInputsEnabled()}
+          />
+        </div>
+      </Show>
       <form
         class="grid w-full gap-2"
         onSubmit={(e) => {
@@ -106,7 +109,9 @@ export function Login(): JSXElement {
           void form.handleSubmit();
         }}
       >
-        <Separator text="or" />
+        <Show when={!isLocalAuth()}>
+          <Separator text="or" />
+        </Show>
         <form.Field
           name="email"
           children={(field) => (
@@ -149,13 +154,22 @@ export function Login(): JSXElement {
         />
       </form>
 
-      <Button
-        text="forgot password?"
-        variant="text"
-        class="text justify-end text-xs"
-        onClick={() => showModal("ForgotPassword")}
-        disabled={!getLoginPageInputsEnabled()}
-      />
+      <Show
+        when={!isLocalAuth()}
+        fallback={
+          <p class="text-right text-xs text-sub">
+            Forgot your password? Contact your instance administrator.
+          </p>
+        }
+      >
+        <Button
+          text="forgot password?"
+          variant="text"
+          class="text justify-end text-xs"
+          onClick={() => showModal("ForgotPassword")}
+          disabled={!getLoginPageInputsEnabled()}
+        />
+      </Show>
     </div>
   );
 }

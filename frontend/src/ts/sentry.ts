@@ -9,6 +9,7 @@ let debug = false;
 let activated = false;
 
 export async function activateSentry(): Promise<void> {
+  if (envConfig.authProvider === "local") return;
   if (activated) {
     console.warn("Sentry already activated");
     return;

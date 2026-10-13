@@ -1,4 +1,5 @@
 import { isDevEnvironment } from "./misc";
+import { isLocalAuth } from "./auth-provider";
 
 type CaptchaData = {
   success: boolean;
@@ -10,6 +11,7 @@ type CaptchaData = {
 const recaptchaSecret = process.env["RECAPTCHA_SECRET"] ?? null;
 
 export async function verify(captcha: string): Promise<boolean> {
+  if (isLocalAuth()) return true;
   if (isDevEnvironment()) {
     return true;
   }

@@ -29,6 +29,7 @@ import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
 import * as AuthUtil from "../../utils/auth";
+import { isLocalAuth } from "../../utils/auth-provider";
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
@@ -111,6 +112,7 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 export async function createNewUser(
   req: MonkeyRequest<undefined, CreateUserRequest>,
 ): Promise<MonkeyResponse> {
+  if (isLocalAuth()) throw new MonkeyError(400, "Use local registration");
   const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
@@ -145,6 +147,12 @@ export async function createNewUser(
 export async function sendVerificationEmail(
   req: MonkeyRequest,
 ): Promise<MonkeyResponse> {
+  if (isLocalAuth()) {
+    throw new MonkeyError(
+      400,
+      "Email verification is disabled on this instance",
+    );
+  }
   const { email, uid } = req.ctx.decodedToken;
   const isVerified = (
     await FirebaseAdmin()
@@ -249,6 +257,12 @@ export async function sendVerificationEmail(
 export async function sendForgotPasswordEmail(
   req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>,
 ): Promise<MonkeyResponse> {
+  if (isLocalAuth()) {
+    throw new MonkeyError(
+      400,
+      "Contact your instance administrator to reset your password",
+    );
+  }
   const { email, captcha } = req.body;
   await verifyCaptcha(captcha);
   await authSendForgotPasswordEmail(email);

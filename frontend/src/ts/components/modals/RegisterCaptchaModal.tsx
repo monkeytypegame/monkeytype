@@ -1,6 +1,7 @@
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
+import { isLocalAuth } from "../../firebase";
 import { hideModal, showModal } from "../../states/modals";
 import { promiseWithResolvers } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -13,6 +14,7 @@ const {
 } = promiseWithResolvers<string | undefined>();
 
 export async function showRegisterCaptchaModal(): Promise<string | undefined> {
+  if (isLocalAuth()) return "local";
   resetCaptchaPromise();
   showModal("RegisterCaptcha");
   return captchaPromise;

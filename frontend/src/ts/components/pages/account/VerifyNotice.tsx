@@ -1,6 +1,7 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 
 import { sendVerificationEmail } from "../../../auth";
+import { isLocalAuth } from "../../../firebase";
 import { isUserVerified } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
@@ -14,7 +15,7 @@ export function VerifyNotice(props: { class?: string }): JSXElement {
     void sendVerificationEmail().finally(() => setProcessing(false));
   };
   return (
-    <Show when={!isUserVerified()}>
+    <Show when={!isLocalAuth() && !isUserVerified()}>
       <div
         class={cn(
           `grid items-center gap-4 rounded p-4 ring-4 ring-sub-alt md:grid-cols-[1fr_auto] ${props.class ?? ""}`,

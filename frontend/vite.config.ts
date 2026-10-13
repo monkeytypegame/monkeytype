@@ -158,7 +158,9 @@ function getPlugins({
         runtimeCaching: [
           {
             urlPattern: (options) => {
-              const isApi = options.url.hostname === "api.monkeytype.com";
+              const isApi =
+                options.url.hostname === "api.monkeytype.com" ||
+                options.url.pathname.startsWith("/api/");
               return options.sameOrigin && !isApi;
             },
             handler: "NetworkFirst",
@@ -332,7 +334,10 @@ export default defineConfig(({ mode }): UserConfig => {
   const isDevelopment = mode !== "production";
 
   if (!isDevelopment) {
-    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
+    if (
+      env["AUTH_PROVIDER"] !== "local" &&
+      env["RECAPTCHA_SITE_KEY"] === undefined
+    ) {
       throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
     }
     if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {

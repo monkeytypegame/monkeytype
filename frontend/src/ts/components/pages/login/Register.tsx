@@ -5,6 +5,7 @@ import { JSXElement } from "solid-js";
 import Ape from "../../../ape";
 import { getPasswordSchema, signUp } from "../../../auth";
 import TypoList from "../../../constants/typo-list";
+import { isLocalAuth } from "../../../firebase";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -33,6 +34,7 @@ export function Register(): JSXElement {
   const emailIsValid = async (
     email: string,
   ): Promise<undefined | ValidationResult[]> => {
+    if (isLocalAuth()) return undefined;
     const messages: ValidationResult[] = [];
 
     const educationRegex =

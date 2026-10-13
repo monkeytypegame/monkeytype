@@ -20,6 +20,8 @@ import {
 import { Configuration } from "@monkeytype/schemas/configuration";
 import { AsyncTsRestRequestHandler, getMetadata } from "./utility";
 import { TsRestRequestWithContext } from "../api/types";
+import { isLocalAuth } from "../utils/auth-provider";
+import * as LocalAuth from "../services/local-auth";
 
 export type DecodedToken = {
   type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
@@ -69,6 +71,27 @@ export function authenticateTsRestRequest<
     try {
       if (options.isGithubWebhook) {
         token = authenticateGithubWebhook(req, githubWebhookHeader);
+      } else if (
+        isLocalAuth() &&
+        LocalAuth.getSessionToken(req) !== undefined
+      ) {
+        try {
+          const session = await LocalAuth.getSession(
+            req,
+            options.requireFreshToken,
+          );
+          const user = await LocalAuth.getUser(session.uid);
+          token = { type: "Bearer", uid: user.uid, email: user.email };
+        } catch (error) {
+          if (
+            !isPublic ||
+            !(error instanceof MonkeyError) ||
+            error.status !== 401
+          ) {
+            throw error;
+          }
+          token = { type: "None", uid: "", email: "" };
+        }
       } else if (authHeader !== undefined && authHeader !== "") {
         token = await authenticateWithAuthHeader(
           authHeader,
@@ -147,10 +170,22 @@ async function authenticateWithAuthHeader(
 
   switch (normalizedAuthScheme) {
     case "Bearer":
+      if (isLocalAuth()) {
+        throw new MonkeyError(
+          401,
+          "Local authentication requires a session cookie",
+        );
+      }
       return await authenticateWithBearerToken(token, options);
     case "ApeKey":
       return await authenticateWithApeKey(token, configuration, options);
     case "Uid":
+      if (isLocalAuth()) {
+        throw new MonkeyError(
+          401,
+          "Local authentication requires a session cookie",
+        );
+      }
       return await authenticateWithUid(token);
   }
 

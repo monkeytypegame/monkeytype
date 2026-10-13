@@ -3,6 +3,7 @@ export type EnvConfig = {
   isDevelopment: boolean;
   clientVersion: string;
   recaptchaSiteKey: string;
+  authProvider: "firebase" | "local";
   quickLoginEmail: string | undefined;
   quickLoginPassword: string | undefined;
 };

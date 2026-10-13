@@ -1,6 +1,7 @@
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { languageHashes } from "virtual:language-hashes";
+import { envConfig } from "virtual:env-config";
 import { isDevEnvironment } from "./env";
 import { toHex } from "./strings";
 
@@ -221,6 +222,7 @@ type GithubRelease = {
  * @returns A promise that resolves to the latest release name.
  */
 export async function getLatestReleaseFromGitHub(): Promise<string> {
+  if (envConfig.authProvider === "local") return envConfig.clientVersion;
   type releaseType = { name: string };
   const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
@@ -238,6 +240,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
 export async function getReleasesFromGitHub(options?: {
   page?: number;
 }): Promise<GithubRelease[]> {
+  if (envConfig.authProvider === "local") return [];
   return fetchJson(
     `https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5&page=${options?.page ?? 1}`,
   );

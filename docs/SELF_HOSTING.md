@@ -13,6 +13,7 @@
     - [Hosting over the network (HTTPS)](#hosting-over-the-network-https)
   - [Security](#security)
   - [Account System](#account-system)
+    - [Local accounts (no internet required)](#local-accounts-no-internet-required)
     - [Setup Firebase](#setup-firebase)
     - [Update backend configuration](#update-backend-configuration)
     - [Setup Recaptcha](#setup-recaptcha)
@@ -100,8 +101,55 @@ Sources:
 
 ## Account System
 
-By default, user sign-up and login are disabled. To enable this, you'll need to set up a Firebase project.
+By default, user sign-up and login are disabled. Choose local accounts for a closed network, or Firebase for an internet-connected installation.
 Stop the running docker containers using `docker compose down` before making any changes.
+
+### Local accounts (no internet required)
+
+From a checkout of this repository, run:
+
+```bash
+docker compose -f docker/docker-compose.local.yml up --build -d
+```
+
+Open `http://localhost:8080`. Registration, login, profiles, saved results, XP progression, all-time leaderboards and daily English 15/60-second leaderboards are enabled. The first build downloads dependencies and images. Backend/databases use an internal Docker network without internet access; the frontend has a separate network for its published localhost port. Its content security policy restricts browser resource requests to this instance. MongoDB stores accounts, password hashes and results; Redis stores sessions and daily rankings. No Firebase credentials, reCAPTCHA or email server are required.
+
+For Kubernetes frontend/backend manifests and plain `docker build` commands, see [the Kubernetes deployment guide](../docker/k8s/README.md). MongoDB and Redis are managed separately in that deployment.
+
+Local accounts use email addresses as login identifiers; ownership is not verified. Password recovery is handled by the administrator. Passwords use salted scrypt hashes, sessions use HttpOnly cookies, and changing a password/email or revoking tokens invalidates all devices. Social login, ads, analytics, error telemetry and GitHub release fetching are disabled in local mode. Firebase remains the default provider for the standard deployment.
+
+Change feature settings in `docker/backend-configuration.local.json` and restart the backend. Set `HTTP_PORT` and matching `BASE_URL` when changing the localhost port. Registration can be disabled with `users.signUp`; existing users can still log in.
+
+XP uses Monkeytype's existing calculation with `users.xp.enabled=true` and `gainMultiplier=1`. Eligible saved tests award XP; zen mode does not. Daily/streak/funbox bonuses and weekly XP leaderboards remain configurable and are disabled in this preset. Previously saved tests are not awarded XP retroactively.
+
+Daily rankings update when an eligible result is saved; all-time rankings refresh approximately every 15 minutes. Internet-dependent test sources such as Wikipedia and poetry are unavailable on a closed network.
+
+#### Administrator password recovery
+
+Run this command and enter a new password when prompted (at least 8 characters, including an uppercase letter, number and special character):
+
+```bash
+docker compose -f docker/docker-compose.local.yml exec monkeytype-backend node scripts/reset-local-password.js user@example.com
+```
+
+The password is hidden while typing and is not passed as a command-line argument. The command resets only the password and revokes all existing sessions; typing history is preserved. Access to this command requires host/Docker administration privileges. Contact your administrator if you forget your password.
+
+#### Transfer to a closed network
+
+Build on an internet-connected machine, then export all four images:
+
+```bash
+docker save -o monkeytype-local.tar monkeytype-local-frontend:latest monkeytype-local-backend:latest mongo:5.0.13 redis:6.2.6
+```
+
+Transfer the archive and the `docker` directory, then run on the closed-network host:
+
+```bash
+docker load -i monkeytype-local.tar
+docker compose -f docker/docker-compose.local.yml up --no-build --pull never -d
+```
+
+For access from other computers, terminate HTTPS at an internal reverse proxy using a certificate trusted by those computers. Set `BASE_URL=https://your.internal.domain` and forward that proxy to the localhost port. Public ACME/Let's Encrypt issuance requires internet access; use your internal certificate authority instead. The provided Compose file binds only to localhost. MongoDB/Redis remain private. Back up both named volumes before upgrades.
 
 ### Setup Firebase
 

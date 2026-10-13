@@ -5,7 +5,7 @@ import {
   type ApiFetcherArgs,
 } from "@ts-rest/core";
 import { envConfig } from "virtual:env-config";
-import { getIdToken } from "../../firebase";
+import { getIdToken, isLocalAuth } from "../../firebase";
 import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
@@ -38,10 +38,12 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 
       request.fetchOptions = {
         ...request.fetchOptions,
+        ...(isLocalAuth() ? { credentials: "include" } : {}),
         signal: usePolyfill
           ? timeoutSignal(timeout)
           : AbortSignal.timeout(timeout),
       };
+      if (isLocalAuth()) request.headers["X-Monkeytype-Client"] = "web";
       const response = await tsRestFetchApi(request);
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {

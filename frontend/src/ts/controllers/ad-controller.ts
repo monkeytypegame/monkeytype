@@ -6,6 +6,7 @@ import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { onDOMReady, qs } from "../utils/dom";
 import { isTestActive } from "../states/test";
+import { envConfig } from "virtual:env-config";
 // import { createEffect } from "solid-js";
 
 const breakpoint = 900;
@@ -34,6 +35,10 @@ const choice: "eg" | "pw" = "pw";
 // }
 
 function init(): void {
+  if (envConfig.authProvider === "local") {
+    removeAll();
+    return;
+  }
   if (choice === "eg") {
     EG.init();
   } else {
@@ -183,6 +188,10 @@ export async function checkCookieblocker(): Promise<void> {
 }
 
 export async function reinstate(): Promise<boolean> {
+  if (envConfig.authProvider === "local") {
+    removeAll();
+    return false;
+  }
   if (Config.ads === "off") return false;
   if (!initialised) {
     init();
@@ -200,6 +209,7 @@ export async function reinstate(): Promise<boolean> {
 }
 
 export async function renderResult(): Promise<void> {
+  if (envConfig.authProvider === "local") return;
   if (Config.ads === "off") return;
   if (!initialised) {
     init();
@@ -257,6 +267,7 @@ export function updateFooterAndVerticalAds(visible: boolean): void {
 }
 
 export function showConsentPopup(): void {
+  if (envConfig.authProvider === "local") return;
   if (choice === "eg") {
     //@ts-expect-error 3rd party ad code, doesnt have types
     // oxlint-disable-next-line no-unsafe-call

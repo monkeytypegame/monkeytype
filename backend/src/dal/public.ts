@@ -10,6 +10,16 @@ export type PublicSpeedStatsDB = {
   english_time_60: SpeedHistogram;
 };
 
+export async function initializeTypingStats(): Promise<void> {
+  await db
+    .collection<PublicTypingStatsDB>("public")
+    .updateOne(
+      { _id: "stats" },
+      { $setOnInsert: { testsCompleted: 0, testsStarted: 0, timeTyping: 0 } },
+      { upsert: true },
+    );
+}
+
 export async function updateStats(
   restartCount: number,
   time: number,

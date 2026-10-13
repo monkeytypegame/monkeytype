@@ -3,6 +3,7 @@ import { IdSchema } from "@monkeytype/schemas/util";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { format } from "date-fns/format";
+import { envConfig } from "virtual:env-config";
 import { z } from "zod";
 
 import Ape from "../ape";
@@ -37,6 +38,14 @@ async function getLatest(): Promise<PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
+    if (envConfig.authProvider === "local") {
+      addBanner({
+        level: "error",
+        text: "Your local Monkeytype server is unavailable. Contact your instance administrator.",
+        icon: "fas fa-exclamation-triangle",
+      });
+      return null;
+    }
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
