@@ -1,14 +1,9 @@
-import {
-  AnyRouter,
-  createLink,
-  LinkComponentProps,
-  RegisteredRouter,
-} from "@tanstack/solid-router";
 import { JSX, JSXElement, Match, Show, splitProps, Switch } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
 import { Fa, FaProps } from "./Fa";
+import { withLink } from "./withLink";
 
 type BaseProps = {
   text?: string;
@@ -52,21 +47,6 @@ type ButtonLinkStyleProps = Omit<BaseProps, "type" | "active"> & {
 
 type ButtonAnchorProps = ButtonLinkStyleProps &
   Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps>;
-
-type ButtonLinkProps<
-  TRouter extends AnyRouter = RegisteredRouter,
-  TFrom extends string = string,
-  TTo extends string | undefined = undefined,
-  TMaskFrom extends string = TFrom,
-  TMaskTo extends string = "",
-> = LinkComponentProps<
-  typeof ButtonAnchor,
-  TRouter,
-  TFrom,
-  TTo,
-  TMaskFrom,
-  TMaskTo
->;
 
 function getButtonClasses(options: {
   variant: "text" | "button";
@@ -154,50 +134,15 @@ function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
   );
 }
 
-const ButtonLink = createLink(ButtonAnchor);
-
 /**
- * Overloads live on a call-signature type rather than as `function`
- * overloads: the dev-only solid-refresh transform rewrites component
- * declarations to `const`, which breaks overload signatures.
+ * A button, an external link (`href`), or an in-app link (`to`, see
+ * withLink). An in-app link gets `data-status="active"` while its route is
+ * the current location (exact path, search ignored, unless `activeOptions`
+ * says otherwise).
  */
-type ButtonComponent = {
-  (props: ButtonProps | AnchorProps): JSXElement;
-  /**
-   * In-app link: a real anchor (href, cmd/ctrl+click opens a new tab) that
-   * navigates through the router with typed `to`, `params` and `search`.
-   * Gets `data-status="active"` while its route is the current location
-   * (exact path, search ignored, unless `activeOptions` says otherwise).
-   */
-  <
-    TRouter extends AnyRouter = RegisteredRouter,
-    const TFrom extends string = string,
-    const TTo extends string | undefined = undefined,
-    const TMaskFrom extends string = TFrom,
-    const TMaskTo extends string = "",
-  >(
-    props: ButtonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>,
-  ): JSXElement;
-};
-
-export const Button: ButtonComponent = (
-  props:
-    | ButtonProps
-    | AnchorProps
-    | ButtonLinkProps<AnyRouter, string, string, string, string>,
-): JSXElement => {
-  return (
-    <Show
-      when={"to" in props}
-      fallback={<PlainButton {...(props as ButtonProps | AnchorProps)} />}
-    >
-      <ButtonLink
-        activeOptions={{ exact: true, includeSearch: false }}
-        {...(props as ButtonLinkProps)}
-      />
-    </Show>
-  );
-};
+export const Button = withLink(PlainButton, ButtonAnchor, {
+  activeOptions: { exact: true, includeSearch: false },
+});
 
 function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = (): boolean => "href" in props;
