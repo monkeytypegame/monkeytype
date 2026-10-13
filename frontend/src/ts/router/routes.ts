@@ -17,7 +17,7 @@ import { AccountPage } from "../components/pages/account/AccountPage";
 import { FriendsPage } from "../components/pages/connections/FriendsPage";
 import { LeaderboardPage } from "../components/pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "../components/pages/login/LoginPage";
-import { LoadingRoutePage, pageComponent } from "../components/pages/Page";
+import { pageComponent } from "../components/pages/Page";
 import { ProfilePage } from "../components/pages/profile/ProfilePage";
 import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
 import { SettingsPage } from "../components/pages/settings/SettingsPage";
@@ -95,9 +95,9 @@ const app = createRoute({
   // depend on itself through `matches` (TS7022)
   beforeLoad: async ({ context, matches, preload }): Promise<void> =>
     waitForUserData(context.auth, matches, preload),
-  // the router renders a pending route only through its pendingComponent -
-  // without one nothing renders on first load, not even the root layout
-  pendingComponent: LoadingRoutePage,
+  // the router renders a pending route only through its pending component
+  // (the router's default) - shown at once, else nothing renders on first
+  // load, not even the root layout
   pendingMs: 0,
   pendingMinMs: 0,
 });
