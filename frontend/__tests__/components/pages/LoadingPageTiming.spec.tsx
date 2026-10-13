@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { LoadingPage } from "../../../src/ts/components/pages/LoadingPage";
 import {
+  planLoadingBar,
   resetLoadingPage,
+  runLoadingStep,
   updateLoadingPageBar,
 } from "../../../src/ts/states/loading-page";
 
@@ -54,5 +56,25 @@ describe("LoadingPage bar", () => {
   // so with nothing mounted to animate it, page loading hung forever
   it("resolves with nothing mounted to animate the fill", async () => {
     await expect(updateLoadingPageBar(10, 0)).resolves.toBeUndefined();
+  });
+
+  it("starts the fill at the current step's start when mounted mid-navigation", async () => {
+    planLoadingBar(4);
+    await runLoadingStep(
+      { label: "first", keyframes: [] },
+      async () => undefined,
+    );
+    void runLoadingStep(
+      { label: "second", keyframes: [{ percentage: 90, durationMs: 10_000 }] },
+      async () => new Promise(() => undefined),
+    );
+    // the second step's keyframe is under way
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // the old page faded out, the loading page mounts while the second runs
+    const { container } = render(() => <LoadingPage />);
+
+    expect(container.querySelector<HTMLElement>(".bg-main")?.style.width).toBe(
+      "25%",
+    );
   });
 });

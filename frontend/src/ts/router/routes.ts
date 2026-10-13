@@ -2,14 +2,14 @@ import {
   createRootRouteWithContext,
   createRoute,
   redirect,
+  type StaticDataRouteOption,
 } from "@tanstack/solid-router";
 
 import {
   invalidateConnections,
-  isConnectionsReady,
   waitForConnectionsReady,
 } from "../collections/connections";
-import { isResultsReady, waitForResultsReady } from "../collections/results";
+import { waitForResultsReady } from "../collections/results";
 import { NotFoundPage } from "../components/pages/404Page";
 import { AboutPage } from "../components/pages/AboutPage";
 import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
@@ -33,6 +33,11 @@ import { settingsSearch } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
+import {
+  planNavigationLoadingBar,
+  runRouteLoadingStep,
+  runUserDataStep,
+} from "./loading-steps";
 import { readSearchOnEnter } from "./search-params";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
@@ -46,22 +51,21 @@ declare module "@tanstack/solid-router" {
 }
 
 /**
- * Waits until the auth state is known, then shows the loading bar while the
- * user data downloads (only once per sign in).
+ * Waits until the auth state is known, plans the navigation's loading bar,
+ * then shows it while the user data downloads (only once per sign in).
+ * `matches` are all routes of the navigation.
  */
-async function waitForUserData(auth: RouterAuth): Promise<void> {
+async function waitForUserData(
+  auth: RouterAuth,
+  matches: readonly { staticData: StaticDataRouteOption }[],
+): Promise<void> {
   await auth.waitForFirstState();
 
   const userData = auth.takeUserDataDownload();
+  planNavigationLoadingBar({ matches, userData });
   if (userData === undefined) return;
 
-  await withLoading("user data", {
-    style: "bar",
-    load: async () => userData,
-    keyframes: [
-      { percentage: 90, durationMs: 1000, text: "Downloading user data..." },
-    ],
-  });
+  await runUserDataStep(userData);
 }
 
 function requireAuth(auth: RouterAuth): void {
@@ -83,7 +87,10 @@ const root = createRootRouteWithContext<RouterContext>()({
 const app = createRoute({
   getParentRoute: () => root,
   id: "app",
-  beforeLoad: async ({ context }) => waitForUserData(context.auth),
+  // explicit return type: inferring it would make the route tree's type
+  // depend on itself through `matches` (TS7022)
+  beforeLoad: async ({ context, matches }): Promise<void> =>
+    waitForUserData(context.auth, matches),
   // the router renders a pending route only through its pendingComponent -
   // without one nothing renders on first load, not even the root layout
   pendingComponent: LoadingRoutePage,
@@ -159,27 +166,19 @@ const login = createRoute({
 const account = createRoute({
   getParentRoute: () => app,
   path: "/account",
-  staticData: { page: "account" },
+  staticData: { page: "account", loadingStep: "results" },
   component: pageComponent("account", AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
-  loader: async () => {
-    if (isResultsReady()) return;
-    await withLoading("the account page", {
-      style: "bar",
-      load: async () => {
-        if (getSnapshot() === null || getSnapshot() === undefined) {
-          throw new Error(
-            "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
-          );
-        }
-        await waitForResultsReady();
-        TodayTracker.addAllFromToday();
-      },
-      keyframes: [
-        { percentage: 90, durationMs: 2000, text: "Downloading results..." },
-      ],
-    });
-  },
+  loader: async () =>
+    runRouteLoadingStep("results", async () => {
+      if (getSnapshot() === null || getSnapshot() === undefined) {
+        throw new Error(
+          "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
+        );
+      }
+      await waitForResultsReady();
+      TodayTracker.addAllFromToday();
+    }),
 });
 
 const accountSettings = createRoute({
@@ -213,29 +212,16 @@ const profile = createRoute({
 const friends = createRoute({
   getParentRoute: () => app,
   path: "/friends",
-  staticData: { page: "friends" },
+  staticData: { page: "friends", loadingStep: "friends" },
   component: pageComponent("friends", FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async ({ context: { queryClient } }) => {
-    if (!isConnectionsReady()) {
-      await withLoading("the friends page", {
-        style: "bar",
-        load: async () => {
-          await Promise.all([
-            queryClient.ensureQueryData(getServerConfigurationQueryOptions()),
-            waitForConnectionsReady(),
-          ]);
-        },
-        keyframes: [
-          { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
-          {
-            percentage: 50,
-            durationMs: 1500,
-            text: "Downloading friend requests...",
-          },
-        ],
-      });
-    }
+    await runRouteLoadingStep("friends", async () => {
+      await Promise.all([
+        queryClient.ensureQueryData(getServerConfigurationQueryOptions()),
+        waitForConnectionsReady(),
+      ]);
+    });
     await invalidateConnections();
   },
 });

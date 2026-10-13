@@ -1,6 +1,6 @@
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
-import { hideLoadingPage } from "../states/loading-page";
+import { finishLoadingBar, hideLoadingPage } from "../states/loading-page";
 import type { RouterContext } from "./context";
 import { routeTree } from "./routes";
 
@@ -36,6 +36,12 @@ export function createAppRouter(
   // re-run guards and loaders when the user signs in or out. The initial load
   // waits for the first auth state itself (the app route's beforeLoad)
   context.auth.onChange(() => void router.invalidate());
+
+  // the loading page stops updating once hidden (onResolved), so its bar
+  // completes when the loads are done
+  router.subscribe("onLoad", () => {
+    finishLoadingBar();
+  });
 
   router.subscribe("onResolved", () => {
     hideLoadingPage();

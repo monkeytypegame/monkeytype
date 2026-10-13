@@ -158,6 +158,106 @@ describe("app shell routing", () => {
     });
   });
 
+  describe("loading bar", () => {
+    it("splits a refresh on account between user data and results", async () => {
+      const userData = deferred();
+      const app = renderApp({
+        url: "/account",
+        auth: "pending",
+        results: "pending",
+      });
+      await flush();
+      app.auth.signIn({ userData: userData.promise });
+      await flush();
+      expect(app.loadingBar()).toEqual({
+        width: "50%",
+        text: "Downloading user data...",
+      });
+
+      userData.resolve();
+      await flush();
+      expect(app.loadingBar()).toEqual({
+        width: "90%",
+        text: "Downloading results...",
+      });
+
+      app.blockingData.loadResults();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("gives the user data the whole bar on a refresh on the test page", async () => {
+      const userData = deferred();
+      const app = renderApp({ url: "/", auth: "pending" });
+      await flush();
+      app.auth.signIn({ userData: userData.promise });
+      await flush();
+      expect(app.loadingBar()).toEqual({
+        width: "90%",
+        text: "Downloading user data...",
+      });
+
+      userData.resolve();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+
+      await app.settle();
+      expect(app.shownPage()).toBe("test");
+    });
+
+    it("gives the results the whole bar going from the test page to account", async () => {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        results: "pending",
+      });
+      await app.settle();
+
+      // resolves only once the account page loaded
+      void app.navigate({ to: "/account" });
+      await flush();
+      // the test page fades out before the loading page shows
+      expect(app.finishFade()).toBe(0);
+      await flush();
+      expect(app.loadingBar()).toEqual({
+        width: "90%",
+        text: "Downloading results...",
+      });
+
+      app.blockingData.loadResults();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("finishes at done when a planned step turned out not to be needed", async () => {
+      const userData = deferred();
+      const app = renderApp({
+        url: "/account",
+        auth: "pending",
+        results: "pending",
+      });
+      await flush();
+      app.auth.signIn({ userData: userData.promise });
+      await flush();
+      expect(app.loadingBar()?.width).toBe("50%");
+
+      // the results arrive with the user data, before the account page loads
+      app.blockingData.loadResults();
+      userData.resolve();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+  });
+
   describe("page fade", () => {
     it("fades the old page out before the new page is in the DOM", async () => {
       const app = renderApp({ url: "/about" });
