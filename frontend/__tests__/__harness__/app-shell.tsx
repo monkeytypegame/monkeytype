@@ -31,7 +31,12 @@
  *   It resolves once the navigation loaded: don't await it while a load
  *   waits for the test.
  * - `loadingBar()` reads the loading page's bar (fill width, text). The fill
- *   jumps straight to each target.
+ *   jumps straight to each target. `loadingIndicator()`: spinner, bar or error.
+ * - Slow navigations (pending spinner): `friendsRefresh: "pending"` hangs the
+ *   friends page's refetch (not a loading step) until
+ *   `app.blockingData.refreshFriends()`. Use fake timers (setTimeout,
+ *   clearTimeout, Date, requestAnimationFrame, cancelAnimationFrame);
+ *   `flush()` then moves the clock by one frame.
  * - Pages are stubs rendering their name, except the real loading page (its
  *   text, bar, error and Retry button); `shownPage()` returns the name of the
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
@@ -101,7 +106,11 @@ const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
     fades: [] as Fade[],
     pageMounts: [] as PageMount[],
     pageContent: new Map<string, () => JSXElement>(),
-    blockingData: { results: readiness(), friends: readiness() },
+    blockingData: {
+      results: readiness(),
+      friends: readiness(),
+      friendsRefresh: readiness(),
+    },
   };
 });
 
@@ -117,6 +126,8 @@ vi.mock(
     ...(await importOriginal()),
     isConnectionsReady: () => blockingData.friends.ready,
     waitForConnectionsReady: blockingData.friends.wait,
+    // the friends page refetches its connections on every visit
+    invalidateConnections: blockingData.friendsRefresh.wait,
   }),
 );
 
@@ -342,11 +353,20 @@ export type RenderAppOptions = {
   /** Friends download. Default "ready". */
   friends?: "ready" | "pending";
   /**
+   * The friends refetch on every visit of the friends page, not a loading
+   * step: "pending" makes a navigation to friends unexpectedly slow.
+   * Default "ready".
+   */
+  friendsRefresh?: "ready" | "pending";
+  /**
    * Extra content for stub pages by component name (eg. `LeaderboardPage`),
    * rendered inside the page - for probes using the page's hooks.
    */
   pageContent?: Record<string, () => JSXElement>;
 };
+
+/** What the loading page shows while (or instead of) loading. */
+export type LoadingIndicator = "spinner" | "bar" | "error";
 
 /** The loading page's bar as the user sees it. */
 export type LoadingBar = { width: string; text: string };
@@ -372,13 +392,19 @@ export type App = {
    * `waitForRouter: false` finishes the fades of a navigation still loading.
    */
   settle: (options?: { waitForRouter?: boolean }) => Promise<void>;
-  /** Finishes pending blocking data downloads. */
-  blockingData: { loadResults: () => void; loadFriends: () => void };
+  /** Finishes pending blocking data downloads (and the friends refetch). */
+  blockingData: {
+    loadResults: () => void;
+    loadFriends: () => void;
+    refreshFriends: () => void;
+  };
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
   finishFade: () => number;
   /** The loading page's bar (fill width, text below it), undefined if not shown. */
   loadingBar: () => LoadingBar | undefined;
+  /** What the loading page shows, undefined if no loading page is in the DOM. */
+  loadingIndicator: () => LoadingIndicator | undefined;
   /** The typing test's state (the test page itself is a stub). */
   test: TestControls;
 };
@@ -414,6 +440,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
   }
   blockingData.results.set(options.results !== "pending");
   blockingData.friends.set(options.friends !== "pending");
+  blockingData.friendsRefresh.set(options.friendsRefresh !== "pending");
   // the account route checks the user data downloaded
   setSnapshot(options.auth === "signedIn" ? getDefaultSnapshot() : undefined, {
     dispatchEvent: false,
@@ -478,6 +505,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
     blockingData: {
       loadResults: () => blockingData.results.set(true),
       loadFriends: () => blockingData.friends.set(true),
+      refreshFriends: () => blockingData.friendsRefresh.set(true),
     },
     runningFades: () => fades,
     finishFade,
@@ -492,6 +520,16 @@ export function renderApp(options: RenderAppOptions = {}): App {
         width: fill.style.width,
         text: bar.nextElementSibling?.textContent ?? "",
       };
+    },
+    loadingIndicator: () => {
+      const page = container.querySelector("#pageLoading");
+      if (page === null) return undefined;
+      // the spinner, error icon and bar are toggled, never removed
+      const isShown = (icon: string): boolean =>
+        page.querySelector(icon)?.closest(".hidden") === null;
+      if (isShown(".fa-circle-notch")) return "spinner";
+      if (isShown(".fa-times")) return "error";
+      return "bar";
     },
     test: testControls,
   };
@@ -519,9 +557,16 @@ function pageName(el: Element): string {
 
 /**
  * Lets the app react without finishing fades: waits for pending timers and
- * the next animation frame (fade ins start on one).
+ * the next animation frame (fade ins start on one). With fake timers this
+ * moves the clock by one frame.
  */
 export async function flush(): Promise<void> {
+  if (vi.isFakeTimers()) {
+    await vi.advanceTimersByTimeAsync(0);
+    vi.advanceTimersToNextFrame();
+    await vi.advanceTimersByTimeAsync(0);
+    return;
+  }
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => requestAnimationFrame(resolve));
   await new Promise((resolve) => setTimeout(resolve, 0));

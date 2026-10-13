@@ -4,8 +4,8 @@ import { createEffect, JSXElement, onCleanup, Show } from "solid-js";
 import {
   getLoadingPageBarStart,
   getLoadingPageBarTarget,
-  getLoadingPageIndicator,
   getLoadingPageText,
+  isLoadingBarShown,
 } from "../../states/loading-page";
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
@@ -34,7 +34,11 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   });
 
   const shown = (): "spinner" | "bar" | "error" =>
-    props.error !== undefined ? "error" : getLoadingPageIndicator();
+    props.error !== undefined
+      ? "error"
+      : isLoadingBarShown()
+        ? "bar"
+        : "spinner";
   const text = (): string | null =>
     props.error?.message ?? getLoadingPageText();
   const spinnerClass = (): string =>

@@ -62,6 +62,17 @@ export const getRoutePage = createRoot(() =>
   }),
 );
 
+/**
+ * Whether the router shows a pending route: on first load, and once a
+ * navigation took longer than its pendingMs. Not for an unknown url, whose
+ * routes stay pending behind the 404 page.
+ */
+export function isPendingShown(): boolean {
+  const matches = getMatches();
+  if (matches.some((match) => match._notFound === true)) return false;
+  return matches.some((match) => match.status === "pending");
+}
+
 /** Whether a navigation is in progress (the loading page may cover the current page). */
 export function isNavigating(): boolean {
   return getRouter()?.state.status === "pending";
