@@ -1,7 +1,8 @@
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
-import { finishLoadingBar, hideLoadingPage } from "../states/loading-page";
+import { LoadingRoutePage } from "../components/pages/Page";
+import { endLoadingBar, finishLoadingBar } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
@@ -48,6 +49,12 @@ export function createAppRouter(
     defaultPreload: (options.preload ?? INTENT_PRELOADING) ? "intent" : false,
     // a preloaded page's loaders run again when it's opened
     defaultPreloadStaleTime: 0,
+    // safety net for an unexpectedly slow navigation (loading steps show the
+    // bar straight away): the loading page with a spinner after half a
+    // second, kept at least half a second so it doesn't flash
+    defaultPendingComponent: LoadingRoutePage,
+    defaultPendingMs: 500,
+    defaultPendingMinMs: 500,
     // a failed load shows its error on the loading page, with a Retry button
     defaultErrorComponent: LoadingErrorRoutePage,
     notFoundMode: "root",
@@ -97,8 +104,8 @@ export function createAppRouter(
   // waits for the first auth state itself (the app route's beforeLoad)
   context.auth.onChange(() => void router.invalidate());
 
-  // the loading page stops updating once hidden (onResolved), so its bar
-  // completes when the loads are done
+  // the loading page stops updating once hidden (router idle, after
+  // onResolved), so its bar completes when the loads are done
   router.subscribe("onLoad", () => {
     finishLoadingBar();
   });
@@ -111,8 +118,9 @@ export function createAppRouter(
     leaveTestPage();
   });
 
+  // the router is idle: the loading page hides (see RootLayout)
   router.subscribe("onResolved", () => {
-    hideLoadingPage();
+    endLoadingBar();
   });
 
   return router;

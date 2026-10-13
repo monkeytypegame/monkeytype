@@ -1,6 +1,6 @@
 import type { QueryKey } from "@tanstack/solid-query";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getUserProfile } from "../../src/ts/queries/profile";
 import {
@@ -386,6 +386,124 @@ describe("app shell routing", () => {
     });
   });
 
+  describe("pending spinner", () => {
+    beforeEach(() => {
+      vi.useFakeTimers({
+        toFake: [
+          "setTimeout",
+          "clearTimeout",
+          "Date",
+          "requestAnimationFrame",
+          "cancelAnimationFrame",
+        ],
+      });
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    // friends are downloaded, but their refetch on every visit hangs
+    async function slowFriendsNavigation(): Promise<App> {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friendsRefresh: "pending",
+      });
+      await app.settle();
+      // resolves once the navigation finished loading
+      void app.navigate({ to: "/friends" });
+      return app;
+    }
+
+    it("shows the loading page with a spinner when a navigation takes longer than 500ms", async () => {
+      const app = await slowFriendsNavigation();
+
+      await vi.advanceTimersByTimeAsync(450);
+      expect(app.pagesInDom()).toEqual(["test"]);
+      expect(app.runningFades()).toHaveLength(0);
+
+      await vi.advanceTimersByTimeAsync(100);
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+      expect(app.loadingIndicator()).toBe("spinner");
+    });
+
+    it("keeps the spinner at least 500ms once shown", async () => {
+      const app = await slowFriendsNavigation();
+      await vi.advanceTimersByTimeAsync(500);
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+
+      // the navigation finishes right after the spinner showed
+      app.blockingData.refreshFriends();
+      await vi.advanceTimersByTimeAsync(400);
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+
+      await vi.advanceTimersByTimeAsync(200);
+      await app.settle();
+      expect(app.shownPage()).toBe("friends");
+    });
+
+    it("shows no spinner for a navigation faster than 500ms", async () => {
+      const app = await slowFriendsNavigation();
+      await vi.advanceTimersByTimeAsync(300);
+      app.blockingData.refreshFriends();
+      await flush();
+
+      // straight from the test page to friends
+      expect(app.pagesInDom()).toEqual(["test"]);
+      expect(app.finishFade()).toBe(0);
+      await flush();
+      expect(app.pagesInDom()).toEqual(["friends"]);
+      await vi.advanceTimersByTimeAsync(1000);
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["friends"]);
+    });
+
+    it("shows the loading bar, not the spinner, for a slow loading step", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      // resolves once the navigation finished loading
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("bar");
+
+      await vi.advanceTimersByTimeAsync(1000);
+      await flush();
+      // the same loading page, no fade to a second one
+      expect(app.runningFades()).toHaveLength(0);
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.loadingIndicator()).toBe("bar");
+
+      app.blockingData.loadResults();
+      await vi.advanceTimersByTimeAsync(500);
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("shows the spinner for a slow navigation after one with a loading step", async () => {
+      const app = renderApp({
+        url: "/account",
+        auth: "signedIn",
+        results: "pending",
+        friendsRefresh: "pending",
+      });
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("bar");
+      app.blockingData.loadResults();
+      await vi.advanceTimersByTimeAsync(500);
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+
+      void app.navigate({ to: "/friends" });
+      await vi.advanceTimersByTimeAsync(600);
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+      expect(app.loadingIndicator()).toBe("spinner");
+    });
+  });
+
   describe("page fade", () => {
     it("fades the old page out before the new page is in the DOM", async () => {
       const app = renderApp({ url: "/about" });
@@ -752,6 +870,34 @@ describe("app shell routing", () => {
 
       await app.settle();
       expect(app.shownPage()).toBe("test");
+    });
+
+    it("shows no spinner when hovering a link to a slow page", async () => {
+      vi.useFakeTimers({
+        toFake: [
+          "setTimeout",
+          "clearTimeout",
+          "Date",
+          "requestAnimationFrame",
+          "cancelAnimationFrame",
+        ],
+      });
+      // friends are downloaded, but their refetch on every visit hangs
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friendsRefresh: "pending",
+      });
+      await app.settle();
+
+      const hovered = app.hover({ to: "/friends" });
+      await vi.advanceTimersByTimeAsync(1000);
+      await hovered;
+      await app.settle({ waitForRouter: false });
+
+      expect(app.pagesInDom()).toEqual(["test"]);
+      expect(app.loadingIndicator()).toBeUndefined();
+      vi.useRealTimers();
     });
 
     it("keeps showing the profile when hovering a link to another profile", async () => {
