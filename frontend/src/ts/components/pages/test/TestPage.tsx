@@ -36,8 +36,9 @@ import { TestInitFailed } from "./TestInitFailed";
  * the test page is active.
  */
 export function TestPage(): JSXElement {
-  // leaving the page ends the test. The route unmounts the page as soon as
-  // the next route resolved, the page's DOM then fades out
+  // the router ends the test as soon as a navigation away starts (see
+  // createAppRouter). This also ends it when the page unmounts without one,
+  // eg. the loading page covering it while user data downloads after sign in
   onCleanup(() => {
     stop();
     blurInputElement();

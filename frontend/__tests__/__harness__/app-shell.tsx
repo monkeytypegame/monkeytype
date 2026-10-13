@@ -52,11 +52,18 @@ import { vi } from "vitest";
 import type { RouterAuth } from "../../src/ts/router/context";
 
 import { AppShell } from "../../src/ts/components/AppShell";
+import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
 import { setSnapshot } from "../../src/ts/db";
 import { AppRouter, createAppRouter } from "../../src/ts/router/create-router";
 import { setRouter } from "../../src/ts/router/navigate";
 import { resetLoadingPage } from "../../src/ts/states/loading-page";
+import {
+  isTestActive,
+  setIsTestRestarting,
+  setResultCalculating,
+  setTestActive,
+} from "../../src/ts/states/test";
 
 export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 
@@ -190,6 +197,14 @@ vi.mock(
   stubPage("SettingsPage"),
 );
 vi.mock("../../src/ts/components/pages/test/TestPage", stubPage("TestPage"));
+
+// the real test logic pulls in the whole typing test (indexedDB, layouts...).
+// Leaving the test page just ends the test here: tests start a test (app.test),
+// then check whether it is still running
+vi.mock("../../src/ts/test/test-logic", async () => {
+  const { setTestActive } = await import("../../src/ts/states/test");
+  return { leaveTestPage: () => setTestActive(false) };
+});
 
 export type FakeAuthState = "signedIn" | "signedOut" | "pending";
 
@@ -343,6 +358,26 @@ export type App = {
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
   finishFade: () => number;
+  /** The typing test's state (the test page itself is a stub). */
+  test: TestControls;
+};
+
+export type TestControls = {
+  /** As if the user started typing. */
+  start: () => void;
+  isRunning: () => boolean;
+  setRestarting: (restarting: boolean) => void;
+  setResultCalculating: (calculating: boolean) => void;
+  /** Activates the no quit funbox. */
+  enableNoQuit: () => void;
+};
+
+const testControls: TestControls = {
+  start: () => setTestActive(true),
+  isRunning: () => isTestActive(),
+  setRestarting: (restarting) => setIsTestRestarting(restarting),
+  setResultCalculating: (calculating) => setResultCalculating(calculating),
+  enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
 
 export function renderApp(options: RenderAppOptions = {}): App {
@@ -425,6 +460,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
     },
     runningFades: () => fades,
     finishFade,
+    test: testControls,
   };
 }
 
@@ -436,6 +472,10 @@ export function cleanupApp(): void {
   pageContent.clear();
   setRouter(undefined);
   resetLoadingPage();
+  setTestActive(false);
+  setIsTestRestarting(false);
+  setResultCalculating(false);
+  configTesting.replaceConfig({});
   setSnapshot(undefined, { dispatchEvent: false });
 }
 

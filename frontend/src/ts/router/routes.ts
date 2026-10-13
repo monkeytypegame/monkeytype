@@ -40,19 +40,10 @@ import {
 } from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
 import { SettingsSearchSchema } from "../states/settings-search";
-import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
-
-declare module "@tanstack/solid-router" {
-  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
-  interface StaticDataRouteOption {
-    /** Names the current page for page-dependent behaviour (title, hotkeys...), the route's component renders it */
-    page?: PageName;
-  }
-}
 
 /**
  * Waits until the auth state is known, then shows the loading bar while the
@@ -105,7 +96,6 @@ const app = createRoute({
 const test = createRoute({
   getParentRoute: () => app,
   path: "/",
-  staticData: { page: "test" },
   component: pageComponent("test", TestPage, {
     class: "full-width content-grid",
   }),
@@ -127,7 +117,6 @@ const verify = createRoute({
 const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
-  staticData: { page: "leaderboards" },
   component: pageComponent("leaderboards", LeaderboardPage),
   validateSearch: LeaderboardSearchSchema,
   // no loaderDeps: the loader doesn't read the search, so selection changes
@@ -152,7 +141,6 @@ const leaderboards = createRoute({
 const about = createRoute({
   getParentRoute: () => app,
   path: "/about",
-  staticData: { page: "about" },
   component: pageComponent("about", AboutPage, { class: "full-width" }),
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
@@ -166,7 +154,6 @@ const about = createRoute({
 const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
-  staticData: { page: "settings" },
   component: pageComponent("settings", SettingsPage),
   validateSearch: SettingsSearchSchema,
 });
@@ -174,7 +161,6 @@ const settings = createRoute({
 const login = createRoute({
   getParentRoute: () => app,
   path: "/login",
-  staticData: { page: "login" },
   component: pageComponent("login", LoginPage),
   beforeLoad: ({ context }) => guestOnly(context.auth),
   // background data: start the fetch, the page shows its section loaders
@@ -186,7 +172,6 @@ const login = createRoute({
 const account = createRoute({
   getParentRoute: () => app,
   path: "/account",
-  staticData: { page: "account" },
   component: pageComponent("account", AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async () => {
@@ -212,7 +197,6 @@ const account = createRoute({
 const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
-  staticData: { page: "accountSettings" },
   component: pageComponent("accountSettings", AccountSettingsPage),
   validateSearch: AccountSettingsSearchSchema,
   beforeLoad: ({ context }) => requireAuth(context.auth),
@@ -221,14 +205,12 @@ const accountSettings = createRoute({
 const profileSearch = createRoute({
   getParentRoute: () => app,
   path: "/profile",
-  staticData: { page: "profileSearch" },
   component: pageComponent("profileSearch", ProfileSearchPage),
 });
 
 const profile = createRoute({
   getParentRoute: () => app,
   path: "/profile/$uidOrName",
-  staticData: { page: "profile" },
   component: pageComponent("profile", ProfilePage),
   beforeLoad: ({ params }) => {
     setSelectedProfileName(params.uidOrName);
@@ -242,7 +224,6 @@ const profile = createRoute({
 const friends = createRoute({
   getParentRoute: () => app,
   path: "/friends",
-  staticData: { page: "friends" },
   component: pageComponent("friends", FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async ({ context: { queryClient } }) => {
