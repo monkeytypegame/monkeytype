@@ -22,7 +22,8 @@ const userDataStep: LoadingStep = {
 };
 
 // the loading bar setup of every route with a loading step. A route names its
-// step in `staticData.loadingStep`, its loader runs it with runRouteLoadingStep
+// step in `staticData.loadingStep` (the one place), its loader runs it with
+// runRouteLoadingStep
 const routeLoadingSteps = {
   results: {
     label: "the account page",
@@ -76,11 +77,28 @@ export async function runUserDataStep(userData: Promise<void>): Promise<void> {
   await runLoadingStep(userDataStep, async () => userData);
 }
 
-/** Runs `load` as the route's loading step, unless it's no longer needed. */
+/** The parts of a loader's context running its route's loading step needs. */
+type LoadingStepLoaderContext = {
+  preload: boolean;
+  route: { options: { staticData?: StaticDataRouteOption } };
+};
+
+/**
+ * Runs `load` as the loading step the loader's route names in
+ * `staticData.loadingStep`, unless it's no longer needed. A preload (hovered
+ * link) runs nothing: no loading page, the step runs once the page is opened.
+ */
 export async function runRouteLoadingStep(
-  name: RouteLoadingStepName,
+  loader: LoadingStepLoaderContext,
   load: () => Promise<void>,
 ): Promise<void> {
+  if (loader.preload) return;
+  const name = loader.route.options.staticData?.loadingStep;
+  if (name === undefined) {
+    throw new Error(
+      "A route running a loading step needs staticData.loadingStep",
+    );
+  }
   const step = routeLoadingSteps[name];
   if (!step.isNeeded()) return;
   await runLoadingStep(step, load);

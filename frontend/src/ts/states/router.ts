@@ -1,4 +1,3 @@
-import type { RouteIds } from "@tanstack/solid-router";
 import { createMemo, createRoot } from "solid-js";
 
 import type { AppRouter } from "../router/create-router";
@@ -19,24 +18,13 @@ export type PageName =
   | "friends"
   | "leaderboards";
 
-type RouteId = RouteIds<AppRouter["routeTree"]>;
-
-// routes that render no page of their own
-type PagelessRouteId = "__root__" | "/app" | "/app/verify";
-
-/** The page each route renders. */
-const pageOfRoute: Record<Exclude<RouteId, PagelessRouteId>, PageName> = {
-  "/app/": "test",
-  "/app/leaderboards": "leaderboards",
-  "/app/about": "about",
-  "/app/settings": "settings",
-  "/app/login": "login",
-  "/app/account": "account",
-  "/app/account-settings": "accountSettings",
-  "/app/profile": "profileSearch",
-  "/app/profile/$uidOrName": "profile",
-  "/app/friends": "friends",
-};
+declare module "@tanstack/solid-router" {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
+  interface StaticDataRouteOption {
+    /** The page the route renders (its component is a `routePage`). */
+    page?: PageName;
+  }
+}
 
 function getMatches(): AppRouter["state"]["matches"] {
   return getRouter()?.state.matches ?? [];
@@ -55,9 +43,7 @@ export const getRoutePage = createRoot(() =>
     const matches = getMatches();
     if (isNotFound(matches)) return "404";
     if (matches.some((match) => match.status !== "success")) return "loading";
-    const routeId = matches.at(-1)?.routeId;
-    if (routeId === undefined || !(routeId in pageOfRoute)) return "loading";
-    return pageOfRoute[routeId as keyof typeof pageOfRoute];
+    return matches.at(-1)?.staticData.page ?? "loading";
   }),
 );
 

@@ -1,3 +1,4 @@
+import { useMatch } from "@tanstack/solid-router";
 import {
   Component,
   createSignal,
@@ -73,7 +74,28 @@ export function Page(props: PageProps): JSXElement {
   );
 }
 
-/** A route component rendering `content` as page `name`. */
+/**
+ * A route component rendering `content` as the page its route names in
+ * `staticData.page` (the one place a route's page is named).
+ */
+export function routePage(
+  content: Component,
+  options: { class?: string } = {},
+): Component {
+  return () => {
+    // read once: the page keeps its name while it fades out
+    const name = useMatch({
+      strict: false,
+      select: (match) => match.staticData.page,
+    })();
+    if (name === undefined) {
+      throw new Error("A route rendering a page needs staticData.page");
+    }
+    return <Page name={name} content={content} class={options.class} />;
+  };
+}
+
+/** A component rendering `content` as page `name` (eg. a route's not found or pending component). */
 export function pageComponent(
   name: PageName,
   content: Component,

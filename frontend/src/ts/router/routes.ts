@@ -17,7 +17,7 @@ import { AccountPage } from "../components/pages/account/AccountPage";
 import { FriendsPage } from "../components/pages/connections/FriendsPage";
 import { LeaderboardPage } from "../components/pages/leaderboard/LeaderboardPage";
 import { LoginPage } from "../components/pages/login/LoginPage";
-import { pageComponent } from "../components/pages/Page";
+import { pageComponent, routePage } from "../components/pages/Page";
 import { ProfilePage } from "../components/pages/profile/ProfilePage";
 import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
 import { SettingsPage } from "../components/pages/settings/SettingsPage";
@@ -110,7 +110,8 @@ const app = createRoute({
 const test = createRoute({
   getParentRoute: () => app,
   path: "/",
-  component: pageComponent("test", TestPage, {
+  staticData: { page: "test" },
+  component: routePage(TestPage, {
     class: "full-width content-grid",
   }),
 });
@@ -131,7 +132,8 @@ const verify = createRoute({
 const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
-  component: pageComponent("leaderboards", LeaderboardPage),
+  staticData: { page: "leaderboards" },
+  component: routePage(LeaderboardPage),
   validateSearch: LeaderboardSearchSchema,
   // the loader reads the selection and page only: other search writes (eg.
   // dropping goToUserPage) don't re-run it
@@ -172,7 +174,8 @@ const leaderboards = createRoute({
 const about = createRoute({
   getParentRoute: () => app,
   path: "/about",
-  component: pageComponent("about", AboutPage, { class: "full-width" }),
+  staticData: { page: "about" },
+  component: routePage(AboutPage, { class: "full-width" }),
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
     void queryClient.prefetchQuery(getContributorsQueryOptions());
@@ -185,14 +188,16 @@ const about = createRoute({
 const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
-  component: pageComponent("settings", SettingsPage),
+  staticData: { page: "settings" },
+  component: routePage(SettingsPage),
   validateSearch: SettingsSearchSchema,
 });
 
 const login = createRoute({
   getParentRoute: () => app,
   path: "/login",
-  component: pageComponent("login", LoginPage),
+  staticData: { page: "login" },
+  component: routePage(LoginPage),
   beforeLoad: ({ context }) => guestOnly(context.auth),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
@@ -203,14 +208,12 @@ const login = createRoute({
 const account = createRoute({
   getParentRoute: () => app,
   path: "/account",
-  staticData: { loadingStep: "results" },
-  component: pageComponent("account", AccountPage),
+  staticData: { page: "account", loadingStep: "results" },
+  component: routePage(AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
-  loader: async ({ preload }) => {
-    // blocking data: a hover must not show the loading page, the results
-    // download is waited for when the page is opened
-    if (preload) return;
-    await runRouteLoadingStep("results", async () => {
+  // blocking data
+  loader: async (loader) => {
+    await runRouteLoadingStep(loader, async () => {
       if (getSnapshot() === null || getSnapshot() === undefined) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
@@ -225,7 +228,8 @@ const account = createRoute({
 const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
-  component: pageComponent("accountSettings", AccountSettingsPage),
+  staticData: { page: "accountSettings" },
+  component: routePage(AccountSettingsPage),
   validateSearch: AccountSettingsSearchSchema,
   beforeLoad: ({ context }) => requireAuth(context.auth),
 });
@@ -233,13 +237,15 @@ const accountSettings = createRoute({
 const profileSearch = createRoute({
   getParentRoute: () => app,
   path: "/profile",
-  component: pageComponent("profileSearch", ProfileSearchPage),
+  staticData: { page: "profileSearch" },
+  component: routePage(ProfileSearchPage),
 });
 
 const profile = createRoute({
   getParentRoute: () => app,
   path: "/profile/$uidOrName",
-  component: pageComponent("profile", ProfilePage),
+  staticData: { page: "profile" },
+  component: routePage(ProfilePage),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient }, params }) => {
     void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
@@ -249,19 +255,21 @@ const profile = createRoute({
 const friends = createRoute({
   getParentRoute: () => app,
   path: "/friends",
-  staticData: { loadingStep: "friends" },
-  component: pageComponent("friends", FriendsPage),
+  staticData: { page: "friends", loadingStep: "friends" },
+  component: routePage(FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
-  loader: async ({ context: { queryClient }, preload }) => {
-    // blocking data: a hover must not show the loading page
-    if (preload) return;
-    await runRouteLoadingStep("friends", async () => {
+  // blocking data
+  loader: async (loader) => {
+    await runRouteLoadingStep(loader, async () => {
       await Promise.all([
-        queryClient.ensureQueryData(getServerConfigurationQueryOptions()),
+        loader.context.queryClient.ensureQueryData(
+          getServerConfigurationQueryOptions(),
+        ),
         waitForConnectionsReady(),
       ]);
     });
-    await invalidateConnections();
+    // refetched on every visit (not on a hover: no global side effects)
+    if (!loader.preload) await invalidateConnections();
   },
 });
 
