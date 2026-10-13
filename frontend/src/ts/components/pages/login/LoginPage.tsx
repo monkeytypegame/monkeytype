@@ -19,7 +19,13 @@ export function LoginPage(): JSXElement {
           <i class="fas fa-fw fa-spin fa-circle-notch"></i>
         </div>
       </Show>
-      <Suspense fallback={<LoadingCircle class="p-4 text-center text-2xl" />}>
+      <Suspense
+        fallback={
+          <div class="grid h-full content-center">
+            <LoadingCircle class="p-4 text-center text-[2rem]" />
+          </div>
+        }
+      >
         <Show
           when={isSignUpDisabled()}
           fallback={
