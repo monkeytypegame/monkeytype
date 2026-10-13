@@ -27,7 +27,7 @@ declare module "@tanstack/solid-router" {
 setRouter(router);
 
 // guards every navigation - links, navigate(), back/forward.
-// redirects and replaceSearch bypass it (ignoreBlocker)
+// redirects bypass it (ignoreBlocker)
 router.history.block({
   enableBeforeUnload: false,
   blockerFn: ({ nextLocation }) => {

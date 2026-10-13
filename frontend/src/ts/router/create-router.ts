@@ -21,14 +21,17 @@ export function createAppRouter(
     // a failed load shows its error on the loading page (see RootLayout)
     defaultErrorComponent: () => null,
     trailingSlash: "never",
-    // keep search params as plain strings - routes parse them with zod themselves,
-    // and existing links (eg. ?mode2=15) must keep their format
+    // search params are plain strings (the default JSON parser would turn
+    // ?mode2=15 into a number) - route validateSearch schemas take strings in
     parseSearch: (searchStr) =>
       Object.fromEntries(new URLSearchParams(searchStr)),
     stringifySearch: (search) => {
-      const str = new URLSearchParams(
-        search as Record<string, string>,
-      ).toString();
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(search)) {
+        const str = searchValueToString(value);
+        if (str !== undefined) params.set(key, str);
+      }
+      const str = params.toString();
       return str === "" ? "" : `?${str}`;
     },
   });
@@ -45,3 +48,12 @@ export function createAppRouter(
 }
 
 export type AppRouter = ReturnType<typeof createAppRouter>;
+
+// booleans keep the "t"/"f" format of existing links, undefined is left out
+function searchValueToString(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "boolean") return value ? "t" : "f";
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return value.toString();
+  return JSON.stringify(value);
+}
