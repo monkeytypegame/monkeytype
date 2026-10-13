@@ -18,7 +18,7 @@ export function createAppRouter(
     routeTree,
     context,
     history: options.history,
-    // pages are rendered by <Pages>, a failed load shows its error on the loading page
+    // a failed load shows its error on the loading page (see RootLayout)
     defaultErrorComponent: () => null,
     trailingSlash: "never",
     // keep search params as plain strings - routes parse them with zod themselves,

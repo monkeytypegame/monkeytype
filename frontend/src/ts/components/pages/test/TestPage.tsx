@@ -1,10 +1,8 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { createEffectOn } from "../../../hooks/effects";
 import { blurInputElement } from "../../../input/input-element";
 import { getShowResult } from "../../../states/result";
-import { getRoutePage } from "../../../states/router";
 import {
   getFocus,
   getLayoutfluidTimerText,
@@ -38,12 +36,11 @@ import { TestInitFailed } from "./TestInitFailed";
  * the test page is active.
  */
 export function TestPage(): JSXElement {
-  // stop typing as soon as the user navigates away, before the page fades out
-  createEffectOn(getRoutePage, (page, prev) => {
-    if (page !== "test" && prev === "test") {
-      stop();
-      blurInputElement();
-    }
+  // leaving the page ends the test. The route unmounts the page as soon as
+  // the next route resolved, the page's DOM then fades out
+  onCleanup(() => {
+    stop();
+    blurInputElement();
   });
 
   return <TypingTest />;

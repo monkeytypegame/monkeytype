@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
-import { cleanupApp, deferred, renderApp } from "../__harness__/app-shell";
+import {
+  cleanupApp,
+  deferred,
+  flush,
+  renderApp,
+} from "../__harness__/app-shell";
 
 const serverConfigurationKey = getServerConfigurationQueryOptions().queryKey;
 
@@ -153,6 +158,120 @@ describe("app shell routing", () => {
     });
   });
 
+  describe("page fade", () => {
+    it("fades the old page out before the new page is in the DOM", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await flush();
+      expect(app.pagesInDom()).toEqual(["about"]);
+      expect(app.runningFades()).toHaveLength(1);
+      expect(app.finishFade()).toBe(0);
+
+      await flush();
+      expect(app.pagesInDom()).toEqual(["settings"]);
+      expect(app.finishFade()).toBe(1);
+      expect(app.runningFades()).toHaveLength(0);
+    });
+
+    it("holds the new page at opacity 0 until its fade in finishes", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await flush();
+      app.finishFade();
+      await flush();
+
+      expect(app.pageElement()?.style.opacity).toBe("0");
+      app.finishFade();
+      await flush();
+      expect(app.pageElement()?.style.opacity).toBe("");
+    });
+
+    it("ends on the last page after navigating during the fade out", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await app.navigate({ to: "/login" });
+      await app.navigate({ to: "/profile" });
+      await flush();
+      expect(app.finishFade()).toBe(0);
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["profileSearch"]);
+      expect(app.pageElement()?.style.opacity).toBe("");
+    });
+
+    it("ends on the last page after navigating during the fade in", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await flush();
+      app.finishFade();
+      await flush();
+      expect(app.pagesInDom()).toEqual(["settings"]);
+
+      await app.navigate({ to: "/login" });
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["login"]);
+      expect(app.pageElement()?.style.opacity).toBe("");
+    });
+
+    it("ends on the last page when navigating before the fade in starts", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await flush();
+      app.finishFade();
+      // the fade in starts on the next frame - navigate before it
+      await app.navigate({ to: "/login" });
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["login"]);
+      expect(app.pageElement()?.style.opacity).toBe("");
+    });
+
+    it("mounts page content only once its wrapper is in the document", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.navigate({ to: "/settings" });
+      await app.settle();
+
+      expect(app.pageMounts()).toContainEqual({
+        page: "Settings",
+        attached: true,
+      });
+      expect(app.pageMounts().every((mount) => mount.attached)).toBe(true);
+    });
+
+    it("fades the first page in from the loading page", async () => {
+      const userData = deferred();
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      app.auth.signIn({ userData: userData.promise });
+      await flush();
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      // the loading page fades in on boot
+      expect(app.finishFade()).toBe(1);
+
+      userData.resolve();
+      await flush();
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.finishFade()).toBe(0);
+
+      await flush();
+      expect(app.pagesInDom()).toEqual(["settings"]);
+      expect(app.finishFade()).toBe(1);
+    });
+  });
+
   it("redirects /verify to / keeping search and hash", async () => {
     const app = renderApp({ url: "/verify?mode=verifyEmail&oobCode=abc#top" });
     await app.settle();
@@ -161,7 +280,3 @@ describe("app shell routing", () => {
     expect(app.shownPage()).toBe("test");
   });
 });
-
-async function flush(): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 0));
-}

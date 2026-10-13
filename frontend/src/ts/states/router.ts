@@ -1,10 +1,22 @@
 import { createMemo } from "solid-js";
 
-import type { PageName } from "../components/pages/Pages";
 import { getRouter } from "../router/navigate";
 import { isLoadingPageShown } from "./loading-page";
 
-export type { PageName };
+/** A page of the site, rendered by its route (see router/routes.ts). */
+export type PageName =
+  | "loading"
+  | "test"
+  | "about"
+  | "settings"
+  | "account"
+  | "login"
+  | "profile"
+  | "profileSearch"
+  | "404"
+  | "accountSettings"
+  | "friends"
+  | "leaderboards";
 
 // matches only change once a route has loaded
 const getMatches = createMemo(() => getRouter()?.state.matches ?? []);
