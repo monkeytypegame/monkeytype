@@ -18,7 +18,7 @@ function quickRestart(e: KeyboardEvent): void {
   if (getRoutePage() === "test") {
     restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
   } else {
-    void navigate("");
+    void navigate({ to: "/" });
   }
 }
 

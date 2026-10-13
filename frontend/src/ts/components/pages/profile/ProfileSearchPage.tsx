@@ -25,7 +25,10 @@ export function ProfileSearchPage(): JSXElement {
     onSubmit: async ({ value }) => {
       setEditable(false);
       try {
-        void navigate(`/profile/${value.username}`);
+        void navigate({
+          to: "/profile/$uidOrName",
+          params: { uidOrName: value.username },
+        });
       } finally {
         setEditable(true);
       }
