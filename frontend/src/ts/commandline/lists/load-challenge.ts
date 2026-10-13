@@ -13,7 +13,7 @@ const subgroup: CommandsSubgroup = {
       id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
       display: challenge.display,
       exec: async (): Promise<void> => {
-        await navigate("/");
+        await navigate({ to: "/" });
         await ChallengeController.setup(challenge.name);
         void TestLogic.restart({
           nosave: true,
