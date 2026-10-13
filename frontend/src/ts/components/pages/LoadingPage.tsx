@@ -1,5 +1,5 @@
 import { animate } from "animejs";
-import { createEffect, JSXElement, onCleanup, Show } from "solid-js";
+import { createEffect, JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import {
   getLoadingPageBarStart,
@@ -19,6 +19,14 @@ export type LoadingPageProps = {
 export function LoadingPage(props: LoadingPageProps): JSXElement {
   let fillEl: HTMLElement | undefined;
 
+  // the loading page can mount mid-navigation (after the old page faded
+  // out): start where the current step's share begins
+  onMount(() => {
+    if (fillEl !== undefined) {
+      fillEl.style.width = `${getLoadingPageBarStart()}%`;
+    }
+  });
+
   createEffect(() => {
     const target = getLoadingPageBarTarget();
     if (target === null || fillEl === undefined) return;
@@ -33,7 +41,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
     onCleanup(() => animation.pause());
   });
 
-  const shown = (): "spinner" | "bar" | "error" =>
+  const indicator = (): "spinner" | "bar" | "error" =>
     props.error !== undefined
       ? "error"
       : isLoadingBarShown()
@@ -42,12 +50,12 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   const text = (): string | null =>
     props.error?.message ?? getLoadingPageText();
   const spinnerClass = (): string =>
-    cn("text-[2rem] text-main", { hidden: shown() !== "spinner" });
+    cn("text-[2rem] text-main", { hidden: indicator() !== "spinner" });
   const errorClass = (): string =>
-    cn("text-[2rem] text-error", { hidden: shown() !== "error" });
+    cn("text-[2rem] text-error", { hidden: indicator() !== "error" });
   const barClass = (): string =>
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
-      hidden: shown() !== "bar",
+      hidden: indicator() !== "bar",
     });
   const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
 
@@ -62,15 +70,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
         <Fa icon="fa-times" fixedWidth />
       </div>
       <div class={barClass()}>
-        <div
-          ref={(el) => {
-            fillEl = el;
-            // the loading page can mount mid-navigation (after the old page
-            // faded out): start where the current step's share begins
-            el.style.width = `${getLoadingPageBarStart()}%`;
-          }}
-          class="h-full rounded bg-main"
-        ></div>
+        <div ref={(el) => (fillEl = el)} class="h-full rounded bg-main"></div>
       </div>
       {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}

@@ -3,6 +3,7 @@ import {
   createSignal,
   JSXElement,
   onCleanup,
+  onMount,
   Show,
   Suspense,
 } from "solid-js";
@@ -28,14 +29,19 @@ type PageProps = {
  */
 export function Page(props: PageProps): JSXElement {
   const [isAttached, setAttached] = createSignal(false);
+  let pageEl: HTMLElement | undefined;
   let frame: number | undefined;
+  let isDisposed = false;
   onCleanup(() => {
+    isDisposed = true;
     if (frame !== undefined) cancelAnimationFrame(frame);
   });
 
-  const waitUntilAttached = (el: HTMLElement): void => {
+  // runs before the fade inserts the wrapper: wait until it is attached
+  onMount(() => {
     const check = (): void => {
-      if (el.isConnected) {
+      if (isDisposed) return;
+      if (pageEl?.isConnected === true) {
         frame = undefined;
         setAttached(true);
         return;
@@ -43,7 +49,7 @@ export function Page(props: PageProps): JSXElement {
       frame = requestAnimationFrame(check);
     };
     queueMicrotask(check);
-  };
+  });
 
   const id = (): string => `page${capitalizeFirstLetter(props.name)}`;
 
@@ -52,7 +58,7 @@ export function Page(props: PageProps): JSXElement {
       id={id()}
       class={cn("page", id(), props.class)}
       data-nosnippet={props.name === "test" ? "" : undefined}
-      ref={waitUntilAttached}
+      ref={(el) => (pageEl = el)}
     >
       <Show when={isAttached()}>
         {/* last-resort net: the router wraps every match in Suspense
