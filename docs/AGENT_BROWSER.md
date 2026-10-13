@@ -12,6 +12,12 @@ New tabs open on `chrome://newtab`, which rejects `javascript_tool` and screensh
 
 Before testing anything animated (page fades, anime.js, carets), check `document.visibilityState`. In a `hidden` tab Chrome pauses `requestAnimationFrame`, so fades never finish and pages look stuck at opacity 0. If it's `hidden`, ask the user to bring the Chrome window to the front.
 
+`javascript_tool` calls time out at 45s and the result is lost. Keep each call under ~40s; split long measurements (eg. one variant per call).
+
+## Verifying what's on screen
+
+Claims about what the user sees ("never two pages at once", "no flash", "loader shows") need what's painted: screenshots, or `gif_creator` frames. Computed styles and DOM queries miss painted-but-not-in-DOM content, eg. View Transition snapshots drawn over the live page, and content a `Suspense` fallback swapped out. Use DOM sampling for timings, screenshots to confirm the visual claim.
+
 ## `window.__mt` (dev only)
 
 Defined in `frontend/src/ts/dev/expose.ts`; absent in production builds. Wait for it after load:
@@ -25,7 +31,8 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `navigate(url)` | client-side route change |
 | `getTargetPage()` | page that should be on screen (loading page while a route loads) |
 | `getRoutePage()` | page name for current route |
-| `getConfig` / `setConfig(key, value)` | read/write config |
+| `getConfig.<key>` | read config (store object, not a function) |
+| `setConfig(key, value)` | write config |
 | `showModal(id)` | open a modal by `ModalId` |
 | `restart()` | restart the typing test |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
