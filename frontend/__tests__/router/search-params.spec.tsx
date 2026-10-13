@@ -8,6 +8,7 @@ import {
   App,
   cleanupApp,
   deferred,
+  flush,
   renderApp,
   RenderAppOptions,
 } from "../__harness__/app-shell";
@@ -287,7 +288,3 @@ describe("search params", () => {
     });
   });
 });
-
-async function flush(): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 0));
-}
