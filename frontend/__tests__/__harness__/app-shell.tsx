@@ -45,6 +45,10 @@
  *   content mount and whether it was attached to the document by then.
  *   `pageContent` adds content to a stub, eg. a probe calling the page's
  *   search hook.
+ * - Links outside the pages, like the header's: `app.hover(link)` (waits for
+ *   its preload), `app.click(link)`. `history: "browser"` for back/forward
+ *   (`app.router.history.back()`), which the history blocker guards only on
+ *   the browser history.
  * - Fades: `settle()` finishes them all. For fade ordering use
  *   `runningFades()` / `finishFade()` (finishes the oldest running fade) and
  *   `flush()` (timers and one animation frame - fade ins start on a frame).
@@ -61,10 +65,12 @@ import {
   QueryKey,
 } from "@tanstack/solid-query";
 import {
+  createBrowserHistory,
   createMemoryHistory,
   Link,
   NavigateOptions,
   RouterContextProvider,
+  RouterHistory,
 } from "@tanstack/solid-router";
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
@@ -417,6 +423,12 @@ export type RenderAppOptions = {
    * rendered inside the page - for probes using the page's hooks.
    */
   pageContent?: Record<string, () => JSXElement>;
+  /**
+   * "browser" runs on jsdom's window history (back/forward through popstate,
+   * which the history blocker guards; memory history doesn't block them).
+   * Default "memory".
+   */
+  history?: "memory" | "browser";
 };
 
 /** What the loading page shows while (or instead of) loading. */
@@ -472,10 +484,14 @@ export type App = {
   hover: <TTo extends string | undefined>(
     link: NavigateOptions<AppRouter, string, TTo>,
   ) => Promise<void>;
+  /** Clicks a link to `link` (rendered outside the pages, like the header's nav). */
+  click: <TTo extends string | undefined>(
+    link: NavigateOptions<AppRouter, string, TTo>,
+  ) => void;
 };
 
-/** Where a hovered link points (to, params, search). */
-type HoverLink = NavigateOptions<AppRouter, string, string | undefined>;
+/** Where a hovered or clicked link points (to, params, search). */
+type HarnessLink = NavigateOptions<AppRouter, string, string | undefined>;
 
 export type TestControls = {
   /** Starts a test, wherever the user is. */
@@ -500,6 +516,18 @@ const testControls: TestControls = {
   setResultCalculating: (calculating) => setResultCalculating(calculating),
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
+
+// stops the browser history listening to window popstate (see cleanupApp)
+let destroyHistory: (() => void) | undefined;
+
+function createHistory(options: RenderAppOptions): RouterHistory {
+  const url = options.url ?? "/";
+  if (options.history !== "browser") {
+    return createMemoryHistory({ initialEntries: [url] });
+  }
+  window.history.replaceState(null, "", url);
+  return createBrowserHistory();
+}
 
 export function renderApp(options: RenderAppOptions = {}): App {
   const auth = createFakeAuth(options.auth ?? "signedOut", {
@@ -527,13 +555,14 @@ export function renderApp(options: RenderAppOptions = {}): App {
 
   const router = createAppRouter(
     { auth, queryClient },
-    { history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }) },
+    { history: createHistory(options) },
   );
+  destroyHistory = () => router.history.destroy();
   // vanilla modules and router state memos read the router through this holder
   setRouter(router);
 
   // the header's links live in a separate solid root, like here
-  const [links, setLinks] = createSignal<HoverLink[]>([]);
+  const [links, setLinks] = createSignal<HarnessLink[]>([]);
   const { container } = render(() => (
     <QueryClientProvider client={queryClient}>
       <AppShell router={router} />
@@ -547,13 +576,18 @@ export function renderApp(options: RenderAppOptions = {}): App {
     </QueryClientProvider>
   ));
 
-  async function hover<TTo extends string | undefined>(
-    link: NavigateOptions<AppRouter, string, TTo>,
-  ): Promise<void> {
-    setLinks((prev) => [...prev, link as HoverLink]);
+  function renderLink(link: HarnessLink): Element {
+    setLinks((prev) => [...prev, link]);
     const nav = container.querySelector('[data-testid="harness-links"]');
     const el = nav?.lastElementChild;
     if (el === null || el === undefined) throw new Error("link not rendered");
+    return el;
+  }
+
+  async function hover<TTo extends string | undefined>(
+    link: NavigateOptions<AppRouter, string, TTo>,
+  ): Promise<void> {
+    const el = renderLink(link as HarnessLink);
     fireEvent.mouseEnter(el);
     // intent preloads start after the preload delay
     await new Promise((resolve) =>
@@ -639,12 +673,17 @@ export function renderApp(options: RenderAppOptions = {}): App {
     },
     test: testControls,
     hover,
+    click: (link) => {
+      fireEvent.click(renderLink(link as HarnessLink));
+    },
   };
 }
 
 /** Unmounts the app and resets shared state. Call in afterEach. */
 export function cleanupApp(): void {
   cleanup();
+  destroyHistory?.();
+  destroyHistory = undefined;
   fades.length = 0;
   pageMounts.length = 0;
   pageContent.clear();

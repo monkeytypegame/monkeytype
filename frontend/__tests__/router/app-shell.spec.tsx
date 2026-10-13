@@ -457,6 +457,20 @@ describe("app shell routing", () => {
       expect(app.loadingIndicator()).toBe("spinner");
     });
 
+    it("lets the user navigate away while the spinner is shown", async () => {
+      const app = await slowFriendsNavigation();
+      await vi.advanceTimersByTimeAsync(500);
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("spinner");
+
+      void app.navigate({ to: "/about" });
+      await vi.advanceTimersByTimeAsync(600);
+      await app.settle();
+
+      expect(app.url()).toBe("/about");
+      expect(app.shownPage()).toBe("about");
+    });
+
     it("keeps the spinner at least 500ms once shown", async () => {
       const app = await slowFriendsNavigation();
       await vi.advanceTimersByTimeAsync(500);
@@ -530,6 +544,118 @@ describe("app shell routing", () => {
       await app.settle({ waitForRouter: false });
       expect(app.shownPage()).toBe("loading");
       expect(app.loadingIndicator()).toBe("spinner");
+    });
+  });
+
+  describe("navigating while the loading bar is shown", () => {
+    // test page -> account, the results download holding the bar up
+    async function accountLoading(): Promise<App> {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      // resolves once the account page loaded
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("bar");
+      return app;
+    }
+
+    it("blocks navigate() while the bar is shown", async () => {
+      const app = await accountLoading();
+
+      // a blocked navigation never resolves
+      void app.navigate({ to: "/about" });
+      await app.settle({ waitForRouter: false });
+
+      expect(app.url()).toBe("/account");
+      expect(app.loadingBar()?.text).toBe("Downloading results...");
+    });
+
+    it("blocks link clicks while the bar is shown", async () => {
+      const app = await accountLoading();
+
+      app.click({ to: "/about" });
+      await app.settle({ waitForRouter: false });
+
+      expect(app.url()).toBe("/account");
+      expect(app.loadingBar()?.text).toBe("Downloading results...");
+    });
+
+    it("blocks back while the bar is shown", async () => {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        results: "pending",
+        history: "browser",
+      });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("bar");
+
+      app.router.history.back();
+      // popstate fires asynchronously, the blocker then restores the entry
+      await vi.waitFor(() => expect(window.location.pathname).toBe("/account"));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await app.settle({ waitForRouter: false });
+
+      expect(window.location.pathname).toBe("/account");
+      expect(app.url()).toBe("/account");
+      expect(app.loadingBar()?.text).toBe("Downloading results...");
+    });
+
+    it("shows the page once loaded, without a blocked navigation firing later", async () => {
+      const app = await accountLoading();
+      void app.navigate({ to: "/about" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.loadResults();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+
+      await waitForDone();
+      await app.settle();
+      expect(app.url()).toBe("/account");
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("lets the user navigate away from a failed load's error page", async () => {
+      const app = await accountLoading();
+      app.blockingData.failResults(new Error("server is down"));
+      await app.settle();
+      expect(app.loadingIndicator()).toBe("error");
+
+      await app.navigate({ to: "/about" });
+      await app.settle();
+
+      expect(app.shownPage()).toBe("about");
+    });
+
+    it("redirects to login when the user signs out while the results download", async () => {
+      const app = await accountLoading();
+
+      app.auth.signOut();
+      await app.settle();
+
+      expect(app.url()).toBe("/login");
+      expect(app.shownPage()).toBe("login");
+    });
+
+    it("redirects from login to account when the user signs in, the bar showing the download", async () => {
+      const userData = deferred();
+      const app = renderApp({ url: "/login", results: "pending" });
+      await app.settle();
+
+      app.auth.signIn({ userData: userData.promise });
+      await app.settle({ waitForRouter: false });
+      expect(app.loadingIndicator()).toBe("bar");
+      userData.resolve();
+      app.blockingData.loadResults();
+      await app.settle();
+
+      expect(app.url()).toBe("/account");
+      expect(app.shownPage()).toBe("account");
     });
   });
 
