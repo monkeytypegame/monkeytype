@@ -1,5 +1,5 @@
 import { animate } from "animejs";
-import { createEffect, JSXElement, onCleanup } from "solid-js";
+import { createEffect, JSXElement, onCleanup, Show } from "solid-js";
 
 import {
   getLoadingPageBarStart,
@@ -7,11 +7,16 @@ import {
   getLoadingPageIndicator,
   getLoadingPageText,
 } from "../../states/loading-page";
-import { getLoadingError } from "../../states/router";
 import { cn } from "../../utils/cn";
+import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 
-export function LoadingPage(): JSXElement {
+export type LoadingPageProps = {
+  /** Shows the error state: the failed load's message and a Retry button. */
+  error?: { message: string; onRetry: () => void };
+};
+
+export function LoadingPage(props: LoadingPageProps): JSXElement {
   let fillEl: HTMLElement | undefined;
 
   createEffect(() => {
@@ -29,8 +34,9 @@ export function LoadingPage(): JSXElement {
   });
 
   const shown = (): "spinner" | "bar" | "error" =>
-    getLoadingError() !== null ? "error" : getLoadingPageIndicator();
-  const text = (): string | null => getLoadingError() ?? getLoadingPageText();
+    props.error !== undefined ? "error" : getLoadingPageIndicator();
+  const text = (): string | null =>
+    props.error?.message ?? getLoadingPageText();
   const spinnerClass = (): string =>
     cn("text-[2rem] text-main", { hidden: shown() !== "spinner" });
   const errorClass = (): string =>
@@ -65,6 +71,16 @@ export function LoadingPage(): JSXElement {
       {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}
       <div class={textClass()} innerHTML={text() ?? ""}></div>
+      <Show when={props.error}>
+        {(error) => (
+          <Button
+            fa={{ icon: "fa-redo-alt" }}
+            text="Retry"
+            class="justify-self-center"
+            onClick={() => error().onRetry()}
+          />
+        )}
+      </Show>
     </>
   );
 }

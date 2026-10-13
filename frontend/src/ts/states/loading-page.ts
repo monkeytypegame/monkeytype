@@ -78,28 +78,6 @@ export type LoadingStep = {
   keyframes: LoadingBarKeyframe[];
 };
 
-/** Spinner loads show no progress, so they take no share of the bar. */
-export type RouteLoading = {
-  style: "spinner";
-  load: () => Promise<void>;
-};
-
-/**
- * Shows the loading page with a spinner while `loading.load` runs. Throws on
- * failure, so the route fails and the router shows the error on the loading
- * page.
- * @param label used in the error message, eg. "the leaderboards page"
- */
-export async function withLoading(
-  label: string,
-  loading: RouteLoading,
-): Promise<void> {
-  setLoadingPageShown(true);
-  setLoadingPageIndicator(loading.style);
-  setLoadingPageText(null);
-  await failWithLabel(label, loading.load());
-}
-
 // one bar per navigation, split between its loading steps: each gets an equal
 // share of 0-100, the last one stops at barEnd leaving the rest for "Done"
 const barEnd = 90;

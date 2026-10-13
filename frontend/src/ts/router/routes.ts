@@ -24,12 +24,21 @@ import { SettingsPage } from "../components/pages/settings/SettingsPage";
 import { TestPage } from "../components/pages/test/TestPage";
 import { RootLayout } from "../components/RootLayout";
 import { getSnapshot } from "../db";
-import { accountSettingsSearch } from "../states/account-settings";
+import { AccountSettingsSearchSchema } from "../states/account-settings";
+import { getUserProfile } from "../queries/profile";
+import {
+  getContributorsQueryOptions,
+  getSpeedHistogramQueryOptions,
+  getSupportersQueryOptions,
+  getTypingStatsQueryOptions,
+} from "../queries/public";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
 import { setSelectedProfileName } from "../states/core";
-import { leaderboardSearch } from "../states/leaderboard-selection";
-import { withLoading } from "../states/loading-page";
-import { settingsSearch } from "../states/settings-search";
+import {
+  getMissingLeaderboardSearch,
+  LeaderboardSearchSchema,
+} from "../states/leaderboard-selection";
+import { SettingsSearchSchema } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
@@ -38,7 +47,6 @@ import {
   runRouteLoadingStep,
   runUserDataStep,
 } from "./loading-steps";
-import { readSearchOnEnter } from "./search-params";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -81,6 +89,8 @@ function guestOnly(auth: RouterAuth): void {
 // each route renders its page, the root layout fades between them
 const root = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
+  // unknown urls. The profile page shows its own message for unknown users
+  notFoundComponent: pageComponent("404", NotFoundPage),
 });
 
 // pathless layout so every page waits for auth and the user data download
@@ -125,18 +135,23 @@ const leaderboards = createRoute({
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
   component: pageComponent("leaderboards", LeaderboardPage),
-  beforeLoad: readSearchOnEnter(leaderboardSearch),
-  loader: async ({ context: { queryClient } }) => {
-    const serverConfiguration = getServerConfigurationQueryOptions();
-    if (queryClient.getQueryData(serverConfiguration.queryKey) !== undefined) {
-      return;
+  validateSearch: LeaderboardSearchSchema,
+  // no loaderDeps: the loader doesn't read the search, so selection changes
+  // don't re-run it. A loader that does lists only what it reads in loaderDeps
+  beforeLoad: ({ search }) => {
+    const missing = getMissingLeaderboardSearch(search);
+    if (missing !== undefined) {
+      redirect({
+        to: "/leaderboards",
+        search: missing,
+        replace: true,
+        throw: true,
+      });
     }
-    await withLoading("the leaderboards page", {
-      style: "spinner",
-      load: async () => {
-        await queryClient.ensureQueryData(serverConfiguration);
-      },
-    });
+  },
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
   },
 });
 
@@ -145,6 +160,13 @@ const about = createRoute({
   path: "/about",
   staticData: { page: "about" },
   component: pageComponent("about", AboutPage, { class: "full-width" }),
+  // background data: start the fetches, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getContributorsQueryOptions());
+    void queryClient.prefetchQuery(getSupportersQueryOptions());
+    void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+    void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+  },
 });
 
 const settings = createRoute({
@@ -152,7 +174,7 @@ const settings = createRoute({
   path: "/settings",
   staticData: { page: "settings" },
   component: pageComponent("settings", SettingsPage),
-  beforeLoad: readSearchOnEnter(settingsSearch),
+  validateSearch: SettingsSearchSchema,
 });
 
 const login = createRoute({
@@ -161,6 +183,10 @@ const login = createRoute({
   staticData: { page: "login" },
   component: pageComponent("login", LoginPage),
   beforeLoad: ({ context }) => guestOnly(context.auth),
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
+  },
 });
 
 const account = createRoute({
@@ -186,10 +212,8 @@ const accountSettings = createRoute({
   path: "/account-settings",
   staticData: { page: "accountSettings" },
   component: pageComponent("accountSettings", AccountSettingsPage),
-  beforeLoad: (ctx) => {
-    requireAuth(ctx.context.auth);
-    readSearchOnEnter(accountSettingsSearch)(ctx);
-  },
+  validateSearch: AccountSettingsSearchSchema,
+  beforeLoad: ({ context }) => requireAuth(context.auth),
 });
 
 const profileSearch = createRoute({
@@ -206,6 +230,10 @@ const profile = createRoute({
   component: pageComponent("profile", ProfilePage),
   beforeLoad: ({ params }) => {
     setSelectedProfileName(params.uidOrName);
+  },
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient }, params }) => {
+    void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
   },
 });
 
@@ -226,13 +254,6 @@ const friends = createRoute({
   },
 });
 
-const notFound = createRoute({
-  getParentRoute: () => app,
-  path: "$",
-  staticData: { page: "404" },
-  component: pageComponent("404", NotFoundPage),
-});
-
 export const routeTree = root.addChildren([
   app.addChildren([
     test,
@@ -246,6 +267,5 @@ export const routeTree = root.addChildren([
     profileSearch,
     profile,
     friends,
-    notFound,
   ]),
 ]);

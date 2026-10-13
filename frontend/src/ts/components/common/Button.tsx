@@ -156,26 +156,36 @@ function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
 
 const ButtonLink = createLink(ButtonAnchor);
 
-export function Button(props: ButtonProps | AnchorProps): JSXElement;
 /**
- * In-app link: a real anchor (href, cmd/ctrl+click opens a new tab) that
- * navigates through the router with typed `to`, `params` and `search`.
- * Gets `data-status="active"` while its route is the current location
- * (exact path, search ignored, unless `activeOptions` says otherwise).
+ * Overloads live on a call-signature type rather than as `function`
+ * overloads: the dev-only solid-refresh transform rewrites component
+ * declarations to `const`, which breaks overload signatures.
  */
-export function Button<
-  TRouter extends AnyRouter = RegisteredRouter,
-  const TFrom extends string = string,
-  const TTo extends string | undefined = undefined,
-  const TMaskFrom extends string = TFrom,
-  const TMaskTo extends string = "",
->(props: ButtonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>): JSXElement;
-export function Button(
+type ButtonComponent = {
+  (props: ButtonProps | AnchorProps): JSXElement;
+  /**
+   * In-app link: a real anchor (href, cmd/ctrl+click opens a new tab) that
+   * navigates through the router with typed `to`, `params` and `search`.
+   * Gets `data-status="active"` while its route is the current location
+   * (exact path, search ignored, unless `activeOptions` says otherwise).
+   */
+  <
+    TRouter extends AnyRouter = RegisteredRouter,
+    const TFrom extends string = string,
+    const TTo extends string | undefined = undefined,
+    const TMaskFrom extends string = TFrom,
+    const TMaskTo extends string = "",
+  >(
+    props: ButtonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>,
+  ): JSXElement;
+};
+
+export const Button: ButtonComponent = (
   props:
     | ButtonProps
     | AnchorProps
     | ButtonLinkProps<AnyRouter, string, string, string, string>,
-): JSXElement {
+): JSXElement => {
   return (
     <Show
       when={"to" in props}
@@ -187,7 +197,7 @@ export function Button(
       />
     </Show>
   );
-}
+};
 
 function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = (): boolean => "href" in props;
