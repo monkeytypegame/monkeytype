@@ -2,28 +2,25 @@ import { createSignal } from "solid-js";
 
 import { sleep } from "../utils/misc";
 
-/** Which indicator the loading page shows while loading (a failed load shows the error instead). */
-type LoadingIndicator = "spinner" | "bar";
-
 /** Where the bar fill should animate to, and how long it should take getting there. */
 type LoadingBarTarget = {
   percentage: number;
   durationMs: number;
 };
 
-/** Shown from boot until the first route resolves, and while a blocking load runs. */
-const [isLoadingPageShown, setLoadingPageShown] = createSignal(true);
-export { isLoadingPageShown };
+/**
+ * Whether a loading step showed the bar since the router was last idle. The
+ * router can't tell: while it is navigating, this keeps the loading page up
+ * with the bar instead of the old page or the slow navigation spinner.
+ */
+const [isLoadingBarShown, setLoadingBarShown] = createSignal(false);
+export { isLoadingBarShown };
 
-/** Called by the router once a route has resolved. */
-export function hideLoadingPage(): void {
-  setLoadingPageShown(false);
+/** Called by the router once it is idle, the next navigation starts without a bar. */
+export function endLoadingBar(): void {
+  setLoadingBarShown(false);
 }
 
-const initialIndicator: LoadingIndicator = "spinner";
-
-export const [getLoadingPageIndicator, setLoadingPageIndicator] =
-  createSignal<LoadingIndicator>(initialIndicator);
 /** `null` hides the text line; an empty string shows it, holding its space. */
 export const [getLoadingPageText, setLoadingPageText] = createSignal<
   string | null
@@ -48,13 +45,12 @@ export async function updateLoadingPageBar(
 }
 
 /**
- * Back to the boot state: shown, a fresh spinner with no text or bar target.
+ * Back to the boot state: no bar, text or bar target.
  * Only needed to isolate tests - in the app every load sets the state it
  * needs before showing the page.
  */
 export function resetLoadingPage(): void {
-  setLoadingPageShown(true);
-  setLoadingPageIndicator(initialIndicator);
+  setLoadingBarShown(false);
   setLoadingPageText(null);
   setLoadingPageBarStart(0);
   setLoadingPageBarTarget(null);
@@ -87,12 +83,10 @@ type BarPlan = {
   steps: number;
   /** Loading steps finished so far. */
   done: number;
-  /** Whether a step showed the bar this navigation. */
-  shown: boolean;
 };
 
 function emptyPlan(): BarPlan {
-  return { steps: 0, done: 0, shown: false };
+  return { steps: 0, done: 0 };
 }
 
 let barPlan = emptyPlan();
@@ -110,9 +104,8 @@ export function planLoadingBar(steps: number): void {
  * to "Done", even when a planned step was skipped.
  */
 export function finishLoadingBar(): void {
-  const { shown } = barPlan;
   barPlan = emptyPlan();
-  if (!shown) return;
+  if (!isLoadingBarShown()) return;
   void updateLoadingPageBar(100, 125);
   setLoadingPageText("Done");
 }
@@ -131,10 +124,8 @@ export async function runLoadingStep(
   const index = barPlan.done;
   const start = (index * 100) / steps;
   const end = index === steps - 1 ? barEnd : ((index + 1) * 100) / steps;
-  barPlan.shown = true;
 
-  setLoadingPageShown(true);
-  setLoadingPageIndicator("bar");
+  setLoadingBarShown(true);
   setLoadingPageText(null);
   setLoadingPageBarStart(start);
 
