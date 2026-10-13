@@ -2,6 +2,7 @@ import { animate } from "animejs";
 import { createEffect, JSXElement, onCleanup, Show } from "solid-js";
 
 import {
+  getLoadingPageBarStart,
   getLoadingPageBarTarget,
   getLoadingPageIndicator,
   getLoadingPageText,
@@ -58,8 +59,13 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
       </div>
       <div class={barClass()}>
         <div
-          ref={(el) => (fillEl = el)}
-          class="h-full w-1/2 rounded bg-main"
+          ref={(el) => {
+            fillEl = el;
+            // the loading page can mount mid-navigation (after the old page
+            // faded out): start where the current step's share begins
+            el.style.width = `${getLoadingPageBarStart()}%`;
+          }}
+          class="h-full rounded bg-main"
         ></div>
       </div>
       {/* innerHTML because load errors can contain <br> separated messages */}

@@ -1,7 +1,7 @@
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
-import { hideLoadingPage } from "../states/loading-page";
+import { finishLoadingBar, hideLoadingPage } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
@@ -72,6 +72,12 @@ export function createAppRouter(
   // re-run guards and loaders when the user signs in or out. The initial load
   // waits for the first auth state itself (the app route's beforeLoad)
   context.auth.onChange(() => void router.invalidate());
+
+  // the loading page stops updating once hidden (onResolved), so its bar
+  // completes when the loads are done
+  router.subscribe("onLoad", () => {
+    finishLoadingBar();
+  });
 
   // leaving the test page ends the test as soon as the navigation starts, so
   // keystrokes while the page fades out don't count. Navigations the history

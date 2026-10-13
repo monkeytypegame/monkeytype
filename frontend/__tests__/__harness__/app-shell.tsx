@@ -28,8 +28,12 @@
  *   app's query functions by query key - pair with `deferred()` to settle a
  *   response mid-test. `app.queryClient` for anything else.
  * - `app.navigate(...)` is the typed router.navigate, `app.router` the router.
+ *   It resolves once the navigation loaded: don't await it while a load
+ *   waits for the test.
+ * - `loadingBar()` reads the loading page's bar (fill width, text). The fill
+ *   jumps straight to each target.
  * - Pages are stubs rendering their name, except the real loading page (its
- *   text, error and Retry button); `shownPage()` returns the name of the
+ *   text, bar, error and Retry button); `shownPage()` returns the name of the
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
  *   them, `pageElement()` its wrapper. `pageMounts()` records each page
  *   content mount and whether it was attached to the document by then.
@@ -119,10 +123,18 @@ vi.mock(
 vi.mock("animejs", () => ({
   animate: (
     el: HTMLElement,
-    params: { opacity?: number; duration: number; onComplete?: () => void },
+    params: {
+      opacity?: number;
+      width?: string;
+      duration: number;
+      onComplete?: () => void;
+    },
   ) => {
     // only page fades are tracked (not eg. the loading bar fill)
     if (params.opacity === undefined) {
+      // the loading bar fill jumps to its target
+      if (params.width !== undefined) el.style.width = params.width;
+      params.onComplete?.();
       return { pause: vi.fn(), then: vi.fn() };
     }
     // like anime's default composition, a new animation replaces the running
@@ -229,6 +241,10 @@ export function createFakeAuth(
 
   function setSignedIn(signedIn: boolean): void {
     isSignedIn = signedIn;
+    // the account route checks the user data downloaded
+    setSnapshot(signedIn ? getDefaultSnapshot() : undefined, {
+      dispatchEvent: false,
+    });
     if (!isFirstStateKnown) {
       isFirstStateKnown = true;
       resolveFirstState();
@@ -332,6 +348,9 @@ export type RenderAppOptions = {
   pageContent?: Record<string, () => JSXElement>;
 };
 
+/** The loading page's bar as the user sees it. */
+export type LoadingBar = { width: string; text: string };
+
 export type App = {
   router: AppRouter;
   auth: FakeAuth;
@@ -358,6 +377,8 @@ export type App = {
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
   finishFade: () => number;
+  /** The loading page's bar (fill width, text below it), undefined if not shown. */
+  loadingBar: () => LoadingBar | undefined;
   /** The typing test's state (the test page itself is a stub). */
   test: TestControls;
 };
@@ -460,6 +481,18 @@ export function renderApp(options: RenderAppOptions = {}): App {
     },
     runningFades: () => fades,
     finishFade,
+    loadingBar: () => {
+      const page = container.querySelector("#pageLoading");
+      const fill = page?.querySelector<HTMLElement>(".bg-main");
+      const bar = fill?.parentElement;
+      if (page === null || fill === null || fill === undefined) return;
+      if (bar === null || bar === undefined) return;
+      if (bar.classList.contains("hidden")) return undefined;
+      return {
+        width: fill.style.width,
+        text: bar.nextElementSibling?.textContent ?? "",
+      };
+    },
     test: testControls,
   };
 }
