@@ -1,14 +1,7 @@
 import * as AdController from "../controllers/ad-controller";
 import { queryClient } from "../queries";
-import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage, PageName } from "../states/router";
-import {
-  isResultCalculating,
-  isTestActive,
-  isTestRestarting,
-} from "../states/test";
 import * as Focus from "../test/focus";
-import { isFunboxActive } from "../test/funbox/list";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { setRouter } from "./navigate";
@@ -25,28 +18,6 @@ declare module "@tanstack/solid-router" {
 }
 
 setRouter(router);
-
-// guards every navigation - links, navigate(), back/forward.
-// redirects bypass it (ignoreBlocker)
-router.history.block({
-  enableBeforeUnload: false,
-  blockerFn: ({ nextLocation }) => {
-    if (isTestRestarting() || isResultCalculating()) {
-      console.debug(
-        `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()})`,
-      );
-      return true;
-    }
-    if (isTestActive() && isFunboxActive("no_quit")) {
-      showNoticeNotification(
-        "No quit funbox is active. Please finish the test.",
-        { important: true },
-      );
-      return true;
-    }
-    return false;
-  },
-});
 
 let isInitialLoad = true;
 let prevPage: PageName = "loading";

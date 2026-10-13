@@ -3,7 +3,7 @@
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { navigate } from "../router/navigate";
-import { getRoutePage, getTargetPage } from "../states/router";
+import { getRoutePage, isNavigating } from "../states/router";
 import { showModal } from "../states/modals";
 import { restart } from "../test/test-logic";
 import { trackedSignals } from "./signal-tracker";
@@ -24,7 +24,7 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
 const mt = {
   navigate,
   getRoutePage,
-  getTargetPage,
+  isNavigating,
   getConfig,
   setConfig,
   showModal,
