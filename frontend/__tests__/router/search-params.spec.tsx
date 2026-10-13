@@ -1,5 +1,8 @@
+import { useQuery } from "@tanstack/solid-query";
 import { afterEach, describe, expect, it } from "vitest";
 
+import AsyncContent from "../../src/ts/components/common/AsyncContent";
+import { getLeaderboardQueryOptions } from "../../src/ts/queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
 import { useAccountSettingsTab } from "../../src/ts/states/account-settings";
 import { useLeaderboardSearch } from "../../src/ts/states/leaderboard-selection";
@@ -198,6 +201,70 @@ describe("search params", () => {
       expect(app.router.state.status).toBe("idle");
       expect(app.url()).toContain("page=2");
       expect(app.shownPage()).toBe("leaderboards");
+    });
+    it("shows a selection change at once while its entries load", async () => {
+      const selection = {
+        type: "allTime",
+        mode: "time",
+        mode2: "15",
+        language: "english",
+        friendsOnly: false,
+        previous: false,
+      } as const;
+      const entriesKey = (page: number): unknown[] =>
+        getLeaderboardQueryOptions({ ...selection, page }).queryKey;
+      let leaderboard: LeaderboardSearch | undefined;
+      const app = renderApp({
+        url: "/leaderboards?type=allTime&mode=time&mode2=15&language=english&page=1",
+        queryData: [
+          [serverConfigurationKey, {}],
+          [entriesKey(0), { count: 500, entries: [] }],
+        ],
+        // the next pages never load
+        queryResponses: [1, 2].map((page) => [
+          entriesKey(page),
+          async () => new Promise(() => undefined),
+        ]),
+        pageContent: {
+          // like the real page: the selection, and the entries in their own
+          // section reading the query
+          LeaderboardPage: () => {
+            leaderboard = useLeaderboardSearch();
+            const { page } = leaderboard;
+            const entriesQuery = useQuery(() =>
+              getLeaderboardQueryOptions({ ...selection, page: page() }),
+            );
+            return (
+              <>
+                <output data-page>{page()}</output>
+                <AsyncContent
+                  queries={{ entriesQuery }}
+                  loader={<span data-entries-loading />}
+                >
+                  {() => <span data-entries />}
+                </AsyncContent>
+              </>
+            );
+          },
+        },
+      });
+      await app.settle();
+      const shownPage = (): string | null | undefined =>
+        app.container.querySelector("[data-page]")?.textContent;
+      const entriesLoading = (): boolean =>
+        app.container.querySelector("[data-entries-loading]") !== null;
+      expect(shownPage()).toBe("0");
+      expect(entriesLoading()).toBe(false);
+
+      leaderboard?.setPage(1);
+      await flush();
+
+      expect(app.url()).toContain("page=2");
+      expect(shownPage()).toBe("1");
+      expect(entriesLoading()).toBe(true);
+      expect(app.shownPage()).toBe("leaderboards");
+      // the navigation doesn't wait for the entries either
+      expect(app.router.state.status).toBe("idle");
     });
   });
 
