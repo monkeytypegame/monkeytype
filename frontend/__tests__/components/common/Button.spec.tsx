@@ -1,5 +1,6 @@
 import { cleanup, render } from "@solidjs/testing-library";
 import {
+  AnyRouter,
   createMemoryHistory,
   createRootRoute,
   createRoute,
@@ -240,17 +241,7 @@ describe("Button component", () => {
   });
 
   it("renders a router link when to is provided", () => {
-    const root = createRootRoute();
-    const router = createRouter({
-      routeTree: root.addChildren([
-        createRoute({ getParentRoute: () => root, path: "/settings" }),
-        createRoute({
-          getParentRoute: () => root,
-          path: "/profile/$uidOrName",
-        }),
-      ]),
-      history: createMemoryHistory(),
-    });
+    const router = createTestRouter();
 
     const { container } = render(() => (
       <RouterContextProvider router={router}>
@@ -274,6 +265,126 @@ describe("Button component", () => {
     expect(profile).toHaveAttribute("href", "/profile/miodec");
   });
 
+  it("renders a router link with search params in its href", () => {
+    const router = createTestRouter();
+
+    const { container } = render(() => (
+      <RouterContextProvider router={router}>
+        {() => (
+          <Button
+            to="/leaderboards"
+            search={{ type: "daily", mode2: "15" }}
+            text="Leaderboards"
+          />
+        )}
+      </RouterContextProvider>
+    ));
+
+    expect(container.querySelector("a")).toHaveAttribute(
+      "href",
+      "/leaderboards?type=daily&mode2=15",
+    );
+  });
+
+  it("only accepts routes of the app router with their params", () => {
+    const router = createTestRouter();
+
+    const { container } = render(() => (
+      <RouterContextProvider router={router}>
+        {() => (
+          <>
+            {/* @ts-expect-error unknown route */}
+            <Button to="/nope" text="Nope" />
+            {/* @ts-expect-error missing params */}
+            <Button to="/profile/$uidOrName" text="Profile" />
+            <Button
+              to="/profile/$uidOrName"
+              // @ts-expect-error unknown param
+              params={{ name: "miodec" }}
+              text="Profile"
+            />
+          </>
+        )}
+      </RouterContextProvider>
+    ));
+
+    expect(container.querySelectorAll("a")).toHaveLength(3);
+  });
+
+  it("navigates on click, but leaves cmd/ctrl+click to the browser", async () => {
+    const router = createTestRouter();
+    await router.load();
+
+    const { container } = render(() => (
+      <RouterContextProvider router={router}>
+        {() => <Button to="/settings" text="Settings" />}
+      </RouterContextProvider>
+    ));
+    const link = container.querySelector("a") as HTMLAnchorElement;
+
+    for (const modifier of ["metaKey", "ctrlKey"]) {
+      const event = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        [modifier]: true,
+      });
+      link.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(false);
+      expect(router.state.location.pathname).toBe("/");
+    }
+
+    link.click();
+    await vi.waitFor(() => {
+      expect(router.state.location.pathname).toBe("/settings");
+    });
+  });
+
+  it("marks the link to the current page as active", async () => {
+    const router = createTestRouter("/leaderboards?type=daily");
+    await router.load();
+
+    const { container } = render(() => (
+      <RouterContextProvider router={router}>
+        {() => (
+          <>
+            <Button to="/" text="Test" />
+            <Button to="/leaderboards" text="Leaderboards" />
+            <Button to="/settings" text="Settings" />
+          </>
+        )}
+      </RouterContextProvider>
+    ));
+
+    const [test, leaderboards, settings] = container.querySelectorAll("a");
+    expect(test).not.toHaveAttribute("data-status");
+    expect(leaderboards).toHaveAttribute("data-status", "active");
+    expect(settings).not.toHaveAttribute("data-status");
+  });
+
+  it("does not mark a link to a parent path as active", async () => {
+    const router = createTestRouter("/profile/miodec");
+    await router.load();
+
+    const { container } = render(() => (
+      <RouterContextProvider router={router}>
+        {() => (
+          <>
+            <Button to="/profile" text="Search" />
+            <Button
+              to="/profile/$uidOrName"
+              params={{ uidOrName: "miodec" }}
+              text="Profile"
+            />
+          </>
+        )}
+      </RouterContextProvider>
+    ));
+
+    const [search, profile] = container.querySelectorAll("a");
+    expect(search).not.toHaveAttribute("data-status");
+    expect(profile).toHaveAttribute("data-status", "active");
+  });
+
   it("applies disabled to button", () => {
     const { container } = render(() => (
       <Button
@@ -289,3 +400,29 @@ describe("Button component", () => {
     expect(button).toBeDisabled();
   });
 });
+
+function createTestRouter(path = "/"): AnyRouter {
+  const root = createRootRoute();
+  return createRouter({
+    routeTree: root.addChildren([
+      createRoute({ getParentRoute: () => root, path: "/" }),
+      createRoute({ getParentRoute: () => root, path: "/settings" }),
+      createRoute({ getParentRoute: () => root, path: "/leaderboards" }),
+      createRoute({ getParentRoute: () => root, path: "/profile" }),
+      createRoute({
+        getParentRoute: () => root,
+        path: "/profile/$uidOrName",
+      }),
+    ]),
+    history: createMemoryHistory({ initialEntries: [path] }),
+    // same string search format as the app router
+    parseSearch: (searchStr) =>
+      Object.fromEntries(new URLSearchParams(searchStr)),
+    stringifySearch: (search) => {
+      const str = new URLSearchParams(
+        search as Record<string, string>,
+      ).toString();
+      return str === "" ? "" : `?${str}`;
+    },
+  });
+}

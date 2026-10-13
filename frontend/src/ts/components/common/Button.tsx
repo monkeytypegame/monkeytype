@@ -1,5 +1,10 @@
-import { Link, RegisteredRouter, RoutePaths } from "@tanstack/solid-router";
-import { JSXElement, Match, Show, Switch } from "solid-js";
+import {
+  AnyRouter,
+  createLink,
+  LinkComponentProps,
+  RegisteredRouter,
+} from "@tanstack/solid-router";
+import { JSX, JSXElement, Match, Show, splitProps, Switch } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
@@ -40,25 +45,69 @@ type AnchorProps = BaseProps & {
   type?: never;
 };
 
-/** In-app link, navigates through the router. */
-type LinkProps = BaseProps & {
-  to: RoutePaths<RegisteredRouter["routeTree"]>;
-  params?: Record<string, string>;
-  href?: never;
-  disabled?: never;
-  type?: never;
+type ButtonLinkStyleProps = Omit<BaseProps, "type" | "active"> & {
+  /** Style the link as active while its route is the current location. */
+  showActive?: boolean;
 };
 
-export function Button(
-  props: ButtonProps | AnchorProps | LinkProps,
-): JSXElement {
-  const isAnchor = (): boolean => "href" in props || "to" in props;
-  const isActive = (): boolean =>
-    (!isAnchor() && !("href" in props) && props.active) ?? false;
+type ButtonAnchorProps = ButtonLinkStyleProps &
+  Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps>;
 
-  const variant = () => props.variant ?? "button";
+type ButtonLinkProps<
+  TRouter extends AnyRouter = RegisteredRouter,
+  TFrom extends string = string,
+  TTo extends string | undefined = undefined,
+  TMaskFrom extends string = TFrom,
+  TMaskTo extends string = "",
+> = LinkComponentProps<
+  typeof ButtonAnchor,
+  TRouter,
+  TFrom,
+  TTo,
+  TMaskFrom,
+  TMaskTo
+>;
 
-  const content = (
+function getButtonClasses(options: {
+  variant: "text" | "button";
+  active: boolean;
+  danger?: boolean;
+  disabled?: boolean;
+  class?: string;
+}): string {
+  const { variant, active } = options;
+  return cn(
+    "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
+    "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
+    "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
+    "[--themable-button-active:var(--main-color)]",
+    variant === "text" &&
+      "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)] active:text-sub",
+    variant === "button" &&
+      "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)] active:bg-sub",
+    variant === "button" &&
+      active &&
+      "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+    variant === "text" &&
+      active &&
+      "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
+    options.danger &&
+      "[--themable-button-bg:var(--error-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
+    {
+      "pointer-events-none opacity-[0.33]": options.disabled,
+    },
+    {
+      [options.class ?? ""]: options.class !== undefined,
+    },
+  );
+}
+
+function ButtonContent(props: {
+  fa?: FaProps;
+  text?: string;
+  children?: JSXElement;
+}): JSXElement {
+  return (
     <>
       <Show when={props.fa !== undefined}>
         <Fa {...(props.fa as FaProps)} />
@@ -67,36 +116,99 @@ export function Button(
       {props.children}
     </>
   );
+}
+
+/** The anchor rendered by `ButtonLink` - receives href, handlers and data-status from the router. */
+function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
+  const [local, rest] = splitProps(props, [
+    "text",
+    "fa",
+    "class",
+    "variant",
+    "children",
+    "balloon",
+    "dataset",
+    "showActive",
+  ]);
+  const variant = () => local.variant ?? "button";
+
+  return (
+    <a
+      {...rest}
+      class={getButtonClasses({
+        variant: variant(),
+        active:
+          (local.showActive ?? false) &&
+          (rest as Record<string, unknown>)["data-status"] === "active",
+        class: local.class,
+      })}
+      {...buildBalloonHtmlProperties(local.balloon)}
+      data-ui-variant={variant()}
+      data-ui-element="button"
+      {...local.dataset}
+    >
+      <ButtonContent fa={local.fa} text={local.text}>
+        {local.children}
+      </ButtonContent>
+    </a>
+  );
+}
+
+const ButtonLink = createLink(ButtonAnchor);
+
+export function Button(props: ButtonProps | AnchorProps): JSXElement;
+/**
+ * In-app link: a real anchor (href, cmd/ctrl+click opens a new tab) that
+ * navigates through the router with typed `to`, `params` and `search`.
+ * Gets `data-status="active"` while its route is the current location
+ * (exact path, search ignored, unless `activeOptions` says otherwise).
+ */
+export function Button<
+  TRouter extends AnyRouter = RegisteredRouter,
+  const TFrom extends string = string,
+  const TTo extends string | undefined = undefined,
+  const TMaskFrom extends string = TFrom,
+  const TMaskTo extends string = "",
+>(props: ButtonLinkProps<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>): JSXElement;
+export function Button(
+  props:
+    | ButtonProps
+    | AnchorProps
+    | ButtonLinkProps<AnyRouter, string, string, string, string>,
+): JSXElement {
+  return (
+    <Show
+      when={"to" in props}
+      fallback={<PlainButton {...(props as ButtonProps | AnchorProps)} />}
+    >
+      <ButtonLink
+        activeOptions={{ exact: true, includeSearch: false }}
+        {...(props as ButtonLinkProps)}
+      />
+    </Show>
+  );
+}
+
+function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
+  const isAnchor = (): boolean => "href" in props;
+  const variant = () => props.variant ?? "button";
 
   const balloonHtmlProps = () => buildBalloonHtmlProperties(props.balloon);
 
-  const getClasses = (): string => {
-    return cn(
-      "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
-      "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
-      "bg-(--themable-button-bg) text-(--themable-button-text) hover:bg-(--themable-button-hover-bg) hover:text-(--themable-button-hover-text)",
-      "[--themable-button-active:var(--main-color)]",
-      variant() === "text" &&
-        "[--themable-button-bg:transparent] [--themable-button-hover-bg:transparent] [--themable-button-hover-text:var(--text-color)] [--themable-button-text:var(--sub-color)] active:text-sub",
-      variant() === "button" &&
-        "[--themable-button-bg:var(--sub-alt-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--text-color)] active:bg-sub",
-      variant() === "button" &&
-        isActive() &&
-        "[--themable-button-bg:var(--themable-button-active)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
-      variant() === "text" &&
-        isActive() &&
-        "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
-      !isAnchor() &&
-        (props as ButtonProps).danger &&
-        "[--themable-button-bg:var(--error-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
-      {
-        "pointer-events-none opacity-[0.33]": props.disabled,
-      },
-      {
-        [props.class ?? ""]: props.class !== undefined,
-      },
-    );
-  };
+  const getClasses = (): string =>
+    getButtonClasses({
+      variant: variant(),
+      active: (!isAnchor() && props.active) ?? false,
+      danger: !isAnchor() && (props as ButtonProps).danger,
+      disabled: props.disabled,
+      class: props.class,
+    });
+
+  const content = (
+    <ButtonContent fa={props.fa} text={props.text}>
+      {props.children}
+    </ButtonContent>
+  );
 
   return (
     <Switch
@@ -120,26 +232,7 @@ export function Button(
         </button>
       }
     >
-      <Match when={"to" in props && (props as LinkProps)}>
-        {(linkProps) => (
-          <Link
-            id={props.id}
-            class={getClasses()}
-            to={linkProps().to}
-            params={linkProps().params}
-            {...balloonHtmlProps()}
-            onClick={(e) => props.onClick?.(e)}
-            onMouseEnter={(e) => props.onMouseEnter?.(e)}
-            onMouseLeave={(e) => props.onMouseLeave?.(e)}
-            data-ui-variant={variant()}
-            data-ui-element="button"
-            {...props.dataset}
-          >
-            {content}
-          </Link>
-        )}
-      </Match>
-      <Match when={"href" in props}>
+      <Match when={isAnchor()}>
         <a
           id={props.id}
           class={getClasses()}
