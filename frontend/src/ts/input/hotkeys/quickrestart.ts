@@ -2,7 +2,7 @@ import { isAnyPopupVisible } from "../../utils/misc";
 
 import { navigate } from "../../router/navigate";
 import { restartTestEvent } from "../../events/test";
-import { isTestRoute } from "../../states/router";
+import { getRoutePage } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
@@ -15,7 +15,7 @@ function quickRestart(e: KeyboardEvent): void {
 
   e.preventDefault();
 
-  if (isTestRoute()) {
+  if (getRoutePage() === "test") {
     restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
   } else {
     void navigate("");

@@ -1,7 +1,6 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import { createEffectOn } from "../../../hooks/effects";
 import { blurInputElement } from "../../../input/input-element";
 import { getShowResult } from "../../../states/result";
@@ -12,10 +11,8 @@ import {
   isLayoutfluidTimerVisible,
   isResultLoading,
   isTestInitFailed,
-  resetIncompleteTests,
 } from "../../../states/test";
 import { bindTestElements } from "../../../test/bind-test-elements";
-import * as Funbox from "../../../test/funbox/funbox";
 import { onRestartButtonClick, stop } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
@@ -47,17 +44,6 @@ export function TestPage(): JSXElement {
       stop();
       blurInputElement();
     }
-  });
-
-  onMount(() => {
-    updateFooterAndVerticalAds(false);
-    // the test itself is restarted when TypingTest mounts (bindTestElements)
-    resetIncompleteTests();
-  });
-
-  onCleanup(() => {
-    void Funbox.clear();
-    updateFooterAndVerticalAds(true);
   });
 
   return <TypingTest />;

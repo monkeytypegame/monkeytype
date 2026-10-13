@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 
 import { sleep } from "../utils/misc";
-import { setLoadingPageShown } from "./router";
 
 /** Which indicator the loading page shows while loading (a failed load shows the error instead). */
 type LoadingIndicator = "spinner" | "bar";
@@ -11,6 +10,15 @@ type LoadingBarTarget = {
   percentage: number;
   durationMs: number;
 };
+
+/** Shown from boot until the first route resolves, and while withLoading runs. */
+const [isLoadingPageShown, setLoadingPageShown] = createSignal(true);
+export { isLoadingPageShown };
+
+/** Called by the router once a route has resolved. */
+export function hideLoadingPage(): void {
+  setLoadingPageShown(false);
+}
 
 const initialIndicator: LoadingIndicator = "spinner";
 

@@ -1,16 +1,15 @@
 import { JSXElement, createSignal, onMount, onCleanup } from "solid-js";
 
-import { useIsTestRoute } from "../../../states/router";
+import { getRoutePage } from "../../../states/router";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import { Fa } from "../../common/Fa";
 
 export function ScrollToTop(): JSXElement {
   const [visible, setVisible] = createSignal(false);
-  const isTestRoute = useIsTestRoute();
 
   const handleScroll = (): void => {
-    if (isTestRoute()) return;
+    if (getRoutePage() === "test") return;
 
     const scroll = window.scrollY;
     setVisible(scroll > 100);
@@ -31,7 +30,8 @@ export function ScrollToTop(): JSXElement {
         class={cn(
           "breakout pointer-events-auto mb-8 grid h-16 w-16 place-self-end rounded-full bg-sub-alt text-[2rem] text-sub ring-8 ring-bg hover:bg-text hover:text-bg",
           {
-            "pointer-events-none opacity-0": isTestRoute() || !visible(),
+            "pointer-events-none opacity-0":
+              getRoutePage() === "test" || !visible(),
           },
         )}
         style={{

@@ -13,14 +13,15 @@ import { isResultsReady, waitForResultsReady } from "../collections/results";
 import { getSnapshot } from "../db";
 import { authEvent } from "../events/auth";
 import { isAuthAvailable } from "../firebase";
-import { readAccountSettingsSearch } from "../states/account-settings";
+import { accountSettingsSearch } from "../states/account-settings";
 import { isAuthenticated, setSelectedProfileName } from "../states/core";
-import { readLeaderboardSearch } from "../states/leaderboard-selection";
+import { leaderboardSearch } from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
-import { readSettingsSearch } from "../states/settings-search";
+import { settingsSearch } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
 import { promiseWithResolvers } from "../utils/misc";
+import { readSearchOnEnter } from "./search-params";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -109,9 +110,7 @@ const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
-  beforeLoad: ({ search, cause }) => {
-    if (cause === "enter") readLeaderboardSearch(search);
-  },
+  beforeLoad: readSearchOnEnter(leaderboardSearch),
   loader: async () => {
     if (getServerConfiguration() !== undefined) return;
     await withLoading("the leaderboards page", {
@@ -133,9 +132,7 @@ const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
   staticData: { page: "settings" },
-  beforeLoad: ({ search, cause }) => {
-    if (cause === "enter") readSettingsSearch(search);
-  },
+  beforeLoad: readSearchOnEnter(settingsSearch),
 });
 
 const login = createRoute({
@@ -174,9 +171,9 @@ const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
-  beforeLoad: ({ search, cause }) => {
+  beforeLoad: (ctx) => {
     requireAuth();
-    if (cause === "enter") readAccountSettingsSearch(search);
+    readSearchOnEnter(accountSettingsSearch)(ctx);
   },
 });
 

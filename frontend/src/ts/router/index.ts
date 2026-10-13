@@ -3,7 +3,8 @@ import { createRouter } from "@tanstack/solid-router";
 import * as AdController from "../controllers/ad-controller";
 import { authEvent } from "../events/auth";
 import { showNoticeNotification } from "../states/notifications";
-import { getRoutePage, PageName, setLoadingPageShown } from "../states/router";
+import { hideLoadingPage } from "../states/loading-page";
+import { getRoutePage, PageName } from "../states/router";
 import {
   isResultCalculating,
   isTestActive,
@@ -77,7 +78,7 @@ let isInitialLoad = true;
 let prevPage: PageName = "loading";
 
 router.subscribe("onResolved", () => {
-  setLoadingPageShown(false);
+  hideLoadingPage();
 
   updateOpenGraphUrl();
 

@@ -1,8 +1,8 @@
-import { useMatchRoute } from "@tanstack/solid-router";
-import { Accessor, createMemo, createSignal } from "solid-js";
+import { createMemo } from "solid-js";
 
 import type { PageName } from "../components/pages/Pages";
 import { getRouter } from "../router/navigate";
+import { isLoadingPageShown } from "./loading-page";
 
 export type { PageName };
 
@@ -19,9 +19,6 @@ export const getRoutePage = createMemo((): PageName => {
   return getMatches().at(-1)?.staticData.page ?? "loading";
 });
 
-/** Set by withLoading when a route loader needs the loading page. */
-export const [isLoadingPageShown, setLoadingPageShown] = createSignal(true);
-
 /** Why the last route failed to load, shown on the loading page until a route loads. */
 export const getLoadingError = createMemo((): string | null => {
   const match = getFailedMatch();
@@ -36,20 +33,3 @@ export const getTargetPage = createMemo(() =>
     ? "loading"
     : getRoutePage(),
 );
-
-/**
- * Whether the resolved route is the test page. Reactive. For vanilla code -
- * components use useIsTestRoute.
- */
-export function isTestRoute(): boolean {
-  const router = getRouter();
-  if (router === undefined) return false;
-  void router.state.location; // track navigations
-  return router.matchRoute({ to: "/" }, { includeSearch: false }) !== false;
-}
-
-/** Component version of isTestRoute, through tanstack's useMatchRoute. */
-export function useIsTestRoute(): Accessor<boolean> {
-  const match = useMatchRoute()({ to: "/", includeSearch: false });
-  return () => match() !== false;
-}

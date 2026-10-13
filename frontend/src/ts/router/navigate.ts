@@ -27,12 +27,15 @@ export async function navigate(url: string): Promise<void> {
 /**
  * Replace the search params of the current url without adding a history entry.
  * Does nothing while navigating to another path, or if nothing changed - the
- * route reloads on every url change. Use writeSearch (search-params.ts)
+ * route reloads on every url change. Use createSearchState (search-params.ts)
  * rather than calling this directly.
  */
 export function replaceSearch(search: URLSearchParams): void {
   const router = getRouter();
-  if (router === undefined) return;
+  if (router === undefined) {
+    console.error("replaceSearch ignored, router not initialised");
+    return;
+  }
   const { location, resolvedLocation } = router.state;
   if (location.pathname !== resolvedLocation?.pathname) return;
   const pathname = location.pathname;

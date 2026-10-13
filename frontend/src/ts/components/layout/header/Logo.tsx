@@ -2,13 +2,12 @@ import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
-import { useIsTestRoute } from "../../../states/router";
+import { getRoutePage } from "../../../states/router";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
 export function Logo(): JSXElement {
-  const isTestRoute = useIsTestRoute();
   return (
     <Link
       to="/"
@@ -20,7 +19,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (isTestRoute()) restartTestEvent.dispatch();
+        if (getRoutePage() === "test") restartTestEvent.dispatch();
       }}
     >
       <svg

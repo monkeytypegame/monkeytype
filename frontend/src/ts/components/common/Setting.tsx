@@ -14,7 +14,7 @@ import {
 } from "../../states/notifications";
 import {
   getHighlightedSetting,
-  writeSettingsSearch,
+  settingsSearch,
 } from "../../states/settings-search";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
@@ -141,7 +141,7 @@ function DeepLinkButton(props: { key: string }) {
       variant="text"
       fa={{ icon: "fa-link" }}
       onClick={() => {
-        writeSettingsSearch(props.key);
+        settingsSearch.write({ highlight: props.key });
 
         navigator.clipboard
           .writeText(window.location.toString())
