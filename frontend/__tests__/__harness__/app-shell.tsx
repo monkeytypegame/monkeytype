@@ -5,7 +5,8 @@
  *
  * Its vi.mock calls stub the pages and animejs for modules loaded after it.
  * oxfmt sorts imports, so a test file should not import src modules that load
- * pages or anime (eg. Pages, AppShell) itself - get them through the harness.
+ * pages or anime (eg. routes, RootLayout, AppShell) itself - get them through
+ * the harness.
  * Lighter src imports (query options...) are fine.
  *
  * ```tsx
@@ -28,9 +29,14 @@
  *   response mid-test. `app.queryClient` for anything else.
  * - `app.navigate(...)` is the typed router.navigate, `app.router` the router.
  * - Pages are stubs rendering their name; `shownPage()` returns the name of the
- *   page on screen (eg. "loading", "login", "404").
+ *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
+ *   them, `pageElement()` its wrapper. `pageMounts()` records each page
+ *   content mount and whether it was attached to the document by then.
  * - Fades: `settle()` finishes them all. For fade ordering use
- *   `runningFades()` / `finishFade()` (finishes the oldest running fade).
+ *   `runningFades()` / `finishFade()` (finishes the oldest running fade) and
+ *   `flush()` (timers and one animation frame - fade ins start on a frame).
+ *   Like anime, a new fade on an element replaces its running one, which then
+ *   never completes.
  */
 // static json (layouts...) read from disk, the test state module loads some
 import "./mock-static";
@@ -48,15 +54,27 @@ import { resetLoadingPage } from "../../src/ts/states/loading-page";
 
 export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 
-const { fades } = vi.hoisted(() => ({ fades: [] as Fade[] }));
+/** A page's content mounting, and whether it was in the document by then. */
+export type PageMount = { page: string; attached: boolean };
+
+const { fades, pageMounts } = vi.hoisted(() => ({
+  fades: [] as Fade[],
+  pageMounts: [] as PageMount[],
+}));
 
 vi.mock("animejs", () => ({
   animate: (
     el: HTMLElement,
     params: { opacity: number; duration: number; onComplete?: () => void },
   ) => {
-    // initial styles are applied with a zero duration animation
-    if (params.duration !== 0) {
+    // like anime's default composition, a new animation replaces the running
+    // one on the same element, which never completes
+    const replaced = fades.findIndex((fade) => fade.el === el);
+    if (replaced !== -1) fades.splice(replaced, 1);
+    // initial styles and reduced motion use a zero duration animation
+    if (params.duration === 0) {
+      params.onComplete?.();
+    } else {
       const fade: Fade = {
         el,
         opacity: params.opacity,
@@ -71,8 +89,22 @@ vi.mock("animejs", () => ({
   },
 }));
 
-function stubPage(name: string): () => Record<string, () => string> {
-  return () => ({ [name]: () => name });
+// stub pages render their name and record whether they mounted attached
+function stubPage(
+  name: string,
+): () => Promise<Record<string, () => HTMLElement>> {
+  return async () => {
+    const { onMount } = await import("solid-js");
+    const page = name.replace(/Page$/, "");
+    return {
+      [name]: () => {
+        const el = document.createElement("span");
+        el.textContent = name;
+        onMount(() => pageMounts.push({ page, attached: el.isConnected }));
+        return el;
+      },
+    };
+  };
 }
 vi.mock("../../src/ts/components/pages/404Page", stubPage("NotFoundPage"));
 vi.mock("../../src/ts/components/pages/AboutPage", stubPage("AboutPage"));
@@ -235,6 +267,12 @@ export type App = {
   url: () => string;
   /** Name of the page in the DOM, eg. "login" (undefined if none). */
   shownPage: () => string | undefined;
+  /** Names of all pages in the DOM, in document order. */
+  pagesInDom: () => string[];
+  /** The page wrapper element in the DOM (the first one if several). */
+  pageElement: () => HTMLElement | null;
+  /** Page contents mounted so far, oldest first (stub page names, eg. "About"). */
+  pageMounts: () => readonly PageMount[];
   /** Waits for the router to be idle and finishes all page fades. */
   settle: () => Promise<void>;
   runningFades: () => readonly Fade[];
@@ -260,7 +298,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
     { auth, queryClient },
     { history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }) },
   );
-  // vanilla modules (and <Pages>) read the router through this holder
+  // vanilla modules and router state memos read the router through this holder
   setRouter(router);
 
   const { container } = render(() => <AppShell router={router} />);
@@ -280,7 +318,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
           throw new Error("router busy");
         }
       });
-      await flushMicrotasks();
+      await flush();
       if (fades.length === 0) return;
       while (fades.length > 0) finishFade();
     }
@@ -298,11 +336,12 @@ export function renderApp(options: RenderAppOptions = {}): App {
       return pathname + searchStr + (hash === "" ? "" : `#${hash}`);
     },
     shownPage: () => {
-      const id = container.querySelector(".page")?.id;
-      if (id === undefined) return undefined;
-      const name = id.replace(/^page/, "");
-      return name.charAt(0).toLowerCase() + name.slice(1);
+      const el = container.querySelector(".page");
+      return el === null ? undefined : pageName(el);
     },
+    pagesInDom: () => [...container.querySelectorAll(".page")].map(pageName),
+    pageElement: () => container.querySelector<HTMLElement>(".page"),
+    pageMounts: () => pageMounts,
     settle,
     runningFades: () => fades,
     finishFade,
@@ -313,10 +352,22 @@ export function renderApp(options: RenderAppOptions = {}): App {
 export function cleanupApp(): void {
   cleanup();
   fades.length = 0;
+  pageMounts.length = 0;
   setRouter(undefined);
   resetLoadingPage();
 }
 
-async function flushMicrotasks(): Promise<void> {
+function pageName(el: Element): string {
+  const name = el.id.replace(/^page/, "");
+  return name.charAt(0).toLowerCase() + name.slice(1);
+}
+
+/**
+ * Lets the app react without finishing fades: waits for pending timers and
+ * the next animation frame (fade ins start on one).
+ */
+export async function flush(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => requestAnimationFrame(resolve));
   await new Promise((resolve) => setTimeout(resolve, 0));
 }

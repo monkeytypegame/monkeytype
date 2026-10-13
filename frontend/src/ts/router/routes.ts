@@ -10,6 +10,19 @@ import {
   waitForConnectionsReady,
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
+import { NotFoundPage } from "../components/pages/404Page";
+import { AboutPage } from "../components/pages/AboutPage";
+import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
+import { AccountPage } from "../components/pages/account/AccountPage";
+import { FriendsPage } from "../components/pages/connections/FriendsPage";
+import { LeaderboardPage } from "../components/pages/leaderboard/LeaderboardPage";
+import { LoginPage } from "../components/pages/login/LoginPage";
+import { LoadingRoutePage, pageComponent } from "../components/pages/Page";
+import { ProfilePage } from "../components/pages/profile/ProfilePage";
+import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
+import { SettingsPage } from "../components/pages/settings/SettingsPage";
+import { TestPage } from "../components/pages/test/TestPage";
+import { RootLayout } from "../components/RootLayout";
 import { getSnapshot } from "../db";
 import { accountSettingsSearch } from "../states/account-settings";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
@@ -27,6 +40,7 @@ import { readSearchOnEnter } from "./search-params";
 declare module "@tanstack/solid-router" {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
   interface StaticDataRouteOption {
+    /** Names the current page for page-dependent behaviour (title, hotkeys...), the route's component renders it */
     page?: PageName;
   }
 }
@@ -60,9 +74,9 @@ function guestOnly(auth: RouterAuth): void {
   if (auth.isSignedIn()) redirect({ to: "/account", throw: true });
 }
 
-// renders nothing - pages are rendered by <Pages> (see components/pages/Pages.tsx)
+// each route renders its page, the root layout fades between them
 const root = createRootRouteWithContext<RouterContext>()({
-  component: () => null,
+  component: RootLayout,
 });
 
 // pathless layout so every page waits for auth and the user data download
@@ -70,12 +84,20 @@ const app = createRoute({
   getParentRoute: () => root,
   id: "app",
   beforeLoad: async ({ context }) => waitForUserData(context.auth),
+  // the router renders a pending route only through its pendingComponent -
+  // without one nothing renders on first load, not even the root layout
+  pendingComponent: LoadingRoutePage,
+  pendingMs: 0,
+  pendingMinMs: 0,
 });
 
 const test = createRoute({
   getParentRoute: () => app,
   path: "/",
   staticData: { page: "test" },
+  component: pageComponent("test", TestPage, {
+    class: "full-width content-grid",
+  }),
 });
 
 const verify = createRoute({
@@ -95,6 +117,7 @@ const leaderboards = createRoute({
   getParentRoute: () => app,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
+  component: pageComponent("leaderboards", LeaderboardPage),
   beforeLoad: readSearchOnEnter(leaderboardSearch),
   loader: async ({ context: { queryClient } }) => {
     const serverConfiguration = getServerConfigurationQueryOptions();
@@ -114,12 +137,14 @@ const about = createRoute({
   getParentRoute: () => app,
   path: "/about",
   staticData: { page: "about" },
+  component: pageComponent("about", AboutPage, { class: "full-width" }),
 });
 
 const settings = createRoute({
   getParentRoute: () => app,
   path: "/settings",
   staticData: { page: "settings" },
+  component: pageComponent("settings", SettingsPage),
   beforeLoad: readSearchOnEnter(settingsSearch),
 });
 
@@ -127,6 +152,7 @@ const login = createRoute({
   getParentRoute: () => app,
   path: "/login",
   staticData: { page: "login" },
+  component: pageComponent("login", LoginPage),
   beforeLoad: ({ context }) => guestOnly(context.auth),
 });
 
@@ -134,6 +160,7 @@ const account = createRoute({
   getParentRoute: () => app,
   path: "/account",
   staticData: { page: "account" },
+  component: pageComponent("account", AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async () => {
     if (isResultsReady()) return;
@@ -159,6 +186,7 @@ const accountSettings = createRoute({
   getParentRoute: () => app,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
+  component: pageComponent("accountSettings", AccountSettingsPage),
   beforeLoad: (ctx) => {
     requireAuth(ctx.context.auth);
     readSearchOnEnter(accountSettingsSearch)(ctx);
@@ -169,12 +197,14 @@ const profileSearch = createRoute({
   getParentRoute: () => app,
   path: "/profile",
   staticData: { page: "profileSearch" },
+  component: pageComponent("profileSearch", ProfileSearchPage),
 });
 
 const profile = createRoute({
   getParentRoute: () => app,
   path: "/profile/$uidOrName",
   staticData: { page: "profile" },
+  component: pageComponent("profile", ProfilePage),
   beforeLoad: ({ params }) => {
     setSelectedProfileName(params.uidOrName);
   },
@@ -184,6 +214,7 @@ const friends = createRoute({
   getParentRoute: () => app,
   path: "/friends",
   staticData: { page: "friends" },
+  component: pageComponent("friends", FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async ({ context: { queryClient } }) => {
     if (!isConnectionsReady()) {
@@ -213,6 +244,7 @@ const notFound = createRoute({
   getParentRoute: () => app,
   path: "$",
   staticData: { page: "404" },
+  component: pageComponent("404", NotFoundPage),
 });
 
 export const routeTree = root.addChildren([

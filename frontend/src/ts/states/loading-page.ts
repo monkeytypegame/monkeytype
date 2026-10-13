@@ -46,10 +46,12 @@ export async function updateLoadingPageBar(
 }
 
 /**
- * Back to a fresh spinner with no text or bar target. Only needed to isolate
- * tests - in the app every load sets the state it needs before showing the page.
+ * Back to the boot state: shown, a fresh spinner with no text or bar target.
+ * Only needed to isolate tests - in the app every load sets the state it
+ * needs before showing the page.
  */
 export function resetLoadingPage(): void {
+  setLoadingPageShown(true);
   setLoadingPageIndicator(initialIndicator);
   setLoadingPageText(null);
   setLoadingPageBarTarget(null);
