@@ -78,7 +78,6 @@ export function Nav(): JSXElement {
     <nav class={cn("z-5 flex w-full items-center gap-1 md:gap-2")}>
       <Button
         variant="text"
-        showActive
         fa={{
           icon: "fa-keyboard",
           fixedWidth: true,
@@ -95,7 +94,6 @@ export function Nav(): JSXElement {
       />
       <Button
         variant="text"
-        showActive
         fa={{
           icon: "fa-crown",
           fixedWidth: true,
@@ -108,7 +106,6 @@ export function Nav(): JSXElement {
       />
       <Button
         variant="text"
-        showActive
         fa={{
           icon: "fa-info",
           fixedWidth: true,
@@ -121,7 +118,6 @@ export function Nav(): JSXElement {
       />
       <Button
         variant="text"
-        showActive
         fa={{
           icon: "fa-cog",
           fixedWidth: true,
@@ -164,7 +160,6 @@ export function Nav(): JSXElement {
               <Show when={showLoginButton()}>
                 <Button
                   variant="text"
-                  showActive
                   to="/login"
                   dataset={{
                     "data-nav-item": "login",
@@ -211,7 +206,6 @@ export function Nav(): JSXElement {
               >
                 <Button
                   variant="text"
-                  showActive
                   class={cn(
                     "h-full",
                     "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",

@@ -40,10 +40,7 @@ type AnchorProps = BaseProps & {
   type?: never;
 };
 
-type ButtonLinkStyleProps = Omit<BaseProps, "type" | "active"> & {
-  /** Style the link as active while its route is the current location. */
-  showActive?: boolean;
-};
+type ButtonLinkStyleProps = Omit<BaseProps, "type" | "active">;
 
 type ButtonAnchorProps = ButtonLinkStyleProps &
   Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps>;
@@ -108,7 +105,6 @@ function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
     "children",
     "balloon",
     "dataset",
-    "showActive",
   ]);
   const variant = () => local.variant ?? "button";
 
@@ -117,9 +113,7 @@ function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
       {...rest}
       class={getButtonClasses({
         variant: variant(),
-        active:
-          (local.showActive ?? false) &&
-          (rest as Record<string, unknown>)["data-status"] === "active",
+        active: false,
         class: local.class,
       })}
       {...buildBalloonHtmlProperties(local.balloon)}
