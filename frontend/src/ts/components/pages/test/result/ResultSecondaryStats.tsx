@@ -7,6 +7,7 @@ import {
   For,
   JSXElement,
   Show,
+  Suspense,
 } from "solid-js";
 
 import Ape from "../../../../ape";
@@ -90,7 +91,9 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         <div class="text-main" data-ui-element="resultStatValue">
           <Lines lines={testType()} />
         </div>
-        <Tags />
+        <Suspense>
+          <Tags />
+        </Suspense>
       </div>
       <Show when={other().length > 0}>
         <div data-ui-element="resultStat">
@@ -165,9 +168,15 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             "cursor-pointer",
           )}
           onClick={() => {
-            void navigate(
-              `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
-            );
+            void navigate({
+              to: "/leaderboards",
+              search: {
+                type: "daily",
+                language: props.result.language,
+                mode2: props.result.mode2,
+                goToUserPage: "true",
+              },
+            });
           }}
         >
           {format().rank(resultState.dailyLeaderboardRank, {

@@ -1,5 +1,5 @@
 import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
-import { For, JSXElement, Show, untrack } from "solid-js";
+import { For, JSXElement, Show, Suspense, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
 
@@ -85,9 +85,11 @@ export function Theme(): JSXElement {
     <div class="grid gap-4">
       <Show when={isAuthenticated()}>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
-          <For each={customThemes()}>
-            {(theme) => <CustomThemeButton theme={theme} />}
-          </For>
+          <Suspense>
+            <For each={customThemes()}>
+              {(theme) => <CustomThemeButton theme={theme} />}
+            </For>
+          </Suspense>
         </div>
       </Show>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
