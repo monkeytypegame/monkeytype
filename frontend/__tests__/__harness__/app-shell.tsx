@@ -417,8 +417,6 @@ export type RenderAppOptions = {
    * rendered inside the page - for probes using the page's hooks.
    */
   pageContent?: Record<string, () => JSXElement>;
-  /** False as if the router's intent preloading constant were flipped off. */
-  preload?: boolean;
 };
 
 /** What the loading page shows while (or instead of) loading. */
@@ -529,10 +527,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
 
   const router = createAppRouter(
     { auth, queryClient },
-    {
-      history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }),
-      preload: options.preload,
-    },
+    { history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }) },
   );
   // vanilla modules and router state memos read the router through this holder
   setRouter(router);

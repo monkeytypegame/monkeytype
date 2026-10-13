@@ -947,20 +947,6 @@ describe("app shell routing", () => {
       expect(rank.started()).toBe(true);
     });
 
-    it("preloads nothing with preloading turned off", async () => {
-      const contributors = slowResponse(getContributorsQueryOptions().queryKey);
-      const app = renderApp({
-        url: "/settings",
-        preload: false,
-        queryResponses: [contributors.response],
-      });
-      await app.settle();
-
-      await app.hover({ to: "/about" });
-
-      expect(contributors.started()).toBe(false);
-    });
-
     it("switches preloading off and on from the debug handle", async () => {
       // the debug handle loads app modules: import it after the harness mocks
       await import("../../src/ts/dev/expose");

@@ -40,13 +40,13 @@ export function setPreloading(enabled: boolean): void {
 // oxlint-disable-next-line typescript/explicit-function-return-type -- the router type is inferred from the route tree
 export function createAppRouter(
   context: RouterContext,
-  options: { history?: RouterHistory; preload?: boolean } = {},
+  options: { history?: RouterHistory } = {},
 ) {
   const router = createRouter({
     routeTree,
     context,
     history: options.history,
-    defaultPreload: (options.preload ?? INTENT_PRELOADING) ? "intent" : false,
+    defaultPreload: INTENT_PRELOADING ? "intent" : false,
     // a preloaded page's loaders run again when it's opened
     defaultPreloadStaleTime: 0,
     // safety net for an unexpectedly slow navigation (loading steps show the
