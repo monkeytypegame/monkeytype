@@ -1,4 +1,10 @@
-import { createResource, createSignal, JSXElement, Show } from "solid-js";
+import {
+  createResource,
+  createSignal,
+  JSXElement,
+  Show,
+  Suspense,
+} from "solid-js";
 import { z } from "zod";
 
 import { resetConfig } from "../../../config/lifecycle";
@@ -175,9 +181,12 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="flipTestColors" />
           <SearchableAutoSetting key="colorfulMode" />
           <CustomBackground />
-          <Show when={getConfig.customBackground !== "" || hasLocalBg()}>
-            <CustomBackgroundFilters />
-          </Show>
+          <Suspense>
+            {/* latest: a refetch keeps the old value instead of suspending */}
+            <Show when={getConfig.customBackground !== "" || hasLocalBg.latest}>
+              <CustomBackgroundFilters />
+            </Show>
+          </Suspense>
           <AutoSwitchTheme />
           <SearchableAutoSetting key="randomTheme" wide />
           <Theme />
