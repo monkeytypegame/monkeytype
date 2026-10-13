@@ -1,8 +1,7 @@
-import { useNavigate, useSearch } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
-import { keepLastSearch } from "../router/search-params";
+import { useRouteSearch } from "../router/search-params";
 import { FaSolidIcon } from "../types/font-awesome";
 import { isAuthenticated } from "./core";
 
@@ -44,7 +43,6 @@ createEffectOn(isAuthenticated, (hasUser) => {
 export const AccountSettingsSearchSchema = z.object({
   tab: AccountSettingsTabSchema.optional().catch(undefined),
 });
-type AccountSettingsSearch = z.infer<typeof AccountSettingsSearchSchema>;
 
 /**
  * The account settings tab, kept in the url. Writes replace the url (no
@@ -52,23 +50,10 @@ type AccountSettingsSearch = z.infer<typeof AccountSettingsSearchSchema>;
  */
 // oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
 export function useAccountSettingsTab() {
-  const navigate = useNavigate();
-  const current = useSearch({
-    from: "/app/account-settings",
-    shouldThrow: false,
-  });
-  const search = keepLastSearch<AccountSettingsSearch>(current, {});
+  const { search, replace } = useRouteSearch("/account-settings");
 
   return {
     tab: (): AccountSettingsTab => search().tab ?? "account",
-    setTab: (tab: AccountSettingsTab): void => {
-      if (current() === undefined) return;
-      void navigate({
-        to: "/account-settings",
-        search: { tab },
-        replace: true,
-        resetScroll: false,
-      });
-    },
+    setTab: (tab: AccountSettingsTab): void => replace(() => ({ tab })),
   };
 }
