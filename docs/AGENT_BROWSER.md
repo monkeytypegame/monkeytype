@@ -28,7 +28,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 
 | Member | Use |
 | --- | --- |
-| `navigate(url)` | client-side route change |
+| `navigate({ to, params, search })` | client-side route change; `navigate({ href: "/settings?x=1" })` for a raw path |
 | `getTargetPage()` | page that should be on screen (loading page while a route loads) |
 | `getRoutePage()` | page name for current route |
 | `getConfig.<key>` | read config (store object, not a function) |
