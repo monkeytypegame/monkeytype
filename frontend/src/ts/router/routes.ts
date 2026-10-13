@@ -1,9 +1,9 @@
-import { createRootRoute, createRoute, redirect } from "@tanstack/solid-router";
-
 import {
-  configurationPromise as serverConfigurationPromise,
-  get as getServerConfiguration,
-} from "../ape/server-configuration";
+  createRootRouteWithContext,
+  createRoute,
+  redirect,
+} from "@tanstack/solid-router";
+
 import {
   invalidateConnections,
   isConnectionsReady,
@@ -11,16 +11,15 @@ import {
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
 import { getSnapshot } from "../db";
-import { authEvent } from "../events/auth";
-import { isAuthAvailable } from "../firebase";
 import { accountSettingsSearch } from "../states/account-settings";
-import { isAuthenticated, setSelectedProfileName } from "../states/core";
+import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
+import { setSelectedProfileName } from "../states/core";
 import { leaderboardSearch } from "../states/leaderboard-selection";
 import { withLoading } from "../states/loading-page";
 import { settingsSearch } from "../states/settings-search";
 import { PageName } from "../states/router";
 import * as TodayTracker from "../test/today-tracker";
-import { promiseWithResolvers } from "../utils/misc";
+import type { RouterAuth, RouterContext } from "./context";
 import { readSearchOnEnter } from "./search-params";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
@@ -32,31 +31,15 @@ declare module "@tanstack/solid-router" {
   }
 }
 
-const { promise: firstAuthState, resolve: resolveFirstAuthState } =
-  promiseWithResolvers();
-
-let pendingUserData: Promise<void> | undefined;
-
-authEvent.subscribe((event) => {
-  if (event.type !== "authStateChanged") return;
-
-  if (event.data.isUserSignedIn) {
-    pendingUserData = event.data.loadPromise;
-  }
-  // awaited by waitForUserData during the initial load
-  resolveFirstAuthState();
-});
-
 /**
  * Waits until the auth state is known, then shows the loading bar while the
  * user data downloads (only once per sign in).
  */
-async function waitForUserData(): Promise<void> {
-  await firstAuthState;
+async function waitForUserData(auth: RouterAuth): Promise<void> {
+  await auth.waitForFirstState();
 
-  const userData = pendingUserData;
+  const userData = auth.takeUserDataDownload();
   if (userData === undefined) return;
-  pendingUserData = undefined;
 
   await withLoading("user data", {
     style: "bar",
@@ -67,24 +50,26 @@ async function waitForUserData(): Promise<void> {
   });
 }
 
-function requireAuth(): void {
-  if (!isAuthAvailable()) redirect({ to: "/", throw: true });
-  if (!isAuthenticated()) redirect({ to: "/login", throw: true });
+function requireAuth(auth: RouterAuth): void {
+  if (!auth.isAvailable()) redirect({ to: "/", throw: true });
+  if (!auth.isSignedIn()) redirect({ to: "/login", throw: true });
 }
 
-function guestOnly(): void {
-  if (!isAuthAvailable()) redirect({ to: "/", throw: true });
-  if (isAuthenticated()) redirect({ to: "/account", throw: true });
+function guestOnly(auth: RouterAuth): void {
+  if (!auth.isAvailable()) redirect({ to: "/", throw: true });
+  if (auth.isSignedIn()) redirect({ to: "/account", throw: true });
 }
 
 // renders nothing - pages are rendered by <Pages> (see components/pages/Pages.tsx)
-const root = createRootRoute({ component: () => null });
+const root = createRootRouteWithContext<RouterContext>()({
+  component: () => null,
+});
 
 // pathless layout so every page waits for auth and the user data download
 const app = createRoute({
   getParentRoute: () => root,
   id: "app",
-  beforeLoad: waitForUserData,
+  beforeLoad: async ({ context }) => waitForUserData(context.auth),
 });
 
 const test = createRoute({
@@ -111,12 +96,15 @@ const leaderboards = createRoute({
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
   beforeLoad: readSearchOnEnter(leaderboardSearch),
-  loader: async () => {
-    if (getServerConfiguration() !== undefined) return;
+  loader: async ({ context: { queryClient } }) => {
+    const serverConfiguration = getServerConfigurationQueryOptions();
+    if (queryClient.getQueryData(serverConfiguration.queryKey) !== undefined) {
+      return;
+    }
     await withLoading("the leaderboards page", {
       style: "spinner",
       load: async () => {
-        await serverConfigurationPromise;
+        await queryClient.ensureQueryData(serverConfiguration);
       },
     });
   },
@@ -139,14 +127,14 @@ const login = createRoute({
   getParentRoute: () => app,
   path: "/login",
   staticData: { page: "login" },
-  beforeLoad: guestOnly,
+  beforeLoad: ({ context }) => guestOnly(context.auth),
 });
 
 const account = createRoute({
   getParentRoute: () => app,
   path: "/account",
   staticData: { page: "account" },
-  beforeLoad: requireAuth,
+  beforeLoad: ({ context }) => requireAuth(context.auth),
   loader: async () => {
     if (isResultsReady()) return;
     await withLoading("the account page", {
@@ -172,7 +160,7 @@ const accountSettings = createRoute({
   path: "/account-settings",
   staticData: { page: "accountSettings" },
   beforeLoad: (ctx) => {
-    requireAuth();
+    requireAuth(ctx.context.auth);
     readSearchOnEnter(accountSettingsSearch)(ctx);
   },
 });
@@ -196,14 +184,14 @@ const friends = createRoute({
   getParentRoute: () => app,
   path: "/friends",
   staticData: { page: "friends" },
-  beforeLoad: requireAuth,
-  loader: async () => {
+  beforeLoad: ({ context }) => requireAuth(context.auth),
+  loader: async ({ context: { queryClient } }) => {
     if (!isConnectionsReady()) {
       await withLoading("the friends page", {
         style: "bar",
         load: async () => {
           await Promise.all([
-            serverConfigurationPromise,
+            queryClient.ensureQueryData(getServerConfigurationQueryOptions()),
             waitForConnectionsReady(),
           ]);
         },
