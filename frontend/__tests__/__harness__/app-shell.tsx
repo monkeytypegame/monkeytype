@@ -33,6 +33,11 @@
  *   waits for the test.
  * - `loadingBar()` reads the loading page's bar (fill width, text). The fill
  *   jumps straight to each target. `loadingIndicator()`: spinner, bar or error.
+ * - Blocking downloads (`results`, `friends`: "pending"): real query
+ *   collections (the app's retry options) fetching from a fake server.
+ *   `app.blockingData.loadResults()` / `failResults(error)` (fails the fetch
+ *   and its retries, like a down server; a new fetch, eg. Retry, waits again),
+ *   `requests(download)` counts the requests sent.
  * - Slow navigations (pending spinner): `friendsRefresh: "pending"` hangs the
  *   friends page's refetch (not a loading step) until
  *   `app.blockingData.refreshFriends()`. Use fake timers (setTimeout,
@@ -58,6 +63,8 @@
 // static json (layouts...) read from disk, the test state module loads some
 import "./mock-static";
 import { cleanup, fireEvent, render } from "@solidjs/testing-library";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/solid-db";
 import {
   hashKey,
   QueryClient,
@@ -77,6 +84,7 @@ import { vi } from "vitest";
 
 import type { RouterAuth } from "../../src/ts/router/context";
 
+import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { AppShell } from "../../src/ts/components/AppShell";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
@@ -106,42 +114,73 @@ export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 export type PageMount = { page: string; attached: boolean };
 
 const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
-  // blocking data the account and friends routes wait for, ready by default
   type Waiting = { resolve: () => void; reject: (error: Error) => void };
+  // the friends page's refetch on every visit, ready by default
   function readiness(): {
     ready: boolean;
-    waiting: Waiting[];
     set: (ready: boolean) => void;
-    /**
-     * The download failed: fails the current waits, or the next one if none
-     * is waiting yet. Later waits wait again.
-     */
-    fail: (error: Error) => void;
     wait: () => Promise<void>;
   } {
-    let failure: Error | undefined;
+    const waiting: Waiting[] = [];
     const state = {
       ready: true,
-      waiting: [] as Waiting[],
       set: (ready: boolean) => {
         state.ready = ready;
         if (!ready) return;
-        for (const { resolve } of state.waiting.splice(0)) resolve();
-      },
-      fail: (error: Error) => {
-        if (state.waiting.length === 0) failure = error;
-        for (const { reject } of state.waiting.splice(0)) reject(error);
+        for (const { resolve } of waiting.splice(0)) resolve();
       },
       wait: async () => {
         if (state.ready) return;
-        if (failure !== undefined) {
-          const error = failure;
-          failure = undefined;
-          return Promise.reject(error);
-        }
         return new Promise<void>((resolve, reject) =>
-          state.waiting.push({ resolve, reject }),
+          waiting.push({ resolve, reject }),
         );
+      },
+    };
+    return state;
+  }
+  /**
+   * The server side of a blocking download (results, friends), ready by
+   * default. A real query collection (made by renderApp) fetches from it.
+   */
+  function server(): {
+    ready: boolean;
+    /** Requests received (fetch attempts, retries included). */
+    requests: number;
+    /** The collection downloading from this server, set by renderApp. */
+    collection: DownloadCollection | undefined;
+    set: (ready: boolean) => void;
+    /** Fails the running fetch, its retries included. A new fetch waits again. */
+    fail: (error: Error) => void;
+    /** The query function, `failures`: the fetch's failed attempts so far. */
+    fetch: (failures: number) => Promise<{ _id: string }[]>;
+  } {
+    const waiting: Waiting[] = [];
+    let failure: Error | undefined;
+    const state = {
+      ready: true,
+      requests: 0,
+      collection: undefined as DownloadCollection | undefined,
+      set: (ready: boolean) => {
+        state.ready = ready;
+        failure = undefined;
+        if (!ready) return;
+        for (const { resolve } of waiting.splice(0)) resolve();
+      },
+      fail: (error: Error) => {
+        failure = error;
+        for (const { reject } of waiting.splice(0)) reject(error);
+      },
+      fetch: async (failures: number) => {
+        state.requests++;
+        if (failures === 0) failure = undefined;
+        // a retry of the failing fetch
+        if (failure !== undefined) return Promise.reject(failure);
+        if (!state.ready) {
+          await new Promise<void>((resolve, reject) =>
+            waiting.push({ resolve, reject }),
+          );
+        }
+        return [];
       },
     };
     return state;
@@ -151,28 +190,45 @@ const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
     pageMounts: [] as PageMount[],
     pageContent: new Map<string, () => JSXElement>(),
     blockingData: {
-      results: readiness(),
-      friends: readiness(),
+      results: server(),
+      friends: server(),
       friendsRefresh: readiness(),
     },
   };
 });
 
-// results and friends are collections synced outside the router context
-vi.mock(import("../../src/ts/collections/results"), async (importOriginal) => ({
-  ...(await importOriginal()),
-  isResultsReady: () => blockingData.results.ready,
-  waitForResultsReady: blockingData.results.wait,
-}));
+function downloadCollection(name: "results" | "friends"): DownloadCollection {
+  const collection = blockingData[name].collection;
+  if (collection === undefined) throw new Error("app not rendered");
+  return collection;
+}
+
+// results and friends are collections synced outside the router context: the
+// harness swaps them for collections downloading from its fake server
+vi.mock(import("../../src/ts/collections/results"), async (importOriginal) => {
+  const { isDownloaded, waitForDownload } =
+    await import("../../src/ts/collections/utils/blocking-download");
+  return {
+    ...(await importOriginal()),
+    isResultsReady: () => isDownloaded(downloadCollection("results")),
+    waitForResultsReady: async () =>
+      waitForDownload(downloadCollection("results")),
+  };
+});
 vi.mock(
   import("../../src/ts/collections/connections"),
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    isConnectionsReady: () => blockingData.friends.ready,
-    waitForConnectionsReady: blockingData.friends.wait,
-    // the friends page refetches its connections on every visit
-    invalidateConnections: blockingData.friendsRefresh.wait,
-  }),
+  async (importOriginal) => {
+    const { isDownloaded, waitForDownload } =
+      await import("../../src/ts/collections/utils/blocking-download");
+    return {
+      ...(await importOriginal()),
+      isConnectionsReady: () => isDownloaded(downloadCollection("friends")),
+      waitForConnectionsReady: async () =>
+        waitForDownload(downloadCollection("friends")),
+      // the friends page refetches its connections on every visit
+      invalidateConnections: blockingData.friendsRefresh.wait,
+    };
+  },
 );
 
 vi.mock("animejs", () => ({
@@ -463,10 +519,12 @@ export type App = {
     loadResults: () => void;
     loadFriends: () => void;
     refreshFriends: () => void;
-    /** Fails the pending results download (a later wait waits again). */
+    /** Fails the results download, its retries too (a new download waits again). */
     failResults: (error: Error) => void;
-    /** Fails the pending friends download (a later wait waits again). */
+    /** Fails the friends download, its retries too (a new download waits again). */
     failFriends: (error: Error) => void;
+    /** Requests the download sent to the server so far (retries included). */
+    requests: (download: "results" | "friends") => number;
   };
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
@@ -542,6 +600,10 @@ export function renderApp(options: RenderAppOptions = {}): App {
   }
   blockingData.results.set(options.results !== "pending");
   blockingData.friends.set(options.friends !== "pending");
+  blockingData.results.requests = 0;
+  blockingData.friends.requests = 0;
+  blockingData.results.collection = createDownloadCollection("results");
+  blockingData.friends.collection = createDownloadCollection("friends");
   blockingData.friendsRefresh.set(options.friendsRefresh !== "pending");
   // the account route checks the user data downloaded
   setSnapshot(options.auth === "signedIn" ? getDefaultSnapshot() : undefined, {
@@ -646,6 +708,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
       refreshFriends: () => blockingData.friendsRefresh.set(true),
       failResults: (error) => blockingData.results.fail(error),
       failFriends: (error) => blockingData.friends.fail(error),
+      requests: (download) => blockingData[download].requests,
     },
     runningFades: () => fades,
     finishFade,
@@ -695,6 +758,40 @@ export function cleanupApp(): void {
   setResultCalculating(false);
   configTesting.replaceConfig({});
   setSnapshot(undefined, { dispatchEvent: false });
+  for (const name of ["results", "friends"] as const) {
+    void blockingData[name].collection?.cleanup();
+    blockingData[name].collection = undefined;
+  }
+}
+
+type DownloadCollection = ReturnType<typeof createDownloadCollection>;
+
+/**
+ * A real query collection (like the app's results and friends) downloading
+ * from the harness server: already downloaded when the server is ready, else
+ * fetching from the start (like after sign in).
+ */
+// oxlint-disable-next-line typescript/explicit-function-return-type
+function createDownloadCollection(name: "results" | "friends") {
+  const server = blockingData[name];
+  const queryKey = ["harness", name];
+  const queryClient = new QueryClient();
+  if (server.ready) queryClient.setQueryData(queryKey, []);
+  return createCollection(
+    queryCollectionOptions({
+      ...blockingDownloadOptions,
+      retryDelay: 0,
+      queryKey,
+      queryClient,
+      staleTime: Infinity,
+      startSync: true,
+      getKey: (item) => item._id,
+      queryFn: async () =>
+        server.fetch(
+          queryClient.getQueryState(queryKey)?.fetchFailureCount ?? 0,
+        ),
+    }),
+  );
 }
 
 function pageName(el: Element): string {

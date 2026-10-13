@@ -822,6 +822,52 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["settings"]);
     });
 
+    it.each(["results", "friends"] as const)(
+      "retries a failing %s download once before showing the error",
+      async (download) => {
+        const app = renderApp({
+          url: "/",
+          auth: "signedIn",
+          [download]: "pending",
+          queryData: [[serverConfigurationKey, {}]],
+        });
+        await app.settle();
+        void app.navigate({
+          to: download === "results" ? "/account" : "/friends",
+        });
+        await app.settle({ waitForRouter: false });
+        const before = app.blockingData.requests(download);
+
+        if (download === "results") {
+          app.blockingData.failResults(new Error("server is down"));
+        } else {
+          app.blockingData.failFriends(new Error("server is down"));
+        }
+        await app.settle();
+
+        expect(app.loadingIndicator()).toBe("error");
+        expect(app.blockingData.requests(download) - before).toBe(1);
+      },
+    );
+
+    it("downloads the results again when an earlier download failed", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      // eg. the download after sign in, before the account page is opened
+      app.blockingData.failResults(new Error("server is down"));
+      await flush();
+
+      void app.navigate({ to: "/account" });
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading results...");
+      });
+
+      app.blockingData.loadResults();
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["account"]);
+    });
+
     it("retries a failed results download", async () => {
       const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
       await app.settle();
