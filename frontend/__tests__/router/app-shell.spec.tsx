@@ -812,6 +812,29 @@ describe("app shell routing", () => {
       expect(app.test.isRunning()).toBe(true);
     });
 
+    it("starts a test when typing while the test page reloads in place", async () => {
+      const app = renderApp({ url: "/", auth: "signedOut" });
+      await app.settle();
+
+      // signing in reloads the test page's routes
+      app.auth.signIn();
+      expect(app.router.state.status).toBe("pending");
+      app.test.type();
+
+      expect(app.test.isRunning()).toBe(true);
+    });
+
+    it("starts no test when typing while leaving the test page", async () => {
+      const app = renderApp({ url: "/" });
+      await app.settle();
+
+      void app.navigate({ to: "/about" });
+      await flush();
+      app.test.type();
+
+      expect(app.test.isRunning()).toBe(false);
+    });
+
     it.each([
       ["the test is restarting", "setRestarting"],
       ["the result is calculating", "setResultCalculating"],

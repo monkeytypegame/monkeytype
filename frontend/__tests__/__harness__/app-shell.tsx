@@ -86,6 +86,7 @@ import {
   isLoadingBarShown,
   resetLoadingPage,
 } from "../../src/ts/states/loading-page";
+import { canStartTest } from "../../src/ts/states/router";
 import {
   isTestActive,
   setIsTestRestarting,
@@ -479,8 +480,10 @@ export type App = {
 type HoverLink = NavigateOptions<AppRouter, string, string | undefined>;
 
 export type TestControls = {
-  /** As if the user started typing. */
+  /** Starts a test, wherever the user is. */
   start: () => void;
+  /** As if the user typed: starts a test if typing may start one now. */
+  type: () => void;
   isRunning: () => boolean;
   setRestarting: (restarting: boolean) => void;
   setResultCalculating: (calculating: boolean) => void;
@@ -490,6 +493,10 @@ export type TestControls = {
 
 const testControls: TestControls = {
   start: () => setTestActive(true),
+  // like the test's startTest
+  type: () => {
+    if (canStartTest()) setTestActive(true);
+  },
   isRunning: () => isTestActive(),
   setRestarting: (restarting) => setIsTestRestarting(restarting),
   setResultCalculating: (calculating) => setResultCalculating(calculating),

@@ -77,3 +77,19 @@ export function isPendingShown(): boolean {
 export function isNavigating(): boolean {
   return getRouter()?.state.status === "pending";
 }
+
+/**
+ * Whether typing may start a test: the test page is shown, and no
+ * navigation is leaving it (eg. typing while it fades out). A reload in
+ * place (eg. signing in) doesn't stop it.
+ */
+export function canStartTest(): boolean {
+  return getRoutePage() === "test" && !isLeavingPage();
+}
+
+// a navigation to another path is in progress
+function isLeavingPage(): boolean {
+  const state = getRouter()?.state;
+  if (state?.status !== "pending") return false;
+  return state.location.pathname !== state.resolvedLocation?.pathname;
+}

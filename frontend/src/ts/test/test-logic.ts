@@ -36,7 +36,7 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { getRoutePage, isNavigating } from "../states/router";
+import { canStartTest } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -155,9 +155,7 @@ import { nthElementFromArray } from "../utils/arrays";
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  // eg. typing while the test page fades out after navigating away, or while
-  // the loading page covers it during a navigation
-  if (getRoutePage() !== "test" || isNavigating()) return false;
+  if (!canStartTest()) return false;
 
   if (isAuthenticated()) {
     void AnalyticsController.log("testStarted");
