@@ -29,10 +29,6 @@ export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [isUserVerified, setUserVerified] = createSignal(false);
 
-export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
-  string | undefined
->(undefined);
-
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);

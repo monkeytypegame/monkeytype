@@ -47,10 +47,20 @@
  */
 // static json (layouts...) read from disk, the test state module loads some
 import "./mock-static";
-import { cleanup, render } from "@solidjs/testing-library";
-import { hashKey, QueryClient, QueryKey } from "@tanstack/solid-query";
-import { createMemoryHistory } from "@tanstack/solid-router";
-import { JSXElement } from "solid-js";
+import { cleanup, fireEvent, render } from "@solidjs/testing-library";
+import {
+  hashKey,
+  QueryClient,
+  QueryClientProvider,
+  QueryKey,
+} from "@tanstack/solid-query";
+import {
+  createMemoryHistory,
+  Link,
+  NavigateOptions,
+  RouterContextProvider,
+} from "@tanstack/solid-router";
+import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
 import type { RouterAuth } from "../../src/ts/router/context";
@@ -59,7 +69,11 @@ import { AppShell } from "../../src/ts/components/AppShell";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
 import { setSnapshot } from "../../src/ts/db";
-import { AppRouter, createAppRouter } from "../../src/ts/router/create-router";
+import {
+  AppRouter,
+  createAppRouter,
+  setPreloading,
+} from "../../src/ts/router/create-router";
 import { setRouter } from "../../src/ts/router/navigate";
 import { resetLoadingPage } from "../../src/ts/states/loading-page";
 import {
@@ -215,7 +229,11 @@ vi.mock("../../src/ts/components/pages/test/TestPage", stubPage("TestPage"));
 // then check whether it is still running
 vi.mock("../../src/ts/test/test-logic", async () => {
   const { setTestActive } = await import("../../src/ts/states/test");
-  return { leaveTestPage: () => setTestActive(false) };
+  return {
+    leaveTestPage: () => setTestActive(false),
+    // the debug handle exposes it
+    restart: () => undefined,
+  };
 });
 
 export type FakeAuthState = "signedIn" | "signedOut" | "pending";
@@ -346,6 +364,8 @@ export type RenderAppOptions = {
    * rendered inside the page - for probes using the page's hooks.
    */
   pageContent?: Record<string, () => JSXElement>;
+  /** False as if the router's intent preloading constant were flipped off. */
+  preload?: boolean;
 };
 
 /** The loading page's bar as the user sees it. */
@@ -381,7 +401,17 @@ export type App = {
   loadingBar: () => LoadingBar | undefined;
   /** The typing test's state (the test page itself is a stub). */
   test: TestControls;
+  /**
+   * Hovers a link to `link` (rendered outside the pages, like the header's
+   * nav) and waits for the preload it starts.
+   */
+  hover: <TTo extends string | undefined>(
+    link: NavigateOptions<AppRouter, string, TTo>,
+  ) => Promise<void>;
 };
+
+/** Where a hovered link points (to, params, search). */
+type HoverLink = NavigateOptions<AppRouter, string, string | undefined>;
 
 export type TestControls = {
   /** As if the user started typing. */
@@ -426,12 +456,43 @@ export function renderApp(options: RenderAppOptions = {}): App {
 
   const router = createAppRouter(
     { auth, queryClient },
-    { history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }) },
+    {
+      history: createMemoryHistory({ initialEntries: [options.url ?? "/"] }),
+      preload: options.preload,
+    },
   );
   // vanilla modules and router state memos read the router through this holder
   setRouter(router);
 
-  const { container } = render(() => <AppShell router={router} />);
+  // the header's links live in a separate solid root, like here
+  const [links, setLinks] = createSignal<HoverLink[]>([]);
+  const { container } = render(() => (
+    <QueryClientProvider client={queryClient}>
+      <AppShell router={router} />
+      <RouterContextProvider router={router}>
+        {() => (
+          <nav data-testid="harness-links">
+            <For each={links()}>{(link) => <Link {...link}>link</Link>}</For>
+          </nav>
+        )}
+      </RouterContextProvider>
+    </QueryClientProvider>
+  ));
+
+  async function hover<TTo extends string | undefined>(
+    link: NavigateOptions<AppRouter, string, TTo>,
+  ): Promise<void> {
+    setLinks((prev) => [...prev, link as HoverLink]);
+    const nav = container.querySelector('[data-testid="harness-links"]');
+    const el = nav?.lastElementChild;
+    if (el === null || el === undefined) throw new Error("link not rendered");
+    fireEvent.mouseEnter(el);
+    // intent preloads start after the preload delay
+    await new Promise((resolve) =>
+      setTimeout(resolve, (router.options.defaultPreloadDelay ?? 0) + 1),
+    );
+    await flush();
+  }
 
   function finishFade(): number {
     const fade = fades[0];
@@ -494,6 +555,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
       };
     },
     test: testControls,
+    hover,
   };
 }
 
@@ -504,6 +566,7 @@ export function cleanupApp(): void {
   pageMounts.length = 0;
   pageContent.clear();
   setRouter(undefined);
+  setPreloading(true);
   resetLoadingPage();
   setTestActive(false);
   setIsTestRestarting(false);

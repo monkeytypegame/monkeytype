@@ -33,7 +33,6 @@ import {
   getTypingStatsQueryOptions,
 } from "../queries/public";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
-import { setSelectedProfileName } from "../states/core";
 import {
   getMissingLeaderboardSearch,
   LeaderboardSearchSchema,
@@ -52,13 +51,17 @@ import {
 /**
  * Waits until the auth state is known, plans the navigation's loading bar,
  * then shows it while the user data downloads (only once per sign in).
- * `matches` are all routes of the navigation.
+ * `matches` are all routes of the navigation. A preload (hovered link) only
+ * waits for the auth state.
  */
 async function waitForUserData(
   auth: RouterAuth,
   matches: readonly { staticData: StaticDataRouteOption }[],
+  preload: boolean,
 ): Promise<void> {
   await auth.waitForFirstState();
+  // a hover plans no bar and leaves the download to the navigation
+  if (preload) return;
 
   const userData = auth.takeUserDataDownload();
   planNavigationLoadingBar({ matches, userData });
@@ -90,8 +93,8 @@ const app = createRoute({
   id: "app",
   // explicit return type: inferring it would make the route tree's type
   // depend on itself through `matches` (TS7022)
-  beforeLoad: async ({ context, matches }): Promise<void> =>
-    waitForUserData(context.auth, matches),
+  beforeLoad: async ({ context, matches, preload }): Promise<void> =>
+    waitForUserData(context.auth, matches, preload),
   // the router renders a pending route only through its pendingComponent -
   // without one nothing renders on first load, not even the root layout
   pendingComponent: LoadingRoutePage,
@@ -181,8 +184,11 @@ const account = createRoute({
   staticData: { loadingStep: "results" },
   component: pageComponent("account", AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
-  loader: async () =>
-    runRouteLoadingStep("results", async () => {
+  loader: async ({ preload }) => {
+    // blocking data: a hover must not show the loading page, the results
+    // download is waited for when the page is opened
+    if (preload) return;
+    await runRouteLoadingStep("results", async () => {
       if (getSnapshot() === null || getSnapshot() === undefined) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
@@ -190,7 +196,8 @@ const account = createRoute({
       }
       await waitForResultsReady();
       TodayTracker.addAllFromToday();
-    }),
+    });
+  },
 });
 
 const accountSettings = createRoute({
@@ -211,9 +218,6 @@ const profile = createRoute({
   getParentRoute: () => app,
   path: "/profile/$uidOrName",
   component: pageComponent("profile", ProfilePage),
-  beforeLoad: ({ params }) => {
-    setSelectedProfileName(params.uidOrName);
-  },
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient }, params }) => {
     void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
@@ -226,7 +230,9 @@ const friends = createRoute({
   staticData: { loadingStep: "friends" },
   component: pageComponent("friends", FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
-  loader: async ({ context: { queryClient } }) => {
+  loader: async ({ context: { queryClient }, preload }) => {
+    // blocking data: a hover must not show the loading page
+    if (preload) return;
     await runRouteLoadingStep("friends", async () => {
       await Promise.all([
         queryClient.ensureQueryData(getServerConfigurationQueryOptions()),

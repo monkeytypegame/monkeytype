@@ -31,10 +31,11 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `navigate({ to, params, search })` | client-side route change; `navigate({ href: "/settings?x=1" })` for a raw path |
 | `isNavigating()` | a navigation is in progress (the loading page may cover the page) |
 | `getRoutePage()` | page name of the last resolved route ("loading" before the first or after a failed load) |
-| `getConfig.<key>` | read config (store object, not a function) |
+| `getConfig.<key>` | read config: `getConfig` is the config store object, not a function (`getConfig.fontSize`) |
 | `setConfig(key, value)` | write config |
 | `showModal(id)` | open a modal by `ModalId` |
 | `restart()` | restart the typing test |
+| `setPreloading(enabled)` | turn intent preloading (hovered/focused links run the next page's guards and loaders) off or back on, no rebuild; resets on reload. Permanent switch: `INTENT_PRELOADING` in `router/create-router.ts` |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
 | `getSignal(name)` / `setSignal(name, value)` | read/write a tracked signal by exact name |
 
