@@ -16,7 +16,6 @@ import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
 import * as DB from "../../../../db";
-import { navigate } from "../../../../router/navigate";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -160,20 +159,15 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           data-ui-element="resultStatValue"
           text="Show daily leaderboard"
           class={cn(
-            "text-[2em] leading-[1em] text-main",
+            "block text-[2em] leading-[1em] text-main",
             mobileBalloonClass,
-            "cursor-pointer",
           )}
-          onClick={() => {
-            void navigate({
-              to: "/leaderboards",
-              search: {
-                type: "daily",
-                language: props.result.language,
-                mode2: props.result.mode2,
-                goToUserPage: "true",
-              },
-            });
+          to="/leaderboards"
+          search={{
+            type: "daily",
+            language: props.result.language,
+            mode2: props.result.mode2,
+            goToUserPage: "true",
           }}
         >
           {format().rank(resultState.dailyLeaderboardRank, {
