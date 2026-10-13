@@ -14,6 +14,7 @@ import type { PageName } from "../../states/router";
 
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
+import { LoadingCircle } from "../common/LoadingCircle";
 import { LoadingPage } from "./LoadingPage";
 
 type PageProps = {
@@ -66,7 +67,14 @@ export function Page(props: PageProps): JSXElement {
             (solid-router #7829), so a read that suspends without a closer
             boundary would swap the whole page out and fade it in again.
             Caught here it blanks the page instead */}
-        <Suspense>
+        <Suspense
+          fallback={
+            <div class="grid h-full content-center justify-center">
+              <LoadingCircle class="mb-4 text-[2rem]" />
+              {capitalizeFirstLetter(props.name)} page is loading...
+            </div>
+          }
+        >
           <Dynamic component={props.content} />
         </Suspense>
       </Show>
