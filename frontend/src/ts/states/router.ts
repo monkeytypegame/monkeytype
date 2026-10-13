@@ -1,6 +1,6 @@
+import type { RegisteredRouter } from "@tanstack/solid-router";
 import { createMemo, createRoot } from "solid-js";
 
-import type { AppRouter } from "../router/create-router";
 import { getRouter } from "../router/navigate";
 
 /** A page of the site, rendered by its route (see router/routes.ts). */
@@ -26,7 +26,7 @@ declare module "@tanstack/solid-router" {
   }
 }
 
-function getMatches(): AppRouter["state"]["matches"] {
+function getMatches(): RegisteredRouter["state"]["matches"] {
   return getRouter()?.state.matches ?? [];
 }
 

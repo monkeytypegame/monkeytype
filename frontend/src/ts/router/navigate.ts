@@ -1,19 +1,17 @@
+import type { RegisteredRouter } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
-
-// type-only: importing the router at runtime would be circular
-import type { router } from "./index";
 
 // set by router/index.ts - kept separate so vanilla modules can navigate and
 // read router state without importing the route tree. router.state is
 // reactive (backed by solid signals)
-export const [getRouter, setRouter] = createSignal<typeof router>();
+export const [getRouter, setRouter] = createSignal<RegisteredRouter>();
 
 /**
  * Typed navigation to internal routes: `navigate({ to, params, search })`.
  * External links use plain urls instead.
  * Navigation guards live in the router's history blocker (router/index.ts).
  */
-export const navigate: (typeof router)["navigate"] = async (options) => {
+export const navigate: RegisteredRouter["navigate"] = async (options) => {
   const router = getRouter();
   if (router === undefined) {
     console.error("navigate ignored, router not initialised", options);
