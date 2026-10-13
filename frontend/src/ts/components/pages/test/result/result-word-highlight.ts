@@ -3,9 +3,9 @@
 // to place a highlight (".highlight") on top of the text to be highlighted.
 // Constants for padding around the highlights
 
-import * as Misc from "../utils/misc";
-import { isLanguageRightToLeft } from "../states/test";
-import { qsr } from "../utils/dom";
+import * as Misc from "../../../../utils/misc";
+import { isLanguageRightToLeft } from "../../../../states/test";
+import { qs } from "../../../../utils/dom";
 
 const PADDING_X = 16;
 const PADDING_Y = 12;
@@ -196,9 +196,16 @@ async function init(): Promise<boolean> {
     );
   }
 
-  RWH_el = qsr("#resultWordsHistory").native;
+  // words history is only mounted while open
+  const rwh = qs("#resultWordsHistory");
+  if (rwh === null) {
+    isInitInProgress = false;
+    return false;
+  }
+
+  RWH_el = rwh.native;
   RWH_rect = RWH_el.getBoundingClientRect();
-  wordEls = qsr("#resultWordsHistory").qsa(".words .word[input]").native;
+  wordEls = rwh.qsa(".words .word[data-input]").native;
 
   // remove non-input words
   if (wordEls.length === 0) {
@@ -293,7 +300,7 @@ async function init(): Promise<boolean> {
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i] as HTMLElement;
-      const userInputString = wordEl.getAttribute("input") ?? "";
+      const userInputString = wordEl.getAttribute("data-input") ?? "";
 
       if (!userInputString) {
         continue;

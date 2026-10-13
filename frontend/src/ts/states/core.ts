@@ -1,7 +1,5 @@
 import { createMemo, createSignal } from "solid-js";
-import { CommandlineSubgroupKey } from "../commandline/types";
 import { PageName } from "../pages/page";
-import { showModal } from "./modals";
 import { Formatting } from "../utils/format";
 import { getConfig } from "../config/store";
 
@@ -26,10 +24,6 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
   isFavorite: false,
 });
 
-export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
-  string | null
->(null);
-
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
@@ -40,13 +34,6 @@ export const [isUserVerified, setUserVerified] = createSignal(false);
 export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
   string | undefined
 >(undefined);
-
-export function showCommandLineForConfig(
-  selector: CommandlineSubgroupKey,
-): void {
-  setCommandlineSubgroup(selector);
-  showModal("Commandline");
-}
 
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined

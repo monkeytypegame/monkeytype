@@ -62,14 +62,45 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
+// #words / #wordsWrapper are still vanilla; test/test-ui applies these to them.
+// Other modules write here instead of touching the DOM directly.
+export const [isWordsHidden, setWordsHidden] = createSignal(false);
+export const [isWordsWrapperHidden, setWordsWrapperHidden] =
+  createSignal(false);
+export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
+export const [isErrorBorderDisabled, setErrorBorderDisabled] =
+  createSignal(false);
+
+// memory funbox countdown in seconds, null when off. MemoryFunboxTimer runs it.
+// equals: false so restarting with the same duration restarts the countdown.
+export const [getMemoryTimerDuration, setMemoryTimerDuration] = createSignal<
+  number | null
+>(null, { equals: false });
+// layoutfluid banner above the words, driven by test-timer/funbox-functions.
+// visibility is separate from text so the text stays during the exit animation.
+export const [isLayoutfluidTimerVisible, setLayoutfluidTimerVisible] =
+  createSignal(false);
+export const [getLayoutfluidTimerText, setLayoutfluidTimerText] =
+  createSignal("");
+
+// set by TestLogic.init() after repeated init failures; cleared on restart.
+export const [isTestInitFailed, setTestInitFailed] = createSignal(false);
+export const [getTestInitError, setTestInitError] = createSignal<string | null>(
+  null,
+);
+
+// shown between the words fading out and the result appearing.
+export const [isResultLoading, setResultLoading] = createSignal(false);
+
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
-export const [getLastResult, setLastResult] = createSignal<Omit<
-  CompletedEvent,
-  "hash" | "uid"
-> | null>(null);
+// a finished test's result, before the server adds hash and uid
+export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
+
+export const [getLastResult, setLastResult] =
+  createSignal<CompletedResult | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
