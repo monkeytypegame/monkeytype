@@ -82,7 +82,10 @@ import {
 } from "../../src/ts/router/create-router";
 import { setRouter } from "../../src/ts/router/navigate";
 import { createUserDataDownload } from "../../src/ts/router/user-data-download";
-import { resetLoadingPage } from "../../src/ts/states/loading-page";
+import {
+  isLoadingBarShown,
+  resetLoadingPage,
+} from "../../src/ts/states/loading-page";
 import {
   isTestActive,
   setIsTestRestarting,
@@ -572,6 +575,8 @@ export function renderApp(options: RenderAppOptions = {}): App {
           if (router.state.status !== "idle" || router.state.isLoading) {
             throw new Error("router busy");
           }
+          // the loading bar filling up to "Done"
+          if (isLoadingBarShown()) throw new Error("loading bar finishing");
         });
       }
       await flush();

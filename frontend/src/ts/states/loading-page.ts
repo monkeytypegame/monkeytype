@@ -9,17 +9,17 @@ type LoadingBarTarget = {
 };
 
 /**
- * Whether a loading step showed the bar since the router was last idle. The
- * router can't tell: while it is navigating, this keeps the loading page up
- * with the bar instead of the old page or the slow navigation spinner.
+ * Whether the loading bar is up: from the first loading step of a navigation
+ * until the bar finished at "Done" (see finishLoadingBar). The router can't
+ * tell: this keeps the loading page up with the bar instead of the old page,
+ * the new page or the slow navigation spinner.
  */
 const [isLoadingBarShown, setLoadingBarShown] = createSignal(false);
 export { isLoadingBarShown };
 
-/** Called by the router once it is idle, the next navigation starts without a bar. */
-export function endLoadingBar(): void {
-  setLoadingBarShown(false);
-}
+// the "Done" fill that hides the bar once finished. A loading step starting
+// meanwhile cancels the hide
+let finishing: object | undefined;
 
 /** `null` hides the text line; an empty string shows it, holding its space. */
 export const [getLoadingPageText, setLoadingPageText] = createSignal<
@@ -55,6 +55,7 @@ export function resetLoadingPage(): void {
   setLoadingPageBarStart(0);
   setLoadingPageBarTarget(null);
   barPlan = emptyPlan();
+  finishing = undefined;
 }
 
 export type LoadingBarKeyframe = {
@@ -100,14 +101,27 @@ export function planLoadingBar(steps: number): void {
 }
 
 /**
- * Called once the navigation resolved: a bar shown this navigation completes
- * to "Done", even when a planned step was skipped.
+ * Called once the navigation loaded: a bar shown this navigation completes
+ * to "Done", even when a planned step was skipped, then hides. A failed
+ * navigation hides it at once (its error shows instead).
  */
-export function finishLoadingBar(): void {
+export function finishLoadingBar(options: { failed: boolean }): void {
   barPlan = emptyPlan();
   if (!isLoadingBarShown()) return;
-  void updateLoadingPageBar(100, 125);
+  if (options.failed) {
+    finishing = undefined;
+    setLoadingBarShown(false);
+    return;
+  }
+
+  const finish = {};
+  finishing = finish;
   setLoadingPageText("Done");
+  void updateLoadingPageBar(100, 125).then(() => {
+    if (finishing !== finish) return;
+    finishing = undefined;
+    setLoadingBarShown(false);
+  });
 }
 
 /**
@@ -125,6 +139,7 @@ export async function runLoadingStep(
   const start = (index * 100) / steps;
   const end = index === steps - 1 ? barEnd : ((index + 1) * 100) / steps;
 
+  finishing = undefined;
   setLoadingBarShown(true);
   setLoadingPageText(null);
   setLoadingPageBarStart(start);

@@ -2,7 +2,7 @@ import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
 import { LoadingRoutePage } from "../components/pages/Page";
-import { endLoadingBar, finishLoadingBar } from "../states/loading-page";
+import { finishLoadingBar } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
@@ -104,10 +104,12 @@ export function createAppRouter(
   // waits for the first auth state itself (the app route's beforeLoad)
   context.auth.onChange(() => void router.invalidate());
 
-  // the loading page stops updating once hidden (router idle, after
-  // onResolved), so its bar completes when the loads are done
+  // the loads are done: the bar fills up to "Done", then the loading page
+  // hides (see RootLayout)
   router.subscribe("onLoad", () => {
-    finishLoadingBar();
+    finishLoadingBar({
+      failed: router.state.matches.some((match) => match.status === "error"),
+    });
   });
 
   // leaving the test page ends the test as soon as the navigation starts, so
@@ -116,11 +118,6 @@ export function createAppRouter(
   router.subscribe("onBeforeNavigate", ({ pathChanged }) => {
     if (!pathChanged || getRoutePage() !== "test") return;
     leaveTestPage();
-  });
-
-  // the router is idle: the loading page hides (see RootLayout)
-  router.subscribe("onResolved", () => {
-    endLoadingBar();
   });
 
   return router;

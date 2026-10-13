@@ -32,6 +32,13 @@ function retryButton(app: App): HTMLButtonElement {
   return button;
 }
 
+// the loading bar fills up from its last step to "Done" (125ms) before the
+// loading page leaves
+async function waitForDone(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  await flush();
+}
+
 // a response that never arrives, recording that the fetch started
 function slowResponse(key: QueryKey): {
   response: [QueryKey, () => Promise<unknown>];
@@ -250,6 +257,24 @@ describe("app shell routing", () => {
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
 
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("keeps the loading page up until the bar finished at done", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.loadResults();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+      // the bar takes 125ms to fill up from the last step
+      expect(app.runningFades()).toEqual([]);
+
+      await waitForDone();
+      expect(app.runningFades().map((fade) => fade.opacity)).toEqual([0]);
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -608,7 +633,7 @@ describe("app shell routing", () => {
       expect(app.finishFade()).toBe(1);
 
       userData.resolve();
-      await flush();
+      await waitForDone();
       expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.finishFade()).toBe(0);
 
