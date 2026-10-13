@@ -28,7 +28,8 @@
  *   app's query functions by query key - pair with `deferred()` to settle a
  *   response mid-test. `app.queryClient` for anything else.
  * - `app.navigate(...)` is the typed router.navigate, `app.router` the router.
- * - Pages are stubs rendering their name; `shownPage()` returns the name of the
+ * - Pages are stubs rendering their name, except the real loading page (its
+ *   text, error and Retry button); `shownPage()` returns the name of the
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
  *   them, `pageElement()` its wrapper. `pageMounts()` records each page
  *   content mount and whether it was attached to the document by then.
@@ -65,8 +66,12 @@ const { fades, pageMounts } = vi.hoisted(() => ({
 vi.mock("animejs", () => ({
   animate: (
     el: HTMLElement,
-    params: { opacity: number; duration: number; onComplete?: () => void },
+    params: { opacity?: number; duration: number; onComplete?: () => void },
   ) => {
+    // only page fades are tracked (not eg. the loading bar fill)
+    if (params.opacity === undefined) {
+      return { pause: vi.fn(), then: vi.fn() };
+    }
     // like anime's default composition, a new animation replaces the running
     // one on the same element, which never completes
     const replaced = fades.findIndex((fade) => fade.el === el);
@@ -124,7 +129,6 @@ vi.mock(
   "../../src/ts/components/pages/leaderboard/LeaderboardPage",
   stubPage("LeaderboardPage"),
 );
-vi.mock("../../src/ts/components/pages/LoadingPage", stubPage("LoadingPage"));
 vi.mock("../../src/ts/components/pages/login/LoginPage", stubPage("LoginPage"));
 vi.mock(
   "../../src/ts/components/pages/profile/ProfilePage",

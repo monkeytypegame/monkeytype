@@ -77,6 +77,8 @@ function guestOnly(auth: RouterAuth): void {
 // each route renders its page, the root layout fades between them
 const root = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
+  // unknown urls. The profile page shows its own message for unknown users
+  notFoundComponent: pageComponent("404", NotFoundPage),
 });
 
 // pathless layout so every page waits for auth and the user data download
@@ -240,13 +242,6 @@ const friends = createRoute({
   },
 });
 
-const notFound = createRoute({
-  getParentRoute: () => app,
-  path: "$",
-  staticData: { page: "404" },
-  component: pageComponent("404", NotFoundPage),
-});
-
 export const routeTree = root.addChildren([
   app.addChildren([
     test,
@@ -260,6 +255,5 @@ export const routeTree = root.addChildren([
     profileSearch,
     profile,
     friends,
-    notFound,
   ]),
 ]);

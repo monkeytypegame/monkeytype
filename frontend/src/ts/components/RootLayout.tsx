@@ -1,10 +1,9 @@
 import { createSwitchTransition } from "@solid-primitives/transition-group";
 import { Outlet } from "@tanstack/solid-router";
 import { animate } from "animejs";
-import { children, createMemo, JSXElement, Show } from "solid-js";
+import { children, JSXElement, Show } from "solid-js";
 
 import { isLoadingPageShown } from "../states/loading-page";
-import { getLoadingError } from "../states/router";
 import { applyReducedMotion } from "../utils/misc";
 import { LoadingRoutePage } from "./pages/Page";
 
@@ -23,16 +22,15 @@ async function fade(el: HTMLElement, opacity: number): Promise<void> {
 
 /**
  * Root route component: the routed page, or the loading page while a blocking
- * load runs or after a load failed, with the page fade between them. The old
+ * load runs, with the page fade between them. A failed load (the router's
+ * error component) and an unknown url (the root's not found component) are
+ * routed pages too. The old
  * page fades out completely before the new one is inserted and fades in, so
  * two pages are never in the DOM at once (ADR 0002).
  */
 export function RootLayout(): JSXElement {
-  const isLoadingShown = createMemo(
-    () => isLoadingPageShown() || getLoadingError() !== null,
-  );
   const content = children(() => (
-    <Show when={!isLoadingShown()} fallback={<LoadingRoutePage />}>
+    <Show when={!isLoadingPageShown()} fallback={<LoadingRoutePage />}>
       <Outlet />
     </Show>
   ));
