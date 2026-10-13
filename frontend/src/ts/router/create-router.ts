@@ -16,6 +16,23 @@ import type { RouterContext } from "./context";
 import { routeTree } from "./routes";
 
 /**
+ * Hovering (or focusing) a link preloads its page: guards and loaders run
+ * with `preload: true`, so they must not show the loading page or change
+ * global state then. Flip to false to rule preloading out while debugging
+ * (or toggle it at runtime with `__mt.setPreloading` in dev).
+ */
+const INTENT_PRELOADING = true;
+
+// runtime switch (dev debug handle). Links read the router's preload option
+// once, so the switch gates the preloads themselves
+let isPreloadingPaused = false;
+
+/** Turns preloading off or back on without a rebuild (dev debug handle). */
+export function setPreloading(enabled: boolean): void {
+  isPreloadingPaused = !enabled;
+}
+
+/**
  * The app's router, minus the app-only side effects (title, focus, ads - see
  * router/index.ts). Tests build one with a test context and
  * in-memory history (see __tests__/__harness__/app-shell.tsx).
@@ -23,12 +40,15 @@ import { routeTree } from "./routes";
 // oxlint-disable-next-line typescript/explicit-function-return-type -- the router type is inferred from the route tree
 export function createAppRouter(
   context: RouterContext,
-  options: { history?: RouterHistory } = {},
+  options: { history?: RouterHistory; preload?: boolean } = {},
 ) {
   const router = createRouter({
     routeTree,
     context,
     history: options.history,
+    defaultPreload: (options.preload ?? INTENT_PRELOADING) ? "intent" : false,
+    // a preloaded page's loaders run again when it's opened
+    defaultPreloadStaleTime: 0,
     // safety net for an unexpectedly slow navigation (loading steps show the
     // bar straight away): the loading page with a spinner after half a
     // second, kept at least half a second so it doesn't flash
@@ -53,6 +73,10 @@ export function createAppRouter(
       return str === "" ? "" : `?${str}`;
     },
   });
+
+  const preloadRoute = router.preloadRoute;
+  router.preloadRoute = async (preloadOptions) =>
+    isPreloadingPaused ? undefined : preloadRoute(preloadOptions);
 
   // guards every navigation - links, navigate(), back/forward.
   // redirects bypass it (ignoreBlocker)

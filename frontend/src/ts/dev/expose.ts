@@ -2,6 +2,7 @@
 // or browser automation. Loaded via dynamic import behind `import.meta.env.DEV`.
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
+import { setPreloading } from "../router/create-router";
 import { navigate } from "../router/navigate";
 import { getRoutePage, isNavigating } from "../states/router";
 import { showModal } from "../states/modals";
@@ -25,6 +26,8 @@ const mt = {
   navigate,
   getRoutePage,
   isNavigating,
+  /** Turns intent preloading (hovered links) off or back on. */
+  setPreloading,
   getConfig,
   setConfig,
   showModal,

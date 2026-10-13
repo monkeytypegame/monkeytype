@@ -11,10 +11,6 @@ import { usePendingConnectionsQuery } from "../../../collections/connections";
 import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import {
-  prefetchAboutPage,
-  prefetchLeaderboardPage,
-} from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import {
   getAccountButtonSpinner,
@@ -109,9 +105,6 @@ export function Nav(): JSXElement {
         }}
         class={buttonClass()}
         to="/leaderboards"
-        onMouseEnter={() => {
-          prefetchLeaderboardPage();
-        }}
       />
       <Button
         variant="text"
@@ -125,9 +118,6 @@ export function Nav(): JSXElement {
           "data-nav-item": "about",
         }}
         to="/about"
-        onMouseEnter={() => {
-          prefetchAboutPage();
-        }}
       />
       <Button
         variant="text"

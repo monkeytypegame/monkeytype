@@ -32,9 +32,23 @@ function retryButton(app: App): HTMLButtonElement {
   return button;
 }
 
+// a response that never arrives, recording that the fetch started
+function slowResponse(key: QueryKey): {
+  response: [QueryKey, () => Promise<unknown>];
+  started: () => boolean;
+} {
+  let started = false;
+  const fetch = async (): Promise<unknown> => {
+    started = true;
+    return deferred<unknown>().promise;
+  };
+  return { response: [key, fetch], started: () => started };
+}
+
 describe("app shell routing", () => {
   afterEach(() => {
     cleanupApp();
+    vi.unstubAllGlobals();
   });
 
   describe("guards", () => {
@@ -264,19 +278,6 @@ describe("app shell routing", () => {
   });
 
   describe("background data", () => {
-    // a response that never arrives, recording that the fetch started
-    function slowResponse(key: QueryKey): {
-      response: [QueryKey, () => Promise<unknown>];
-      started: () => boolean;
-    } {
-      let started = false;
-      const fetch = async (): Promise<unknown> => {
-        started = true;
-        return deferred<unknown>().promise;
-      };
-      return { response: [key, fetch], started: () => started };
-    }
-
     it("shows about straight away while its data loads", async () => {
       const responses = [
         getContributorsQueryOptions().queryKey,
@@ -766,5 +767,171 @@ describe("app shell routing", () => {
 
     expect(app.url()).toBe("/?mode=verifyEmail&oobCode=abc#top");
     expect(app.shownPage()).toBe("test");
+  });
+
+  describe("preloading", () => {
+    it("starts about's background fetches when hovering a link to it", async () => {
+      const responses = [
+        getContributorsQueryOptions().queryKey,
+        getSupportersQueryOptions().queryKey,
+        getTypingStatsQueryOptions().queryKey,
+        getSpeedHistogramQueryOptions().queryKey,
+      ].map(slowResponse);
+      const app = renderApp({
+        url: "/settings",
+        queryResponses: responses.map(({ response }) => response),
+      });
+      await app.settle();
+
+      await app.hover({ to: "/about" });
+
+      expect(app.shownPage()).toBe("settings");
+      expect(app.url()).toBe("/settings");
+      expect(responses.map((response) => response.started())).toEqual([
+        true,
+        true,
+        true,
+        true,
+      ]);
+    });
+
+    it("preloads nothing with preloading turned off", async () => {
+      const contributors = slowResponse(getContributorsQueryOptions().queryKey);
+      const app = renderApp({
+        url: "/settings",
+        preload: false,
+        queryResponses: [contributors.response],
+      });
+      await app.settle();
+
+      await app.hover({ to: "/about" });
+
+      expect(contributors.started()).toBe(false);
+    });
+
+    it("switches preloading off and on from the debug handle", async () => {
+      // the debug handle loads app modules: import it after the harness mocks
+      await import("../../src/ts/dev/expose");
+      const contributors = slowResponse(getContributorsQueryOptions().queryKey);
+      const app = renderApp({
+        url: "/settings",
+        queryResponses: [contributors.response],
+      });
+      await app.settle();
+
+      window.__mt.setPreloading(false);
+      await app.hover({ to: "/about" });
+      expect(contributors.started()).toBe(false);
+
+      window.__mt.setPreloading(true);
+      await app.hover({ to: "/about" });
+      expect(contributors.started()).toBe(true);
+    });
+
+    it.each([
+      { page: "account", url: "/account", results: "pending" },
+      { page: "friends", url: "/friends", friends: "pending" },
+    ] as const)(
+      "shows no loading page when hovering a link to $page while its data is missing",
+      async ({ url, ...blocking }) => {
+        const app = renderApp({
+          url: "/settings",
+          auth: "signedIn",
+          queryData: [[serverConfigurationKey, {}]],
+          ...blocking,
+        });
+        await app.settle();
+
+        await app.hover({ to: url });
+        await app.settle();
+
+        expect(app.pagesInDom()).toEqual(["settings"]);
+        expect(app.loadingBar()).toBeUndefined();
+        expect(app.url()).toBe("/settings");
+      },
+    );
+
+    it("keeps the loading bar of a navigation when hovering a link while it loads", async () => {
+      const userData = deferred();
+      const app = renderApp({ url: "/", auth: "pending", results: "pending" });
+      await flush();
+      app.auth.signIn({ userData: userData.promise });
+      await flush();
+
+      await app.hover({ to: "/account" });
+      expect(app.loadingBar()).toEqual({
+        width: "90%",
+        text: "Downloading user data...",
+      });
+
+      userData.resolve();
+      await flush();
+      expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+
+      await app.settle();
+      expect(app.shownPage()).toBe("test");
+    });
+
+    it("shows no spinner when hovering a link to a slow page", async () => {
+      vi.useFakeTimers({
+        toFake: [
+          "setTimeout",
+          "clearTimeout",
+          "Date",
+          "requestAnimationFrame",
+          "cancelAnimationFrame",
+        ],
+      });
+      // friends are downloaded, but their refetch on every visit hangs
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friendsRefresh: "pending",
+      });
+      await app.settle();
+
+      const hovered = app.hover({ to: "/friends" });
+      await vi.advanceTimersByTimeAsync(1000);
+      await hovered;
+      await app.settle({ waitForRouter: false });
+
+      expect(app.pagesInDom()).toEqual(["test"]);
+      expect(app.loadingIndicator()).toBeUndefined();
+      vi.useRealTimers();
+    });
+
+    it("keeps showing the profile when hovering a link to another profile", async () => {
+      // the real page (the harness stubs it), shown inside the stub. Its
+      // layout breakpoints need matchMedia, which jsdom lacks
+      vi.stubGlobal("matchMedia", () => ({
+        matches: false,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }));
+      const { ProfilePage } = await vi.importActual<
+        typeof import("../../src/ts/components/pages/profile/ProfilePage")
+      >("../../src/ts/components/pages/profile/ProfilePage");
+      const notFound = async (): Promise<never> => {
+        throw new Error("User not found");
+      };
+      const app = renderApp({
+        url: "/profile/alice",
+        queryResponses: [
+          [getUserProfile("alice").queryKey, notFound],
+          [getUserProfile("bob").queryKey, notFound],
+        ],
+        pageContent: { ProfilePage },
+      });
+      await app.settle();
+      expect(app.pageElement()?.textContent).toContain("User alice not found");
+
+      await app.hover({
+        to: "/profile/$uidOrName",
+        params: { uidOrName: "bob" },
+      });
+      await app.settle();
+
+      expect(app.pageElement()?.textContent).toContain("User alice not found");
+    });
   });
 });
