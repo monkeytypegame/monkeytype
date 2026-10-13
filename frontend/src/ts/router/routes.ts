@@ -25,6 +25,13 @@ import { TestPage } from "../components/pages/test/TestPage";
 import { RootLayout } from "../components/RootLayout";
 import { getSnapshot } from "../db";
 import { accountSettingsSearch } from "../states/account-settings";
+import { getUserProfile } from "../queries/profile";
+import {
+  getContributorsQueryOptions,
+  getSpeedHistogramQueryOptions,
+  getSupportersQueryOptions,
+  getTypingStatsQueryOptions,
+} from "../queries/public";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
 import { setSelectedProfileName } from "../states/core";
 import { leaderboardSearch } from "../states/leaderboard-selection";
@@ -119,17 +126,9 @@ const leaderboards = createRoute({
   staticData: { page: "leaderboards" },
   component: pageComponent("leaderboards", LeaderboardPage),
   beforeLoad: readSearchOnEnter(leaderboardSearch),
-  loader: async ({ context: { queryClient } }) => {
-    const serverConfiguration = getServerConfigurationQueryOptions();
-    if (queryClient.getQueryData(serverConfiguration.queryKey) !== undefined) {
-      return;
-    }
-    await withLoading("the leaderboards page", {
-      style: "spinner",
-      load: async () => {
-        await queryClient.ensureQueryData(serverConfiguration);
-      },
-    });
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
   },
 });
 
@@ -138,6 +137,13 @@ const about = createRoute({
   path: "/about",
   staticData: { page: "about" },
   component: pageComponent("about", AboutPage, { class: "full-width" }),
+  // background data: start the fetches, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getContributorsQueryOptions());
+    void queryClient.prefetchQuery(getSupportersQueryOptions());
+    void queryClient.prefetchQuery(getTypingStatsQueryOptions());
+    void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+  },
 });
 
 const settings = createRoute({
@@ -154,6 +160,10 @@ const login = createRoute({
   staticData: { page: "login" },
   component: pageComponent("login", LoginPage),
   beforeLoad: ({ context }) => guestOnly(context.auth),
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient } }) => {
+    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
+  },
 });
 
 const account = createRoute({
@@ -207,6 +217,10 @@ const profile = createRoute({
   component: pageComponent("profile", ProfilePage),
   beforeLoad: ({ params }) => {
     setSelectedProfileName(params.uidOrName);
+  },
+  // background data: start the fetch, the page shows its section loaders
+  loader: ({ context: { queryClient }, params }) => {
+    void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
   },
 });
 
