@@ -1,5 +1,14 @@
+import type { QueryKey } from "@tanstack/solid-query";
+
 import { afterEach, describe, expect, it } from "vitest";
 
+import { getUserProfile } from "../../src/ts/queries/profile";
+import {
+  getContributorsQueryOptions,
+  getSpeedHistogramQueryOptions,
+  getSupportersQueryOptions,
+  getTypingStatsQueryOptions,
+} from "../../src/ts/queries/public";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
 import {
   App,
@@ -134,23 +143,6 @@ describe("app shell routing", () => {
       expect(app.shownPage()).toBe("settings");
     });
 
-    it("waits for the server configuration on leaderboards", async () => {
-      const configuration = deferred<unknown>();
-      const app = renderApp({
-        url: "/leaderboards",
-        queryResponses: [
-          [serverConfigurationKey, async () => configuration.promise],
-        ],
-      });
-      await flush();
-      expect(app.shownPage()).toBe("loading");
-
-      configuration.resolve({});
-      await app.settle();
-
-      expect(app.shownPage()).toBe("leaderboards");
-    });
-
     it("shows leaderboards straight away with a cached server configuration", async () => {
       const app = renderApp({
         url: "/about",
@@ -164,6 +156,128 @@ describe("app shell routing", () => {
       await app.settle();
 
       expect(app.shownPage()).toBe("leaderboards");
+    });
+  });
+
+  describe("background data", () => {
+    // a response that never arrives, recording that the fetch started
+    function slowResponse(key: QueryKey): {
+      response: [QueryKey, () => Promise<unknown>];
+      started: () => boolean;
+    } {
+      let started = false;
+      const fetch = async (): Promise<unknown> => {
+        started = true;
+        return deferred<unknown>().promise;
+      };
+      return { response: [key, fetch], started: () => started };
+    }
+
+    it("shows about straight away while its data loads", async () => {
+      const responses = [
+        getContributorsQueryOptions().queryKey,
+        getSupportersQueryOptions().queryKey,
+        getTypingStatsQueryOptions().queryKey,
+        getSpeedHistogramQueryOptions().queryKey,
+      ].map(slowResponse);
+      const app = renderApp({
+        url: "/settings",
+        queryResponses: responses.map(({ response }) => response),
+      });
+      await app.settle();
+
+      await app.navigate({ to: "/about" });
+      await app.settle();
+
+      expect(app.shownPage()).toBe("about");
+      expect(responses.map((response) => response.started())).toEqual([
+        true,
+        true,
+        true,
+        true,
+      ]);
+    });
+
+    it.each([
+      {
+        page: "leaderboards",
+        url: "/leaderboards",
+        keys: [serverConfigurationKey],
+      },
+      {
+        page: "profile",
+        url: "/profile/bob",
+        keys: [getUserProfile("bob").queryKey],
+      },
+      {
+        page: "login",
+        url: "/login",
+        keys: [serverConfigurationKey],
+      },
+      { page: "settings", url: "/settings", keys: [] },
+    ] as const)(
+      "shows $page straight away while its data loads",
+      async ({ page, url, keys }) => {
+        const responses = keys.map(slowResponse);
+        const app = renderApp({
+          url: "/",
+          queryResponses: responses.map(({ response }) => response),
+        });
+        await app.settle();
+
+        app.router.history.push(url);
+        await app.settle();
+
+        expect(app.shownPage()).toBe(page);
+        expect(responses.every((response) => response.started())).toBe(true);
+      },
+    );
+
+    it("shows leaderboards on first load while the server configuration loads", async () => {
+      const configuration = slowResponse(serverConfigurationKey);
+      const app = renderApp({
+        url: "/leaderboards",
+        queryResponses: [configuration.response],
+      });
+      await app.settle();
+
+      expect(app.shownPage()).toBe("leaderboards");
+      expect(configuration.started()).toBe(true);
+    });
+
+    it("keeps the loading page up until the account results are ready", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+
+      // resolves once the navigation finished loading
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+
+      app.blockingData.loadResults();
+      await app.settle();
+
+      expect(app.shownPage()).toBe("account");
+    });
+
+    it("keeps the loading page up until the friends are ready", async () => {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friends: "pending",
+        queryData: [[serverConfigurationKey, {}]],
+      });
+      await app.settle();
+
+      // resolves once the navigation finished loading
+      void app.navigate({ to: "/friends" });
+      await app.settle({ waitForRouter: false });
+      expect(app.shownPage()).toBe("loading");
+
+      app.blockingData.loadFriends();
+      await app.settle();
+
+      expect(app.shownPage()).toBe("friends");
     });
   });
 
