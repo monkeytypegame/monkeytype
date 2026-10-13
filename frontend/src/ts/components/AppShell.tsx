@@ -3,20 +3,7 @@ import { JSXElement } from "solid-js";
 
 import type { AppRouter } from "../router/create-router";
 
-import { Pages } from "./pages/Pages";
-
-/** The router and the pages it selects. */
+/** The router, rendering the page of the current route (see RootLayout). */
 export function AppShell(props: { router: AppRouter }): JSXElement {
-  return (
-    // pages render outside the router's matches so they don't wait on route loads
-    <RouterProvider
-      router={props.router}
-      InnerWrap={(innerProps) => (
-        <>
-          <Pages />
-          {innerProps.children}
-        </>
-      )}
-    />
-  );
+  return <RouterProvider router={props.router} />;
 }
