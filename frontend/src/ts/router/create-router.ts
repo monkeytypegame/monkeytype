@@ -2,7 +2,7 @@ import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
 import { LoadingRoutePage } from "../components/pages/Page";
-import { finishLoadingBar } from "../states/loading-page";
+import { finishLoadingBar, isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
@@ -79,10 +79,20 @@ export function createAppRouter(
     isPreloadingPaused ? undefined : preloadRoute(preloadOptions);
 
   // guards every navigation - links, navigate(), back/forward.
-  // redirects bypass it (ignoreBlocker)
+  // redirects bypass it (ignoreBlocker); invalidate() (auth change, Retry)
+  // doesn't go through history
   router.history.block({
     enableBeforeUnload: false,
     blockerFn: ({ nextLocation }) => {
+      // a blocking load (user data, results, friends) holds the loading bar
+      // up until "Done": the user waits for it. The slow navigation spinner
+      // and the error page don't block
+      if (isLoadingBarShown()) {
+        console.debug(
+          `navigation to ${nextLocation.href} blocked, the loading bar is shown`,
+        );
+        return true;
+      }
       if (isTestRestarting() || isResultCalculating()) {
         console.debug(
           `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()})`,
