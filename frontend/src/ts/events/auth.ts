@@ -3,7 +3,12 @@ import { createEvent } from "../hooks/createEvent";
 export type AuthEvent =
   | {
       type: "authStateChanged";
-      data: { isUserSignedIn: boolean; loadPromise: Promise<void> };
+      data: {
+        isUserSignedIn: boolean;
+        loadPromise: Promise<void>;
+        /** Downloads the user data again, eg. after `loadPromise` failed. */
+        reloadUserData: () => Promise<void>;
+      };
     }
   | { type: "snapshotUpdated"; data: { isInitial: boolean } }
   | { type: "authConfigUpdated"; data?: undefined };

@@ -23,7 +23,8 @@
  * - `auth`: "signedIn" | "signedOut" | "pending" (first auth state not known
  *   yet). Change it with `app.auth.signIn()` / `signOut()`; the first call on a
  *   pending auth resolves the first auth state. `signIn({ userData })` hands
- *   the app route a user data download to wait for.
+ *   the app route a user data download to wait for (a function: called per
+ *   download, so a Retry after a failure gets a new one).
  * - `queryData`: seeds the test query client. `queryResponses`: replaces the
  *   app's query functions by query key - pair with `deferred()` to settle a
  *   response mid-test. `app.queryClient` for anything else.
@@ -80,6 +81,7 @@ import {
   setPreloading,
 } from "../../src/ts/router/create-router";
 import { setRouter } from "../../src/ts/router/navigate";
+import { createUserDataDownload } from "../../src/ts/router/user-data-download";
 import { resetLoadingPage } from "../../src/ts/states/loading-page";
 import {
   isTestActive,
@@ -95,23 +97,41 @@ export type PageMount = { page: string; attached: boolean };
 
 const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
   // blocking data the account and friends routes wait for, ready by default
+  type Waiting = { resolve: () => void; reject: (error: Error) => void };
   function readiness(): {
     ready: boolean;
-    waiting: (() => void)[];
+    waiting: Waiting[];
     set: (ready: boolean) => void;
+    /**
+     * The download failed: fails the current waits, or the next one if none
+     * is waiting yet. Later waits wait again.
+     */
+    fail: (error: Error) => void;
     wait: () => Promise<void>;
   } {
+    let failure: Error | undefined;
     const state = {
       ready: true,
-      waiting: [] as (() => void)[],
+      waiting: [] as Waiting[],
       set: (ready: boolean) => {
         state.ready = ready;
         if (!ready) return;
-        for (const resolve of state.waiting.splice(0)) resolve();
+        for (const { resolve } of state.waiting.splice(0)) resolve();
+      },
+      fail: (error: Error) => {
+        if (state.waiting.length === 0) failure = error;
+        for (const { reject } of state.waiting.splice(0)) reject(error);
       },
       wait: async () => {
         if (state.ready) return;
-        return new Promise<void>((resolve) => state.waiting.push(resolve));
+        if (failure !== undefined) {
+          const error = failure;
+          failure = undefined;
+          return Promise.reject(error);
+        }
+        return new Promise<void>((resolve, reject) =>
+          state.waiting.push({ resolve, reject }),
+        );
       },
     };
     return state;
@@ -250,8 +270,14 @@ vi.mock("../../src/ts/test/test-logic", async () => {
 export type FakeAuthState = "signedIn" | "signedOut" | "pending";
 
 export type FakeAuth = RouterAuth & {
-  /** Resolves the first auth state if pending, else notifies the router. */
-  signIn: (options?: { userData?: Promise<void> }) => void;
+  /**
+   * Resolves the first auth state if pending, else notifies the router.
+   * `userData`: the user data download routes wait for - a function is
+   * called for each download (the first, then each retry after a failure).
+   */
+  signIn: (options?: {
+    userData?: Promise<void> | (() => Promise<void>);
+  }) => void;
   signOut: () => void;
 };
 
@@ -261,7 +287,7 @@ export function createFakeAuth(
 ): FakeAuth {
   let isSignedIn = initial === "signedIn";
   let isFirstStateKnown = initial !== "pending";
-  let userData: Promise<void> | undefined;
+  const userData = createUserDataDownload();
   let resolveFirstState: () => void = () => undefined;
   const firstState = isFirstStateKnown
     ? Promise.resolve()
@@ -286,20 +312,26 @@ export function createFakeAuth(
     isAvailable: () => options.available ?? true,
     isSignedIn: () => isSignedIn,
     waitForFirstState: async () => firstState,
-    takeUserDataDownload: (): Promise<void> | undefined => {
-      const download = userData;
-      userData = undefined;
-      return download;
-    },
+    userDataDownload: userData.get,
     onChange: (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
     signIn: (signInOptions) => {
-      userData = signInOptions?.userData;
+      const download = signInOptions?.userData;
+      if (download === undefined) {
+        userData.clear();
+      } else if (typeof download === "function") {
+        userData.start(download(), download);
+      } else {
+        userData.start(download, async () => download);
+      }
       setSignedIn(true);
     },
-    signOut: () => setSignedIn(false),
+    signOut: () => {
+      userData.clear();
+      setSignedIn(false);
+    },
   };
 }
 
@@ -417,6 +449,10 @@ export type App = {
     loadResults: () => void;
     loadFriends: () => void;
     refreshFriends: () => void;
+    /** Fails the pending results download (a later wait waits again). */
+    failResults: (error: Error) => void;
+    /** Fails the pending friends download (a later wait waits again). */
+    failFriends: (error: Error) => void;
   };
   runningFades: () => readonly Fade[];
   /** Finishes the oldest running fade, returns its target opacity. */
@@ -567,6 +603,8 @@ export function renderApp(options: RenderAppOptions = {}): App {
       loadResults: () => blockingData.results.set(true),
       loadFriends: () => blockingData.friends.set(true),
       refreshFriends: () => blockingData.friendsRefresh.set(true),
+      failResults: (error) => blockingData.results.fail(error),
+      failFriends: (error) => blockingData.friends.fail(error),
     },
     runningFades: () => fades,
     finishFade,

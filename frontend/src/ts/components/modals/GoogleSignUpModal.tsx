@@ -135,11 +135,16 @@ async function apply(options: {
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
     showSuccessNotification("Account created");
-    await loadUser(signedInUser.user);
+    const user = signedInUser.user;
+    await loadUser(user);
 
     authEvent.dispatch({
       type: "authStateChanged",
-      data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
+      data: {
+        isUserSignedIn: true,
+        loadPromise: Promise.resolve(),
+        reloadUserData: async () => loadUser(user),
+      },
     });
     signedInUser = undefined;
   } catch (e) {

@@ -639,14 +639,83 @@ describe("app shell routing", () => {
       );
     });
 
-    it("retries the load and shows the page when it succeeds", async () => {
-      const app = await failUserData("/settings");
-      expect(app.shownPage()).toBe("loading");
+    it("downloads the user data again on Retry and shows the page once it arrived", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const retried = deferred();
+      const downloads = [
+        Promise.reject(new Error("server is down")),
+        retried.promise,
+      ];
+      // the router takes the download later - don't flag it as unhandled
+      downloads[0]?.catch(() => undefined);
+      app.auth.signIn({
+        // each call is one download
+        userData: async () => downloads.shift(),
+      });
+      await app.settle();
+      expect(app.loadingIndicator()).toBe("error");
 
       retryButton(app).click();
-      await app.settle();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading user data...");
+      });
 
+      retried.resolve();
+      await app.settle();
       expect(app.pagesInDom()).toEqual(["settings"]);
+    });
+
+    it("retries a failed results download", async () => {
+      const app = renderApp({ url: "/", auth: "signedIn", results: "pending" });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.failResults(new Error("server is down"));
+      await app.settle();
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the account page: server is down",
+      );
+
+      retryButton(app).click();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading results...");
+      });
+
+      app.blockingData.loadResults();
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["account"]);
+    });
+
+    it("retries a failed friends download", async () => {
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        friends: "pending",
+        queryData: [[serverConfigurationKey, {}]],
+      });
+      await app.settle();
+      void app.navigate({ to: "/friends" });
+      await app.settle({ waitForRouter: false });
+
+      app.blockingData.failFriends(new Error("server is down"));
+      await app.settle();
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the friends page: server is down",
+      );
+
+      retryButton(app).click();
+      await vi.waitFor(async () => {
+        await app.settle({ waitForRouter: false });
+        expect(app.loadingBar()?.text).toBe("Downloading friends...");
+      });
+
+      app.blockingData.loadFriends();
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["friends"]);
     });
   });
 

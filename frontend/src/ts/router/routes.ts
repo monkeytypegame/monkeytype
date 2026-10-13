@@ -63,7 +63,7 @@ async function waitForUserData(
   // a hover plans no bar and leaves the download to the navigation
   if (preload) return;
 
-  const userData = auth.takeUserDataDownload();
+  const userData = auth.userDataDownload();
   planNavigationLoadingBar({ matches, userData });
   if (userData === undefined) return;
 
