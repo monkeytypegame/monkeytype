@@ -53,8 +53,7 @@ function getMatches(): AppRouter["state"]["matches"] {
 export const getRoutePage = createRoot(() =>
   createMemo((): PageName => {
     const matches = getMatches();
-    // private, but the only trace of a global not found (no route matched)
-    if (matches.some((match) => match._notFound === true)) return "404";
+    if (isNotFound(matches)) return "404";
     if (matches.some((match) => match.status !== "success")) return "loading";
     const routeId = matches.at(-1)?.routeId;
     if (routeId === undefined || !(routeId in pageOfRoute)) return "loading";
@@ -69,8 +68,18 @@ export const getRoutePage = createRoot(() =>
  */
 export function isPendingShown(): boolean {
   const matches = getMatches();
-  if (matches.some((match) => match._notFound === true)) return false;
+  if (isNotFound(matches)) return false;
   return matches.some((match) => match.status === "pending");
+}
+
+/**
+ * Whether the url matched no route (the root renders the 404 page). Reads
+ * the router's private `_notFound` flag: no public api tells a global not
+ * found apart (match status stays "success", its prefix routes "pending").
+ * Keep this the only place reading it.
+ */
+function isNotFound(matches: ReturnType<typeof getMatches>): boolean {
+  return matches.some((match) => match._notFound === true);
 }
 
 /** Whether a navigation is in progress (the loading page may cover the current page). */
