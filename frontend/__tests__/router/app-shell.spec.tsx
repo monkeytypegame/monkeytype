@@ -2,6 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
 import {
+  __testing,
+  getNotificationHistory,
+} from "../../src/ts/states/notifications";
+import {
   cleanupApp,
   deferred,
   flush,
@@ -269,6 +273,87 @@ describe("app shell routing", () => {
       await flush();
       expect(app.pagesInDom()).toEqual(["settings"]);
       expect(app.finishFade()).toBe(1);
+    });
+  });
+
+  describe("leaving the test page", () => {
+    it("stops the test as soon as the navigation starts, before the fade out", async () => {
+      const serverConfiguration = deferred<unknown>();
+      const app = renderApp({
+        url: "/",
+        queryResponses: [
+          [serverConfigurationKey, async () => serverConfiguration.promise],
+        ],
+      });
+      await app.settle();
+      app.test.start();
+
+      void app.navigate({ to: "/leaderboards" });
+      await flush();
+
+      // the leaderboards route is still loading, the test page fades out to
+      // the loading page
+      expect(app.pagesInDom()).toEqual(["test"]);
+      expect(app.runningFades().map((fade) => fade.opacity)).toEqual([0]);
+      expect(app.test.isRunning()).toBe(false);
+    });
+
+    it("keeps the test running when the test page reloads in place", async () => {
+      const app = renderApp({ url: "/", auth: "signedOut" });
+      await app.settle();
+      app.test.start();
+
+      app.auth.signIn();
+      await app.settle();
+
+      expect(app.shownPage()).toBe("test");
+      expect(app.test.isRunning()).toBe(true);
+    });
+
+    it.each([
+      ["the test is restarting", "setRestarting"],
+      ["the result is calculating", "setResultCalculating"],
+    ] as const)("blocks navigation while %s", async (_, busy) => {
+      const app = renderApp({ url: "/" });
+      await app.settle();
+      app.test[busy](true);
+
+      // a blocked navigation never resolves
+      void app.navigate({ to: "/about" });
+      await app.settle();
+
+      expect(app.url()).toBe("/");
+      expect(app.shownPage()).toBe("test");
+    });
+
+    it("blocks navigation during a test with the no quit funbox, with a notice", async () => {
+      __testing.clearNotificationHistory();
+      const app = renderApp({ url: "/" });
+      await app.settle();
+      app.test.enableNoQuit();
+      app.test.start();
+
+      // a blocked navigation never resolves
+      void app.navigate({ to: "/about" });
+      await app.settle();
+
+      expect(app.url()).toBe("/");
+      expect(app.shownPage()).toBe("test");
+      expect(app.test.isRunning()).toBe(true);
+      expect(getNotificationHistory().map((n) => n.message)).toEqual([
+        "No quit funbox is active. Please finish the test.",
+      ]);
+    });
+
+    it("lets a test with the no quit funbox be left once it ended", async () => {
+      const app = renderApp({ url: "/" });
+      await app.settle();
+      app.test.enableNoQuit();
+
+      await app.navigate({ to: "/about" });
+      await app.settle();
+
+      expect(app.shownPage()).toBe("about");
     });
   });
 

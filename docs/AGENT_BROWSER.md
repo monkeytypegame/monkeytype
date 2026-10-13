@@ -29,8 +29,8 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | Member | Use |
 | --- | --- |
 | `navigate({ to, params, search })` | client-side route change; `navigate({ href: "/settings?x=1" })` for a raw path |
-| `getTargetPage()` | page that should be on screen (loading page while a route loads) |
-| `getRoutePage()` | page name for current route |
+| `isNavigating()` | a navigation is in progress (the loading page may cover the page) |
+| `getRoutePage()` | page name of the last resolved route ("loading" before the first or after a failed load) |
 | `getConfig.<key>` | read config (store object, not a function) |
 | `setConfig(key, value)` | write config |
 | `showModal(id)` | open a modal by `ModalId` |

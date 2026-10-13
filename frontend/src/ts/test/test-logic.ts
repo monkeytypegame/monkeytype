@@ -36,7 +36,7 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { getTargetPage } from "../states/router";
+import { getRoutePage, isNavigating } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -156,8 +156,8 @@ let failReason = "";
 
 export function startTest(now: number): boolean {
   // eg. typing while the test page fades out after navigating away, or while
-  // the loading page covers it (the route only changes once loaded)
-  if (getTargetPage() !== "test") return false;
+  // the loading page covers it during a navigation
+  if (getRoutePage() !== "test" || isNavigating()) return false;
 
   if (isAuthenticated()) {
     void AnalyticsController.log("testStarted");
@@ -223,6 +223,12 @@ export function stop(): void {
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
+}
+
+/** Ends the test when leaving the test page. Keystrokes after this don't reach the test. */
+export function leaveTestPage(): void {
+  stop();
+  blurInputElement();
 }
 
 type RestartOptions = {

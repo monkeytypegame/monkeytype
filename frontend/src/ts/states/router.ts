@@ -1,7 +1,8 @@
-import { createMemo } from "solid-js";
+import type { RouteIds } from "@tanstack/solid-router";
+import { createMemo, createRoot } from "solid-js";
 
+import type { AppRouter } from "../router/create-router";
 import { getRouter } from "../router/navigate";
-import { isLoadingPageShown } from "./loading-page";
 
 /** A page of the site, rendered by its route (see router/routes.ts). */
 export type PageName =
@@ -18,30 +19,58 @@ export type PageName =
   | "friends"
   | "leaderboards";
 
-// matches only change once a route has loaded
-const getMatches = createMemo(() => getRouter()?.state.matches ?? []);
+type RouteId = RouteIds<AppRouter["routeTree"]>;
 
-const getFailedMatch = createMemo(() =>
-  getMatches().find((match) => match.status === "error"),
+// routes that render no page of their own
+type PagelessRouteId = "__root__" | "/app" | "/app/verify";
+
+/** The page each route renders. */
+const pageOfRoute: Record<Exclude<RouteId, PagelessRouteId>, PageName> = {
+  "/app/": "test",
+  "/app/leaderboards": "leaderboards",
+  "/app/about": "about",
+  "/app/settings": "settings",
+  "/app/login": "login",
+  "/app/account": "account",
+  "/app/account-settings": "accountSettings",
+  "/app/profile": "profileSearch",
+  "/app/profile/$uidOrName": "profile",
+  "/app/friends": "friends",
+  "/app/$": "404",
+};
+
+function getMatches(): AppRouter["state"]["matches"] {
+  return getRouter()?.state.matches ?? [];
+}
+
+/**
+ * The page of the last resolved route ("loading" before the first one, or if
+ * loading failed). Reactive: read in a tracked scope to follow page changes.
+ */
+// in a root so it is owned, the router keeps its own state the same way.
+// a memo so readers only re-run when the page changes, not on every router state change
+export const getRoutePage = createRoot(() =>
+  createMemo((): PageName => {
+    const matches = getMatches();
+    if (matches.some((match) => match.status === "error")) return "loading";
+    const routeId = matches.at(-1)?.routeId;
+    if (routeId === undefined || !(routeId in pageOfRoute)) return "loading";
+    return pageOfRoute[routeId as keyof typeof pageOfRoute];
+  }),
 );
 
-/** The page of the last resolved route ("loading" before the first one, or if loading failed). */
-export const getRoutePage = createMemo((): PageName => {
-  if (getFailedMatch() !== undefined) return "loading";
-  return getMatches().at(-1)?.staticData.page ?? "loading";
-});
-
-/** Why the last route failed to load, shown on the loading page until a route loads. */
-export const getLoadingError = createMemo((): string | null => {
-  const match = getFailedMatch();
+/**
+ * Why the last route failed to load, shown on the loading page until a route
+ * loads. Reads router state: tracked when read in a tracked scope.
+ */
+export function getLoadingError(): string | null {
+  const match = getMatches().find((match) => match.status === "error");
   if (match === undefined) return null;
   const error: unknown = match.error;
   return error instanceof Error ? error.message : String(error);
-});
+}
 
-/** The page that should be on screen - the loading page covers the route while it loads. */
-export const getTargetPage = createMemo(() =>
-  isLoadingPageShown() || getLoadingError() !== null
-    ? "loading"
-    : getRoutePage(),
-);
+/** Whether a navigation is in progress (the loading page may cover the current page). */
+export function isNavigating(): boolean {
+  return getRouter()?.state.status === "pending";
+}
