@@ -16,15 +16,9 @@ import {
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { isAuthenticated } from "../../../states/core";
 import {
-  getGoToUserPage,
-  getPage,
-  getSelection,
   pageSize,
   Selection,
-  setGoToUserPage,
-  setPage,
-  setSelection,
-  updateGetParameters,
+  useLeaderboardSearch,
 } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
@@ -40,6 +34,13 @@ import { UserRank } from "./UserRank";
 
 export function LeaderboardPage(): JSXElement {
   const [scrollToUser, setScrollToUser] = createSignal(false);
+  const {
+    selection: getSelection,
+    page: getPage,
+    goToUserPage,
+    setSelection,
+    setPage,
+  } = useLeaderboardSearch();
 
   //invalidate cache for daily and weekly lb on close
   onCleanup(() => {
@@ -61,11 +62,14 @@ export function LeaderboardPage(): JSXElement {
     );
   });
 
-  //update url after the data is loaded
+  //go to the last page if the current page is past it
   createEffect(() => {
-    if (entriesQuery.isSuccess) {
-      updateGetParameters(getSelection(), getPage());
+    const data = entriesQuery.data;
+    if (data === undefined || data.entries.length > 0 || getPage() === 0) {
+      return;
     }
+    const lastPage = Math.max(0, Math.ceil(data.count / pageSize) - 1);
+    if (lastPage !== getPage()) setPage(lastPage);
   });
 
   //update lb memory after the rank is loaded
@@ -77,20 +81,17 @@ export function LeaderboardPage(): JSXElement {
 
   //handle goToUserPage url param once rank is loaded
   createEffect(() => {
-    if (getGoToUserPage() && rankQuery.isSuccess) {
-      setGoToUserPage(false);
-      const page = userPage();
-      if (page !== undefined) {
-        setPage(page);
-        setScrollToUser(true);
-      }
+    if (goToUserPage() && rankQuery.isSuccess) {
+      // setting the page clears goToUserPage
+      setPage(userPage() ?? getPage());
+      setScrollToUser(userPage() !== undefined);
     }
   });
 
   const entriesQuery = useQuery(() => ({
     ...getLeaderboardQueryOptions({
       ...getSelection(),
-      page: getPage() ?? 0,
+      page: getPage(),
     }),
   }));
 
@@ -102,11 +103,6 @@ export function LeaderboardPage(): JSXElement {
   const serverConfigurationQuery = useQuery(() => ({
     ...getServerConfigurationQueryOptions(),
   }));
-
-  const onSelectionChange = (newSelection: Selection) => {
-    setSelection(newSelection);
-    setPage(0);
-  };
 
   /**
    * the page that contains the user
@@ -168,7 +164,7 @@ export function LeaderboardPage(): JSXElement {
           {({ serverConfigurationQueryData }) => (
             <Sidebar
               selection={getSelection}
-              onSelect={onSelectionChange}
+              onSelect={setSelection}
               validModeRules={
                 serverConfigurationQueryData().dailyLeaderboards
                   .validModeRules ?? []
@@ -185,7 +181,10 @@ export function LeaderboardPage(): JSXElement {
         <Title
           selection={getSelection()}
           onPreviousSelect={() =>
-            setSelection((old) => ({ ...old, previous: !old.previous }))
+            setSelection({
+              ...getSelection(),
+              previous: !getSelection().previous,
+            })
           }
         />
 

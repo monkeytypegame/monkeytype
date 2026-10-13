@@ -28,7 +28,8 @@
  *   response mid-test. `app.queryClient` for anything else.
  * - `app.navigate(...)` is the typed router.navigate, `app.router` the router.
  * - Pages are stubs rendering their name; `shownPage()` returns the name of the
- *   page on screen (eg. "loading", "login", "404").
+ *   page on screen (eg. "loading", "login", "404"). `pageContent` adds content
+ *   to a stub, eg. a probe calling the page's search hook.
  * - Fades: `settle()` finishes them all. For fade ordering use
  *   `runningFades()` / `finishFade()` (finishes the oldest running fade).
  */
@@ -37,6 +38,7 @@ import "./mock-static";
 import { cleanup, render } from "@solidjs/testing-library";
 import { hashKey, QueryClient, QueryKey } from "@tanstack/solid-query";
 import { createMemoryHistory } from "@tanstack/solid-router";
+import { JSXElement } from "solid-js";
 import { vi } from "vitest";
 
 import type { RouterAuth } from "../../src/ts/router/context";
@@ -48,7 +50,10 @@ import { resetLoadingPage } from "../../src/ts/states/loading-page";
 
 export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 
-const { fades } = vi.hoisted(() => ({ fades: [] as Fade[] }));
+const { fades, pageContent } = vi.hoisted(() => ({
+  fades: [] as Fade[],
+  pageContent: new Map<string, () => JSXElement>(),
+}));
 
 vi.mock("animejs", () => ({
   animate: (
@@ -71,8 +76,15 @@ vi.mock("animejs", () => ({
   },
 }));
 
-function stubPage(name: string): () => Record<string, () => string> {
-  return () => ({ [name]: () => name });
+function stubPage(name: string): () => Record<string, () => JSXElement> {
+  return () => ({
+    [name]: () => (
+      <>
+        {name}
+        {pageContent.get(name)?.()}
+      </>
+    ),
+  });
 }
 vi.mock("../../src/ts/components/pages/404Page", stubPage("NotFoundPage"));
 vi.mock("../../src/ts/components/pages/AboutPage", stubPage("AboutPage"));
@@ -223,6 +235,11 @@ export type RenderAppOptions = {
   queryData?: [QueryKey, unknown][];
   /** Query functions replacing the app's, by query key (see createTestQueryClient). */
   queryResponses?: [QueryKey, () => Promise<unknown>][];
+  /**
+   * Extra content for stub pages by component name (eg. `LeaderboardPage`),
+   * rendered inside the page - for probes using the page's hooks.
+   */
+  pageContent?: Record<string, () => JSXElement>;
 };
 
 export type App = {
@@ -252,6 +269,9 @@ export function renderApp(options: RenderAppOptions = {}): App {
   }
   for (const [key, fetch] of options.queryResponses ?? []) {
     queryClient.respond(key, fetch);
+  }
+  for (const [name, content] of Object.entries(options.pageContent ?? {})) {
+    pageContent.set(name, content);
   }
   // the router resets scroll on navigation, jsdom doesn't implement it
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
@@ -313,6 +333,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
 export function cleanupApp(): void {
   cleanup();
   fades.length = 0;
+  pageContent.clear();
   setRouter(undefined);
   resetLoadingPage();
 }
