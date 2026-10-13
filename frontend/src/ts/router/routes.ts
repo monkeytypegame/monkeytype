@@ -36,7 +36,12 @@ import { getServerConfigurationQueryOptions } from "../queries/server-configurat
 import {
   getMissingLeaderboardSearch,
   LeaderboardSearchSchema,
+  toSelection,
 } from "../states/leaderboard-selection";
+import {
+  getLeaderboardQueryOptions,
+  getRankQueryOptions,
+} from "../queries/leaderboards";
 import { SettingsSearchSchema } from "../states/settings-search";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
@@ -128,8 +133,18 @@ const leaderboards = createRoute({
   path: "/leaderboards",
   component: pageComponent("leaderboards", LeaderboardPage),
   validateSearch: LeaderboardSearchSchema,
-  // no loaderDeps: the loader doesn't read the search, so selection changes
-  // don't re-run it. A loader that does lists only what it reads in loaderDeps
+  // the loader reads the selection and page only: other search writes (eg.
+  // dropping goToUserPage) don't re-run it
+  loaderDeps: ({ search }) => ({
+    type: search.type,
+    mode: search.mode,
+    mode2: search.mode2,
+    language: search.language,
+    yesterday: search.yesterday,
+    lastWeek: search.lastWeek,
+    friendsOnly: search.friendsOnly,
+    page: search.page,
+  }),
   beforeLoad: ({ search }) => {
     const missing = getMissingLeaderboardSearch(search);
     if (missing !== undefined) {
@@ -141,9 +156,16 @@ const leaderboards = createRoute({
       });
     }
   },
-  // background data: start the fetch, the page shows its section loaders
-  loader: ({ context: { queryClient } }) => {
+  // background data: start the fetches, the page shows its section loaders
+  loader: ({ context: { queryClient, auth }, deps }) => {
+    const selection = toSelection(deps);
     void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
+    void queryClient.prefetchQuery(
+      getLeaderboardQueryOptions({ ...selection, page: (deps.page ?? 1) - 1 }),
+    );
+    if (auth.isSignedIn()) {
+      void queryClient.prefetchQuery(getRankQueryOptions(selection));
+    }
   },
 });
 

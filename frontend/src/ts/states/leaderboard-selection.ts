@@ -87,7 +87,8 @@ export function getMissingLeaderboardSearch(
   return toLeaderboardSearch(getLastSelection());
 }
 
-function toSelection(search: LeaderboardSearch): Selection {
+/** The selection `search` shows (friends only needs a signed in user). */
+export function toSelection(search: LeaderboardSearch): Selection {
   if (search.type === undefined) return getLastSelection();
   const friendsOnly =
     (search.friendsOnly ?? false) &&

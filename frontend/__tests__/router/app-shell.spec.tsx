@@ -2,6 +2,10 @@ import type { QueryKey } from "@tanstack/solid-query";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  getLeaderboardQueryOptions,
+  getRankQueryOptions,
+} from "../../src/ts/queries/leaderboards";
 import { getUserProfile } from "../../src/ts/queries/profile";
 import {
   getContributorsQueryOptions,
@@ -887,6 +891,37 @@ describe("app shell routing", () => {
         true,
         true,
       ]);
+    });
+
+    it("starts the leaderboard and rank fetches of the hovered selection", async () => {
+      const selection = {
+        type: "allTime",
+        mode: "time",
+        mode2: "60",
+        language: "english",
+        friendsOnly: false,
+        previous: false,
+      } as const;
+      const entries = slowResponse(
+        getLeaderboardQueryOptions({ ...selection, page: 1 }).queryKey,
+      );
+      const rank = slowResponse(getRankQueryOptions(selection).queryKey);
+      const app = renderApp({
+        url: "/settings",
+        auth: "signedIn",
+        queryData: [[serverConfigurationKey, {}]],
+        queryResponses: [entries.response, rank.response],
+      });
+      await app.settle();
+
+      await app.hover({
+        to: "/leaderboards",
+        search: { type: "allTime", mode: "time", mode2: "60", page: 2 },
+      });
+
+      expect(app.shownPage()).toBe("settings");
+      expect(entries.started()).toBe(true);
+      expect(rank.started()).toBe(true);
     });
 
     it("preloads nothing with preloading turned off", async () => {
