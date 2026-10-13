@@ -282,44 +282,33 @@ describe("app shell routing", () => {
   });
 
   describe("errors", () => {
-    it("shows the loading page with the error when a blocking load fails", async () => {
-      const app = renderApp({
-        url: "/leaderboards",
-        queryResponses: [
-          [
-            serverConfigurationKey,
-            async () => Promise.reject(new Error("server is down")),
-          ],
-        ],
+    async function failUserData(url: string): Promise<App> {
+      const app = renderApp({ url, auth: "pending" });
+      await flush();
+      app.auth.signIn({
+        userData: Promise.reject(new Error("server is down")),
       });
       await app.settle();
+      return app;
+    }
 
-      expect(app.shownPage()).toBe("loading");
+    it("shows the loading page with the error when a blocking load fails", async () => {
+      const app = await failUserData("/settings");
+
+      expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.pageElement()?.textContent).toContain(
-        "Failed to load the leaderboards page: server is down",
+        "Failed to load user data: server is down",
       );
     });
 
     it("retries the load and shows the page when it succeeds", async () => {
-      let fail = true;
-      const app = renderApp({
-        url: "/leaderboards",
-        queryResponses: [
-          [
-            serverConfigurationKey,
-            async () =>
-              fail ? Promise.reject(new Error("server is down")) : {},
-          ],
-        ],
-      });
-      await app.settle();
+      const app = await failUserData("/settings");
       expect(app.shownPage()).toBe("loading");
 
-      fail = false;
       retryButton(app).click();
       await app.settle();
 
-      expect(app.shownPage()).toBe("leaderboards");
+      expect(app.pagesInDom()).toEqual(["settings"]);
     });
   });
 
