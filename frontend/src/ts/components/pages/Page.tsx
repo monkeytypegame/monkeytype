@@ -76,8 +76,10 @@ export function pageComponent(
   return () => <Page name={name} content={content} class={options.class} />;
 }
 
+export const loadingPageClass =
+  "grid h-full w-full content-center items-center gap-4 place-self-center text-center";
+
 /** The loading page, as the root layout and pending routes render it. */
 export const LoadingRoutePage = pageComponent("loading", LoadingPage, {
-  class:
-    "grid h-full w-full content-center items-center gap-4 place-self-center text-center",
+  class: loadingPageClass,
 });

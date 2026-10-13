@@ -11,6 +11,7 @@ import {
 } from "../../src/ts/queries/public";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
 import {
+  App,
   cleanupApp,
   deferred,
   flush,
@@ -18,6 +19,14 @@ import {
 } from "../__harness__/app-shell";
 
 const serverConfigurationKey = getServerConfigurationQueryOptions().queryKey;
+
+function retryButton(app: App): HTMLButtonElement {
+  const button = [
+    ...(app.pageElement()?.querySelectorAll("button") ?? []),
+  ].find((el) => el.textContent?.includes("Retry"));
+  if (button === undefined) throw new Error("no Retry button");
+  return button;
+}
 
 describe("app shell routing", () => {
   afterEach(() => {
@@ -383,6 +392,67 @@ describe("app shell routing", () => {
       await flush();
       expect(app.pagesInDom()).toEqual(["settings"]);
       expect(app.finishFade()).toBe(1);
+    });
+  });
+
+  describe("errors", () => {
+    async function failUserData(url: string): Promise<App> {
+      const app = renderApp({ url, auth: "pending" });
+      await flush();
+      app.auth.signIn({
+        userData: Promise.reject(new Error("server is down")),
+      });
+      await app.settle();
+      return app;
+    }
+
+    it("shows the loading page with the error when a blocking load fails", async () => {
+      const app = await failUserData("/settings");
+
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load user data: server is down",
+      );
+    });
+
+    it("retries the load and shows the page when it succeeds", async () => {
+      const app = await failUserData("/settings");
+      expect(app.shownPage()).toBe("loading");
+
+      retryButton(app).click();
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["settings"]);
+    });
+  });
+
+  describe("not found", () => {
+    it.each(["/nope", "/settings/nope", "/profile/someone/nope"])(
+      "shows the 404 page for %s",
+      async (url) => {
+        const app = renderApp({ url });
+        await app.settle();
+
+        expect(app.shownPage()).toBe("404");
+        expect(app.url()).toBe(url);
+      },
+    );
+
+    it("shows the 404 page when navigating to an unknown url", async () => {
+      const app = renderApp({ url: "/about" });
+      await app.settle();
+
+      await app.router.navigate({ href: "/nope" });
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["404"]);
+    });
+
+    it("shows the profile page for a profile that doesn't exist", async () => {
+      const app = renderApp({ url: "/profile/nobody" });
+      await app.settle();
+
+      expect(app.shownPage()).toBe("profile");
     });
   });
 

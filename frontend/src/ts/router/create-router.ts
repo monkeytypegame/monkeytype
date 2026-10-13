@@ -1,5 +1,6 @@
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
+import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
 import { hideLoadingPage } from "../states/loading-page";
 import type { RouterContext } from "./context";
 import { routeTree } from "./routes";
@@ -18,8 +19,9 @@ export function createAppRouter(
     routeTree,
     context,
     history: options.history,
-    // a failed load shows its error on the loading page (see RootLayout)
-    defaultErrorComponent: () => null,
+    // a failed load shows its error on the loading page, with a Retry button
+    defaultErrorComponent: LoadingErrorRoutePage,
+    notFoundMode: "root",
     trailingSlash: "never",
     // search params are plain strings (the default JSON parser would turn
     // ?mode2=15 into a number) - route validateSearch schemas take strings in
