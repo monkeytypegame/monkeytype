@@ -28,6 +28,7 @@ export function InputField(props: {
   max?: number;
   step?: string | number;
   alwaysShowFieldIndicator?: boolean;
+  ref?: (el: HTMLInputElement) => void;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
 
@@ -57,6 +58,7 @@ export function InputField(props: {
       }
     >
       <input
+        ref={props.ref}
         class={cn(
           "col-start-1 row-start-1 w-full",
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",

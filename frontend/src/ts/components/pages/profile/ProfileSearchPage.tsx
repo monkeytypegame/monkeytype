@@ -2,7 +2,6 @@ import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, onMount } from "solid-js";
 
-import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
 import { navigate } from "../../../router/navigate";
@@ -15,8 +14,7 @@ import { fromSchema } from "../../ui/form/utils";
 export function ProfileSearchPage(): JSXElement {
   const [isEditable, setEditable] = createSignal(true);
 
-  // Refs are assigned by SolidJS via the ref attribute
-  const [inputRef, inputEl] = useRefWithUtils<HTMLElement>();
+  let inputRef: HTMLInputElement | undefined;
 
   const form = createForm(() => ({
     defaultValues: {
@@ -39,9 +37,7 @@ export function ProfileSearchPage(): JSXElement {
   }));
 
   onMount(() => {
-    requestAnimationFrame(() => {
-      inputEl()?.qs("input")?.focus({ preventScroll: true });
-    });
+    inputRef?.focus({ preventScroll: true });
   });
 
   return (
@@ -59,7 +55,7 @@ export function ProfileSearchPage(): JSXElement {
         </div>
 
         <div class="flex w-full gap-2 text-xl">
-          <div class="flex-1 text-center" ref={inputRef}>
+          <div class="flex-1 text-center">
             <form.Field
               name="username"
               validators={{
@@ -82,6 +78,7 @@ export function ProfileSearchPage(): JSXElement {
                   placeholder="username"
                   autocomplete="new-username"
                   disabled={!isEditable()}
+                  ref={(el) => (inputRef = el)}
                 />
               )}
             />
