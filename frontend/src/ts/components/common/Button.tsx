@@ -18,11 +18,9 @@ type BaseProps = {
   children?: JSXElement;
   balloon?: BalloonProps;
   onClick?: (e: MouseEvent) => void;
-  type?: HTMLButtonElement["type"];
   onMouseEnter?: (e: MouseEvent) => void;
   onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
-  active?: boolean;
   tabIndex?: number | string;
   id?: string;
 };
@@ -31,7 +29,7 @@ export type ButtonProps = BaseProps & {
   type?: "button" | "submit" | "reset";
   href?: never;
   to?: never;
-  sameTarget?: true;
+  active?: boolean;
   disabled?: boolean;
   danger?: boolean;
 };
@@ -40,14 +38,12 @@ export type ButtonProps = BaseProps & {
 type AnchorProps = BaseProps & {
   href: string;
   to?: never;
-  // onClick?: never;
+  active?: never;
   disabled?: never;
   type?: never;
 };
 
-type ButtonLinkStyleProps = Omit<BaseProps, "type" | "active">;
-
-type ButtonAnchorProps = ButtonLinkStyleProps &
+type ButtonAnchorProps = BaseProps &
   Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps>;
 
 function getButtonClasses(options: {
@@ -57,7 +53,7 @@ function getButtonClasses(options: {
   disabled?: boolean;
   class?: string;
 }): string {
-  const { variant, active } = options;
+  const { variant, active, danger, disabled } = options;
   return cn(
     "inline-flex h-min cursor-pointer appearance-none items-center justify-center gap-[0.5em] rounded border-0 p-[0.5em] text-center leading-[1.25] text-text transition-[color,background,opacity] duration-125 ease-in-out select-none",
     "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),_0_0_0_0.2rem_var(--text-color)] focus-visible:outline-none",
@@ -73,14 +69,10 @@ function getButtonClasses(options: {
     variant === "text" &&
       active &&
       "[--themable-button-hover-text:var(--themable-button-hover-text)] [--themable-button-text:var(--themable-button-active)]",
-    options.danger &&
+    danger &&
       "[--themable-button-bg:var(--error-color)] [--themable-button-hover-bg:var(--text-color)] [--themable-button-hover-text:var(--bg-color)] [--themable-button-text:var(--bg-color)]",
-    {
-      "pointer-events-none opacity-[0.33]": options.disabled,
-    },
-    {
-      [options.class ?? ""]: options.class !== undefined,
-    },
+    disabled && "pointer-events-none opacity-[0.33]",
+    options.class,
   );
 }
 
@@ -91,10 +83,8 @@ function ButtonContent(props: {
 }): JSXElement {
   return (
     <>
-      <Show when={props.fa !== undefined}>
-        <Fa {...(props.fa as FaProps)} />
-      </Show>
-      <Show when={props.text !== undefined}>{props.text}</Show>
+      <Show when={props.fa}>{(fa) => <Fa {...fa()} />}</Show>
+      {props.text}
       {props.children}
     </>
   );
@@ -167,6 +157,8 @@ export const Button = ((
 
 function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = (): boolean => "href" in props;
+  const isExternal = (): boolean =>
+    !(props as AnchorProps).href.startsWith("#");
   const variant = () => props.variant ?? "button";
 
   const balloonHtmlProps = () => buildBalloonHtmlProperties(props.balloon);
@@ -174,7 +166,7 @@ function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
   const getClasses = (): string =>
     getButtonClasses({
       variant: variant(),
-      active: (!isAnchor() && props.active) ?? false,
+      active: !isAnchor() && props.active === true,
       danger: !isAnchor() && (props as ButtonProps).danger,
       disabled: props.disabled,
       class: props.class,
@@ -201,7 +193,7 @@ function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
-          tabIndex={props.tabIndex ?? undefined}
+          tabIndex={props.tabIndex}
           {...props.dataset}
         >
           {content}
@@ -213,14 +205,15 @@ function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
           id={props.id}
           class={getClasses()}
           href={props.href}
-          target={props.href?.startsWith("#") ? undefined : "_blank"}
-          rel={props.href?.startsWith("#") ? undefined : "noreferrer noopener"}
+          target={isExternal() ? "_blank" : undefined}
+          rel={isExternal() ? "noreferrer noopener" : undefined}
           {...balloonHtmlProps()}
           onClick={(e) => props.onClick?.(e)}
           onMouseEnter={(e) => props.onMouseEnter?.(e)}
           onMouseLeave={(e) => props.onMouseLeave?.(e)}
           data-ui-variant={variant()}
           data-ui-element="button"
+          tabIndex={props.tabIndex}
           {...props.dataset}
         >
           {content}
