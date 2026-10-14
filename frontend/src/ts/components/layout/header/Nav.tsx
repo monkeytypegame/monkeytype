@@ -18,6 +18,7 @@ import {
   setAnimatedLevel,
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
+import { getRoutePage } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
@@ -87,9 +88,8 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "test",
         }}
-        onClick={(e) => {
-          const link = e.currentTarget as HTMLAnchorElement;
-          if (link.dataset["status"] === "active") restartTestEvent.dispatch();
+        onClick={() => {
+          if (getRoutePage() === "test") restartTestEvent.dispatch();
         }}
       />
       <Button
