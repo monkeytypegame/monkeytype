@@ -3,7 +3,6 @@ import { createForm } from "@tanstack/solid-form";
 import { createEffect, createSignal, JSXElement } from "solid-js";
 
 import { navigationEvent } from "../../../events/navigation";
-import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
 import { getActivePage } from "../../../states/core";
@@ -18,8 +17,7 @@ export function ProfileSearchPage(): JSXElement {
   const [isEditable, setEditable] = createSignal(true);
   const isOpen = () => getActivePage() === "profileSearch";
 
-  // Refs are assigned by SolidJS via the ref attribute
-  const [inputRef, inputEl] = useRefWithUtils<HTMLElement>();
+  let inputRef: HTMLInputElement | undefined;
 
   const form = createForm(() => ({
     defaultValues: {
@@ -44,7 +42,7 @@ export function ProfileSearchPage(): JSXElement {
   createEffect(() => {
     if (isOpen()) {
       requestAnimationFrame(() => {
-        inputEl()?.qs("input")?.focus({ preventScroll: true });
+        inputRef?.focus({ preventScroll: true });
       });
     } else {
       form.reset();
@@ -67,7 +65,7 @@ export function ProfileSearchPage(): JSXElement {
           </div>
 
           <div class="flex w-full gap-2 text-xl">
-            <div class="flex-1 text-center" ref={inputRef}>
+            <div class="flex-1 text-center">
               <form.Field
                 name="username"
                 validators={{
@@ -90,6 +88,7 @@ export function ProfileSearchPage(): JSXElement {
                     placeholder="username"
                     autocomplete="new-username"
                     disabled={!isEditable()}
+                    ref={(el) => (inputRef = el)}
                   />
                 )}
               />
