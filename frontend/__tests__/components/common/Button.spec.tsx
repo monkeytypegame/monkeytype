@@ -339,52 +339,6 @@ describe("Button component", () => {
     });
   });
 
-  it("marks the link to the current page as active", async () => {
-    const router = createTestRouter("/leaderboards?type=daily");
-    await router.load();
-
-    const { container } = render(() => (
-      <RouterContextProvider router={router}>
-        {() => (
-          <>
-            <Button to="/" text="Test" />
-            <Button to="/leaderboards" text="Leaderboards" />
-            <Button to="/settings" text="Settings" />
-          </>
-        )}
-      </RouterContextProvider>
-    ));
-
-    const [test, leaderboards, settings] = container.querySelectorAll("a");
-    expect(test).not.toHaveAttribute("data-status");
-    expect(leaderboards).toHaveAttribute("data-status", "active");
-    expect(settings).not.toHaveAttribute("data-status");
-  });
-
-  it("does not mark a link to a parent path as active", async () => {
-    const router = createTestRouter("/profile/miodec");
-    await router.load();
-
-    const { container } = render(() => (
-      <RouterContextProvider router={router}>
-        {() => (
-          <>
-            <Button to="/profile" text="Search" />
-            <Button
-              to="/profile/$uidOrName"
-              params={{ uidOrName: "miodec" }}
-              text="Profile"
-            />
-          </>
-        )}
-      </RouterContextProvider>
-    ));
-
-    const [search, profile] = container.querySelectorAll("a");
-    expect(search).not.toHaveAttribute("data-status");
-    expect(profile).toHaveAttribute("data-status", "active");
-  });
-
   it("applies disabled to button", () => {
     const { container } = render(() => (
       <Button

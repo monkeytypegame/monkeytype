@@ -4,7 +4,6 @@ import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import { getIsScreenshotting } from "../../states/core";
-import { withLink } from "./withLink";
 
 export type BalloonProps = {
   text?: string;
@@ -40,30 +39,7 @@ export function buildBalloonHtmlProperties(
   };
 }
 
-/** The anchor rendered by `BalloonLink` - receives href and handlers from the router. */
-function BalloonAnchor(
-  props: ParentProps<BalloonProps> &
-    Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, "aria-label">,
-): JSXElement {
-  const [local, rest] = splitProps(props, [
-    "text",
-    "position",
-    "break",
-    "length",
-    "children",
-  ]);
-
-  return (
-    <a {...rest} {...buildBalloonHtmlProperties(local)}>
-      {local.children}
-    </a>
-  );
-}
-
-/** An element with a balloon, or an in-app link with one (`to`, see withLink). */
-export const Balloon = withLink(BalloonElement, BalloonAnchor);
-
-function BalloonElement(props: Props): JSXElement {
+export function Balloon(props: Props): JSXElement {
   const [local, rest] = splitProps(props, [
     "text",
     "position",

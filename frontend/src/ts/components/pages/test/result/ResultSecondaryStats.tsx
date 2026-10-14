@@ -1,5 +1,6 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { isSafeNumber, roundTo2 } from "@monkeytype/util/numbers";
+import { Link } from "@tanstack/solid-router";
 import {
   createMemo,
   createResource,
@@ -153,18 +154,13 @@ export function ResultSecondaryStats(props: Props): JSXElement {
       </div>
 
       <AnimeShow
-        when={resultState.dailyLeaderboardRank !== undefined}
+        // when={resultState.dailyLeaderboardRank !== undefined}
+        when={true}
         duration={250}
         class="max-w-52 whitespace-nowrap"
       >
         <div class="text-sub">daily leaderboard</div>
-        <Balloon
-          data-ui-element="resultStatValue"
-          text="Show daily leaderboard"
-          class={cn(
-            "block text-[2em] leading-[1em] text-main",
-            mobileBalloonClass,
-          )}
+        <Link
           to="/leaderboards"
           search={{
             type: "daily",
@@ -173,10 +169,20 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             goToUserPage: true,
           }}
         >
-          {format().rank(resultState.dailyLeaderboardRank, {
-            fallback: "",
-          })}
-        </Balloon>
+          <Balloon
+            data-ui-element="resultStatValue"
+            text="Show daily leaderboard"
+            class={cn(
+              "block text-[2em] leading-[1em] text-main",
+              mobileBalloonClass,
+            )}
+          >
+            {format().rank(resultState.dailyLeaderboardRank, {
+              // fallback: "",
+              fallback: "nth",
+            })}
+          </Balloon>
+        </Link>
       </AnimeShow>
 
       <Show when={resultState.details?.quote}>

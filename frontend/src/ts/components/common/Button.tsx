@@ -1,9 +1,14 @@
+import {
+  createLink,
+  LinkComponent,
+  LinkComponentProps,
+  RegisteredRouter,
+} from "@tanstack/solid-router";
 import { JSX, JSXElement, Match, Show, splitProps, Switch } from "solid-js";
 
 import { cn } from "../../utils/cn";
 import { BalloonProps, buildBalloonHtmlProperties } from "./Balloon";
 import { Fa, FaProps } from "./Fa";
-import { withLink } from "./withLink";
 
 type BaseProps = {
   text?: string;
@@ -95,7 +100,7 @@ function ButtonContent(props: {
   );
 }
 
-/** The anchor rendered by `ButtonLink` - receives href, handlers and data-status from the router. */
+/** The anchor rendered by `ButtonLink` - receives href and handlers from the router. */
 function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
   const [local, rest] = splitProps(props, [
     "text",
@@ -128,15 +133,37 @@ function ButtonAnchor(props: ButtonAnchorProps): JSXElement {
   );
 }
 
+const ButtonLink = createLink(ButtonAnchor);
+
+type ButtonLinkProps = LinkComponentProps<
+  typeof ButtonAnchor,
+  RegisteredRouter,
+  string,
+  undefined,
+  string,
+  ""
+>;
+
 /**
- * A button, an external link (`href`), or an in-app link (`to`, see
- * withLink). An in-app link gets `data-status="active"` while its route is
- * the current location (exact path, search ignored, unless `activeOptions`
- * says otherwise).
+ * A button, an external link (`href`), or an in-app link (`to`): a real
+ * anchor (href, cmd/ctrl+click opens a new tab) navigating through the
+ * router with typed `to`, `params` and `search`.
+ *
+ * The call signatures are an intersection type rather than `function`
+ * overloads: the dev-only solid-refresh transform rewrites component
+ * declarations to `const`, which breaks overload signatures.
  */
-export const Button = withLink(PlainButton, ButtonAnchor, {
-  activeOptions: { exact: true, includeSearch: false },
-});
+export const Button = ((
+  props: ButtonProps | AnchorProps | ButtonLinkProps,
+): JSXElement => (
+  <Show
+    when={"to" in props}
+    fallback={<PlainButton {...(props as ButtonProps | AnchorProps)} />}
+  >
+    <ButtonLink {...(props as ButtonLinkProps)} />
+  </Show>
+)) as ((props: (ButtonProps | AnchorProps) & { to?: never }) => JSXElement) &
+  LinkComponent<typeof ButtonAnchor>;
 
 function PlainButton(props: ButtonProps | AnchorProps): JSXElement {
   const isAnchor = (): boolean => "href" in props;
