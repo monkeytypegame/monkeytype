@@ -154,8 +154,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
       </div>
 
       <AnimeShow
-        // when={resultState.dailyLeaderboardRank !== undefined}
-        when={true}
+        when={resultState.dailyLeaderboardRank !== undefined}
         duration={250}
         class="max-w-52 whitespace-nowrap"
       >
@@ -178,8 +177,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             )}
           >
             {format().rank(resultState.dailyLeaderboardRank, {
-              // fallback: "",
-              fallback: "nth",
+              fallback: "",
             })}
           </Balloon>
         </Link>
