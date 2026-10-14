@@ -1,15 +1,21 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import { createMemo, JSXElement, Show } from "solid-js";
+import { createMemo, JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
 import { restart, retrySavingResult } from "../../../../test/test-logic";
+import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
+import {
+  applyReducedMotion,
+  scrollToCenterOrTop,
+} from "../../../../utils/misc";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
@@ -27,8 +33,23 @@ export function TestResult(): JSXElement {
     return result !== null && eventLog !== null ? { result, eventLog } : null;
   });
 
+  const [resultRef, resultEl] = useRefWithUtils<HTMLDivElement>();
+  onMount(() => {
+    const el = resultEl();
+    if (el === undefined) return;
+    // test-ui fades it out on restart
+    setResultElement(el);
+    onCleanup(() => setResultElement(undefined));
+
+    void el.promiseAnimate({
+      opacity: [0, 1],
+      duration: applyReducedMotion(125),
+    });
+    scrollToCenterOrTop(el.native);
+  });
+
   return (
-    <div id="result" class={cn("content-grid full-width")}>
+    <div id="result" ref={resultRef} class={cn("content-grid full-width")}>
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">
           <Fa icon="fa-check" />

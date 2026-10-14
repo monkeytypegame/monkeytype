@@ -1,4 +1,4 @@
-import { Config } from "../config/store";
+import { Config, getConfig } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
@@ -7,7 +7,6 @@ import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
-import { configEvent } from "../events/config";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -34,7 +33,7 @@ import * as SlowTimer from "../legacy-states/slow-timer";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
-import { ElementsWithUtils, ElementWithUtils, qs, qsa } from "../utils/dom";
+import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
@@ -46,21 +45,16 @@ import {
   setOutOfFocusMaxHeight,
   wordsHaveNewline,
   setTestFocusState,
-  showOutOfFocusWarning,
   getResultVisible,
-  isWordsHidden,
-  isWordsWrapperHidden,
   setWordsWrapperHidden,
-  isReadAheadDisabled,
-  isErrorBorderDisabled,
   setLayoutfluidTimerVisible,
   setTestInitError,
   setTestInitFailed,
+  setTypingTestHidden,
 } from "../states/test";
-import { createEffect } from "solid-js";
+import { createEffect, on } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
-import { setShowResult, setResultWordsJoiningScript } from "../states/result";
-import { onTestPageClick } from "../elements/test-page";
+import { setShowResult } from "../states/result";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -70,6 +64,13 @@ export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
 // rendered by TestPage, registered via init() on every mount
 let wordsRef: ElementWithUtils | undefined;
 let wordsWrapperRef: ElementWithUtils | undefined;
+let typingTestRef: ElementWithUtils | undefined;
+// rendered by TestResult, registered while it's mounted
+let resultRef: ElementWithUtils | undefined;
+
+export function setResultElement(el: ElementWithUtils | undefined): void {
+  resultRef = el;
+}
 
 export function isMounted(): boolean {
   return wordsRef !== undefined;
@@ -87,6 +88,11 @@ function wordsWrapperEl(): ElementWithUtils {
   return wordsWrapperRef;
 }
 
+function typingTestEl(): ElementWithUtils {
+  if (typingTestRef === undefined) throw new Error("#typingTest not mounted");
+  return typingTestRef;
+}
+
 let activeWordTop = 0;
 let activeWordHeight = 0;
 let wordTopBeforeLineJump = 0;
@@ -102,12 +108,11 @@ export function focusWords(force = false): void {
   if (isTestActive()) {
     keepWordsInputInTheCenter(true);
   } else {
-    const typingTest = document.querySelector<HTMLElement>("#typingTest");
-    Misc.scrollToCenterOrTop(typingTest);
+    Misc.scrollToCenterOrTop(typingTestEl().native);
   }
 }
 
-export function keepWordsInputInTheCenter(force = false): void {
+function keepWordsInputInTheCenter(force = false): void {
   const wordsInput = getInputElement();
   if (wordsInput === null) return;
 
@@ -144,7 +149,7 @@ function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-export function updateActiveElement(
+function updateActiveElement(
   options:
     | { direction: "forward" | "back"; initial?: undefined }
     | { direction?: undefined; initial: true },
@@ -411,82 +416,11 @@ function buildWordHTML(word: string, wordIndex: number): string {
   return retval;
 }
 
-function updateWordWrapperClasses(): void {
+// measures #words, so it has to run after TestPage applied the config classes
+function updateLayout(): void {
   // outoffocus applies transition, need to remove it
   setTestFocusState("focused");
 
-  if (Config.tapeMode !== "off") {
-    wordsEl().addClass("tape");
-    wordsWrapperEl().addClass("tape");
-  } else {
-    wordsEl().removeClass("tape");
-    wordsWrapperEl().removeClass("tape");
-  }
-
-  if (Config.blindMode) {
-    wordsEl().addClass("blind");
-    wordsWrapperEl().addClass("blind");
-  } else {
-    wordsEl().removeClass("blind");
-    wordsWrapperEl().removeClass("blind");
-  }
-
-  if (Config.indicateTypos === "below" || Config.indicateTypos === "both") {
-    wordsEl().addClass("indicateTyposBelow");
-    wordsWrapperEl().addClass("indicateTyposBelow");
-  } else {
-    wordsEl().removeClass("indicateTyposBelow");
-    wordsWrapperEl().removeClass("indicateTyposBelow");
-  }
-
-  if (Config.hideExtraLetters) {
-    wordsEl().addClass("hideExtraLetters");
-    wordsWrapperEl().addClass("hideExtraLetters");
-  } else {
-    wordsEl().removeClass("hideExtraLetters");
-    wordsWrapperEl().removeClass("hideExtraLetters");
-  }
-
-  if (Config.flipTestColors) {
-    wordsEl().addClass("flipped");
-  } else {
-    wordsEl().removeClass("flipped");
-  }
-
-  if (Config.colorfulMode) {
-    wordsEl().addClass("colorfulMode");
-  } else {
-    wordsEl().removeClass("colorfulMode");
-  }
-
-  qsa("#caret, #paceCaret, #typingTest, #wordsInput").setStyle({
-    fontSize: `${Config.fontSize}rem`,
-  });
-
-  if (isLanguageRightToLeft()) {
-    wordsEl().addClass("rightToLeftTest");
-  } else {
-    wordsEl().removeClass("rightToLeftTest");
-  }
-
-  const existing =
-    wordsEl()
-      .native.className.split(/\s+/)
-      .filter(
-        (className) =>
-          !className.startsWith("highlight-") &&
-          !className.startsWith("typed-effect-"),
-      ) ?? [];
-  if (Config.highlightMode !== null) {
-    existing.push(`highlight-${Config.highlightMode.replaceAll("_", "-")}`);
-  }
-  if (Config.typedEffect !== null) {
-    existing.push(`typed-effect-${Config.typedEffect.replaceAll("_", "-")}`);
-  }
-
-  wordsEl().native.className = existing.join(" ");
-
-  updateWordsWidth();
   updateWordsWrapperHeight(true);
   if (!Config.showAllLines) {
     void centerActiveLine();
@@ -519,7 +453,7 @@ function showWords(): void {
   updateActiveElement({
     initial: true,
   });
-  updateWordWrapperClasses();
+  updateLayout();
   PaceCaret.resetCaretPosition();
 }
 
@@ -609,7 +543,7 @@ export async function centerActiveLine(): Promise<void> {
   resolve();
 }
 
-export function updateWordsWrapperHeight(force = false): void {
+function updateWordsWrapperHeight(force = false): void {
   if (!isMounted() || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
@@ -741,7 +675,7 @@ function displayTypedChar(char: string | undefined): string {
 }
 
 // deferred to the next animation frame - not awaitable
-export function updateWordLetters({
+function updateWordLetters({
   wordIndex,
   input,
   compositionData,
@@ -1238,20 +1172,13 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
   return;
 }
 
-export function setJoiningClass(isEnabled: boolean): void {
-  const joining =
-    isEnabled || Config.mode === "custom" || Config.mode === "zen";
-  wordsEl().toggleClass("joiningScript", joining);
-  setResultWordsJoiningScript(joining);
-}
-
-export function highlightBadWord(index: number): void {
+function highlightBadWord(index: number): void {
   requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
     getWordElement(index)?.addClass("error");
   });
 }
 
-export function highlightAllLettersAsCorrect(wordIndex: number): void {
+function highlightAllLettersAsCorrect(wordIndex: number): void {
   requestDebouncedAnimationFrame(
     `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
     () => {
@@ -1261,38 +1188,6 @@ export function highlightAllLettersAsCorrect(wordIndex: number): void {
       }
     },
   );
-}
-
-function updateWordsWidth(): void {
-  let css: Record<string, string> = {};
-  if (Config.tapeMode === "off") {
-    if (Config.maxLineWidth === 0) {
-      css = {
-        "max-width": "100%",
-      };
-    } else {
-      css = {
-        "max-width": `${Config.maxLineWidth}ch`,
-      };
-    }
-  } else {
-    if (Config.maxLineWidth === 0) {
-      css = {
-        "max-width": "100%",
-      };
-    } else {
-      css = {
-        "max-width": "100%",
-      };
-    }
-  }
-  const el = qs("#typingTest");
-  el?.setStyle(css);
-  if (Config.maxLineWidth === 0) {
-    el?.removeClass("full-width-padding").addClass("content");
-  } else {
-    el?.removeClass("content").addClass("full-width-padding");
-  }
 }
 
 /**
@@ -1503,31 +1398,28 @@ function getRestartAnimationTime(noAnim: boolean): number {
   return noAnim ? 0 : Misc.applyReducedMotion(125);
 }
 
-export async function fadeOutForRestart(
+export async function fadeOutTest(
   source: "testPage" | "resultPage",
   noAnim: boolean,
 ): Promise<void> {
-  const selector = source === "resultPage" ? "#result" : "#typingTest";
-  await qs(selector)?.promiseAnimate({
+  const el = source === "resultPage" ? resultRef : typingTestEl();
+  await el?.promiseAnimate({
     opacity: 0,
     duration: getRestartAnimationTime(noAnim),
   });
 }
 
-export async function fadeInAfterRestart(noAnim: boolean): Promise<void> {
-  const typingTestEl = qs("#typingTest");
-  await typingTestEl?.promiseAnimate({
+export async function fadeInTest(noAnim: boolean): Promise<void> {
+  await typingTestEl().promiseAnimate({
     opacity: [0, 1],
-    onBegin: () => {
-      typingTestEl.removeClass("hidden");
-    },
     duration: getRestartAnimationTime(noAnim),
   });
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
   setShowResult(false);
-  qs("#typingTest")?.setStyle({ opacity: "0" }).show();
+  typingTestEl().setStyle({ opacity: "0" });
+  setTypingTestHidden(false);
   getInputElement().style.left = "0";
   Focus.set(false);
   setCurrentLiveStats({
@@ -1584,66 +1476,77 @@ export function onTestFinish(): void {
 }
 
 /**
- * Binds test-ui to TestPage's elements. Call on every mount; effects are
- * owned by the caller, listeners are removed via `signal`.
+ * Binds test-ui to TestPage's elements. Call on every mount; refs are
+ * released when `signal` aborts.
  */
 export function init(
-  refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
+  refs: {
+    words: ElementWithUtils;
+    wordsWrapper: ElementWithUtils;
+    typingTest: ElementWithUtils;
+  },
   signal: AbortSignal,
 ): void {
   wordsRef = refs.words;
   wordsWrapperRef = refs.wordsWrapper;
+  typingTestRef = refs.typingTest;
   signal.addEventListener("abort", () => {
     // a remount may have registered new elements already
     if (wordsRef === refs.words) wordsRef = undefined;
     if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
+    if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
 
-  // #words is still vanilla; the warning itself is Solid (OutOfFocusWarning.tsx).
-  // show/hideOutOfFocus live in states/test so commandline needn't import test-ui.
-  createEffect(() => {
-    if (showOutOfFocusWarning()) {
-      wordsEl().setStyle({ transition: "0.25s" })?.addClass("blurred");
-    } else {
-      wordsEl().setStyle({ transition: "none" })?.removeClass("blurred");
-    }
-  });
-
-  createEffect(() => {
-    wordsEl().toggleClass("hidden", isWordsHidden());
-  });
-  createEffect(() => {
-    wordsWrapperEl().toggleClass("hidden", isWordsWrapperHidden());
-  });
-  createEffect(() => {
-    wordsEl().toggleClass("read_ahead_disabled", isReadAheadDisabled());
-  });
-  createEffect(() => {
-    wordsEl().toggleClass("noErrorBorder", isErrorBorderDisabled());
-  });
-
-  const inputEl = getInputElement();
-  inputEl.addEventListener(
-    "focus",
-    () => {
-      if (!isInputElementFocused()) return;
-      if (!getResultVisible() && Config.showOutOfFocusWarning) {
-        setTestFocusState("focused");
-      }
-      Caret.show(true);
-    },
-    { signal },
+  // configEvent fires before the config store updates, so DOM reactions live
+  // here instead - they run after TestPage's bindings picked up the new config
+  createEffect(
+    on(
+      () => [
+        getConfig.highlightMode,
+        getConfig.typedEffect,
+        getConfig.blindMode,
+        getConfig.indicateTypos,
+        getConfig.tapeMode,
+        getConfig.hideExtraLetters,
+        getConfig.flipTestColors,
+        getConfig.colorfulMode,
+        getConfig.showAllLines,
+        getConfig.fontSize,
+        getConfig.maxLineWidth,
+        getConfig.tapeMargin,
+      ],
+      updateLayout,
+      { defer: true },
+    ),
   );
-
-  inputEl.addEventListener(
-    "focusout",
-    () => {
-      if (!isInputElementFocused()) {
-        setTestFocusState("unfocused");
-      }
-      Caret.hide();
-    },
-    { signal },
+  createEffect(
+    on(
+      () => getConfig.highlightMode,
+      () =>
+        updateWordLetters({
+          input: getCurrentInput(),
+          wordIndex: getActiveWordIndex(),
+          compositionData: CompositionState.getData(),
+        }),
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(
+      () => getConfig.typedEffect,
+      () => Joining.update("typedEffect", wordsEl()),
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(
+      () => [getConfig.fontFamily, getConfig.fontSize],
+      () => {
+        Joining.update("fontSize", wordsEl());
+        void updateHintsPositionDebounced();
+      },
+      { defer: true },
+    ),
   );
 
   // autofocus the words when typing anywhere on the page
@@ -1705,68 +1608,3 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 }
-
-addEventListener("resize", () => {
-  ResultWordHighlight.destroy();
-});
-
-onTestPageClick("#wordsWrapper", () => {
-  focusWords();
-});
-
-window.addEventListener("blur", () => {
-  setTestFocusState("unfocusedWindow");
-});
-
-// little roadblock for basic cheating
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "hidden") return;
-  setTestFocusState("unfocusedWindow");
-});
-
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "showOutOfFocusWarning" && !newValue) {
-    setTestFocusState("focused");
-  }
-  if (key === "compositionDisplay" && newValue === "below") {
-    setCompositionText(" ");
-  }
-  // not on the test page - the next mount renders with the new config
-  if (!isMounted()) return;
-  if (
-    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
-      key ?? "",
-    )
-  ) {
-    void updateHintsPositionDebounced();
-  }
-  if (key === "highlightMode") {
-    updateWordLetters({
-      input: getCurrentInput(),
-      wordIndex: getActiveWordIndex(),
-      compositionData: CompositionState.getData(),
-    });
-  }
-  if (
-    [
-      "highlightMode",
-      "typedEffect",
-      "blindMode",
-      "indicateTypos",
-      "tapeMode",
-      "hideExtraLetters",
-      "flipTestColors",
-      "colorfulMode",
-      "showAllLines",
-      "fontSize",
-      "fontFamily",
-      "maxLineWidth",
-      "tapeMargin",
-    ].includes(key)
-  ) {
-    if (key !== "fontFamily") updateWordWrapperClasses();
-    if (["typedEffect", "fontFamily", "fontSize"].includes(key)) {
-      Joining.update(key, wordsEl());
-    }
-  }
-});

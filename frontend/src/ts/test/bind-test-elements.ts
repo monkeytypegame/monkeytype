@@ -8,7 +8,7 @@ import { ElementWithUtils } from "../utils/dom";
 import * as Caret from "./caret";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
-import { restart, restartOnRefocus } from "./test-logic";
+import { restart } from "./test-logic";
 import * as TestUI from "./test-ui";
 
 /**
@@ -21,6 +21,7 @@ export function bindTestElements(
   refs: {
     words: HTMLElement;
     wordsWrapper: HTMLElement;
+    typingTest: HTMLElement;
     caret: HTMLElement;
     paceCaret: HTMLElement;
     input: HTMLTextAreaElement;
@@ -50,8 +51,10 @@ export function bindTestElements(
   );
 
   initInputListeners(signal);
-  TestUI.init({ words, wordsWrapper }, signal);
-  restartOnRefocus(signal);
+  TestUI.init(
+    { words, wordsWrapper, typingTest: new ElementWithUtils(refs.typingTest) },
+    signal,
+  );
   listenForModifierKeys(signal);
   listenForMonkeyKeys(signal);
   void restart({ noAnim: true });

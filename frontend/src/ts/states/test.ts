@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal } from "solid-js";
+import { createEffect, createMemo, createSignal, on } from "solid-js";
 import { z } from "zod";
 import { getConfig } from "../config/store";
 import { useLocalStorage } from "../hooks/useLocalStorage";
@@ -33,10 +33,9 @@ export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restart().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// #words is still vanilla so it's blurred imperatively (see test/test-ui);
-// the Solid-owned composition display + OutOfFocusWarning read this signal.
+// read by TestPage (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
-export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
+type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
   createSignalWithSetters<TestFocusState>("focused")({
     setTestFocusState: (set, val: TestFocusState) => {
@@ -62,7 +61,7 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// #words / #wordsWrapper are still vanilla; test/test-ui applies these to them.
+// bound to #words / #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);
 export const [isWordsWrapperHidden, setWordsWrapperHidden] =
@@ -70,6 +69,10 @@ export const [isWordsWrapperHidden, setWordsWrapperHidden] =
 export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
 export const [isErrorBorderDisabled, setErrorBorderDisabled] =
   createSignal(false);
+// hidden between the words fading out and the next restart
+export const [isTypingTestHidden, setTypingTestHidden] = createSignal(false);
+// script with no spaces between words (or custom/zen) - words may wrap mid-word
+export const [isJoiningScript, setJoiningScript] = createSignal(false);
 
 // memory funbox countdown in seconds, null when off. MemoryFunboxTimer runs it.
 // equals: false so restarting with the same duration restarts the countdown.
@@ -94,6 +97,25 @@ export const [isResultLoading, setResultLoading] = createSignal(false);
 
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
+
+createEffect(
+  on(
+    () => getConfig.showOutOfFocusWarning,
+    (show) => {
+      if (!show) setTestFocusState("focused");
+    },
+    { defer: true },
+  ),
+);
+createEffect(
+  on(
+    () => getConfig.compositionDisplay,
+    (display) => {
+      if (display === "below") setCompositionText(" ");
+    },
+    { defer: true },
+  ),
+);
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
 // a finished test's result, before the server adds hash and uid
