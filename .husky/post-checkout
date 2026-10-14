@@ -2,7 +2,10 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # branch checkouts only, not file checkouts
-[ "$3" = "1" ] || exit 0  
+[ "$3" = "1" ] || exit 0
+
+# skip if the lockfile and .nvmrc didn't change
+git diff --quiet "$1" "$2" -- pnpm-lock.yaml .nvmrc && exit 0
 
 # Load nvm
 export NVM_DIR="$HOME/.nvm"
@@ -12,6 +15,6 @@ if [ ! -s "$NVM_DIR/nvm.sh" ]; then
 fi
 . "$NVM_DIR/nvm.sh"
 
-
-nvm install
-pnpm i
+nvm use || nvm install
+pnpm i --config.confirm-modules-purge=false || echo "post-checkout: pnpm i failed (non-fatal)"
+exit 0
