@@ -15,7 +15,7 @@ import {
 import {
   getHighlightedSetting,
   linkToSetting,
-} from "../../states/settings-search";
+} from "../../states/settings-highlight";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";

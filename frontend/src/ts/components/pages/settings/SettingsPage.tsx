@@ -18,10 +18,8 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useRouteSearch } from "../../../router/search-params";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import {
-  isSettingsSearchActive,
-  setHighlightedSetting,
-} from "../../../states/settings-search";
+import { setHighlightedSetting } from "../../../states/settings-highlight";
+import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";

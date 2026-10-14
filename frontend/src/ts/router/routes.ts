@@ -42,7 +42,7 @@ import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
 } from "../queries/leaderboards";
-import { SettingsSearchSchema } from "../states/settings-search";
+import { SettingsSearchSchema } from "../states/settings-highlight";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth, RouterContext } from "./context";
 import {

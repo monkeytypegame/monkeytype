@@ -7,7 +7,7 @@ import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-
 import { useRouteSearch } from "../../src/ts/router/search-params";
 import { useAccountSettingsTab } from "../../src/ts/states/account-settings";
 import { useLeaderboardSearch } from "../../src/ts/states/leaderboard-selection";
-import { linkToSetting } from "../../src/ts/states/settings-search";
+import { linkToSetting } from "../../src/ts/states/settings-highlight";
 import {
   App,
   cleanupApp,
