@@ -78,6 +78,8 @@ import {
   setResultLoading,
   setTestInitError,
   setTestInitFailed,
+  setJoiningScript,
+  setTypingTestHidden,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -365,7 +367,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   setIsTestRestarting(true);
 
-  await TestUI.fadeOutForRestart(source, noAnim);
+  await TestUI.fadeOutTest(source, noAnim);
 
   setResultVisible(false);
   setInputElementValue("");
@@ -387,7 +389,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   TestUI.onTestRestart(source);
 
-  await TestUI.fadeInAfterRestart(noAnim);
+  await TestUI.fadeInTest(noAnim);
   setIsTestRestarting(false);
 }
 
@@ -595,7 +597,11 @@ async function init(): Promise<boolean> {
   }
 
   Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
-  TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
+  setJoiningScript(
+    (allJoiningScript ?? language.joiningScript ?? false) ||
+      Config.mode === "custom" ||
+      Config.mode === "zen",
+  );
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
   setIsLanguageRightToLeft(isLanguageRTL);
@@ -848,11 +854,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // fade out the test and show loading
   // because the css animation has a delay,
   // if the test calculation is fast the loading will not show
-  await Misc.promiseAnimate("#typingTest", {
-    opacity: 0,
-    duration: Misc.applyReducedMotion(125),
-  });
-  qs(".pageTest #typingTest")?.hide();
+  await TestUI.fadeOutTest("testPage", false);
+  setTypingTestHidden(true);
   setResultLoading(true);
   await Misc.sleep(0); //allow ui update
 
@@ -1205,14 +1208,6 @@ async function showResult(
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
   resultPrefocusTarget?.focus({ preventScroll: true });
 
-  const resultEl = qs("#result");
-
-  void resultEl?.promiseAnimate?.({
-    opacity: [0, 1],
-    duration: Misc.applyReducedMotion(125),
-  });
-
-  Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
   setResultCalculating(false);
   TestUI.clearWords();

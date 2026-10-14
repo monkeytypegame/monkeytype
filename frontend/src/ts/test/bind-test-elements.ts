@@ -15,6 +15,7 @@ export function bindTestElements(
   refs: {
     words: HTMLElement;
     wordsWrapper: HTMLElement;
+    typingTest: HTMLElement;
     caret: HTMLElement;
     paceCaret: HTMLElement;
     input: HTMLTextAreaElement;
@@ -44,6 +45,9 @@ export function bindTestElements(
   );
 
   initInputListeners(signal);
-  TestUI.init({ words, wordsWrapper }, signal);
+  TestUI.init(
+    { words, wordsWrapper, typingTest: new ElementWithUtils(refs.typingTest) },
+    signal,
+  );
   void restart({ noAnim: true });
 }
