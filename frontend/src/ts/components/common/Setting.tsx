@@ -12,7 +12,10 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { useSettingsHighlight } from "../../states/settings-search";
+import {
+  getHighlightedSetting,
+  linkToSetting,
+} from "../../states/settings-search";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -62,9 +65,8 @@ export function Setting(props: SettingProps): JSXElement {
   // deep link highlight from the `?highlight=` param
   let ref: HTMLDivElement | undefined;
   const [highlighted, setHighlighted] = createSignal(false);
-  const { highlighted: highlightedKey } = useSettingsHighlight();
   onMount(() => {
-    if (props.key === undefined || highlightedKey() !== props.key) {
+    if (props.key === undefined || getHighlightedSetting() !== props.key) {
       return;
     }
 
@@ -133,7 +135,6 @@ export function Setting(props: SettingProps): JSXElement {
 }
 
 function DeepLinkButton(props: { key: string }) {
-  const { linkTo } = useSettingsHighlight();
   return (
     <Button
       class="-m-2 p-2 opacity-0 group-hover:opacity-100"
@@ -141,7 +142,7 @@ function DeepLinkButton(props: { key: string }) {
       fa={{ icon: "fa-link" }}
       onClick={() => {
         navigator.clipboard
-          .writeText(linkTo(props.key))
+          .writeText(linkToSetting(props.key))
           .then(() => {
             showSuccessNotification("Link copied to clipboard");
           })

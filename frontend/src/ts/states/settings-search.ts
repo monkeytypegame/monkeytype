@@ -1,8 +1,7 @@
-import { useRouter } from "@tanstack/solid-router";
 import { createMemo, createSignal, onCleanup } from "solid-js";
 import { z } from "zod";
 
-import { useRouteSearch } from "../router/search-params";
+import { getRouter, navigate } from "../router/navigate";
 
 // the current settings filter query, shared between the search input and the
 // settings/sections that hide themselves when they don't match
@@ -17,27 +16,21 @@ export const SettingsSearchSchema = z.object({
   highlight: z.string().optional().catch(undefined),
 });
 
-/** The setting deep linked with `?highlight=`, and deep links to settings. */
-// oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
-export function useSettingsHighlight() {
-  const router = useRouter();
-  const { search, replace } = useRouteSearch("/settings");
+// the setting deep linked with `?highlight=`. a snapshot the settings page
+// takes during setup, before its settings mount and read it
+export const [getHighlightedSetting, setHighlightedSetting] = createSignal<
+  string | undefined
+>();
 
-  return {
-    highlighted: (): string | undefined => search().highlight,
-    /**
-     * Shows a deep link to the setting `key` in the url (without a history
-     * entry) and returns it.
-     */
-    linkTo: (key: string): string => {
-      replace(() => ({ highlight: key }));
-      const { href } = router.buildLocation({
-        to: "/settings",
-        search: { highlight: key },
-      });
-      return window.location.origin + href;
-    },
-  };
+/**
+ * Shows a deep link to the setting `key` in the url (without a history entry)
+ * and returns it.
+ */
+export function linkToSetting(key: string): string {
+  const location = { to: "/settings", search: { highlight: key } } as const;
+  void navigate({ ...location, replace: true, resetScroll: false });
+  const href = getRouter()?.buildLocation(location).href ?? "/settings";
+  return window.location.origin + href;
 }
 
 // registry of every searchable setting's haystack getter. settings register on

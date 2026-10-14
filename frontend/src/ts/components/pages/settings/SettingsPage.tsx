@@ -15,9 +15,13 @@ import {
   previewError,
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { useRouteSearch } from "../../../router/search-params";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { isSettingsSearchActive } from "../../../states/settings-search";
+import {
+  isSettingsSearchActive,
+  setHighlightedSetting,
+} from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
@@ -53,6 +57,10 @@ import { SearchableSetting } from "./SearchableSetting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
+  const { search } = useRouteSearch("/settings");
+  // components run untracked: a snapshot
+  setHighlightedSetting(search().highlight);
+
   const [hasLocalBg] = createResource(
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),

@@ -4,9 +4,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import AsyncContent from "../../src/ts/components/common/AsyncContent";
 import { getLeaderboardQueryOptions } from "../../src/ts/queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
+import { useRouteSearch } from "../../src/ts/router/search-params";
 import { useAccountSettingsTab } from "../../src/ts/states/account-settings";
 import { useLeaderboardSearch } from "../../src/ts/states/leaderboard-selection";
-import { useSettingsHighlight } from "../../src/ts/states/settings-search";
+import { linkToSetting } from "../../src/ts/states/settings-search";
 import {
   App,
   cleanupApp,
@@ -317,13 +318,14 @@ describe("search params", () => {
   });
 
   describe("settings", () => {
+    // the settings page snapshots `highlight` from its search
     function renderSettings(
       url: string,
-    ): Probe<ReturnType<typeof useSettingsHighlight>> {
+    ): Probe<ReturnType<typeof useRouteSearch<"/settings">>> {
       return renderWithProbe(
         "SettingsPage",
-        useSettingsHighlight,
-        (settings) => settings.highlighted() ?? null,
+        () => useRouteSearch("/settings"),
+        (settings) => settings.search().highlight ?? null,
         { url },
       );
     }
@@ -336,12 +338,12 @@ describe("search params", () => {
     });
 
     it("writes a deep link to the url without a history entry", async () => {
-      const { app, hook } = renderSettings("/about");
+      const { app } = renderSettings("/about");
       await app.settle();
       await app.navigate({ to: "/settings" });
       await app.settle();
 
-      const link = hook().linkTo("fontSize");
+      const link = linkToSetting("fontSize");
       await app.settle();
 
       expect(link).toBe(
