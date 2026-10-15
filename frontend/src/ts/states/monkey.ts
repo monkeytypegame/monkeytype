@@ -3,6 +3,7 @@ import { getActivePage } from "./core";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
+import { listenForKeyState } from "../utils/key-state";
 
 const [getMonkeyState, setMonkeyState] = createSignal<{
   left: boolean;
@@ -11,21 +12,15 @@ const [getMonkeyState, setMonkeyState] = createSignal<{
 
 export { getMonkeyState };
 
-createEffect(() => {
+function resetMonkeyState(): void {
   setMonkeyState({ left: false, right: false });
+}
 
-  if (getActivePage() === "test" && getConfig.monkey) {
-    const onKeyDown = (e: KeyboardEvent): void => handleKey(e, true);
-    const onKeyUp = (e: KeyboardEvent): void => handleKey(e, false);
-
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
-
-    onCleanup(() => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("keyup", onKeyUp);
-    });
-  }
+createEffect(() => {
+  if (getActivePage() !== "test" || !getConfig.monkey) return;
+  const controller = new AbortController();
+  listenForKeyState(controller.signal, handleKey, resetMonkeyState);
+  onCleanup(() => controller.abort());
 });
 
 const middleKeysState = { left: false, right: false, last: "right" };
