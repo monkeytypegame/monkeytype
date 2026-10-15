@@ -40,7 +40,7 @@ function isLoadingShown(): boolean {
  * page fades out completely before the new one is inserted and fades in, so
  * two pages are never in the DOM at once (ADR 0002).
  */
-export function RootLayout(): JSXElement {
+export function PageSwitcher(): JSXElement {
   const content = children(() => (
     <Show when={!isLoadingShown()} fallback={<LoadingRoutePage />}>
       <Outlet />

@@ -22,7 +22,7 @@ import { ProfilePage } from "../components/pages/profile/ProfilePage";
 import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
 import { SettingsPage } from "../components/pages/settings/SettingsPage";
 import { TestPage } from "../components/pages/test/TestPage";
-import { RootLayout } from "../components/RootLayout";
+import { PageSwitcher } from "../components/PageSwitcher";
 import { getSnapshot } from "../db";
 import { AccountSettingsSearchSchema } from "../states/account-settings";
 import { getUserProfile } from "../queries/profile";
@@ -85,30 +85,30 @@ function guestOnly(auth: RouterAuth): void {
   if (auth.isSignedIn()) redirect({ to: "/account", throw: true });
 }
 
-// each route renders its page, the root layout fades between them
+// each route renders its page, the page switcher fades between them
 const root = createRootRouteWithContext<RouterContext>()({
-  component: RootLayout,
+  component: PageSwitcher,
   // unknown urls. The profile page shows its own message for unknown users
   notFoundComponent: pageComponent("404", NotFoundPage),
 });
 
 // pathless layout so every page waits for auth and the user data download
-const app = createRoute({
+const userDataRoute = createRoute({
   getParentRoute: () => root,
-  id: "app",
+  id: "userData",
   // explicit return type: inferring it would make the route tree's type
   // depend on itself through `matches` (TS7022)
   beforeLoad: async ({ context, matches, preload }): Promise<void> =>
     waitForUserData(context.auth, matches, preload),
   // the router renders a pending route only through its pending component
   // (the router's default) - shown at once, else nothing renders on first
-  // load, not even the root layout
+  // load, not even the page switcher
   pendingMs: 0,
   pendingMinMs: 0,
 });
 
 const test = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/",
   staticData: { page: "test" },
   component: routePage(TestPage, {
@@ -117,7 +117,7 @@ const test = createRoute({
 });
 
 const verify = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/verify",
   beforeLoad: ({ location }) => {
     redirect({
@@ -130,7 +130,7 @@ const verify = createRoute({
 });
 
 const leaderboards = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/leaderboards",
   staticData: { page: "leaderboards" },
   component: routePage(LeaderboardPage),
@@ -172,7 +172,7 @@ const leaderboards = createRoute({
 });
 
 const about = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/about",
   staticData: { page: "about" },
   component: routePage(AboutPage, { class: "full-width" }),
@@ -186,7 +186,7 @@ const about = createRoute({
 });
 
 const settings = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/settings",
   staticData: { page: "settings" },
   component: routePage(SettingsPage),
@@ -194,7 +194,7 @@ const settings = createRoute({
 });
 
 const login = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/login",
   staticData: { page: "login" },
   component: routePage(LoginPage),
@@ -206,7 +206,7 @@ const login = createRoute({
 });
 
 const account = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/account",
   staticData: { page: "account", loadingStep: "results" },
   component: routePage(AccountPage),
@@ -226,7 +226,7 @@ const account = createRoute({
 });
 
 const accountSettings = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/account-settings",
   staticData: { page: "accountSettings" },
   component: routePage(AccountSettingsPage),
@@ -235,14 +235,14 @@ const accountSettings = createRoute({
 });
 
 const profileSearch = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/profile",
   staticData: { page: "profileSearch" },
   component: routePage(ProfileSearchPage),
 });
 
 const profile = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/profile/$uidOrName",
   staticData: { page: "profile" },
   component: routePage(ProfilePage),
@@ -253,7 +253,7 @@ const profile = createRoute({
 });
 
 const friends = createRoute({
-  getParentRoute: () => app,
+  getParentRoute: () => userDataRoute,
   path: "/friends",
   staticData: { page: "friends", loadingStep: "friends" },
   component: routePage(FriendsPage),
@@ -274,7 +274,7 @@ const friends = createRoute({
 });
 
 export const routeTree = root.addChildren([
-  app.addChildren([
+  userDataRoute.addChildren([
     test,
     verify,
     leaderboards,

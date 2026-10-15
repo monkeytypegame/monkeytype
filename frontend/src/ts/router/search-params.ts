@@ -16,7 +16,7 @@ export type SearchRoutePath =
 /** The validated search params of the route at `TPath`. */
 export type RouteSearch<TPath extends SearchRoutePath> = RouteById<
   RegisteredRouter["routeTree"],
-  `/app${TPath}`
+  `/userData${TPath}`
 >["types"]["fullSearchSchema"];
 
 /**
@@ -40,7 +40,8 @@ export function useRouteSearch<TPath extends SearchRoutePath>(
   const navigate = useNavigate();
   const router = useRouter();
   // these routes validate their search with a zod schema
-  const schema = router.routesById[`/app${path}`].options.validateSearch as {
+  const schema = router.routesById[`/userData${path}`].options
+    .validateSearch as {
     parse: (search: unknown) => RouteSearch<TPath>;
   };
   // the raw search while the url is the route's

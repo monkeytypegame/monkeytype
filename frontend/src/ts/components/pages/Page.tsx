@@ -25,7 +25,7 @@ type PageProps = {
 
 /**
  * The wrapper of one page (`.page#page<Name>`). The page fade moves this
- * element in and out (see RootLayout). The content mounts only once the
+ * element in and out (see PageSwitcher). The content mounts only once the
  * wrapper is in the document: the fade builds the next page before inserting
  * it, and page code queries `document` and measures layout on mount.
  */
@@ -115,7 +115,7 @@ export function pageComponent(
 export const loadingPageClass =
   "grid h-full w-full content-center items-center gap-4 place-self-center text-center";
 
-/** The loading page, as the root layout and pending routes render it. */
+/** The loading page, as the page switcher and pending routes render it. */
 export const LoadingRoutePage = pageComponent("loading", LoadingPage, {
   class: loadingPageClass,
 });

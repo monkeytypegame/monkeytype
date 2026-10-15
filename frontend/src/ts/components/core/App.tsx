@@ -52,7 +52,7 @@ export function App(): JSXElement {
             </div>
             <div id="ad-vertical-right"></div>
           </div>
-          {/* renders the current route's page (see RootLayout) */}
+          {/* renders the current route's page (see PageSwitcher) */}
           <RouterProvider router={router} />
         </main>
         <Footer />

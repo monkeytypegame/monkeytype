@@ -111,11 +111,11 @@ export function createAppRouter(
   });
 
   // re-run guards and loaders when the user signs in or out. The initial load
-  // waits for the first auth state itself (the app route's beforeLoad)
+  // waits for the first auth state itself (the userData route's beforeLoad)
   context.auth.onChange(() => void router.invalidate());
 
   // the loads are done: the bar fills up to "Done", then the loading page
-  // hides (see RootLayout)
+  // hides (see PageSwitcher)
   router.subscribe("onLoad", () => {
     finishLoadingBar({
       failed: router.state.matches.some((match) => match.status === "error"),

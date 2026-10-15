@@ -8,7 +8,7 @@ import { Fa } from "../../common/Fa";
 import { UserProfile } from "./UserProfile";
 
 export function ProfilePage(): JSXElement {
-  const params = useParams({ from: "/app/profile/$uidOrName" });
+  const params = useParams({ from: "/userData/profile/$uidOrName" });
   const profileQuery = useQuery(() => getUserProfile(params().uidOrName));
 
   return (

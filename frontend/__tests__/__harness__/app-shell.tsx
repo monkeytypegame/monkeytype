@@ -5,7 +5,7 @@
  *
  * Its vi.mock calls stub the pages and animejs for modules loaded after it.
  * oxfmt sorts imports, so a test file should not import src modules that load
- * pages or anime (eg. routes, RootLayout) itself - get them through
+ * pages or anime (eg. routes, PageSwitcher) itself - get them through
  * the harness.
  * Lighter src imports (query options...) are fine.
  *
@@ -23,7 +23,7 @@
  * - `auth`: "signedIn" | "signedOut" | "pending" (first auth state not known
  *   yet). Change it with `app.auth.signIn()` / `signOut()`; the first call on a
  *   pending auth resolves the first auth state. `signIn({ userData })` hands
- *   the app route a user data download to wait for (a function: called per
+ *   the userData route a user data download to wait for (a function: called per
  *   download, so a Retry after a failure gets a new one).
  * - `queryData`: seeds the test query client. `queryResponses`: replaces the
  *   app's query functions by query key - pair with `deferred()` to settle a
