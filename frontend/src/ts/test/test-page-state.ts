@@ -1,3 +1,5 @@
+// Temporary: bridges imperative test code and the Solid TestPage. Remove once
+// no imperative code needs to know whether the test page is mounted.
 import { createSignal, untrack } from "solid-js";
 
 // the current mount's signal - a remount can register before the old one aborts
