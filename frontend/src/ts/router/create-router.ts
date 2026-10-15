@@ -73,8 +73,11 @@ export function createAppRouter(
     context,
     history: options.history,
     defaultPreload: INTENT_PRELOADING ? "intent" : false,
-    // a preloaded page's loaders run again when it's opened
+    // a preloaded page's loaders run again when it's opened, and the
+    // navigation waits for them: a preload skips the loading steps, so a
+    // background reload (the default) would show the page before its data
     defaultPreloadStaleTime: 0,
+    defaultStaleReloadMode: "blocking",
     // safety net for an unexpectedly slow navigation (loading steps show the
     // bar straight away): the loading page with a spinner after half a
     // second, kept at least half a second so it doesn't flash

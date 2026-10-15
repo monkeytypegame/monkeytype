@@ -215,6 +215,12 @@ const account = createRoute({
   beforeLoad: ({ context }) => requireAuth(context.auth),
   // blocking data
   loader: async (loader) => {
+    // a hover starts the download early, without the loading page. Nothing
+    // else starts it: the collection downloads once something reads it
+    if (loader.preload) {
+      waitForResultsReady().catch(() => undefined);
+      return;
+    }
     await runRouteLoadingStep(loader, async () => {
       if (getSnapshot() === null || getSnapshot() === undefined) {
         throw new Error(

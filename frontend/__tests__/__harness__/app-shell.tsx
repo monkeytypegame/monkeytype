@@ -754,8 +754,9 @@ type DownloadCollection = ReturnType<typeof createDownloadCollection>;
 
 /**
  * A real query collection (like the app's results and friends) downloading
- * from the harness server: already downloaded when the server is ready, else
- * fetching from the start (like after sign in).
+ * from the harness server: already downloaded when the server is ready.
+ * Else, like the app's, it starts downloading only once something reads it
+ * (a loader, a hover's preload), not at sign in.
  */
 // oxlint-disable-next-line typescript/explicit-function-return-type
 function createDownloadCollection(name: "results" | "friends") {
@@ -770,7 +771,7 @@ function createDownloadCollection(name: "results" | "friends") {
       queryKey,
       queryClient,
       staleTime: Infinity,
-      startSync: true,
+      startSync: server.ready,
       getKey: (item) => item._id,
       queryFn: async () =>
         server.fetch(

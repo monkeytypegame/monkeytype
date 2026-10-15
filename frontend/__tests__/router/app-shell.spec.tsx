@@ -1161,6 +1161,80 @@ describe("app shell routing", () => {
       },
     );
 
+    it("starts the results download when hovering a link to account", async () => {
+      const app = renderApp({
+        url: "/settings",
+        auth: "signedIn",
+        queryData: [[serverConfigurationKey, {}]],
+        results: "pending",
+      });
+      await app.settle();
+      expect(app.blockingData.requests("results")).toBe(0);
+
+      await app.hover({ to: "/account" });
+      expect(app.blockingData.requests("results")).toBe(1);
+      expect(app.loadingBar()).toBeUndefined();
+
+      // downloaded before the click: no loading page
+      app.blockingData.loadResults();
+      await flush();
+      app.click({ to: "/account" });
+      await app.settle();
+      expect(app.shownPage()).toBe("account");
+      expect(app.pageMounts().map((mount) => mount.page)).not.toContain(
+        "loading",
+      );
+      expect(app.blockingData.requests("results")).toBe(1);
+    });
+
+    it.each([
+      {
+        page: "account",
+        url: "/account",
+        results: "pending",
+        text: "Downloading results...",
+        load: "loadResults",
+      },
+      {
+        page: "friends",
+        url: "/friends",
+        friends: "pending",
+        text: "Downloading friends...",
+        load: "loadFriends",
+      },
+    ] as const)(
+      "keeps the loading page up when opening a hovered $page while its data is missing",
+      async ({ page, url, text, load, ...blocking }) => {
+        const app = renderApp({
+          url: "/settings",
+          auth: "signedIn",
+          queryData: [[serverConfigurationKey, {}]],
+          ...blocking,
+        });
+        await app.settle();
+
+        // clicked while the hover's preload (which runs no loading step) is
+        // still in flight: the navigation must still wait for the data
+        await app.hover({ to: url });
+
+        // the preload ran no loading step: opening the page must still wait
+        app.click({ to: url });
+        await app.settle({ waitForRouter: false });
+
+        expect(app.shownPage()).toBe("loading");
+        expect(app.loadingBar()?.text).toBe(text);
+        expect(app.pagesInDom()).toEqual(["loading"]);
+        expect(app.pageMounts().map((mount) => mount.page)).not.toContain(page);
+
+        app.blockingData[load]();
+        await flush();
+        expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
+        await waitForDone();
+        await app.settle();
+        expect(app.shownPage()).toBe(page);
+      },
+    );
+
     it("keeps the loading bar of a navigation when hovering a link while it loads", async () => {
       const userData = deferred();
       const app = renderApp({ url: "/", auth: "pending", results: "pending" });
