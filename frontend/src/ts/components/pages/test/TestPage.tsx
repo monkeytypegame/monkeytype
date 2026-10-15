@@ -2,7 +2,6 @@ import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { isInputElementFocused } from "../../../input/input-element";
-import { getActivePage } from "../../../states/core";
 import { getShowResult } from "../../../states/result";
 import {
   getFocus,
@@ -48,18 +47,6 @@ import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 
-/**
- * Renders the children of the static `.page.pageTest` element, only while
- * the test page is active.
- */
-export function TestPage(): JSXElement {
-  return (
-    <Show when={getActivePage() === "test"}>
-      <TypingTest />
-    </Show>
-  );
-}
-
 function prefixedClass(
   prefix: string,
   value: string | null,
@@ -69,11 +56,11 @@ function prefixedClass(
 }
 
 /**
- * Internals are still vanilla - this owns the markup and hands its elements
- * to the vanilla modules on mount (see bindTestElements), unbinding them
- * on cleanup. Mounting starts a fresh test.
+ * The test page. Internals are still vanilla - this owns the markup and hands
+ * its elements to the vanilla modules on mount (see bindTestElements),
+ * unbinding them on cleanup. Mounting starts a fresh test.
  */
-function TypingTest(): JSXElement {
+export function TestPage(): JSXElement {
   // the test page's beforeHide ends the test as soon as a navigation away
   // starts. This also ends it when the page unmounts without one
   onCleanup(leaveTestPage);

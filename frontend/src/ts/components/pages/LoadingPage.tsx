@@ -1,7 +1,8 @@
 import { animate } from "animejs";
-import { createEffect, JSXElement, onCleanup } from "solid-js";
+import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
 
 import {
+  getLoadingPageBarStart,
   getLoadingPageBarTarget,
   getLoadingPageIndicator,
   getLoadingPageText,
@@ -11,6 +12,14 @@ import { Fa } from "../common/Fa";
 
 export function LoadingPage(): JSXElement {
   let fillEl: HTMLElement | undefined;
+
+  // the loading page can mount mid-load (after the old page faded out):
+  // start the fill where the load started
+  onMount(() => {
+    if (fillEl !== undefined) {
+      fillEl.style.width = `${getLoadingPageBarStart()}%`;
+    }
+  });
 
   createEffect(() => {
     const target = getLoadingPageBarTarget();
@@ -42,7 +51,7 @@ export function LoadingPage(): JSXElement {
     cn("h-[1.25em]", { hidden: getLoadingPageText() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
-  // fill keeps its width between loads and is always there to animate
+  // fill keeps its width between steps and is always there to animate
   return (
     <>
       <div class={spinnerClass()}>
@@ -52,10 +61,7 @@ export function LoadingPage(): JSXElement {
         <Fa icon="fa-times" fixedWidth />
       </div>
       <div class={barClass()}>
-        <div
-          ref={(el) => (fillEl = el)}
-          class="h-full w-1/2 rounded bg-main"
-        ></div>
+        <div ref={(el) => (fillEl = el)} class="h-full rounded bg-main"></div>
       </div>
       {/* innerHTML because load errors pass <br> separated messages to updateLoadingPageText */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}

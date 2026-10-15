@@ -1,3 +1,5 @@
+import { batch } from "solid-js";
+import { waitForShownPage } from "../components/pages/Pages";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import {
@@ -8,6 +10,8 @@ import {
 import * as PageTest from "../pages/test";
 import * as PageLoading from "../pages/loading";
 import {
+  setLoadingPageBarStart,
+  setLoadingShown,
   showLoadingPageBar,
   showLoadingPageError,
   showLoadingPageSpinner,
@@ -25,8 +29,6 @@ import Page, {
   UrlParamsSchema,
   OptionsWithUrlParams,
 } from "../pages/page";
-import { onDOMReady, qsa, qsr } from "../utils/dom";
-import * as Skeleton from "../utils/skeleton";
 import {
   LeaderboardUrlParamsSchema,
   readLeaderboardGetParameters,
@@ -163,24 +165,13 @@ function updateTitle(nextPage: { id: string; display?: string }): void {
   }
 }
 
-async function showSyncLoading({
-  loadingOptions,
-  totalDuration,
-}: {
-  loadingOptions: LoadingOptions[];
-  totalDuration: number;
-}): Promise<void> {
-  PageLoading.page.element.show().setStyle({ opacity: "0" });
-  await PageLoading.page.beforeShow({});
-
+/**
+ * Runs the sync loading steps on the loading page. The caller shows and hides
+ * the loading page.
+ */
+async function runSyncLoading(loadingOptions: LoadingOptions[]): Promise<void> {
   const fillDivider = loadingOptions.length;
   const fillOffset = 100 / fillDivider;
-
-  //void here to run the loading promise as soon as possible
-  void PageLoading.page.element.promiseAnimate({
-    opacity: "1",
-    duration: totalDuration / 2,
-  });
 
   for (let i = 0; i < loadingOptions.length; i++) {
     const currentOffset = fillOffset * i;
@@ -188,6 +179,7 @@ async function showSyncLoading({
     if (options.style === "bar") {
       showLoadingPageBar();
       if (i === 0) {
+        setLoadingPageBarStart(0);
         await updateLoadingPageBar(0, 0);
         updateLoadingPageText("");
       }
@@ -207,14 +199,6 @@ async function showSyncLoading({
       await options.loadingPromise();
     }
   }
-
-  await PageLoading.page.element.promiseAnimate({
-    opacity: "0",
-    duration: totalDuration / 2,
-  });
-
-  await PageLoading.page.afterHide();
-  PageLoading.page.element.hide();
 }
 
 // Global abort controller for keyframe promises
@@ -294,21 +278,12 @@ export async function change(
 
   const previousPage = pages[getActivePage()];
   const nextPage = pages[pageName];
-  const totalDuration = Misc.applyReducedMotion(250);
 
   //start
   PageTransition.set(true);
-  qsa(".page")?.removeClass("active");
 
   //previous page
-  await previousPage?.beforeHide?.();
-  previousPage.element.show().setStyle({ opacity: "1" });
-  await previousPage.element.promiseAnimate({
-    opacity: "0",
-    duration: totalDuration / 2,
-  });
-  previousPage.element.hide();
-  await previousPage?.afterHide();
+  await previousPage.beforeHide();
 
   // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
   const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
@@ -324,10 +299,10 @@ export async function change(
     }
 
     if (syncLoadingOptions.length > 0) {
-      await showSyncLoading({
-        loadingOptions: syncLoadingOptions,
-        totalDuration,
-      });
+      // fades the previous page out and the loading page in, unless the
+      // loading page is already shown (boot)
+      setLoadingShown(true);
+      await runSyncLoading(syncLoadingOptions);
     }
 
     // Clean up abort controller after successful loading
@@ -341,8 +316,11 @@ export async function change(
       keyframeAbortController = null;
     }
 
-    pages.loading.element.addClass("active");
-    setActivePage(pages.loading.id);
+    // the loading page stays shown, now as the active page
+    batch(() => {
+      setActivePage(pages.loading.id);
+      setLoadingShown(false);
+    });
     Focus.set(false);
     showLoadingPageError();
     updateLoadingPageText(
@@ -356,9 +334,12 @@ export async function change(
 
   //between
   updateTitle(nextPage);
-  setActivePage(nextPage.id);
+  // in one batch so the previous page doesn't come back between the two
+  batch(() => {
+    setActivePage(nextPage.id);
+    setLoadingShown(false);
+  });
   updateOpenGraphUrl();
-  Focus.set(false);
 
   //next page
   await nextPage?.beforeShow({
@@ -377,13 +358,9 @@ export async function change(
     });
   }
 
-  nextPage.element.show().setStyle({ opacity: "0" });
-  await nextPage.element.promiseAnimate({
-    opacity: "1",
-    duration: totalDuration / 2,
-  });
-  nextPage.element.addClass("active");
-  await nextPage?.afterShow();
+  await waitForShownPage();
+  Focus.set(false);
+  await nextPage.afterShow();
 
   //wrapup
   PageTransition.set(false);
@@ -398,7 +375,6 @@ function solidPage(
     urlParamsSchema?: never;
     loadingOptions?: LoadingOptions;
     beforeShow?: PageProperties<undefined>["beforeShow"];
-    afterHide?: () => Promise<void>;
   },
 ): Page<undefined>;
 function solidPage<U extends UrlParamsSchema>(
@@ -408,7 +384,6 @@ function solidPage<U extends UrlParamsSchema>(
     urlParamsSchema: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
   },
 ): PageWithUrlParams<undefined, U>;
 function solidPage<U extends UrlParamsSchema>(
@@ -418,40 +393,21 @@ function solidPage<U extends UrlParamsSchema>(
     urlParamsSchema?: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
   },
 ): Page<undefined> | PageWithUrlParams<undefined, U> {
-  const path = props?.path ?? `/${id}`;
-  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
-  onDOMReady(() => Skeleton.save(internalId));
-
   const shared = {
     id,
-    path,
-    element: qsr(`#${internalId}`),
+    path: props?.path ?? `/${id}`,
     loadingOptions: props?.loadingOptions,
-    afterHide: async () => {
-      Skeleton.remove(internalId);
-      await props?.afterHide?.();
-    },
   };
 
   if (props?.urlParamsSchema !== undefined) {
     return new PageWithUrlParams({
       ...shared,
       urlParamsSchema: props.urlParamsSchema,
-      beforeShow: async (options) => {
-        Skeleton.append(internalId, "main");
-        await props.beforeShow?.(options);
-      },
+      beforeShow: props.beforeShow,
     });
   }
 
-  return new Page({
-    ...shared,
-    beforeShow: async (options) => {
-      Skeleton.append(internalId, "main");
-      await props?.beforeShow?.(options);
-    },
-  });
+  return new Page({ ...shared, beforeShow: props?.beforeShow });
 }
