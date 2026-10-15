@@ -141,11 +141,14 @@ export async function runLoadingStep(
 
   finishing = undefined;
   setLoadingBarShown(true);
-  setLoadingPageText(null);
+  // the step's text straight away: hiding the line, even for a frame, moves
+  // the centered bar
+  setLoadingPageText(
+    step.keyframes.find((keyframe) => keyframe.text !== undefined)?.text ?? "",
+  );
   setLoadingPageBarStart(start);
 
   await updateLoadingPageBar(start, 0);
-  setLoadingPageText("");
   await failWithLabel(
     step.label,
     loadWithKeyframes(
