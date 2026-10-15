@@ -20,8 +20,8 @@ import {
   setTestFocusState,
   showOutOfFocusWarning,
 } from "../../../states/test";
-import { bindTestElements } from "../../../test/bind-test-elements";
 import * as Caret from "../../../test/caret";
+import { mountTestPage } from "../../../test/mount-test-page";
 import {
   leaveTestPage,
   onRestartButtonClick,
@@ -57,7 +57,7 @@ function prefixedClass(
 
 /**
  * The test page. Internals are still vanilla - this owns the markup and hands
- * its elements to the vanilla modules on mount (see bindTestElements),
+ * its elements to the vanilla modules on mount (see mountTestPage),
  * unbinding them on cleanup. Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
@@ -88,7 +88,7 @@ export function TestPage(): JSXElement {
       throw new Error("TestPage refs not set");
     }
 
-    bindTestElements(
+    mountTestPage(
       {
         words: wordsRef,
         wordsWrapper: wordsWrapperRef,

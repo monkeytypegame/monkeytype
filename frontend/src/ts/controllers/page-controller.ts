@@ -289,7 +289,8 @@ export async function change(
   if (previousPage.id === "test") {
     // ends the test as soon as the navigation starts, before the fade out.
     // TestPage also does this on unmount. Staying on the test page (forced
-    // navigation) only stops the test - the page doesn't remount
+    // navigation) only stops the test: the page doesn't remount, so
+    // leaveTestPage's leaving mark would never clear and block new tests
     if (nextPage.id === "test") stopTest();
     else leaveTestPage();
   }

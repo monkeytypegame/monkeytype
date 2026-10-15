@@ -48,7 +48,7 @@ export { isCapsLockOn };
 
 onCapsLockChange((state) => setCapsLockOn(state));
 
-/** Tracks shift and alt. Called by bindTestElements while the test page is mounted. */
+/** Tracks shift and alt. Called by mountTestPage while the test page is mounted. */
 export function listenForModifierKeys(signal: AbortSignal): void {
   listenForKeyState(signal, handleModifierState, resetModifierState);
 }

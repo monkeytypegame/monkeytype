@@ -10,15 +10,14 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import { restart } from "./test-logic";
 import * as TestUI from "./test-ui";
-import { markTestPageMounted } from "./test-page-state";
 
 /**
- * Brings the test page to life: hands TestPage's elements to the vanilla test
- * modules and sets up page-wide state. Call on every mount; everything done
- * here is undone when `signal` aborts. Mounting starts a fresh test, since any
- * previously rendered words are gone.
+ * Runs the test page lifecycle: hands TestPage's elements to the vanilla test
+ * modules, starts key listeners, and handles ads, incomplete tests and funbox.
+ * Call on every mount; everything done here is undone when `signal` aborts.
+ * Mounting starts a fresh test, since any previously rendered words are gone.
  */
-export function bindTestElements(
+export function mountTestPage(
   refs: {
     words: HTMLElement;
     wordsWrapper: HTMLElement;
@@ -58,7 +57,6 @@ export function bindTestElements(
   );
   listenForModifierKeys(signal);
   listenForMonkeyKeys(signal);
-  markTestPageMounted(signal);
   void restart({ noAnim: true });
 
   updateFooterAndVerticalAds(false);

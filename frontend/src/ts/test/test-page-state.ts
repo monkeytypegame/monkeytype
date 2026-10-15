@@ -1,12 +1,15 @@
-let mounted = false;
+import { createSignal, untrack } from "solid-js";
+
+// the current mount's signal - a remount can register before the old one aborts
+const [getMountSignal, setMountSignal] = createSignal<AbortSignal>();
 let leaving = false;
 
 /** Call when the test page mounts. It counts as unmounted once `signal` aborts. */
 export function markTestPageMounted(signal: AbortSignal): void {
-  mounted = true;
+  setMountSignal(signal);
   leaving = false;
   signal.addEventListener("abort", () => {
-    mounted = false;
+    if (untrack(getMountSignal) === signal) setMountSignal(undefined);
   });
 }
 
@@ -15,7 +18,12 @@ export function markTestPageLeaving(): void {
   leaving = true;
 }
 
+/** Whether the test page is mounted. Reactive. */
+export function isTestPageMounted(): boolean {
+  return getMountSignal() !== undefined;
+}
+
 /** A test can only start on the mounted test page, not while it fades out. */
 export function canStartTest(): boolean {
-  return mounted && !leaving;
+  return untrack(isTestPageMounted) && !leaving;
 }

@@ -74,12 +74,12 @@ export function Pages(props: { registry: PageRegistry }): JSXElement {
     isLoadingShown() ? "loading" : getActivePage(),
   );
 
-  let isFirst = true;
-  let shownElement: HTMLElement | undefined;
-  const shownEl = createMemo((): HTMLElement => {
+  // the boot loading page appears instantly, without a page change to wait for
+  let isBootPage = true;
+  const shownPageEl = createMemo((): HTMLElement => {
     const name = shownName();
-    if (isFirst) {
-      isFirst = false;
+    if (isBootPage) {
+      isBootPage = false;
     } else {
       isShownPageIn = false;
     }
@@ -94,8 +94,7 @@ export function Pages(props: { registry: PageRegistry }): JSXElement {
     if (element === undefined) {
       throw new Error(`page ${name} did not render an element`);
     }
-    shownElement = element;
-    return shownElement;
+    return element;
   });
 
   onCleanup(settleShownPage);
@@ -105,7 +104,7 @@ export function Pages(props: { registry: PageRegistry }): JSXElement {
 
   // createSwitchTransition tracks its source itself
   // oxlint-disable-next-line solid/reactivity
-  const rendered = createSwitchTransition(shownEl, {
+  const rendered = createSwitchTransition(shownPageEl, {
     mode: "out-in",
     // the boot loading page appears instantly
     appear: false,
@@ -131,7 +130,8 @@ export function Pages(props: { registry: PageRegistry }): JSXElement {
         void fade(el, 1).then(() => {
           el.style.opacity = "";
           done();
-          if (el === shownElement) settleShownPage();
+          // an older page finishing its fade in doesn't settle
+          if (el === untrack(shownPageEl)) settleShownPage();
         });
       });
       pendingFadeIns.set(el, frame);
