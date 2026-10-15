@@ -18,7 +18,7 @@ function resetMonkeyState(): void {
 
 createEffectOn(() => getConfig.monkey, resetMonkeyState);
 
-/** Tracks the typing hands. Called by mountTestPage while the test page is mounted. */
+/** Tracks the typing hands. Called by TestPage on mount. */
 export function listenForMonkeyKeys(signal: AbortSignal): void {
   listenForKeyState(
     signal,
