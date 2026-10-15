@@ -3,16 +3,36 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import * as AdController from "../controllers/ad-controller";
+import { authEvent } from "../events/auth";
+import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
+import { isAuthenticated } from "../states/core";
 import { getRoutePage, PageName } from "../states/router";
 import * as Focus from "../test/focus";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { setRouter } from "./navigate";
-import { routerAuth } from "./auth";
+import { createRouterAuth } from "./create-router-auth";
 import { createAppRouter } from "./create-router";
 
-export const router = createAppRouter({ queryClient, auth: routerAuth });
+const auth = createRouterAuth({
+  isAvailable: isAuthAvailable,
+  isSignedIn: isAuthenticated,
+});
+
+authEvent.subscribe((event) => {
+  if (event.type !== "authStateChanged") return;
+  auth.stateChanged(
+    event.data.isUserSignedIn
+      ? {
+          download: event.data.loadPromise,
+          redownload: event.data.reloadUserData,
+        }
+      : undefined,
+  );
+});
+
+export const router = createAppRouter({ queryClient, auth });
 
 declare module "@tanstack/solid-router" {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface

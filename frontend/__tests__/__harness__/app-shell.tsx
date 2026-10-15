@@ -94,8 +94,11 @@ import {
   createAppRouter,
   setPreloading,
 } from "../../src/ts/router/create-router";
+import {
+  createRouterAuth,
+  type UserDataDownload,
+} from "../../src/ts/router/create-router-auth";
 import { setRouter } from "../../src/ts/router/navigate";
-import { createUserDataDownload } from "../../src/ts/router/user-data-download";
 import {
   isLoadingBarShown,
   resetLoadingPage,
@@ -352,52 +355,35 @@ export function createFakeAuth(
   options: { available?: boolean } = {},
 ): FakeAuth {
   let isSignedIn = initial === "signedIn";
-  let isFirstStateKnown = initial !== "pending";
-  const userData = createUserDataDownload();
-  let resolveFirstState: () => void = () => undefined;
-  const firstState = isFirstStateKnown
-    ? Promise.resolve()
-    : new Promise<void>((resolve) => (resolveFirstState = resolve));
-  const listeners = new Set<() => void>();
+  const auth = createRouterAuth({
+    isAvailable: () => options.available ?? true,
+    isSignedIn: () => isSignedIn,
+  });
+  if (initial !== "pending") auth.stateChanged();
 
-  function setSignedIn(signedIn: boolean): void {
+  function setSignedIn(signedIn: boolean, userData?: UserDataDownload): void {
     isSignedIn = signedIn;
     // the account route checks the user data downloaded
     setSnapshot(signedIn ? getDefaultSnapshot() : undefined, {
       dispatchEvent: false,
     });
-    if (!isFirstStateKnown) {
-      isFirstStateKnown = true;
-      resolveFirstState();
-      return;
-    }
-    for (const listener of listeners) listener();
+    auth.stateChanged(userData);
   }
 
   return {
-    isAvailable: () => options.available ?? true,
-    isSignedIn: () => isSignedIn,
-    waitForFirstState: async () => firstState,
-    userDataDownload: userData.get,
-    onChange: (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
+    ...auth,
     signIn: (signInOptions) => {
       const download = signInOptions?.userData;
-      if (download === undefined) {
-        userData.clear();
-      } else if (typeof download === "function") {
-        userData.start(download(), download);
-      } else {
-        userData.start(download, async () => download);
-      }
-      setSignedIn(true);
+      setSignedIn(
+        true,
+        download === undefined
+          ? undefined
+          : typeof download === "function"
+            ? { download: download(), redownload: download }
+            : { download, redownload: async () => download },
+      );
     },
-    signOut: () => {
-      userData.clear();
-      setSignedIn(false);
-    },
+    signOut: () => setSignedIn(false),
   };
 }
 

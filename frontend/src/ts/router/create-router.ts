@@ -19,7 +19,7 @@ import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
 import { routeTree } from "./routes";
 
-/** What routes need to know about auth. The app's is in router/auth.ts. */
+/** What routes need to know about auth. Made by createRouterAuth. */
 export type RouterAuth = {
   /** False when auth failed to load - guarded pages send users to the test page. */
   isAvailable: () => boolean;
