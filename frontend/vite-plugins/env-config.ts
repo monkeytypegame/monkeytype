@@ -38,7 +38,8 @@ export function envConfig(options: {
           isDevelopment: false,
           backendUrl: fallback(
             options.env["BACKEND_URL"],
-            "https://api.monkeytype.com",
+            // frontend-only fork: no hosted backend. Set BACKEND_URL to use your own.
+            "http://localhost:5005",
           ),
           recaptchaSiteKey: options.env["RECAPTCHA_SITE_KEY"] ?? "",
           quickLoginEmail: undefined,

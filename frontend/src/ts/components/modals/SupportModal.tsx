@@ -13,7 +13,7 @@ export function SupportModal(): JSXElement {
   return (
     <AnimatedModal
       id="Support"
-      title="Support Monkeytype"
+      title="Support Monkeytype (upstream project)"
       modalClass="max-w-4xl"
     >
       <div>

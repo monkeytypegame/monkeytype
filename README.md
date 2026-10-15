@@ -1,3 +1,28 @@
+# Recurse Type
+
+**Recurse Type** is the Recurse KMIT edition of [Monkeytype](https://github.com/monkeytypegame/monkeytype): same typing test, rebranded for [Recurse](https://recurse.qzz.io), the technical club of KMIT, with a terminal-green `recurse` theme as the default.
+
+What's different from upstream:
+
+- `recurse` theme (`frontend/static/themes/recurse.css`) and it's the default
+- Recurse name, logo, favicons, page titles, footer and about/contact text
+- Merch banner removed
+- Frontend-only: no hosted backend or accounts by default (set `BACKEND_URL` to use your own)
+
+Run it locally (Node 24, pnpm):
+
+```bash
+pnpm install
+cp frontend/src/ts/constants/firebase-config-example.ts frontend/src/ts/constants/firebase-config.ts
+pnpm dev-fe            # http://localhost:3000
+```
+
+Production build: also copy the example to `firebase-config-live.ts`, then `RECAPTCHA_SITE_KEY=none pnpm build-fe`. The static site lands in `frontend/dist`.
+
+Licensed under GPL-3.0, like Monkeytype. All credit for the typing test goes to Miodec and the Monkeytype contributors.
+
+---
+
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 

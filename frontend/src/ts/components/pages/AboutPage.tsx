@@ -55,7 +55,9 @@ export function AboutPage(): JSXElement {
     <Page id="about">
       <div class="content-grid grid gap-8">
         <section class="text-center text-sub">
-          Created with love by Miodec.
+          Recurse Type is the Recurse KMIT edition of{" "}
+          <a href="https://github.com/monkeytypegame/monkeytype">Monkeytype</a>,
+          created with love by Miodec.
           <br />
           <a href="#supporters_title">Supported</a> and{" "}
           <a href="#contributors_title">expanded</a> by many awesome people.
@@ -190,14 +192,15 @@ export function AboutPage(): JSXElement {
         <section>
           <H2 fa={{ icon: "fa-info-circle" }} text="about" />
           <p>
-            Monkeytype is a minimalistic and customizable typing test. It
-            features many test modes, an account system to save your typing
-            speed history, and user-configurable features such as themes,
-            sounds, a smooth caret, and more. Monkeytype attempts to emulate the
-            experience of natural keyboard typing during a typing test, by
-            unobtrusively presenting the text prompts and displaying typed
-            characters in-place, providing straightforward, real-time feedback
-            on typos, speed, and accuracy.
+            Recurse Type is a minimalistic and customizable typing test from
+            Recurse, the technical club of KMIT, built on the open-source
+            Monkeytype project (GPL-3.0). It features many test modes, an
+            account system to save your typing speed history, and
+            user-configurable features such as themes, sounds, a smooth caret,
+            and more. It attempts to emulate the experience of natural keyboard
+            typing during a typing test, by unobtrusively presenting the text
+            prompts and displaying typed characters in-place, providing
+            straightforward, real-time feedback on typos, speed, and accuracy.
             <br />
             <br />
             Test yourself in various modes, track your progress and improve your
@@ -269,9 +272,8 @@ export function AboutPage(): JSXElement {
         <section>
           <H3 fa={{ icon: "fa-bug" }} text="bug report or feature request" />
           <p>
-            If you encounter a bug, or have a feature request - join the Discord
-            server, send me an email, a direct message on Twitter or create an
-            issue on GitHub.
+            If you encounter a bug, or have a feature request - email Recurse,
+            send a message on Instagram or open an issue on GitHub.
           </p>
         </section>
         <div></div>
@@ -297,7 +299,7 @@ export function AboutPage(): JSXElement {
           <H2 fa={{ icon: "fa-envelope" }} text="contact" />
           <p>
             If you encounter a bug, have a feature request or just want to say
-            hi - here are the different ways you can contact me directly.
+            hi - here are the different ways you can reach the Recurse team.
           </p>
           <div class="mt-4 grid w-full grid-cols-1 gap-4 text-xl sm:grid-cols-2 lg:grid-cols-4">
             <Button
@@ -307,21 +309,21 @@ export function AboutPage(): JSXElement {
               class="w-full p-8"
             />
             <Button
-              text="twitter"
-              fa={{ icon: "fa-twitter", variant: "brand" }}
-              href="https://x.com/monkeytype"
+              text="instagram"
+              fa={{ icon: "fa-instagram", variant: "brand" }}
+              href="https://www.instagram.com/recurse.official/"
               class="w-full p-8"
             />
             <Button
-              text="discord"
-              fa={{ icon: "fa-discord", variant: "brand" }}
-              href="https://discord.gg/monkeytype"
+              text="website"
+              fa={{ icon: "fa-globe" }}
+              href="https://recurse.qzz.io"
               class="w-full p-8"
             />
             <Button
               text="github"
               fa={{ icon: "fa-github", variant: "brand" }}
-              href="https://github.com/monkeytypegame/monkeytype"
+              href="https://github.com/aditya36900/monkeytype"
               class="w-full p-8"
             />
           </div>

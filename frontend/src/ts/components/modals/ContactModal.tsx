@@ -9,9 +9,8 @@ export function ContactModal(): JSXElement {
   return (
     <AnimatedModal id="Contact" modalClass="max-w-4xl" title="Contact">
       <div>
-        Feel free to send an email to contact@monkeytype.com. For business
-        inquiries, email jack@monkeytype.com (the buttons below will open the
-        default mail client).
+        Feel free to send an email to recurse@kmit.in (the buttons below will
+        open the default mail client).
         <br />
         <br />
         Please <span class="text-error">do not send</span> requests to delete
@@ -21,7 +20,7 @@ export function ContactModal(): JSXElement {
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <Button
           variant="button"
-          href="mailto:contact@monkeytype.com?subject=[Question] "
+          href="mailto:recurse@kmit.in?subject=[Question] "
           text="Question"
           class={buttonClass}
           fa={{
@@ -31,7 +30,7 @@ export function ContactModal(): JSXElement {
         />
         <Button
           variant="button"
-          href="mailto:contact@monkeytype.com?subject=[Feedback] "
+          href="mailto:recurse@kmit.in?subject=[Feedback] "
           fa={{
             icon: "fa-comment-dots",
             fixedWidth: true,
@@ -41,7 +40,7 @@ export function ContactModal(): JSXElement {
         />
         <Button
           variant="button"
-          href="mailto:support@monkeytype.com?subject=[Bug] "
+          href="mailto:recurse@kmit.in?subject=[Bug] "
           fa={{
             icon: "fa-bug",
             fixedWidth: true,
@@ -51,7 +50,7 @@ export function ContactModal(): JSXElement {
         />
         <Button
           variant="button"
-          href="mailto:support@monkeytype.com?subject=[Account] "
+          href="mailto:recurse@kmit.in?subject=[Account] "
           fa={{
             icon: "fa-user-circle",
             fixedWidth: true,
@@ -61,7 +60,7 @@ export function ContactModal(): JSXElement {
         />
         <Button
           variant="button"
-          href="mailto:jack@monkeytype.com?subject=[Business] "
+          href="mailto:recurse@kmit.in?subject=[Business] "
           fa={{
             icon: "fa-briefcase",
             fixedWidth: true,
@@ -71,7 +70,7 @@ export function ContactModal(): JSXElement {
         />
         <Button
           variant="button"
-          href="mailto:contact@monkeytype.com?subject=[Other] "
+          href="mailto:recurse@kmit.in?subject=[Other] "
           fa={{
             icon: "fa-ellipsis-h",
             fixedWidth: true,

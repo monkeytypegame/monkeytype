@@ -1,7 +1,6 @@
 import { JSXElement } from "solid-js";
 
 import { getIsScreenshotting } from "../../../states/core";
-import { showModal } from "../../../states/modals";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
@@ -26,21 +25,31 @@ export function Footer(): JSXElement {
         <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button
             variant="text"
-            text="contact"
+            text="email"
             fa={{
               icon: "fa-envelope",
               fixedWidth: true,
             }}
-            onClick={() => showModal("Contact")}
+            href="mailto:recurse@kmit.in"
           />
           <Button
             variant="text"
-            text="support"
+            text="instagram"
             fa={{
-              icon: "fa-donate",
+              icon: "fa-instagram",
+              variant: "brand",
               fixedWidth: true,
             }}
-            onClick={() => showModal("Support")}
+            href="https://www.instagram.com/recurse.official/"
+          />
+          <Button
+            variant="text"
+            text="recurse"
+            fa={{
+              icon: "fa-globe",
+              fixedWidth: true,
+            }}
+            href="https://recurse.qzz.io"
           />
           <Button
             variant="text"
@@ -49,54 +58,16 @@ export function Footer(): JSXElement {
               icon: "fa-code",
               fixedWidth: true,
             }}
+            href="https://github.com/aditya36900/monkeytype"
+          />
+          <Button
+            variant="text"
+            text="based on monkeytype (gpl-3.0)"
+            fa={{
+              icon: "fa-code-branch",
+              fixedWidth: true,
+            }}
             href="https://github.com/monkeytypegame/monkeytype"
-          />
-          <Button
-            variant="text"
-            text="discord"
-            fa={{
-              icon: "fa-discord",
-              variant: "brand",
-              fixedWidth: true,
-            }}
-            href="https://www.discord.gg/monkeytype"
-          />
-          <Button
-            variant="text"
-            text="twitter"
-            fa={{
-              icon: "fa-twitter",
-              variant: "brand",
-              fixedWidth: true,
-            }}
-            href="https://x.com/monkeytype"
-          />
-          <Button
-            variant="text"
-            text="terms"
-            fa={{
-              icon: "fa-file-contract",
-              fixedWidth: true,
-            }}
-            href="/terms-of-service.html"
-          />
-          <Button
-            href="/security-policy.html"
-            variant="text"
-            text="security"
-            fa={{
-              icon: "fa-shield-alt",
-              fixedWidth: true,
-            }}
-          />
-          <Button
-            href="/privacy-policy.html"
-            variant="text"
-            text="privacy"
-            fa={{
-              icon: "fa-lock",
-              fixedWidth: true,
-            }}
           />
         </div>
         <div class="flex flex-col items-end text-right lg:flex-row">

@@ -1,6 +1,5 @@
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
-import * as MerchBanner from "./elements/merch-banner";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { configLoadPromise } from "./config/lifecycle";
 import { authPromise } from "./firebase";
@@ -17,7 +16,6 @@ onDOMReady(async () => {
   qs("body")?.setStyle({
     transition: "background .25s, transform .05s",
   });
-  MerchBanner.showIfNotClosedBefore();
 
   const app = document.querySelector("#app") as HTMLElement;
   app?.classList.remove("hidden");

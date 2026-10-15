@@ -1,0 +1,34 @@
+/* recurse — terminal green on near-black, built for Recurse KMIT */
+
+body {
+  background-image: radial-gradient(
+    900px 500px at 50% -10%,
+    color-mix(in srgb, var(--main-color) 7%, transparent),
+    transparent 70%
+  );
+  background-attachment: fixed;
+}
+
+#caret {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--caret-color) 60%, transparent);
+}
+
+[data-ui-element="logoText"] {
+  letter-spacing: 0.02em;
+}
+
+kbd {
+  color: var(--bg-color);
+  background-color: var(--sub-color);
+}
+
+[data-nav-item] {
+  &:hover {
+    color: var(--main-color);
+  }
+}
+
+::selection {
+  color: var(--bg-color);
+  background: var(--main-color);
+}

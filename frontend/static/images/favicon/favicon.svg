@@ -1,10 +1,1 @@
-<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <style>
-    #bg{fill: #323437;}
-    path{fill: #e2b714;}
-  </style>
-    <g>
-        <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
-        <path d="M9.09 24.1v21.2h5.12V33.1q.256-4.61 4.48-4.61 3.46.384 3.46 3.84v12.9h5.12v-11.5q-.128-5.25 4.48-5.25 3.46.384 3.46 3.84v12.9h5.12v-12.2q0-9.47-7.04-9.47-4.22 0-7.04 3.46-2.18-3.46-6.02-3.46-3.46 0-6.02 2.43v-2.05M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
-    </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#080a09"/><g fill="none" stroke="#6dffb0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 7)"><rect x="1" y="1" width="28" height="16" rx="4"/><path d="M7 5.5 L11 9 L7 12.5"/><path d="M14 12.5 H21"/></g></svg>

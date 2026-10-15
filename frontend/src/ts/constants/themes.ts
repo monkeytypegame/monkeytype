@@ -2320,6 +2320,19 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  recurse: {
+    bg: "#080a09",
+    caret: "#6dffb0",
+    main: "#6dffb0",
+    sub: "#55635b",
+    subAlt: "#0e1311",
+    text: "#dfe8e2",
+    error: "#ff5a5f",
+    errorExtra: "#9c3a3d",
+    colorfulError: "#ff5a5f",
+    colorfulErrorExtra: "#9c3a3d",
+    hasCss: true,
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
