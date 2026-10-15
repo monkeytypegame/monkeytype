@@ -52,9 +52,10 @@ import {
   setTestInitFailed,
   setTypingTestHidden,
 } from "../states/test";
-import { createEffect, on } from "solid-js";
+import { createEffect, on, untrack } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
 import { setShowResult } from "../states/result";
+import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -72,8 +73,9 @@ export function setResultElement(el: ElementWithUtils | undefined): void {
   resultRef = el;
 }
 
+/** Whether TestPage is mounted. Not reactive. */
 export function isMounted(): boolean {
-  return wordsRef !== undefined;
+  return untrack(isTestPageMounted);
 }
 
 function wordsEl(): ElementWithUtils {
@@ -1496,6 +1498,7 @@ export function init(
     if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
+  markTestPageMounted(signal);
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config
@@ -1584,27 +1587,29 @@ export function init(
 
 function autofocusWords(e: KeyboardEvent): void {
   if (e.key === undefined) return;
+
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  if (getResultVisible() || isInputElementFocused()) return;
+  // checked last, isAnyPopupVisible is a bit expensive
   if (
-    isDevEnvironment() &&
-    (document.activeElement as HTMLElement | undefined)?.dataset[
-      "uiElement"
-    ] === "signalDevtoolsInput"
+    ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
+    e.metaKey ||
+    e.ctrlKey ||
+    Misc.isAnyPopupVisible()
   ) {
     return;
   }
-  if (getResultVisible() || isInputElementFocused()) return;
-
-  // this is nested because isAnyPopupVisible is a bit expensive
-  // and we don't want to call it during the test
-  if (
-    !Misc.isAnyPopupVisible() &&
-    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
-    !e.metaKey &&
-    !e.ctrlKey
-  ) {
-    focusWords();
-    if (Config.showOutOfFocusWarning) {
-      e.preventDefault();
-    }
+  focusWords();
+  if (Config.showOutOfFocusWarning) {
+    e.preventDefault();
   }
 }

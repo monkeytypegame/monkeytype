@@ -31,9 +31,7 @@ import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
 export function FriendsList() {
-  const query = useQuery(() => ({
-    ...getFriendsListQuery(),
-  }));
+  const query = useQuery(() => getFriendsListQuery());
 
   const columns = createMemo(() => {
     return getColumns({ format: getFormatting() });

@@ -11,6 +11,7 @@ import { createStore } from "solid-js/store";
 import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
+import { isTestPageMounted } from "../test/test-page-state";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
@@ -176,6 +177,8 @@ export const [currentLiveStats, setCurrentLiveStats] = createStore<{
 }>({});
 
 createEffect(() => {
+  // custom text settings aren't reactive - re-read them when the test page mounts
+  isTestPageMounted();
   setIsLongTest(
     !canQuickRestart(
       getConfig.mode,

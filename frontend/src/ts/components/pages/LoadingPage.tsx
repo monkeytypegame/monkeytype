@@ -60,7 +60,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
-  // fill keeps its width between loads and is always there to animate
+  // fill keeps its width between steps and is always there to animate
   return (
     <>
       <div class={spinnerClass()}>

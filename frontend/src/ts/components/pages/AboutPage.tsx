@@ -19,21 +19,13 @@ import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
 import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
 
 export function AboutPage(): JSXElement {
-  const contributors = useQuery(() => ({
-    ...getContributorsQueryOptions(),
-  }));
+  const contributors = useQuery(() => getContributorsQueryOptions());
 
-  const supporters = useQuery(() => ({
-    ...getSupportersQueryOptions(),
-  }));
+  const supporters = useQuery(() => getSupportersQueryOptions());
 
-  const typingStats = useQuery(() => ({
-    ...getTypingStatsQueryOptions(),
-  }));
+  const typingStats = useQuery(() => getTypingStatsQueryOptions());
 
-  const speedHistogram = useQuery(() => ({
-    ...getSpeedHistogramQueryOptions(),
-  }));
+  const speedHistogram = useQuery(() => getSpeedHistogramQueryOptions());
 
   const numberOfHistogramRecords = (data?: { y: number }[]) => {
     if (data === undefined) return "";

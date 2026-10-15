@@ -88,21 +88,18 @@ export function LeaderboardPage(): JSXElement {
     }
   });
 
-  const entriesQuery = useQuery(() => ({
-    ...getLeaderboardQueryOptions({
-      ...getSelection(),
-      page: getPage(),
-    }),
-  }));
+  const entriesQuery = useQuery(() =>
+    getLeaderboardQueryOptions({ ...getSelection(), page: getPage() }),
+  );
 
   const rankQuery = useQuery(() => ({
     ...getRankQueryOptions(getSelection()),
     enabled: isAuthenticated(),
   }));
 
-  const serverConfigurationQuery = useQuery(() => ({
-    ...getServerConfigurationQueryOptions(),
-  }));
+  const serverConfigurationQuery = useQuery(() =>
+    getServerConfigurationQueryOptions(),
+  );
 
   /**
    * the page that contains the user

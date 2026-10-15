@@ -1387,7 +1387,7 @@ export function repeatTest(): void {
 
 /**
  * Little roadblock for basic cheating - restarts an unstarted test.
- * TestPage calls this when the window regains focus.
+ * TestPage calls this when the window regains focus or becomes visible.
  */
 export function restartIfNotStarted(): void {
   if (

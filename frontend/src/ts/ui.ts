@@ -1,18 +1,16 @@
 import { Config } from "./config/store";
 import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
-import { getCustomTextIndicator, getGlobalOffsetTop } from "./states/core";
+import * as TestUI from "./test/test-ui";
+import { getCustomTextIndicator } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
-import { qs, qsr } from "./utils/dom";
-import { createEffect } from "solid-js";
+import { qs } from "./utils/dom";
 import fileStorage from "./utils/file-storage";
-import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
 import { isTestActive } from "./states/test";
-import * as TestUI from "./test/test-ui";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -106,12 +104,6 @@ window.addEventListener("beforeunload", (event) => {
       event.returnValue = "";
     }
   }
-});
-
-createEffect(() => {
-  qsr("#app").setStyle({
-    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
-  });
 });
 
 configEvent.subscribe(async ({ key }) => {

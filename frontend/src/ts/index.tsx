@@ -1,3 +1,6 @@
+// Import sorting is disabled for this file (.oxfmtrc.json): many imports run
+// side effects on load, so their order matters.
+
 // register signal tracking hook before any signals are created
 import "./dev/signal-tracker";
 
@@ -16,7 +19,6 @@ import * as TestTimer from "./test/test-timer";
 import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
 import "./elements/no-css";
-import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
@@ -28,7 +30,8 @@ import "./elements/psa";
 import "./controllers/url-handler";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
-import { mountComponents } from "./components/mount";
+import { render } from "solid-js/web";
+import { App } from "./components/core/App";
 import "./ready";
 import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
@@ -61,8 +64,9 @@ if (import.meta.env.DEV) {
   void import("./dev/expose");
 }
 
-// mount before anything that might touch component-rendered DOM (eg. test page)
-mountComponents();
+// render before anything that might touch component-rendered DOM (eg. test page).
+// Renders after the static markup in <body> (index.html)
+render(() => <App />, document.body);
 
 applyEngineSettings();
 void loadFromLocalStorage();
@@ -91,7 +95,6 @@ addToGlobal({
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst,
-  egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,
   qs: qs,
