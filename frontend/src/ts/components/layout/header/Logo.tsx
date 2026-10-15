@@ -6,58 +6,40 @@ import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
+/**
+ * Recurse KMIT logo. Drawn as a CSS mask so it takes the theme's text colour
+ * on every theme (light or dark).
+ */
 export function Logo(): JSXElement {
   return (
     <a
       href={`${location.origin}/`}
-      class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:**:data-[ui-element='logoSubtext']:text-transparent"
-      aria-label="Recurse Home"
+      class="relative -m-2 flex w-max shrink-0 items-center p-2"
+      aria-label="Recurse Type home"
       router-link
-      style={{
-        "box-sizing": "content-box",
-        "font-family": "Roboto Mono, monospace",
-      }}
       data-ui-element="logo"
       onClick={() => {
         if (getActivePage() === "test") restartTestEvent.dispatch();
       }}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 30 18"
+      <span
+        role="img"
+        aria-hidden="true"
+        data-ui-element="logoMark"
         class={cn(
-          "h-full fill-none stroke-current stroke-2 text-main transition-colors",
-          {
-            "text-sub": getFocus(),
-          },
+          "block h-[2.6rem] w-[8.95rem] bg-text transition-colors duration-250",
+          { "bg-sub": getFocus() },
         )}
-        style={{ "stroke-linecap": "round", "stroke-linejoin": "round" }}
+      ></span>
+      <span
+        class={cn(
+          "absolute top-[0.15rem] left-[9.6rem] hidden text-[0.6rem] tracking-[0.08em] text-main uppercase transition-opacity lg:block",
+          { "opacity-0": getFocus() },
+        )}
+        data-ui-element="logoSubtext"
       >
-        <rect x="1" y="1" width="28" height="16" rx="4"></rect>
-        <path d="M7 5.5 L11 9 L7 12.5"></path>
-        <path d="M14 12.5 H21"></path>
-      </svg>
-      <div class="hidden h-6 place-content-center text-[2rem] leading-0 sm:grid">
-        <div
-          class={cn(
-            "-mt-[1.65em] hidden pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125 lg:block",
-            {
-              "text-transparent": getFocus(),
-            },
-          )}
-          data-ui-element="logoSubtext"
-        >
-          {isDevEnvironment() ? "localhost" : "kmit"}
-        </div>
-        <h1
-          class={cn("-mt-[0.11em] text-text transition-colors duration-250", {
-            "text-sub": getFocus(),
-          })}
-          data-ui-element="logoText"
-        >
-          recurse
-        </h1>
-      </div>
+        {isDevEnvironment() ? "localhost" : "type"}
+      </span>
     </a>
   );
 }

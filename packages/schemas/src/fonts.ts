@@ -46,6 +46,8 @@ export const KnownFontNameSchema = z.enum(
     "Inter_Tight",
     "Space_Grotesk",
     "Noto_Sans_Lao",
+    "Space_Mono",
+    "DM_Sans",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known font family"),

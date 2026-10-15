@@ -150,4 +150,10 @@ export const Fonts: Record<KnownFontName, FontConfig> = {
     display: "Noto Sans Lao (ລາວ)",
     fileName: "NotoSansLao-Regular.woff2",
   },
+  Space_Mono: {
+    fileName: "SpaceMono-Regular.woff2",
+  },
+  DM_Sans: {
+    fileName: "DMSans-400.woff2",
+  },
 };

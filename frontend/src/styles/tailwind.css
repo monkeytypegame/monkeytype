@@ -30,6 +30,14 @@
   --duration-half: 0.125s;
 
   --radius: var(--roundness);
+  /* recurse: square corners everywhere (rounded-full stays round) */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
 
   @keyframes loader {
     0% {

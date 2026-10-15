@@ -40,6 +40,7 @@ export function ResultMainStats(props: Props): JSXElement {
 
   return (
     <div
+      data-ui-element="resultMainStats"
       class={cn(
         "grid items-center justify-center gap-2",
         "sm:grid-cols-2 sm:justify-items-center",

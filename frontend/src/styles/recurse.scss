@@ -1,0 +1,328 @@
+/* =====================================================================
+   Recurse KMIT design layer for Monkeytype.
+   Mirrors the Recurse website (recurse.qzz.io): ink background with a
+   faint grid and a glowing ring, DM Sans display type with outlined
+   accents, Space Mono uppercase labels, square bordered controls and a
+   lime ticker band. Colours come from the active theme, so every
+   Monkeytype theme still works; the default theme is `recurse`.
+   ===================================================================== */
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/webfonts/DMSans-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/webfonts/DMSans-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/webfonts/DMSans-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/webfonts/SpaceMono-Bold.woff2") format("woff2");
+}
+
+:root {
+  --recurse-line: color-mix(in srgb, var(--text-color) 14%, transparent);
+  --recurse-glow: color-mix(in srgb, var(--main-color) 8%, transparent);
+}
+
+/* ---------- backdrop: grid + ring ---------- */
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--text-color) 5%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--text-color) 5%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 4.75rem 4.75rem;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 75%);
+}
+
+body::after {
+  position: fixed;
+  z-index: -1;
+  top: 18vh;
+  right: -18vw;
+  width: 56vw;
+  height: 56vw;
+  border: 1px solid color-mix(in srgb, var(--main-color) 16%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    0 0 140px var(--recurse-glow),
+    inset 0 0 140px var(--recurse-glow);
+  content: "";
+  pointer-events: none;
+}
+
+/* ---------- header ---------- */
+[data-ui-element="header"] {
+  min-height: 3.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid transparent;
+}
+
+[data-ui-element="logoMark"] {
+  mask: url("/images/recurse-logo.png") left center / auto 100% no-repeat;
+  -webkit-mask: url("/images/recurse-logo.png") left center / auto 100%
+    no-repeat;
+}
+
+/* small screens: just the robot head */
+@media (max-width: 720px) {
+  [data-ui-element="logoMark"] {
+    width: 2.2rem !important;
+  }
+}
+
+[data-ui-element="logoSubtext"] {
+  font-family: var(--font);
+}
+
+[data-ui-element="header"] nav [data-nav-item] {
+  font-family: "Space Mono", var(--font);
+}
+
+[data-ui-element="navLabel"] {
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-ui-element="header"]
+  nav
+  [data-nav-item]:has([data-ui-element="navLabel"]) {
+  position: relative;
+  gap: 0.6em;
+}
+
+[data-ui-element="recurseCta"] {
+  font-family: "Space Mono", var(--font);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- display type ---------- */
+.recurse-display {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.18em;
+  margin: 0;
+  color: var(--text-color);
+  font-family: var(--ui-sans);
+  font-size: clamp(2.6rem, 6.4vw, 5.6rem);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.085em;
+  text-transform: uppercase;
+}
+
+.recurse-display span {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--main-color);
+}
+
+[data-ui-element="recurseIntro"] p {
+  font-family: "Space Mono", var(--font);
+}
+
+#app h2,
+#app h3 {
+  font-family: var(--ui-sans);
+  letter-spacing: -0.03em;
+}
+
+/* ---------- test config bar ---------- */
+[data-ui-element="testConfig"] {
+  font-family: "Space Mono", var(--font);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[data-ui-element="testConfig"] button {
+  font-size: 0.92em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-ui-element="testConfig"] .card {
+  border: 1px solid var(--recurse-line);
+  background: color-mix(in srgb, var(--sub-alt-color) 70%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+[data-ui-element="testConfig"] [data-active] {
+  --themable-button-text: var(--bg-color) !important;
+  --themable-button-hover-text: var(--bg-color) !important;
+  background: var(--main-color) !important;
+}
+
+/* ---------- typing area ---------- */
+#caret {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--caret-color) 55%, transparent);
+}
+
+/* ---------- buttons ---------- */
+[data-ui-element="button"][data-ui-variant="button"] {
+  border: 1px solid transparent;
+}
+
+#result [data-ui-element="button"],
+[data-ui-element="restartTestButton"] {
+  font-family: "Space Mono", var(--font);
+}
+
+/* ---------- results ---------- */
+#result [data-ui-element="resultStat"] > div:first-child {
+  margin-bottom: 0.35rem;
+  font-family: "Space Mono", var(--font);
+  font-size: 0.7rem;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+[data-ui-element="resultMainStats"] [data-ui-element="resultStatValue"] {
+  font-family: var(--ui-sans);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+}
+
+[data-ui-element="resultMainStats"]
+  > [data-ui-element="resultStat"]:first-of-type
+  [data-ui-element="resultStatValue"] {
+  color: var(--text-color) !important;
+}
+
+[data-ui-element="resultMainStats"]
+  > [data-ui-element="resultStat"]:nth-of-type(2)
+  [data-ui-element="resultStatValue"] {
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px var(--main-color);
+}
+
+#result canvas {
+  border: 1px solid var(--recurse-line);
+  background: color-mix(in srgb, var(--sub-alt-color) 50%, transparent);
+}
+
+/* no ad slots in the recurse build */
+.advertisement,
+#ad-result-wrapper,
+#ad-result-small-wrapper,
+#ad-vertical-left-wrapper,
+#ad-vertical-right-wrapper {
+  display: none !important;
+}
+
+/* ---------- popups, cards, inputs ---------- */
+dialog,
+.modal,
+[data-ui-element="modal"] {
+  border: 1px solid var(--recurse-line);
+}
+
+input,
+textarea,
+select {
+  border: 1px solid transparent;
+}
+
+input:focus,
+textarea:focus {
+  border-color: color-mix(in srgb, var(--main-color) 60%, transparent);
+}
+
+/* ---------- footer ---------- */
+footer {
+  font-family: "Space Mono", var(--font);
+}
+
+footer kbd,
+footer .keyTip {
+  font-family: "Space Mono", var(--font);
+}
+
+[data-ui-element="recurseTicker"] {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  height: 2.7rem;
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0 -2rem -50vw;
+  overflow: hidden;
+  color: var(--bg-color);
+  background: var(--main-color);
+  font:
+    700 0.66rem "Space Mono",
+    var(--font);
+  text-transform: uppercase;
+}
+
+[data-ui-element="recurseTickerTrack"] {
+  display: flex;
+  flex: none;
+  width: max-content;
+  animation: recurse-ticker 26s linear infinite;
+}
+
+[data-ui-element="recurseTickerTrack"] span {
+  display: inline-flex;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  letter-spacing: 0.04em;
+}
+
+[data-ui-element="recurseTickerTrack"] i {
+  font-style: normal;
+}
+
+@keyframes recurse-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ui-element="recurseTickerTrack"] {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .recurse-display {
+    font-size: clamp(2.3rem, 13vw, 3.4rem);
+  }
+
+  body::after {
+    display: none;
+  }
+}

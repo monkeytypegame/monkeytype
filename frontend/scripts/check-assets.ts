@@ -339,6 +339,9 @@ async function validateFonts(): Promise<void> {
   const ignoredFonts = new Set([
     "GallaudetRegular.woff2", //used for asl
     "Vazirharf-NL-Regular.woff2", //default font
+    "SpaceMono-Bold.woff2", //recurse ui weight
+    "DMSans-500.woff2", //recurse ui weight
+    "DMSans-700.woff2", //recurse ui weight
   ]);
 
   const fontFiles = fs

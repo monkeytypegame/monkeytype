@@ -101,6 +101,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
           disabled={props.disabled ?? false}
           data-ui-variant={variant()}
           data-ui-element="button"
+          data-active={isActive() ? "" : undefined}
           tabIndex={props.tabIndex ?? undefined}
           {...props.dataset}
         >

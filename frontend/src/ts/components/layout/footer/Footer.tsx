@@ -1,4 +1,4 @@
-import { JSXElement } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
 import { getIsScreenshotting } from "../../../states/core";
 import { getFocus } from "../../../states/test";
@@ -7,6 +7,17 @@ import { Button } from "../../common/Button";
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
+
+const TICKER = [
+  "type",
+  "code",
+  "break",
+  "repeat",
+  "type",
+  "code",
+  "break",
+  "repeat",
+];
 
 export function Footer(): JSXElement {
   return (
@@ -73,6 +84,26 @@ export function Footer(): JSXElement {
         <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />
           <VersionButton />
+        </div>
+      </div>
+      <div
+        aria-hidden="true"
+        data-ui-element="recurseTicker"
+        class={cn("transition-opacity", { "opacity-0": getFocus() })}
+      >
+        <div data-ui-element="recurseTickerTrack">
+          <For each={[0, 1]}>
+            {() => (
+              <For each={TICKER}>
+                {(word) => (
+                  <span>
+                    {word}
+                    <i>+</i>
+                  </span>
+                )}
+              </For>
+            )}
+          </For>
         </div>
       </div>
     </footer>

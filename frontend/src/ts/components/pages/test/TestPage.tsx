@@ -40,6 +40,7 @@ import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
+import { RecurseIntro } from "./RecurseIntro";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
@@ -134,6 +135,9 @@ function TypingTest(): JSXElement {
   return (
     <>
       <div class="full-width">
+        <div class="content-grid">
+          <RecurseIntro />
+        </div>
         <TestConfig />
       </div>
 

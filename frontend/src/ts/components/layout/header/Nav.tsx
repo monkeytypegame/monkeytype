@@ -56,6 +56,17 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": getFocus(),
     });
 
+  // labelled nav items (recurse header style): icon only on small screens
+  const labelClass = () =>
+    cn("aspect-square lg:aspect-auto lg:px-[0.9em]", {
+      "opacity-(--nav-focus-opacity)": getFocus(),
+    });
+  const Label = (props: { text: string }): JSXElement => (
+    <span class="hidden lg:inline" data-ui-element="navLabel">
+      {props.text}
+    </span>
+  );
+
   createEffectOn(getSnapshot, (snapshot) => {
     if (snapshot === undefined) {
       setAnimatedLevel(0);
@@ -89,14 +100,16 @@ export function Nav(): JSXElement {
         }}
         router-link
         href="/"
-        class={buttonClass()}
+        class={labelClass()}
         dataset={{
           "data-nav-item": "test",
         }}
         onClick={() => {
           if (getActivePage() === "test") restartTestEvent.dispatch();
         }}
-      />
+      >
+        <Label text="type" />
+      </Button>
       <Button
         variant="text"
         fa={{
@@ -107,19 +120,21 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "leaderboards",
         }}
-        class={buttonClass()}
+        class={labelClass()}
         href="/leaderboards"
         onMouseEnter={() => {
           prefetchLeaderboardPage();
         }}
-      />
+      >
+        <Label text="leaderboards" />
+      </Button>
       <Button
         variant="text"
         fa={{
           icon: "fa-info",
           fixedWidth: true,
         }}
-        class={buttonClass()}
+        class={labelClass()}
         dataset={{
           "data-nav-item": "about",
         }}
@@ -128,20 +143,24 @@ export function Nav(): JSXElement {
         onMouseEnter={() => {
           prefetchAboutPage();
         }}
-      />
+      >
+        <Label text="about" />
+      </Button>
       <Button
         variant="text"
         fa={{
           icon: "fa-cog",
           fixedWidth: true,
         }}
-        class={buttonClass()}
+        class={labelClass()}
         href="/settings"
         dataset={{
           "data-nav-item": "settings",
         }}
         router-link
-      />
+      >
+        <Label text="settings" />
+      </Button>
       <div class="grow"></div>
       <Button
         variant="text"
@@ -254,6 +273,18 @@ export function Nav(): JSXElement {
           )}
         </Show>
       </AnimePresence>
+      <a
+        href="https://recurse.qzz.io"
+        target="_blank"
+        rel="noopener"
+        data-ui-element="recurseCta"
+        class={cn(
+          "ml-2 hidden shrink-0 items-center gap-3 bg-main px-4 py-3 text-[0.68rem] font-bold text-bg uppercase transition-[background,transform,opacity] duration-200 hover:-translate-y-0.5 hover:bg-text lg:inline-flex",
+          { "pointer-events-none opacity-0": getFocus() },
+        )}
+      >
+        join the loop <span aria-hidden="true">↗</span>
+      </a>
     </nav>
   );
 }
