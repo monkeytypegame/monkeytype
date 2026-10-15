@@ -3,7 +3,7 @@ import { RouterContextProvider, RouterProvider } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
 import { queryClient } from "../../queries";
-import { router } from "../../router";
+import { router } from "../../router/app-router";
 import { getGlobalOffsetTop } from "../../states/core";
 import { convertRemToPixels } from "../../utils/numbers";
 import { Fa } from "../common/Fa";

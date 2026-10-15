@@ -1,3 +1,6 @@
+// Tracks the user data download of the last sign in. Separate from auth.ts
+// so tests use it without firebase
+
 /** The user data download of the last sign in, as routes wait for it. */
 export type UserDataDownload = {
   /** A sign in started `download`; `redownload` starts a new one. */

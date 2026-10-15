@@ -83,7 +83,7 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
-import type { RouterAuth } from "../../src/ts/router/context";
+import type { RouterAuth } from "../../src/ts/router/create-router";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";

@@ -1,3 +1,6 @@
+// Routes' loading steps: planning a navigation's loading bar and running
+// its steps
+
 import type { StaticDataRouteOption } from "@tanstack/solid-router";
 
 import { isConnectionsReady } from "../collections/connections";

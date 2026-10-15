@@ -1,3 +1,7 @@
+// The app's router instance: real auth and query client, the router type
+// registration, and app-only side effects (title, og:url, focus, ads).
+// Importing it creates the router - tests use createAppRouter instead
+
 import * as AdController from "../controllers/ad-controller";
 import { queryClient } from "../queries";
 import { getRoutePage, PageName } from "../states/router";

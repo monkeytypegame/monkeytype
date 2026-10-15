@@ -1,3 +1,5 @@
+// The route tree: every page with its guards and loaders
+
 import {
   createRootRouteWithContext,
   createRoute,
@@ -44,7 +46,7 @@ import {
 } from "../queries/leaderboards";
 import { SettingsSearchSchema } from "../states/settings-highlight";
 import * as TodayTracker from "../test/today-tracker";
-import type { RouterAuth, RouterContext } from "./context";
+import type { RouterAuth, RouterContext } from "./create-router";
 import {
   planNavigationLoadingBar,
   runRouteLoadingStep,

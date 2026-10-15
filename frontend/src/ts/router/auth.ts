@@ -1,8 +1,10 @@
+// The app's RouterAuth, backed by the auth events
+
 import { authEvent } from "../events/auth";
 import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { promiseWithResolvers } from "../utils/misc";
-import type { RouterAuth } from "./context";
+import type { RouterAuth } from "./create-router";
 import { createUserDataDownload } from "./user-data-download";
 
 const { promise: firstAuthState, resolve: resolveFirstAuthState } =

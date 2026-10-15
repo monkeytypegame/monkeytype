@@ -8,8 +8,8 @@
     "jsxImportSource": "solid-js",
     "types": ["node"]
   },
-  // router/index.ts registers the app router type (typed navigate, links)
-  "files": ["vitest.d.ts", "../src/ts/router/index.ts"],
+  // router/app-router.ts registers the app router type (typed navigate, links)
+  "files": ["vitest.d.ts", "../src/ts/router/app-router.ts"],
   "include": [
     "./__harness__/**/*.ts",
     "./__harness__/**/*.tsx",

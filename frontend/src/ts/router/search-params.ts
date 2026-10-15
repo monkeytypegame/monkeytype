@@ -1,3 +1,5 @@
+// useRouteSearch: a route's search params as page state
+
 import {
   RegisteredRouter,
   RouteById,

@@ -1,3 +1,8 @@
+// createAppRouter: router options and the behaviour every router needs, the
+// app's and the tests' (navigation blocker, guards re-run on auth change,
+// loading bar). Also the router context type routes read
+
+import type { QueryClient } from "@tanstack/solid-query";
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
@@ -12,8 +17,29 @@ import {
 } from "../states/test";
 import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
-import type { RouterContext } from "./context";
 import { routeTree } from "./routes";
+
+/** What routes need to know about auth. The app's is in router/auth.ts. */
+export type RouterAuth = {
+  /** False when auth failed to load - guarded pages send users to the test page. */
+  isAvailable: () => boolean;
+  isSignedIn: () => boolean;
+  /** Resolves once the first auth state is known. */
+  waitForFirstState: () => Promise<void>;
+  /**
+   * The user data download of the last sign in, until it succeeded. After a
+   * failed one it starts a new one (Retry). undefined if there's none.
+   */
+  userDataDownload: () => Promise<void> | undefined;
+  /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
+  onChange: (listener: () => void) => () => void;
+};
+
+/** Router context: guards and loaders read these instead of module globals. */
+export type RouterContext = {
+  auth: RouterAuth;
+  queryClient: QueryClient;
+};
 
 /**
  * Hovering (or focusing) a link preloads its page: guards and loaders run
@@ -34,7 +60,7 @@ export function setPreloading(enabled: boolean): void {
 
 /**
  * The app's router, minus the app-only side effects (title, focus, ads - see
- * router/index.ts). Tests build one with a test context and
+ * router/app-router.ts). Tests build one with a test context and
  * in-memory history (see __tests__/__harness__/app-shell.tsx).
  */
 // oxlint-disable-next-line typescript/explicit-function-return-type -- the router type is inferred from the route tree
