@@ -1,11 +1,11 @@
 /**
- * App-shell test harness: the real route tree in a real RouterProvider (via
- * AppShell), with in-memory history, a test router context (fake auth, test
+ * App-shell test harness: the real route tree in a real RouterProvider,
+ * with in-memory history, a test router context (fake auth, test
  * query client), stub pages and page fades completed by the harness.
  *
  * Its vi.mock calls stub the pages and animejs for modules loaded after it.
  * oxfmt sorts imports, so a test file should not import src modules that load
- * pages or anime (eg. routes, RootLayout, AppShell) itself - get them through
+ * pages or anime (eg. routes, RootLayout) itself - get them through
  * the harness.
  * Lighter src imports (query options...) are fine.
  *
@@ -78,6 +78,7 @@ import {
   NavigateOptions,
   RouterContextProvider,
   RouterHistory,
+  RouterProvider,
 } from "@tanstack/solid-router";
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
@@ -85,7 +86,6 @@ import { vi } from "vitest";
 import type { RouterAuth } from "../../src/ts/router/context";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
-import { AppShell } from "../../src/ts/components/AppShell";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
 import { setSnapshot } from "../../src/ts/db";
@@ -627,7 +627,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
   const [links, setLinks] = createSignal<HarnessLink[]>([]);
   const { container } = render(() => (
     <QueryClientProvider client={queryClient}>
-      <AppShell router={router} />
+      <RouterProvider router={router} />
       <RouterContextProvider router={router}>
         {() => (
           <nav data-testid="harness-links">
