@@ -1,5 +1,4 @@
 import * as Caret from "./caret";
-import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
 import { qsa, ElementsWithUtils } from "../utils/dom";
@@ -67,7 +66,6 @@ export function set(value: boolean, withCursor = false): void {
 }
 
 document.addEventListener("mousemove", function (event) {
-  if (PageTransition.get()) return;
   if (!getFocus()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

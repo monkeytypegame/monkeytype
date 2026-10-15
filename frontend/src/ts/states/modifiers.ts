@@ -3,9 +3,7 @@ import {
   onCapsLockChange,
 } from "@leonabcd123/modern-caps-lock";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { createSignal, onCleanup } from "solid-js";
-import { createEffectOn } from "../hooks/effects";
-import { getActivePage } from "./core";
+import { createSignal } from "solid-js";
 import { listenForKeyState } from "../utils/key-state";
 
 type ModifierState = {
@@ -50,12 +48,10 @@ export { isCapsLockOn };
 
 onCapsLockChange((state) => setCapsLockOn(state));
 
-createEffectOn(getActivePage, (page) => {
-  if (page !== "test") return;
-  const controller = new AbortController();
-  listenForKeyState(controller.signal, handleModifierState, resetModifierState);
-  onCleanup(() => controller.abort());
-});
+/** Tracks shift and alt. Called by TestPage on mount. */
+export function listenForModifierKeys(signal: AbortSignal): void {
+  listenForKeyState(signal, handleModifierState, resetModifierState);
+}
 
 function handleModifierState(e: KeyboardEvent, updateValue: boolean): void {
   if (e.code === "ShiftLeft") updateModifierState({ leftShift: updateValue });

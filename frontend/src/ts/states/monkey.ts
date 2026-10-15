@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup } from "solid-js";
-import { getActivePage } from "./core";
+import { createEffectOn } from "../hooks/effects";
+import { createSignal } from "solid-js";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
@@ -16,12 +16,18 @@ function resetMonkeyState(): void {
   setMonkeyState({ left: false, right: false });
 }
 
-createEffect(() => {
-  if (getActivePage() !== "test" || !getConfig.monkey) return;
-  const controller = new AbortController();
-  listenForKeyState(controller.signal, handleKey, resetMonkeyState);
-  onCleanup(() => controller.abort());
-});
+createEffectOn(() => getConfig.monkey, resetMonkeyState);
+
+/** Tracks the typing hands. Called by TestPage on mount. */
+export function listenForMonkeyKeys(signal: AbortSignal): void {
+  listenForKeyState(
+    signal,
+    (e, isKeyDown) => {
+      if (getConfig.monkey) handleKey(e, isKeyDown);
+    },
+    resetMonkeyState,
+  );
+}
 
 const middleKeysState = { left: false, right: false, last: "right" };
 function handleKey(event: KeyboardEvent, isKeyDown: boolean): void {

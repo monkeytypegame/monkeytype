@@ -10,7 +10,15 @@ If a page load fails (`ERR_CONNECTION_REFUSED`, "This site can't be reached"), s
 
 New tabs open on `chrome://newtab`, which rejects `javascript_tool` and screenshots. Navigate to `http://localhost:3000` first, then interact.
 
-Before testing anything animated (page fades, anime.js, carets), check `document.visibilityState`. In a `hidden` tab Chrome pauses `requestAnimationFrame`, so fades never finish and pages look stuck at opacity 0. If it's `hidden`, ask the user to bring the Chrome window to the front.
+Before testing anything animated (page fades, anime.js, carets), time one frame. A hidden tab or a hidden built-in browser pane throttles `requestAnimationFrame` (seconds per frame) while `document.visibilityState` still says `visible`, so fades stall and pages look stuck on the old page or at opacity 0:
+
+```js
+const t = performance.now();
+await new Promise((r) => requestAnimationFrame(r));
+performance.now() - t; // > 100ms: throttled
+```
+
+If throttled, ask the user to bring the browser to the front (built-in pane: Cmd+Shift+B) before testing anything animated.
 
 ## `window.__mt` (dev only)
 
@@ -32,8 +40,10 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 
 Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state.
 
-Older globals from `frontend/src/ts/index.ts` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`.
+Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`.
 
 ## Console
 
 `read_console_messages` with a `pattern` — logger output is noisy. Errors from `utils/logger.ts` are prefixed `ERR`.
+
+The console buffer survives reloads, so hot-reload errors from earlier edits look current. After reloading, log a marker first (`console.error("MARK")`) and trust only errors after it.

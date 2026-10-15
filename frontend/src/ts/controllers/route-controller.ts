@@ -1,5 +1,4 @@
 import * as PageController from "./page-controller";
-import * as PageTransition from "../legacy-states/page-transition";
 import { isAuthAvailable } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { isFunboxActive } from "../test/funbox/list";
@@ -165,10 +164,12 @@ export async function navigate(
 ): Promise<void> {
   if (
     !options.force &&
-    (isTestRestarting() || isResultCalculating() || PageTransition.get())
+    (isTestRestarting() ||
+      isResultCalculating() ||
+      PageController.isNavigating())
   ) {
     console.debug(
-      `navigate: ${url} ignored, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, pageTransition: ${PageTransition.get()})`,
+      `navigate: ${url} ignored, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()}, navigating: ${PageController.isNavigating()})`,
     );
     return;
   }

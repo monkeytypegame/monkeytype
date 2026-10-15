@@ -1,8 +1,14 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { isInputElementFocused } from "../../../input/input-element";
-import { getActivePage } from "../../../states/core";
+import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
+import {
+  isInputElementFocused,
+  registerInputElement,
+} from "../../../input/input-element";
+import { initInputListeners } from "../../../input/listeners";
+import { listenForModifierKeys } from "../../../states/modifiers";
+import { listenForMonkeyKeys } from "../../../states/monkey";
 import { getShowResult } from "../../../states/result";
 import {
   getFocus,
@@ -18,14 +24,22 @@ import {
   isTypingTestHidden,
   isWordsHidden,
   isWordsWrapperHidden,
+  resetIncompleteTests,
   setTestFocusState,
   showOutOfFocusWarning,
 } from "../../../states/test";
-import { bindTestElements } from "../../../test/bind-test-elements";
 import * as Caret from "../../../test/caret";
-import { onRestartButtonClick } from "../../../test/test-logic";
-import { focusWords } from "../../../test/test-ui";
+import * as Funbox from "../../../test/funbox/funbox";
+import * as PaceCaret from "../../../test/pace-caret";
+import {
+  leaveTestPage,
+  onRestartButtonClick,
+  restart,
+  restartIfNotStarted,
+} from "../../../test/test-logic";
+import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
+import { ElementWithUtils } from "../../../utils/dom";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -44,18 +58,6 @@ import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 
-/**
- * Renders the children of the static `.page.pageTest` element, only while
- * the test page is active.
- */
-export function TestPage(): JSXElement {
-  return (
-    <Show when={getActivePage() === "test"}>
-      <TypingTest />
-    </Show>
-  );
-}
-
 function prefixedClass(
   prefix: string,
   value: string | null,
@@ -65,11 +67,15 @@ function prefixedClass(
 }
 
 /**
- * Internals are still vanilla - this owns the markup and hands its elements
- * to the vanilla modules on mount (see bindTestElements), unbinding them
- * on cleanup. Mounting starts a fresh test.
+ * The test page. Internals are still vanilla - this owns the markup and hands
+ * its elements to the vanilla modules on mount, unbinding them on cleanup.
+ * Mounting starts a fresh test.
  */
-function TypingTest(): JSXElement {
+export function TestPage(): JSXElement {
+  // page-controller ends the test as soon as a navigation away starts. This
+  // also ends it when the page unmounts without one
+  onCleanup(leaveTestPage);
+
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
   let wordsRef: HTMLDivElement | undefined;
@@ -81,6 +87,7 @@ function TypingTest(): JSXElement {
     // registered first so a throw below still cleans up
     const controller = new AbortController();
     onCleanup(() => controller.abort());
+    const { signal } = controller;
 
     if (
       typingTestRef === undefined ||
@@ -93,30 +100,56 @@ function TypingTest(): JSXElement {
       throw new Error("TestPage refs not set");
     }
 
-    bindTestElements(
-      {
-        words: wordsRef,
-        wordsWrapper: wordsWrapperRef,
-        typingTest: typingTestRef,
-        caret: caretRef,
-        paceCaret: paceCaretRef,
-        input: inputRef,
-      },
-      controller.signal,
-    );
-  });
+    // input first - the listeners and test-ui read it via getInputElement()
+    registerInputElement(inputRef, signal);
 
-  const onWindowBlur = (): void => setTestFocusState("unfocusedWindow");
-  // little roadblock for basic cheating
-  const onVisibilityChange = (): void => {
-    if (document.visibilityState !== "hidden") return;
-    setTestFocusState("unfocusedWindow");
-  };
-  window.addEventListener("blur", onWindowBlur);
-  document.addEventListener("visibilitychange", onVisibilityChange);
-  onCleanup(() => {
-    window.removeEventListener("blur", onWindowBlur);
-    document.removeEventListener("visibilitychange", onVisibilityChange);
+    const words = new ElementWithUtils(wordsRef);
+    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
+    Caret.initElement(
+      { caret: new ElementWithUtils(caretRef), words, wordsWrapper },
+      signal,
+    );
+    PaceCaret.initElement(
+      { caret: new ElementWithUtils(paceCaretRef), words, wordsWrapper },
+      signal,
+    );
+
+    initInputListeners(signal);
+    TestUI.init(
+      { words, wordsWrapper, typingTest: new ElementWithUtils(typingTestRef) },
+      signal,
+    );
+    listenForModifierKeys(signal);
+    listenForMonkeyKeys(signal);
+    // any previously rendered words are gone, start a fresh test
+    void restart({ noAnim: true });
+
+    updateFooterAndVerticalAds(false);
+    resetIncompleteTests();
+    // registered last so it runs after the modules above have unbound
+    signal.addEventListener("abort", () => {
+      void Funbox.clear();
+      updateFooterAndVerticalAds(true);
+    });
+
+    window.addEventListener(
+      "blur",
+      () => setTestFocusState("unfocusedWindow"),
+      { signal },
+    );
+    window.addEventListener("focus", restartIfNotStarted, { signal });
+    // little roadblock for basic cheating
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.visibilityState === "hidden") {
+          setTestFocusState("unfocusedWindow");
+        } else {
+          restartIfNotStarted();
+        }
+      },
+      { signal },
+    );
   });
 
   const isFullWidth = (): boolean =>
@@ -177,7 +210,7 @@ function TypingTest(): JSXElement {
           })}
           translate="no"
           onClick={() => {
-            focusWords();
+            TestUI.focusWords();
           }}
         >
           <textarea

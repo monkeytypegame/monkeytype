@@ -8,7 +8,9 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { getActivePage } from "../states/core";
+import { debounce, throttle } from "throttle-debounce";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
@@ -50,13 +52,10 @@ import {
   setTestInitFailed,
   setTypingTestHidden,
 } from "../states/test";
-import { createEffect, on } from "solid-js";
-import { debounce, throttle } from "throttle-debounce";
-import * as PageTransition from "../legacy-states/page-transition";
-import { ModifierKeys } from "../constants/modifier-keys";
-import { isDevEnvironment } from "../utils/env";
+import { createEffect, on, untrack } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
 import { setShowResult } from "../states/result";
+import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -74,8 +73,9 @@ export function setResultElement(el: ElementWithUtils | undefined): void {
   resultRef = el;
 }
 
+/** Whether TestPage is mounted. Not reactive. */
 export function isMounted(): boolean {
-  return wordsRef !== undefined;
+  return untrack(isTestPageMounted);
 }
 
 function wordsEl(): ElementWithUtils {
@@ -327,7 +327,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    getActivePage() !== "test" ||
+    !isMounted() ||
     getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -466,7 +466,7 @@ export function appendEmptyWordElement(index: number): void {
 }
 
 export function updateWordsInputPosition(): void {
-  if (getActivePage() !== "test") return;
+  if (!isMounted()) return;
   const isTestRightToLeft = isDirectionReversed()
     ? !isLanguageRightToLeft()
     : isLanguageRightToLeft();
@@ -546,7 +546,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 function updateWordsWrapperHeight(force = false): void {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -885,7 +885,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1451,7 +1451,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (getActivePage() === "test") {
+  // the page may have unmounted during the restart
+  if (isMounted()) {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -1497,6 +1498,7 @@ export function init(
     if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
+  markTestPageMounted(signal);
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config
@@ -1584,7 +1586,6 @@ export function init(
 }
 
 function autofocusWords(e: KeyboardEvent): void {
-  if (PageTransition.get()) return;
   if (e.key === undefined) return;
 
   if (isDevEnvironment()) {

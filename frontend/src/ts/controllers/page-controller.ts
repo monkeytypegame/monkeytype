@@ -1,3 +1,5 @@
+import { batch } from "solid-js";
+import { waitForShownPage } from "../components/pages/Pages";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import {
@@ -5,16 +7,16 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as PageTest from "../pages/test";
-import * as PageLoading from "../pages/loading";
+import { leaveTestPage, stop as stopTest } from "../test/test-logic";
 import {
+  setLoadingPageBarStart,
+  setLoadingShown,
   showLoadingPageBar,
   showLoadingPageError,
   showLoadingPageSpinner,
   updateLoadingPageBar,
   updateLoadingPageText,
 } from "../states/loading-page";
-import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, {
@@ -25,8 +27,6 @@ import Page, {
   UrlParamsSchema,
   OptionsWithUrlParams,
 } from "../pages/page";
-import { onDOMReady, qsa, qsr } from "../utils/dom";
-import * as Skeleton from "../utils/skeleton";
 import {
   LeaderboardUrlParamsSchema,
   readLeaderboardGetParameters,
@@ -52,12 +52,20 @@ type ChangeOptions = {
   loadingOptions?: LoadingOptions;
 };
 
+// true from boot until the first navigation finishes
+let navigating = true;
+
+/** Whether a page change is in progress. Other navigations are ignored meanwhile. */
+export function isNavigating(): boolean {
+  return navigating;
+}
+
 const pages = {
-  loading: PageLoading.page,
-  test: PageTest.page,
-  settings: solidPage("settings"),
-  about: solidPage("about"),
-  account: solidPage("account", {
+  loading: page("loading"),
+  test: page("test"),
+  settings: page("settings"),
+  about: page("about"),
+  account: page("account", {
     loadingOptions: {
       loadingMode: () => {
         if (isResultsReady()) {
@@ -85,15 +93,15 @@ const pages = {
       ],
     },
   }),
-  login: solidPage("login"),
-  profile: solidPage("profile", {
+  login: page("login"),
+  profile: page("profile", {
     beforeShow: async (options) => {
       setSelectedProfileName(options.params?.["uidOrName"]);
     },
   }),
-  profileSearch: solidPage("profileSearch"),
-  404: solidPage("404"),
-  friends: solidPage("friends", {
+  profileSearch: page("profileSearch"),
+  404: page("404"),
+  friends: page("friends", {
     beforeShow: async () => {
       await invalidateConnections();
     },
@@ -116,13 +124,13 @@ const pages = {
       ],
     },
   }),
-  accountSettings: solidPage("accountSettings", {
+  accountSettings: page("accountSettings", {
     urlParamsSchema: AccountSettingsUrlParamsSchema,
     beforeShow: async (options) => {
       readAccountSettingsGetParameters(options.urlParams);
     },
   }),
-  leaderboards: solidPage("leaderboards", {
+  leaderboards: page("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {
       style: "spinner",
@@ -153,34 +161,22 @@ function updateOpenGraphUrl(): void {
   }
 }
 
-function updateTitle(nextPage: { id: string; display?: string }): void {
+function updateTitle(nextPage: { id: string }): void {
   if (nextPage.id === "test") {
     Misc.updateTitle();
   } else {
-    const titleString =
-      nextPage.display ?? Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+    const titleString = Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
     Misc.updateTitle(`${titleString} | Monkeytype`);
   }
 }
 
-async function showSyncLoading({
-  loadingOptions,
-  totalDuration,
-}: {
-  loadingOptions: LoadingOptions[];
-  totalDuration: number;
-}): Promise<void> {
-  PageLoading.page.element.show().setStyle({ opacity: "0" });
-  await PageLoading.page.beforeShow({});
-
+/**
+ * Runs the sync loading steps on the loading page. The caller shows and hides
+ * the loading page.
+ */
+async function runSyncLoading(loadingOptions: LoadingOptions[]): Promise<void> {
   const fillDivider = loadingOptions.length;
   const fillOffset = 100 / fillDivider;
-
-  //void here to run the loading promise as soon as possible
-  void PageLoading.page.element.promiseAnimate({
-    opacity: "1",
-    duration: totalDuration / 2,
-  });
 
   for (let i = 0; i < loadingOptions.length; i++) {
     const currentOffset = fillOffset * i;
@@ -188,6 +184,7 @@ async function showSyncLoading({
     if (options.style === "bar") {
       showLoadingPageBar();
       if (i === 0) {
+        setLoadingPageBarStart(0);
         await updateLoadingPageBar(0, 0);
         updateLoadingPageText("");
       }
@@ -207,37 +204,20 @@ async function showSyncLoading({
       await options.loadingPromise();
     }
   }
-
-  await PageLoading.page.element.promiseAnimate({
-    opacity: "0",
-    duration: totalDuration / 2,
-  });
-
-  await PageLoading.page.afterHide();
-  PageLoading.page.element.hide();
 }
 
-// Global abort controller for keyframe promises
-let keyframeAbortController: AbortController | null = null;
-
 async function getLoadingPromiseWithBarKeyframes(
-  loadingOptions: Extract<
-    NonNullable<Page<unknown>["loadingOptions"]>,
-    { style: "bar" }
-  >,
+  loadingOptions: Extract<LoadingOptions, { style: "bar" }>,
   fillDivider: number,
   fillOffset: number,
 ): Promise<void> {
-  let loadingPromise = loadingOptions.loadingPromise();
+  const loadingPromise = loadingOptions.loadingPromise();
+  // stops the keyframes once loading finishes, or fails
+  const keyframesController = new AbortController();
 
-  // Create abort controller for this keyframe sequence
-  const localAbortController = new AbortController();
-  keyframeAbortController = localAbortController;
-
-  // Animate bar keyframes, but allow aborting if loading.promise finishes first or if globally aborted
-  const keyframePromise = (async () => {
+  const keyframesPromise = (async () => {
     for (const keyframe of loadingOptions.keyframes) {
-      if (localAbortController.signal.aborted) break;
+      if (keyframesController.signal.aborted) break;
       if (keyframe.text !== undefined) {
         updateLoadingPageText(keyframe.text);
       }
@@ -248,44 +228,25 @@ async function getLoadingPromiseWithBarKeyframes(
     }
   })();
 
-  // Wait for either the keyframes or the loading.promise to finish
-  await Promise.race([
-    keyframePromise,
-    (async () => {
-      await loadingPromise;
-      localAbortController.abort();
-    })(),
-  ]);
-
-  // Always wait for loading.promise to finish before continuing
-  await loadingPromise;
-
-  // Clean up the abort controller
-  if (keyframeAbortController === localAbortController) {
-    keyframeAbortController = null;
+  try {
+    await Promise.race([keyframesPromise, loadingPromise]);
+    // always wait for loading to finish, even if the keyframes ran out
+    await loadingPromise;
+  } finally {
+    keyframesController.abort();
   }
-
-  return;
 }
 
 export async function change(
   pageName: PageName,
   options = {} as ChangeOptions,
 ): Promise<boolean> {
-  const defaultOptions = {
-    force: false,
-  };
-
-  options = { ...defaultOptions, ...options };
-
-  if (PageTransition.get() && !options.force) {
-    console.debug(
-      `change page to ${pageName} stopped, page transition is true`,
-    );
+  if (navigating && options.force !== true) {
+    console.debug(`change page to ${pageName} stopped, already navigating`);
     return false;
   }
 
-  if (!options.force && getActivePage() === pageName) {
+  if (options.force !== true && getActivePage() === pageName) {
     console.debug(`change page ${pageName} stoped, page already active`);
     return false;
   } else {
@@ -294,28 +255,23 @@ export async function change(
 
   const previousPage = pages[getActivePage()];
   const nextPage = pages[pageName];
-  const totalDuration = Misc.applyReducedMotion(250);
 
   //start
-  PageTransition.set(true);
-  qsa(".page")?.removeClass("active");
+  navigating = true;
 
   //previous page
-  await previousPage?.beforeHide?.();
-  previousPage.element.show().setStyle({ opacity: "1" });
-  await previousPage.element.promiseAnimate({
-    opacity: "0",
-    duration: totalDuration / 2,
-  });
-  previousPage.element.hide();
-  await previousPage?.afterHide();
-
-  // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
-  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
+  if (previousPage.id === "test") {
+    // ends the test as soon as the navigation starts, before the fade out.
+    // TestPage also does this on unmount. Staying on the test page (forced
+    // navigation) only stops the test: the page doesn't remount, so
+    // leaveTestPage's leaving mark would never clear and block new tests
+    if (nextPage.id === "test") stopTest();
+    else leaveTestPage();
+  }
 
   //show loading page if needed
   try {
-    let syncLoadingOptions: LoadingOptions[] = [];
+    const syncLoadingOptions: LoadingOptions[] = [];
     if (options.loadingOptions?.loadingMode() === "sync") {
       syncLoadingOptions.push(options.loadingOptions);
     }
@@ -324,25 +280,17 @@ export async function change(
     }
 
     if (syncLoadingOptions.length > 0) {
-      await showSyncLoading({
-        loadingOptions: syncLoadingOptions,
-        totalDuration,
-      });
-    }
-
-    // Clean up abort controller after successful loading
-    if (keyframeAbortController) {
-      keyframeAbortController = null;
+      // fades the previous page out and the loading page in, unless the
+      // loading page is already shown (boot)
+      setLoadingShown(true);
+      await runSyncLoading(syncLoadingOptions);
     }
   } catch (error) {
-    // Abort any running keyframe promises
-    if (keyframeAbortController) {
-      keyframeAbortController.abort();
-      keyframeAbortController = null;
-    }
-
-    pages.loading.element.addClass("active");
-    setActivePage(pages.loading.id);
+    // the loading page stays shown, now as the active page
+    batch(() => {
+      setActivePage(pages.loading.id);
+      setLoadingShown(false);
+    });
     Focus.set(false);
     showLoadingPageError();
     updateLoadingPageText(
@@ -350,108 +298,68 @@ export async function change(
         error instanceof Error ? error.message : String(error)
       }`,
     );
-    PageTransition.set(false);
+    navigating = false;
     return false;
   }
 
   //between
   updateTitle(nextPage);
-  setActivePage(nextPage.id);
+  // in one batch so the previous page doesn't come back between the two
+  batch(() => {
+    setActivePage(nextPage.id);
+    setLoadingShown(false);
+  });
   updateOpenGraphUrl();
-  Focus.set(false);
 
   //next page
-  await nextPage?.beforeShow({
+  await nextPage.beforeShow({
     params: options.params,
     // @ts-expect-error for the future (i think)
     data: options.data,
   });
 
-  if (
-    typeof nextPageLoadingMode === "object" &&
-    nextPageLoadingMode.mode === "async"
-  ) {
-    nextPageLoadingMode.beforeLoading?.();
-    void nextPage?.loadingOptions?.loadingPromise().then(() => {
-      nextPageLoadingMode.afterLoading?.();
-    });
-  }
-
-  nextPage.element.show().setStyle({ opacity: "0" });
-  await nextPage.element.promiseAnimate({
-    opacity: "1",
-    duration: totalDuration / 2,
-  });
-  nextPage.element.addClass("active");
-  await nextPage?.afterShow();
+  await waitForShownPage();
+  Focus.set(false);
 
   //wrapup
-  PageTransition.set(false);
+  navigating = false;
   void AdController.reinstate();
   return true;
 }
 
-function solidPage(
+function page(
   id: PageName,
   props?: {
-    path?: string;
     urlParamsSchema?: never;
     loadingOptions?: LoadingOptions;
     beforeShow?: PageProperties<undefined>["beforeShow"];
-    afterHide?: () => Promise<void>;
   },
 ): Page<undefined>;
-function solidPage<U extends UrlParamsSchema>(
+function page<U extends UrlParamsSchema>(
   id: PageName,
   props: {
-    path?: string;
     urlParamsSchema: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
   },
 ): PageWithUrlParams<undefined, U>;
-function solidPage<U extends UrlParamsSchema>(
+function page<U extends UrlParamsSchema>(
   id: PageName,
   props?: {
-    path?: string;
     urlParamsSchema?: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
-    afterHide?: () => Promise<void>;
   },
 ): Page<undefined> | PageWithUrlParams<undefined, U> {
-  const path = props?.path ?? `/${id}`;
-  const internalId = `page${Strings.capitalizeFirstLetter(id)}`;
-  onDOMReady(() => Skeleton.save(internalId));
-
-  const shared = {
-    id,
-    path,
-    element: qsr(`#${internalId}`),
-    loadingOptions: props?.loadingOptions,
-    afterHide: async () => {
-      Skeleton.remove(internalId);
-      await props?.afterHide?.();
-    },
-  };
+  const shared = { id, loadingOptions: props?.loadingOptions };
 
   if (props?.urlParamsSchema !== undefined) {
     return new PageWithUrlParams({
       ...shared,
       urlParamsSchema: props.urlParamsSchema,
-      beforeShow: async (options) => {
-        Skeleton.append(internalId, "main");
-        await props.beforeShow?.(options);
-      },
+      beforeShow: props.beforeShow,
     });
   }
 
-  return new Page({
-    ...shared,
-    beforeShow: async (options) => {
-      Skeleton.append(internalId, "main");
-      await props?.beforeShow?.(options);
-    },
-  });
+  return new Page({ ...shared, beforeShow: props?.beforeShow });
 }
