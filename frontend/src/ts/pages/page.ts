@@ -28,12 +28,8 @@ export type LoadingOptions = {
    * Get the loading mode for this page.
    * "none" - No loading screen will be shown.
    * "sync" - A loading spinner or bar (depending on style) will be shown until the page is ready.
-   * { mode: "async", beforeLoading, afterLoading } - The loadingPromise will be executed in the background and afterLoading called after it resolves.
    */
-  loadingMode: () =>
-    | "none"
-    | "sync"
-    | { mode: "async"; beforeLoading?: () => void; afterLoading?: () => void };
+  loadingMode: () => "none" | "sync";
   /**
    * When this promise resolves, the loading screen will be hidden.
    */
@@ -68,9 +64,7 @@ export type LoadingOptions = {
 
 export type PageProperties<T> = {
   id: PageName;
-  path: string;
   loadingOptions?: LoadingOptions;
-  beforeHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
 };
 
@@ -79,17 +73,13 @@ async function empty(): Promise<void> {
 }
 export default class Page<T> {
   public id: PageName;
-  public pathname: string;
   public loadingOptions: LoadingOptions | undefined;
 
-  public beforeHide: () => Promise<void>;
   protected _beforeShow: (options: Options<T>) => Promise<void>;
 
   constructor(options: PageProperties<T>) {
     this.id = options.id;
-    this.pathname = options.path;
     this.loadingOptions = options.loadingOptions;
-    this.beforeHide = options.beforeHide ?? empty;
     this._beforeShow = options.beforeShow ?? empty;
   }
 

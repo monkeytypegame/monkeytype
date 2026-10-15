@@ -61,11 +61,11 @@ export function isNavigating(): boolean {
 }
 
 const pages = {
-  loading: solidPage("loading", { path: "/" }),
-  test: solidPage("test", { path: "/" }),
-  settings: solidPage("settings"),
-  about: solidPage("about"),
-  account: solidPage("account", {
+  loading: page("loading"),
+  test: page("test"),
+  settings: page("settings"),
+  about: page("about"),
+  account: page("account", {
     loadingOptions: {
       loadingMode: () => {
         if (isResultsReady()) {
@@ -93,15 +93,15 @@ const pages = {
       ],
     },
   }),
-  login: solidPage("login"),
-  profile: solidPage("profile", {
+  login: page("login"),
+  profile: page("profile", {
     beforeShow: async (options) => {
       setSelectedProfileName(options.params?.["uidOrName"]);
     },
   }),
-  profileSearch: solidPage("profileSearch"),
-  404: solidPage("404"),
-  friends: solidPage("friends", {
+  profileSearch: page("profileSearch"),
+  404: page("404"),
+  friends: page("friends", {
     beforeShow: async () => {
       await invalidateConnections();
     },
@@ -124,13 +124,13 @@ const pages = {
       ],
     },
   }),
-  accountSettings: solidPage("accountSettings", {
+  accountSettings: page("accountSettings", {
     urlParamsSchema: AccountSettingsUrlParamsSchema,
     beforeShow: async (options) => {
       readAccountSettingsGetParameters(options.urlParams);
     },
   }),
-  leaderboards: solidPage("leaderboards", {
+  leaderboards: page("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {
       style: "spinner",
@@ -206,27 +206,18 @@ async function runSyncLoading(loadingOptions: LoadingOptions[]): Promise<void> {
   }
 }
 
-// Global abort controller for keyframe promises
-let keyframeAbortController: AbortController | null = null;
-
 async function getLoadingPromiseWithBarKeyframes(
-  loadingOptions: Extract<
-    NonNullable<Page<unknown>["loadingOptions"]>,
-    { style: "bar" }
-  >,
+  loadingOptions: Extract<LoadingOptions, { style: "bar" }>,
   fillDivider: number,
   fillOffset: number,
 ): Promise<void> {
-  let loadingPromise = loadingOptions.loadingPromise();
+  const loadingPromise = loadingOptions.loadingPromise();
+  // stops the keyframes once loading finishes, or fails
+  const keyframesController = new AbortController();
 
-  // Create abort controller for this keyframe sequence
-  const localAbortController = new AbortController();
-  keyframeAbortController = localAbortController;
-
-  // Animate bar keyframes, but allow aborting if loading.promise finishes first or if globally aborted
-  const keyframePromise = (async () => {
+  const keyframesPromise = (async () => {
     for (const keyframe of loadingOptions.keyframes) {
-      if (localAbortController.signal.aborted) break;
+      if (keyframesController.signal.aborted) break;
       if (keyframe.text !== undefined) {
         updateLoadingPageText(keyframe.text);
       }
@@ -237,42 +228,25 @@ async function getLoadingPromiseWithBarKeyframes(
     }
   })();
 
-  // Wait for either the keyframes or the loading.promise to finish
-  await Promise.race([
-    keyframePromise,
-    (async () => {
-      await loadingPromise;
-      localAbortController.abort();
-    })(),
-  ]);
-
-  // Always wait for loading.promise to finish before continuing
-  await loadingPromise;
-
-  // Clean up the abort controller
-  if (keyframeAbortController === localAbortController) {
-    keyframeAbortController = null;
+  try {
+    await Promise.race([keyframesPromise, loadingPromise]);
+    // always wait for loading to finish, even if the keyframes ran out
+    await loadingPromise;
+  } finally {
+    keyframesController.abort();
   }
-
-  return;
 }
 
 export async function change(
   pageName: PageName,
   options = {} as ChangeOptions,
 ): Promise<boolean> {
-  const defaultOptions = {
-    force: false,
-  };
-
-  options = { ...defaultOptions, ...options };
-
-  if (navigating && !options.force) {
+  if (navigating && options.force !== true) {
     console.debug(`change page to ${pageName} stopped, already navigating`);
     return false;
   }
 
-  if (!options.force && getActivePage() === pageName) {
+  if (options.force !== true && getActivePage() === pageName) {
     console.debug(`change page ${pageName} stoped, page already active`);
     return false;
   } else {
@@ -294,14 +268,10 @@ export async function change(
     if (nextPage.id === "test") stopTest();
     else leaveTestPage();
   }
-  await previousPage.beforeHide();
-
-  // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
-  const nextPageLoadingMode = nextPage.loadingOptions?.loadingMode();
 
   //show loading page if needed
   try {
-    let syncLoadingOptions: LoadingOptions[] = [];
+    const syncLoadingOptions: LoadingOptions[] = [];
     if (options.loadingOptions?.loadingMode() === "sync") {
       syncLoadingOptions.push(options.loadingOptions);
     }
@@ -315,18 +285,7 @@ export async function change(
       setLoadingShown(true);
       await runSyncLoading(syncLoadingOptions);
     }
-
-    // Clean up abort controller after successful loading
-    if (keyframeAbortController) {
-      keyframeAbortController = null;
-    }
   } catch (error) {
-    // Abort any running keyframe promises
-    if (keyframeAbortController) {
-      keyframeAbortController.abort();
-      keyframeAbortController = null;
-    }
-
     // the loading page stays shown, now as the active page
     batch(() => {
       setActivePage(pages.loading.id);
@@ -353,21 +312,11 @@ export async function change(
   updateOpenGraphUrl();
 
   //next page
-  await nextPage?.beforeShow({
+  await nextPage.beforeShow({
     params: options.params,
     // @ts-expect-error for the future (i think)
     data: options.data,
   });
-
-  if (
-    typeof nextPageLoadingMode === "object" &&
-    nextPageLoadingMode.mode === "async"
-  ) {
-    nextPageLoadingMode.beforeLoading?.();
-    void nextPage?.loadingOptions?.loadingPromise().then(() => {
-      nextPageLoadingMode.afterLoading?.();
-    });
-  }
 
   await waitForShownPage();
   Focus.set(false);
@@ -378,38 +327,31 @@ export async function change(
   return true;
 }
 
-function solidPage(
+function page(
   id: PageName,
   props?: {
-    path?: string;
     urlParamsSchema?: never;
     loadingOptions?: LoadingOptions;
     beforeShow?: PageProperties<undefined>["beforeShow"];
   },
 ): Page<undefined>;
-function solidPage<U extends UrlParamsSchema>(
+function page<U extends UrlParamsSchema>(
   id: PageName,
   props: {
-    path?: string;
     urlParamsSchema: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
   },
 ): PageWithUrlParams<undefined, U>;
-function solidPage<U extends UrlParamsSchema>(
+function page<U extends UrlParamsSchema>(
   id: PageName,
   props?: {
-    path?: string;
     urlParamsSchema?: U;
     loadingOptions?: LoadingOptions;
     beforeShow?: (options: OptionsWithUrlParams<undefined, U>) => Promise<void>;
   },
 ): Page<undefined> | PageWithUrlParams<undefined, U> {
-  const shared = {
-    id,
-    path: props?.path ?? `/${id}`,
-    loadingOptions: props?.loadingOptions,
-  };
+  const shared = { id, loadingOptions: props?.loadingOptions };
 
   if (props?.urlParamsSchema !== undefined) {
     return new PageWithUrlParams({
