@@ -10,6 +10,7 @@ import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import { restart } from "./test-logic";
 import * as TestUI from "./test-ui";
+import { markTestPageMounted } from "./test-page-state";
 
 /**
  * Brings the test page to life: hands TestPage's elements to the vanilla test
@@ -57,6 +58,7 @@ export function bindTestElements(
   );
   listenForModifierKeys(signal);
   listenForMonkeyKeys(signal);
+  markTestPageMounted(signal);
   void restart({ noAnim: true });
 
   updateFooterAndVerticalAds(false);

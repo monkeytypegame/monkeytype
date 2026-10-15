@@ -10,7 +10,6 @@ import * as CompositionState from "../legacy-states/composition";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
-import * as PageTransition from "../legacy-states/page-transition";
 import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
@@ -1584,7 +1583,6 @@ export function init(
 }
 
 function autofocusWords(e: KeyboardEvent): void {
-  if (PageTransition.get()) return;
   if (e.key === undefined) return;
   if (
     isDevEnvironment() &&

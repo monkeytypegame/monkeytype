@@ -80,7 +80,7 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import * as PageTransition from "../legacy-states/page-transition";
+import { canStartTest, markTestPageLeaving } from "./test-page-state";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
@@ -157,7 +157,7 @@ import { nthElementFromArray } from "../utils/arrays";
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (PageTransition.get()) {
+  if (!canStartTest()) {
     return false;
   }
 
@@ -229,6 +229,7 @@ export function stop(): void {
 
 /** Ends the test when leaving the test page. Keystrokes after this don't reach the test. */
 export function leaveTestPage(): void {
+  markTestPageLeaving();
   stop();
   blurInputElement();
 }

@@ -61,8 +61,8 @@ function prefixedClass(
  * unbinding them on cleanup. Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
-  // the test page's beforeHide ends the test as soon as a navigation away
-  // starts. This also ends it when the page unmounts without one
+  // page-controller ends the test as soon as a navigation away starts. This
+  // also ends it when the page unmounts without one
   onCleanup(leaveTestPage);
 
   let typingTestRef: HTMLDivElement | undefined;

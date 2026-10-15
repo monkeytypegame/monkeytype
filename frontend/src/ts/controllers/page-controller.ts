@@ -7,8 +7,7 @@ import {
   setActivePage,
   setSelectedProfileName,
 } from "../states/core";
-import * as PageTest from "../pages/test";
-import * as PageLoading from "../pages/loading";
+import { leaveTestPage, stop as stopTest } from "../test/test-logic";
 import {
   setLoadingPageBarStart,
   setLoadingShown,
@@ -18,7 +17,6 @@ import {
   updateLoadingPageBar,
   updateLoadingPageText,
 } from "../states/loading-page";
-import * as PageTransition from "../legacy-states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 import Page, {
@@ -54,9 +52,17 @@ type ChangeOptions = {
   loadingOptions?: LoadingOptions;
 };
 
+// true from boot until the first navigation finishes
+let navigating = true;
+
+/** Whether a page change is in progress. Other navigations are ignored meanwhile. */
+export function isNavigating(): boolean {
+  return navigating;
+}
+
 const pages = {
-  loading: PageLoading.page,
-  test: PageTest.page,
+  loading: solidPage("loading", { path: "/" }),
+  test: solidPage("test", { path: "/" }),
   settings: solidPage("settings"),
   about: solidPage("about"),
   account: solidPage("account", {
@@ -155,12 +161,11 @@ function updateOpenGraphUrl(): void {
   }
 }
 
-function updateTitle(nextPage: { id: string; display?: string }): void {
+function updateTitle(nextPage: { id: string }): void {
   if (nextPage.id === "test") {
     Misc.updateTitle();
   } else {
-    const titleString =
-      nextPage.display ?? Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
+    const titleString = Strings.capitalizeFirstLetterOfEachWord(nextPage.id);
     Misc.updateTitle(`${titleString} | Monkeytype`);
   }
 }
@@ -262,10 +267,8 @@ export async function change(
 
   options = { ...defaultOptions, ...options };
 
-  if (PageTransition.get() && !options.force) {
-    console.debug(
-      `change page to ${pageName} stopped, page transition is true`,
-    );
+  if (navigating && !options.force) {
+    console.debug(`change page to ${pageName} stopped, already navigating`);
     return false;
   }
 
@@ -280,9 +283,16 @@ export async function change(
   const nextPage = pages[pageName];
 
   //start
-  PageTransition.set(true);
+  navigating = true;
 
   //previous page
+  if (previousPage.id === "test") {
+    // ends the test as soon as the navigation starts, before the fade out.
+    // TestPage also does this on unmount. Staying on the test page (forced
+    // navigation) only stops the test - the page doesn't remount
+    if (nextPage.id === "test") stopTest();
+    else leaveTestPage();
+  }
   await previousPage.beforeHide();
 
   // we need to evaluate and store next page loading mode in case options.loadingOptions.loadingMode is sync
@@ -328,7 +338,7 @@ export async function change(
         error instanceof Error ? error.message : String(error)
       }`,
     );
-    PageTransition.set(false);
+    navigating = false;
     return false;
   }
 
@@ -360,10 +370,9 @@ export async function change(
 
   await waitForShownPage();
   Focus.set(false);
-  await nextPage.afterShow();
 
   //wrapup
-  PageTransition.set(false);
+  navigating = false;
   void AdController.reinstate();
   return true;
 }

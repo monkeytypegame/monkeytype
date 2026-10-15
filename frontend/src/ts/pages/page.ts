@@ -68,13 +68,10 @@ export type LoadingOptions = {
 
 export type PageProperties<T> = {
   id: PageName;
-  display?: string;
   path: string;
   loadingOptions?: LoadingOptions;
   beforeHide?: () => Promise<void>;
-  afterHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
-  afterShow?: () => Promise<void>;
 };
 
 async function empty(): Promise<void> {
@@ -82,24 +79,18 @@ async function empty(): Promise<void> {
 }
 export default class Page<T> {
   public id: PageName;
-  public display: string | undefined;
   public pathname: string;
   public loadingOptions: LoadingOptions | undefined;
 
   public beforeHide: () => Promise<void>;
-  public afterHide: () => Promise<void>;
   protected _beforeShow: (options: Options<T>) => Promise<void>;
-  public afterShow: () => Promise<void>;
 
   constructor(options: PageProperties<T>) {
     this.id = options.id;
-    this.display = options.display;
     this.pathname = options.path;
     this.loadingOptions = options.loadingOptions;
     this.beforeHide = options.beforeHide ?? empty;
-    this.afterHide = options.afterHide ?? empty;
     this._beforeShow = options.beforeShow ?? empty;
-    this.afterShow = options.afterShow ?? empty;
   }
 
   public async beforeShow(options: Options<T>): Promise<void> {
