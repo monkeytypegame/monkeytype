@@ -1587,27 +1587,29 @@ export function init(
 
 function autofocusWords(e: KeyboardEvent): void {
   if (e.key === undefined) return;
+
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  if (getResultVisible() || isInputElementFocused()) return;
+  // checked last, isAnyPopupVisible is a bit expensive
   if (
-    isDevEnvironment() &&
-    (document.activeElement as HTMLElement | undefined)?.dataset[
-      "uiElement"
-    ] === "signalDevtoolsInput"
+    ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
+    e.metaKey ||
+    e.ctrlKey ||
+    Misc.isAnyPopupVisible()
   ) {
     return;
   }
-  if (getResultVisible() || isInputElementFocused()) return;
-
-  // this is nested because isAnyPopupVisible is a bit expensive
-  // and we don't want to call it during the test
-  if (
-    !Misc.isAnyPopupVisible() &&
-    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
-    !e.metaKey &&
-    !e.ctrlKey
-  ) {
-    focusWords();
-    if (Config.showOutOfFocusWarning) {
-      e.preventDefault();
-    }
+  focusWords();
+  if (Config.showOutOfFocusWarning) {
+    e.preventDefault();
   }
 }
