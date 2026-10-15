@@ -8,7 +8,7 @@ import { Inbox } from "./Inbox";
 import { NotificationHistory } from "./NotificationHistory";
 import { Psas } from "./Psas";
 
-export function AlertsPopup(): JSXElement {
+export function AlertsModal(): JSXElement {
   return (
     <AnimatedModal
       id="Alerts"
