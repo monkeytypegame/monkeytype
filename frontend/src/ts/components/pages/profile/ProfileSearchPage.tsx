@@ -1,6 +1,6 @@
 import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
-import { createSignal, JSXElement, onCleanup, onMount } from "solid-js";
+import { createSignal, JSXElement, onMount } from "solid-js";
 
 import { navigationEvent } from "../../../events/navigation";
 import { queryClient } from "../../../queries";
@@ -37,11 +37,7 @@ export function ProfileSearchPage(): JSXElement {
   }));
 
   onMount(() => {
-    // the page wrapper is attached and shown after mount, wait a frame
-    const frame = requestAnimationFrame(() => {
-      inputRef?.focus({ preventScroll: true });
-    });
-    onCleanup(() => cancelAnimationFrame(frame));
+    inputRef?.focus({ preventScroll: true });
   });
 
   return (
