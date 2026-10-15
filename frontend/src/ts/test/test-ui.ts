@@ -51,6 +51,10 @@ import {
   setTypingTestHidden,
 } from "../states/test";
 import { createEffect, on } from "solid-js";
+import { debounce, throttle } from "throttle-debounce";
+import * as PageTransition from "../legacy-states/page-transition";
+import { ModifierKeys } from "../constants/modifier-keys";
+import { isDevEnvironment } from "../utils/env";
 import * as ConnectionState from "../legacy-states/connection";
 import { setShowResult } from "../states/result";
 
@@ -1545,4 +1549,66 @@ export function init(
       { defer: true },
     ),
   );
+
+  // autofocus the words when typing anywhere on the page
+  document.addEventListener("keydown", autofocusWords, { signal });
+
+  const recenter = debounce(250, () => {
+    if (getResultVisible()) return;
+    if (Config.tapeMode !== "off") {
+      void scrollTape();
+    } else {
+      void centerActiveLine();
+      void updateHintsPositionDebounced();
+    }
+    setTimeout(() => {
+      if (signal.aborted) return;
+      updateWordsInputPosition();
+      focusWords();
+      Caret.show();
+    }, 250);
+  });
+  const hideCaret = throttle(250, () => Caret.hide());
+  window.addEventListener(
+    "resize",
+    () => {
+      hideCaret();
+      recenter();
+    },
+    { signal },
+  );
+  signal.addEventListener("abort", () => {
+    hideCaret.cancel();
+    recenter.cancel();
+  });
+}
+
+function autofocusWords(e: KeyboardEvent): void {
+  if (PageTransition.get()) return;
+  if (e.key === undefined) return;
+
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  if (getResultVisible() || isInputElementFocused()) return;
+  // checked last, isAnyPopupVisible is a bit expensive
+  if (
+    ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
+    e.metaKey ||
+    e.ctrlKey ||
+    Misc.isAnyPopupVisible()
+  ) {
+    return;
+  }
+  focusWords();
+  if (Config.showOutOfFocusWarning) {
+    e.preventDefault();
+  }
 }
