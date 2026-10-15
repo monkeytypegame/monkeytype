@@ -1,26 +1,14 @@
-import * as TestLogic from "../test/test-logic";
-import * as Funbox from "../test/funbox/funbox";
+import { leaveTestPage } from "../test/test-logic";
 import Page from "./page";
-import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
-import { blurInputElement } from "../input/input-element";
 import { qsr } from "../utils/dom";
-import { resetIncompleteTests } from "../states/test";
 
 export const page = new Page({
   id: "test",
   element: qsr(".page.pageTest"),
   path: "/",
+  // TestPage also calls this on unmount - calling it here ends the test as
+  // soon as the navigation starts, before the fade out
   beforeHide: async (): Promise<void> => {
-    TestLogic.stop();
-    blurInputElement();
-  },
-  afterHide: async (): Promise<void> => {
-    void Funbox.clear();
-    updateFooterAndVerticalAds(true);
-  },
-  beforeShow: async (): Promise<void> => {
-    updateFooterAndVerticalAds(false);
-    // the test itself is restarted when TestPage mounts (bindTestElements)
-    resetIncompleteTests();
+    leaveTestPage();
   },
 });

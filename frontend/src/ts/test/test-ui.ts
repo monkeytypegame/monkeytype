@@ -8,7 +8,10 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as CompositionState from "../legacy-states/composition";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { getActivePage } from "../states/core";
+import { debounce, throttle } from "throttle-debounce";
+import { ModifierKeys } from "../constants/modifier-keys";
+import * as PageTransition from "../legacy-states/page-transition";
+import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
 import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
@@ -323,7 +326,7 @@ async function joinOverlappingHints(
 
 async function updateHintsPosition(): Promise<void> {
   if (
-    getActivePage() !== "test" ||
+    !isMounted() ||
     getResultVisible() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
@@ -462,7 +465,7 @@ export function appendEmptyWordElement(index: number): void {
 }
 
 export function updateWordsInputPosition(): void {
-  if (getActivePage() !== "test") return;
+  if (!isMounted()) return;
   const isTestRightToLeft = isDirectionReversed()
     ? !isLanguageRightToLeft()
     : isLanguageRightToLeft();
@@ -542,7 +545,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 function updateWordsWrapperHeight(force = false): void {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -881,7 +884,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (getActivePage() !== "test" || getResultVisible()) return;
+  if (!isMounted() || getResultVisible()) return;
 
   await centeringActiveLine;
 
@@ -1447,7 +1450,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  if (getActivePage() === "test") {
+  // the page may have unmounted during the restart
+  if (isMounted()) {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
@@ -1545,4 +1549,64 @@ export function init(
       { defer: true },
     ),
   );
+
+  // autofocus the words when typing anywhere on the page
+  document.addEventListener("keydown", autofocusWords, { signal });
+
+  const recenter = debounce(250, () => {
+    if (getResultVisible()) return;
+    if (Config.tapeMode !== "off") {
+      void scrollTape();
+    } else {
+      void centerActiveLine();
+      void updateHintsPositionDebounced();
+    }
+    setTimeout(() => {
+      if (signal.aborted) return;
+      updateWordsInputPosition();
+      focusWords();
+      Caret.show();
+    }, 250);
+  });
+  const hideCaret = throttle(250, () => Caret.hide());
+  window.addEventListener(
+    "resize",
+    () => {
+      hideCaret();
+      recenter();
+    },
+    { signal },
+  );
+  signal.addEventListener("abort", () => {
+    hideCaret.cancel();
+    recenter.cancel();
+  });
+}
+
+function autofocusWords(e: KeyboardEvent): void {
+  if (PageTransition.get()) return;
+  if (e.key === undefined) return;
+  if (
+    isDevEnvironment() &&
+    (document.activeElement as HTMLElement | undefined)?.dataset[
+      "uiElement"
+    ] === "signalDevtoolsInput"
+  ) {
+    return;
+  }
+  if (getResultVisible() || isInputElementFocused()) return;
+
+  // this is nested because isAnyPopupVisible is a bit expensive
+  // and we don't want to call it during the test
+  if (
+    !Misc.isAnyPopupVisible() &&
+    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) &&
+    !e.metaKey &&
+    !e.ctrlKey
+  ) {
+    focusWords();
+    if (Config.showOutOfFocusWarning) {
+      e.preventDefault();
+    }
+  }
 }

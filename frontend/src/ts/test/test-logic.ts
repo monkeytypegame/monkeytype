@@ -35,11 +35,7 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  isAuthenticated,
-} from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -229,6 +225,12 @@ export function stop(): void {
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
+}
+
+/** Ends the test when leaving the test page. Keystrokes after this don't reach the test. */
+export function leaveTestPage(): void {
+  stop();
+  blurInputElement();
 }
 
 type RestartOptions = {
@@ -427,7 +429,8 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  // the page may have unmounted while loading the language
+  if (TestUI.isMounted()) {
     await Funbox.activate();
   }
 
@@ -1384,8 +1387,11 @@ export function repeatTest(): void {
   });
 }
 
-// little roadblock for basic cheating
-window.addEventListener("focus", () => {
+/**
+ * Little roadblock for basic cheating - restarts an unstarted test.
+ * TestPage calls this when the window regains focus or becomes visible.
+ */
+export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
     !getResultVisible() &&
@@ -1395,28 +1401,14 @@ window.addEventListener("focus", () => {
       noAnim: true,
     });
   }
-});
-
-// little roadblock for basic cheating
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return;
-  if (
-    !isTestActive() &&
-    !getResultVisible() &&
-    (Config.mode === "time" || Config.mode === "words")
-  ) {
-    void restart({
-      noAnim: true,
-    });
-  }
-});
+}
 
 restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (getActivePage() === "test") {
+  if (TestUI.isMounted()) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

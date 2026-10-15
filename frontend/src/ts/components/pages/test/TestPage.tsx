@@ -23,7 +23,11 @@ import {
 } from "../../../states/test";
 import { bindTestElements } from "../../../test/bind-test-elements";
 import * as Caret from "../../../test/caret";
-import { onRestartButtonClick } from "../../../test/test-logic";
+import {
+  leaveTestPage,
+  onRestartButtonClick,
+  restartIfNotStarted,
+} from "../../../test/test-logic";
 import { focusWords } from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
@@ -70,6 +74,10 @@ function prefixedClass(
  * on cleanup. Mounting starts a fresh test.
  */
 function TypingTest(): JSXElement {
+  // the test page's beforeHide ends the test as soon as a navigation away
+  // starts. This also ends it when the page unmounts without one
+  onCleanup(leaveTestPage);
+
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
   let wordsRef: HTMLDivElement | undefined;
@@ -109,13 +117,18 @@ function TypingTest(): JSXElement {
   const onWindowBlur = (): void => setTestFocusState("unfocusedWindow");
   // little roadblock for basic cheating
   const onVisibilityChange = (): void => {
-    if (document.visibilityState !== "hidden") return;
-    setTestFocusState("unfocusedWindow");
+    if (document.visibilityState === "hidden") {
+      setTestFocusState("unfocusedWindow");
+    } else {
+      restartIfNotStarted();
+    }
   };
   window.addEventListener("blur", onWindowBlur);
+  window.addEventListener("focus", restartIfNotStarted);
   document.addEventListener("visibilitychange", onVisibilityChange);
   onCleanup(() => {
     window.removeEventListener("blur", onWindowBlur);
+    window.removeEventListener("focus", restartIfNotStarted);
     document.removeEventListener("visibilitychange", onVisibilityChange);
   });
 
