@@ -1,6 +1,7 @@
 import { createSwitchTransition } from "@solid-primitives/transition-group";
 import { animate } from "animejs";
 import {
+  children,
   Component,
   createMemo,
   createSignal,
@@ -82,9 +83,18 @@ export function Pages(props: { registry: PageRegistry }): JSXElement {
     } else {
       isShownPageIn = false;
     }
-    shownElement = untrack(
-      () => (<Page name={name} entry={props.registry[name]} />) as HTMLElement,
+    // resolve to the wrapper element: in dev, hot reload wraps components so
+    // the JSX is a function, not the element
+    const resolved = untrack(() =>
+      children(() => <Page name={name} entry={props.registry[name]} />),
     );
+    const element = resolved
+      .toArray()
+      .find((node): node is HTMLElement => node instanceof HTMLElement);
+    if (element === undefined) {
+      throw new Error(`page ${name} did not render an element`);
+    }
+    shownElement = element;
     return shownElement;
   });
 
