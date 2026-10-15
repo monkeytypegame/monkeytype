@@ -4,6 +4,7 @@ import { render } from "solid-js/web";
 
 import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
+import { Page } from "./common/Page";
 import { Theme } from "./core/Theme";
 import { DevTools } from "./dev/DevTools";
 import { CommandlineHotkey } from "./hotkeys/CommandlineHotkey";
@@ -30,14 +31,42 @@ import { Popups } from "./popups/Popups";
 const components: Record<string, () => JSXElement> = {
   testpage: () => <TestPage />,
   footer: () => <Footer />,
-  aboutpage: () => <AboutPage />,
-  settingspage: () => <SettingsPage />,
-  accountpage: () => <AccountPage />,
+  aboutpage: () => (
+    <Page id="about">
+      <AboutPage />
+    </Page>
+  ),
+  settingspage: () => (
+    <Page id="settings">
+      <SettingsPage />
+    </Page>
+  ),
+  accountpage: () => (
+    <Page id="account" needsAuthentication>
+      <AccountPage />
+    </Page>
+  ),
   loadingpage: () => <LoadingPage />,
-  loginpage: () => <LoginPage />,
-  leaderboardpage: () => <LeaderboardPage />,
-  profilepage: () => <ProfilePage />,
-  profilesearchpage: () => <ProfileSearchPage />,
+  loginpage: () => (
+    <Page id="login">
+      <LoginPage />
+    </Page>
+  ),
+  leaderboardpage: () => (
+    <Page id="leaderboards">
+      <LeaderboardPage />
+    </Page>
+  ),
+  profilepage: () => (
+    <Page id="profile">
+      <ProfilePage />
+    </Page>
+  ),
+  profilesearchpage: () => (
+    <Page id="profileSearch">
+      <ProfileSearchPage />
+    </Page>
+  ),
   myprofile: () => <MyProfile />,
   modals: () => <Modals />,
   popups: () => <Popups />,
@@ -46,9 +75,21 @@ const components: Record<string, () => JSXElement> = {
   header: () => <Header />,
   devtools: () => <DevTools />,
   commandlinehotkey: () => <CommandlineHotkey />,
-  friendspage: () => <FriendsPage />,
-  notfoundpage: () => <NotFoundPage />,
-  accountsettingspage: () => <AccountSettingsPage />,
+  friendspage: () => (
+    <Page id="friends">
+      <FriendsPage />
+    </Page>
+  ),
+  notfoundpage: () => (
+    <Page id="404">
+      <NotFoundPage />
+    </Page>
+  ),
+  accountsettingspage: () => (
+    <Page id="accountSettings">
+      <AccountSettingsPage />
+    </Page>
+  ),
   bartimerprogress: () => <BarTimerProgress />,
 };
 

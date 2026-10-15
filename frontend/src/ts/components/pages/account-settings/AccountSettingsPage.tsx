@@ -1,13 +1,14 @@
 import { For, JSXElement } from "solid-js";
 
+import { createEffectOn } from "../../../hooks/effects";
 import {
   AccountSettingsTab,
   accountSettingsTabs,
   getCurrentTab,
   setCurrentTab,
+  updateAccountSettingsGetParameters,
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
-import { Page } from "../../common/Page";
 import { AccountTab } from "./AccountTab";
 import { ApeKeysTab } from "./ApeKeysTab";
 import { AuthenticationTab } from "./AuthenticationTab";
@@ -23,17 +24,20 @@ const tabContent: Record<AccountSettingsTab, () => JSXElement> = {
 };
 
 export function AccountSettingsPage() {
+  //keep the url in sync with the tab while on this page
+  createEffectOn(getCurrentTab, updateAccountSettingsGetParameters, {
+    defer: true,
+  });
+
   return (
-    <Page id="accountSettings">
-      <div class="content-grid flex flex-col gap-8 md:flex-row">
-        <div class="w-full shrink-0 md:w-60">
-          <Sidebar />
-        </div>
-        <div class="flex w-full flex-1 flex-col gap-8">
-          {tabContent[getCurrentTab()]()}
-        </div>
+    <div class="content-grid flex flex-col gap-8 md:flex-row">
+      <div class="w-full shrink-0 md:w-60">
+        <Sidebar />
       </div>
-    </Page>
+      <div class="flex w-full flex-1 flex-col gap-8">
+        {tabContent[getCurrentTab()]()}
+      </div>
+    </div>
   );
 }
 
