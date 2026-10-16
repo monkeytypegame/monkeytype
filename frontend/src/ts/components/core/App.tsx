@@ -1,5 +1,8 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { RouterContextProvider, RouterProvider } from "@tanstack/solid-router";
+import {
+  RouterContextProvider,
+  RouterProvider as RouteRenderer,
+} from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
 import { queryClient } from "../../queries";
@@ -53,7 +56,7 @@ export function App(): JSXElement {
             <div id="ad-vertical-right"></div>
           </div>
           {/* renders the current route's page (see PageSwitcher) */}
-          <RouterProvider router={router} />
+          <RouteRenderer router={router} />
         </main>
         <Footer />
         <div
