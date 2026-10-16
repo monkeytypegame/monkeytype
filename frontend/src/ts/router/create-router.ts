@@ -4,7 +4,6 @@
 
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
-import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
 import { LoadingRoutePage } from "../components/pages/LoadingPage";
 import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
@@ -19,6 +18,9 @@ import { leaveTestPage } from "../test/test-logic";
 import { finishLoadingBar } from "./loading-bar";
 import { type RouterContext, routeTree } from "./routes";
 import { parseSearch, stringifySearch } from "./search-params";
+import { createNonRouterPage } from "../components/core/Page";
+import { NotFoundPage } from "../components/pages/404Page";
+import { LoadingErrorPage } from "../components/pages/LoadingErrorPage";
 
 /**
  * Hovering (or focusing) a link preloads its page: guards and loaders run
@@ -64,7 +66,10 @@ export function createAppRouter(
     defaultPendingMs: 500,
     defaultPendingMinMs: 500,
     // a failed load shows its error on the loading page, with a Retry button
-    defaultErrorComponent: LoadingErrorRoutePage,
+    defaultErrorComponent: createNonRouterPage("loading", LoadingErrorPage),
+    // unknown urls (the root route renders it, see notFoundMode). The profile
+    // page shows its own message for unknown users
+    defaultNotFoundComponent: createNonRouterPage("404", NotFoundPage),
     notFoundMode: "root",
     trailingSlash: "never",
     parseSearch,

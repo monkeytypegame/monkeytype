@@ -10,7 +10,7 @@ import {
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
-import { pageComponent } from "./Page";
+import { createNonRouterPage } from "../core/Page";
 
 export type LoadingPageProps = {
   /** Shows the error state: the failed load's message and a Retry button. */
@@ -63,7 +63,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
   return (
-    <>
+    <div class="grid h-full w-full content-center items-center gap-4 place-self-center text-center">
       <div class={spinnerClass()}>
         <Fa icon="fa-circle-notch" fixedWidth spin />
       </div>
@@ -86,14 +86,9 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
           />
         )}
       </Show>
-    </>
+    </div>
   );
 }
 
-export const loadingPageClass =
-  "grid h-full w-full content-center items-center gap-4 place-self-center text-center";
-
 /** The loading page, as the page switcher and pending routes render it. */
-export const LoadingRoutePage = pageComponent("loading", LoadingPage, {
-  class: loadingPageClass,
-});
+export const LoadingRoutePage = createNonRouterPage("loading", LoadingPage);

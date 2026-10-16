@@ -11,9 +11,9 @@ import { JSXElement, onCleanup } from "solid-js";
 
 import preview from "#.storybook/preview";
 
+import { createRouterPage } from "../../src/ts/components/core/Page";
 import { PageSwitcher } from "../../src/ts/components/core/PageSwitcher";
 import { LoadingRoutePage } from "../../src/ts/components/pages/LoadingPage";
-import { routePage } from "../../src/ts/components/pages/Page";
 import { setRouter } from "../../src/ts/router/instance";
 import {
   isLoadingBarShown,
@@ -76,19 +76,19 @@ function createStoryRouter() {
       getParentRoute: () => rootRoute,
       path: "/",
       staticData: { page: "test" },
-      component: routePage(stubPage("Test page")),
+      component: createRouterPage(stubPage("Test page")),
     }),
     createRoute({
       getParentRoute: () => rootRoute,
       path: "/about",
       staticData: { page: "about" },
-      component: routePage(stubPage("About page")),
+      component: createRouterPage(stubPage("About page")),
     }),
     createRoute({
       getParentRoute: () => rootRoute,
       path: "/settings",
       staticData: { page: "settings" },
-      component: routePage(stubPage("Settings page")),
+      component: createRouterPage(stubPage("Settings page")),
     }),
     createRoute({
       getParentRoute: () => rootRoute,
@@ -96,7 +96,7 @@ function createStoryRouter() {
       staticData: { page: "account" },
       // longer than pendingMs: shows the loading page with a spinner
       loader: async () => sleep(2000),
-      component: routePage(stubPage("Slow page")),
+      component: createRouterPage(stubPage("Slow page")),
     }),
   ];
 

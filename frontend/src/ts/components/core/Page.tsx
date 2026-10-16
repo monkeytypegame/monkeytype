@@ -19,7 +19,6 @@ import { LoadingCircle } from "../common/LoadingCircle";
 type PageProps = {
   name: PageName;
   content: Component;
-  class?: string;
 };
 
 /**
@@ -28,7 +27,7 @@ type PageProps = {
  * wrapper is in the document: the fade builds the next page before inserting
  * it, and page code queries `document` and measures layout on mount.
  */
-export function Page(props: PageProps): JSXElement {
+function Page(props: PageProps): JSXElement {
   const [isAttached, setAttached] = createSignal(false);
   let pageEl: HTMLElement | undefined;
   let frame: number | undefined;
@@ -57,7 +56,7 @@ export function Page(props: PageProps): JSXElement {
   return (
     <div
       id={id()}
-      class={cn("page", id(), props.class)}
+      class={cn("page", id(), "full-width content-grid")}
       data-nosnippet={props.name === "test" ? "" : undefined}
       ref={(el) => (pageEl = el)}
     >
@@ -85,10 +84,7 @@ export function Page(props: PageProps): JSXElement {
  * A route component rendering `content` as the page its route names in
  * `staticData.page` (the one place a route's page is named).
  */
-export function routePage(
-  content: Component,
-  options: { class?: string } = {},
-): Component {
+export function createRouterPage(content: Component): Component {
   return () => {
     // read once: the page keeps its name while it fades out
     const name = useMatch({
@@ -98,15 +94,22 @@ export function routePage(
     if (name === undefined) {
       throw new Error("A route rendering a page needs staticData.page");
     }
-    return <Page name={name} content={content} class={options.class} />;
+    return <Page name={name} content={content} />;
   };
 }
 
-/** A component rendering `content` as page `name` (eg. a route's not found or pending component). */
-export function pageComponent(
+/**
+ * A component rendering `content` as page `name` (eg. a route's not found,
+ * pending or error component). Its props are passed on to `content`.
+ */
+export function createNonRouterPage<P extends object>(
   name: PageName,
-  content: Component,
-  options: { class?: string } = {},
-): Component {
-  return () => <Page name={name} content={content} class={options.class} />;
+  content: Component<P>,
+): Component<P> {
+  return (props) => (
+    <Page
+      name={name}
+      content={() => <Dynamic component={content} {...props} />}
+    />
+  );
 }
