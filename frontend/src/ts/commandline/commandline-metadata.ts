@@ -407,7 +407,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           "20": "cherrymx blue abs",
           "21": "cherrymx blue pbt",
           "22": "cherrymx brown pbt",
-          "23": "kalih box white",
+          "23": "kailh box white",
           "24": "razer green",
           "25": "tealios v2",
           "26": "trust gxt",
