@@ -506,12 +506,43 @@ describe("extracted-text", () => {
       expect(looksLikeCode(lines)).toBe(true);
     });
 
+    it("detects C code with preprocessor and braces", () => {
+      const lines = [
+        line("#include <stdio.h>", 100),
+        line("int main(void) {", 90),
+        line('printf("hi");', 80, 10, 92),
+        line("return 0;", 70, 10, 92),
+        line("}", 60),
+      ];
+      expect(looksLikeCode(lines)).toBe(true);
+    });
+
     it("does not treat prose as code", () => {
       const lines = [
         line("The quick brown fox jumps over the lazy dog.", 100),
         line("It was a bright cold day in April.", 90),
         line("All happy families are alike.", 80),
         line("Call me Ishmael, a wandering soul.", 70),
+      ];
+      expect(looksLikeCode(lines)).toBe(false);
+    });
+
+    it("does not treat technical prose with code-like words as code", () => {
+      const lines = [
+        line("This class of regulatory problems is complex.", 100),
+        line("We return to the import of foreign goods.", 90),
+        line("The public and private sectors must align.", 80),
+        line("Export controls remain a static concern for all.", 70),
+      ];
+      expect(looksLikeCode(lines)).toBe(false);
+    });
+
+    it("does not treat prose with parentheticals as code", () => {
+      const lines = [
+        line("The Securities Commission (SEC) issues rules.", 100),
+        line("The Authority (ESMA) coordinates with banks.", 90),
+        line("Firms report under IFRS and GAAP standards.", 80),
+        line("Compliance teams review these filings yearly.", 70),
       ];
       expect(looksLikeCode(lines)).toBe(false);
     });
@@ -543,6 +574,28 @@ describe("extracted-text", () => {
         { lines: [line("b = 2", 100)], bottom: 0, top: 110 },
       ];
       expect(linesToLayoutText(pages)).toBe("a = 1\nb = 2");
+    });
+
+    it("scales a large horizontal offset into proportional indentation", () => {
+      //unit = median height (10) * 0.5 = 5; indent = round((172-72)/5) = 20
+      const pages = [
+        {
+          lines: [line("a()", 100, 10, 72), line("b()", 90, 10, 172)],
+          bottom: 0,
+          top: 110,
+        },
+      ];
+      expect(linesToLayoutText(pages)).toBe(`a()\n${" ".repeat(20)}b()`);
+    });
+
+    it("computes indentation independently per page", () => {
+      //each page's own minX is the baseline, so the deep indent on page 2
+      //(x=72 vs its own minX 72) renders flush despite the absolute offset
+      const pages = [
+        { lines: [line("x", 100, 10, 72)], bottom: 0, top: 110 },
+        { lines: [line("y", 100, 10, 72)], bottom: 0, top: 110 },
+      ];
+      expect(linesToLayoutText(pages)).toBe("x\ny");
     });
   });
 });

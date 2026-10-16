@@ -14,6 +14,7 @@ export function TextareaField(props: {
   maxLength?: number;
   onKeyDown?: (e: KeyboardEvent) => void;
   onKeyPress?: (e: KeyboardEvent) => void;
+  onPaste?: (e: ClipboardEvent) => void;
 }): JSXElement {
   return (
     <div class="grid w-full">
@@ -37,6 +38,7 @@ export function TextareaField(props: {
         maxLength={props.maxLength}
         onKeyDown={(e) => props.onKeyDown?.(e)}
         onKeyPress={(e) => props.onKeyPress?.(e)}
+        onPaste={(e) => props.onPaste?.(e)}
         dir="auto"
       ></textarea>
       <Show when={props.field().options.validators}>

@@ -297,21 +297,38 @@ export function removePageNumbers(paragraphs: string[]): string[] {
   return result;
 }
 
-/** Line shapes that are common in source code but rare in prose. */
-const CODE_LINE =
-  /[{};]\s*$|=>|[-+*/%<>=!&|]=|&&|\|\||\b(function|const|let|var|def|class|import|export|return|public|private|protected|static|void|async|await|elif|lambda|struct|enum|interface)\b|^\s*(#include|#define|using |package |from \w)/u;
+/**
+ * Structural shapes that are strong evidence of code and rare in prose:
+ * braces, a line ending in `;`, arrow functions, compound/boolean operators,
+ * `::`, a call/definition that is the whole line (`foo(...)`, `def foo():`),
+ * and preprocessor / import lines.
+ */
+const CODE_STRUCTURAL =
+  /[{}]|;\s*$|=>|[-+*/%<>=!&|]=|&&|\|\||::|\w+\([^)]*\)\s*[;{:]?\s*$|^\s*(#include|#define|using |package |from \w+ import )/u;
+
+/**
+ * Keywords that hint at code but also occur in ordinary prose ("a class of",
+ * "we return to", "public sector"). They only *strengthen* a structural
+ * signal, they never flag code on their own.
+ */
+const CODE_KEYWORD =
+  /\b(function|const|let|var|def|class|public|private|protected|static|void|async|await|return|elif|lambda|struct|enum|interface|if|else|for|while|switch|import|export)\b/u;
 
 /**
  * Guess whether the lines of a document are source code rather than prose.
- * Code is detected by code-like line endings/keywords and by consistent
- * indentation. Kept conservative so normal prose is never treated as code.
+ * Detection requires structural evidence (CODE_STRUCTURAL); code keywords and
+ * consistent indentation only reinforce it. Kept conservative so prose — even
+ * technical prose that happens to use words like "class" or "return" — is not
+ * treated as code.
  */
 export function looksLikeCode(lines: PositionedLine[]): boolean {
   const texts = lines.map((line) => line.text).filter((text) => text !== "");
   if (texts.length < 4) return false;
 
-  const codeLines = texts.filter((text) => CODE_LINE.test(text)).length;
-  const ratio = codeLines / texts.length;
+  const structural =
+    texts.filter((text) => CODE_STRUCTURAL.test(text)).length / texts.length;
+  const keyword =
+    texts.filter((text) => CODE_KEYWORD.test(text)).length / texts.length;
 
   const unit = (median(lines.map((line) => line.height)) ?? 0) * INDENT_FACTOR;
   const minX = Math.min(...lines.map((line) => line.x));
@@ -320,13 +337,22 @@ export function looksLikeCode(lines: PositionedLine[]): boolean {
       ? lines.filter((line) => line.x - minX > unit).length / lines.length
       : 0;
 
-  return ratio >= 0.25 || (ratio >= 0.1 && indented >= 0.25);
+  return (
+    structural >= 0.3 ||
+    (structural >= 0.15 && (keyword >= 0.2 || indented >= 0.25))
+  );
 }
 
 /**
  * Build text that keeps the original lines and indentation, for code.
- * Leading indentation is rebuilt from the horizontal position of each line
- * (internal spacing is already collapsed when the lines are read).
+ *
+ * Leading indentation is rebuilt from the horizontal position of each line and
+ * is therefore *approximate*: the step is derived per page from the median
+ * line height, internal spacing is already collapsed when the lines are read,
+ * tabs do not survive the PDF text layer, and proportional fonts or an unusual
+ * left margin can shift the result. Indentation is also computed independently
+ * per page, so two pages can render slightly different depths for the same
+ * logical level.
  */
 export function linesToLayoutText(pages: PageLines[]): string {
   const out: string[] = [];

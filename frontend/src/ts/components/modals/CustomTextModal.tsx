@@ -627,6 +627,7 @@ export function CustomTextModal(): JSXElement {
                     class="min-h-182.5 self-start overflow-x-hidden overflow-y-scroll p-4 text-base font-(--font) text-text"
                     onKeyDown={handleTextareaKeydown}
                     onKeyPress={handleTextareaKeypress}
+                    onPaste={() => setCustomTextFromFile(false)}
                   />
                 )}
               </form.Field>

@@ -262,7 +262,10 @@ async function extractTextFromPdf(
     );
 
     //code keeps its line breaks and indentation instead of being reflowed;
-    //only attempt it when every page has a real text layer (no OCR guesses)
+    //only attempt it when every page has a real text layer. A PDF that mixes
+    //text-layer and scanned (OCR) pages falls through to the reflow path
+    //below, which interleaves both in reading order but may lose code line
+    //structure on such mixed documents.
     if (pages.every((page) => !Array.isArray(page))) {
       const cleanedPages: PageLines[] = (pages as PageLines[]).map(
         (page, i) => ({
