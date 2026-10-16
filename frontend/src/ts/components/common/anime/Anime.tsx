@@ -93,11 +93,6 @@ export type AnimeProps = ParentProps<{
   class?: string;
 
   /**
-   * ID for the wrapper element.
-   */
-  id?: string;
-
-  /**
    * CSS styles for the wrapper element.
    */
   style?: string | Record<string, string>;
