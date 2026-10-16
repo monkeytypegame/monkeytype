@@ -39,12 +39,14 @@ type SkippedConfigKeys =
   | "theme" //themes are sorted by color and also affected by config.favThemes
   | "funbox"; //is using a special non schema command at the top to clear funboxes
 
+type CommandlineConfigKey = keyof Omit<
+  ConfigSchemas.Config,
+  ConfigKeysWithoutCommands | SkippedConfigKeys
+>;
+
 export type CommandlineConfigMetadataObject = {
-  [K in keyof Omit<
-    ConfigSchemas.Config,
-    ConfigKeysWithoutCommands | SkippedConfigKeys
-    // oxlint-disable-next-line no-explicit-any
-  >]: CommandlineConfigMetadata<K, any>;
+  // oxlint-disable-next-line no-explicit-any
+  [K in CommandlineConfigKey]: CommandlineConfigMetadata<K, any>;
 };
 
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
