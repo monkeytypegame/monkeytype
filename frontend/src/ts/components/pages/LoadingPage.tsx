@@ -1,20 +1,27 @@
 import { animate } from "animejs";
-import { createEffect, JSXElement, onCleanup, onMount } from "solid-js";
+import { createEffect, JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import {
   getLoadingPageBarStart,
   getLoadingPageBarTarget,
-  getLoadingPageIndicator,
   getLoadingPageText,
+  isLoadingBarShown,
 } from "../../states/loading-page";
 import { cn } from "../../utils/cn";
+import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
+import { createNonRouterPage } from "../core/Page";
 
-export function LoadingPage(): JSXElement {
+export type LoadingPageProps = {
+  /** Shows the error state: the failed load's message and a Retry button. */
+  error?: { message: string; onRetry: () => void };
+};
+
+export function LoadingPage(props: LoadingPageProps): JSXElement {
   let fillEl: HTMLElement | undefined;
 
-  // the loading page can mount mid-load (after the old page faded out):
-  // start the fill where the load started
+  // the loading page can mount mid-navigation (after the old page faded
+  // out): start where the current step's share begins
   onMount(() => {
     if (fillEl !== undefined) {
       fillEl.style.width = `${getLoadingPageBarStart()}%`;
@@ -35,25 +42,28 @@ export function LoadingPage(): JSXElement {
     onCleanup(() => animation.pause());
   });
 
+  const indicator = (): "spinner" | "bar" | "error" =>
+    props.error !== undefined
+      ? "error"
+      : isLoadingBarShown()
+        ? "bar"
+        : "spinner";
+  const text = (): string | null =>
+    props.error?.message ?? getLoadingPageText();
   const spinnerClass = (): string =>
-    cn("text-[2rem] text-main", {
-      hidden: getLoadingPageIndicator() !== "spinner",
-    });
+    cn("text-[2rem] text-main", { hidden: indicator() !== "spinner" });
   const errorClass = (): string =>
-    cn("text-[2rem] text-error", {
-      hidden: getLoadingPageIndicator() !== "error",
-    });
+    cn("text-[2rem] text-error", { hidden: indicator() !== "error" });
   const barClass = (): string =>
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
-      hidden: getLoadingPageIndicator() !== "bar",
+      hidden: indicator() !== "bar",
     });
-  const textClass = (): string =>
-    cn("h-[1.25em]", { hidden: getLoadingPageText() === null });
+  const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
   return (
-    <>
+    <div class="grid h-full w-full content-center items-center gap-4 place-self-center text-center">
       <div class={spinnerClass()}>
         <Fa icon="fa-circle-notch" fixedWidth spin />
       </div>
@@ -63,9 +73,22 @@ export function LoadingPage(): JSXElement {
       <div class={barClass()}>
         <div ref={(el) => (fillEl = el)} class="h-full rounded bg-main"></div>
       </div>
-      {/* innerHTML because load errors pass <br> separated messages to updateLoadingPageText */}
+      {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}
-      <div class={textClass()} innerHTML={getLoadingPageText() ?? ""}></div>
-    </>
+      <div class={textClass()} innerHTML={text() ?? ""}></div>
+      <Show when={props.error}>
+        {(error) => (
+          <Button
+            fa={{ icon: "fa-redo-alt" }}
+            text="Retry"
+            class="justify-self-center"
+            onClick={() => error().onRetry()}
+          />
+        )}
+      </Show>
+    </div>
   );
 }
+
+/** The loading page, as the page switcher and pending routes render it. */
+export const LoadingRoutePage = createNonRouterPage("loading", LoadingPage);

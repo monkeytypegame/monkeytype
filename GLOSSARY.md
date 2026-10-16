@@ -5,7 +5,7 @@ A typing test website: users take typing tests, and signed-in users keep their r
 ## Navigation
 
 **Page**:
-One screen of the site (test, settings, account, about...). Only one page is on screen at a time.
+One screen of the site, shown for one route (test, settings, account, about...). Only one page is on screen at a time.
 _Avoid_: view, screen, route (a route is the URL that selects a page)
 
 **Test page**:
@@ -25,3 +25,13 @@ The progress bar on the loading page. One navigation fills one loading bar, from
 **Loading step**:
 One load within a navigation that fills its share of the loading bar, eg. downloading the user data or downloading results.
 _Avoid_: bar load, loading stage, keyframe
+
+## Page data
+
+**Blocking data**:
+Data a page is useless without. Navigating to the page waits for it, showing the loading page with a loading step.
+_Avoid_: critical data, required data
+
+**Background data**:
+Data a page shows after the page has appeared; each part of the page that needs it shows its own loader until it arrives.
+_Avoid_: lazy data, deferred data, non-critical data

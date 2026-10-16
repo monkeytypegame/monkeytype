@@ -72,8 +72,9 @@ function prefixedClass(
  * Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
-  // page-controller ends the test as soon as a navigation away starts. This
-  // also ends it when the page unmounts without one
+  // the router ends the test as soon as a navigation away starts (see
+  // createAppRouter). This also ends it when the page unmounts without one,
+  // eg. the loading page covering it while user data downloads after sign in
   onCleanup(leaveTestPage);
 
   let typingTestRef: HTMLDivElement | undefined;

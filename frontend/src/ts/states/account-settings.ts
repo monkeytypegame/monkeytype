@@ -3,7 +3,6 @@ import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
 import { FaSolidIcon } from "../types/font-awesome";
 import { isAuthenticated } from "./core";
-import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 
 export const [getLastGeneratedApeKey, setLastGeneratedApeKey] = createSignal<
   string | undefined
@@ -29,18 +28,6 @@ export const accountSettingsTabs: Record<
   dangerZone: { text: "danger zone", icon: "fa-exclamation-triangle" },
 };
 
-export const AccountSettingsUrlParamsSchema = z
-  .object({
-    tab: AccountSettingsTabSchema,
-  })
-  .partial();
-export type AccountSettingsUrlParams = z.infer<
-  typeof AccountSettingsUrlParamsSchema
->;
-
-export const [getCurrentTab, setCurrentTab] =
-  createSignal<AccountSettingsTab>("account");
-
 export const [isApeKeysDenied, setApeKeysDenied] = createSignal<
   boolean | undefined
 >(undefined);
@@ -51,23 +38,7 @@ createEffectOn(isAuthenticated, (hasUser) => {
   }
 });
 
-export function readAccountSettingsGetParameters(
-  params: AccountSettingsUrlParams | undefined,
-): void {
-  if (params?.tab === undefined) return;
-
-  setCurrentTab(params.tab);
-}
-
-export function updateAccountSettingsGetParameters(
-  tab: AccountSettingsTab,
-): void {
-  const data: AccountSettingsUrlParams = { tab };
-
-  const urlParams = serializeUrlSearchParams({
-    schema: AccountSettingsUrlParamsSchema,
-    data,
-  });
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
-}
+/** The account settings url search params, taking strings in. */
+export const AccountSettingsSearchSchema = z.object({
+  tab: AccountSettingsTabSchema.optional().catch(undefined),
+});

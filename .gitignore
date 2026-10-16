@@ -136,3 +136,4 @@ frontend/.env.sentry-build-plugin
 .pnpm-store
 keylogs
 frontend/scripts/keylog-report.ts
+.scratch/

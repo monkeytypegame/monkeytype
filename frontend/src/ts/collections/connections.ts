@@ -21,6 +21,11 @@ import { getSnapshot } from "../states/snapshot";
 import { Connection } from "@monkeytype/schemas/connections";
 import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";
+import {
+  blockingDownloadOptions,
+  isDownloaded,
+  waitForDownload,
+} from "./utils/blocking-download";
 
 const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
@@ -28,6 +33,7 @@ const queryKeys = {
 
 const connectionsCollection = createCollection(
   queryCollectionOptions({
+    ...blockingDownloadOptions,
     staleTime: 5 * 60 * 1000,
     queryKey: queryKeys.root(),
     queryClient,
@@ -184,12 +190,14 @@ const actions = {
 };
 
 // -- Public API ---
+/** Whether the connections downloaded (a failed download isn't ready). */
 export function isConnectionsReady(): boolean {
-  return connectionsCollection.isReady();
+  return isDownloaded(connectionsCollection);
 }
 
+/** Waits for the connections download, throws if it failed (retries a failed one). */
 export async function waitForConnectionsReady(): Promise<void> {
-  await connectionsCollection.stateWhenReady();
+  await waitForDownload(connectionsCollection);
 }
 
 export async function acceptConnection(

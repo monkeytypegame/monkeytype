@@ -15,8 +15,10 @@ import {
   previewError,
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { useRouteSearch } from "../../../router/search-params";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
+import { setHighlightedSetting } from "../../../states/settings-highlight";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
@@ -53,6 +55,10 @@ import { SearchableSetting } from "./SearchableSetting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
+  const { search } = useRouteSearch("/settings");
+  // components run untracked: a snapshot
+  setHighlightedSetting(search().highlight);
+
   const [hasLocalBg] = createResource(
     () => fileStorage.track("LocalBackgroundFile"),
     async () => fileStorage.hasFile("LocalBackgroundFile"),
@@ -304,9 +310,8 @@ function AccountSettingsNotice(): JSXElement {
         </div>
         <Button
           text="go to account settings"
-          href="/account-settings"
+          to="/account-settings"
           class="col-span-2 p-4 md:col-span-1"
-          router-link
           onClick={() => {
             setDismissed(true);
           }}
