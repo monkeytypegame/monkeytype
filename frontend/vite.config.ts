@@ -19,6 +19,7 @@ import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
 import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
+import { vendorAssets } from "./vite-plugins/vendor-assets";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
@@ -99,6 +100,7 @@ function getPlugins({
   const plugins: PluginOption[] = [
     envConfig({ isDevelopment, clientVersion, env }),
     languageHashes({ skip: isDevelopment }),
+    vendorAssets(),
     injectHTML() as PluginOption,
     tailwindcss(),
 
@@ -266,6 +268,15 @@ function getBuildOptions({
             {
               name: "monkeytype-utils",
               test: /src\/ts\/utils\//,
+            },
+            //only loaded when importing a pdf or an image as custom text
+            {
+              name: "vendor-pdf",
+              test: /node_modules\/pdfjs-dist\//,
+            },
+            {
+              name: "vendor-ocr",
+              test: /node_modules\/(tesseract\.js|regenerator-runtime|is-url|is-electron|wasm-feature-detect|idb-keyval|zlibjs|bmp-js|node-fetch)\//,
             },
             {
               name: "vendor",
