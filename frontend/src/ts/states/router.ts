@@ -50,6 +50,11 @@ export function isPendingShown(): boolean {
   return matches.some((match) => match.status === "pending");
 }
 
+/** Whether the first route has not resolved yet. Reactive. */
+export function isInitialLoad(): boolean {
+  return getRouter()?.state.resolvedLocation === undefined;
+}
+
 /**
  * Whether the url matched no route (the root renders the 404 page). Reads
  * the router's private `_notFound` flag: no public api tells a global not

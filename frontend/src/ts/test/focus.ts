@@ -1,6 +1,7 @@
 import * as Caret from "./caret";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
+import { isInitialLoad } from "../states/router";
 import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;
@@ -74,6 +75,7 @@ export function set(value: boolean, withCursor = false): void {
 
 document.addEventListener("mousemove", function (event) {
   if (!getFocus()) return;
+  if (isInitialLoad()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
     event.movementX > unfocusPx ||
