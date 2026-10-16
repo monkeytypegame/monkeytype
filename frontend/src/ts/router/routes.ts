@@ -1,5 +1,6 @@
 // The route tree: every page with its guards and loaders
 
+import type { QueryClient } from "@tanstack/solid-query";
 import {
   createRootRouteWithContext,
   createRoute,
@@ -46,7 +47,6 @@ import {
 } from "../queries/leaderboards";
 import { SettingsSearchSchema } from "../states/settings-highlight";
 import * as TodayTracker from "../test/today-tracker";
-import type { RouterAuth, RouterContext } from "./create-router";
 import {
   planNavigationLoadingBar,
   runRouteLoadingStep,
@@ -54,6 +54,28 @@ import {
 } from "./loading-steps";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
+
+/** What routes need to know about auth. Made by createRouterAuth. */
+export type RouterAuth = {
+  /** False when auth failed to load - guarded pages send users to the test page. */
+  isAvailable: () => boolean;
+  isSignedIn: () => boolean;
+  /** Resolves once the first auth state is known. */
+  waitForFirstState: () => Promise<void>;
+  /**
+   * The user data download of the last sign in, until it succeeded. After a
+   * failed one it starts a new one (Retry). undefined if there's none.
+   */
+  userDataDownload: () => Promise<void> | undefined;
+  /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
+  onChange: (listener: () => void) => () => void;
+};
+
+/** Router context: guards and loaders read these instead of module globals. */
+export type RouterContext = {
+  auth: RouterAuth;
+  queryClient: QueryClient;
+};
 
 /**
  * Waits until the auth state is known, plans the navigation's loading bar,

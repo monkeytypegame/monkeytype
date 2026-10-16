@@ -1,8 +1,7 @@
 // createAppRouter: router options and the behaviour every router needs, the
 // app's and the tests' (navigation blocker, guards re-run on auth change,
-// loading bar). Also the router context type routes read
+// loading bar)
 
-import type { QueryClient } from "@tanstack/solid-query";
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
@@ -17,29 +16,7 @@ import {
 } from "../states/test";
 import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
-import { routeTree } from "./routes";
-
-/** What routes need to know about auth. Made by createRouterAuth. */
-export type RouterAuth = {
-  /** False when auth failed to load - guarded pages send users to the test page. */
-  isAvailable: () => boolean;
-  isSignedIn: () => boolean;
-  /** Resolves once the first auth state is known. */
-  waitForFirstState: () => Promise<void>;
-  /**
-   * The user data download of the last sign in, until it succeeded. After a
-   * failed one it starts a new one (Retry). undefined if there's none.
-   */
-  userDataDownload: () => Promise<void> | undefined;
-  /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
-  onChange: (listener: () => void) => () => void;
-};
-
-/** Router context: guards and loaders read these instead of module globals. */
-export type RouterContext = {
-  auth: RouterAuth;
-  queryClient: QueryClient;
-};
+import { type RouterContext, routeTree } from "./routes";
 
 /**
  * Hovering (or focusing) a link preloads its page: guards and loaders run

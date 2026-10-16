@@ -3,7 +3,7 @@
 // the real thing - the app feeds it auth events (router/app-router.ts)
 
 import { promiseWithResolvers } from "../utils/misc";
-import type { RouterAuth } from "./create-router";
+import type { RouterAuth } from "./routes";
 
 /** A sign in's user data download; `redownload` starts a new one. */
 export type UserDataDownload = {
