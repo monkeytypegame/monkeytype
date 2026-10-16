@@ -146,10 +146,8 @@ export function escapeHTML<T extends string | null | undefined>(str: T): T {
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
-  timeouts.forEach((to) => {
-    if (typeof to === "number") clearTimeout(to);
-    else clearTimeout(to);
-  });
+  timeouts.forEach((to) => clearTimeout(to));
+  timeouts.length = 0;
 }
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
