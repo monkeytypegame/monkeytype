@@ -21,10 +21,6 @@ import { getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
-// True when the current custom text was imported from a file; used to render
-// the typing words larger for dense pasted content like code.
-export const [customTextFromFile, setCustomTextFromFile] = createSignal(false);
-
 export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
 export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);

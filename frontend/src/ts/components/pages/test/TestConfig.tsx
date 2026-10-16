@@ -16,7 +16,6 @@ import {
   getResultVisible,
   getFocus,
   isTestRestarting,
-  setCustomTextFromFile,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
 import { FaObject } from "../../../types/font-awesome";
@@ -177,7 +176,6 @@ function Mode(): JSXElement {
       CustomText.setText(words);
       CustomText.setLimitMode("word");
       CustomText.setLimitValue(words.length);
-      setCustomTextFromFile(true);
       setConfig("mode", "custom");
       restartTestEvent.dispatch();
     } catch (e) {

@@ -17,11 +17,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
-import {
-  getLoadedChallenge,
-  setCustomTextFromFile,
-  setLoadedChallenge,
-} from "../../states/test";
+import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
 import { cn } from "../../utils/cn";
@@ -366,8 +362,6 @@ export function CustomTextModal(): JSXElement {
     const data = incomingChainedData();
     if (data === null) return;
     setIncomingChainedData(null);
-    //text from saved texts / generator / word filter is not an imported file
-    setCustomTextFromFile(false);
 
     if (data.long !== true && getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
@@ -438,7 +432,6 @@ export function CustomTextModal(): JSXElement {
         return;
       }
       form.setFieldValue("text", content);
-      setCustomTextFromFile(true);
     } catch (e) {
       if (abortController.signal.aborted) return;
 
@@ -467,7 +460,6 @@ export function CustomTextModal(): JSXElement {
       area.value = `${area.value.substring(0, start)}\t${area.value.substring(end)}`;
       area.selectionStart = area.selectionEnd = start + 1;
       form.setFieldValue("text", area.value);
-      setCustomTextFromFile(false);
     }
   };
 
@@ -478,10 +470,7 @@ export function CustomTextModal(): JSXElement {
     }
     if (e.code === "Enter" && e.ctrlKey) {
       void form.handleSubmit();
-      return;
     }
-    //the user is editing the imported text by hand
-    setCustomTextFromFile(false);
     if (getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
       setLongTextWarning(false);
@@ -627,7 +616,6 @@ export function CustomTextModal(): JSXElement {
                     class="min-h-182.5 self-start overflow-x-hidden overflow-y-scroll p-4 text-base font-(--font) text-text"
                     onKeyDown={handleTextareaKeydown}
                     onKeyPress={handleTextareaKeypress}
-                    onPaste={() => setCustomTextFromFile(false)}
                   />
                 )}
               </form.Field>

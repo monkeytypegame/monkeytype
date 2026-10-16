@@ -17,7 +17,6 @@ import {
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
-  customTextFromFile,
   isLayoutfluidTimerVisible,
   isReadAheadDisabled,
   isResultLoading,
@@ -155,12 +154,7 @@ export function TestPage(): JSXElement {
 
   const isFullWidth = (): boolean =>
     getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
-  // custom text imported from a file (e.g. code) is rendered larger so dense
-  // pasted content is easier to read while typing
-  const fontSize = (): string => {
-    const scale = getConfig.mode === "custom" && customTextFromFile() ? 1.5 : 1;
-    return `${getConfig.fontSize * scale}rem`;
-  };
+  const fontSize = (): string => `${getConfig.fontSize}rem`;
   // classes shared by #words and #wordsWrapper
   const modeClasses = (): Record<string, boolean> => ({
     tape: getConfig.tapeMode !== "off",
