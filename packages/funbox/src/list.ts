@@ -314,7 +314,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "wikipedia",
   },
   weakspot: {
-    description: "Focus on slow and mistyped letters.",
+    description: "Focus on slow and mistyped letter pairs.",
     canGetPb: false,
     difficultyLevel: 0,
     properties: ["changesWordsFrequency"],
