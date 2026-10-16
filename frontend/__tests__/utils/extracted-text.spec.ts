@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   groupLinesIntoParagraphs,
   joinWrappedLines,
+  linesToLayoutText,
+  looksLikeCode,
   mergeBrokenParagraphs,
   paragraphsToText,
   removeMarginalText,
@@ -456,13 +458,13 @@ describe("extracted-text", () => {
   });
 
   describe("paragraphsToText", () => {
-    it("joins paragraphs with a new line", () => {
-      expect(paragraphsToText(["one", "two"])).toBe("one\ntwo");
+    it("joins paragraphs with a blank line", () => {
+      expect(paragraphsToText(["one", "two"])).toBe("one\n\ntwo");
     });
 
     it("skips blank paragraphs and collapses whitespace", () => {
       expect(paragraphsToText(["  one   two ", " ", "", "three"])).toBe(
-        "one two\nthree",
+        "one two\n\nthree",
       );
     });
 
@@ -475,11 +477,72 @@ describe("extracted-text", () => {
     it("removes bullets which cannot be typed", () => {
       expect(
         paragraphsToText(["• first", "▪second", "- third", "1. fourth"]),
-      ).toBe("first\nsecond\n- third\n1. fourth");
+      ).toBe("first\n\nsecond\n\n- third\n\n1. fourth");
     });
 
     it("returns an empty string for nothing", () => {
       expect(paragraphsToText([])).toBe("");
+    });
+  });
+
+  describe("looksLikeCode", () => {
+    it("detects code by its line shapes", () => {
+      const lines = [
+        line("function add(a, b) {", 100),
+        line("return a + b;", 90, 10, 92),
+        line("}", 80),
+        line("const sum = add(1, 2);", 70),
+      ];
+      expect(looksLikeCode(lines)).toBe(true);
+    });
+
+    it("detects indented code with few keywords", () => {
+      const lines = [
+        line("for item in items:", 100),
+        line("total += item", 90, 10, 92),
+        line("print(total)", 80),
+        line("save(total)", 70),
+      ];
+      expect(looksLikeCode(lines)).toBe(true);
+    });
+
+    it("does not treat prose as code", () => {
+      const lines = [
+        line("The quick brown fox jumps over the lazy dog.", 100),
+        line("It was a bright cold day in April.", 90),
+        line("All happy families are alike.", 80),
+        line("Call me Ishmael, a wandering soul.", 70),
+      ];
+      expect(looksLikeCode(lines)).toBe(false);
+    });
+
+    it("needs at least a few lines", () => {
+      expect(looksLikeCode([line("return x;", 100)])).toBe(false);
+    });
+  });
+
+  describe("linesToLayoutText", () => {
+    it("keeps line breaks and rebuilds indentation from position", () => {
+      const pages = [
+        {
+          lines: [
+            line("def foo():", 100, 10, 72),
+            line("return 1", 90, 10, 92),
+          ],
+          bottom: 0,
+          top: 110,
+        },
+      ];
+      expect(linesToLayoutText(pages)).toBe("def foo():\n    return 1");
+    });
+
+    it("joins pages with a line break and skips empty pages", () => {
+      const pages = [
+        { lines: [line("a = 1", 100)], bottom: 0, top: 110 },
+        { lines: [], bottom: 0, top: 110 },
+        { lines: [line("b = 2", 100)], bottom: 0, top: 110 },
+      ];
+      expect(linesToLayoutText(pages)).toBe("a = 1\nb = 2");
     });
   });
 });

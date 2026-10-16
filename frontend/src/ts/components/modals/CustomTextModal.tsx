@@ -17,7 +17,11 @@ import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
-import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
+import {
+  getLoadedChallenge,
+  setCustomTextFromFile,
+  setLoadedChallenge,
+} from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
 import { cn } from "../../utils/cn";
@@ -195,6 +199,11 @@ export function CustomTextModal(): JSXElement {
   const showWordLimit = () => !formValues().pipeDelimiter;
   const showSectionLimit = () => formValues().pipeDelimiter;
 
+  const wordCount = () =>
+    (formValues().text ?? "")
+      .split(formValues().pipeDelimiter ? "|" : /\s+/)
+      .filter((word) => word.trim() !== "").length;
+
   const cleanUpText = (): string[] => {
     let text = form.getFieldValue("text");
     if (text === "") return [];
@@ -218,6 +227,48 @@ export function CustomTextModal(): JSXElement {
 
   const applyLowercase = () => {
     form.setFieldValue("text", form.getFieldValue("text").toLowerCase());
+  };
+
+  const applyTrimToSelection = () => {
+    const area = textareaRef;
+    if (area === undefined) return;
+    const { selectionStart, selectionEnd } = area;
+    if (selectionStart === selectionEnd) {
+      showNoticeNotification(
+        "Select the part of the text you want to keep first",
+        { durationMs: 5000 },
+      );
+      return;
+    }
+    const selected = area.value.slice(selectionStart, selectionEnd).trim();
+    if (selected === "") {
+      showNoticeNotification("Selection is empty", { durationMs: 5000 });
+      return;
+    }
+    form.setFieldValue("text", selected);
+  };
+
+  const applyRemoveSelection = () => {
+    const area = textareaRef;
+    if (area === undefined) return;
+    const { selectionStart, selectionEnd, value, scrollTop } = area;
+    if (selectionStart === selectionEnd) {
+      showNoticeNotification("Select the text you want to remove first", {
+        durationMs: 5000,
+      });
+      return;
+    }
+    form.setFieldValue(
+      "text",
+      value.slice(0, selectionStart) + value.slice(selectionEnd),
+    );
+    //after the new value is written to the DOM, put the caret where the removed
+    //text was and keep the scroll position instead of jumping to the end
+    requestAnimationFrame(() => {
+      area.focus({ preventScroll: true });
+      area.setSelectionRange(selectionStart, selectionStart);
+      area.scrollTop = scrollTop;
+    });
   };
 
   const applyRemoveFancyTypography = () => {
@@ -315,6 +366,8 @@ export function CustomTextModal(): JSXElement {
     const data = incomingChainedData();
     if (data === null) return;
     setIncomingChainedData(null);
+    //text from saved texts / generator / word filter is not an imported file
+    setCustomTextFromFile(false);
 
     if (data.long !== true && getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
@@ -385,6 +438,7 @@ export function CustomTextModal(): JSXElement {
         return;
       }
       form.setFieldValue("text", content);
+      setCustomTextFromFile(true);
     } catch (e) {
       if (abortController.signal.aborted) return;
 
@@ -413,6 +467,7 @@ export function CustomTextModal(): JSXElement {
       area.value = `${area.value.substring(0, start)}\t${area.value.substring(end)}`;
       area.selectionStart = area.selectionEnd = start + 1;
       form.setFieldValue("text", area.value);
+      setCustomTextFromFile(false);
     }
   };
 
@@ -423,7 +478,10 @@ export function CustomTextModal(): JSXElement {
     }
     if (e.code === "Enter" && e.ctrlKey) {
       void form.handleSubmit();
+      return;
     }
+    //the user is editing the imported text by hand
+    setCustomTextFromFile(false);
     if (getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
       setLongTextWarning(false);
@@ -572,6 +630,11 @@ export function CustomTextModal(): JSXElement {
                   />
                 )}
               </form.Field>
+              <div class="mt-1 text-sub lowercase">
+                {wordCount()} words · import a file or paste text, then
+                highlight a part and use the tools (keep / remove selection,
+                lowercase…) to edit it
+              </div>
             </div>
             <SubmitButton
               form={form}
@@ -723,6 +786,27 @@ export function CustomTextModal(): JSXElement {
               />
             </div>
             {/* <Separator /> */}
+            <SettingsGroup
+              title="Trim to selection"
+              icon="fa-crop"
+              sub="Highlight the part you want to keep, then apply to remove the rest. To keep several parts, remove the ones you do not want instead."
+            >
+              <div class="flex w-full gap-2">
+                <Button
+                  variant="button"
+                  text="keep selection"
+                  class="flex-1"
+                  onClick={applyTrimToSelection}
+                />
+                <Button
+                  variant="button"
+                  text="remove selection"
+                  class="flex-1"
+                  onClick={applyRemoveSelection}
+                />
+              </div>
+            </SettingsGroup>
+
             <SettingsGroup
               title="Remove zero-width characters"
               icon="fa-text-width"

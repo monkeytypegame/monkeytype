@@ -16,6 +16,7 @@ import {
   getResultVisible,
   getFocus,
   isTestRestarting,
+  setCustomTextFromFile,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
 import { FaObject } from "../../../types/font-awesome";
@@ -158,10 +159,13 @@ function Mode(): JSXElement {
     });
     try {
       const content = await extractTextFromFile(file);
+      //keep paragraph breaks as newline tokens (same as the custom text modal)
+      //instead of collapsing every whitespace run into a single space
       const words = content
         .normalize()
-        .replace(/\s+/g, " ")
-        .trim()
+        .replace(/[ -    ]/g, " ")
+        .replace(/ +/g, " ")
+        .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
         .split(" ")
         .filter((word) => word !== "");
       if (words.length === 0) {
@@ -173,6 +177,7 @@ function Mode(): JSXElement {
       CustomText.setText(words);
       CustomText.setLimitMode("word");
       CustomText.setLimitValue(words.length);
+      setCustomTextFromFile(true);
       setConfig("mode", "custom");
       restartTestEvent.dispatch();
     } catch (e) {

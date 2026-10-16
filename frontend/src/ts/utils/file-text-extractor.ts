@@ -21,6 +21,8 @@ import { vendorAssets } from "virtual:vendor-assets";
 
 import {
   groupLinesIntoParagraphs,
+  linesToLayoutText,
+  looksLikeCode,
   mergeBrokenParagraphs,
   PageLines,
   paragraphsToText,
@@ -258,11 +260,28 @@ async function extractTextFromPdf(
     const textLayers = removeMarginalText(
       pages.filter((page): page is PageLines => !Array.isArray(page)),
     );
+
+    //code keeps its line breaks and indentation instead of being reflowed;
+    //only attempt it when every page has a real text layer (no OCR guesses)
+    if (pages.every((page) => !Array.isArray(page))) {
+      const cleanedPages: PageLines[] = (pages as PageLines[]).map(
+        (page, i) => ({
+          lines: textLayers[i] ?? [],
+          bottom: page.bottom,
+          top: page.top,
+        }),
+      );
+      if (looksLikeCode(cleanedPages.flatMap((page) => page.lines))) {
+        return linesToLayoutText(cleanedPages);
+      }
+    }
+
+    const queue = [...textLayers];
     const paragraphs = pages.flatMap((page) =>
       removePageNumbers(
         Array.isArray(page)
           ? page
-          : groupLinesIntoParagraphs(textLayers.shift() ?? []),
+          : groupLinesIntoParagraphs(queue.shift() ?? []),
       ),
     );
 

@@ -297,8 +297,58 @@ export function removePageNumbers(paragraphs: string[]): string[] {
   return result;
 }
 
+/** Line shapes that are common in source code but rare in prose. */
+const CODE_LINE =
+  /[{};]\s*$|=>|[-+*/%<>=!&|]=|&&|\|\||\b(function|const|let|var|def|class|import|export|return|public|private|protected|static|void|async|await|elif|lambda|struct|enum|interface)\b|^\s*(#include|#define|using |package |from \w)/u;
+
 /**
- * Build the final text, one paragraph per line.
+ * Guess whether the lines of a document are source code rather than prose.
+ * Code is detected by code-like line endings/keywords and by consistent
+ * indentation. Kept conservative so normal prose is never treated as code.
+ */
+export function looksLikeCode(lines: PositionedLine[]): boolean {
+  const texts = lines.map((line) => line.text).filter((text) => text !== "");
+  if (texts.length < 4) return false;
+
+  const codeLines = texts.filter((text) => CODE_LINE.test(text)).length;
+  const ratio = codeLines / texts.length;
+
+  const unit = (median(lines.map((line) => line.height)) ?? 0) * INDENT_FACTOR;
+  const minX = Math.min(...lines.map((line) => line.x));
+  const indented =
+    unit > 0
+      ? lines.filter((line) => line.x - minX > unit).length / lines.length
+      : 0;
+
+  return ratio >= 0.25 || (ratio >= 0.1 && indented >= 0.25);
+}
+
+/**
+ * Build text that keeps the original lines and indentation, for code.
+ * Leading indentation is rebuilt from the horizontal position of each line
+ * (internal spacing is already collapsed when the lines are read).
+ */
+export function linesToLayoutText(pages: PageLines[]): string {
+  const out: string[] = [];
+  for (const page of pages) {
+    if (page.lines.length === 0) continue;
+    const minX = Math.min(...page.lines.map((line) => line.x));
+    const unit = (median(page.lines.map((line) => line.height)) ?? 0) * 0.5;
+    for (const line of page.lines) {
+      const indent =
+        unit > 0 ? Math.max(0, Math.round((line.x - minX) / unit)) : 0;
+      out.push(
+        " ".repeat(indent) +
+          line.text.replace(/[ﬀ-ﬆ]/g, (it) => LIGATURES[it] ?? it),
+      );
+    }
+  }
+  return out.join("\n");
+}
+
+/**
+ * Build the final text, paragraphs separated by a blank line so they stay
+ * visually distinct instead of running together.
  * Bullet characters are removed, they cannot be typed.
  */
 export function paragraphsToText(paragraphs: string[]): string {
@@ -311,5 +361,5 @@ export function paragraphsToText(paragraphs: string[]): string {
       ),
     )
     .filter((it) => it !== "")
-    .join("\n");
+    .join("\n\n");
 }

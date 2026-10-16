@@ -18,6 +18,7 @@
     "start": "vite preview --port 3000",
     "dev": "vite dev",
     "test": "vitest run",
+    "test-pdf-import": "vitest run __tests__/utils/extracted-text.spec.ts __tests__/utils/file-text-extractor.spec.ts",
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
