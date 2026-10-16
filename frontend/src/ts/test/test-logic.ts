@@ -35,11 +35,7 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  isAuthenticated,
-} from "../states/core";
+import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -78,11 +74,13 @@ import {
   setResultLoading,
   setTestInitError,
   setTestInitFailed,
+  setJoiningScript,
+  setTypingTestHidden,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import * as PageTransition from "../legacy-states/page-transition";
+import { canStartTest, markTestPageLeaving } from "./test-page-state";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
@@ -159,7 +157,7 @@ import { nthElementFromArray } from "../utils/arrays";
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (PageTransition.get()) {
+  if (!canStartTest()) {
     return false;
   }
 
@@ -227,6 +225,13 @@ export function stop(): void {
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
+}
+
+/** Ends the test when leaving the test page. Keystrokes after this don't reach the test. */
+export function leaveTestPage(): void {
+  markTestPageLeaving();
+  stop();
+  blurInputElement();
 }
 
 type RestartOptions = {
@@ -365,7 +370,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   setIsTestRestarting(true);
 
-  await TestUI.fadeOutForRestart(source, noAnim);
+  await TestUI.fadeOutTest(source, noAnim);
 
   setResultVisible(false);
   setInputElementValue("");
@@ -387,7 +392,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   TestUI.onTestRestart(source);
 
-  await TestUI.fadeInAfterRestart(noAnim);
+  await TestUI.fadeInTest(noAnim);
   setIsTestRestarting(false);
 }
 
@@ -425,7 +430,8 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  if (getActivePage() === "test") {
+  // the page may have unmounted while loading the language
+  if (TestUI.isMounted()) {
     await Funbox.activate();
   }
 
@@ -595,7 +601,11 @@ async function init(): Promise<boolean> {
   }
 
   Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
-  TestUI.setJoiningClass(allJoiningScript ?? language.joiningScript ?? false);
+  setJoiningScript(
+    (allJoiningScript ?? language.joiningScript ?? false) ||
+      Config.mode === "custom" ||
+      Config.mode === "zen",
+  );
 
   const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
   setIsLanguageRightToLeft(isLanguageRTL);
@@ -848,11 +858,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // fade out the test and show loading
   // because the css animation has a delay,
   // if the test calculation is fast the loading will not show
-  await Misc.promiseAnimate("#typingTest", {
-    opacity: 0,
-    duration: Misc.applyReducedMotion(125),
-  });
-  qs(".pageTest #typingTest")?.hide();
+  await TestUI.fadeOutTest("testPage", false);
+  setTypingTestHidden(true);
   setResultLoading(true);
   await Misc.sleep(0); //allow ui update
 
@@ -1205,14 +1212,6 @@ async function showResult(
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
   resultPrefocusTarget?.focus({ preventScroll: true });
 
-  const resultEl = qs("#result");
-
-  void resultEl?.promiseAnimate?.({
-    opacity: [0, 1],
-    duration: Misc.applyReducedMotion(125),
-  });
-
-  Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   void AdController.renderResult();
   setResultCalculating(false);
   TestUI.clearWords();
@@ -1389,8 +1388,11 @@ export function repeatTest(): void {
   });
 }
 
-// little roadblock for basic cheating
-window.addEventListener("focus", () => {
+/**
+ * Little roadblock for basic cheating - restarts an unstarted test.
+ * TestPage calls this when the window regains focus or becomes visible.
+ */
+export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
     !getResultVisible() &&
@@ -1400,28 +1402,14 @@ window.addEventListener("focus", () => {
       noAnim: true,
     });
   }
-});
-
-// little roadblock for basic cheating
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return;
-  if (
-    !isTestActive() &&
-    !getResultVisible() &&
-    (Config.mode === "time" || Config.mode === "words")
-  ) {
-    void restart({
-      noAnim: true,
-    });
-  }
-});
+}
 
 restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (getActivePage() === "test") {
+  if (TestUI.isMounted()) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

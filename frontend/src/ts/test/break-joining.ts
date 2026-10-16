@@ -1,11 +1,12 @@
 import { Config } from "../config/store";
+import { isJoiningScript } from "../states/test";
 import { ElementWithUtils } from "../utils/dom";
 
 function canBreak(wordEl: ElementWithUtils): boolean {
   if (Config.typedEffect !== "dots") return false;
   if (wordEl.hasClass("broken-joining")) return false;
 
-  return wordEl.getParent()?.hasClass("joiningScript") ?? false;
+  return isJoiningScript();
 }
 
 function applyIfNeeded(wordEl: ElementWithUtils): void {
@@ -43,7 +44,7 @@ export function update(key: string, wordsEl: ElementWithUtils): void {
   const words = wordsEl.qsa(".word.typed");
 
   const shouldReset =
-    !wordsEl.hasClass("joiningScript") ||
+    !isJoiningScript() ||
     Config.typedEffect !== "dots" ||
     key === "fontFamily" ||
     key === "fontSize";

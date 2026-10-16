@@ -5,6 +5,7 @@ import {
   For,
   JSXElement,
   on,
+  onCleanup,
   Show,
   untrack,
 } from "solid-js";
@@ -114,6 +115,12 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
     setConfig("burstHeatmap", !getConfig.burstHeatmap);
     ResultWordHighlight.destroy();
   };
+
+  // highlights are positioned absolutely, stale after a resize
+  window.addEventListener("resize", ResultWordHighlight.destroy);
+  onCleanup(() =>
+    window.removeEventListener("resize", ResultWordHighlight.destroy),
+  );
 
   // element is remounted on every open, so drop highlights tied to the old one
   createEffect(
