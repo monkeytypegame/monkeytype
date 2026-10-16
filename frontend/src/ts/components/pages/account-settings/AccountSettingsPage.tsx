@@ -3,7 +3,6 @@ import { For, JSXElement } from "solid-js";
 import {
   AccountSettingsTab,
   accountSettingsTabs,
-  useAccountSettingsTab,
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
 import { AccountTab } from "./AccountTab";
@@ -11,6 +10,7 @@ import { ApeKeysTab } from "./ApeKeysTab";
 import { AuthenticationTab } from "./AuthenticationTab";
 import { BlockedUsersTab } from "./BlockedUsersTab";
 import { DangerZoneTab } from "./DangerZoneTab";
+import { useAccountSettingsTab } from "./useAccountSettingsTab";
 
 const tabContent: Record<AccountSettingsTab, () => JSXElement> = {
   account: () => <AccountTab />,

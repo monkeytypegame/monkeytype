@@ -1,11 +1,11 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, createEffect, createMemo, Setter } from "solid-js";
+import { Accessor, Setter } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
-import { useRouteSearch } from "../router/search-params";
+import { SearchFlagSchema } from "../router/search-params";
 import { getSnapshot } from "./snapshot";
 
 export const pageSize = 50;
@@ -31,13 +31,6 @@ const SpeedSelection = z.object({
 export const SelectionSchema = SpeedSelection.or(XpSelection);
 export type Selection = z.infer<typeof SelectionSchema>;
 
-/** A boolean search param: written as "t", read as "t" or "true". */
-const SearchFlagSchema = z
-  .union([z.boolean(), z.enum(["t", "true", "f", "false"])])
-  .transform((value) => value === true || value === "t" || value === "true")
-  .optional()
-  .catch(undefined);
-
 /**
  * The leaderboards url search params. Takes strings in (see the router's
  * search serializer); an invalid value is dropped, falling back to its default.
@@ -57,8 +50,10 @@ export const LeaderboardSearchSchema = z.object({
 });
 export type LeaderboardSearch = z.infer<typeof LeaderboardSearchSchema>;
 
-// the last shown selection, used when opening the leaderboards without one
+// the last shown selection, used when opening the leaderboards without one.
+// the leaderboards page sets it (useLeaderboardSearch)
 const [getLastSelection, setLastSelection] = lsSelection();
+export { setLastSelection };
 
 /** The search params showing `selection` on the 0-based `page`. */
 export function toLeaderboardSearch(
@@ -107,31 +102,6 @@ export function toSelection(search: LeaderboardSearch): Selection {
   };
 }
 
-/**
- * The leaderboards selection and page, kept in the url. Writes replace the
- * url (no history entry) and are ignored once the leaderboards route is left.
- */
-// oxlint-disable-next-line typescript/explicit-function-return-type -- inferred
-export function useLeaderboardSearch() {
-  const { search, replace: write } = useRouteSearch("/leaderboards");
-  const selection = createMemo(() => toSelection(search()));
-
-  // remember the selection for the next visit
-  createEffect(() => setLastSelection(selection()));
-
-  return {
-    selection,
-    /** 0-based */
-    page: (): number => (search().page ?? 1) - 1,
-    goToUserPage: (): boolean => search().goToUserPage ?? false,
-    /** Shows `selection` from its first page. */
-    setSelection: (selection: Selection): void =>
-      write(() => toLeaderboardSearch(selection)),
-    /** Shows the 0-based `page`. */
-    setPage: (page: number): void =>
-      write((prev) => ({ ...prev, page: page + 1, goToUserPage: undefined })),
-  };
-}
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
     key: "leaderboardSelector",

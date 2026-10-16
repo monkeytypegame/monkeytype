@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { LoadingPage } from "../../../src/ts/components/pages/LoadingPage";
 import {
   planLoadingBar,
-  resetLoadingPage,
+  resetLoadingBar,
   runLoadingStep,
-  updateLoadingPageBar,
-} from "../../../src/ts/states/loading-page";
+} from "../../../src/ts/router/loading-bar";
+import { updateLoadingPageBar } from "../../../src/ts/states/loading-page";
 
 /**
  * The fill is animated, so its width lands a frame or two after the step's
@@ -30,7 +30,7 @@ async function waitForFillWidth(
 describe("LoadingPage bar", () => {
   afterEach(() => {
     cleanup();
-    resetLoadingPage();
+    resetLoadingBar();
   });
 
   it("resolves a zero duration step", async () => {

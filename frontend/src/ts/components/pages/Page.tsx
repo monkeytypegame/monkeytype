@@ -15,7 +15,6 @@ import type { PageName } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { LoadingCircle } from "../common/LoadingCircle";
-import { LoadingPage } from "./LoadingPage";
 
 type PageProps = {
   name: PageName;
@@ -111,11 +110,3 @@ export function pageComponent(
 ): Component {
   return () => <Page name={name} content={content} class={options.class} />;
 }
-
-export const loadingPageClass =
-  "grid h-full w-full content-center items-center gap-4 place-self-center text-center";
-
-/** The loading page, as the page switcher and pending routes render it. */
-export const LoadingRoutePage = pageComponent("loading", LoadingPage, {
-  class: loadingPageClass,
-});

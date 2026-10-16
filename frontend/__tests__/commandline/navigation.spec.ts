@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import navigationCommands from "../../src/ts/commandline/lists/navigation";
 import type { Command } from "../../src/ts/commandline/types";
-import { getRouter, setRouter } from "../../src/ts/router/navigate";
+import { getRouter, setRouter } from "../../src/ts/router/instance";
 
 const { isAuthenticated } = vi.hoisted(() => ({ isAuthenticated: vi.fn() }));
 vi.mock("../../src/ts/states/core", async (importOriginal) => ({

@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
 import { z } from "zod";
 
-import { getRouter, navigate } from "../router/navigate";
+import { getRouter } from "../router/instance";
+import { navigate } from "../router/navigate";
 
 /** The settings url search params, taking strings in. */
 export const SettingsSearchSchema = z.object({

@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/solid-query";
 import { afterEach, describe, expect, it } from "vitest";
 
 import AsyncContent from "../../src/ts/components/common/AsyncContent";
+import { useAccountSettingsTab } from "../../src/ts/components/pages/account-settings/useAccountSettingsTab";
+import { useLeaderboardSearch } from "../../src/ts/components/pages/leaderboard/useLeaderboardSearch";
 import { getLeaderboardQueryOptions } from "../../src/ts/queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
 import { useRouteSearch } from "../../src/ts/router/search-params";
-import { useAccountSettingsTab } from "../../src/ts/states/account-settings";
-import { useLeaderboardSearch } from "../../src/ts/states/leaderboard-selection";
 import { linkToSetting } from "../../src/ts/states/settings-highlight";
 import {
   App,

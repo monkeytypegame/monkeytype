@@ -1,8 +1,8 @@
 import { ErrorComponentProps, useRouter } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
-import { LoadingPage } from "./LoadingPage";
-import { loadingPageClass, Page } from "./Page";
+import { LoadingPage, loadingPageClass } from "./LoadingPage";
+import { Page } from "./Page";
 
 /**
  * The router's error component: the loading page showing why the route

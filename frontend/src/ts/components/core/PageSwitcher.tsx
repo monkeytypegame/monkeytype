@@ -3,10 +3,10 @@ import { Outlet } from "@tanstack/solid-router";
 import { animate } from "animejs";
 import { children, JSXElement, Show } from "solid-js";
 
-import { isLoadingBarShown } from "../states/loading-page";
-import { isPendingShown } from "../states/router";
-import { applyReducedMotion } from "../utils/misc";
-import { LoadingRoutePage } from "./pages/Page";
+import { isLoadingBarShown } from "../../states/loading-page";
+import { isPendingShown } from "../../states/router";
+import { applyReducedMotion } from "../../utils/misc";
+import { LoadingRoutePage } from "../pages/LoadingPage";
 
 // duration of the page fade out and of the fade in
 const fadeDuration = 125;

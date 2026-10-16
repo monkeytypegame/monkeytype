@@ -25,8 +25,7 @@ import { ProfilePage } from "../components/pages/profile/ProfilePage";
 import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
 import { SettingsPage } from "../components/pages/settings/SettingsPage";
 import { TestPage } from "../components/pages/test/TestPage";
-import { PageSwitcher } from "../components/PageSwitcher";
-import { getSnapshot } from "../db";
+import { PageSwitcher } from "../components/core/PageSwitcher";
 import { AccountSettingsSearchSchema } from "../states/account-settings";
 import { getUserProfile } from "../queries/profile";
 import {
@@ -45,31 +44,29 @@ import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
 } from "../queries/leaderboards";
+import type { PageName } from "../states/router";
 import { SettingsSearchSchema } from "../states/settings-highlight";
+import { getSnapshot } from "../states/snapshot";
 import * as TodayTracker from "../test/today-tracker";
+import type { RouterAuth } from "./create-router-auth";
 import {
   planNavigationLoadingBar,
+  type RouteLoadingStepName,
   runRouteLoadingStep,
   runUserDataStep,
 } from "./loading-steps";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
-/** What routes need to know about auth. Made by createRouterAuth. */
-export type RouterAuth = {
-  /** False when auth failed to load - guarded pages send users to the test page. */
-  isAvailable: () => boolean;
-  isSignedIn: () => boolean;
-  /** Resolves once the first auth state is known. */
-  waitForFirstState: () => Promise<void>;
-  /**
-   * The user data download of the last sign in, until it succeeded. After a
-   * failed one it starts a new one (Retry). undefined if there's none.
-   */
-  userDataDownload: () => Promise<void> | undefined;
-  /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
-  onChange: (listener: () => void) => () => void;
-};
+declare module "@tanstack/solid-router" {
+  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
+  interface StaticDataRouteOption {
+    /** The page the route renders (its component is a `routePage`). */
+    page?: PageName;
+    /** The route's loading step (see routeLoadingSteps), its loader runs it */
+    loadingStep?: RouteLoadingStepName;
+  }
+}
 
 /** Router context: guards and loaders read these instead of module globals. */
 export type RouterContext = {

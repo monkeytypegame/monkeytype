@@ -3,8 +3,9 @@
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { setPreloading } from "../router/create-router";
+import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
-import { getRoutePage, isNavigating } from "../states/router";
+import { getRoutePage } from "../states/router";
 import { showModal } from "../states/modals";
 import { restart } from "../test/test-logic";
 import { trackedSignals } from "./signal-tracker";
@@ -25,7 +26,8 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
 const mt = {
   navigate,
   getRoutePage,
-  isNavigating,
+  /** Whether a navigation is in progress (the loading page may cover the page). */
+  isNavigating: (): boolean => getRouter()?.state.status === "pending",
   /** Turns intent preloading (hovered links) off or back on. */
   setPreloading,
   getConfig,

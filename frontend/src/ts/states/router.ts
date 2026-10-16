@@ -1,7 +1,7 @@
 import type { RegisteredRouter } from "@tanstack/solid-router";
 import { createMemo, createRoot } from "solid-js";
 
-import { getRouter } from "../router/navigate";
+import { getRouter } from "../router/instance";
 
 /** A page of the site, rendered by its route (see router/routes.ts). */
 export type PageName =
@@ -17,14 +17,6 @@ export type PageName =
   | "accountSettings"
   | "friends"
   | "leaderboards";
-
-declare module "@tanstack/solid-router" {
-  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
-  interface StaticDataRouteOption {
-    /** The page the route renders (its component is a `routePage`). */
-    page?: PageName;
-  }
-}
 
 function getMatches(): RegisteredRouter["state"]["matches"] {
   return getRouter()?.state.matches ?? [];
@@ -68,22 +60,11 @@ function isNotFound(matches: ReturnType<typeof getMatches>): boolean {
   return matches.some((match) => match._notFound === true);
 }
 
-/** Whether a navigation is in progress (the loading page may cover the current page). */
-export function isNavigating(): boolean {
-  return getRouter()?.state.status === "pending";
-}
-
 /**
- * Whether typing may start a test: the test page is shown, and no
- * navigation is leaving it (eg. typing while it fades out). A reload in
- * place (eg. signing in) doesn't stop it.
+ * Whether a navigation to another path is in progress (eg. the page fades
+ * out). A reload in place (eg. signing in) doesn't count.
  */
-export function canStartTest(): boolean {
-  return getRoutePage() === "test" && !isLeavingPage();
-}
-
-// a navigation to another path is in progress
-function isLeavingPage(): boolean {
+export function isLeavingPage(): boolean {
   const state = getRouter()?.state;
   if (state?.status !== "pending") return false;
   return state.location.pathname !== state.resolvedLocation?.pathname;

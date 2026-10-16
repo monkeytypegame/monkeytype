@@ -11,9 +11,9 @@ import { getRoutePage, PageName } from "../states/router";
 import * as Focus from "../test/focus";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
-import { setRouter } from "./navigate";
 import { createRouterAuth } from "./create-router-auth";
 import { createAppRouter } from "./create-router";
+import { setRouter } from "./instance";
 
 const auth = createRouterAuth({
   isAvailable: isAuthAvailable,

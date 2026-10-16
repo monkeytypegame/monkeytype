@@ -5,8 +5,8 @@
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
 import { LoadingErrorRoutePage } from "../components/pages/LoadingErrorRoutePage";
-import { LoadingRoutePage } from "../components/pages/Page";
-import { finishLoadingBar, isLoadingBarShown } from "../states/loading-page";
+import { LoadingRoutePage } from "../components/pages/LoadingPage";
+import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
@@ -16,7 +16,9 @@ import {
 } from "../states/test";
 import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
+import { finishLoadingBar } from "./loading-bar";
 import { type RouterContext, routeTree } from "./routes";
+import { parseSearch, stringifySearch } from "./search-params";
 
 /**
  * Hovering (or focusing) a link preloads its page: guards and loaders run
@@ -65,19 +67,8 @@ export function createAppRouter(
     defaultErrorComponent: LoadingErrorRoutePage,
     notFoundMode: "root",
     trailingSlash: "never",
-    // search params are plain strings (the default JSON parser would turn
-    // ?mode2=15 into a number) - route validateSearch schemas take strings in
-    parseSearch: (searchStr) =>
-      Object.fromEntries(new URLSearchParams(searchStr)),
-    stringifySearch: (search) => {
-      const params = new URLSearchParams();
-      for (const [key, value] of Object.entries(search)) {
-        const str = searchValueToString(value);
-        if (str !== undefined) params.set(key, str);
-      }
-      const str = params.toString();
-      return str === "" ? "" : `?${str}`;
-    },
+    parseSearch,
+    stringifySearch,
   });
 
   const preloadRoute = router.preloadRoute;
@@ -140,12 +131,3 @@ export function createAppRouter(
 }
 
 export type AppRouter = ReturnType<typeof createAppRouter>;
-
-// booleans keep the "t"/"f" format of existing links, undefined is left out
-function searchValueToString(value: unknown): string | undefined {
-  if (value === undefined || value === null) return undefined;
-  if (typeof value === "boolean") return value ? "t" : "f";
-  if (typeof value === "string") return value;
-  if (typeof value === "number") return value.toString();
-  return JSON.stringify(value);
-}

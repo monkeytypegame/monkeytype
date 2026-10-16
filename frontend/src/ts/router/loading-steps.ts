@@ -5,11 +5,7 @@ import type { StaticDataRouteOption } from "@tanstack/solid-router";
 
 import { isConnectionsReady } from "../collections/connections";
 import { isResultsReady } from "../collections/results";
-import {
-  LoadingStep,
-  planLoadingBar,
-  runLoadingStep,
-} from "../states/loading-page";
+import { LoadingStep, planLoadingBar, runLoadingStep } from "./loading-bar";
 
 /** A route's loading step: its bar setup and whether it has to run right now. */
 type RouteLoadingStep = LoadingStep & {
@@ -25,7 +21,7 @@ const userDataStep: LoadingStep = {
 };
 
 // the loading bar setup of every route with a loading step. A route names its
-// step in `staticData.loadingStep` (the one place), its loader runs it with
+// step in `staticData.loadingStep` (the one place, declared in routes.ts), its loader runs it with
 // runRouteLoadingStep
 const routeLoadingSteps = {
   results: {
@@ -50,14 +46,6 @@ const routeLoadingSteps = {
 } satisfies Record<string, RouteLoadingStep>;
 
 export type RouteLoadingStepName = keyof typeof routeLoadingSteps;
-
-declare module "@tanstack/solid-router" {
-  // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
-  interface StaticDataRouteOption {
-    /** The route's loading step (see routeLoadingSteps), its loader runs it */
-    loadingStep?: RouteLoadingStepName;
-  }
-}
 
 /**
  * Plans the navigation's loading bar: the user data step if a download is

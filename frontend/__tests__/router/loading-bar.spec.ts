@@ -2,11 +2,11 @@ import { createEffect, createRoot } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  getLoadingPageText,
   planLoadingBar,
-  resetLoadingPage,
+  resetLoadingBar,
   runLoadingStep,
-} from "../../src/ts/states/loading-page";
+} from "../../src/ts/router/loading-bar";
+import { getLoadingPageText } from "../../src/ts/states/loading-page";
 
 // every text value the loading page renders, in order
 function recordTexts(): { texts: (string | null)[]; dispose: () => void } {
@@ -18,9 +18,9 @@ function recordTexts(): { texts: (string | null)[]; dispose: () => void } {
   return { texts, dispose };
 }
 
-describe("loading page", () => {
+describe("loading bar", () => {
   afterEach(() => {
-    resetLoadingPage();
+    resetLoadingBar();
     vi.useRealTimers();
   });
 

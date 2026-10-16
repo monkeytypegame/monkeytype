@@ -83,8 +83,6 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
-import type { RouterAuth } from "../../src/ts/router/routes";
-
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
@@ -96,20 +94,19 @@ import {
 } from "../../src/ts/router/create-router";
 import {
   createRouterAuth,
+  type RouterAuth,
   type UserDataDownload,
 } from "../../src/ts/router/create-router-auth";
-import { setRouter } from "../../src/ts/router/navigate";
-import {
-  isLoadingBarShown,
-  resetLoadingPage,
-} from "../../src/ts/states/loading-page";
-import { canStartTest } from "../../src/ts/states/router";
+import { setRouter } from "../../src/ts/router/instance";
+import { resetLoadingBar } from "../../src/ts/router/loading-bar";
+import { isLoadingBarShown } from "../../src/ts/states/loading-page";
 import {
   isTestActive,
   setIsTestRestarting,
   setResultCalculating,
   setTestActive,
 } from "../../src/ts/states/test";
+import { canStartTest } from "../../src/ts/test/test-page-state";
 
 export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
 
@@ -738,7 +735,7 @@ export function cleanupApp(): void {
   pageContent.clear();
   setRouter(undefined);
   setPreloading(true);
-  resetLoadingPage();
+  resetLoadingBar();
   setTestActive(false);
   setIsTestRestarting(false);
   setResultCalculating(false);

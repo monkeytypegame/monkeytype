@@ -36,7 +36,6 @@ import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
-import { canStartTest } from "../states/router";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -81,6 +80,7 @@ import {
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
+import { canStartTest } from "./test-page-state";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";

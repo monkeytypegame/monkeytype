@@ -15,11 +15,7 @@ import {
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { isAuthenticated } from "../../../states/core";
-import {
-  pageSize,
-  Selection,
-  useLeaderboardSearch,
-} from "../../../states/leaderboard-selection";
+import { pageSize, Selection } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";
@@ -30,6 +26,7 @@ import { NextUpdate } from "./NextUpdate";
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
 import { Title } from "./Title";
+import { useLeaderboardSearch } from "./useLeaderboardSearch";
 import { UserRank } from "./UserRank";
 
 export function LeaderboardPage(): JSXElement {

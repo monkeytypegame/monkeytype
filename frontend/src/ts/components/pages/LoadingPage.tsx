@@ -10,6 +10,7 @@ import {
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
+import { pageComponent } from "./Page";
 
 export type LoadingPageProps = {
   /** Shows the error state: the failed load's message and a Retry button. */
@@ -88,3 +89,11 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
     </>
   );
 }
+
+export const loadingPageClass =
+  "grid h-full w-full content-center items-center gap-4 place-self-center text-center";
+
+/** The loading page, as the page switcher and pending routes render it. */
+export const LoadingRoutePage = pageComponent("loading", LoadingPage, {
+  class: loadingPageClass,
+});
