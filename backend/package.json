@@ -61,7 +61,7 @@
   "devDependencies": {
     "@monkeytype/oxlint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "@redocly/cli": "2.24.1",
+    "@redocly/cli": "2.33.2",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.19",
     "@types/cron": "1.7.3",
