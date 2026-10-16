@@ -44,7 +44,6 @@ import {
   LeaderboardSearchSchema,
   toSelection,
 } from "../states/leaderboard-selection";
-import type { PageName } from "../states/router";
 import { SettingsSearchSchema } from "../states/settings-highlight";
 import { getSnapshot } from "../states/snapshot";
 import * as TodayTracker from "../test/today-tracker";
@@ -56,6 +55,21 @@ import {
 } from "./loading-bar";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
+
+/** A page of the site, rendered by its route (see `staticData.page`). */
+export type PageName =
+  | "loading"
+  | "test"
+  | "about"
+  | "settings"
+  | "account"
+  | "login"
+  | "profile"
+  | "profileSearch"
+  | "404"
+  | "accountSettings"
+  | "friends"
+  | "leaderboards";
 
 declare module "@tanstack/solid-router" {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface

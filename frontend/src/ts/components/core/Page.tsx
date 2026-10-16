@@ -10,7 +10,7 @@ import {
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
-import type { PageName } from "../../states/router";
+import type { PageName } from "../../router/routes";
 
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";

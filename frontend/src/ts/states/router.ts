@@ -2,21 +2,7 @@ import type { RegisteredRouter } from "@tanstack/solid-router";
 import { createMemo, createRoot } from "solid-js";
 
 import { getRouter } from "../router/instance";
-
-/** A page of the site, rendered by its route (see router/routes.ts). */
-export type PageName =
-  | "loading"
-  | "test"
-  | "about"
-  | "settings"
-  | "account"
-  | "login"
-  | "profile"
-  | "profileSearch"
-  | "404"
-  | "accountSettings"
-  | "friends"
-  | "leaderboards";
+import type { PageName } from "../router/routes";
 
 function getMatches(): RegisteredRouter["state"]["matches"] {
   return getRouter()?.state.matches ?? [];
