@@ -8,8 +8,7 @@ import {
 } from "firebase/auth";
 
 import Ape from "../../ape";
-import { loadUser, signOut } from "../../auth";
-import { authEvent } from "../../events/auth";
+import { dispatchAuthStateChanged, loadUser, signOut } from "../../auth";
 import { googleSignUpEvent } from "../../events/google-sign-up";
 import { resetIgnoreAuthCallback, setUserState } from "../../firebase";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -135,17 +134,8 @@ async function apply(options: {
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
     showSuccessNotification("Account created");
-    const user = signedInUser.user;
-    await loadUser(user);
-
-    authEvent.dispatch({
-      type: "authStateChanged",
-      data: {
-        isUserSignedIn: true,
-        loadPromise: Promise.resolve(),
-        reloadUserData: async () => loadUser(user),
-      },
-    });
+    await loadUser(signedInUser.user);
+    dispatchAuthStateChanged(signedInUser.user, Promise.resolve());
     signedInUser = undefined;
   } catch (e) {
     console.log(e);

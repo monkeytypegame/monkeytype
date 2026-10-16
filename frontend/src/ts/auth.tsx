@@ -224,14 +224,12 @@ export async function onAuthStateChanged(
   console.debug(`account controller ready`);
 
   let userPromise: Promise<void> = Promise.resolve();
-  let reloadUserData = async (): Promise<void> => undefined;
 
   if (authInitialisedAndConnected) {
     console.debug(`auth state changed, user ${user ? "true" : "false"}`);
     if (user) {
       setUserId(user.uid);
       userPromise = loadUser(user);
-      reloadUserData = async () => loadUser(user);
     } else {
       setUserId(null);
       DB.setSnapshot(undefined);
@@ -242,12 +240,25 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
+  dispatchAuthStateChanged(user, userPromise);
+}
+
+/**
+ * Announces a new auth state: `user` signed in (null: signed out), with
+ * `loadPromise` downloading their user data.
+ */
+export function dispatchAuthStateChanged(
+  user: UserType | null,
+  loadPromise: Promise<void>,
+): void {
   authEvent.dispatch({
     type: "authStateChanged",
     data: {
       isUserSignedIn: user !== null,
-      loadPromise: userPromise,
-      reloadUserData,
+      loadPromise,
+      reloadUserData: async () => {
+        if (user !== null) await loadUser(user);
+      },
     },
   });
 }

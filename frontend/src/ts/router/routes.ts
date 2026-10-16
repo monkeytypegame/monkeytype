@@ -13,6 +13,7 @@ import {
   waitForConnectionsReady,
 } from "../collections/connections";
 import { waitForResultsReady } from "../collections/results";
+import { PageSwitcher } from "../components/core/PageSwitcher";
 import { NotFoundPage } from "../components/pages/404Page";
 import { AboutPage } from "../components/pages/AboutPage";
 import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
@@ -25,8 +26,10 @@ import { ProfilePage } from "../components/pages/profile/ProfilePage";
 import { ProfileSearchPage } from "../components/pages/profile/ProfileSearchPage";
 import { SettingsPage } from "../components/pages/settings/SettingsPage";
 import { TestPage } from "../components/pages/test/TestPage";
-import { PageSwitcher } from "../components/core/PageSwitcher";
-import { AccountSettingsSearchSchema } from "../states/account-settings";
+import {
+  getLeaderboardQueryOptions,
+  getRankQueryOptions,
+} from "../queries/leaderboards";
 import { getUserProfile } from "../queries/profile";
 import {
   getContributorsQueryOptions,
@@ -35,15 +38,12 @@ import {
   getTypingStatsQueryOptions,
 } from "../queries/public";
 import { getServerConfigurationQueryOptions } from "../queries/server-configuration";
+import { AccountSettingsSearchSchema } from "../states/account-settings";
 import {
   getMissingLeaderboardSearch,
   LeaderboardSearchSchema,
   toSelection,
 } from "../states/leaderboard-selection";
-import {
-  getLeaderboardQueryOptions,
-  getRankQueryOptions,
-} from "../queries/leaderboards";
 import type { PageName } from "../states/router";
 import { SettingsSearchSchema } from "../states/settings-highlight";
 import { getSnapshot } from "../states/snapshot";
@@ -63,7 +63,7 @@ declare module "@tanstack/solid-router" {
   interface StaticDataRouteOption {
     /** The page the route renders (its component is a `routePage`). */
     page?: PageName;
-    /** The route's loading step (see routeLoadingSteps), its loader runs it */
+    /** The route's loading step (see routeLoadingSteps in loading-steps.ts), its loader runs it */
     loadingStep?: RouteLoadingStepName;
   }
 }
