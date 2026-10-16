@@ -10,9 +10,10 @@ import {
 
 import {
   invalidateConnections,
+  isConnectionsReady,
   waitForConnectionsReady,
 } from "../collections/connections";
-import { waitForResultsReady } from "../collections/results";
+import { isResultsReady, waitForResultsReady } from "../collections/results";
 import { PageSwitcher } from "../components/core/PageSwitcher";
 import { NotFoundPage } from "../components/pages/404Page";
 import { AboutPage } from "../components/pages/AboutPage";
@@ -50,11 +51,10 @@ import { getSnapshot } from "../states/snapshot";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth } from "./create-router-auth";
 import {
-  planNavigationLoadingBar,
-  type RouteLoadingStepName,
-  runRouteLoadingStep,
-  runUserDataStep,
-} from "./loading-steps";
+  type LoadingStep,
+  planLoadingBar,
+  runLoadingStep,
+} from "./loading-bar";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -63,10 +63,26 @@ declare module "@tanstack/solid-router" {
   interface StaticDataRouteOption {
     /** The page the route renders (its component is a `routePage`). */
     page?: PageName;
-    /** The route's loading step (see routeLoadingSteps in loading-steps.ts), its loader runs it */
-    loadingStep?: RouteLoadingStepName;
+    /** The route's loading step: its loader runs it with runRouteLoadingStep */
+    loadingPage?: RouteLoadingStep;
   }
 }
+
+/**
+ * A route's loading step, set in its `staticData.loadingPage`: its bar setup
+ * and whether it has to run right now. Labelled after the route's page.
+ */
+type RouteLoadingStep = Omit<LoadingStep, "label"> & {
+  /** Read when the navigation starts (to plan the bar) and again when the step runs. */
+  isNeeded: () => boolean;
+};
+
+const userDataStep: LoadingStep = {
+  label: "user data",
+  keyframes: [
+    { percentage: 90, durationMs: 1000, text: "Downloading user data..." },
+  ],
+};
 
 /** Router context: guards and loaders read these instead of module globals. */
 export type RouterContext = {
@@ -75,10 +91,11 @@ export type RouterContext = {
 };
 
 /**
- * Waits until the auth state is known, plans the navigation's loading bar,
- * then shows it while the user data downloads (only once per sign in).
- * `matches` are all routes of the navigation. A preload (hovered link) only
- * waits for the auth state.
+ * Waits until the auth state is known, plans the navigation's loading bar
+ * (the user data step if a download is pending, plus each matched route's
+ * step that is needed right now), then shows it while the user data
+ * downloads (only once per sign in). `matches` are all routes of the
+ * navigation. A preload (hovered link) only waits for the auth state.
  */
 async function waitForUserData(
   auth: RouterAuth,
@@ -90,10 +107,39 @@ async function waitForUserData(
   if (preload) return;
 
   const userData = auth.userDataDownload();
-  planNavigationLoadingBar({ matches, userData });
+  const routeSteps = matches.filter(
+    (match) => match.staticData.loadingPage?.isNeeded() ?? false,
+  ).length;
+  planLoadingBar((userData === undefined ? 0 : 1) + routeSteps);
   if (userData === undefined) return;
 
-  await runUserDataStep(userData);
+  await runLoadingStep(userDataStep, async () => userData);
+}
+
+/** The parts of a loader's context running its route's loading step needs. */
+type LoadingStepLoaderContext = {
+  preload: boolean;
+  route: { options: { staticData?: StaticDataRouteOption } };
+};
+
+/**
+ * Runs `load` as the loading step the loader's route sets in
+ * `staticData.loadingPage`, unless it's no longer needed. A preload (hovered
+ * link) runs nothing: no loading page, the step runs once the page is opened.
+ */
+async function runRouteLoadingStep(
+  loader: LoadingStepLoaderContext,
+  load: () => Promise<void>,
+): Promise<void> {
+  if (loader.preload) return;
+  const { loadingPage: step, page } = loader.route.options.staticData ?? {};
+  if (step === undefined || page === undefined) {
+    throw new Error(
+      "A route running a loading step needs staticData.loadingPage and staticData.page",
+    );
+  }
+  if (!step.isNeeded()) return;
+  await runLoadingStep({ ...step, label: `the ${page} page` }, load);
 }
 
 function requireAuth(auth: RouterAuth): void {
@@ -229,7 +275,15 @@ const login = createRoute({
 const account = createRoute({
   getParentRoute: () => userDataRoute,
   path: "/account",
-  staticData: { page: "account", loadingStep: "results" },
+  staticData: {
+    page: "account",
+    loadingPage: {
+      isNeeded: () => !isResultsReady(),
+      keyframes: [
+        { percentage: 90, durationMs: 2000, text: "Downloading results..." },
+      ],
+    },
+  },
   component: routePage(AccountPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   // blocking data
@@ -282,7 +336,20 @@ const profile = createRoute({
 const friends = createRoute({
   getParentRoute: () => userDataRoute,
   path: "/friends",
-  staticData: { page: "friends", loadingStep: "friends" },
+  staticData: {
+    page: "friends",
+    loadingPage: {
+      isNeeded: () => !isConnectionsReady(),
+      keyframes: [
+        { percentage: 50, durationMs: 1500, text: "Downloading friends..." },
+        {
+          percentage: 50,
+          durationMs: 1500,
+          text: "Downloading friend requests...",
+        },
+      ],
+    },
+  },
   component: routePage(FriendsPage),
   beforeLoad: ({ context }) => requireAuth(context.auth),
   // blocking data
