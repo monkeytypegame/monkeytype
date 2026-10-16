@@ -137,6 +137,7 @@ export function HistoryChart(props: {
         <ChartJs
           name="History"
           type="line"
+          deferUpdates
           data={{
             labels: props.results.map((_, i) => i),
             datasets: [

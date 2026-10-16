@@ -18,7 +18,8 @@ type BaseProps = {
   onMouseLeave?: (e: MouseEvent) => void;
   dataset?: Record<string, string>;
   active?: boolean;
-  tabIndex?: number;
+  tabIndex?: number | string;
+  id?: string;
 };
 
 export type ButtonProps = BaseProps & {
@@ -90,6 +91,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
         <button
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
+          id={props.id}
           class={getClasses()}
           onClick={(e) => props.onClick?.(e)}
           onMouseEnter={(e) => props.onMouseEnter?.(e)}
@@ -107,6 +109,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
       }
     >
       <a
+        id={props.id}
         class={getClasses()}
         href={props.href}
         target={
