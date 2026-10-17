@@ -172,6 +172,63 @@ export async function getRank(
   }
 }
 
+export async function getNextWpm(
+  mode: string,
+  mode2: string,
+  language: string,
+  uid: string,
+): Promise<number | null | false> {
+  try {
+    const collectionName = getCollectionName({ language, mode, mode2 });
+    const [result] = await getCollection({ language, mode, mode2 })
+      .aggregate<{ nextWpm?: number }>([
+        { $match: { uid } },
+        { $sort: { rank: 1, _id: 1 } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: collectionName,
+            let: { currentRank: "$rank", currentWpm: "$wpm" },
+            // ranks are sorted by wpm, so the closest entry above with a higher
+            // wpm holds the next distinct wpm. walking the rank index upwards
+            // only has to skip entries with the same wpm.
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $lt: ["$rank", "$$currentRank"] },
+                      { $gt: ["$wpm", "$$currentWpm"] },
+                    ],
+                  },
+                },
+              },
+              { $sort: { rank: -1 } },
+              { $limit: 1 },
+              { $project: { _id: 0, wpm: 1 } },
+            ],
+            as: "nextEntry",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            nextWpm: { $arrayElemAt: ["$nextEntry.wpm", 0] },
+          },
+        },
+      ])
+      .toArray();
+
+    return result?.nextWpm ?? null;
+  } catch (e) {
+    // oxlint-disable-next-line no-unsafe-member-access
+    if (e.error === 175) {
+      return false;
+    }
+    throw e;
+  }
+}
+
 export async function update(
   mode: string,
   mode2: string,

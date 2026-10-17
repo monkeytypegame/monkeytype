@@ -6,6 +6,13 @@ import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
 import { Caret } from "../elements/caret";
+import { getNextPaceCaretWpm } from "../queries/leaderboards";
+import {
+  configurationPromise,
+  get as getServerConfiguration,
+} from "../ape/server-configuration";
+import { isPaceCaretModeAvailable } from "../config/pace-caret-options";
+import { GetLeaderboardRankQuery } from "@monkeytype/contracts/leaderboards";
 import { ElementWithUtils } from "../utils/dom";
 import {
   getUserAverage10Once,
@@ -81,11 +88,89 @@ export function resetCaretPosition(): void {
   });
 }
 
+function matchesRule(value: string, rule: string): boolean {
+  try {
+    return new RegExp(`^${rule}$`).test(value);
+  } catch {
+    return false;
+  }
+}
+
+// mirrors the backend rules for adding a result to the targeted leaderboard
+function qualifiesForLeaderboard(
+  paceCaret: "next" | "nextDaily",
+  query: GetLeaderboardRankQuery,
+): boolean {
+  if (!getActiveFunboxes().every((funbox) => funbox.canGetPb)) return false;
+
+  if (paceCaret === "next") {
+    return (
+      !Config.lazyMode &&
+      query.language === "english" &&
+      query.mode === "time" &&
+      (query.mode2 === "15" || query.mode2 === "60")
+    );
+  }
+
+  return (
+    getServerConfiguration()?.dailyLeaderboards.validModeRules.some(
+      (rule) =>
+        matchesRule(query.language, rule.language) &&
+        matchesRule(query.mode, rule.mode) &&
+        matchesRule(query.mode2, rule.mode2),
+    ) ?? false
+  );
+}
+
 export async function init(): Promise<void> {
   caret?.hide();
+  const paceCaret = Config.paceCaret;
   const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
-  if (Config.paceCaret === "pb") {
+  if (paceCaret === "next" || paceCaret === "nextDaily") {
+    settings = null;
+    setPaceCaretWpm(undefined);
+
+    if (paceCaret === "nextDaily") {
+      try {
+        await configurationPromise;
+      } catch {
+        return;
+      }
+    }
+
+    const leaderboardQuery: GetLeaderboardRankQuery = {
+      language: Config.language,
+      mode: Config.mode,
+      mode2,
+    };
+    if (
+      !isPaceCaretModeAvailable(paceCaret) ||
+      !qualifiesForLeaderboard(paceCaret, leaderboardQuery)
+    ) {
+      return;
+    }
+
+    try {
+      wpm =
+        (await getNextPaceCaretWpm(
+          paceCaret === "next" ? "allTime" : "daily",
+          leaderboardQuery,
+        )) ?? 0;
+    } catch {
+      return;
+    }
+
+    // a newer init() handles settings that changed during the request
+    if (
+      Config.paceCaret !== paceCaret ||
+      Config.language !== leaderboardQuery.language ||
+      Config.mode !== leaderboardQuery.mode ||
+      Misc.getMode2(Config, getCurrentQuote()) !== leaderboardQuery.mode2
+    ) {
+      return;
+    }
+  } else if (Config.paceCaret === "pb") {
     wpm =
       DB.getLocalPB(
         Config.mode,
