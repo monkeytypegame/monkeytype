@@ -8,14 +8,12 @@ import {
   Show,
 } from "solid-js";
 
+import { useRouteSearch } from "../../router/search-params";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import {
-  getHighlightedSetting,
-  linkToSetting,
-} from "../../states/settings-highlight";
+import { linkToSetting } from "../../states/settings-highlight";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -55,6 +53,7 @@ export type SettingProps = {
   );
 
 export function Setting(props: SettingProps): JSXElement {
+  const { search } = useRouteSearch("/settings");
   const breakpoints = () => props.breakpoints ?? "normal";
   // JSX props are getters that build new DOM on every read - resolve each once
   const description = children(() => props.description);
@@ -66,7 +65,8 @@ export function Setting(props: SettingProps): JSXElement {
   let ref: HTMLDivElement | undefined;
   const [highlighted, setHighlighted] = createSignal(false);
   onMount(() => {
-    if (props.key === undefined || getHighlightedSetting() !== props.key) {
+    const key = search().highlight;
+    if (props.key === undefined || key !== props.key) {
       return;
     }
 
