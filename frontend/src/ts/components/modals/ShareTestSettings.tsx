@@ -97,7 +97,17 @@ export function ShareTestSettings(): JSXElement {
 
   return (
     <AnimatedModal id="ShareTestSettings" title="Share test settings">
-      <form.Field name="mode">
+      <form.Field
+        name="mode"
+        listeners={{
+          onChange: ({ value }) => {
+            if (!value) {
+              form.setFieldValue("mode2", false);
+              form.setFieldValue("customText", false);
+            }
+          },
+        }}
+      >
         {(field) => (
           <Checkbox
             field={() => field()}
