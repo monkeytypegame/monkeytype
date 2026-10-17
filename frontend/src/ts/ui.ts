@@ -1,24 +1,16 @@
 import { Config } from "./config/store";
-import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import { configEvent } from "./events/config";
-import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
-import {
-  getActivePage,
-  getCustomTextIndicator,
-  getGlobalOffsetTop,
-} from "./states/core";
+import { getCustomTextIndicator } from "./states/core";
 import { isDevEnvironment } from "./utils/env";
 import { canQuickRestart } from "./utils/quick-restart";
 import { FontName } from "@monkeytype/schemas/fonts";
-import { qs, qsr } from "./utils/dom";
-import { createEffect } from "solid-js";
+import { qs } from "./utils/dom";
 import fileStorage from "./utils/file-storage";
-import { convertRemToPixels } from "./utils/numbers";
 import { getLanguage } from "./utils/json-data";
 import { replaceUnderscoresWithSpaces } from "./utils/strings";
-import { getResultVisible, isTestActive } from "./states/test";
+import { isTestActive } from "./states/test";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: FontName): void {
@@ -112,37 +104,6 @@ window.addEventListener("beforeunload", (event) => {
       event.returnValue = "";
     }
   }
-});
-
-const debouncedEvent = debounce(250, () => {
-  if (getActivePage() === "test" && !getResultVisible()) {
-    if (Config.tapeMode !== "off") {
-      void TestUI.scrollTape();
-    } else {
-      void TestUI.centerActiveLine();
-      void TestUI.updateHintsPositionDebounced();
-    }
-    setTimeout(() => {
-      TestUI.updateWordsInputPosition();
-      TestUI.focusWords();
-      Caret.show();
-    }, 250);
-  }
-});
-
-const throttledEvent = throttle(250, () => {
-  Caret.hide();
-});
-
-window.addEventListener("resize", () => {
-  throttledEvent();
-  debouncedEvent();
-});
-
-createEffect(() => {
-  qsr("#app").setStyle({
-    paddingTop: `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
-  });
 });
 
 configEvent.subscribe(async ({ key }) => {

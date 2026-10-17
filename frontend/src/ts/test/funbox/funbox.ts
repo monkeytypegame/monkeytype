@@ -9,7 +9,6 @@ import {
   toggleFunbox as configToggleFunbox,
   setConfig,
 } from "../../config/setters";
-import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
@@ -24,7 +23,10 @@ import {
 } from "./list";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { qs, qsa } from "../../utils/dom";
-import { setWordsWrapperHidden } from "../../states/test";
+import {
+  setMemoryTimerDuration,
+  setWordsWrapperHidden,
+} from "../../states/test";
 import { configEvent } from "../../events/config";
 
 export function toggleScript(...params: string[]): void {
@@ -70,7 +72,7 @@ export async function clear(): Promise<boolean> {
   qsa(".funBoxTheme").remove();
 
   setWordsWrapperHidden(false);
-  MemoryTimer.reset();
+  setMemoryTimerDuration(null);
   return true;
 }
 
@@ -98,7 +100,7 @@ export async function activate(
     return false;
   }
 
-  MemoryTimer.reset();
+  setMemoryTimerDuration(null);
   await setFunboxBodyClasses();
   await applyFunboxCSS();
 

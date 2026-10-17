@@ -13,15 +13,15 @@ import {
   setGlarsesMode,
 } from "../../states/glarses-mode";
 import {
+  getSmoothedBurst,
+  resetSmoothedBurst,
+  setSmoothedBurst,
+} from "../../states/result";
+import {
   getSarcasticResultMessage,
   resetSarcasticResultMessage,
   setSarcasticResultMessage,
 } from "../../states/sarcastic-result-message";
-import {
-  getSmoothedBurst,
-  resetSmoothedBurst,
-  setSmoothedBurst,
-} from "../../states/smoothed-burst";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";

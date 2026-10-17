@@ -1,3 +1,5 @@
+// queries only static markup from index.html (#nocss, links, scripts)
+/* oxlint-disable monkeytype-rules/no-module-scope-dom-query */
 import { envConfig } from "virtual:env-config";
 import { qs } from "../utils/dom";
 

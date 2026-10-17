@@ -1,58 +1,167 @@
-import { JSXElement, onMount } from "solid-js";
+import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
-import { initResultChart } from "../../../controllers/chart-controller";
+import { getConfig } from "../../../config/store";
+import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
+import {
+  isInputElementFocused,
+  registerInputElement,
+} from "../../../input/input-element";
 import { initInputListeners } from "../../../input/listeners";
+import { listenForModifierKeys } from "../../../states/modifiers";
+import { listenForMonkeyKeys } from "../../../states/monkey";
+import { getShowResult } from "../../../states/result";
+import {
+  getFocus,
+  getLayoutfluidTimerText,
+  getResultVisible,
+  isErrorBorderDisabled,
+  isJoiningScript,
+  isLanguageRightToLeft,
+  isLayoutfluidTimerVisible,
+  isReadAheadDisabled,
+  isResultLoading,
+  isTestInitFailed,
+  isTypingTestHidden,
+  isWordsHidden,
+  isWordsWrapperHidden,
+  resetIncompleteTests,
+  setTestFocusState,
+  showOutOfFocusWarning,
+} from "../../../states/test";
 import * as Caret from "../../../test/caret";
+import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
+import {
+  leaveTestPage,
+  onRestartButtonClick,
+  restart,
+  restartIfNotStarted,
+} from "../../../test/test-logic";
 import * as TestUI from "../../../test/test-ui";
+import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import { Button } from "../../common/Button";
+import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
+import { FunboxTimer } from "./FunboxTimer";
 import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
 import { LiveStatsTextBottom } from "./live-stats/LiveStatsTextBottom";
 import { LiveStatsTextTop } from "./live-stats/LiveStatsTextTop";
+import { MemoryFunboxTimer } from "./MemoryFunboxTimer";
 import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
+import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
+import { TestInitFailed } from "./TestInitFailed";
+
+function prefixedClass(
+  prefix: string,
+  value: string | null,
+): Record<string, boolean> {
+  if (value === null) return {};
+  return { [`${prefix}-${value.replaceAll("_", "-")}`]: true };
+}
 
 /**
- * Renders the children of the static `.page.pageTest` element.
- * Internals are still vanilla - this only owns the markup and binds the
- * vanilla listeners once it exists. Must stay mounted for the app's lifetime.
+ * The test page. Internals are still vanilla - this owns the markup and hands
+ * its elements to the vanilla modules on mount, unbinding them on cleanup.
+ * Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
+  // page-controller ends the test as soon as a navigation away starts. This
+  // also ends it when the page unmounts without one
+  onCleanup(leaveTestPage);
+
+  let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
   let wordsRef: HTMLDivElement | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
+  let inputRef: HTMLTextAreaElement | undefined;
 
   onMount(() => {
+    // registered first so a throw below still cleans up
+    const controller = new AbortController();
+    onCleanup(() => controller.abort());
+    const { signal } = controller;
+
     if (
+      typingTestRef === undefined ||
       wordsWrapperRef === undefined ||
       wordsRef === undefined ||
       caretRef === undefined ||
-      paceCaretRef === undefined
+      paceCaretRef === undefined ||
+      inputRef === undefined
     ) {
       throw new Error("TestPage refs not set");
     }
+
+    // input first - the listeners and test-ui read it via getInputElement()
+    registerInputElement(inputRef, signal);
+
     const words = new ElementWithUtils(wordsRef);
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
-    Caret.initElement({
-      caret: new ElementWithUtils(caretRef),
-      words,
-      wordsWrapper,
+    Caret.initElement(
+      { caret: new ElementWithUtils(caretRef), words, wordsWrapper },
+      signal,
+    );
+    PaceCaret.initElement(
+      { caret: new ElementWithUtils(paceCaretRef), words, wordsWrapper },
+      signal,
+    );
+
+    initInputListeners(signal);
+    TestUI.init(
+      { words, wordsWrapper, typingTest: new ElementWithUtils(typingTestRef) },
+      signal,
+    );
+    listenForModifierKeys(signal);
+    listenForMonkeyKeys(signal);
+    // any previously rendered words are gone, start a fresh test
+    void restart({ noAnim: true });
+
+    updateFooterAndVerticalAds(false);
+    resetIncompleteTests();
+    // registered last so it runs after the modules above have unbound
+    signal.addEventListener("abort", () => {
+      void Funbox.clear();
+      updateFooterAndVerticalAds(true);
     });
-    PaceCaret.initElement({
-      caret: new ElementWithUtils(paceCaretRef),
-      words,
-      wordsWrapper,
-    });
-    initResultChart();
-    initInputListeners();
-    TestUI.init();
+
+    window.addEventListener(
+      "blur",
+      () => setTestFocusState("unfocusedWindow"),
+      { signal },
+    );
+    window.addEventListener("focus", restartIfNotStarted, { signal });
+    // little roadblock for basic cheating
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.visibilityState === "hidden") {
+          setTestFocusState("unfocusedWindow");
+        } else {
+          restartIfNotStarted();
+        }
+      },
+      { signal },
+    );
+  });
+
+  const isFullWidth = (): boolean =>
+    getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
+  const fontSize = (): string => `${getConfig.fontSize}rem`;
+  // classes shared by #words and #wordsWrapper
+  const modeClasses = (): Record<string, boolean> => ({
+    tape: getConfig.tapeMode !== "off",
+    blind: getConfig.blindMode,
+    indicateTyposBelow:
+      getConfig.indicateTypos === "below" || getConfig.indicateTypos === "both",
+    hideExtraLetters: getConfig.hideExtraLetters,
   });
 
   return (
@@ -61,25 +170,28 @@ export function TestPage(): JSXElement {
         <TestConfig />
       </div>
 
-      <div id="testInitFailed" class="content-grid hidden">
-        <div class="message">
-          <div class="text">
-            Test initialization failed. Please try different settings or
-            refreshing the page. If the problem persists, please contact
-            support.
-          </div>
-          <div class="error"></div>
-          <button type="button" class="active restart">
-            <i class="fas fa-fw fa-redo-alt"></i> Restart
-          </button>
-        </div>
-      </div>
-      <div id="typingTest" class="content-grid full-width-padding">
+      <div
+        id="typingTest"
+        ref={(el) => (typingTestRef = el)}
+        class={cn("content-grid", {
+          content: getConfig.maxLineWidth === 0,
+          "full-width-padding": getConfig.maxLineWidth !== 0,
+          hidden: isTestInitFailed() || isTypingTestHidden(),
+        })}
+        style={{
+          "max-width": isFullWidth() ? "100%" : `${getConfig.maxLineWidth}ch`,
+          "font-size": fontSize(),
+        }}
+      >
         <div>
           <CapsWarning />
         </div>
-        <div id="memoryTimer">Time left to memorise all words: 0s</div>
-        <div id="layoutfluidTimer">Time left to memorise all words: 0s</div>
+        <MemoryFunboxTimer />
+        <FunboxTimer
+          id="layoutfluidTimer"
+          visible={isLayoutfluidTimerVisible()}
+          text={getLayoutfluidTimerText()}
+        />
         <div>
           <TestModesNotice />
         </div>
@@ -93,11 +205,17 @@ export function TestPage(): JSXElement {
         <div
           id="wordsWrapper"
           ref={(el) => (wordsWrapperRef = el)}
-          class="content-grid full-width"
+          class={cn("content-grid full-width", modeClasses(), {
+            hidden: isWordsWrapperHidden(),
+          })}
           translate="no"
+          onClick={() => {
+            TestUI.focusWords();
+          }}
         >
           <textarea
             id="wordsInput"
+            ref={(el) => (inputRef = el)}
             class="full-width"
             autocomplete="off"
             // oxlint-disable-next-line react/no-unknown-property
@@ -113,6 +231,20 @@ export function TestPage(): JSXElement {
             data-form-type="other"
             // oxlint-disable-next-line react/no-unknown-property
             spellcheck={false}
+            style={{ "font-size": fontSize() }}
+            onFocus={() => {
+              if (!isInputElementFocused()) return;
+              if (!getResultVisible() && getConfig.showOutOfFocusWarning) {
+                setTestFocusState("focused");
+              }
+              Caret.show(true);
+            }}
+            onBlur={() => {
+              if (!isInputElementFocused()) {
+                setTestFocusState("unfocused");
+              }
+              Caret.hide();
+            }}
           ></textarea>
           <div class="contents">
             <OutOfFocusWarning />
@@ -121,16 +253,31 @@ export function TestPage(): JSXElement {
             id="paceCaret"
             ref={(el) => (paceCaretRef = el)}
             class="full-width default hidden"
+            style={{ "font-size": fontSize() }}
           ></div>
           <div
             id="caret"
             ref={(el) => (caretRef = el)}
             class="full-width default"
+            style={{ "font-size": fontSize() }}
           ></div>
           <div
             id="words"
             ref={(el) => (wordsRef = el)}
-            class="full-width"
+            class={cn("full-width", {
+              ...modeClasses(),
+              flipped: getConfig.flipTestColors,
+              colorfulMode: getConfig.colorfulMode,
+              rightToLeftTest: isLanguageRightToLeft(),
+              ...prefixedClass("highlight", getConfig.highlightMode),
+              ...prefixedClass("typed-effect", getConfig.typedEffect),
+              blurred: showOutOfFocusWarning(),
+              hidden: isWordsHidden(),
+              read_ahead_disabled: isReadAheadDisabled(),
+              noErrorBorder: isErrorBorderDisabled(),
+              joiningScript: isJoiningScript(),
+            })}
+            style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
           ></div>
         </div>
 
@@ -144,15 +291,26 @@ export function TestPage(): JSXElement {
           <Monkey />
         </div>
 
-        <button
-          type="button"
-          id="restartTestButton"
-          aria-label="Restart Test"
-          data-balloon-pos="down"
-          class="text"
-        >
-          <i class="fas fa-fw fa-redo-alt"></i>
-        </button>
+        <Button
+          variant="text"
+          dataset={{ "data-ui-element": "restartTestButton" }}
+          class={cn(
+            "mx-auto mt-4 w-max px-8 py-4 text-base transition-opacity",
+            "focus:opacity-100 focus:transition-none",
+            getConfig.quickRestart !== "off" && "hidden",
+            "pointer-coarse:block", //always show the button if using a pointer-coarse device
+            getFocus() && "opacity-0", //always hide if we are focused
+          )}
+          balloon={{
+            text: "Restart Test",
+            position: "down",
+          }}
+          fa={{
+            icon: "fa-redo-alt",
+            fixedWidth: true,
+          }}
+          onClick={onRestartButtonClick}
+        />
         <div>
           <LiveStatsTextBottom />
         </div>
@@ -160,363 +318,17 @@ export function TestPage(): JSXElement {
           <Premid />
         </div>
       </div>
-      <div class="loading hidden">
-        <i class="fas fa-circle-notch fa-spin"></i>
-      </div>
-      <TestResult />
+      <Show when={isTestInitFailed()}>
+        <TestInitFailed />
+      </Show>
+      <Show when={isResultLoading()}>
+        <div class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0">
+          <LoadingCircle />
+        </div>
+      </Show>
+      <Show when={getShowResult()}>
+        <TestResult />
+      </Show>
     </>
-  );
-}
-
-function TestResult(): JSXElement {
-  return (
-    <div id="result" class="content-grid full-width hidden" tabIndex="-1">
-      <div class="wrapper">
-        <div class="stats">
-          <div class="group wpm">
-            <div class="top">
-              <div class="text">wpm</div>
-              <div
-                class="crown hidden"
-                aria-label=""
-                data-balloon-pos="up"
-                data-balloon-length="medium"
-              >
-                <i class="fas fa-question"></i>
-                <i class="fas fa-crown"></i>
-                <i class="fas fa-slash"></i>
-                <i class="fas fa-exclamation-triangle"></i>
-              </div>
-            </div>
-            <div class="bottom" aria-label="" data-balloon-pos="up">
-              -
-            </div>
-          </div>
-          <div class="group acc">
-            <div class="top">acc</div>
-            <div class="bottom" aria-label="" data-balloon-pos="up">
-              -
-            </div>
-          </div>
-        </div>
-        <div class="stats morestats">
-          <div class="group testType">
-            <div class="top">test type</div>
-            <div class="bottom">-</div>
-            <div class="tags hidden" style={{ "margin-top": "0.5rem" }}>
-              <div class="top">
-                <span>tags</span>
-                <div
-                  class="textButton editTagsButton"
-                  data-result-id=""
-                  data-active-tag-ids=""
-                  aria-label="Edit tags"
-                  role="button"
-                  data-balloon-pos="right"
-                >
-                  <i class="fas fa-pen fa-fw"></i>
-                </div>
-              </div>
-              <div class="bottom">-</div>
-            </div>
-          </div>
-          <div class="group info">
-            <div class="top">other</div>
-            <div class="bottom">-</div>
-          </div>
-
-          <div class="group raw">
-            <div class="top">raw</div>
-            <div class="bottom" aria-label="" data-balloon-pos="up">
-              -
-            </div>
-          </div>
-          <div class="group key">
-            <div class="top">characters</div>
-            <div
-              class="bottom"
-              aria-label={"correct\nincorrect\nextra\nmissed"}
-              data-balloon-break=""
-              data-balloon-pos="up"
-            >
-              -
-            </div>
-          </div>
-
-          <div class="group flat consistency">
-            <div class="top">consistency</div>
-            <div class="bottom" aria-label="" data-balloon-pos="up">
-              2 -
-            </div>
-          </div>
-          <div class="group time">
-            <div class="top">time</div>
-            <div class="bottom" aria-label="" data-balloon-pos="up">
-              <div class="text">-</div>
-              <div class="afk"></div>
-              <div class="timeToday"></div>
-            </div>
-          </div>
-
-          <div class="group dailyLeaderboard hidden">
-            <div class="top">daily leaderboard</div>
-            <div
-              id="dailyLeaderboardRank"
-              aria-label="Show daily leaderboard"
-              data-balloon-pos="up"
-              class="bottom"
-            >
-              -
-            </div>
-          </div>
-
-          <div class="group source hidden">
-            <div class="top">
-              <span style={{ "margin-right": "0.5em" }}>source</span>
-              <span
-                id="reportQuoteButton"
-                class="textButton hidden"
-                aria-label="Report quote"
-                data-balloon-pos="up"
-              >
-                <i class="icon fas fa-fw fa-flag"></i>
-              </span>
-              <span
-                id="favoriteQuoteButton"
-                class="textButton hidden"
-                aria-label="Favorite quote"
-                data-balloon-pos="up"
-              >
-                <i class="icon far fa-fw fa-heart"></i>
-              </span>
-              <span
-                id="rateQuoteButton"
-                class="textButton hidden"
-                aria-label="Rate quote"
-                data-balloon-pos="up"
-              >
-                <i class="icon far fa-fw fa-star"></i>
-                <span class="rating"></span>
-              </span>
-            </div>
-            <div class="bottom">-</div>
-          </div>
-        </div>
-        <div class="chart">
-          <div class="chartLegend">
-            <button
-              type="button"
-              class="text active"
-              tabIndex="-1"
-              data-id="scale"
-            >
-              <i class="fas fa-chart-line"></i>
-              <div class="text">scale</div>
-            </button>
-            <button type="button" class="text" tabIndex="-1" data-id="pbLine">
-              <i class="fas fa-crown"></i>
-              <div class="text">pb</div>
-            </button>
-            <button
-              type="button"
-              class="text"
-              tabIndex="-1"
-              data-id="tagPbLine"
-            >
-              <i class="fas fa-tag"></i>
-              <div class="text">tag pb</div>
-            </button>
-            <button type="button" class="text" tabIndex="-1" data-id="raw">
-              <div class="line dashed"></div>
-              <div class="text">raw</div>
-            </button>
-            <button type="button" class="text" tabIndex="-1" data-id="burst">
-              <div class="line"></div>
-              <div class="text">burst</div>
-            </button>
-            <button type="button" class="text" tabIndex="-1" data-id="errors">
-              <i class="fas fa-times"></i>
-              <div class="text">errors</div>
-            </button>
-          </div>
-          <canvas id="wpmChart"></canvas>
-        </div>
-        <div class="bottom">
-          <div id="resultWordsHistory" class="hidden">
-            <div class="title">
-              <span>input history</span>
-              <button
-                type="button"
-                id="copyWordsListButton"
-                class="textButton"
-                aria-label="Copy words list"
-                data-balloon-pos="up"
-                style={{ display: "inline-block" }}
-                tabIndex="-1"
-              >
-                <i class="fas fa-fw fa-align-left"></i>
-              </button>
-              <button
-                type="button"
-                id="copyMissedWordsListButton"
-                class="textButton"
-                aria-label="Copy missed words list"
-                data-balloon-pos="up"
-                tabIndex="-1"
-              >
-                <i class="fas fa-fw fa-times"></i>
-              </button>
-              <button
-                type="button"
-                id="copySlowWordsListButton"
-                class="textButton"
-                aria-label="Copy slow words list"
-                data-balloon-pos="up"
-                tabIndex="-1"
-              >
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-              </button>
-              <button
-                type="button"
-                id="toggleBurstHeatmap"
-                class="textButton"
-                aria-label="Toggle burst heatmap"
-                data-balloon-pos="up"
-                style={{ display: "inline-block" }}
-                tabIndex="-1"
-              >
-                <i class="fas fa-fw fa-fire-alt"></i>
-              </button>
-              <div class="heatmapLegend hidden">
-                <div class="boxes">
-                  <div class="box box0"></div>
-                  <div class="box box1"></div>
-                  <div class="box box2"></div>
-                  <div class="box box3"></div>
-                  <div class="box box4"></div>
-                </div>
-              </div>
-            </div>
-            <div class="words"></div>
-          </div>
-          <div id="resultReplay" class="hidden">
-            <div class="title">
-              watch replay{" "}
-              <button
-                type="button"
-                id="playpauseReplayButton"
-                class="textButton"
-                aria-label="Start replay"
-                data-balloon-pos="up"
-                style={{ display: "inline-block" }}
-                tabIndex="-1"
-              >
-                <i class="fas fa-play"></i>
-              </button>
-              <p id="replayStats">0s</p>
-            </div>
-            <div id="replayWordsWrapper">
-              <div id="replayWords" class="words"></div>
-            </div>
-          </div>
-          <button
-            type="button"
-            id="retrySavingResultButton"
-            class="danger hidden"
-          >
-            <i class="fas fa-redo"></i> Retry saving result
-          </button>
-          <div class="buttons">
-            <button
-              type="button"
-              class="text"
-              id="nextTestButton"
-              aria-label="Next test"
-              role="button"
-              data-balloon-pos="down"
-            >
-              <i class="fas fa-fw fa-chevron-right"></i>
-            </button>
-            <button
-              type="button"
-              class="text"
-              id="restartTestButtonWithSameWordset"
-              aria-label="Repeat test"
-              role="button"
-              data-balloon-pos="down"
-            >
-              <i class="fas fa-fw fa-sync-alt"></i>
-            </button>
-            <button
-              type="button"
-              class="text"
-              id="practiseWordsButton"
-              aria-label="Practice words"
-              role="button"
-              data-balloon-pos="down"
-            >
-              <i class="fas fa-fw fa-exclamation-triangle"></i>
-            </button>
-            <button
-              type="button"
-              class="text"
-              id="showWordHistoryButton"
-              aria-label="Toggle words history"
-              role="button"
-              data-balloon-pos="down"
-            >
-              <i class="fas fa-fw fa-align-left"></i>
-            </button>
-            <button
-              type="button"
-              class="text"
-              id="watchReplayButton"
-              aria-label="Watch replay"
-              role="button"
-              data-balloon-pos="down"
-            >
-              <i class="fas fa-fw fa-backward"></i>
-            </button>
-            <button
-              type="button"
-              class="text"
-              id="saveScreenshotButton"
-              aria-label={
-                "Copy screenshot to clipboard\n(shift click to download)"
-              }
-              role="button"
-              data-balloon-pos="down"
-              data-balloon-break=""
-            >
-              <i class="far fa-fw fa-image"></i>
-            </button>
-          </div>
-        </div>
-        <div class="loginTip">
-          <a href="/login" router-link>
-            Sign in
-          </a>{" "}
-          to save your result
-        </div>
-        <div class="ssWatermark hidden">monkeytype.com</div>
-      </div>
-      <div class="full-width" style={{ "margin-top": "1rem" }}>
-        <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
-          <div class="iconAndText">
-            <div class="icon">
-              <i class="fas fa-ad"></i>
-            </div>
-            <div class="text textRight"></div>
-          </div>
-          <div id="ad-result"></div>
-        </div>
-        <div id="ad-result-small-wrapper" class="ad advertisement ad-h-s">
-          <div class="icon small">
-            <i class="fas fa-ad"></i>
-          </div>
-          <div id="ad-result-small"></div>
-        </div>
-      </div>
-    </div>
   );
 }
