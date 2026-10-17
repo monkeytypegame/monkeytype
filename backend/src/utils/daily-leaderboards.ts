@@ -255,12 +255,12 @@ export class DailyLeaderboard {
       return null;
     }
 
-    let nextWpm: number | null = null;
     const pageSize = Math.min(nextWpmPageSize, currentEntry.rank - 1);
     const lastPage = Math.floor((currentEntry.rank - 2) / pageSize);
 
-    // All entries above the current rank must be checked because the score is
-    // also affected by accuracy and timestamp, so WPM is not strictly sorted.
+    // scores are ordered by wpm first (see kogascore), so walking upwards from
+    // the current rank, the first entry with a higher wpm holds the next
+    // distinct wpm
     for (let page = lastPage; page >= 0; page--) {
       const results = await this.getResults(
         page,
@@ -269,18 +269,16 @@ export class DailyLeaderboard {
         true,
       );
 
-      for (const entry of results?.entries ?? []) {
-        if (
-          entry.rank < currentEntry.rank &&
-          entry.wpm > currentEntry.wpm &&
-          (nextWpm === null || entry.wpm < nextWpm)
-        ) {
-          nextWpm = entry.wpm;
-        }
-      }
+      const nextEntry = [...(results?.entries ?? [])]
+        .reverse()
+        .find(
+          (entry) =>
+            entry.rank < currentEntry.rank && entry.wpm > currentEntry.wpm,
+        );
+      if (nextEntry !== undefined) return nextEntry.wpm;
     }
 
-    return nextWpm;
+    return null;
   }
 }
 

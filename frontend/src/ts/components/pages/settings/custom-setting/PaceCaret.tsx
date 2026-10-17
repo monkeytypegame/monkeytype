@@ -11,10 +11,7 @@ import {
   getOptionLabel,
   getOptionSearchKeywords,
 } from "../../../../config/metadata";
-import {
-  getPaceCaretContext,
-  isPaceCaretModeAvailable,
-} from "../../../../config/pace-caret-options";
+import { isPaceCaretModeAvailable } from "../../../../config/pace-caret-options";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
@@ -89,11 +86,7 @@ export function PaceCaret(): JSXElement {
           <div class="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-2">
             <For
               each={getOptions(ConfigSchema.shape.paceCaret)?.filter((option) =>
-                isPaceCaretModeAvailable(
-                  option,
-                  getPaceCaretContext(),
-                  serverConfiguration.data,
-                ),
+                isPaceCaretModeAvailable(option, serverConfiguration.data),
               )}
             >
               {(option) => {

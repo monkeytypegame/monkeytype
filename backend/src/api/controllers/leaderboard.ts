@@ -110,28 +110,31 @@ export async function getNextLeaderboardWpm(
   req: MonkeyRequest<GetLeaderboardRankQuery>,
 ): Promise<NextLeaderboardWpmResponse> {
   const { language, mode, mode2 } = req.query;
-  let nextWpm: number | null | false = null;
 
   if (
-    language === "english" &&
-    mode === "time" &&
-    ["15", "60"].includes(mode2)
+    language !== "english" ||
+    mode !== "time" ||
+    (mode2 !== "15" && mode2 !== "60")
   ) {
-    try {
-      nextWpm = await LeaderboardsDAL.getNextWpm(
-        mode,
-        mode2,
-        language,
-        req.ctx.decodedToken.uid,
-      );
-    } catch {
-      nextWpm = null;
-    }
+    return new MonkeyResponse("Next leaderboard WPM retrieved", null);
+  }
+
+  const nextWpm = await LeaderboardsDAL.getNextWpm(
+    mode,
+    mode2,
+    language,
+    req.ctx.decodedToken.uid,
+  );
+  if (nextWpm === false) {
+    throw new MonkeyError(
+      503,
+      "Leaderboard is currently updating. Please try again in a few seconds.",
+    );
   }
 
   return new MonkeyResponse(
     "Next leaderboard WPM retrieved",
-    nextWpm === false || nextWpm === null ? null : { next: nextWpm },
+    nextWpm === null ? null : { next: nextWpm },
   );
 }
 
@@ -233,18 +236,14 @@ export async function getNextDailyLeaderboardWpm(
     return new MonkeyResponse("Next daily leaderboard WPM retrieved", null);
   }
 
-  try {
-    const nextWpm = await dailyLeaderboard.getNextWpm(
-      req.ctx.decodedToken.uid,
-      req.ctx.configuration.dailyLeaderboards,
-    );
-    return new MonkeyResponse(
-      "Next daily leaderboard WPM retrieved",
-      nextWpm === null ? null : { next: nextWpm },
-    );
-  } catch {
-    return new MonkeyResponse("Next daily leaderboard WPM retrieved", null);
-  }
+  const nextWpm = await dailyLeaderboard.getNextWpm(
+    req.ctx.decodedToken.uid,
+    req.ctx.configuration.dailyLeaderboards,
+  );
+  return new MonkeyResponse(
+    "Next daily leaderboard WPM retrieved",
+    nextWpm === null ? null : { next: nextWpm },
+  );
 }
 
 function getWeeklyXpLeaderboardWithError(

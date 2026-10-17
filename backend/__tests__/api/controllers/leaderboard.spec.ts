@@ -539,6 +539,20 @@ describe("Loaderboard Controller", () => {
 
       expect(missing.body.data).toBeNull();
     });
+
+    it("fails while the leaderboard is updating", async () => {
+      getNextWpmMock.mockResolvedValue(false);
+
+      const { body } = await mockApp
+        .get("/leaderboards/next")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(503);
+
+      expect(body.message).toEqual(
+        "Leaderboard is currently updating. Please try again in a few seconds.",
+      );
+    });
   });
 
   describe("get daily leaderboard", () => {

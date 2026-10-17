@@ -13,10 +13,6 @@ import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getOptions } from "../utils/zod";
 import { canSetFunboxWithConfig } from "./funbox-validation";
-import {
-  getPaceCaretContext,
-  isPaceCaretModeAvailable,
-} from "./pace-caret-options";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -742,14 +738,9 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
-        if (
-          (value === "next" || value === "nextDaily") &&
-          !isPaceCaretModeAvailable(value, getPaceCaretContext())
-        ) {
+        if ((value === "next" || value === "nextDaily") && !isAuthenticated()) {
           showNoticeNotification(
-            `Pace caret "${
-              value === "nextDaily" ? "daily next" : "next"
-            }" is unavailable for this test`,
+            `Pace caret "next" and "daily next" are unavailable without an account`,
           );
           return true;
         }

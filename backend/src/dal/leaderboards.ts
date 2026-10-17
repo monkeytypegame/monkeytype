@@ -188,14 +188,22 @@ export async function getNextWpm(
         {
           $lookup: {
             from: collectionName,
-            let: { currentWpm: "$wpm" },
+            let: { currentRank: "$rank", currentWpm: "$wpm" },
+            // ranks are sorted by wpm, so the closest entry above with a higher
+            // wpm holds the next distinct wpm. walking the rank index upwards
+            // only has to skip entries with the same wpm.
             pipeline: [
               {
                 $match: {
-                  $expr: { $gt: ["$wpm", "$$currentWpm"] },
+                  $expr: {
+                    $and: [
+                      { $lt: ["$rank", "$$currentRank"] },
+                      { $gt: ["$wpm", "$$currentWpm"] },
+                    ],
+                  },
                 },
               },
-              { $sort: { wpm: 1 } },
+              { $sort: { rank: -1 } },
               { $limit: 1 },
               { $project: { _id: 0, wpm: 1 } },
             ],

@@ -29,10 +29,9 @@ const queryKeys = {
   ],
   rank: (options: Selection) =>
     queryKeys.root({ ...options, userSpecific: true }), //rank is always user specific
+  nextRoot: (type: "allTime" | "daily") => ["user", "paceCaret", type],
   next: (type: "allTime" | "daily", options: GetLeaderboardRankQuery) => [
-    "user",
-    "paceCaret",
-    type,
+    ...queryKeys.nextRoot(type),
     options,
   ],
 };
@@ -51,20 +50,38 @@ export const getNextPaceCaretWpmQueryOptions = (
           ? await Ape.leaderboards.getNext({ query: options })
           : await Ape.leaderboards.getDailyNext({ query: options });
 
-      if (response.status !== 200) return null;
+      if (response.status !== 200) {
+        throw new Error(
+          `Failed to get next ${type} leaderboard wpm: ${response.body.message}`,
+        );
+      }
       return response.body.data?.next ?? null;
     },
     staleTime: type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
     gcTime: Infinity,
   });
 
+/**
+ * Resolves with the cached value when there is one, so a test restart only
+ * waits for the request the first time. Stale values are refetched in the
+ * background for the next restart.
+ */
 export async function getNextPaceCaretWpm(
   type: "allTime" | "daily",
   options: GetLeaderboardRankQuery,
 ): Promise<number | null> {
-  return await queryClient.fetchQuery(
-    getNextPaceCaretWpmQueryOptions(type, options),
-  );
+  return await queryClient.ensureQueryData({
+    ...getNextPaceCaretWpmQueryOptions(type, options),
+    revalidateIfStale: true,
+  });
+}
+
+// a saved result can move the user on the daily leaderboard right away
+export function refreshNextDailyPaceCaretWpm(): void {
+  void queryClient.invalidateQueries({
+    queryKey: queryKeys.nextRoot("daily"),
+    refetchType: "all",
+  });
 }
 
 export const getLeaderboardQueryOptions = (
