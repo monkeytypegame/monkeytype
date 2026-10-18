@@ -27,7 +27,6 @@ import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
 import "./elements/psa";
-import "./controllers/url-handler";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { render } from "solid-js/web";

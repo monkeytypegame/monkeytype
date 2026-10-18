@@ -1,3 +1,6 @@
+// Url actions: shared links (test settings, custom theme, challenge) and the
+// discord oauth redirect, applied by the test route (router/routes.ts)
+
 import { getChallenges } from "@monkeytype/challenges";
 import {
   CustomBackgroundFilter,
@@ -25,7 +28,6 @@ import Ape from "../ape";
 import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
 import * as DB from "../db";
-import { authEvent } from "../events/auth";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
@@ -35,14 +37,17 @@ import {
 import { setSelectedQuoteId } from "../states/test";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
 import * as Misc from "../utils/misc";
-import * as ChallengeController from "./challenge-controller";
 
-export async function linkDiscord(hashOverride: string): Promise<void> {
-  if (!hashOverride) return;
-  const fragment = new URLSearchParams(hashOverride.slice(1));
+/** The discord oauth redirect: its hash (without "#") carries the token. */
+function isDiscordLink(hash: string): boolean {
+  return new URLSearchParams(hash).has("access_token");
+}
+
+async function linkDiscord(hash: string): Promise<void> {
+  const fragment = new URLSearchParams(hash);
   if (fragment.has("access_token")) {
-    history.replaceState(null, "", "/");
     const accessToken = fragment.get("access_token") as string;
     const tokenType = fragment.get("token_type") as string;
     const state = fragment.get("state") as string;
@@ -87,10 +92,7 @@ const customThemeUrlDataSchema = z.object({
   f: CustomBackgroundFilterSchema.optional(),
 });
 
-export function loadCustomThemeFromUrl(getOverride?: string): void {
-  const getValue = Misc.findGetParameter("customTheme", getOverride);
-  if (getValue === null) return;
-
+function loadCustomThemeFromUrl(getValue: string): void {
   const { data: decoded, error } = tryCatchSync(() =>
     parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema),
   );
@@ -166,10 +168,7 @@ const TestSettingsSchema = z.tuple([
   FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
 
-export function loadTestSettingsFromUrl(getOverride?: string): void {
-  const getValue = Misc.findGetParameter("testSettings", getOverride);
-  if (getValue === null) return;
-
+export function loadTestSettingsFromUrl(getValue: string): void {
   // if the encoding structure or method ever changes, make sure to support the old data format
   // otherwise eiko will be sad
 
@@ -314,11 +313,8 @@ const challengeNameLookup = Object.fromEntries(
   getChallenges().map((it) => [it.name.toLowerCase(), it.name]),
 );
 
-export async function loadChallengeFromUrl(
-  getOverride?: string,
-): Promise<void> {
-  const getValue =
-    Misc.findGetParameter("challenge", getOverride)?.toLowerCase() ?? "";
+function loadChallengeFromUrl(value: string): void {
+  const getValue = value.toLowerCase();
   if (getValue === "") return;
 
   const challengeName = challengeNameLookup[getValue];
@@ -342,16 +338,50 @@ export async function loadChallengeFromUrl(
     });
 }
 
-authEvent.subscribe(async (event) => {
-  if (event.type === "authStateChanged") {
-    const search = window.location.search;
-    const hash = window.location.hash;
+/** The search params the test page applies once, then drops from the url. */
+const URL_ACTION_PARAMS = ["customTheme", "testSettings", "challenge"] as const;
 
-    await event.data.loadPromise;
+/**
+ * Applies the url's shared links (custom theme, test settings, challenge) and
+ * the discord oauth redirect. Returns the url's search and hash without them,
+ * or undefined if there was nothing to apply.
+ *
+ * `searchStr` is the raw search: values are read from it, not the parsed
+ * search, which turns the "+" of base64 and lz values into spaces.
+ */
+export function applyUrlActions(location: {
+  search: Record<string, unknown>;
+  searchStr: string;
+  hash: string;
+}): { search: Record<string, unknown>; hash: string } | undefined {
+  const value = (param: (typeof URL_ACTION_PARAMS)[number]): string | null =>
+    location.searchStr === ""
+      ? null
+      : Misc.findGetParameter(param, location.searchStr);
+  const customTheme = value("customTheme");
+  const testSettings = value("testSettings");
+  const challenge = value("challenge");
+  const discord = isDiscordLink(location.hash);
 
-    loadCustomThemeFromUrl(search);
-    loadTestSettingsFromUrl(search);
-    void loadChallengeFromUrl(search);
-    void linkDiscord(hash);
+  if (
+    customTheme === null &&
+    testSettings === null &&
+    challenge === null &&
+    !discord
+  ) {
+    return undefined;
   }
-});
+
+  if (customTheme !== null) loadCustomThemeFromUrl(customTheme);
+  if (testSettings !== null) loadTestSettingsFromUrl(testSettings);
+  if (challenge !== null) loadChallengeFromUrl(challenge);
+  if (discord) void linkDiscord(location.hash);
+
+  const search = Object.fromEntries(
+    Object.entries(location.search).filter(
+      ([key]) => !(URL_ACTION_PARAMS as readonly string[]).includes(key),
+    ),
+  );
+  // the token is single use, the rest of the hash goes with it
+  return { search, hash: discord ? "" : location.hash };
+}

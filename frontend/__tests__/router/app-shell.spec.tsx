@@ -989,6 +989,39 @@ describe("app shell routing", () => {
     });
   });
 
+  it("applies url actions on the test page and drops them from the url", async () => {
+    __testing.clearNotificationHistory();
+    const app = renderApp({ url: "/?challenge=nope&foo=1#top" });
+    await app.settle();
+
+    expect(app.url()).toBe("/?foo=1#top");
+    expect(app.shownPage()).toBe("test");
+    expect(getNotificationHistory().map((n) => n.message)).toEqual([
+      "Failed to load challenge: invalid name nope",
+    ]);
+  });
+
+  it("applies url actions after the /verify redirect", async () => {
+    __testing.clearNotificationHistory();
+    const app = renderApp({ url: "/verify?challenge=nope#top" });
+    await app.settle();
+
+    expect(app.url()).toBe("/#top");
+    expect(getNotificationHistory()).toHaveLength(1);
+  });
+
+  it("applies no url actions on a hover", async () => {
+    const app = renderApp({ url: "/about" });
+    await app.settle();
+    __testing.clearNotificationHistory();
+
+    // the test route takes any search: a shared link's params aren't typed
+    await app.hover({ to: "/", search: { challenge: "nope" } as never });
+
+    expect(app.url()).toBe("/about");
+    expect(getNotificationHistory()).toEqual([]);
+  });
+
   it("redirects /verify to / keeping search and hash", async () => {
     const app = renderApp({ url: "/verify?mode=verifyEmail&oobCode=abc#top" });
     await app.settle();

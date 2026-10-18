@@ -5,19 +5,94 @@ import * as UpdateConfig from "../../src/ts/config/setters";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/states/test";
-import * as Misc from "../../src/ts/utils/misc";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
-import { loadTestSettingsFromUrl } from "../../src/ts/controllers/url-handler";
+import {
+  applyUrlActions,
+  loadTestSettingsFromUrl,
+} from "../../src/ts/router/url-actions";
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({
   restart: vi.fn(),
 }));
+vi.mock("../../src/ts/ape", () => ({
+  default: {
+    users: {
+      linkDiscord: vi.fn(async () => ({
+        status: 200,
+        body: { message: "linked", data: {} },
+      })),
+    },
+  },
+}));
 
-describe("url-handler", () => {
+describe("url-actions", () => {
+  describe("applyUrlActions", () => {
+    const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
+
+    beforeEach(() => {
+      setConfigMock.mockClear();
+    });
+
+    function location(
+      searchStr: string,
+      hash = "",
+    ): Parameters<typeof applyUrlActions>[0] {
+      return {
+        search: Object.fromEntries(new URLSearchParams(searchStr)),
+        searchStr,
+        hash,
+      };
+    }
+
+    it("returns undefined without actions", () => {
+      expect(applyUrlActions(location("?foo=1", "top"))).toBeUndefined();
+      expect(setConfigMock).not.toHaveBeenCalled();
+    });
+
+    it("drops the action params and keeps the rest", () => {
+      const rest = applyUrlActions(
+        location(
+          `?testSettings=${urlData({ punctuation: true })}&foo=1`,
+          "top",
+        ),
+      );
+
+      expect(rest).toEqual({ search: { foo: "1" }, hash: "top" });
+      expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, {
+        nosave: true,
+      });
+    });
+
+    it("reads values from the raw search, keeping their +", () => {
+      const colors = new Array(10).fill("#111111");
+      const theme = btoa(
+        JSON.stringify({
+          c: colors,
+          i: "https://a.b/x~.png",
+          s: "cover",
+          f: [0, 1, 1, 1],
+        }),
+      );
+      expect(theme).toContain("+");
+
+      applyUrlActions(location(`?customTheme=${theme}`));
+
+      expect(setConfigMock).toHaveBeenCalledWith("customThemeColors", colors);
+    });
+
+    it("drops the hash of a discord oauth redirect", () => {
+      const rest = applyUrlActions(
+        location("?foo=1", "access_token=a&token_type=b&state=c"),
+      );
+
+      expect(rest).toEqual({ search: { foo: "1" }, hash: "" });
+    });
+  });
+
   describe("loadTestSettingsFromUrl", () => {
-    const findGetParameterMock = vi.spyOn(Misc, "findGetParameter");
+    let url = "";
 
     const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
     const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
@@ -31,34 +106,31 @@ describe("url-handler", () => {
     beforeEach(() => {
       [
         setConfigMock,
-        findGetParameterMock,
         setSelectedQuoteIdMock,
         restartTestMock,
         notifySuccessMock,
         notifyMock,
       ].forEach((it) => it.mockClear());
 
-      findGetParameterMock.mockImplementation((override) => override);
+      url = "";
     });
 
     it("handles null", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue("null");
+      url = "null";
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).not.toHaveBeenCalled();
     });
     it("handles mode2 as number", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ mode: "time", mode2: 60 }),
-      );
+      url = urlData({ mode: "time", mode2: 60 });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
@@ -71,12 +143,10 @@ describe("url-handler", () => {
     });
     it("sets time", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ mode: "time", mode2: "30" }),
-      );
+      url = urlData({ mode: "time", mode2: "30" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "time", {
@@ -89,12 +159,10 @@ describe("url-handler", () => {
     });
     it("sets word count", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ mode: "words", mode2: "50" }),
-      );
+      url = urlData({ mode: "words", mode2: "50" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "words", {
@@ -107,12 +175,10 @@ describe("url-handler", () => {
     });
     it("sets quote length", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ mode: "quote", mode2: "512" }),
-      );
+      url = urlData({ mode: "quote", mode2: "512" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("mode", "quote", {
@@ -124,10 +190,10 @@ describe("url-handler", () => {
     });
     it("sets punctuation", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(urlData({ punctuation: true }));
+      url = urlData({ punctuation: true });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("punctuation", true, {
@@ -137,10 +203,10 @@ describe("url-handler", () => {
     });
     it("sets numbers", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(urlData({ numbers: false }));
+      url = urlData({ numbers: false });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("numbers", false, {
@@ -150,10 +216,10 @@ describe("url-handler", () => {
     });
     it("sets language", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(urlData({ language: "english" }));
+      url = urlData({ language: "english" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("language", "english", {
@@ -163,10 +229,10 @@ describe("url-handler", () => {
     });
     it("sets difficulty", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(urlData({ difficulty: "master" }));
+      url = urlData({ difficulty: "master" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith("difficulty", "master", {
@@ -176,12 +242,10 @@ describe("url-handler", () => {
     });
     it("sets funbox", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ funbox: ["crt", "choo_choo"] }),
-      );
+      url = urlData({ funbox: ["crt", "choo_choo"] });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith(
@@ -195,12 +259,10 @@ describe("url-handler", () => {
     });
     it("sets funbox legacy", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({ funbox: "crt#choo_choo" }),
-      );
+      url = urlData({ funbox: "crt#choo_choo" });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(setConfigMock).toHaveBeenCalledWith(
@@ -214,26 +276,24 @@ describe("url-handler", () => {
     });
     it("adds notification", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({
-          mode: "time",
-          mode2: "60",
-          customText: {
-            text: ["abcabc"],
-            limit: { value: 5, mode: "time" },
-            mode: "random",
-            pipeDelimiter: true,
-          },
-          punctuation: true,
-          numbers: true,
-          language: "english",
-          difficulty: "master",
-          funbox: ["ascii", "crt"],
-        }),
-      );
+      url = urlData({
+        mode: "time",
+        mode2: "60",
+        customText: {
+          text: ["abcabc"],
+          limit: { value: 5, mode: "time" },
+          mode: "random",
+          pipeDelimiter: true,
+        },
+        punctuation: true,
+        numbers: true,
+        language: "english",
+        difficulty: "master",
+        funbox: ["ascii", "crt"],
+      });
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(notifySuccessMock).toHaveBeenCalledWith(expect.anything(), {
@@ -243,26 +303,24 @@ describe("url-handler", () => {
     });
     it("rejects invalid values", () => {
       //GIVEN
-      findGetParameterMock.mockReturnValue(
-        urlData({
-          mode: "invalidMode",
-          mode2: "invalidMode2",
-          customText: {
-            text: "invalid",
-            limit: "invalid",
-            mode: "invalid",
-            pipeDelimiter: "invalid",
-          },
-          punctuation: "invalid",
-          numbers: "invalid",
-          language: "invalid",
-          difficulty: "invalid",
-          funbox: ["invalid"],
-        } as any),
-      );
+      url = urlData({
+        mode: "invalidMode",
+        mode2: "invalidMode2",
+        customText: {
+          text: "invalid",
+          limit: "invalid",
+          mode: "invalid",
+          pipeDelimiter: "invalid",
+        },
+        punctuation: "invalid",
+        numbers: "invalid",
+        language: "invalid",
+        difficulty: "invalid",
+        funbox: ["invalid"],
+      } as any);
 
       //WHEN
-      loadTestSettingsFromUrl("");
+      loadTestSettingsFromUrl(url);
 
       //THEN
       expect(notifyMock).toHaveBeenCalledWith(
