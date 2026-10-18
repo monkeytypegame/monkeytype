@@ -1,6 +1,11 @@
-import { ErrorComponentProps, useRouter } from "@tanstack/solid-router";
+import {
+  ErrorComponentProps,
+  useMatch,
+  useRouter,
+} from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
+import { LoadingStepError } from "../../router/loading-bar";
 import { LoadingPage } from "./LoadingPage";
 
 /**
@@ -10,8 +15,19 @@ import { LoadingPage } from "./LoadingPage";
  */
 export function LoadingErrorPage(props: ErrorComponentProps): JSXElement {
   const router = useRouter();
-  const message = (): string =>
-    props.error instanceof Error ? props.error.message : String(props.error);
+  // the failed route's page (none for a layout route, eg. user data)
+  const page = useMatch({
+    strict: false,
+    select: (match) => match.staticData.page,
+  });
+  const message = (): string => {
+    const text =
+      props.error instanceof Error ? props.error.message : String(props.error);
+    // a loading step's message says what failed to load already
+    if (props.error instanceof LoadingStepError) return text;
+    const name = page();
+    return `Failed to load ${name === undefined ? "the page" : `the ${name} page`}: ${text}`;
+  };
 
   return (
     <LoadingPage

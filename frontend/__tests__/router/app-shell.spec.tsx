@@ -703,6 +703,31 @@ describe("app shell routing", () => {
       );
     });
 
+    it("names the page when it fails outside a loading step", async () => {
+      const app = renderApp({
+        url: "/about",
+        pageContent: {
+          AboutPage: () => {
+            throw new Error("sleep is not defined");
+          },
+        },
+      });
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.loadingIndicator()).toBe("error");
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the about page: sleep is not defined",
+      );
+    });
+
+    it("keeps the message of a failed loading step as it is", async () => {
+      const app = await failUserData("/settings");
+
+      const text = app.pageElement()?.textContent ?? "";
+      expect(text.match(/Failed to load/g)).toHaveLength(1);
+    });
+
     it("downloads the user data again on Retry and shows the page once it arrived", async () => {
       const app = renderApp({ url: "/settings", auth: "pending" });
       await flush();

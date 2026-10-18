@@ -129,6 +129,9 @@ export async function runLoadingStep(
   barPlan.done++;
 }
 
+/** A loading step's failure: its message says what failed to load. */
+export class LoadingStepError extends Error {}
+
 async function failWithLabel(
   label: string,
   load: Promise<void>,
@@ -136,7 +139,7 @@ async function failWithLabel(
   try {
     await load;
   } catch (error) {
-    throw new Error(
+    throw new LoadingStepError(
       `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
       { cause: error },
     );
