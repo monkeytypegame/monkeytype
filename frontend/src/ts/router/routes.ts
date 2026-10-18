@@ -53,7 +53,7 @@ import {
   planLoadingBar,
   runLoadingStep,
 } from "./loading-bar";
-import { applyUrlActions } from "./url-actions";
+import { applyUrlActions } from "../url-actions/apply";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -203,19 +203,6 @@ const test = createRoute({
       search: rest.search,
       hash: rest.hash,
       replace: true,
-      throw: true,
-    });
-  },
-});
-
-const verify = createRoute({
-  getParentRoute: () => userDataRoute,
-  path: "/verify",
-  beforeLoad: ({ location }) => {
-    redirect({
-      to: "/",
-      search: location.search,
-      hash: location.hash,
       throw: true,
     });
   },
@@ -395,7 +382,6 @@ const friends = createRoute({
 export const routeTree = root.addChildren([
   userDataRoute.addChildren([
     test,
-    verify,
     leaderboards,
     about,
     settings,

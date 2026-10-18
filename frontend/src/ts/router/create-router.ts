@@ -2,7 +2,11 @@
 // app's and the tests' (navigation blocker, guards re-run on auth change,
 // loading bar)
 
-import { createRouter, RouterHistory } from "@tanstack/solid-router";
+import {
+  createBrowserHistory,
+  createRouter,
+  RouterHistory,
+} from "@tanstack/solid-router";
 
 import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
@@ -48,10 +52,17 @@ export function createAppRouter(
   context: RouterContext,
   options: { history?: RouterHistory } = {},
 ) {
+  const history = options.history ?? createBrowserHistory();
+  // TODO: remove once links started before the discord oauth redirect moved
+  // from /verify to / are gone (with its firebase.json rewrite)
+  if (history.location.pathname === "/verify") {
+    history.replace(history.location.href.replace(/^\/verify/, "/"));
+  }
+
   const router = createRouter({
     routeTree,
     context,
-    history: options.history,
+    history,
     defaultPreload: INTENT_PRELOADING ? "intent" : false,
     // a preloaded page's loaders run again when it's opened, and the
     // navigation waits for them: a preload skips the loading steps, so a

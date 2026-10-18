@@ -1,7 +1,16 @@
 import type { QueryKey } from "@tanstack/solid-query";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 
+import Ape from "../../src/ts/ape";
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
@@ -1020,6 +1029,36 @@ describe("app shell routing", () => {
 
     expect(app.url()).toBe("/about");
     expect(getNotificationHistory()).toEqual([]);
+  });
+
+  describe("the discord oauth redirect", () => {
+    let linkDiscord: MockInstance<typeof Ape.users.linkDiscord>;
+
+    beforeEach(() => {
+      linkDiscord = vi.spyOn(Ape.users, "linkDiscord").mockResolvedValue({
+        status: 200,
+        body: { message: "linked", data: {} },
+      } as never);
+    });
+    afterEach(() => {
+      linkDiscord.mockRestore();
+    });
+
+    // /verify: links started before the redirect moved to /
+    it.each(["/", "/verify"])(
+      "links discord from %s and drops the hash",
+      async (path) => {
+        const app = renderApp({
+          url: `${path}?foo=1#access_token=a&token_type=b&state=c`,
+        });
+        await app.settle();
+
+        expect(app.url()).toBe("/?foo=1");
+        expect(linkDiscord).toHaveBeenCalledWith({
+          body: { accessToken: "a", tokenType: "b", state: "c" },
+        });
+      },
+    );
   });
 
   it("redirects /verify to / keeping search and hash", async () => {
