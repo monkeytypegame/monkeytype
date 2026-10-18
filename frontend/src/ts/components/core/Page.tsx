@@ -14,7 +14,7 @@ import type { PageName } from "../../router/routes";
 
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
-import { LoadingCircle } from "../common/LoadingCircle";
+import { LoadingPage } from "../pages/LoadingPage";
 
 type PageProps = {
   name: PageName;
@@ -64,13 +64,14 @@ function Page(props: PageProps): JSXElement {
         {/* last-resort net: the router wraps every match in Suspense
             (solid-router #7829), so a read that suspends without a closer
             boundary would swap the whole page out and fade it in again.
-            Caught here it blanks the page instead */}
+            Caught here it shows the loading page's spinner instead */}
         <Suspense
           fallback={
-            <div class="grid h-full content-center justify-center">
-              <LoadingCircle class="mb-4 text-[2rem]" />
-              {capitalizeFirstLetter(props.name)} page is loading...
-            </div>
+            <LoadingPage
+              spinner={{
+                text: `${capitalizeFirstLetter(props.name)} page is still loading...`,
+              }}
+            />
           }
         >
           <Dynamic component={props.content} />

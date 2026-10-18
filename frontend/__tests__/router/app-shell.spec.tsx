@@ -180,11 +180,10 @@ describe("app shell routing", () => {
       await app.settle();
 
       await app.navigate({ to: "/leaderboards" });
-      expect(app.runningFades()).toHaveLength(1);
-      expect(app.finishFade()).toBe(0);
-      await app.settle();
+      await flush();
 
-      expect(app.shownPage()).toBe("leaderboards");
+      // straight from about, no loading page
+      expect(app.pagesInDom()).toEqual(["leaderboards"]);
     });
   });
 
@@ -249,8 +248,6 @@ describe("app shell routing", () => {
       // resolves only once the account page loaded
       void app.navigate({ to: "/account" });
       await flush();
-      // the test page fades out before the loading page shows
-      expect(app.finishFade()).toBe(0);
       await flush();
       expect(app.loadingBar()).toEqual({
         width: "90%",
@@ -275,10 +272,10 @@ describe("app shell routing", () => {
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
       // the bar takes 125ms to fill up from the last step
-      expect(app.runningFades()).toEqual([]);
+      await flush();
+      expect(app.shownPage()).toBe("loading");
 
       await waitForDone();
-      expect(app.runningFades().map((fade) => fade.opacity)).toEqual([0]);
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -449,7 +446,6 @@ describe("app shell routing", () => {
 
       await vi.advanceTimersByTimeAsync(450);
       expect(app.pagesInDom()).toEqual(["test"]);
-      expect(app.runningFades()).toHaveLength(0);
 
       await vi.advanceTimersByTimeAsync(100);
       await app.settle({ waitForRouter: false });
@@ -491,13 +487,11 @@ describe("app shell routing", () => {
     it("shows no spinner for a navigation faster than 500ms", async () => {
       const app = await slowFriendsNavigation();
       await vi.advanceTimersByTimeAsync(300);
+      expect(app.pagesInDom()).toEqual(["test"]);
       app.blockingData.refreshFriends();
       await flush();
 
       // straight from the test page to friends
-      expect(app.pagesInDom()).toEqual(["test"]);
-      expect(app.finishFade()).toBe(0);
-      await flush();
       expect(app.pagesInDom()).toEqual(["friends"]);
       await vi.advanceTimersByTimeAsync(1000);
       await app.settle();
@@ -511,12 +505,12 @@ describe("app shell routing", () => {
       void app.navigate({ to: "/account" });
       await app.settle({ waitForRouter: false });
       expect(app.loadingIndicator()).toBe("bar");
+      const loadingPage = app.pageElement();
 
       await vi.advanceTimersByTimeAsync(1000);
       await flush();
-      // the same loading page, no fade to a second one
-      expect(app.runningFades()).toHaveLength(0);
-      expect(app.pagesInDom()).toEqual(["loading"]);
+      // the same loading page, no swap to a second one
+      expect(app.pageElement()).toBe(loadingPage);
       expect(app.loadingIndicator()).toBe("bar");
 
       app.blockingData.loadResults();
@@ -659,83 +653,18 @@ describe("app shell routing", () => {
     });
   });
 
-  describe("page fade", () => {
-    it("fades the old page out before the new page is in the DOM", async () => {
-      const app = renderApp({ url: "/about" });
-      await app.settle();
-
-      await app.navigate({ to: "/settings" });
-      await flush();
-      expect(app.pagesInDom()).toEqual(["about"]);
-      expect(app.runningFades()).toHaveLength(1);
-      expect(app.finishFade()).toBe(0);
-
-      await flush();
-      expect(app.pagesInDom()).toEqual(["settings"]);
-      expect(app.finishFade()).toBe(1);
-      expect(app.runningFades()).toHaveLength(0);
-    });
-
-    it("holds the new page at opacity 0 until its fade in finishes", async () => {
-      const app = renderApp({ url: "/about" });
-      await app.settle();
-
-      await app.navigate({ to: "/settings" });
-      await flush();
-      app.finishFade();
-      await flush();
-
-      expect(app.pageElement()?.style.opacity).toBe("0");
-      app.finishFade();
-      await flush();
-      expect(app.pageElement()?.style.opacity).toBe("");
-    });
-
-    it("ends on the last page after navigating during the fade out", async () => {
+  // the fades themselves: see the AnimePresence tests
+  describe("page swap", () => {
+    it("ends on the last page after quick navigations", async () => {
       const app = renderApp({ url: "/about" });
       await app.settle();
 
       await app.navigate({ to: "/settings" });
       await app.navigate({ to: "/login" });
       await app.navigate({ to: "/profile" });
-      await flush();
-      expect(app.finishFade()).toBe(0);
       await app.settle();
 
       expect(app.pagesInDom()).toEqual(["profileSearch"]);
-      expect(app.pageElement()?.style.opacity).toBe("");
-    });
-
-    it("ends on the last page after navigating during the fade in", async () => {
-      const app = renderApp({ url: "/about" });
-      await app.settle();
-
-      await app.navigate({ to: "/settings" });
-      await flush();
-      app.finishFade();
-      await flush();
-      expect(app.pagesInDom()).toEqual(["settings"]);
-
-      await app.navigate({ to: "/login" });
-      await app.settle();
-
-      expect(app.pagesInDom()).toEqual(["login"]);
-      expect(app.pageElement()?.style.opacity).toBe("");
-    });
-
-    it("ends on the last page when navigating before the fade in starts", async () => {
-      const app = renderApp({ url: "/about" });
-      await app.settle();
-
-      await app.navigate({ to: "/settings" });
-      await flush();
-      app.finishFade();
-      // the fade in starts on the next frame - navigate before it
-      await app.navigate({ to: "/login" });
-      await app.settle();
-
-      expect(app.pagesInDom()).toEqual(["login"]);
-      expect(app.pageElement()?.style.opacity).toBe("");
     });
 
     it("mounts page content only once its wrapper is in the document", async () => {
@@ -750,26 +679,6 @@ describe("app shell routing", () => {
         attached: true,
       });
       expect(app.pageMounts().every((mount) => mount.attached)).toBe(true);
-    });
-
-    it("fades the first page in from the loading page", async () => {
-      const userData = deferred();
-      const app = renderApp({ url: "/settings", auth: "pending" });
-      await flush();
-      app.auth.signIn({ userData: userData.promise });
-      await flush();
-      expect(app.pagesInDom()).toEqual(["loading"]);
-      // the loading page fades in on boot
-      expect(app.finishFade()).toBe(1);
-
-      userData.resolve();
-      await waitForDone();
-      expect(app.pagesInDom()).toEqual(["loading"]);
-      expect(app.finishFade()).toBe(0);
-
-      await flush();
-      expect(app.pagesInDom()).toEqual(["settings"]);
-      expect(app.finishFade()).toBe(1);
     });
   });
 
@@ -951,7 +860,7 @@ describe("app shell routing", () => {
   });
 
   describe("leaving the test page", () => {
-    it("stops the test as soon as the navigation starts, before the fade out", async () => {
+    it("stops the test as soon as the navigation starts, before the page leaves", async () => {
       const serverConfiguration = deferred<unknown>();
       const app = renderApp({
         url: "/",
@@ -963,13 +872,14 @@ describe("app shell routing", () => {
       app.test.start();
 
       void app.navigate({ to: "/leaderboards" });
-      await flush();
+      // the navigation starts after a few microtasks
+      for (let i = 0; i < 10 && app.test.isRunning(); i++) {
+        await Promise.resolve();
+      }
 
-      // the leaderboards route is still loading, the test page fades out to
-      // the loading page
-      expect(app.pagesInDom()).toEqual(["test"]);
-      expect(app.runningFades().map((fade) => fade.opacity)).toEqual([0]);
+      // before the test page left
       expect(app.test.isRunning()).toBe(false);
+      expect(app.pagesInDom()).toEqual(["test"]);
     });
 
     it("keeps the test running when the test page reloads in place", async () => {

@@ -1,25 +1,17 @@
-import { createSwitchTransition } from "@solid-primitives/transition-group";
 import { Outlet } from "@tanstack/solid-router";
-import { animate } from "animejs";
-import { children, JSXElement, Show } from "solid-js";
+import { AnimationParams } from "animejs";
+import { JSXElement, Show } from "solid-js";
 
 import { isLoadingBarShown } from "../../states/loading-page";
-import { isPendingShown } from "../../states/router";
-import { applyReducedMotion } from "../../utils/misc";
-import { LoadingRoutePage } from "../pages/LoadingPage";
+import { getRoutePage, isPendingShown } from "../../states/router";
+import { Anime, AnimePresence } from "../common/anime";
+import { LoadingPage } from "../pages/LoadingPage";
+import { createNonRouterPage } from "./Page";
+
+const LoadingRoutePage = createNonRouterPage("loading", LoadingPage);
 
 // duration of the page fade out and of the fade in
 const fadeDuration = 125;
-
-async function fade(el: HTMLElement, opacity: number): Promise<void> {
-  return new Promise((resolve) => {
-    animate(el, {
-      opacity,
-      duration: applyReducedMotion(fadeDuration),
-      onComplete: () => resolve(),
-    });
-  });
-}
 
 /**
  * Whether the loading page covers the routed page: while the loading bar is
@@ -41,48 +33,30 @@ function isLoadingShown(): boolean {
  * two pages are never in the DOM at once (ADR 0002).
  */
 export function PageSwitcher(): JSXElement {
-  const content = children(() => (
-    <Show when={!isLoadingShown()} fallback={<LoadingRoutePage />}>
-      <Outlet />
-    </Show>
-  ));
-  const currentPage = (): HTMLElement | undefined =>
-    content.toArray().find((el) => el instanceof HTMLElement);
+  const pageKey = (): string =>
+    isLoadingShown() ? "switcher-loading" : getRoutePage();
 
-  // fade ins waiting for their first frame, cancelled if the page leaves first
-  const pendingFadeIns = new Map<Element, number>();
-
-  const pages = createSwitchTransition(currentPage, {
-    mode: "out-in",
-    // the first page fades in too, replacing the boot loading page
-    appear: true,
-    onExit: (el, done) => {
-      const frame = pendingFadeIns.get(el);
-      if (frame !== undefined) {
-        // never faded in, still at opacity 0
-        cancelAnimationFrame(frame);
-        pendingFadeIns.delete(el);
-        done();
-        return;
-      }
-      void fade(el, 0).then(done);
-    },
-    onEnter: (el, done) => {
-      // called before the page is attached, and an animation started on a
-      // detached element never runs: start on the next frame. Hold the page
-      // at opacity 0 until the fade in finished, clearing it earlier can
-      // paint one frame of the page fully visible
-      el.style.opacity = "0";
-      const frame = requestAnimationFrame(() => {
-        pendingFadeIns.delete(el);
-        void fade(el, 1).then(() => {
-          el.style.opacity = "";
-          done();
-        });
-      });
-      pendingFadeIns.set(el, frame);
-    },
-  });
-
-  return <>{pages()}</>;
+  return (
+    <AnimePresence exitBeforeEnter>
+      <Show when={pageKey()} keyed>
+        {(key) => (
+          <Anime
+            // stands in for the page in main's content grid: full width, and
+            // a grid so the page stretches to its height as before
+            class="full-width grid"
+            initial={{ opacity: 0 } as Partial<AnimationParams>}
+            animate={{ opacity: 1, duration: fadeDuration } as AnimationParams}
+            exit={{ opacity: 0, duration: fadeDuration } as AnimationParams}
+          >
+            <Show
+              when={key !== "switcher-loading"}
+              fallback={<LoadingRoutePage />}
+            >
+              <Outlet />
+            </Show>
+          </Anime>
+        )}
+      </Show>
+    </AnimePresence>
+  );
 }

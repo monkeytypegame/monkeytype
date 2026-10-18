@@ -10,11 +10,15 @@ import {
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
-import { createNonRouterPage } from "../core/Page";
 
 export type LoadingPageProps = {
   /** Shows the error state: the failed load's message and a Retry button. */
   error?: { message: string; onRetry: () => void };
+  /**
+   * Always shows the spinner with `text`, never the bar (a page suspending:
+   * the bar belongs to the navigation).
+   */
+  spinner?: { text: string };
 };
 
 export function LoadingPage(props: LoadingPageProps): JSXElement {
@@ -45,11 +49,16 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   const indicator = (): "spinner" | "bar" | "error" =>
     props.error !== undefined
       ? "error"
-      : isLoadingBarShown()
+      : props.spinner === undefined && isLoadingBarShown()
         ? "bar"
         : "spinner";
+  // the text belongs to the bar: it stays at "Done" once the bar hid, which
+  // the spinner (slow navigation, a page suspending) must not show
   const text = (): string | null =>
-    props.error?.message ?? getLoadingPageText();
+    props.error?.message ??
+    (indicator() === "bar"
+      ? getLoadingPageText()
+      : (props.spinner?.text ?? null));
   const spinnerClass = (): string =>
     cn("text-[2rem] text-main", { hidden: indicator() !== "spinner" });
   const errorClass = (): string =>
@@ -89,6 +98,3 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
     </div>
   );
 }
-
-/** The loading page, as the page switcher and pending routes render it. */
-export const LoadingRoutePage = createNonRouterPage("loading", LoadingPage);

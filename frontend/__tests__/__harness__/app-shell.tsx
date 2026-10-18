@@ -1,7 +1,7 @@
 /**
  * App-shell test harness: the real route tree in a real RouterProvider,
  * with in-memory history, a test router context (fake auth, test
- * query client), stub pages and page fades completed by the harness.
+ * query client), stub pages and animations that finish at once.
  *
  * Its vi.mock calls stub the pages and animejs for modules loaded after it.
  * oxfmt sorts imports, so a test file should not import src modules that load
@@ -14,7 +14,7 @@
  *
  * it("redirects to login", async () => {
  *   const app = renderApp({ url: "/account", auth: "signedOut" });
- *   await app.settle(); // router idle, all page fades finished
+ *   await app.settle(); // router idle, page swapped
  *   expect(app.url()).toBe("/login");
  *   expect(app.shownPage()).toBe("login");
  * });
@@ -54,11 +54,10 @@
  *   its preload), `app.click(link)`. `history: "browser"` for back/forward
  *   (`app.router.history.back()`), which the history blocker guards only on
  *   the browser history.
- * - Fades: `settle()` finishes them all. For fade ordering use
- *   `runningFades()` / `finishFade()` (finishes the oldest running fade) and
- *   `flush()` (timers and one animation frame - fade ins start on a frame).
- *   Like anime, a new fade on an element replaces its running one, which then
- *   never completes.
+ * - Animations (page fades, the bar fill) finish as soon as they start: the
+ *   tests check which page shows, the fades themselves are tested with the
+ *   anime components. `flush()` runs timers and one animation frame (an
+ *   enter animation starts on a frame).
  */
 // static json (layouts...) read from disk, the test state module loads some
 import "./mock-static";
@@ -108,12 +107,10 @@ import {
 } from "../../src/ts/states/test";
 import { canStartTest } from "../../src/ts/test/test-page-state";
 
-export type Fade = { el: HTMLElement; opacity: number; complete: () => void };
-
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
 
-const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
+const { pageMounts, pageContent, blockingData } = vi.hoisted(() => {
   type Waiting = { resolve: () => void; reject: (error: Error) => void };
   // the friends page's refetch on every visit, ready by default
   function readiness(): {
@@ -186,7 +183,6 @@ const { fades, pageMounts, pageContent, blockingData } = vi.hoisted(() => {
     return state;
   }
   return {
-    fades: [] as Fade[],
     pageMounts: [] as PageMount[],
     pageContent: new Map<string, () => JSXElement>(),
     blockingData: {
@@ -231,42 +227,22 @@ vi.mock(
   },
 );
 
+// animations finish as soon as they start
 vi.mock("animejs", () => ({
   animate: (
     el: HTMLElement,
-    params: {
-      opacity?: number;
-      width?: string;
-      duration: number;
-      onComplete?: () => void;
-    },
+    params: { opacity?: number; width?: string; onComplete?: () => void },
   ) => {
-    // only page fades are tracked (not eg. the loading bar fill)
-    if (params.opacity === undefined) {
-      // the loading bar fill jumps to its target
-      if (params.width !== undefined) el.style.width = params.width;
-      params.onComplete?.();
-      return { pause: vi.fn(), then: vi.fn() };
+    if (params.opacity !== undefined) {
+      el.style.opacity = String(params.opacity);
     }
-    // like anime's default composition, a new animation replaces the running
-    // one on the same element, which never completes
-    const replaced = fades.findIndex((fade) => fade.el === el);
-    if (replaced !== -1) fades.splice(replaced, 1);
-    // initial styles and reduced motion use a zero duration animation
-    if (params.duration === 0) {
-      params.onComplete?.();
-    } else {
-      const fade: Fade = {
-        el,
-        opacity: params.opacity,
-        complete: () => {
-          fades.splice(fades.indexOf(fade), 1);
-          params.onComplete?.();
-        },
-      };
-      fades.push(fade);
-    }
-    return { pause: vi.fn(), then: vi.fn() };
+    if (params.width !== undefined) el.style.width = params.width;
+    params.onComplete?.();
+    // anime's animations are thenable: Anime waits on them (eg. an exit)
+    return {
+      pause: vi.fn(),
+      then: async (callback: () => void): Promise<void> => callback(),
+    };
   },
 }));
 
@@ -493,8 +469,9 @@ export type App = {
   /** Page contents mounted so far, oldest first (stub page names, eg. "About"). */
   pageMounts: () => readonly PageMount[];
   /**
-   * Waits for the router to be idle and finishes all page fades.
-   * `waitForRouter: false` finishes the fades of a navigation still loading.
+   * Waits for the router to be idle and the page swap to finish.
+   * `waitForRouter: false` only lets a navigation still loading show its
+   * loading page.
    */
   settle: (options?: { waitForRouter?: boolean }) => Promise<void>;
   /** Finishes pending blocking data downloads (and the friends refetch). */
@@ -509,9 +486,6 @@ export type App = {
     /** Requests the download sent to the server so far (retries included). */
     requests: (download: "results" | "friends") => number;
   };
-  runningFades: () => readonly Fade[];
-  /** Finishes the oldest running fade, returns its target opacity. */
-  finishFade: () => number;
   /** The loading page's bar (fill width, text below it), undefined if not shown. */
   loadingBar: () => LoadingBar | undefined;
   /** What the loading page shows, undefined if no loading page is in the DOM. */
@@ -641,30 +615,19 @@ export function renderApp(options: RenderAppOptions = {}): App {
     await flush();
   }
 
-  function finishFade(): number {
-    const fade = fades[0];
-    if (fade === undefined) throw new Error("no fade running");
-    fade.complete();
-    return fade.opacity;
-  }
-
   async function settle({ waitForRouter = true } = {}): Promise<void> {
-    // a finished fade can start another, and a resolved route can start a fade
-    for (let i = 0; i < 100; i++) {
-      if (waitForRouter) {
-        await vi.waitFor(() => {
-          if (router.state.status !== "idle" || router.state.isLoading) {
-            throw new Error("router busy");
-          }
-          // the loading bar filling up to "Done"
-          if (isLoadingBarShown()) throw new Error("loading bar finishing");
-        });
-      }
-      await flush();
-      if (fades.length === 0) return;
-      while (fades.length > 0) finishFade();
+    if (waitForRouter) {
+      await vi.waitFor(() => {
+        if (router.state.status !== "idle" || router.state.isLoading) {
+          throw new Error("router busy");
+        }
+        // the loading bar filling up to "Done"
+        if (isLoadingBarShown()) throw new Error("loading bar finishing");
+      });
     }
-    throw new Error("app did not settle");
+    // the page swap: the old page leaves, the new one is attached and its
+    // content mounts on the next frame, its fade in starts on a frame
+    for (let i = 0; i < 3; i++) await flush();
   }
 
   return {
@@ -693,8 +656,6 @@ export function renderApp(options: RenderAppOptions = {}): App {
       failFriends: (error) => blockingData.friends.fail(error),
       requests: (download) => blockingData[download].requests,
     },
-    runningFades: () => fades,
-    finishFade,
     loadingBar: () => {
       const page = container.querySelector("#pageLoading");
       const fill = page?.querySelector<HTMLElement>(".bg-main");
@@ -730,7 +691,6 @@ export function cleanupApp(): void {
   cleanup();
   destroyHistory?.();
   destroyHistory = undefined;
-  fades.length = 0;
   pageMounts.length = 0;
   pageContent.clear();
   setRouter(undefined);
@@ -784,9 +744,9 @@ function pageName(el: Element): string {
 }
 
 /**
- * Lets the app react without finishing fades: waits for pending timers and
- * the next animation frame (fade ins start on one). With fake timers this
- * moves the clock by one frame.
+ * Lets the app react: waits for pending timers and the next animation frame
+ * (enter animations start on one). With fake timers this moves the clock by
+ * one frame.
  */
 export async function flush(): Promise<void> {
   if (vi.isFakeTimers()) {

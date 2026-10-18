@@ -4,7 +4,6 @@
 
 import { createRouter, RouterHistory } from "@tanstack/solid-router";
 
-import { LoadingRoutePage } from "../components/pages/LoadingPage";
 import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
@@ -59,10 +58,10 @@ export function createAppRouter(
     // background reload (the default) would show the page before its data
     defaultPreloadStaleTime: 0,
     defaultStaleReloadMode: "blocking",
-    // safety net for an unexpectedly slow navigation (loading steps show the
-    // bar straight away): the loading page with a spinner after half a
-    // second, kept at least half a second so it doesn't flash
-    defaultPendingComponent: LoadingRoutePage,
+    // Without a pending component the router
+    // never marks a match pending, so it must be set, so that we can match it in
+    // isPendingShown() in PageSwitcher.
+    defaultPendingComponent: () => null,
     defaultPendingMs: 500,
     defaultPendingMinMs: 500,
     // a failed load shows its error on the loading page, with a Retry button
