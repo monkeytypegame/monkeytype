@@ -338,13 +338,20 @@ function loadChallengeFromUrl(value: string): void {
     });
 }
 
-/** The search params the test page applies once, then drops from the url. */
-const URL_ACTION_PARAMS = ["customTheme", "testSettings", "challenge"] as const;
+/** A search param the test page applies once, then drops from the url. */
+type UrlAction = { param: string; apply: (value: string) => void };
+
+// applied in order: a challenge overrides test settings
+const URL_ACTIONS: UrlAction[] = [
+  { param: "customTheme", apply: loadCustomThemeFromUrl },
+  { param: "testSettings", apply: loadTestSettingsFromUrl },
+  { param: "challenge", apply: loadChallengeFromUrl },
+];
 
 /**
- * Applies the url's shared links (custom theme, test settings, challenge) and
- * the discord oauth redirect. Returns the url's search and hash without them,
- * or undefined if there was nothing to apply.
+ * Applies the url's shared links (URL_ACTIONS) and the discord oauth
+ * redirect. Returns the url's search and hash without them, or undefined if
+ * there was nothing to apply.
  *
  * `searchStr` is the raw search: values are read from it, not the parsed
  * search, which turns the "+" of base64 and lz values into spaces.
@@ -354,32 +361,23 @@ export function applyUrlActions(location: {
   searchStr: string;
   hash: string;
 }): { search: Record<string, unknown>; hash: string } | undefined {
-  const value = (param: (typeof URL_ACTION_PARAMS)[number]): string | null =>
-    location.searchStr === ""
-      ? null
-      : Misc.findGetParameter(param, location.searchStr);
-  const customTheme = value("customTheme");
-  const testSettings = value("testSettings");
-  const challenge = value("challenge");
+  const found = URL_ACTIONS.flatMap((action) => {
+    const value =
+      location.searchStr === ""
+        ? null
+        : Misc.findGetParameter(action.param, location.searchStr);
+    return value === null ? [] : [{ action, value }];
+  });
   const discord = isDiscordLink(location.hash);
 
-  if (
-    customTheme === null &&
-    testSettings === null &&
-    challenge === null &&
-    !discord
-  ) {
-    return undefined;
-  }
+  if (found.length === 0 && !discord) return undefined;
 
-  if (customTheme !== null) loadCustomThemeFromUrl(customTheme);
-  if (testSettings !== null) loadTestSettingsFromUrl(testSettings);
-  if (challenge !== null) loadChallengeFromUrl(challenge);
+  for (const { action, value } of found) action.apply(value);
   if (discord) void linkDiscord(location.hash);
 
   const search = Object.fromEntries(
     Object.entries(location.search).filter(
-      ([key]) => !(URL_ACTION_PARAMS as readonly string[]).includes(key),
+      ([key]) => !URL_ACTIONS.some((action) => action.param === key),
     ),
   );
   // the token is single use, the rest of the hash goes with it
