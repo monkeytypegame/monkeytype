@@ -155,12 +155,12 @@ async function runRouteLoadingStep(
   await runLoadingStep({ ...step, label: `the ${page} page` }, load);
 }
 
-function requireAuth(auth: RouterAuth): void {
+function signedInOnly(auth: RouterAuth): void {
   if (!auth.isAvailable()) redirect({ to: "/", throw: true });
   if (!auth.isSignedIn()) redirect({ to: "/login", throw: true });
 }
 
-function guestOnly(auth: RouterAuth): void {
+function signedOutOnly(auth: RouterAuth): void {
   if (!auth.isAvailable()) redirect({ to: "/", throw: true });
   if (auth.isSignedIn()) redirect({ to: "/account", throw: true });
 }
@@ -274,7 +274,7 @@ const login = createRoute({
   path: "/login",
   staticData: { page: "login" },
   component: createRouterPage(LoginPage),
-  beforeLoad: ({ context }) => guestOnly(context.auth),
+  beforeLoad: ({ context }) => signedOutOnly(context.auth),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
     void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
@@ -294,7 +294,7 @@ const account = createRoute({
     },
   },
   component: createRouterPage(AccountPage),
-  beforeLoad: ({ context }) => requireAuth(context.auth),
+  beforeLoad: ({ context }) => signedInOnly(context.auth),
   // blocking data
   loader: async (loader) => {
     // a hover starts the download early, without the loading page. Nothing
@@ -321,7 +321,7 @@ const accountSettings = createRoute({
   staticData: { page: "accountSettings" },
   component: createRouterPage(AccountSettingsPage),
   validateSearch: AccountSettingsSearchSchema,
-  beforeLoad: ({ context }) => requireAuth(context.auth),
+  beforeLoad: ({ context }) => signedInOnly(context.auth),
 });
 
 const profileSearch = createRoute({
@@ -360,7 +360,7 @@ const friends = createRoute({
     },
   },
   component: createRouterPage(FriendsPage),
-  beforeLoad: ({ context }) => requireAuth(context.auth),
+  beforeLoad: ({ context }) => signedInOnly(context.auth),
   // blocking data
   loader: async (loader) => {
     await runRouteLoadingStep(loader, async () => {
