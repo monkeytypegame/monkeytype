@@ -31,11 +31,11 @@ function initializeCache(): void {
   cacheReady = true;
 }
 
-// with cursor is a special case that is only used on the initial page load
-// to avoid the cursor being invisible and confusing the user
 // value of a set() call still waiting for its animation frame
 let pendingValue: boolean | undefined;
 
+// with cursor is a special case that is only used on the initial page load
+// to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
   // compare against the pending value too, otherwise set(false) right after
   // set(true) is ignored and the pending set(true) still applies

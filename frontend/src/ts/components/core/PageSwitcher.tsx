@@ -30,7 +30,7 @@ function isLoadingShown(): boolean {
  * failed load (the router's error component) and an unknown url (the root's
  * not found component) are routed pages too. The old
  * page fades out completely before the new one is inserted and fades in, so
- * two pages are never in the DOM at once (ADR 0002).
+ * two pages are never in the DOM at once (AnimePresence exitBeforeEnter).
  */
 export function PageSwitcher(): JSXElement {
   const pageKey = (): string =>

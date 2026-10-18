@@ -22,10 +22,10 @@ type PageProps = {
 };
 
 /**
- * The wrapper of one page (`.page#page<Name>`). The page fade moves this
- * element in and out (see PageSwitcher). The content mounts only once the
- * wrapper is in the document: the fade builds the next page before inserting
- * it, and page code queries `document` and measures layout on mount.
+ * The wrapper of one page (`.page#page<Name>`). The page fade moves the
+ * element around it in and out (see PageSwitcher). The content mounts only
+ * once the wrapper is in the document: the next page is built before it is
+ * inserted, and page code queries `document` and measures layout on mount.
  */
 function Page(props: PageProps): JSXElement {
   const [isAttached, setAttached] = createSignal(false);
@@ -37,7 +37,7 @@ function Page(props: PageProps): JSXElement {
     if (frame !== undefined) cancelAnimationFrame(frame);
   });
 
-  // runs before the fade inserts the wrapper: wait until it is attached
+  // runs before the page switcher inserts the page: wait until it is attached
   onMount(() => {
     const check = (): void => {
       if (isDisposed) return;
@@ -62,9 +62,10 @@ function Page(props: PageProps): JSXElement {
     >
       <Show when={isAttached()}>
         {/* last-resort net: the router wraps every match in Suspense
-            (solid-router #7829), so a read that suspends without a closer
-            boundary would swap the whole page out and fade it in again.
-            Caught here it shows the loading page's spinner instead */}
+            (solid-router #7829) showing its pending component (nothing), so
+            a read that suspends without a closer boundary would blank the
+            whole page. Caught here it shows the loading page's spinner
+            instead */}
         <Suspense
           fallback={
             <LoadingPage

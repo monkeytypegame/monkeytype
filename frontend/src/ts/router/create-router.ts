@@ -58,9 +58,11 @@ export function createAppRouter(
     // background reload (the default) would show the page before its data
     defaultPreloadStaleTime: 0,
     defaultStaleReloadMode: "blocking",
-    // Without a pending component the router
-    // never marks a match pending, so it must be set, so that we can match it in
-    // isPendingShown() in PageSwitcher.
+    // safety net for an unexpectedly slow navigation (loading steps show the
+    // bar straight away): the loading page with a spinner after half a
+    // second, kept at least half a second so it doesn't flash. PageSwitcher
+    // shows it (isPendingShown). The pending component renders nothing, but
+    // must be set: without one the router never marks a match pending
     defaultPendingComponent: () => null,
     defaultPendingMs: 500,
     defaultPendingMinMs: 500,

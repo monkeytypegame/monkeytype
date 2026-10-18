@@ -178,9 +178,9 @@ const userDataRoute = createRoute({
   // depend on itself through `matches` (TS7022)
   beforeLoad: async ({ context, matches, preload }): Promise<void> =>
     waitForUserData(context.auth, matches, preload),
-  // the router renders a pending route only through its pending component
-  // (the router's default) - shown at once, else nothing renders on first
-  // load, not even the page switcher
+  // pending at once: the router only presents a pending route after
+  // pendingMs, so on first load nothing would render (not even the page
+  // switcher's loading page) until then
   pendingMs: 0,
   pendingMinMs: 0,
 });

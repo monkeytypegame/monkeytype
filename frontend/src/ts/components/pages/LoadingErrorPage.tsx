@@ -5,7 +5,8 @@ import { LoadingPage } from "./LoadingPage";
 
 /**
  * The loading page showing why the route failed to load, with a Retry button
- * re-running its loads (the router's error component, see routes.ts).
+ * re-running its loads (the router's error component, see
+ * router/create-router.ts).
  */
 export function LoadingErrorPage(props: ErrorComponentProps): JSXElement {
   const router = useRouter();

@@ -13,7 +13,6 @@ import preview from "#.storybook/preview";
 
 import { createRouterPage } from "../../src/ts/components/core/Page";
 import { PageSwitcher } from "../../src/ts/components/core/PageSwitcher";
-import { LoadingRoutePage } from "../../src/ts/components/pages/LoadingPage";
 import { setRouter } from "../../src/ts/router/instance";
 import {
   isLoadingBarShown,
@@ -104,8 +103,10 @@ function createStoryRouter() {
     routeTree: rootRoute.addChildren(routes),
     history: createMemoryHistory({ initialEntries: ["/"] }),
     defaultPreload: false,
-    // like the app router: the loading page with a spinner for a slow navigation
-    defaultPendingComponent: LoadingRoutePage,
+    // like the app router: renders nothing, the page switcher shows the
+    // loading page while a route is pending (the router only marks it pending
+    // with a pending component set)
+    defaultPendingComponent: () => null,
     defaultPendingMs: 500,
     defaultPendingMinMs: 500,
   });
