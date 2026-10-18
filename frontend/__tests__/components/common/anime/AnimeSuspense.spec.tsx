@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@solidjs/testing-library";
-import { createResource, JSXElement } from "solid-js";
+import { createResource, createSignal, JSXElement } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockAnimate } = vi.hoisted(() => ({
@@ -71,6 +71,19 @@ describe("AnimeSuspense", () => {
     ));
     expect(screen.getByTestId("content")).toBeInTheDocument();
     expect(screen.queryByTestId("fallback")).not.toBeInTheDocument();
+  });
+
+  it("updates reactive content in place without animating", async () => {
+    const [text, setText] = createSignal("100");
+    render(() => <AnimeSuspense>{text()}</AnimeSuspense>);
+    await nextFrame();
+    const wrapper = screen.getByText("100");
+    const animations = mockAnimate.mock.calls.length;
+
+    setText("120");
+    await nextFrame();
+    expect(screen.getByText("120")).toBe(wrapper);
+    expect(mockAnimate.mock.calls.length).toBe(animations);
   });
 
   it("shows the fallback while suspended, then the content", async () => {

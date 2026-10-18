@@ -38,8 +38,12 @@ export function AnimeSuspense(
   const animateOnMount = (): boolean =>
     isMounted || (props.animateOnMount ?? true);
 
-  // `animateIn` is read when the enter animation starts
-  const fade = (content: JSXElement, animateIn: () => boolean): JSXElement => (
+  // `animateIn` is read when the enter animation starts. `content` is read
+  // inside Anime, so reactive content updates in place
+  const fade = (
+    content: () => JSXElement,
+    animateIn: () => boolean,
+  ): JSXElement => (
     <Anime
       initial={
         animateIn() ? ({ opacity: 0 } as Partial<AnimationParams>) : undefined
@@ -53,7 +57,7 @@ export function AnimeSuspense(
       {...props.animeProps}
       class={props.class}
     >
-      {content}
+      {content()}
     </Anime>
   );
 
@@ -67,7 +71,10 @@ export function AnimeSuspense(
           hasSuspended = true;
           return props.fallback === undefined
             ? undefined
-            : fade(props.fallback, () => animateIn);
+            : fade(
+                () => props.fallback,
+                () => animateIn,
+              );
         })()}
       >
         {(() => {
@@ -75,7 +82,10 @@ export function AnimeSuspense(
           // enter animation starts: Suspense holds the effects of content
           // that suspends until it resolved, so it always fades in
           const animateIn = animateOnMount();
-          return fade(props.children, () => hasSuspended || animateIn);
+          return fade(
+            () => props.children,
+            () => hasSuspended || animateIn,
+          );
         })()}
       </Suspense>
     </AnimePresence>
