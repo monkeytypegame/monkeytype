@@ -33,6 +33,8 @@ function isLoadingShown(): boolean {
  * two pages are never in the DOM at once (AnimePresence exitBeforeEnter).
  */
 export function PageSwitcher(): JSXElement {
+  // same page, new params (/profile/a → /profile/b): same key, no fade. The
+  // router keys route components by route id, so the page updates in place
   const pageKey = (): string =>
     isLoadingShown() ? "switcher-loading" : getRoutePage();
 
