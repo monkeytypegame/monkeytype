@@ -100,11 +100,6 @@ export function setResultTagsAfterEdit(
   );
 }
 
-// words history
-
-export const [isResultWordsJoiningScript, setResultWordsJoiningScript] =
-  createSignal(false);
-
 // smoothed burst (chart)
 
 // not part of the config schema on purpose - this is a local only preference

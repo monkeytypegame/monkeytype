@@ -1,4 +1,4 @@
-import { createMemo } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { sleep } from "../utils/misc";
@@ -62,6 +62,15 @@ export const getLoadingPageText = createMemo(() => getState().text);
 export const getLoadingPageBarTarget = createMemo(() => getState().barTarget);
 
 /**
+ * Whether the loading page covers the active page (sync loading during a
+ * navigation). Boot needs no flag: the active page starts as loading.
+ */
+export const [isLoadingShown, setLoadingShown] = createSignal(false);
+
+/** Where the bar fill starts: a loading page mounting mid-load starts its fill here. */
+export const [getLoadingPageBarStart, setLoadingPageBarStart] = createSignal(0);
+
+/**
  * Points the bar fill at `percentage` and resolves after `durationMs`, so a
  * caller can sequence bar steps one after another. The wait is a plain timer
  * rather than the fill animation reporting back: the caller picked the duration,
@@ -81,4 +90,6 @@ export async function updateLoadingPageBar(
  */
 export function resetLoadingPage(): void {
   setState(initialState);
+  setLoadingShown(false);
+  setLoadingPageBarStart(0);
 }

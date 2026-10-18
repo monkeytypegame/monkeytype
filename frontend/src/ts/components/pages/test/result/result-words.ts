@@ -1,5 +1,7 @@
-import { isResultWordsJoiningScript } from "../../../../states/result";
-import { isLanguageRightToLeft } from "../../../../states/test";
+import {
+  isJoiningScript,
+  isLanguageRightToLeft,
+} from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
 
 // shared by the words history and the replay
@@ -8,7 +10,7 @@ export function wordsClass(): string {
   return cn("words flex w-full flex-wrap content-start", {
     "[direction:rtl]": isLanguageRightToLeft(),
     "[&_.word]:pb-[2px] [&_.word]:[overflow-wrap:anywhere] [&_letter]:inline":
-      isResultWordsJoiningScript(),
+      isJoiningScript(),
   });
 }
 
