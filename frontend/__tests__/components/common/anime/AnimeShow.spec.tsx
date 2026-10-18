@@ -28,6 +28,11 @@ vi.mock("../../../../src/ts/utils/misc", () => ({
 
 import { AnimeShow } from "../../../../src/ts/components/common/anime/AnimeShow";
 
+// Anime starts its enter animation on the next frame
+async function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 describe("AnimeShow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -192,12 +197,13 @@ describe("AnimeShow", () => {
   });
 
   describe("duration prop", () => {
-    it("uses the provided duration", () => {
+    it("uses the provided duration", async () => {
       render(() => (
         <AnimeShow when={true} duration={400}>
           <div>content</div>
         </AnimeShow>
       ));
+      await nextFrame();
 
       const durationCalls = mockAnimate.mock.calls.filter(
         ([, params]) => params.duration === 400,
@@ -205,12 +211,13 @@ describe("AnimeShow", () => {
       expect(durationCalls.length).toBeGreaterThan(0);
     });
 
-    it("defaults to 125ms when no duration is provided", () => {
+    it("defaults to 125ms when no duration is provided", async () => {
       render(() => (
         <AnimeShow when={true}>
           <div>content</div>
         </AnimeShow>
       ));
+      await nextFrame();
 
       const defaultDurationCalls = mockAnimate.mock.calls.filter(
         ([, params]) => params.duration === 125,

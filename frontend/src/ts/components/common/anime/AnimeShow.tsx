@@ -37,6 +37,7 @@ export function AnimeShow(
     duration?: number;
     class?: string;
     animeProps?: Partial<AnimeProps>;
+    fallback?: JSXElement;
   }>,
 ): JSXElement {
   const duration = () => props.duration ?? 125;
@@ -48,86 +49,83 @@ export function AnimeShow(
   const shouldAnimateIn = (): boolean =>
     isMounted || (props.animateOnMount ?? true);
 
+  // the content and the fallback animate the same way. Each call is one
+  // element AnimePresence animates out (exitBeforeEnter) before the other
+  // animates in
+  const fade = (content: JSXElement): JSXElement => {
+    const animateIn = shouldAnimateIn();
+    return (
+      <Anime
+        initial={
+          animateIn ? ({ opacity: 0 } as Partial<AnimationParams>) : undefined
+        }
+        animate={
+          animateIn
+            ? ({ opacity: 1, duration: duration() } as AnimationParams)
+            : undefined
+        }
+        exit={{ opacity: 0, duration: duration() } as AnimationParams}
+        {...props.animeProps}
+        class={props.class}
+      >
+        {content}
+      </Anime>
+    );
+  };
+
+  const slide = (content: JSXElement): JSXElement => {
+    let ref: HTMLElement | undefined;
+    const animateIn = shouldAnimateIn();
+    return (
+      <Anime
+        ref={(el) => (ref = el)}
+        initial={
+          animateIn ? ({ height: 0 } as Partial<AnimationParams>) : undefined
+        }
+        animate={
+          animateIn
+            ? ({
+                height: "auto",
+                duration: duration(),
+                onBegin: () => {
+                  if (ref) ref.style.overflow = "hidden";
+                },
+                onComplete: () => {
+                  if (ref) ref.style.overflow = "";
+                },
+              } as AnimationParams)
+            : undefined
+        }
+        exit={
+          {
+            height: 0,
+            duration: duration(),
+            onBegin: () => {
+              if (ref) ref.style.overflow = "hidden";
+            },
+          } as AnimationParams
+        }
+        {...props.animeProps}
+        class={props.class}
+      >
+        {content}
+      </Anime>
+    );
+  };
+
+  const animated = (content: JSXElement): JSXElement =>
+    props.slide ? slide(content) : fade(content);
+
   return (
-    <Show
-      when={props.slide}
-      fallback={
-        <AnimePresence exitBeforeEnter>
-          <Show when={props.when}>
-            {(() => {
-              const animateIn = shouldAnimateIn();
-              return (
-                <Anime
-                  initial={
-                    animateIn
-                      ? ({ opacity: 0 } as Partial<AnimationParams>)
-                      : undefined
-                  }
-                  animate={
-                    animateIn
-                      ? ({
-                          opacity: 1,
-                          duration: duration(),
-                        } as AnimationParams)
-                      : undefined
-                  }
-                  exit={{ opacity: 0, duration: duration() } as AnimationParams}
-                  {...props.animeProps}
-                  class={props.class}
-                >
-                  {props.children}
-                </Anime>
-              );
-            })()}
-          </Show>
-        </AnimePresence>
-      }
-    >
-      <AnimePresence exitBeforeEnter>
-        <Show when={props.when}>
-          {(() => {
-            let ref: HTMLElement | undefined;
-            const animateIn = shouldAnimateIn();
-            return (
-              <Anime
-                ref={(el) => (ref = el)}
-                initial={
-                  animateIn
-                    ? ({ height: 0 } as Partial<AnimationParams>)
-                    : undefined
-                }
-                animate={
-                  animateIn
-                    ? ({
-                        height: "auto",
-                        duration: duration(),
-                        onBegin: () => {
-                          if (ref) ref.style.overflow = "hidden";
-                        },
-                        onComplete: () => {
-                          if (ref) ref.style.overflow = "";
-                        },
-                      } as AnimationParams)
-                    : undefined
-                }
-                exit={
-                  {
-                    height: 0,
-                    duration: duration(),
-                    onBegin: () => {
-                      if (ref) ref.style.overflow = "hidden";
-                    },
-                  } as AnimationParams
-                }
-                {...props.animeProps}
-                class={props.class}
-              >
-                {props.children}
-              </Anime>
-            );
-          })()}
-        </Show>
-      </AnimePresence>
-    </Show>
+    <AnimePresence exitBeforeEnter>
+      <Show
+        when={props.when}
+        fallback={
+          props.fallback === undefined ? undefined : animated(props.fallback)
+        }
+      >
+        {animated(props.children)}
+      </Show>
+    </AnimePresence>
   );
 }
