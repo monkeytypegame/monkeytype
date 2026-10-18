@@ -1,5 +1,5 @@
 import { AnimationParams } from "animejs";
-import { JSXElement, onMount, ParentProps, Show } from "solid-js";
+import { JSXElement, onMount, ParentProps, Show, untrack } from "solid-js";
 
 import { Anime, AnimeProps } from "./Anime";
 import { AnimePresence } from "./AnimePresence";
@@ -52,7 +52,7 @@ export function AnimeShow(
   // the content and the fallback animate the same way. Each call is one
   // element AnimePresence animates out (exitBeforeEnter) before the other
   // animates in
-  const fade = (content: JSXElement): JSXElement => {
+  const fade = (content: () => JSXElement): JSXElement => {
     const animateIn = shouldAnimateIn();
     return (
       <Anime
@@ -68,12 +68,12 @@ export function AnimeShow(
         {...props.animeProps}
         class={props.class}
       >
-        {content}
+        {content()}
       </Anime>
     );
   };
 
-  const slide = (content: JSXElement): JSXElement => {
+  const slide = (content: () => JSXElement): JSXElement => {
     let ref: HTMLElement | undefined;
     const animateIn = shouldAnimateIn();
     return (
@@ -108,23 +108,27 @@ export function AnimeShow(
         {...props.animeProps}
         class={props.class}
       >
-        {content}
+        {content()}
       </Anime>
     );
   };
 
-  const animated = (content: JSXElement): JSXElement =>
-    props.slide ? slide(content) : fade(content);
+  // built once per show: `content` is read inside Anime, so reactive content
+  // updates in place instead of building (and animating) a new element
+  const animated = (content: () => JSXElement): JSXElement =>
+    untrack(() => (props.slide ? slide(content) : fade(content)));
 
   return (
     <AnimePresence exitBeforeEnter>
       <Show
         when={props.when}
         fallback={
-          props.fallback === undefined ? undefined : animated(props.fallback)
+          props.fallback === undefined
+            ? undefined
+            : animated(() => props.fallback)
         }
       >
-        {animated(props.children)}
+        {animated(() => props.children)}
       </Show>
     </AnimePresence>
   );
