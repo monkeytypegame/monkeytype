@@ -1,9 +1,4 @@
 import * as Caret from "./caret";
-import * as LiveSpeed from "./live-speed";
-import * as LiveBurst from "./live-burst";
-import * as LiveAcc from "./live-acc";
-import * as TimerProgress from "./timer-progress";
-import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
 import { qsa, ElementsWithUtils } from "../utils/dom";
@@ -55,10 +50,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.stopAnimation();
-      LiveSpeed.show();
-      LiveBurst.show();
-      LiveAcc.show();
-      TimerProgress.show();
     } else if (!value && getFocus()) {
       setFocus(false);
 
@@ -70,16 +61,11 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.startAnimation();
-      LiveSpeed.hide();
-      LiveBurst.hide();
-      LiveAcc.hide();
-      TimerProgress.hide();
     }
   });
 }
 
 document.addEventListener("mousemove", function (event) {
-  if (PageTransition.get()) return;
   if (!getFocus()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

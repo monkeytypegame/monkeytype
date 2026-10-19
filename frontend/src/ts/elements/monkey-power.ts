@@ -2,7 +2,7 @@ import * as SlowTimer from "../legacy-states/slow-timer";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { ElementWithUtils, qsr } from "../utils/dom";
+import { qs, qsr } from "../utils/dom";
 import { getTheme } from "../states/theme";
 
 const html = qsr("html");
@@ -19,7 +19,6 @@ type Particle = {
 
 type CTX = {
   particles: Particle[];
-  caret?: ElementWithUtils;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
@@ -123,7 +122,6 @@ function updateParticle(particle: Particle): void {
 }
 
 export function init(): void {
-  ctx.caret = qsr("#caret");
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
 }
@@ -224,10 +222,12 @@ export async function addPower(good = true, extra = false): Promise<void> {
     }
 
     // Sparks
-    const offset = ctx.caret?.native.getBoundingClientRect();
+    // looked up each time - #caret is re-rendered if TestPage remounts
+    const caretEl = qs("#caret");
+    const offset = caretEl?.native.getBoundingClientRect();
     const coords = [
       offset?.left ?? 0,
-      (offset?.top ?? 0) + (ctx.caret?.native.offsetHeight ?? 0) / 2,
+      (offset?.top ?? 0) + (caretEl?.native.offsetHeight ?? 0) / 2,
     ];
 
     for (

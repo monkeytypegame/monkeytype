@@ -1,4 +1,4 @@
-import { JSXElement, For } from "solid-js";
+import { For, JSXElement, Suspense } from "solid-js";
 
 import {
   deletePreset,
@@ -24,49 +24,51 @@ export function Presets(): JSXElement {
       }}
       inputs={
         <div class="grid gap-2">
-          <For each={presets()}>
-            {(preset) => (
-              <div class="grid grid-cols-[1fr_auto_auto] gap-2">
-                <Button
-                  text={preset.name}
-                  onClick={() => {
-                    void apply(preset._id);
-                  }}
-                />
-                <Button
-                  fa={{
-                    icon: "fa-pen",
-                  }}
-                  onClick={() => {
-                    showEditPresetModal({
-                      presetId: preset._id,
-                      name: preset.name,
-                    });
-                  }}
-                />
-                <Button
-                  fa={{
-                    icon: "fa-trash",
-                  }}
-                  onClick={() => {
-                    showSimpleModal({
-                      title: "Delete preset",
-                      text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
-                      buttonText: "delete",
-                      execFn: async () => {
-                        await deletePreset({ presetId: preset._id });
+          <Suspense>
+            <For each={presets()}>
+              {(preset) => (
+                <div class="grid grid-cols-[1fr_auto_auto] gap-2">
+                  <Button
+                    text={preset.name}
+                    onClick={() => {
+                      void apply(preset._id);
+                    }}
+                  />
+                  <Button
+                    fa={{
+                      icon: "fa-pen",
+                    }}
+                    onClick={() => {
+                      showEditPresetModal({
+                        presetId: preset._id,
+                        name: preset.name,
+                      });
+                    }}
+                  />
+                  <Button
+                    fa={{
+                      icon: "fa-trash",
+                    }}
+                    onClick={() => {
+                      showSimpleModal({
+                        title: "Delete preset",
+                        text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
+                        buttonText: "delete",
+                        execFn: async () => {
+                          await deletePreset({ presetId: preset._id });
 
-                        return {
-                          status: "success",
-                          message: "Preset deleted",
-                        };
-                      },
-                    });
-                  }}
-                />
-              </div>
-            )}
-          </For>
+                          return {
+                            status: "success",
+                            message: "Preset deleted",
+                          };
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </For>
+          </Suspense>
           <Button
             text="add preset"
             onClick={() => {

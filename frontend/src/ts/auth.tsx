@@ -133,8 +133,12 @@ const authenticationMemos = Object.fromEntries(
 
       const user = getAuthenticatedUserReactive();
       if (user === null) return undefined;
+      const provider = user.providerData.find(
+        (p) => p.providerId === providerId,
+      );
       const result = {
-        isInUse: user.providerData.some((p) => p.providerId === providerId),
+        isInUse: provider !== undefined,
+        email: provider?.email ?? undefined,
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
 
@@ -601,6 +605,12 @@ export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
   return typedKeys(authMethods).some(
     (it) => it !== authMethod && isUsingAuthentication(it),
   );
+}
+
+export function getAuthMethodEmailReactive(
+  authMethod: AuthMethod,
+): string | undefined {
+  return authenticationMemos[authMethod]?.()?.email;
 }
 
 export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {

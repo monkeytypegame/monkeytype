@@ -15,15 +15,21 @@ import {
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import { getCurrentInput, getInputForWord } from "../events/data";
-import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import { highlight } from "../../events/keymap";
-import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
-import * as TestState from "../test-state";
+import {
+  getActiveWordIndex,
+  setReadAheadDisabled,
+  setWordsHidden,
+  setWordsWrapperHidden,
+  setLayoutfluidTimerText,
+  setLayoutfluidTimerVisible,
+  setMemoryTimerDuration,
+} from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
@@ -69,13 +75,13 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Backspace" &&
     !isCorrect &&
     (currentInput !== "" ||
-      getInputForWord(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1)?.textWithCommit ||
+      getInputForWord(getActiveWordIndex() - 1) !==
+        TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
-    qs("#words")?.addClass("read_ahead_disabled");
+    setReadAheadDisabled(true);
   } else if (event.key === " ") {
-    qs("#words")?.removeClass("read_ahead_disabled");
+    setReadAheadDisabled(false);
   }
 }
 
@@ -395,31 +401,33 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
-        const index = Math.floor(
-          (TestState.activeWordIndex + 1) / wordsPerLayout,
-        );
+        const index = Math.floor((getActiveWordIndex() + 1) / wordsPerLayout);
         const mod =
-          wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
+          wordsPerLayout - ((getActiveWordIndex() + 1) % wordsPerLayout);
 
         if (layouts[index] as string) {
           if (mod <= 3 && (layouts[index + 1] as string)) {
-            LayoutfluidFunboxTimer.show();
-            LayoutfluidFunboxTimer.updateWords(
-              mod,
-              layouts[index + 1] as string,
+            const nextLayout = Strings.capitalizeFirstLetter(
+              (layouts[index + 1] as string).replace(/_/g, " "),
             );
+            setLayoutfluidTimerText(
+              mod === 1
+                ? `${nextLayout} starting next word`
+                : `${nextLayout} in: ${mod} words`,
+            );
+            setLayoutfluidTimerVisible(true);
           } else {
-            LayoutfluidFunboxTimer.hide();
+            setLayoutfluidTimerVisible(false);
           }
           if (mod === wordsPerLayout) {
             setConfig("layout", layouts[index] as Layout);
             setConfig("keymapLayout", layouts[index] as KeymapLayout);
             if (mod > 3) {
-              LayoutfluidFunboxTimer.hide();
+              setLayoutfluidTimerVisible(false);
             }
           }
         } else {
-          LayoutfluidFunboxTimer.hide();
+          setLayoutfluidTimerVisible(false);
         }
         setTimeout(() => {
           highlight(
@@ -475,7 +483,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   memory: {
     applyConfig(): void {
-      qs("#wordsWrapper")?.hide();
+      setWordsWrapperHidden(true);
       setConfig("showAllLines", true, {
         nosave: true,
       });
@@ -493,12 +501,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     start(): void {
-      MemoryTimer.reset();
-      qs("#words")?.hide();
+      setMemoryTimerDuration(null);
+      setWordsHidden(true);
     },
     restart(): void {
-      MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      qs("#words")?.show();
+      setMemoryTimerDuration(Math.round(Math.pow(TestWords.words.length, 1.2)));
+      setWordsHidden(false);
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }

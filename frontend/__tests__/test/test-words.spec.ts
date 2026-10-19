@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../src/ts/test/test-state", () => ({
-  activeWordIndex: 0,
+vi.mock("../../src/ts/states/test", () => ({
+  getActiveWordIndex: () => 0,
 }));
 
 import { words } from "../../src/ts/test/test-words";
@@ -59,6 +59,16 @@ describe("test-words", () => {
     it("does nothing on an empty list", () => {
       expect(() => words.removeCommitCharacterFromLastWord()).not.toThrow();
       expect(words.get()).toEqual([]);
+    });
+
+    it("does not empty the last word when it's only a newline", () => {
+      words.push("word\n", 0);
+      words.push("\n", 0);
+      words.removeCommitCharacterFromLastWord();
+      expect(words.get().map((w) => w.textWithCommit)).toEqual([
+        "word\n",
+        "\n",
+      ]);
     });
   });
 });

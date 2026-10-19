@@ -92,6 +92,15 @@ export type TimerOpacity = z.infer<typeof TimerOpacitySchema>;
 export const StopOnErrorSchema = z.enum(["off", "word", "letter"]);
 export type StopOnError = z.infer<typeof StopOnErrorSchema>;
 
+export const DeleteOnErrorSchema = z.enum([
+  "off",
+  "letter",
+  "letter_hard",
+  "word",
+  "word_hard",
+]);
+export type DeleteOnError = z.infer<typeof DeleteOnErrorSchema>;
+
 export const KeymapModeSchema = z.enum(["off", "static", "react", "next"]);
 export type KeymapMode = z.infer<typeof KeymapModeSchema>;
 
@@ -428,6 +437,7 @@ export const ConfigSchema = z
     strictSpace: z.boolean(),
     oppositeShiftMode: OppositeShiftModeSchema,
     stopOnError: StopOnErrorSchema,
+    deleteOnError: DeleteOnErrorSchema,
     confidenceMode: ConfidenceModeSchema,
     quickEnd: z.boolean(),
     indicateTypos: IndicateTyposSchema,

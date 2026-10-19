@@ -14,7 +14,7 @@ import {
   rejectConnection,
 } from "../../../collections/connections";
 import { getFriendsListQuery } from "../../../queries/friends";
-import { getActivePage, getFormatting } from "../../../states/core";
+import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { getSnapshot } from "../../../states/snapshot";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
@@ -31,12 +31,7 @@ import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 
 export function FriendsList() {
-  const isOpen = () => getActivePage() === "friends";
-
-  const query = useQuery(() => ({
-    ...getFriendsListQuery(),
-    enabled: isOpen(),
-  }));
+  const query = useQuery(() => getFriendsListQuery());
 
   const columns = createMemo(() => {
     return getColumns({ format: getFormatting() });
@@ -44,7 +39,7 @@ export function FriendsList() {
 
   return (
     <div>
-      <div class="items-bottom flex">
+      <div class="flex items-center">
         <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
         <Show when={query.isRefetching}>
           <LoadingCircle />

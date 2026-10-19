@@ -11,6 +11,7 @@ import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import fileStorage from "../utils/file-storage";
 import { qs } from "../utils/dom";
+import { setErrorBorderDisabled } from "../states/test";
 import { setThemeIndicator } from "../states/core";
 import { setTheme, ThemeIdentifier } from "../states/theme";
 
@@ -274,12 +275,10 @@ export async function applyCustomBackground(): Promise<void> {
   )?.hide();
 
   if (backgroundUrl === "") {
-    qs("#words")?.removeClass("noErrorBorder");
-    qs("#resultWordsHistory")?.removeClass("noErrorBorder");
+    setErrorBorderDisabled(false);
     qs(".customBackground img")?.remove();
   } else {
-    qs("#words")?.addClass("noErrorBorder");
-    qs("#resultWordsHistory")?.addClass("noErrorBorder");
+    setErrorBorderDisabled(true);
 
     //use setAttribute for possible unsafe customBackground value
     const container = document.querySelector(".customBackground");
@@ -421,8 +420,7 @@ configEvent.subscribe(async ({ key, newValue, nosave }) => {
   if (
     key === "themeDark" &&
     Config.autoSwitchTheme &&
-    window.matchMedia !== undefined &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches &&
+    window.matchMedia?.("(prefers-color-scheme: dark)")?.matches &&
     !nosave
   ) {
     await set(Config.themeDark, true);
