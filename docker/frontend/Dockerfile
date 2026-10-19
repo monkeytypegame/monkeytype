@@ -13,7 +13,7 @@ COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
 
 #gimme pnpm + build
-RUN npm i -g pnpm && \
+RUN npm i -g pnpm@11.21.0 && \
     pnpm i --frozen-lockfile && \
     npm run build
 

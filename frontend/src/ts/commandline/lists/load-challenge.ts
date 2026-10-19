@@ -15,7 +15,7 @@ const subgroup: CommandsSubgroup = {
       exec: async (): Promise<void> => {
         await navigate("/");
         await ChallengeController.setup(challenge.name);
-        TestLogic.restart({
+        void TestLogic.restart({
           nosave: true,
         });
       },
