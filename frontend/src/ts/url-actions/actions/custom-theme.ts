@@ -9,20 +9,12 @@ import {
   CustomThemeColors,
   CustomThemeColorsSchema,
 } from "@monkeytype/schemas/configs";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
-import { UrlSearchAction, urlActionLink } from "../action";
-
-export const customThemeAction: UrlSearchAction = {
-  in: "search",
-  param: "customTheme",
-  failure: "Failed to load theme from URL",
-  apply: (value) => applyCustomTheme(decodeCustomTheme(value)),
-};
+import { defineUrlAction, urlActionLink } from "../action";
 
 /** A shared custom theme: its colors, and optionally its background. */
 export type SharedCustomTheme = {
@@ -45,25 +37,31 @@ const CustomThemeUrlDataSchema = z.union([
   CustomThemeColorsSchema,
 ]);
 
-export function encodeCustomTheme(theme: SharedCustomTheme): string {
-  return btoa(
-    JSON.stringify({
-      c: theme.colors,
-      i: theme.background?.image,
-      s: theme.background?.size,
-      f: theme.background?.filter,
-    }),
-  );
-}
+export const customThemeAction = defineUrlAction({
+  in: "search",
+  param: "customTheme",
+  encoding: "base64",
+  failure: "Failed to load theme from URL",
+  schema: z.object({
+    customTheme: CustomThemeUrlDataSchema.transform(toSharedCustomTheme),
+  }),
+  apply: ({ customTheme }) => applyCustomTheme(customTheme),
+});
 
 /** The link sharing `theme`. */
 export function customThemeLink(theme: SharedCustomTheme): string {
-  return urlActionLink(customThemeAction, encodeCustomTheme(theme));
+  const data: z.input<typeof CustomThemeUrlDataSchema> = {
+    c: theme.colors,
+    i: theme.background?.image,
+    s: theme.background?.size,
+    f: theme.background?.filter,
+  };
+  return urlActionLink(customThemeAction, data);
 }
 
-/** Throws if `value` isn't a shared custom theme. */
-export function decodeCustomTheme(value: string): SharedCustomTheme {
-  const data = parseJsonWithSchema(atob(value), CustomThemeUrlDataSchema);
+function toSharedCustomTheme(
+  data: z.infer<typeof CustomThemeUrlDataSchema>,
+): SharedCustomTheme {
   if (Array.isArray(data)) return { colors: data };
 
   const { c, i, s, f } = data;

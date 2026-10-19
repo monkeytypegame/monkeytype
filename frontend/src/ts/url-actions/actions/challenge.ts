@@ -3,29 +3,34 @@
 import { getChallenges } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
 
+import { z } from "zod";
+
 import * as ChallengeController from "../../controllers/challenge-controller";
 import { restart as restartTest } from "../../test/test-logic";
-import { UrlSearchAction } from "../action";
+import { defineUrlAction } from "../action";
 
-export const challengeAction: UrlSearchAction = {
+export const challengeAction = defineUrlAction({
   in: "search",
   param: "challenge",
+  encoding: "plain",
   failure: "Failed to load challenge",
-  apply: async (value) => applyChallenge(decodeChallenge(value)),
-};
+  schema: z.object({
+    // the challenge's name, any case
+    challenge: z.string().transform((value, ctx) => {
+      const name = challengeNameLookup[value.toLowerCase()];
+      if (name === undefined) {
+        ctx.addIssue({ code: "custom", message: `unknown challenge ${value}` });
+        return z.NEVER;
+      }
+      return name;
+    }),
+  }),
+  apply: async ({ challenge }) => applyChallenge(challenge),
+});
 
-const challengeNameLookup = Object.fromEntries(
+const challengeNameLookup: Record<string, ChallengeName> = Object.fromEntries(
   getChallenges().map((it) => [it.name.toLowerCase(), it.name]),
 );
-
-/** The challenge named `value`, any case. Throws for an unknown name. */
-export function decodeChallenge(value: string): ChallengeName {
-  const name = challengeNameLookup[value.toLowerCase()];
-  if (name === undefined) {
-    throw new Error(`invalid name ${value.toLowerCase()}`);
-  }
-  return name;
-}
 
 async function applyChallenge(name: ChallengeName): Promise<void> {
   if (await ChallengeController.setup(name)) {

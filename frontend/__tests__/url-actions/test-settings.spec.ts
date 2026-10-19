@@ -7,25 +7,32 @@ import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/states/test";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
+import { readUrlAction } from "../../src/ts/url-actions/action";
 import {
-  decodeTestSettings,
-  encodeTestSettings,
   SharedTestSettings,
   testSettingsAction,
   testSettingsLink,
 } from "../../src/ts/url-actions/actions/test-settings";
 
+function decodeTestSettings(value: string): SharedTestSettings {
+  const read = readUrlAction(testSettingsAction, { testSettings: value });
+  if (!read.success) throw new Error(read.error);
+  return read.data.testSettings;
+}
+
 const applyTestSettings = async (value: string): Promise<void> =>
-  testSettingsAction.apply(value, () => null);
+  testSettingsAction.apply({ testSettings: decodeTestSettings(value) });
+
+const linkValue = (link: string): string => link.slice(link.indexOf("=") + 1);
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({
   restart: vi.fn(),
 }));
 
-describe("encodeTestSettings", () => {
+describe("testSettingsLink", () => {
   it("decodes back to the same settings", () => {
-    const settings: SharedTestSettings = {
+    const settings: Parameters<typeof testSettingsLink>[0] = {
       mode: "custom",
       mode2: "15",
       customText: {
@@ -41,23 +48,27 @@ describe("encodeTestSettings", () => {
       funbox: ["crt"],
     };
 
-    expect(decodeTestSettings(encodeTestSettings(settings))).toEqual(settings);
+    expect(decodeTestSettings(linkValue(testSettingsLink(settings)))).toEqual(
+      settings,
+    );
   });
 
   it("leaves out settings that aren't shared", () => {
-    expect(decodeTestSettings(encodeTestSettings({ numbers: true }))).toEqual({
+    expect(
+      decodeTestSettings(linkValue(testSettingsLink({ numbers: true }))),
+    ).toEqual({
       numbers: true,
     });
   });
 
   it("builds a link with the testSettings param", () => {
     expect(testSettingsLink({})).toBe(
-      `${location.origin}?testSettings=${encodeTestSettings({})}`,
+      `${location.origin}?testSettings=${compressToURI(JSON.stringify(new Array(8).fill(null)))}`,
     );
   });
 });
 
-describe("decodeTestSettings", () => {
+describe("reading testSettingsAction", () => {
   it("throws on an invalid value", () => {
     expect(() => decodeTestSettings("nope")).toThrow();
   });
@@ -110,9 +121,25 @@ describe("decodeTestSettings", () => {
       funbox: ["invalid"],
     } as any);
 
-    expect(() => decodeTestSettings(url)).toThrow(
-      `JSON does not match schema: "0" invalid enum value. expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'invalidmode', "1" needs to be a number or a number represented as a string e.g. "10"., "2.mode" invalid enum value. expected 'repeat' | 'random' | 'shuffle', received 'invalid', "2.pipeDelimiter" expected boolean, received string, "2.limit" expected object, received string, "2.text" expected array, received string, "3" expected boolean, received string, "4" expected boolean, received string, "6" invalid enum value. expected 'normal' | 'expert' | 'master', received 'invalid', "7" invalid input`,
-    );
+    const read = readUrlAction(testSettingsAction, { testSettings: url });
+
+    expect(read.success).toBe(false);
+    // the issues' paths, eg. "testSettings.0" for the mode
+    const paths = read.success
+      ? []
+      : [...read.error.matchAll(/"(testSettings[.\w]*)"/g)].map((m) => m[1]);
+    expect(paths).toEqual([
+      "testSettings.0",
+      "testSettings.1",
+      "testSettings.2.mode",
+      "testSettings.2.pipeDelimiter",
+      "testSettings.2.limit",
+      "testSettings.2.text",
+      "testSettings.3",
+      "testSettings.4",
+      "testSettings.6",
+      "testSettings.7",
+    ]);
   });
 });
 

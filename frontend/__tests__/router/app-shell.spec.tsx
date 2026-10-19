@@ -1006,7 +1006,7 @@ describe("app shell routing", () => {
     expect(app.url()).toBe("/?foo=1#top");
     expect(app.shownPage()).toBe("test");
     expect(getNotificationHistory().map((n) => n.message)).toEqual([
-      "Failed to load challenge: invalid name nope",
+      'Invalid challenge url: "challenge" unknown challenge nope',
     ]);
   });
 

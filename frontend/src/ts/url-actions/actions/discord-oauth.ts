@@ -8,33 +8,31 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { UrlHashAction } from "../action";
+import { z } from "zod";
+
+import { defineUrlAction } from "../action";
 
 // the token is single use, the rest of the hash goes with it
-export const discordTokenAction: UrlHashAction = {
+export const discordTokenAction = defineUrlAction({
   in: "hash",
   param: "access_token",
+  encoding: "plain",
   failure: "Failed to link Discord",
-  apply: async (value, getParam) =>
-    applyDiscordToken(decodeDiscordToken(value, getParam)),
-};
+  schema: z
+    .object({
+      access_token: z.string(),
+      token_type: z.string(),
+      state: z.string(),
+    })
+    .transform((params) => ({
+      accessToken: params.access_token,
+      tokenType: params.token_type,
+      state: params.state,
+    })),
+  apply: applyDiscordToken,
+});
 
 type DiscordToken = { accessToken: string; tokenType: string; state: string };
-
-/**
- * The redirect's token. `getParam` reads its other hash params. Throws if one
- * is missing.
- */
-export function decodeDiscordToken(
-  accessToken: string,
-  getParam: (param: string) => string | null,
-): DiscordToken {
-  const tokenType = getParam("token_type");
-  const state = getParam("state");
-  if (tokenType === null) throw new Error("missing token_type");
-  if (state === null) throw new Error("missing state");
-  return { accessToken, tokenType, state };
-}
 
 /** Links the token's discord account. */
 async function applyDiscordToken(token: DiscordToken): Promise<void> {

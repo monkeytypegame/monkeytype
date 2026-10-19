@@ -18,8 +18,6 @@ import {
   Mode2Schema,
   ModeSchema,
 } from "@monkeytype/schemas/shared";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
-import { compressToURI, decompressFromURI } from "lz-ts";
 import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
@@ -29,14 +27,7 @@ import { setSelectedQuoteId } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import { restart as restartTest } from "../../test/test-logic";
 import * as Misc from "../../utils/misc";
-import { UrlSearchAction, urlActionLink } from "../action";
-
-export const testSettingsAction: UrlSearchAction = {
-  in: "search",
-  param: "testSettings",
-  failure: "Failed to load test settings from URL",
-  apply: async (value) => applyTestSettings(decodeTestSettings(value)),
-};
+import { defineUrlAction, urlActionLink } from "../action";
 
 /** The settings a link shares: one left out keeps the user's. */
 export type SharedTestSettings = {
@@ -81,47 +72,56 @@ const TestSettingsSchema = z.tuple([
   FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
 
+export const testSettingsAction = defineUrlAction({
+  in: "search",
+  param: "testSettings",
+  encoding: "lz",
+  failure: "Failed to load test settings from URL",
+  schema: z.object({
+    testSettings: TestSettingsSchema.transform(toSharedTestSettings),
+  }),
+  apply: async ({ testSettings }) => applyTestSettings(testSettings),
+});
+
 type LinkCustomText = NonNullable<z.infer<typeof TestSettingsSchema>[2]>;
 
-export function encodeTestSettings(settings: SharedTestSettings): string {
-  return compressToURI(
-    JSON.stringify([
-      settings.mode ?? null,
-      settings.mode2 ?? null,
-      settings.customText ?? null,
-      settings.punctuation ?? null,
-      settings.numbers ?? null,
-      settings.language ?? null,
-      settings.difficulty ?? null,
-      settings.funbox ?? null,
-    ]),
-  );
-}
-
 /** The link sharing `settings`. */
-export function testSettingsLink(settings: SharedTestSettings): string {
-  return urlActionLink(testSettingsAction, encodeTestSettings(settings));
+export function testSettingsLink(
+  // a link shares the whole custom text, old links can lack parts of it
+  settings: Omit<SharedTestSettings, "customText"> & {
+    customText?: CustomTextSettings;
+  },
+): string {
+  const data: z.input<typeof TestSettingsSchema> = [
+    settings.mode ?? null,
+    settings.mode2 ?? null,
+    settings.customText ?? null,
+    settings.punctuation ?? null,
+    settings.numbers ?? null,
+    settings.language ?? null,
+    settings.difficulty ?? null,
+    settings.funbox ?? null,
+  ];
+  return urlActionLink(testSettingsAction, data);
 }
 
-/** Throws if `value` isn't shared test settings. */
-export function decodeTestSettings(value: string): SharedTestSettings {
-  // if the encoding structure or method ever changes, make sure to support the old data format
-  // otherwise eiko will be sad
-  const [
-    mode,
-    mode2,
-    customText,
-    punctuation,
-    numbers,
-    language,
-    difficulty,
-    funbox,
-  ] = parseJsonWithSchema(decompressFromURI(value) ?? "", TestSettingsSchema);
-
+// if the encoding structure or method ever changes, make sure to support the old data format
+// otherwise eiko will be sad
+function toSharedTestSettings([
+  mode,
+  mode2,
+  customText,
+  punctuation,
+  numbers,
+  language,
+  difficulty,
+  funbox,
+]: z.infer<typeof TestSettingsSchema>): SharedTestSettings {
   return {
     mode: mode ?? undefined,
     mode2: mode2 ?? undefined,
-    customText: customText === null ? undefined : decodeCustomText(customText),
+    customText:
+      customText === null ? undefined : toSharedCustomText(customText),
     punctuation: punctuation ?? undefined,
     numbers: numbers ?? undefined,
     language: language ?? undefined,
@@ -134,7 +134,7 @@ export function decodeTestSettings(value: string): SharedTestSettings {
   };
 }
 
-function decodeCustomText(customText: LinkCustomText): SharedCustomText {
+function toSharedCustomText(customText: LinkCustomText): SharedCustomText {
   return {
     text: customText.text,
     mode: customText.mode ?? "repeat",
