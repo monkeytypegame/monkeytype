@@ -43,7 +43,7 @@
     "@tanstack/solid-db": "0.2.22",
     "@tanstack/solid-form": "1.33.0",
     "@tanstack/solid-hotkeys": "0.10.0",
-    "@tanstack/solid-query": "5.101.0",
+    "@tanstack/solid-query": "5.101.4",
     "@tanstack/solid-table": "8.21.3",
     "@ts-rest/core": "3.52.1",
     "animejs": "4.2.2",
