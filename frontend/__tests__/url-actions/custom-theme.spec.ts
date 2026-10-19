@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readUrlAction } from "../../src/ts/url-actions/action";
 import {
-  customThemeLink,
+  buildCustomThemeLink,
   customThemeAction,
   SharedCustomTheme,
 } from "../../src/ts/url-actions/actions/custom-theme";
@@ -16,7 +16,7 @@ const linkValue = (link: string): string => link.slice(link.indexOf("=") + 1);
 
 const colors = new Array(10).fill("#111111") as SharedCustomTheme["colors"];
 
-describe("customThemeLink", () => {
+describe("buildCustomThemeLink", () => {
   it("decodes back to the same theme", () => {
     const theme: SharedCustomTheme = {
       colors,
@@ -27,17 +27,21 @@ describe("customThemeLink", () => {
       },
     };
 
-    expect(decodeCustomTheme(linkValue(customThemeLink(theme)))).toEqual(theme);
+    expect(decodeCustomTheme(linkValue(buildCustomThemeLink(theme)))).toEqual(
+      theme,
+    );
   });
 
   it("decodes back a theme without background", () => {
-    expect(decodeCustomTheme(linkValue(customThemeLink({ colors })))).toEqual({
+    expect(
+      decodeCustomTheme(linkValue(buildCustomThemeLink({ colors }))),
+    ).toEqual({
       colors,
     });
   });
 
   it("builds a link with the customTheme param", () => {
-    expect(customThemeLink({ colors })).toBe(
+    expect(buildCustomThemeLink({ colors })).toBe(
       `${location.origin}?customTheme=${btoa(JSON.stringify({ c: colors }))}`,
     );
   });

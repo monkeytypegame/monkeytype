@@ -14,7 +14,7 @@ import { z } from "zod";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
-import { defineSearchAction, urlActionLink } from "../action";
+import { buildUrlActionLink, defineSearchAction } from "../action";
 
 /** A shared custom theme: its colors, and optionally its background. */
 export type SharedCustomTheme = {
@@ -47,12 +47,15 @@ export const customThemeAction = defineSearchAction({
 });
 
 /** The link sharing `theme`. */
-export function customThemeLink(theme: SharedCustomTheme): string {
-  return urlActionLink(customThemeAction, {
-    c: theme.colors,
-    i: theme.background?.image,
-    s: theme.background?.size,
-    f: theme.background?.filter,
+export function buildCustomThemeLink(theme: SharedCustomTheme): string {
+  return buildUrlActionLink({
+    action: customThemeAction,
+    value: {
+      c: theme.colors,
+      i: theme.background?.image,
+      s: theme.background?.size,
+      f: theme.background?.filter,
+    },
   });
 }
 

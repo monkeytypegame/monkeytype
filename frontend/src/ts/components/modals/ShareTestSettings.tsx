@@ -5,7 +5,7 @@ import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
 import { getCurrentQuote } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
-import { testSettingsLink } from "../../url-actions/actions/test-settings";
+import { buildTestSettingsLink } from "../../url-actions/actions/test-settings";
 import { cn } from "../../utils/cn";
 import { getMode2 } from "../../utils/misc";
 import { capitalizeFirstLetter } from "../../utils/strings";
@@ -32,7 +32,7 @@ export function ShareTestSettings(): JSXElement {
 
   const url = () => {
     const values = formValues();
-    return testSettingsLink({
+    return buildTestSettingsLink({
       mode: values.mode ? getConfig.mode : undefined,
       mode2: values.mode2 ? getMode2(getConfig, getCurrentQuote()) : undefined,
       customText: values.customText ? CustomText.getData() : undefined,

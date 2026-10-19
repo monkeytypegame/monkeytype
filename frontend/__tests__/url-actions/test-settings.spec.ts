@@ -11,7 +11,7 @@ import { readUrlAction } from "../../src/ts/url-actions/action";
 import {
   SharedTestSettings,
   testSettingsAction,
-  testSettingsLink,
+  buildTestSettingsLink,
 } from "../../src/ts/url-actions/actions/test-settings";
 
 function decodeTestSettings(value: string): SharedTestSettings {
@@ -30,9 +30,9 @@ vi.mock("../../src/ts/test/test-logic", () => ({
   restart: vi.fn(),
 }));
 
-describe("testSettingsLink", () => {
+describe("buildTestSettingsLink", () => {
   it("decodes back to the same settings", () => {
-    const settings: Parameters<typeof testSettingsLink>[0] = {
+    const settings: Parameters<typeof buildTestSettingsLink>[0] = {
       mode: "custom",
       mode2: "15",
       customText: {
@@ -48,21 +48,21 @@ describe("testSettingsLink", () => {
       funbox: ["crt"],
     };
 
-    expect(decodeTestSettings(linkValue(testSettingsLink(settings)))).toEqual(
-      settings,
-    );
+    expect(
+      decodeTestSettings(linkValue(buildTestSettingsLink(settings))),
+    ).toEqual(settings);
   });
 
   it("leaves out settings that aren't shared", () => {
     expect(
-      decodeTestSettings(linkValue(testSettingsLink({ numbers: true }))),
+      decodeTestSettings(linkValue(buildTestSettingsLink({ numbers: true }))),
     ).toEqual({
       numbers: true,
     });
   });
 
   it("builds a link with the testSettings param", () => {
-    expect(testSettingsLink({})).toBe(
+    expect(buildTestSettingsLink({})).toBe(
       `${location.origin}?testSettings=${compressToURI(JSON.stringify(new Array(8).fill(null)))}`,
     );
   });

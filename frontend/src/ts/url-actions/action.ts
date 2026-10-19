@@ -22,7 +22,7 @@ type UrlActionBase<T> = {
 
 /**
  * Owns its search param, and drops only it from the url. `Input` is the
- * param's value before encoding (urlActionLink).
+ * param's value before encoding (buildUrlActionLink).
  */
 export type UrlSearchAction<T = unknown, Input = unknown> = UrlActionBase<T> & {
   in: "search";
@@ -55,10 +55,13 @@ export function defineHashAction<T>(
 }
 
 /** The link applying a search action with `value`, its schema's input. */
-export function urlActionLink<Input>(
-  action: UrlSearchAction<unknown, Input>,
-  value: Input,
-): string {
+export function buildUrlActionLink<Input>({
+  action,
+  value,
+}: {
+  action: UrlSearchAction<unknown, Input>;
+  value: NoInfer<Input>;
+}): string {
   return `${location.origin}?${action.param}=${encodeValue(action.encoding, value)}`;
 }
 

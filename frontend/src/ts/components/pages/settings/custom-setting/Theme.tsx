@@ -30,7 +30,7 @@ import {
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
-import { customThemeLink } from "../../../../url-actions/actions/custom-theme";
+import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
 import {
@@ -139,7 +139,7 @@ export function Theme(): JSXElement {
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
               execFn: async ({ includeBackground }) => {
-                const link = customThemeLink({
+                const link = buildCustomThemeLink({
                   colors: convertThemeToCustomColors(getTheme()),
                   background: includeBackground
                     ? {

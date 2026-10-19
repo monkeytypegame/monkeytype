@@ -27,7 +27,7 @@ import { setSelectedQuoteId } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import { restart as restartTest } from "../../test/test-logic";
 import * as Misc from "../../utils/misc";
-import { defineSearchAction, urlActionLink } from "../action";
+import { buildUrlActionLink, defineSearchAction } from "../action";
 
 /** The settings a link shares: one left out keeps the user's. */
 export type SharedTestSettings = {
@@ -84,22 +84,25 @@ export const testSettingsAction = defineSearchAction({
 type LinkCustomText = NonNullable<z.infer<typeof TestSettingsSchema>[2]>;
 
 /** The link sharing `settings`. */
-export function testSettingsLink(
+export function buildTestSettingsLink(
   // a link shares the whole custom text, old links can lack parts of it
   settings: Omit<SharedTestSettings, "customText"> & {
     customText?: CustomTextSettings;
   },
 ): string {
-  return urlActionLink(testSettingsAction, [
-    settings.mode ?? null,
-    settings.mode2 ?? null,
-    settings.customText ?? null,
-    settings.punctuation ?? null,
-    settings.numbers ?? null,
-    settings.language ?? null,
-    settings.difficulty ?? null,
-    settings.funbox ?? null,
-  ]);
+  return buildUrlActionLink({
+    action: testSettingsAction,
+    value: [
+      settings.mode ?? null,
+      settings.mode2 ?? null,
+      settings.customText ?? null,
+      settings.punctuation ?? null,
+      settings.numbers ?? null,
+      settings.language ?? null,
+      settings.difficulty ?? null,
+      settings.funbox ?? null,
+    ],
+  });
 }
 
 // if the encoding structure or method ever changes, make sure to support the old data format
