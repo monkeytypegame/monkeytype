@@ -2,9 +2,9 @@ import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, onMount } from "solid-js";
 
-import { navigationEvent } from "../../../events/navigation";
 import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
+import { navigate } from "../../../router/navigate";
 import { showNoticeNotification } from "../../../states/notifications";
 import { H2 } from "../../common/Headers";
 import { InputField } from "../../ui/form/InputField";
@@ -23,9 +23,9 @@ export function ProfileSearchPage(): JSXElement {
     onSubmit: async ({ value }) => {
       setEditable(false);
       try {
-        navigationEvent.dispatch({
-          url: `/profile/${value.username}`,
-          options: {},
+        void navigate({
+          to: "/profile/$uidOrName",
+          params: { uidOrName: value.username },
         });
       } finally {
         setEditable(true);

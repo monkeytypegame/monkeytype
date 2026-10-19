@@ -1,9 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
-import { PageName } from "../pages/page";
 import { Formatting } from "../utils/format";
 import { getConfig } from "../config/store";
 
-export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
   text: string;
   isNew: boolean;
@@ -30,10 +28,6 @@ export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [isUserVerified, setUserVerified] = createSignal(false);
-
-export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
-  string | undefined
->(undefined);
 
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined

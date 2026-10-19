@@ -1613,3 +1613,7 @@ function autofocusWords(e: KeyboardEvent): void {
     e.preventDefault();
   }
 }
+
+export const __testing = {
+  updateWordsWrapperHeight,
+};
