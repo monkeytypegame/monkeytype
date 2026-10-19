@@ -12,32 +12,35 @@ import { z } from "zod";
 
 import { defineHashAction } from "../action";
 
+// the oauth redirect's hash params
+const DiscordTokenSchema = z.object({
+  access_token: z.string(),
+  token_type: z.string(),
+  state: z.string(),
+});
+
 // the token is single use, the rest of the hash goes with it
 export const discordTokenAction = defineHashAction({
   in: "hash",
   param: "access_token",
   failure: "Failed to link Discord",
-  schema: z
-    .object({
-      access_token: z.string(),
-      token_type: z.string(),
-      state: z.string(),
-    })
-    .transform((params) => ({
-      accessToken: params.access_token,
-      tokenType: params.token_type,
-      state: params.state,
-    })),
+  schema: DiscordTokenSchema,
   apply: applyDiscordToken,
 });
 
-type DiscordToken = { accessToken: string; tokenType: string; state: string };
-
 /** Links the token's discord account. */
-async function applyDiscordToken(token: DiscordToken): Promise<void> {
+async function applyDiscordToken(
+  token: z.infer<typeof DiscordTokenSchema>,
+): Promise<void> {
   showLoaderBar();
   const response = await Ape.users
-    .linkDiscord({ body: token })
+    .linkDiscord({
+      body: {
+        accessToken: token.access_token,
+        tokenType: token.token_type,
+        state: token.state,
+      },
+    })
     .finally(hideLoaderBar);
 
   if (response.status !== 200) {
