@@ -12,71 +12,88 @@ import {
   setCompositionText,
 } from "../../states/test";
 
-const inputEl = getInputElement();
+export function init(signal: AbortSignal): void {
+  const inputEl = getInputElement();
 
-inputEl.addEventListener("compositionstart", (event) => {
-  console.debug("wordsInput event compositionstart", {
-    event,
-    data: event.data,
-  });
+  inputEl.addEventListener(
+    "compositionstart",
+    (event) => {
+      console.debug("wordsInput event compositionstart", {
+        event,
+        data: event.data,
+      });
 
-  const now = performance.now();
+      const now = performance.now();
 
-  if (isTestRestarting() || isResultCalculating()) return;
-  CompositionState.setComposing(true);
-  CompositionState.setData("");
-  setLastInsertCompositionTextData("");
-  if (!isTestActive()) {
-    TestLogic.startTest(now);
-  }
+      if (isTestRestarting() || isResultCalculating()) return;
+      CompositionState.setComposing(true);
+      CompositionState.setData("");
+      setLastInsertCompositionTextData("");
+      if (!isTestActive()) {
+        TestLogic.startTest(now);
+      }
 
-  logTestEvent("composition", now, {
-    event: "start",
-    wordIndex: getActiveWordIndex(),
-  });
-});
+      logTestEvent("composition", now, {
+        event: "start",
+        wordIndex: getActiveWordIndex(),
+      });
+    },
+    { signal },
+  );
 
-inputEl.addEventListener("compositionupdate", (event) => {
-  console.debug("wordsInput event compositionupdate", {
-    event,
-    data: event.data,
-  });
+  inputEl.addEventListener(
+    "compositionupdate",
+    (event) => {
+      console.debug("wordsInput event compositionupdate", {
+        event,
+        data: event.data,
+      });
 
-  if (isTestRestarting() || isResultCalculating()) return;
-  CompositionState.setData(event.data);
-  setCompositionText(event.data);
+      if (isTestRestarting() || isResultCalculating()) return;
+      CompositionState.setData(event.data);
+      setCompositionText(event.data);
 
-  const now = performance.now();
+      const now = performance.now();
 
-  logTestEvent("composition", now, {
-    event: "update",
-    data: event.data,
-    wordIndex: getActiveWordIndex(),
-  });
-});
+      logTestEvent("composition", now, {
+        event: "update",
+        data: event.data,
+        wordIndex: getActiveWordIndex(),
+      });
+    },
+    { signal },
+  );
 
-inputEl.addEventListener("compositionend", async (event) => {
-  console.debug("wordsInput event compositionend", { event, data: event.data });
+  inputEl.addEventListener(
+    "compositionend",
+    async (event) => {
+      console.debug("wordsInput event compositionend", {
+        event,
+        data: event.data,
+      });
 
-  if (isTestRestarting() || isResultCalculating()) return;
-  CompositionState.setComposing(false);
-  CompositionState.setData("");
-  setCompositionText("");
-  setLastInsertCompositionTextData("");
+      if (isTestRestarting() || isResultCalculating()) return;
+      CompositionState.setComposing(false);
+      CompositionState.setData("");
+      setCompositionText("");
+      setLastInsertCompositionTextData("");
 
-  const now = performance.now();
+      const now = performance.now();
 
-  if (event.data !== "") {
-    await onInsertText({
-      data: event.data,
-      now,
-      isCompositionEnding: true,
-    });
-  }
+      if (event.data !== "") {
+        await onInsertText({
+          data: event.data,
+          now,
+          isCompositionEnding: true,
+        });
+      }
 
-  logTestEvent("composition", now, {
-    event: "end",
-    data: event.data,
-    wordIndex: getActiveWordIndex(),
-  });
-});
+      logTestEvent("composition", now, {
+        event: "end",
+        data: event.data,
+        wordIndex: getActiveWordIndex(),
+      });
+    },
+    { signal },
+  );
+}

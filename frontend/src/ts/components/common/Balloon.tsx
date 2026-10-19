@@ -3,6 +3,8 @@ import type { JSX, ParentProps } from "solid-js";
 import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
+import { getIsScreenshotting } from "../../states/core";
+
 export type BalloonProps = {
   text?: string;
   position?: BalloonPosition;
@@ -20,10 +22,12 @@ type Props = ParentProps<BalloonProps> &
 export function buildBalloonHtmlProperties(
   options: BalloonProps | undefined,
 ): Record<string, string> {
+  // no balloons in screenshots
   if (
     options === undefined ||
     options.text === undefined ||
-    options.text === ""
+    options.text === "" ||
+    getIsScreenshotting()
   ) {
     return {};
   }

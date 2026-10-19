@@ -115,7 +115,7 @@ function handleDeleteOnError(now: number): void {
     goBackAWord &&
     inputLength <= 1 &&
     getActiveWordIndex() > 0 &&
-    TestUI.getWordElement(getActiveWordIndex() - 1) !== null
+    TestUI.isWordRendered(getActiveWordIndex() - 1)
   ) {
     //pretend its a normal backspace, not insertText
     const inputType: DeleteInputType = deleteWholeWord

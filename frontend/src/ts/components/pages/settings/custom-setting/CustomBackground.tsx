@@ -3,7 +3,7 @@ import {
   CustomBackgroundSchema,
 } from "@monkeytype/schemas/configs";
 import { createForm } from "@tanstack/solid-form";
-import { createResource, JSXElement, For, Show } from "solid-js";
+import { createResource, JSXElement, For, Show, Suspense } from "solid-js";
 
 import {
   configMetadata,
@@ -74,92 +74,95 @@ export function CustomBackground(): JSXElement {
       }
       inputs={
         <div class="grid gap-2 self-end">
-          <Show
-            when={!hasLocalBackground()}
-            fallback={
-              <Button
-                fa={{ icon: "fa-trash" }}
-                text="remove local background"
-                onClick={() => {
-                  void FileStorage.deleteFile("LocalBackgroundFile").then(
-                    () => {
-                      void applyCustomBackground();
-                    },
-                  );
-                }}
-              />
-            }
-          >
-            <>
-              <input
-                type="file"
-                id="customBackgroundUploadSolid"
-                accept="image/*"
-                class="hidden"
-                onChange={async (e) => {
-                  const fileInput = e.target;
-                  const file = fileInput.files?.[0];
-
-                  if (!file) {
-                    return;
-                  }
-
-                  // check type
-                  if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-                    showNoticeNotification("Unsupported image format");
-                    fileInput.value = "";
-                    return;
-                  }
-
-                  const dataUrl = await readFileAsDataURL(file);
-                  await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
-
-                  void applyCustomBackground();
-
-                  fileInput.value = "";
-                }}
-              />
-              {/* i cant figure out how to trigger the file input with a Button component */}
-              <label
-                // oxlint-disable-next-line react/no-unknown-property
-                for="customBackgroundUploadSolid"
-                class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
-              >
-                <Fa icon="fa-file-import" fixedWidth />
-                use local image
-              </label>
-              <Separator text="or" />
-            </>
-          </Show>
-          <Show when={!hasLocalBackground()}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                void form.handleSubmit();
-              }}
+          {/* latest: a refetch keeps the old value instead of suspending */}
+          <Suspense>
+            <Show
+              when={!hasLocalBackground.latest}
+              fallback={
+                <Button
+                  fa={{ icon: "fa-trash" }}
+                  text="remove local background"
+                  onClick={() => {
+                    void FileStorage.deleteFile("LocalBackgroundFile").then(
+                      () => {
+                        void applyCustomBackground();
+                      },
+                    );
+                  }}
+                />
+              }
             >
-              <form.Field
-                name="customBackground"
-                validators={{
-                  onChange: fromSchema(CustomBackgroundSchema),
-                  onBlur: () => {
-                    void form.handleSubmit();
-                  },
+              <>
+                <input
+                  type="file"
+                  id="customBackgroundUploadSolid"
+                  accept="image/*"
+                  class="hidden"
+                  onChange={async (e) => {
+                    const fileInput = e.target;
+                    const file = fileInput.files?.[0];
+
+                    if (!file) {
+                      return;
+                    }
+
+                    // check type
+                    if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
+                      showNoticeNotification("Unsupported image format");
+                      fileInput.value = "";
+                      return;
+                    }
+
+                    const dataUrl = await readFileAsDataURL(file);
+                    await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
+
+                    void applyCustomBackground();
+
+                    fileInput.value = "";
+                  }}
+                />
+                {/* i cant figure out how to trigger the file input with a Button component */}
+                <label
+                  // oxlint-disable-next-line react/no-unknown-property
+                  for="customBackgroundUploadSolid"
+                  class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
+                >
+                  <Fa icon="fa-file-import" fixedWidth />
+                  use local image
+                </label>
+                <Separator text="or" />
+              </>
+            </Show>
+            <Show when={!hasLocalBackground.latest}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void form.handleSubmit();
                 }}
-                children={(field) => (
-                  <div class="relative">
-                    <InputField
-                      field={field}
-                      placeholder={"image url"}
-                      type="text"
-                    />
-                    <savedIndicator.component />
-                  </div>
-                )}
-              />
-            </form>
-          </Show>
+              >
+                <form.Field
+                  name="customBackground"
+                  validators={{
+                    onChange: fromSchema(CustomBackgroundSchema),
+                    onBlur: () => {
+                      void form.handleSubmit();
+                    },
+                  }}
+                  children={(field) => (
+                    <div class="relative">
+                      <InputField
+                        field={field}
+                        placeholder={"image url"}
+                        type="text"
+                      />
+                      <savedIndicator.component />
+                    </div>
+                  )}
+                />
+              </form>
+            </Show>
+          </Suspense>
           <div class="grid grid-cols-[repeat(auto-fit,minmax(4rem,1fr))] gap-2">
             <For each={getOptions(ConfigSchema.shape.customBackgroundSize)}>
               {(option) => {

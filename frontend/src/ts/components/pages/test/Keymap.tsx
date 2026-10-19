@@ -2,7 +2,7 @@ import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { showCommandLineForConfig } from "../../../states/core";
+import { showCommandline } from "../../../states/commandline";
 import { getModifierState, isCapsLockOn } from "../../../states/modifiers";
 import {
   FlashEntry,
@@ -177,7 +177,10 @@ function Key(
     }
 
     const entry = props.flashEntry();
-    return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
+    return {
+      tick: entry?.tick ?? 0,
+      correct: getConfig.blindMode || (entry?.correct ?? true),
+    };
   });
 
   const isNext = createMemo(
@@ -306,7 +309,7 @@ function Key(
           variant="text"
           class="text-[0.5em] [--themable-button-bg:transparent] [--themable-button-text:var(--keycolor)]"
           text={getKeymapLayout().layoutNameDisplayString}
-          onClick={() => showCommandLineForConfig("keymapLayout")}
+          onClick={() => showCommandline({ subgroupOverride: "keymapLayout" })}
           tabIndex={-1}
         />
       </Show>
