@@ -10,42 +10,55 @@ import { z } from "zod";
  */
 export type UrlActionEncoding = "plain" | "lz" | "base64";
 
-/**
- * Applied when `param` is in the search, or the hash (`in`). A hash action
- * drops the whole hash (an oauth redirect's fragment).
- */
-type UrlActionBase<In extends "search" | "hash", T> = {
-  in: In;
+type UrlActionBase<T> = {
+  /** its presence in the url triggers the action */
   param: string;
-  encoding: UrlActionEncoding;
   /** the error notification's message when `apply` throws */
   failure: string;
-  /**
-   * Validates the params of the search, or the hash, with `param`'s value
-   * decoded (readUrlAction)
-   */
-  schema: z.ZodType<T, z.ZodTypeDef, Record<string, unknown>>;
   // a method: the actions with different values share one list (apply.ts)
   /** throws if applying failed */
   apply(value: T): void | Promise<void>;
 };
 
-export type UrlSearchAction<T = unknown> = UrlActionBase<"search", T>;
-export type UrlHashAction<T = unknown> = UrlActionBase<"hash", T>;
+/**
+ * Owns its search param, and drops only it from the url. `Input` is the
+ * param's value before encoding (urlActionLink).
+ */
+export type UrlSearchAction<T = unknown, Input = unknown> = UrlActionBase<T> & {
+  in: "search";
+  encoding: UrlActionEncoding;
+  /** validates `param`'s decoded value */
+  schema: z.ZodType<T, z.ZodTypeDef, Input>;
+};
+
+/** Owns the whole hash (an oauth redirect's fragment), and drops it. */
+export type UrlHashAction<T = unknown> = UrlActionBase<T> & {
+  in: "hash";
+  /** validates the hash's params */
+  schema: z.ZodType<T, z.ZodTypeDef, Record<string, string>>;
+};
+
 export type UrlAction<T = unknown> = UrlSearchAction<T> | UrlHashAction<T>;
 
 /** Infers the action's value from its schema. */
-export function defineUrlAction<In extends "search" | "hash", T>(
-  action: UrlActionBase<In, T>,
-): UrlActionBase<In, T> {
+export function defineSearchAction<T, Input>(
+  action: UrlSearchAction<T, Input>,
+): UrlSearchAction<T, Input> {
   return action;
 }
 
-/**
- * The link applying a search action. `value` is its param's value before
- * encoding: a string for plain, else json.
- */
-export function urlActionLink(action: UrlSearchAction, value: unknown): string {
+/** Infers the action's value from its schema. */
+export function defineHashAction<T>(
+  action: UrlHashAction<T>,
+): UrlHashAction<T> {
+  return action;
+}
+
+/** The link applying a search action with `value`, its schema's input. */
+export function urlActionLink<Input>(
+  action: UrlSearchAction<unknown, Input>,
+  value: Input,
+): string {
   return `${location.origin}?${action.param}=${encodeValue(action.encoding, value)}`;
 }
 
@@ -64,13 +77,20 @@ function decodeValue(encoding: UrlActionEncoding, value: string): unknown {
 }
 
 /**
- * The action's value read from `params` (the search's, or the hash's): its
- * param decoded, then validated with its schema.
+ * The action's value read from `params` (the search's, or the hash's): a
+ * search action's param decoded and validated, a hash action's params
+ * validated.
  */
 export function readUrlAction<T>(
   action: UrlAction<T>,
   params: Record<string, string>,
 ): { success: true; data: T } | { success: false; error: string } {
+  if (action.in === "hash") {
+    const parsed = action.schema.safeParse(params);
+    if (parsed.success) return { success: true, data: parsed.data };
+    return { success: false, error: issuesMessage(parsed.error, []) };
+  }
+
   let decoded: unknown;
   try {
     decoded = decodeValue(action.encoding, params[action.param] ?? "");
@@ -79,19 +99,17 @@ export function readUrlAction<T>(
     return { success: false, error: `"${action.param}" ${message}` };
   }
 
-  const parsed = action.schema.safeParse({
-    ...params,
-    [action.param]: decoded,
-  });
+  const parsed = action.schema.safeParse(decoded);
   if (parsed.success) return { success: true, data: parsed.data };
-  return { success: false, error: issuesMessage(parsed.error) };
+  return { success: false, error: issuesMessage(parsed.error, [action.param]) };
 }
 
-function issuesMessage(error: z.ZodError): string {
+/** The issues, each with its path (under `prefix`). */
+function issuesMessage(error: z.ZodError, prefix: string[]): string {
   return error.issues
     .map((issue) => {
-      const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
-      return path + issue.message;
+      const path = [...prefix, ...issue.path];
+      return (path.length > 0 ? `"${path.join(".")}" ` : "") + issue.message;
     })
     .join(", ");
 }

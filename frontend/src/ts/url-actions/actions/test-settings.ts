@@ -27,7 +27,7 @@ import { setSelectedQuoteId } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import { restart as restartTest } from "../../test/test-logic";
 import * as Misc from "../../utils/misc";
-import { defineUrlAction, urlActionLink } from "../action";
+import { defineSearchAction, urlActionLink } from "../action";
 
 /** The settings a link shares: one left out keeps the user's. */
 export type SharedTestSettings = {
@@ -72,15 +72,13 @@ const TestSettingsSchema = z.tuple([
   FunboxSchema.or(z.string().nullable()), //funbox as array or legacy string as hash separated values
 ]);
 
-export const testSettingsAction = defineUrlAction({
+export const testSettingsAction = defineSearchAction({
   in: "search",
   param: "testSettings",
   encoding: "lz",
   failure: "Failed to load test settings from URL",
-  schema: z.object({
-    testSettings: TestSettingsSchema.transform(toSharedTestSettings),
-  }),
-  apply: async ({ testSettings }) => applyTestSettings(testSettings),
+  schema: TestSettingsSchema.transform(toSharedTestSettings),
+  apply: applyTestSettings,
 });
 
 type LinkCustomText = NonNullable<z.infer<typeof TestSettingsSchema>[2]>;
@@ -92,7 +90,7 @@ export function testSettingsLink(
     customText?: CustomTextSettings;
   },
 ): string {
-  const data: z.input<typeof TestSettingsSchema> = [
+  return urlActionLink(testSettingsAction, [
     settings.mode ?? null,
     settings.mode2 ?? null,
     settings.customText ?? null,
@@ -101,8 +99,7 @@ export function testSettingsLink(
     settings.language ?? null,
     settings.difficulty ?? null,
     settings.funbox ?? null,
-  ];
-  return urlActionLink(testSettingsAction, data);
+  ]);
 }
 
 // if the encoding structure or method ever changes, make sure to support the old data format

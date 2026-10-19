@@ -13,7 +13,7 @@ vi.mock("../../src/ts/url-actions/actions/challenge", () => ({
     param: "challenge",
     failure: "Failed challenge",
     encoding: "plain",
-    schema: z.record(z.string()),
+    schema: z.string(),
     apply: vi.fn(),
   },
 }));
@@ -23,7 +23,7 @@ vi.mock("../../src/ts/url-actions/actions/custom-theme", () => ({
     param: "customTheme",
     failure: "Failed customTheme",
     encoding: "plain",
-    schema: z.record(z.string()),
+    schema: z.string(),
     apply: vi.fn(),
   },
 }));
@@ -32,7 +32,6 @@ vi.mock("../../src/ts/url-actions/actions/discord-oauth", () => ({
     in: "hash",
     param: "access_token",
     failure: "Failed discordToken",
-    encoding: "plain",
     schema: z.record(z.string()),
     apply: vi.fn(),
   },
@@ -43,7 +42,7 @@ vi.mock("../../src/ts/url-actions/actions/test-settings", () => ({
     param: "testSettings",
     failure: "Failed testSettings",
     encoding: "plain",
-    schema: z.record(z.string()),
+    schema: z.string(),
     apply: vi.fn(),
   },
 }));
@@ -80,25 +79,19 @@ describe("applyUrlActions", () => {
     const rest = applyUrlActions(location("?testSettings=abc&foo=1", "top"));
 
     expect(rest).toEqual({ search: { foo: "1" }, hash: "top" });
-    expect(applyTestSettings).toHaveBeenCalledWith({
-      testSettings: "abc",
-      foo: "1",
-    });
+    expect(applyTestSettings).toHaveBeenCalledWith("abc");
   });
 
   it("reads values from the raw search, keeping their +", () => {
     applyUrlActions(location("?customTheme=a+b%2Fc"));
 
-    expect(applyCustomTheme).toHaveBeenCalledWith({ customTheme: "a+b/c" });
+    expect(applyCustomTheme).toHaveBeenCalledWith("a+b/c");
   });
 
   it("keeps the = padding of base64 values", () => {
     applyUrlActions(location("?customTheme=YQ==&foo=1"));
 
-    expect(applyCustomTheme).toHaveBeenCalledWith({
-      customTheme: "YQ==",
-      foo: "1",
-    });
+    expect(applyCustomTheme).toHaveBeenCalledWith("YQ==");
   });
 
   it("drops the whole hash for a hash action, passing all its params", async () => {
@@ -156,11 +149,7 @@ describe("applyUrlActions", () => {
 
     applyUrlActions(location("?customTheme=a&testSettings=b&challenge=c"));
 
-    await vi.waitFor(() =>
-      expect(applyChallenge).toHaveBeenCalledWith(
-        expect.objectContaining({ challenge: "c" }),
-      ),
-    );
+    await vi.waitFor(() => expect(applyChallenge).toHaveBeenCalledWith("c"));
     expect(showError.mock.calls.map(([message]) => message)).toEqual([
       "Failed customTheme: nope",
       "Failed testSettings: later",
@@ -173,9 +162,7 @@ describe("applyUrlActions", () => {
       .mockImplementation(() => 0);
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.spyOn(challengeAction.schema, "safeParse").mockReturnValue(
-      z
-        .object({ challenge: z.number() })
-        .safeParse({ challenge: "x" }) as never,
+      z.number().safeParse("x") as never,
     );
 
     applyUrlActions(location("?challenge=x"));

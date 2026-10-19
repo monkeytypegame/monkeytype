@@ -7,25 +7,23 @@ import { z } from "zod";
 
 import * as ChallengeController from "../../controllers/challenge-controller";
 import { restart as restartTest } from "../../test/test-logic";
-import { defineUrlAction } from "../action";
+import { defineSearchAction } from "../action";
 
-export const challengeAction = defineUrlAction({
+export const challengeAction = defineSearchAction({
   in: "search",
   param: "challenge",
   encoding: "plain",
   failure: "Failed to load challenge",
-  schema: z.object({
-    // the challenge's name, any case
-    challenge: z.string().transform((value, ctx) => {
-      const name = challengeNameLookup[value.toLowerCase()];
-      if (name === undefined) {
-        ctx.addIssue({ code: "custom", message: `unknown challenge ${value}` });
-        return z.NEVER;
-      }
-      return name;
-    }),
+  // the challenge's name, any case
+  schema: z.string().transform((value, ctx) => {
+    const name = challengeNameLookup[value.toLowerCase()];
+    if (name === undefined) {
+      ctx.addIssue({ code: "custom", message: `unknown challenge ${value}` });
+      return z.NEVER;
+    }
+    return name;
   }),
-  apply: async ({ challenge }) => applyChallenge(challenge),
+  apply: applyChallenge,
 });
 
 const challengeNameLookup: Record<string, ChallengeName> = Object.fromEntries(

@@ -9,7 +9,7 @@ import {
 function decodeCustomTheme(value: string): SharedCustomTheme {
   const read = readUrlAction(customThemeAction, { customTheme: value });
   if (!read.success) throw new Error(read.error);
-  return read.data.customTheme;
+  return read.data;
 }
 
 const linkValue = (link: string): string => link.slice(link.indexOf("=") + 1);

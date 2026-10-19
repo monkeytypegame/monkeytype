@@ -17,11 +17,11 @@ import {
 function decodeTestSettings(value: string): SharedTestSettings {
   const read = readUrlAction(testSettingsAction, { testSettings: value });
   if (!read.success) throw new Error(read.error);
-  return read.data.testSettings;
+  return read.data;
 }
 
 const applyTestSettings = async (value: string): Promise<void> =>
-  testSettingsAction.apply({ testSettings: decodeTestSettings(value) });
+  testSettingsAction.apply(decodeTestSettings(value));
 
 const linkValue = (link: string): string => link.slice(link.indexOf("=") + 1);
 

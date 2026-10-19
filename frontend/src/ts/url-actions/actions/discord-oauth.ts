@@ -10,13 +10,12 @@ import {
 } from "../../states/notifications";
 import { z } from "zod";
 
-import { defineUrlAction } from "../action";
+import { defineHashAction } from "../action";
 
 // the token is single use, the rest of the hash goes with it
-export const discordTokenAction = defineUrlAction({
+export const discordTokenAction = defineHashAction({
   in: "hash",
   param: "access_token",
-  encoding: "plain",
   failure: "Failed to link Discord",
   schema: z
     .object({

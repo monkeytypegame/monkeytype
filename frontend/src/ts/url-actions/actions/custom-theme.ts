@@ -14,7 +14,7 @@ import { z } from "zod";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
-import { defineUrlAction, urlActionLink } from "../action";
+import { defineSearchAction, urlActionLink } from "../action";
 
 /** A shared custom theme: its colors, and optionally its background. */
 export type SharedCustomTheme = {
@@ -37,26 +37,23 @@ const CustomThemeUrlDataSchema = z.union([
   CustomThemeColorsSchema,
 ]);
 
-export const customThemeAction = defineUrlAction({
+export const customThemeAction = defineSearchAction({
   in: "search",
   param: "customTheme",
   encoding: "base64",
   failure: "Failed to load theme from URL",
-  schema: z.object({
-    customTheme: CustomThemeUrlDataSchema.transform(toSharedCustomTheme),
-  }),
-  apply: ({ customTheme }) => applyCustomTheme(customTheme),
+  schema: CustomThemeUrlDataSchema.transform(toSharedCustomTheme),
+  apply: applyCustomTheme,
 });
 
 /** The link sharing `theme`. */
 export function customThemeLink(theme: SharedCustomTheme): string {
-  const data: z.input<typeof CustomThemeUrlDataSchema> = {
+  return urlActionLink(customThemeAction, {
     c: theme.colors,
     i: theme.background?.image,
     s: theme.background?.size,
     f: theme.background?.filter,
-  };
-  return urlActionLink(customThemeAction, data);
+  });
 }
 
 function toSharedCustomTheme(
