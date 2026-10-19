@@ -88,7 +88,7 @@
     "testcontainers": "11.11.0",
     "tsx": "4.21.0",
     "typescript": "7.0.2",
-    "vitest": "4.1.0",
+    "vitest": "4.1.11",
     "yaml": "2.8.2"
   },
   "engines": {
