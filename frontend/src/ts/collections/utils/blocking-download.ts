@@ -5,7 +5,7 @@
  */
 type BlockingDownload = {
   isReady: () => boolean;
-  stateWhenReady: () => Promise<unknown>;
+  getStateWhenReady: () => Promise<unknown>;
   utils: {
     isError: boolean;
     lastError: unknown;
@@ -36,7 +36,7 @@ export async function waitForDownload(
     await collection.utils.refetch({ throwOnError: true });
     return;
   }
-  await collection.stateWhenReady();
+  await collection.getStateWhenReady();
   if (collection.utils.isError) {
     const error = collection.utils.lastError;
     throw error instanceof Error ? error : new Error(String(error));
