@@ -5,6 +5,7 @@ import * as UpdateConfig from "../../src/ts/config/setters";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as TestState from "../../src/ts/states/test";
+import * as CustomText from "../../src/ts/test/custom-text";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import { readUrlAction } from "../../src/ts/url-actions/action";
@@ -150,6 +151,11 @@ describe("testSettingsAction", () => {
   const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
   const restartTestMock = vi.spyOn(TestLogic, "restart");
   const notifySuccessMock = vi.spyOn(Notifications, "showSuccessNotification");
+  const setTextMock = vi.spyOn(CustomText, "setText");
+  const setModeMock = vi.spyOn(CustomText, "setMode");
+  const setLimitModeMock = vi.spyOn(CustomText, "setLimitMode");
+  const setLimitValueMock = vi.spyOn(CustomText, "setLimitValue");
+  const setPipeDelimiterMock = vi.spyOn(CustomText, "setPipeDelimiter");
 
   beforeEach(() => {
     [
@@ -157,6 +163,11 @@ describe("testSettingsAction", () => {
       setSelectedQuoteIdMock,
       restartTestMock,
       notifySuccessMock,
+      setTextMock,
+      setModeMock,
+      setLimitModeMock,
+      setLimitValueMock,
+      setPipeDelimiterMock,
     ].forEach((it) => it.mockClear());
 
     url = "";
@@ -301,6 +312,138 @@ describe("testSettingsAction", () => {
     expect(setConfigMock).toHaveBeenCalledWith("funbox", ["crt", "choo_choo"], {
       nosave: true,
     });
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("sets custom text (text, mode, limit, pipeDelimiter)", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["hello", "world"],
+        limit: { mode: "word", value: 5 },
+        mode: "random",
+        pipeDelimiter: true,
+      },
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setTextMock).toHaveBeenCalledWith(["hello", "world"]);
+    expect(setModeMock).toHaveBeenCalledWith("random");
+    expect(setLimitModeMock).toHaveBeenCalledWith("word");
+    expect(setLimitValueMock).toHaveBeenCalledWith(5);
+    expect(setPipeDelimiterMock).toHaveBeenCalledWith(true);
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("sets custom text with pipeDelimiter to false", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["a b c"],
+        pipeDelimiter: false,
+        mode: "repeat",
+        limit: { mode: "word", value: 10 },
+      },
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setTextMock).toHaveBeenLastCalledWith(["a b c"]);
+    expect(setModeMock).toHaveBeenCalledWith("repeat");
+    expect(setLimitModeMock).toHaveBeenCalledWith("word");
+    expect(setLimitValueMock).toHaveBeenLastCalledWith(10);
+    expect(setPipeDelimiterMock).toHaveBeenCalledWith(false);
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("sets custom text mode to 'repeat' when undefined", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["hello"],
+        limit: { mode: "word", value: 5 },
+      } as any,
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setModeMock).toHaveBeenCalledWith("repeat");
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("does not call limit setters when limit is undefined", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["hello", "world"],
+        mode: "repeat",
+      } as any,
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setLimitModeMock).not.toHaveBeenCalled();
+    expect(setLimitValueMock).not.toHaveBeenCalled();
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("sets pipeDelimiter to true when delimiter is '|' (legacy)", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["a", "b"],
+        mode: "repeat",
+        delimiter: "|",
+      } as any,
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setPipeDelimiterMock).toHaveBeenCalledWith(true);
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("handles legacy isWordRandom", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["hello"],
+        mode: "repeat",
+        isWordRandom: true,
+        word: 10,
+      } as any,
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setLimitModeMock).toHaveBeenCalledWith("word");
+    expect(setLimitValueMock).toHaveBeenCalledWith(10);
+    expect(restartTestMock).toHaveBeenCalled();
+  });
+  it("handles legacy isTimeRandom", async () => {
+    //GIVEN
+    url = urlData({
+      customText: {
+        text: ["hello"],
+        mode: "repeat",
+        isTimeRandom: true,
+        time: 60,
+      } as any,
+    });
+
+    //WHEN
+    await applyTestSettings(url);
+
+    //THEN
+    expect(setLimitModeMock).toHaveBeenCalledWith("time");
+    expect(setLimitValueMock).toHaveBeenCalledWith(60);
     expect(restartTestMock).toHaveBeenCalled();
   });
   it("adds notification", async () => {

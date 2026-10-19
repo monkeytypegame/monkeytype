@@ -190,7 +190,9 @@ async function applyTestSettings(settings: SharedTestSettings): Promise<void> {
     if (limit.mode !== undefined) CustomText.setLimitMode(limit.mode);
     if (limit.value !== undefined) CustomText.setLimitValue(limit.value);
 
-    if (pipeDelimiter) CustomText.setPipeDelimiter(true);
+    if (pipeDelimiter !== undefined) {
+      CustomText.setPipeDelimiter(pipeDelimiter);
+    }
 
     applied["custom text settings"] = "";
   }
