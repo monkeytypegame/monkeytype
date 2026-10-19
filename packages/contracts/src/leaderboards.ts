@@ -72,6 +72,15 @@ export type GetLeaderboardRankResponse = z.infer<
   typeof GetLeaderboardRankResponseSchema
 >;
 
+const NextLeaderboardWpmResponseSchema = responseWithNullableData(
+  z.object({
+    next: z.number().safe().nonnegative(),
+  }),
+);
+export type NextLeaderboardWpmResponse = z.infer<
+  typeof NextLeaderboardWpmResponseSchema
+>;
+
 //--------------------------------------------------------------------------
 
 export const DailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.extend({
@@ -179,6 +188,20 @@ export const leaderboardsContract = c.router(
         authenticationOptions: { acceptApeKeys: true },
       }),
     },
+    getNext: {
+      summary: "get next leaderboard wpm",
+      description:
+        "Get the next distinct all-time leaderboard WPM above the current user's entry.",
+      method: "GET",
+      path: "/next",
+      query: GetLeaderboardRankQuerySchema.strict(),
+      responses: {
+        200: NextLeaderboardWpmResponseSchema,
+      },
+      metadata: meta({
+        authenticationOptions: {},
+      }),
+    },
     getDaily: {
       summary: "get daily leaderboard",
       description: "Get daily leaderboard.",
@@ -206,6 +229,24 @@ export const leaderboardsContract = c.router(
         200: GetLeaderboardDailyRankResponseSchema,
       },
       metadata: meta({
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
+      }),
+    },
+    getDailyNext: {
+      summary: "get next daily leaderboard wpm",
+      description:
+        "Get the next distinct current-day leaderboard WPM above the current user's entry.",
+      method: "GET",
+      path: "/daily/next",
+      query: GetLeaderboardRankQuerySchema.strict(),
+      responses: {
+        200: NextLeaderboardWpmResponseSchema,
+      },
+      metadata: meta({
+        authenticationOptions: {},
         requireConfiguration: {
           path: "dailyLeaderboards.enabled",
           invalidMessage: "Daily leaderboards are not available at this time.",

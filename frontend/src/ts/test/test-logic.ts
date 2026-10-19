@@ -121,6 +121,7 @@ import { debounce } from "throttle-debounce";
 import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
+import { refreshNextDailyPaceCaretWpm } from "../queries/leaderboards";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import {
   resetTestEvents,
@@ -1327,6 +1328,9 @@ async function saveResult(
     dailyLeaderboardRank: data.dailyLeaderboardRank,
     canRetrySaving: false,
   });
+  if (data.dailyLeaderboardRank !== undefined) {
+    refreshNextDailyPaceCaretWpm();
+  }
   if (isRetrying) {
     showSuccessNotification("Result saved", { important: true });
   }

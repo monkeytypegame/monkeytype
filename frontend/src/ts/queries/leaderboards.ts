@@ -4,6 +4,7 @@ import {
 } from "@monkeytype/contracts/leaderboards";
 import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
+import { queryClient } from ".";
 import { pageSize, Selection, setPage } from "../states/leaderboard-selection";
 
 const queryKeys = {
@@ -28,7 +29,60 @@ const queryKeys = {
   ],
   rank: (options: Selection) =>
     queryKeys.root({ ...options, userSpecific: true }), //rank is always user specific
+  nextRoot: (type: "allTime" | "daily") => ["user", "paceCaret", type],
+  next: (type: "allTime" | "daily", options: GetLeaderboardRankQuery) => [
+    ...queryKeys.nextRoot(type),
+    options,
+  ],
 };
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+export const getNextPaceCaretWpmQueryOptions = (
+  type: "allTime" | "daily",
+  options: GetLeaderboardRankQuery,
+  // oxlint-disable-next-line typescript/explicit-function-return-type
+) =>
+  queryOptions({
+    queryKey: queryKeys.next(type, options),
+    queryFn: async () => {
+      const response =
+        type === "allTime"
+          ? await Ape.leaderboards.getNext({ query: options })
+          : await Ape.leaderboards.getDailyNext({ query: options });
+
+      if (response.status !== 200) {
+        throw new Error(
+          `Failed to get next ${type} leaderboard wpm: ${response.body.message}`,
+        );
+      }
+      return response.body.data?.next ?? null;
+    },
+    staleTime: type === "allTime" ? 1000 * 60 * 5 : 1000 * 60,
+    gcTime: Infinity,
+  });
+
+/**
+ * Resolves with the cached value when there is one, so a test restart only
+ * waits for the request the first time. Stale values are refetched in the
+ * background for the next restart.
+ */
+export async function getNextPaceCaretWpm(
+  type: "allTime" | "daily",
+  options: GetLeaderboardRankQuery,
+): Promise<number | null> {
+  return await queryClient.ensureQueryData({
+    ...getNextPaceCaretWpmQueryOptions(type, options),
+    revalidateIfStale: true,
+  });
+}
+
+// a saved result can move the user on the daily leaderboard right away
+export function refreshNextDailyPaceCaretWpm(): void {
+  void queryClient.invalidateQueries({
+    queryKey: queryKeys.nextRoot("daily"),
+    refetchType: "all",
+  });
+}
 
 export const getLeaderboardQueryOptions = (
   options: Selection & {
