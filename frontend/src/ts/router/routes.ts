@@ -53,6 +53,7 @@ import {
   planLoadingBar,
   runLoadingStep,
 } from "./loading-bar";
+import { applyUrlActions } from "../url-actions/apply";
 
 // NOTE: whenever adding a route add the pathname to the `firebase.json` rewrite rule
 
@@ -190,16 +191,18 @@ const test = createRoute({
   path: "/",
   staticData: { page: "test" },
   component: createRouterPage(TestPage),
-});
-
-const verify = createRoute({
-  getParentRoute: () => userDataRoute,
-  path: "/verify",
-  beforeLoad: ({ location }) => {
+  // shared links (test settings, custom theme, challenge) and the discord
+  // oauth redirect: applied once the user data is in, then dropped from the
+  // url so a reload or sign in doesn't apply them again
+  beforeLoad: ({ location, preload }) => {
+    if (preload) return;
+    const rest = applyUrlActions(location);
+    if (rest === undefined) return;
     redirect({
       to: "/",
-      search: location.search,
-      hash: location.hash,
+      search: rest.search,
+      hash: rest.hash,
+      replace: true,
       throw: true,
     });
   },
@@ -379,7 +382,6 @@ const friends = createRoute({
 export const routeTree = root.addChildren([
   userDataRoute.addChildren([
     test,
-    verify,
     leaderboards,
     about,
     settings,

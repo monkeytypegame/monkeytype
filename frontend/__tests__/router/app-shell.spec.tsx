@@ -1,7 +1,16 @@
 import type { QueryKey } from "@tanstack/solid-query";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 
+import Ape from "../../src/ts/ape";
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
@@ -987,6 +996,69 @@ describe("app shell routing", () => {
 
       expect(app.shownPage()).toBe("about");
     });
+  });
+
+  it("applies url actions on the test page and drops them from the url", async () => {
+    __testing.clearNotificationHistory();
+    const app = renderApp({ url: "/?challenge=nope&foo=1#top" });
+    await app.settle();
+
+    expect(app.url()).toBe("/?foo=1#top");
+    expect(app.shownPage()).toBe("test");
+    expect(getNotificationHistory().map((n) => n.message)).toEqual([
+      'Invalid challenge url: "challenge" unknown challenge nope',
+    ]);
+  });
+
+  it("applies url actions after the /verify redirect", async () => {
+    __testing.clearNotificationHistory();
+    const app = renderApp({ url: "/verify?challenge=nope#top" });
+    await app.settle();
+
+    expect(app.url()).toBe("/#top");
+    expect(getNotificationHistory()).toHaveLength(1);
+  });
+
+  it("applies no url actions on a hover", async () => {
+    const app = renderApp({ url: "/about" });
+    await app.settle();
+    __testing.clearNotificationHistory();
+
+    // the test route takes any search: a shared link's params aren't typed
+    await app.hover({ to: "/", search: { challenge: "nope" } as never });
+
+    expect(app.url()).toBe("/about");
+    expect(getNotificationHistory()).toEqual([]);
+  });
+
+  describe("the discord oauth redirect", () => {
+    let linkDiscord: MockInstance<typeof Ape.users.linkDiscord>;
+
+    beforeEach(() => {
+      linkDiscord = vi.spyOn(Ape.users, "linkDiscord").mockResolvedValue({
+        status: 200,
+        body: { message: "linked", data: {} },
+      } as never);
+    });
+    afterEach(() => {
+      linkDiscord.mockRestore();
+    });
+
+    // /verify: links started before the redirect moved to /
+    it.each(["/", "/verify"])(
+      "links discord from %s and drops the hash",
+      async (path) => {
+        const app = renderApp({
+          url: `${path}?foo=1#access_token=a&token_type=b&state=c`,
+        });
+        await app.settle();
+
+        expect(app.url()).toBe("/?foo=1");
+        expect(linkDiscord).toHaveBeenCalledWith({
+          body: { accessToken: "a", tokenType: "b", state: "c" },
+        });
+      },
+    );
   });
 
   it("redirects /verify to / keeping search and hash", async () => {
