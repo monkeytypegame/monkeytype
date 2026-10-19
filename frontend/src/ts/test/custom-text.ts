@@ -1,30 +1,52 @@
 import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { isObject } from "../utils/misc";
 import { z } from "zod";
 import {
   CustomTextSettings,
   CustomTextSettingsSchema,
 } from "@monkeytype/schemas/results";
 
-const CustomTextObjectSchema = z.record(z.string(), z.string());
+const CustomTextObjectSchema = z.record(
+  z.string(),
+  z.object({
+    text: z.string(),
+    progress: z.number().optional(),
+  }),
+);
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
 
-const CustomTextLongObjectSchema = z.record(
-  z.string(),
-  z.object({ text: z.string(), progress: z.number() }),
-);
-type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
+function migrateCustomText(
+  value: Record<string, unknown> | unknown[],
+): CustomTextObject {
+  if (!isObject(value)) {
+    return {};
+  }
+  const migrated: CustomTextObject = {};
+  for (const [name, entry] of Object.entries(value)) {
+    if (typeof entry === "string") {
+      migrated[name] = { text: entry };
+    } else if (isObject(entry) && typeof entry["text"] === "string") {
+      migrated[name] =
+        typeof entry["progress"] === "number"
+          ? { text: entry["text"], progress: entry["progress"] }
+          : { text: entry["text"] };
+    }
+  }
+  return migrated;
+}
 
 const customTextLS = new LocalStorageWithSchema({
   key: "customText",
   schema: CustomTextObjectSchema,
   fallback: {},
+  migrate: migrateCustomText,
 });
-//todo maybe add migrations here?
 const customTextLongLS = new LocalStorageWithSchema({
   key: "customTextLong",
-  schema: CustomTextLongObjectSchema,
+  schema: CustomTextObjectSchema,
   fallback: {},
+  migrate: migrateCustomText,
 });
 
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
@@ -132,20 +154,11 @@ export function getData(): CustomTextSettings {
 }
 
 export function getCustomText(name: string, long = false): string[] {
-  if (long) {
-    const customTextLong = getLocalStorageLong();
-    const customText = customTextLong[name];
-    if (customText === undefined) {
-      throw new Error(`Custom text ${name} not found`);
-    }
-    return customText.text.split(/ +/);
-  } else {
-    const customText = getLocalStorage()[name];
-    if (customText === undefined) {
-      throw new Error(`Custom text ${name} not found`);
-    }
-    return customText.split(/ +/);
+  const customText = (long ? getLocalStorageLong() : getLocalStorage())[name];
+  if (customText === undefined) {
+    throw new Error(`Custom text ${name} not found`);
   }
+  return customText.text.split(/ +/);
 }
 
 export function setCustomText(
@@ -153,37 +166,15 @@ export function setCustomText(
   text: string | string[],
   long = false,
 ): boolean {
-  if (long) {
-    const customText = getLocalStorageLong();
+  const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-    customText[name] = {
-      text: "",
-      progress: 0,
-    };
+  const textString = typeof text === "string" ? text : text.join(" ");
 
-    const textByName = customText[name];
-    if (textByName === undefined) {
-      throw new Error("Custom text not found");
-    }
+  customText[name] = long
+    ? { text: textString, progress: 0 }
+    : { text: textString };
 
-    if (typeof text === "string") {
-      textByName.text = text;
-    } else {
-      textByName.text = text.join(" ");
-    }
-
-    return setLocalStorageLong(customText);
-  } else {
-    const customText = getLocalStorage();
-
-    if (typeof text === "string") {
-      customText[name] = text;
-    } else {
-      customText[name] = text.join(" ");
-    }
-
-    return setLocalStorage(customText);
-  }
+  return long ? setLocalStorageLong(customText) : setLocalStorage(customText);
 }
 
 export function deleteCustomText(name: string, long: boolean): void {
@@ -193,9 +184,9 @@ export function deleteCustomText(name: string, long: boolean): void {
   delete customText[name];
 
   if (long) {
-    setLocalStorageLong(customText as CustomTextLongObject);
+    setLocalStorageLong(customText);
   } else {
-    setLocalStorage(customText as CustomTextObject);
+    setLocalStorage(customText);
   }
 }
 
@@ -222,7 +213,7 @@ function getLocalStorage(): CustomTextObject {
   return customTextLS.get();
 }
 
-function getLocalStorageLong(): CustomTextLongObject {
+function getLocalStorageLong(): CustomTextObject {
   return customTextLongLS.get();
 }
 
@@ -230,7 +221,7 @@ function setLocalStorage(data: CustomTextObject): boolean {
   return customTextLS.set(data);
 }
 
-function setLocalStorageLong(data: CustomTextLongObject): boolean {
+function setLocalStorageLong(data: CustomTextObject): boolean {
   return customTextLongLS.set(data);
 }
 
