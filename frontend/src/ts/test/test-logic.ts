@@ -1,3 +1,10 @@
+import {
+  getRememberLazyMode,
+  setRememberLazyMode,
+  getPrefersArabicLazyMode,
+  setPrefersArabicLazyMode,
+} from "../states/lazy-mode";
+import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
 import { batch } from "solid-js";
 import * as TestUI from "./test-ui";
@@ -29,7 +36,6 @@ import {
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
 import * as AdController from "../controllers/ad-controller";
-import * as ConnectionState from "../legacy-states/connection";
 import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
@@ -76,6 +82,8 @@ import {
   setTestInitFailed,
   setJoiningScript,
   setTypingTestHidden,
+  setComposing,
+  setCompositionData,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
@@ -87,7 +95,6 @@ import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
 import { highlight } from "../events/keymap";
-import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
@@ -102,7 +109,6 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import * as CompositionState from "../legacy-states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
@@ -207,8 +213,8 @@ function resetTestState(): void {
   PaceCaret.reset();
   setKoreanStatus(false);
   clearQuoteStats();
-  CompositionState.setComposing(false);
-  CompositionState.setData("");
+  setComposing(false);
+  setCompositionData("");
   Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
@@ -460,7 +466,7 @@ async function init(): Promise<boolean> {
       .some((lang) => !lang.noLazyMode);
 
     if (Config.lazyMode && !anySupportsLazyMode) {
-      LazyModeState.setRemember(true);
+      setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification(
           "None of the selected polyglot languages support lazy mode.",
@@ -471,15 +477,15 @@ async function init(): Promise<boolean> {
         showedLazyModeNotification = true;
       }
       setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && anySupportsLazyMode) {
+    } else if (getRememberLazyMode() && anySupportsLazyMode) {
       setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
+      setRememberLazyMode(false);
       showedLazyModeNotification = false;
     }
   } else {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
-      LazyModeState.setRemember(true);
+      setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification("This language does not support lazy mode.", {
           important: true,
@@ -487,15 +493,15 @@ async function init(): Promise<boolean> {
         showedLazyModeNotification = true;
       }
       setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && allowLazyMode) {
+    } else if (getRememberLazyMode() && allowLazyMode) {
       setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
+      setRememberLazyMode(false);
       showedLazyModeNotification = false;
     }
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
-    LazyModeState.setRemember(false);
+    setRememberLazyMode(false);
   }
 
   if (Config.mode === "custom") {
@@ -1146,8 +1152,8 @@ async function showResult(
   Replay.resetReplay();
   blurInputElement();
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
+  if (!isOnline()) {
+    showOfflineBanner();
   }
 
   const pbEligibility = getPbEligibility(result, dontSave);
@@ -1411,7 +1417,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
       //automatically enable lazy mode for arabic
       if (
         (newValue as string)?.startsWith("arabic") &&
-        LazyModeState.getArabicPref()
+        getPrefersArabicLazyMode()
       ) {
         setConfig("lazyMode", true, {
           nosave: true,
@@ -1445,7 +1451,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
   }
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      LazyModeState.setArabicPref(newValue);
+      setPrefersArabicLazyMode(newValue);
     }
   }
 });

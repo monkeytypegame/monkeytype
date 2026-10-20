@@ -99,6 +99,25 @@ export const [isResultLoading, setResultLoading] = createSignal(false);
 // live IME composition text, pushed from the compositionupdate/end events.
 export const [getCompositionText, setCompositionText] = createSignal("");
 
+// IME composition in progress and its data so far, read by the input
+// handlers and the caret. Unlike getCompositionText, never a display placeholder.
+export const [isComposing, setComposing] = createSignal(false);
+export const [getCompositionData, setCompositionData] = createSignal("");
+
+// the timer drifted too far: animations stay off until it's cleared on restart.
+const [isSlowTimer, setIsSlowTimer] = createSignal(false);
+export { isSlowTimer };
+
+export function setSlowTimer(): void {
+  if (isSlowTimer()) return;
+  setIsSlowTimer(true);
+  console.error("Slow timer, disabling animations");
+}
+
+export function clearSlowTimer(): void {
+  setIsSlowTimer(false);
+}
+
 createEffect(
   on(
     () => getConfig.showOutOfFocusWarning,

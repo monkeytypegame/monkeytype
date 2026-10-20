@@ -10,11 +10,11 @@ import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
-import * as CompositionState from "../../legacy-states/composition";
 import {
   isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
+  getCompositionData,
 } from "../../states/test";
 import { getCurrentInput } from "../../test/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
@@ -138,7 +138,7 @@ export function init(signal: AbortSignal): void {
         const allWordsTyped =
           getActiveWordIndex() >= TestWords.words.length - 1;
         const inputPlusComposition =
-          getCurrentInput() + (CompositionState.getData() ?? "");
+          getCurrentInput() + (getCompositionData() ?? "");
         const inputPlusCompositionIsCorrect =
           TestWords.words.getCurrent()?.textWithCommit === inputPlusComposition;
 

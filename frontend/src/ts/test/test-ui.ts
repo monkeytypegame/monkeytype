@@ -1,3 +1,4 @@
+import { isOnline, showOfflineBanner } from "../states/connection";
 import { Config, getConfig } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
@@ -6,7 +7,6 @@ import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as CompositionState from "../legacy-states/composition";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -29,7 +29,6 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
-import * as SlowTimer from "../legacy-states/slow-timer";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
@@ -51,9 +50,10 @@ import {
   setTestInitError,
   setTestInitFailed,
   setTypingTestHidden,
+  getCompositionData,
+  isSlowTimer,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
-import * as ConnectionState from "../legacy-states/connection";
 import { setShowResult } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
@@ -653,7 +653,7 @@ export function addWord(
   //     await updateWordLetters({
   //       wordIndex,
   //       input,
-  //       compositionData: CompositionState.getData(),
+  //       compositionData: getCompositionData(),
   //     });
   //   }
   // });
@@ -839,7 +839,7 @@ function updateWordLetters({
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
-      if (Config.mode === "zen" || SlowTimer.get()) {
+      if (Config.mode === "zen" || isSlowTimer()) {
         // because we block word jumps in before-insert-text
         // this check only needs to happen in zen mode
         // unless slow timer is on, then it needs to happen
@@ -1290,7 +1290,7 @@ export function afterTestTextInput(
   updateWordLetters({
     input,
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
 
   afterAnyTestInput("textInput", correct);
@@ -1300,7 +1300,7 @@ export function afterTestCompositionUpdate(): void {
   updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
   // correct needs to be true to get the normal click sound
   afterAnyTestInput("compositionUpdate", true);
@@ -1310,7 +1310,7 @@ export function afterTestDelete(): void {
   updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
   afterAnyTestInput("delete", null);
 }
@@ -1328,7 +1328,7 @@ export function beforeTestWordChange(
     updateWordLetters({
       input: getCurrentInput(),
       wordIndex: getActiveWordIndex(),
-      compositionData: CompositionState.getData(),
+      compositionData: getCompositionData(),
     });
   }
 
@@ -1439,8 +1439,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   setTestInitError(null);
   focusWords(true);
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
+  if (!isOnline()) {
+    showOfflineBanner();
   }
 
   if (source === "resultPage") {
@@ -1529,7 +1529,7 @@ export function init(
         updateWordLetters({
           input: getCurrentInput(),
           wordIndex: getActiveWordIndex(),
-          compositionData: CompositionState.getData(),
+          compositionData: getCompositionData(),
         }),
       { defer: true },
     ),

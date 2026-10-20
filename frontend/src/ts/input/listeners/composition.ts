@@ -1,5 +1,4 @@
 import { getInputElement } from "../input-element";
-import * as CompositionState from "../../legacy-states/composition";
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
@@ -10,6 +9,8 @@ import {
   isResultCalculating,
   isTestActive,
   setCompositionText,
+  setComposing,
+  setCompositionData,
 } from "../../states/test";
 
 export function init(signal: AbortSignal): void {
@@ -26,8 +27,8 @@ export function init(signal: AbortSignal): void {
       const now = performance.now();
 
       if (isTestRestarting() || isResultCalculating()) return;
-      CompositionState.setComposing(true);
-      CompositionState.setData("");
+      setComposing(true);
+      setCompositionData("");
       setLastInsertCompositionTextData("");
       if (!isTestActive()) {
         TestLogic.startTest(now);
@@ -50,7 +51,7 @@ export function init(signal: AbortSignal): void {
       });
 
       if (isTestRestarting() || isResultCalculating()) return;
-      CompositionState.setData(event.data);
+      setCompositionData(event.data);
       setCompositionText(event.data);
 
       const now = performance.now();
@@ -73,8 +74,8 @@ export function init(signal: AbortSignal): void {
       });
 
       if (isTestRestarting() || isResultCalculating()) return;
-      CompositionState.setComposing(false);
-      CompositionState.setData("");
+      setComposing(false);
+      setCompositionData("");
       setCompositionText("");
       setLastInsertCompositionTextData("");
 
