@@ -1451,10 +1451,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  // the page may have unmounted during the restart
-  if (isMounted()) {
-    AdController.updateFooterAndVerticalAds(false);
-  }
   AdController.destroyResult();
   if (Config.compositionDisplay === "below") {
     setCompositionText(" ");

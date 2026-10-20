@@ -1,7 +1,6 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
 import {
   isInputElementFocused,
   registerInputElement,
@@ -125,12 +124,10 @@ export function TestPage(): JSXElement {
     // any previously rendered words are gone, start a fresh test
     void restart({ noAnim: true });
 
-    updateFooterAndVerticalAds(false);
     resetIncompleteTests();
     // registered last so it runs after the modules above have unbound
     signal.addEventListener("abort", () => {
       void Funbox.clear();
-      updateFooterAndVerticalAds(true);
     });
 
     window.addEventListener(

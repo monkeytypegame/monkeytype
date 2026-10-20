@@ -1200,7 +1200,6 @@ async function showResult(
   ) {
     toggleResultWords(true);
   }
-  AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
 
   setResultLoading(false);

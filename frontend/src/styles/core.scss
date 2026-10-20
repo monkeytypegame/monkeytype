@@ -99,21 +99,26 @@
   grid-column: full-width-padding;
 }
 
+// fixed vertically, 4rem out from the content column. When there's less
+// room the gap shrinks to match the space on the outer side, centering the ad
+// (100% is the viewport's width, same as the grid's; 160px is the ad's width,
+// see Advertisement.tsx)
 #ad-vertical-left-wrapper,
 #ad-vertical-right-wrapper {
-  grid-row: content;
-  margin-right: 2rem;
+  --side-width: calc(
+    (100% - min(100% - var(--padding-inline) * 2, var(--content-max-width))) / 2
+  );
+  --gap: min(4rem, (var(--side-width) - 160px) / 2);
+  --side-offset: calc(var(--side-width) - 160px - var(--gap));
   position: fixed;
 }
 
 #ad-vertical-left-wrapper {
-  grid-column: full-width-start/content-start;
-  left: 0;
+  left: var(--side-offset);
 }
 
 #ad-vertical-right-wrapper {
-  grid-column: content-end/full-width-end;
-  right: -2rem;
+  right: var(--side-offset);
 }
 
 main {

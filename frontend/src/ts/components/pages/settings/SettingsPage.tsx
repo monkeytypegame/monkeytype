@@ -17,6 +17,7 @@ import { isCustomBackgroundLoaded } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
+import { Advertisement } from "../../common/Advertisement";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
@@ -105,6 +106,7 @@ export function SettingsPage(): JSXElement {
           <Layout />
           <SearchableAutoSetting key="codeUnindentOnBackspace" />
         </Section>
+        <Advertisement id="ad-settings-1" visible="sellout" />
         <Section title="sound">
           <SoundVolume />
           <SearchableAutoSetting
@@ -139,6 +141,7 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="repeatedPace" />
           <SearchableAutoSetting key="paceCaretStyle" wide />
         </Section>
+        <Advertisement id="ad-settings-2" visible="sellout" />
         <Section title="appearance">
           <SearchableAutoSetting key="timerStyle" wide />
           <SearchableAutoSetting key="liveSpeedStyle" />
@@ -178,6 +181,7 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="randomTheme" wide />
           <Theme />
         </Section>
+        <Advertisement id="ad-settings-3" visible="sellout" />
         <Section title="hide elements">
           <SearchableAutoSetting key="showKeyTips" />
           <SearchableAutoSetting key="showOutOfFocusWarning" />
