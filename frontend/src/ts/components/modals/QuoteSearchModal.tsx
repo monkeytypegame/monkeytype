@@ -11,7 +11,6 @@ import { z } from "zod";
 
 import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
 import { createDebouncedEffectOn } from "../../hooks/effects";
@@ -274,7 +273,7 @@ export function QuoteSearchModal(): JSXElement {
     }
 
     const quoteSearchService = getSearchService<Quote>(
-      Config.language,
+      Misc.getQuotesLanguage(),
       allQuotes,
       (quote: Quote) => `${quote.text} ${quote.id} ${quote.source}`,
     );
@@ -390,10 +389,10 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const handleAfterShow = async (): Promise<void> => {
-    const quotesLanguage = await getLanguage(Config.language);
+    const quotesLanguage = await getLanguage(Misc.getQuotesLanguage());
     setIsRtl(quotesLanguage?.rightToLeft ?? false);
     const { quotes: fetchedQuotes } = await QuotesController.getQuotes(
-      Config.language,
+      Misc.getQuotesLanguage(),
     );
     setQuotes(fetchedQuotes);
     performSearch(form.state.values.searchText);

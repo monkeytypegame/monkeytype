@@ -521,9 +521,7 @@ async function getQuoteWordList(
       return currentWordset.words;
     }
   }
-  const languageToGet = language.name.startsWith("swiss_german")
-    ? "german"
-    : language.name;
+  const languageToGet = Misc.getQuotesLanguage(language.name);
 
   showLoaderBar();
   const quotesCollection = await QuotesController.getQuotes(
