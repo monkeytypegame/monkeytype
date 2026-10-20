@@ -297,6 +297,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "league_of_legends",
     "docker_file",
     "pokemon_1k",
+    "monkey",
   ],
   amharic: ["amharic", "amharic_1k", "amharic_5k"],
   oromo: ["oromo", "oromo_1k", "oromo_5k"],
