@@ -79,6 +79,8 @@ vi.mock("../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
   getBailedOut: () => false,
   getKoreanStatus: () => false,
+  isComposing: () => false,
+  getCompositionData: () => "",
 }));
 
 vi.mock("../../../src/ts/input/state", () => ({
@@ -111,10 +113,6 @@ vi.mock("../../../src/ts/test/weak-spot", () => ({ updateScore: vi.fn() }));
 vi.mock("../../../src/ts/events/keymap", () => ({ flash: vi.fn() }));
 vi.mock("../../../src/ts/states/notifications", () => ({
   showNoticeNotification: vi.fn(),
-}));
-vi.mock("../../../src/ts/legacy-states/composition", () => ({
-  getComposing: () => false,
-  getData: () => "",
 }));
 vi.mock("../../../src/ts/test/words-generator", () => ({
   areAllWordsGenerated: () => true,
