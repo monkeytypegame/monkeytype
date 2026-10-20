@@ -2320,7 +2320,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
-};
+icy_blue: {
+    bg: "#323437",
+    caret: "#343f55",
+    main: "#c7c7c7",
+    sub: "#ffffff",
+    subAlt: "#5b7ea4",
+    text: "#84c5e1",
+    error: "#3b8ce3",
+    errorExtra: "#1560c1",
+    colorfulError: "#3b8ce3",
+    colorfulErrorExtra: "#1560c1",
+  },
 
 export type ThemeWithName = Theme & { name: ThemeName };
 export const ThemesList: ThemeWithName[] = Object.keys(themes)
