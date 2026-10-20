@@ -19,7 +19,7 @@ import * as TestTimer from "./test/test-timer";
 import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
 import "./elements/no-css";
-import "./legacy-states/connection";
+import "./states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
 import * as Focus from "./test/focus";

@@ -45,9 +45,10 @@ export function CustomBackgroundFilters(): JSXElement {
               }}
               value={getConfig.customBackgroundFilter[0]}
               onEveryChange={() =>
-                setCustomBackgroundFilterPreview(refValues())
+                setCustomBackgroundFilterPreview(refValues() ?? null)
               }
               onChange={(value) => {
+                setCustomBackgroundFilterPreview(null);
                 if (value === getConfig.customBackgroundFilter[0]) return;
                 setConfig("customBackgroundFilter", [
                   value,
@@ -70,9 +71,10 @@ export function CustomBackgroundFilters(): JSXElement {
               }}
               value={getConfig.customBackgroundFilter[1]}
               onEveryChange={() =>
-                setCustomBackgroundFilterPreview(refValues())
+                setCustomBackgroundFilterPreview(refValues() ?? null)
               }
               onChange={(value) => {
+                setCustomBackgroundFilterPreview(null);
                 if (value === getConfig.customBackgroundFilter[1]) return;
                 setConfig("customBackgroundFilter", [
                   getConfig.customBackgroundFilter[0],
@@ -95,9 +97,10 @@ export function CustomBackgroundFilters(): JSXElement {
               }}
               value={getConfig.customBackgroundFilter[2]}
               onEveryChange={() =>
-                setCustomBackgroundFilterPreview(refValues())
+                setCustomBackgroundFilterPreview(refValues() ?? null)
               }
               onChange={(value) => {
+                setCustomBackgroundFilterPreview(null);
                 if (value === getConfig.customBackgroundFilter[2]) return;
                 setConfig("customBackgroundFilter", [
                   getConfig.customBackgroundFilter[0],
@@ -120,9 +123,10 @@ export function CustomBackgroundFilters(): JSXElement {
               }}
               value={getConfig.customBackgroundFilter[3]}
               onEveryChange={() =>
-                setCustomBackgroundFilterPreview(refValues())
+                setCustomBackgroundFilterPreview(refValues() ?? null)
               }
               onChange={(value) => {
+                setCustomBackgroundFilterPreview(null);
                 if (value === getConfig.customBackgroundFilter[3]) return;
                 setConfig("customBackgroundFilter", [
                   getConfig.customBackgroundFilter[0],

@@ -1,28 +1,13 @@
-import { CustomBackgroundFilter } from "@monkeytype/schemas/configs";
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  on,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
-import { getConfig } from "../../config/store";
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
-import { setErrorBorderDisabled } from "../../states/test";
-import {
-  getCustomBackgroundFilterPreview,
-  getTheme,
-  setCustomBackgroundFilterPreview,
-} from "../../states/theme";
+import { getTheme } from "../../states/theme";
 import { isColorDark } from "../../utils/colors";
-import fileStorage from "../../utils/file-storage";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
@@ -94,110 +79,20 @@ export function Theme(): JSXElement {
   });
 
   return (
-    <>
-      <CustomBackground />
-      <MetaProvider>
-        <Style id="theme" ref={styleRef} />
-        <Show when={isThemeWithCss()}>
-          <Link
-            ref={linkRef}
-            rel="stylesheet"
-            id="currentTheme"
-            data-name={getTheme().name}
-            onError={onError}
-            onLoad={onLoad}
-          />
-        </Show>
-        <Meta id="metaThemeColor" name="theme-color" content={getTheme().bg} />
-        <FavIcon theme={getTheme()} />
-      </MetaProvider>
-    </>
-  );
-}
-
-function CustomBackground(): JSXElement {
-  // a local background file wins over the config url
-  const [url, setUrl] = createSignal("");
-  let urlRequest = 0;
-  createEffect(
-    on(
-      () =>
-        [
-          getConfig.customBackground,
-          fileStorage.track("LocalBackgroundFile"),
-        ] as const,
-      ([configUrl]) => {
-        const request = ++urlRequest;
-        void fileStorage.getFile("LocalBackgroundFile").then((localFile) => {
-          // a later change already started its own lookup
-          if (request !== urlRequest) return;
-          setUrl(localFile ?? configUrl);
-        });
-      },
-    ),
-  );
-
-  createEffect(() => setErrorBorderDisabled(url() !== ""));
-
-  createEffect(
-    on(
-      () => [...getConfig.customBackgroundFilter],
-      () => setCustomBackgroundFilterPreview(undefined),
-      { defer: true },
-    ),
-  );
-  const filter = (): CustomBackgroundFilter =>
-    getCustomBackgroundFilterPreview() ?? getConfig.customBackgroundFilter;
-
-  const onError = (e: Event): void => {
-    (e.currentTarget as HTMLImageElement).style.display = "none";
-    showNoticeNotification(
-      "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
-      { durationMs: 5000 },
-    );
-  };
-
-  return (
-    <div class="customBackground">
-      {/* keyed: a new url gets a fresh img, shown again after a failed one */}
-      <Show when={url() !== "" && url()} keyed>
-        {(src) => (
-          <img
-            src={src}
-            onError={onError}
-            style={{
-              ...backgroundFilterStyle(filter()),
-              "object-fit":
-                getConfig.customBackgroundSize === "max"
-                  ? undefined
-                  : getConfig.customBackgroundSize,
-            }}
-          />
-        )}
+    <MetaProvider>
+      <Style id="theme" ref={styleRef} />
+      <Show when={isThemeWithCss()}>
+        <Link
+          ref={linkRef}
+          rel="stylesheet"
+          id="currentTheme"
+          data-name={getTheme().name}
+          onError={onError}
+          onLoad={onLoad}
+        />
       </Show>
-    </div>
+      <Meta id="metaThemeColor" name="theme-color" content={getTheme().bg} />
+      <FavIcon theme={getTheme()} />
+    </MetaProvider>
   );
-}
-
-function backgroundFilterStyle([
-  blur,
-  brightness,
-  saturate,
-  opacity,
-]: CustomBackgroundFilter): Record<string, string> {
-  let filter = "";
-  if (blur !== 0) filter += `blur(${blur}rem) `;
-  if (brightness !== 1) filter += `brightness(${brightness}) `;
-  if (saturate !== 1) filter += `saturate(${saturate}) `;
-  if (opacity !== 1) filter += `opacity(${opacity}) `;
-
-  // blur bleeds transparent edges: grow the image past the screen
-  return {
-    filter,
-    width: `calc(100% + ${blur * 8}rem)`,
-    height: `calc(100% + ${blur * 8}rem)`,
-    transform: `scale(${1 + blur / 100})`,
-    top: `-${blur * 4}rem`,
-    position: "absolute",
-  };
 }
