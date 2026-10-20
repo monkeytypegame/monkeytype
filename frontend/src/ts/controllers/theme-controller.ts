@@ -9,7 +9,6 @@ import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
-import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../states/core";
 import { setTheme, ThemeIdentifier } from "../states/theme";
 
@@ -71,12 +70,6 @@ async function apply(
   setTheme({ ...themeColors, name: themeName });
 
   updateThemeIndicator(isPreview ? themeName : undefined);
-
-  if (isColorDark(themeColors.bg)) {
-    qs("body")?.addClass("darkMode");
-  } else {
-    qs("body")?.removeClass("darkMode");
-  }
 }
 
 function updateThemeIndicator(nameOverride?: string): void {

@@ -7,6 +7,7 @@ import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
 import { getTheme } from "../../states/theme";
+import { isColorDark } from "../../utils/colors";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
@@ -70,6 +71,11 @@ export function Theme(): JSXElement {
       hideLoaderBar();
     }
     linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
+  });
+
+  // tailwind's dark: variant
+  createEffect(() => {
+    document.body.classList.toggle("darkMode", isColorDark(getTheme().bg));
   });
 
   return (
