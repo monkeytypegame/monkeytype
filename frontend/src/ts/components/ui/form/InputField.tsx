@@ -72,7 +72,7 @@ export function InputField(props: {
         autocomplete={props.autocomplete}
         name={props.field().name as string}
         value={convertValueToString(props.field().state.value)}
-        onBlur={() => {
+        onBlur={(e) => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
             (props.field().state.value === undefined ||
@@ -85,6 +85,9 @@ export function InputField(props: {
           }
           shakeItIfYouWantIt();
           props.field().handleBlur();
+          e.currentTarget.value = convertValueToString(
+            props.field().state.value,
+          );
         }}
         onInput={(e) => {
           const value: unknown = convertStringToValue(
