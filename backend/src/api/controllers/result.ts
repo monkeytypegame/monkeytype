@@ -736,13 +736,37 @@ async function calculateXp(
     funboxBonus: funboxBonusConfiguration,
   } = xpConfiguration;
 
-  if (mode === "zen" || !enabled) {
+  if (!enabled) {
     return {
       xp: 0,
     };
   }
 
   const breakdown: XpBreakdown = {};
+
+  let incompleteXp = 0;
+  if (incompleteTests !== undefined && incompleteTests.length > 0) {
+    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
+      let mod = (it.acc - 50) / 50;
+      if (mod < 0) mod = 0;
+      incompleteXp += Math.round(it.seconds * mod);
+    });
+    breakdown.incomplete = incompleteXp;
+  } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
+    incompleteXp = Math.round(incompleteTestSeconds);
+    breakdown.incomplete = incompleteXp;
+  }
+
+  if (gainMultiplier !== 1) {
+    breakdown.configMultiplier = gainMultiplier;
+  }
+
+  if (mode === "zen") {
+    return {
+      xp: Math.round(incompleteXp * gainMultiplier),
+      breakdown,
+    };
+  }
 
   const baseXp = Math.round((testDuration - afkDuration) * 2);
   breakdown.base = baseXp;
@@ -809,19 +833,6 @@ async function calculateXp(
     }
   }
 
-  let incompleteXp = 0;
-  if (incompleteTests !== undefined && incompleteTests.length > 0) {
-    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
-      let mod = (it.acc - 50) / 50;
-      if (mod < 0) mod = 0;
-      incompleteXp += Math.round(it.seconds * mod);
-    });
-    breakdown.incomplete = incompleteXp;
-  } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
-    incompleteXp = Math.round(incompleteTestSeconds);
-    breakdown.incomplete = incompleteXp;
-  }
-
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
@@ -845,14 +856,6 @@ async function calculateXp(
 
   const totalXp =
     Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
-
-  if (gainMultiplier !== 1) {
-    // breakdown.push([
-    //   "configMultiplier",
-    //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
-    // ]);
-    breakdown.configMultiplier = gainMultiplier;
-  }
 
   const isAwardingDailyBonus = dailyBonus > 0;
 
