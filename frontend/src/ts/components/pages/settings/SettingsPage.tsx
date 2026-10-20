@@ -1,10 +1,4 @@
-import {
-  createResource,
-  createSignal,
-  JSXElement,
-  Show,
-  Suspense,
-} from "solid-js";
+import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
 import { resetConfig } from "../../../config/lifecycle";
@@ -19,6 +13,7 @@ import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { isCustomBackgroundLoaded } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
@@ -53,11 +48,6 @@ import { SearchableSetting } from "./SearchableSetting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
-  const [hasLocalBg] = createResource(
-    () => fileStorage.track("LocalBackgroundFile"),
-    async () => fileStorage.hasFile("LocalBackgroundFile"),
-  );
-
   return (
     <div class="grid gap-8">
       {/* while filtering, only the matching settings stay visible; everything
@@ -181,12 +171,9 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="flipTestColors" />
           <SearchableAutoSetting key="colorfulMode" />
           <CustomBackground />
-          <Suspense>
-            {/* latest: a refetch keeps the old value instead of suspending */}
-            <Show when={getConfig.customBackground !== "" || hasLocalBg.latest}>
-              <CustomBackgroundFilters />
-            </Show>
-          </Suspense>
+          <Show when={isCustomBackgroundLoaded()}>
+            <CustomBackgroundFilters />
+          </Show>
           <AutoSwitchTheme />
           <SearchableAutoSetting key="randomTheme" wide />
           <Theme />

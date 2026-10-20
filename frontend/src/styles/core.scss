@@ -170,21 +170,6 @@ body {
   background: var(--bg-color);
 }
 
-.customBackground {
-  content: "";
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-position: center center;
-  background-repeat: no-repeat;
-  z-index: -999;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
 kbd {
   color: var(--bg-color);
   background-color: var(--sub-color);

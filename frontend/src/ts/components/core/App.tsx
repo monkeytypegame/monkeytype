@@ -16,13 +16,14 @@ import { Header } from "../layout/header/Header";
 import { Overlays } from "../layout/overlays/Overlays";
 import { Modals } from "../modals/Modals";
 import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
+import { CustomBackground } from "./CustomBackground";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
   return (
     <Providers>
       <Overlays />
-      <div class="customBackground"></div>
+      <CustomBackground />
       <Theme />
       <BarTimerProgress />
       <div id="solidmodals">
