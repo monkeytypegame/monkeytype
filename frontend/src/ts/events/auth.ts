@@ -10,7 +10,6 @@ export type AuthEvent =
         reloadUserData: () => Promise<void>;
       };
     }
-  | { type: "snapshotUpdated"; data: { isInitial: boolean } }
-  | { type: "authConfigUpdated"; data?: undefined };
+  | { type: "snapshotUpdated"; data: { isInitial: boolean } };
 
 export const authEvent = createEvent<AuthEvent>();

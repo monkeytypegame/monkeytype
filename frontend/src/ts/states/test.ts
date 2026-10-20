@@ -8,7 +8,6 @@ import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
-import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { isTestPageMounted } from "../test/test-page-state";
@@ -229,18 +228,23 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-keymapEvent.useListener(({ mode, key, correct }) => {
-  const mappedKey = key === "" ? " " : key;
-  setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+/** Highlights the next key to press on the keymap. */
+export function highlightKeymapKey(key: string): void {
+  setKeymapHighlightKey(key === "" ? " " : key);
+}
 
-  if (mode === "flash" && getConfig.keymapMode === "react") {
-    const existing = getKeymapFlashState[mappedKey];
-    setKeymapFlashState(mappedKey, {
-      tick: existing ? existing.tick + 1 : 1,
-      correct: correct ?? true,
-    });
-  }
-});
+/** Flashes the pressed key on the keymap, clearing the highlight. */
+export function flashKeymapKey(key: string, correct?: boolean): void {
+  setKeymapHighlightKey(undefined);
+  if (getConfig.keymapMode !== "react") return;
+
+  const mappedKey = key === "" ? " " : key;
+  const existing = getKeymapFlashState[mappedKey];
+  setKeymapFlashState(mappedKey, {
+    tick: existing ? existing.tick + 1 : 1,
+    correct: correct ?? true,
+  });
+}
 
 const getInputLayout = createMemo<{
   layout: string;

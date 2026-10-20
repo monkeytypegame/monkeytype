@@ -12,7 +12,6 @@ import {
 } from "../states/notifications";
 import * as Caret from "./caret";
 import { timerEvent } from "../events/timer";
-import { highlight } from "../events/keymap";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -36,6 +35,7 @@ import {
   isSlowTimer,
   setSlowTimer,
   clearSlowTimer,
+  highlightKeymapKey,
 } from "../states/test";
 import { capitalizeFirstLetter } from "../utils/strings";
 
@@ -181,7 +181,7 @@ function layoutfluid(time: number): void {
 
       if (Config.keymapMode === "next") {
         setTimeout(() => {
-          highlight(
+          highlightKeymapKey(
             TestWords.words
               .getCurrent()
               ?.text.charAt(getCurrentInput().length) ?? "",

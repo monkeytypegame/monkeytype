@@ -14,7 +14,6 @@ import {
 import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
-import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
 import {
   isCorrectShiftUsed,
@@ -33,6 +32,7 @@ import {
   getActiveWordIndex,
   isTestActive,
   isComposing,
+  flashKeymapKey,
 } from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
 
@@ -269,7 +269,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
 
   if (Config.keymapMode === "react") {
-    flash(data, correct);
+    flashKeymapKey(data, correct);
   }
 
   if (removeLastChar) {
