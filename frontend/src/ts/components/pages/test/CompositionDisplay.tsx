@@ -19,7 +19,7 @@ export function CompositionDisplay() {
         }}
       >
         {/* a placeholder keeps the line's height while not composing */}
-        {getCompositionData() || " "}
+        {getCompositionData() || " "}
       </div>
     </Show>
   );
