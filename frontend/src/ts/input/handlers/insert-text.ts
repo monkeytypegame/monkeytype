@@ -14,7 +14,6 @@ import {
 import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
-import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
 import * as CompositionState from "../../legacy-states/composition";
 import {
@@ -30,7 +29,11 @@ import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
-import { getActiveWordIndex, isTestActive } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isTestActive,
+  flashKeymapKey,
+} from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
 
 const charOverrides = new Map<string, string>([
@@ -266,7 +269,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
 
   if (Config.keymapMode === "react") {
-    flash(data, correct);
+    flashKeymapKey(data, correct);
   }
 
   if (removeLastChar) {
