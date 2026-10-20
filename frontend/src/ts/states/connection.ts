@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "./notifications";
-import { connectionEvent } from "../events/connection";
 import { onDOMReady } from "../utils/dom";
 import { addBanner, removeBanner } from "./banners";
 import { isTestActive } from "./test";
@@ -41,12 +40,14 @@ const throttledHandleState = debounce(5000, () => {
   }
 });
 
-connectionEvent.subscribe((newState) => {
+function handleConnectionChange(newState: boolean): void {
   setOnline(newState);
   throttledHandleState();
-});
+}
 
 onDOMReady(() => {
+  window.addEventListener("online", () => handleConnectionChange(true));
+  window.addEventListener("offline", () => handleConnectionChange(false));
   setOnline(navigator.onLine);
   if (!isOnline()) {
     showOfflineBanner();
