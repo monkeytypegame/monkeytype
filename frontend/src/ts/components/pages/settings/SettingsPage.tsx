@@ -1,10 +1,4 @@
-import {
-  createResource,
-  createSignal,
-  JSXElement,
-  Show,
-  Suspense,
-} from "solid-js";
+import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
 import { resetConfig } from "../../../config/lifecycle";
@@ -19,9 +13,11 @@ import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { isCustomBackgroundLoaded } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
+import { Advertisement } from "../../common/Advertisement";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
@@ -53,11 +49,6 @@ import { SearchableSetting } from "./SearchableSetting";
 import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
-  const [hasLocalBg] = createResource(
-    () => fileStorage.track("LocalBackgroundFile"),
-    async () => fileStorage.hasFile("LocalBackgroundFile"),
-  );
-
   return (
     <div class="grid gap-8">
       {/* while filtering, only the matching settings stay visible; everything
@@ -115,6 +106,7 @@ export function SettingsPage(): JSXElement {
           <Layout />
           <SearchableAutoSetting key="codeUnindentOnBackspace" />
         </Section>
+        <Advertisement id="ad-settings-1" visible="sellout" />
         <Section title="sound">
           <SoundVolume />
           <SearchableAutoSetting
@@ -149,6 +141,7 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="repeatedPace" />
           <SearchableAutoSetting key="paceCaretStyle" wide />
         </Section>
+        <Advertisement id="ad-settings-2" visible="sellout" />
         <Section title="appearance">
           <SearchableAutoSetting key="timerStyle" wide />
           <SearchableAutoSetting key="liveSpeedStyle" />
@@ -181,16 +174,14 @@ export function SettingsPage(): JSXElement {
           <SearchableAutoSetting key="flipTestColors" />
           <SearchableAutoSetting key="colorfulMode" />
           <CustomBackground />
-          <Suspense>
-            {/* latest: a refetch keeps the old value instead of suspending */}
-            <Show when={getConfig.customBackground !== "" || hasLocalBg.latest}>
-              <CustomBackgroundFilters />
-            </Show>
-          </Suspense>
+          <Show when={isCustomBackgroundLoaded()}>
+            <CustomBackgroundFilters />
+          </Show>
           <AutoSwitchTheme />
           <SearchableAutoSetting key="randomTheme" wide />
           <Theme />
         </Section>
+        <Advertisement id="ad-settings-3" visible="sellout" />
         <Section title="hide elements">
           <SearchableAutoSetting key="showKeyTips" />
           <SearchableAutoSetting key="showOutOfFocusWarning" />

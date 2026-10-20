@@ -15,16 +15,7 @@ let cache: {
 function initializeCache(): void {
   if (cacheReady) return;
 
-  const elementsSelector = [
-    "app",
-    "footer",
-    "main",
-    "#bannerCenter",
-    "#ad-vertical-right-wrapper",
-    "#ad-vertical-left-wrapper",
-    "#ad-footer-wrapper",
-    "#ad-footer-small-wrapper",
-  ].join(",");
+  const elementsSelector = ["app", "footer", "main", "#bannerCenter"].join(",");
 
   cache.focus = qsa(elementsSelector);
 

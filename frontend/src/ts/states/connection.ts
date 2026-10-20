@@ -1,15 +1,13 @@
+import { createSignal } from "solid-js";
 import { debounce } from "throttle-debounce";
-import { showSuccessNotification } from "../states/notifications";
+import { showSuccessNotification } from "./notifications";
 import { connectionEvent } from "../events/connection";
 import { onDOMReady } from "../utils/dom";
-import { addBanner, removeBanner } from "../states/banners";
-import { isTestActive } from "../states/test";
+import { addBanner, removeBanner } from "./banners";
+import { isTestActive } from "./test";
 
-let state = navigator.onLine;
-
-export function get(): boolean {
-  return state;
-}
+const [isOnline, setOnline] = createSignal(navigator.onLine);
+export { isOnline };
 
 let noInternetBannerId: number | undefined = undefined;
 
@@ -29,7 +27,7 @@ export function showOfflineBanner(): void {
 }
 
 const throttledHandleState = debounce(5000, () => {
-  if (state) {
+  if (isOnline()) {
     if (noInternetBannerId !== undefined) {
       showSuccessNotification("You're back online", {
         customTitle: "Connection",
@@ -44,13 +42,13 @@ const throttledHandleState = debounce(5000, () => {
 });
 
 connectionEvent.subscribe((newState) => {
-  state = newState;
+  setOnline(newState);
   throttledHandleState();
 });
 
 onDOMReady(() => {
-  state = navigator.onLine;
-  if (!state) {
+  setOnline(navigator.onLine);
+  if (!isOnline()) {
     showOfflineBanner();
   }
 });

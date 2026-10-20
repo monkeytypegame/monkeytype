@@ -13,18 +13,18 @@ const arabicLazyModeLS = new LocalStorageWithSchema({
   fallback: true,
 });
 
-export function getRemember(): boolean {
+export function getRememberLazyMode(): boolean {
   return rememberLazyModeLS.get();
 }
 
-export function setRemember(value: boolean): void {
+export function setRememberLazyMode(value: boolean): void {
   rememberLazyModeLS.set(value);
 }
 
-export function getArabicPref(): boolean {
+export function getPrefersArabicLazyMode(): boolean {
   return arabicLazyModeLS.get();
 }
 
-export function setArabicPref(value: boolean): void {
+export function setPrefersArabicLazyMode(value: boolean): void {
   arabicLazyModeLS.set(value);
 }

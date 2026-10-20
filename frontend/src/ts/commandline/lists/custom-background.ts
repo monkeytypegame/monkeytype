@@ -1,7 +1,6 @@
 import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
-import { applyCustomBackground } from "../../controllers/theme-controller";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
@@ -54,7 +53,6 @@ const customBackgroundCommand: Command = {
               const dataUrl = readerEvent.target?.result as string;
               try {
                 await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
-                await applyCustomBackground();
               } catch (e) {
                 showNoticeNotification(
                   `Error uploading background: ${(e as Error).message}`,
@@ -82,7 +80,6 @@ const customBackgroundCommand: Command = {
           try {
             await FileStorage.deleteFile("LocalBackgroundFile");
             setConfig("customBackground", "");
-            await applyCustomBackground();
           } catch (e) {
             showNoticeNotification(
               `Error removing background: ${(e as Error).message}`,

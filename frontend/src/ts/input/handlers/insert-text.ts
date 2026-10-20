@@ -15,7 +15,6 @@ import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
 import * as WeakSpot from "../../test/weak-spot";
-import * as CompositionState from "../../legacy-states/composition";
 import {
   isCorrectShiftUsed,
   getIncorrectShiftsInARow,
@@ -32,6 +31,7 @@ import { areAllWordsGenerated } from "../../test/words-generator";
 import {
   getActiveWordIndex,
   isTestActive,
+  isComposing,
   flashKeymapKey,
 } from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
@@ -342,7 +342,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }, 0);
   }
 
-  if (!CompositionState.getComposing() && lastInMultiOrSingle) {
+  if (!isComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
         data,

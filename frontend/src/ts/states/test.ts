@@ -26,9 +26,11 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from TestLogic.finish() (before the result is built) until restart()
+// fades the result out. Whether the result is on screen: isResultShown()
+export const [isTestFinished, setTestFinished] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
-// it covers the words fade-out that getResultVisible() is still false during.
+// it covers the words fade-out that isTestFinished() is still false during.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restart().
 export const [getBailedOut, setBailedOut] = createSignal(false);
@@ -95,23 +97,31 @@ export const [getTestInitError, setTestInitError] = createSignal<string | null>(
 // shown between the words fading out and the result appearing.
 export const [isResultLoading, setResultLoading] = createSignal(false);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
+// IME composition in progress and its data so far, pushed from the
+// composition events. Read by the input handlers, the caret and the
+// composition display.
+export const [isComposing, setComposing] = createSignal(false);
+export const [getCompositionData, setCompositionData] = createSignal("");
+
+// the timer drifted too far: animations stay off until it's cleared on restart.
+const [isSlowTimer, setIsSlowTimer] = createSignal(false);
+export { isSlowTimer };
+
+export function setSlowTimer(): void {
+  if (isSlowTimer()) return;
+  setIsSlowTimer(true);
+  console.error("Slow timer, disabling animations");
+}
+
+export function clearSlowTimer(): void {
+  setIsSlowTimer(false);
+}
 
 createEffect(
   on(
     () => getConfig.showOutOfFocusWarning,
     (show) => {
       if (!show) setTestFocusState("focused");
-    },
-    { defer: true },
-  ),
-);
-createEffect(
-  on(
-    () => getConfig.compositionDisplay,
-    (display) => {
-      if (display === "below") setCompositionText(" ");
     },
     { defer: true },
   ),
