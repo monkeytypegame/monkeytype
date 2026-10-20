@@ -13,7 +13,7 @@ import { isAuthenticated } from "../states/core";
 import { getRoutePage } from "../states/router";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
-import * as UI from "../ui";
+import { setFontPreview } from "../states/font";
 import { Validation } from "../types/validation";
 import { typedKeys } from "@monkeytype/util/objects";
 
@@ -639,7 +639,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           display: fontConfig.display,
         } as Record<string, string | boolean>;
       },
-      hover: (name) => UI.previewFontFamily(name),
+      hover: (name) => setFontPreview(name),
     },
   },
   keymapMode: {

@@ -1,11 +1,12 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
-import { getConfig } from "../../../config/store";
+import { Config, getConfig } from "../../../config/store";
 import {
   isInputElementFocused,
   registerInputElement,
 } from "../../../input/input-element";
 import { initInputListeners } from "../../../input/listeners";
+import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
 import { isResultShown } from "../../../states/result";
@@ -19,6 +20,7 @@ import {
   isLayoutfluidTimerVisible,
   isReadAheadDisabled,
   isResultLoading,
+  isTestActive,
   isTestInitFailed,
   isTypingTestHidden,
   isWordsHidden,
@@ -28,6 +30,7 @@ import {
   showOutOfFocusWarning,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
+import * as CustomText from "../../../test/custom-text";
 import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
 import {
@@ -39,6 +42,7 @@ import {
 import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -136,6 +140,29 @@ export function TestPage(): JSXElement {
       { signal },
     );
     window.addEventListener("focus", restartIfNotStarted, { signal });
+    // confirm leaving mid test, unless it's quick to redo
+    window.addEventListener(
+      "beforeunload",
+      (event) => {
+        if (!isTestActive()) return;
+        if (
+          canQuickRestart(
+            Config.mode,
+            Config.words,
+            Config.time,
+            CustomText.getData(),
+            getCustomTextIndicator()?.isLong ?? false,
+          )
+        ) {
+          return;
+        }
+        event.preventDefault();
+        // Included for legacy support, e.g. Chrome/Edge < 119
+        // oxlint-disable-next-line no-deprecated
+        event.returnValue = "";
+      },
+      { signal },
+    );
     // little roadblock for basic cheating
     document.addEventListener(
       "visibilitychange",

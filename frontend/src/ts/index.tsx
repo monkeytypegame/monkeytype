@@ -12,7 +12,6 @@ import "./event-handlers/global";
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
-import "./ui";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";

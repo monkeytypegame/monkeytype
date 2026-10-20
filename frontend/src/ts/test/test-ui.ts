@@ -32,6 +32,7 @@ import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
+import { getFontPreview } from "../states/font";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
@@ -1535,7 +1536,7 @@ export function init(
   );
   createEffect(
     on(
-      () => [getConfig.fontFamily, getConfig.fontSize],
+      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
         Joining.update("fontSize", wordsEl());
         void updateHintsPositionDebounced();

@@ -19,6 +19,7 @@ import { Overlays } from "../layout/overlays/Overlays";
 import { Modals } from "../modals/Modals";
 import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
 import { CustomBackground } from "./CustomBackground";
+import { Font } from "./Font";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
@@ -27,6 +28,7 @@ export function App(): JSXElement {
       <Overlays />
       <CustomBackground />
       <Theme />
+      <Font />
       <BarTimerProgress />
       <div id="solidmodals">
         <Modals />
