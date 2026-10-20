@@ -5,7 +5,7 @@
 
 import { Config } from "../config/store";
 import { getRoutePage } from "../states/router";
-import { getResultVisible } from "../states/test";
+import { isTestFinished } from "../states/test";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -207,7 +207,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (getRoutePage() === "test" && !getResultVisible()) {
+  if (getRoutePage() === "test" && !isTestFinished()) {
     ramp.destroyUnits("all");
     return;
   }

@@ -23,6 +23,8 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
 });
 
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
+// #app stays hidden until the config and auth are loaded (see ready.ts)
+export const [isAppReady, setAppReady] = createSignal(false);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
 export const [getUserId, setUserId] = createSignal<string | null>(null);

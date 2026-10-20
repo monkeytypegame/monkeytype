@@ -7,7 +7,7 @@ import * as ResultWordHighlight from "../components/pages/test/result/result-wor
 import {
   getKoreanStatus,
   getLastEventLog,
-  getResultVisible,
+  isTestFinished,
 } from "../states/test";
 import {
   showErrorNotification,
@@ -161,7 +161,7 @@ export function buildWordsHistory(eventLog: EventLog): HistoryWord[] {
 }
 
 export function toggleResultWords(noAnimation = false): void {
-  if (!getResultVisible()) return;
+  if (!isTestFinished()) return;
   ResultWordHighlight.updateToggleWordsHistoryTime();
 
   const open = !isWordsHistoryOpen();
