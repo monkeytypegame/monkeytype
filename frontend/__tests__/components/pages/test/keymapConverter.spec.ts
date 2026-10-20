@@ -3,6 +3,7 @@ import { convertLayoutToKeymap } from "../../../../src/ts/components/pages/test/
 
 import qwertyLayout from "../../../../static/layouts/qwerty.json";
 import qwertzLayout from "../../../../static/layouts/qwertz.json";
+import arabic101Layout from "../../../../static/layouts/arabic_101.json";
 
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import {
@@ -1121,6 +1122,20 @@ describe("keymap converter", () => {
         expect(row2?.length, "row2 length").toBe(15);
         expect(row3?.length, "row3 length").toBe(14);
         expect(row4?.length, "row4 length").toBe(15);
+      });
+    });
+
+    describe("arabic_101", () => {
+      it("converts arabic_101 with canonical multi-char ligatures", () => {
+        const [, , , row4] = convertLayoutToKeymap(
+          arabic101Layout as LayoutObject,
+          {
+            keymapStyle: "staggered",
+            showAllKeys: false,
+          },
+        );
+
+        expect(row4?.[4]).toEqual(expectLegend("لا", "لآ"));
       });
     });
   });
