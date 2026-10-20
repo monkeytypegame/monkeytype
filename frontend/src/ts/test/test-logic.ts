@@ -64,12 +64,12 @@ import {
   setBailedOut,
   setLastSignedOutResult,
   setResultCalculating,
-  setResultVisible,
+  setTestFinished,
   setTestActive,
   setWordsHaveNewline,
   setWordsHaveNumbers,
   setWordsHaveTab,
-  getResultVisible,
+  isTestFinished,
   CompletedResult,
   setResultLoading,
   setTestInitError,
@@ -111,7 +111,7 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { canQuickRestart } from "../utils/quick-restart";
 import {
   ResultDetails,
-  setShowResult,
+  setResultShown,
   resultState,
   setResultState,
   setCrownType,
@@ -360,7 +360,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   // restart
 
-  const source: "testPage" | "resultPage" = getResultVisible()
+  const source: "testPage" | "resultPage" = isTestFinished()
     ? "resultPage"
     : "testPage";
   const noAnim = options.noAnim ?? false;
@@ -369,7 +369,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   await TestUI.fadeOutTest(source, noAnim);
 
-  setResultVisible(false);
+  setTestFinished(false);
   setInputElementValue("");
 
   await Funbox.rememberSettings();
@@ -868,7 +868,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   forceReleaseAllKeys();
 
-  setResultVisible(true);
+  setTestFinished(true);
   setTestActive(false);
 
   cleanupData();
@@ -1204,7 +1204,7 @@ async function showResult(
   void Funbox.clear();
 
   setResultLoading(false);
-  setShowResult(true);
+  setResultShown(true);
 
   const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
   resultPrefocusTarget?.focus({ preventScroll: true });
@@ -1274,7 +1274,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (getResultVisible()) {
+    if (isTestFinished()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }
@@ -1392,7 +1392,7 @@ export function repeatTest(): void {
 export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
-    !getResultVisible() &&
+    !isTestFinished() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     void restart({

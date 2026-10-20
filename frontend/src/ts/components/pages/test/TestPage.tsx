@@ -9,11 +9,11 @@ import {
 import { initInputListeners } from "../../../input/listeners";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { getShowResult } from "../../../states/result";
+import { isResultShown } from "../../../states/result";
 import {
   getFocus,
   getLayoutfluidTimerText,
-  getResultVisible,
+  isTestFinished,
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
@@ -235,7 +235,7 @@ export function TestPage(): JSXElement {
             style={{ "font-size": fontSize() }}
             onFocus={() => {
               if (!isInputElementFocused()) return;
-              if (!getResultVisible() && getConfig.showOutOfFocusWarning) {
+              if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
                 setTestFocusState("focused");
               }
               Caret.show(true);
@@ -327,7 +327,7 @@ export function TestPage(): JSXElement {
           <LoadingCircle />
         </div>
       </Show>
-      <Show when={getShowResult()}>
+      <Show when={isResultShown()}>
         <TestResult />
       </Show>
     </>

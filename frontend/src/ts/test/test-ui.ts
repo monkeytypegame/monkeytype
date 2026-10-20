@@ -45,7 +45,7 @@ import {
   setOutOfFocusMaxHeight,
   wordsHaveNewline,
   setTestFocusState,
-  getResultVisible,
+  isTestFinished,
   setWordsWrapperHidden,
   setLayoutfluidTimerVisible,
   setTestInitError,
@@ -54,7 +54,7 @@ import {
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
 import * as ConnectionState from "../legacy-states/connection";
-import { setShowResult } from "../states/result";
+import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
@@ -328,7 +328,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     !isMounted() ||
-    getResultVisible() ||
+    isTestFinished() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
     return;
@@ -546,7 +546,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 function updateWordsWrapperHeight(force = false): void {
-  if (!isMounted() || getResultVisible()) return;
+  if (!isMounted() || isTestFinished()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -885,7 +885,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (!isMounted() || getResultVisible()) return;
+  if (!isMounted() || isTestFinished()) return;
 
   await centeringActiveLine;
 
@@ -1419,7 +1419,7 @@ export async function fadeInTest(noAnim: boolean): Promise<void> {
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
-  setShowResult(false);
+  setResultShown(false);
   typingTestEl().setStyle({ opacity: "0" });
   setTypingTestHidden(false);
   getInputElement().style.left = "0";
@@ -1556,7 +1556,7 @@ export function init(
   document.addEventListener("keydown", autofocusWords, { signal });
 
   const recenter = debounce(250, () => {
-    if (getResultVisible()) return;
+    if (isTestFinished()) return;
     if (Config.tapeMode !== "off") {
       void scrollTape();
     } else {
@@ -1598,7 +1598,7 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 
-  if (getResultVisible() || isInputElementFocused()) return;
+  if (isTestFinished() || isInputElementFocused()) return;
   // checked last, isAnyPopupVisible is a bit expensive
   if (
     ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
