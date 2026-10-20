@@ -88,6 +88,11 @@ export type AnimeProps = ParentProps<{
   as?: keyof HTMLElementTagNameMap;
 
   /**
+   * id of the wrapper element.
+   */
+  id?: string;
+
+  /**
    * CSS class name for the wrapper element.
    */
   class?: string;

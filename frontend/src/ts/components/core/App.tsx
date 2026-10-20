@@ -7,8 +7,10 @@ import { JSXElement } from "solid-js";
 
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
-import { getGlobalOffsetTop } from "../../states/core";
+import { getGlobalOffsetTop, isAppReady } from "../../states/core";
+import { cn } from "../../utils/cn";
 import { convertRemToPixels } from "../../utils/numbers";
+import { Anime } from "../common/anime";
 import { Fa } from "../common/Fa";
 import { DevTools } from "../dev/DevTools";
 import { Footer } from "../layout/footer/Footer";
@@ -29,9 +31,11 @@ export function App(): JSXElement {
       <div id="solidmodals">
         <Modals />
       </div>
-      <div
+      <Anime
         id="app"
-        class="content-grid focus hidden"
+        class={cn("content-grid focus", { hidden: !isAppReady() })}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isAppReady() ? 1 : 0, duration: 250 }}
         style={{
           "padding-top": `${getGlobalOffsetTop() + convertRemToPixels(2)}px`,
         }}
@@ -75,7 +79,7 @@ export function App(): JSXElement {
           </div>
           <div id="ad-footer-small"></div>
         </div>
-      </div>
+      </Anime>
       <DevTools />
     </Providers>
   );
