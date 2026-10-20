@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { ColorName, Theme } from "../constants/themes";
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { CustomBackgroundFilter, ThemeName } from "@monkeytype/schemas/configs";
 
 export type ThemeIdentifier = ThemeName | "custom";
 const defaultTheme: Theme & { name: ThemeIdentifier } = {
@@ -25,3 +25,10 @@ export function updateThemeColor(key: ColorName, color: string): void {
     [key]: color,
   }));
 }
+
+// the custom background filter sliders while dragging, before the value is
+// saved. Cleared once the config changes
+export const [
+  getCustomBackgroundFilterPreview,
+  setCustomBackgroundFilterPreview,
+] = createSignal<CustomBackgroundFilter | undefined>();

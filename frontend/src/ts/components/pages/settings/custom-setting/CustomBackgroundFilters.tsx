@@ -3,7 +3,7 @@ import { JSXElement } from "solid-js";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import { applyCustomBackgroundFilters } from "../../../../controllers/theme-controller";
+import { setCustomBackgroundFilterPreview } from "../../../../states/theme";
 import { Slider } from "../../../common/Slider";
 import { SearchableSetting } from "../SearchableSetting";
 
@@ -44,7 +44,9 @@ export function CustomBackgroundFilters(): JSXElement {
                 return value.toFixed(1);
               }}
               value={getConfig.customBackgroundFilter[0]}
-              onEveryChange={() => applyCustomBackgroundFilters(refValues())}
+              onEveryChange={() =>
+                setCustomBackgroundFilterPreview(refValues())
+              }
               onChange={(value) => {
                 if (value === getConfig.customBackgroundFilter[0]) return;
                 setConfig("customBackgroundFilter", [
@@ -67,7 +69,9 @@ export function CustomBackgroundFilters(): JSXElement {
                 return value.toFixed(1);
               }}
               value={getConfig.customBackgroundFilter[1]}
-              onEveryChange={() => applyCustomBackgroundFilters(refValues())}
+              onEveryChange={() =>
+                setCustomBackgroundFilterPreview(refValues())
+              }
               onChange={(value) => {
                 if (value === getConfig.customBackgroundFilter[1]) return;
                 setConfig("customBackgroundFilter", [
@@ -90,7 +94,9 @@ export function CustomBackgroundFilters(): JSXElement {
                 return value.toFixed(1);
               }}
               value={getConfig.customBackgroundFilter[2]}
-              onEveryChange={() => applyCustomBackgroundFilters(refValues())}
+              onEveryChange={() =>
+                setCustomBackgroundFilterPreview(refValues())
+              }
               onChange={(value) => {
                 if (value === getConfig.customBackgroundFilter[2]) return;
                 setConfig("customBackgroundFilter", [
@@ -113,7 +119,9 @@ export function CustomBackgroundFilters(): JSXElement {
                 return value.toFixed(1);
               }}
               value={getConfig.customBackgroundFilter[3]}
-              onEveryChange={() => applyCustomBackgroundFilters(refValues())}
+              onEveryChange={() =>
+                setCustomBackgroundFilterPreview(refValues())
+              }
               onChange={(value) => {
                 if (value === getConfig.customBackgroundFilter[3]) return;
                 setConfig("customBackgroundFilter", [

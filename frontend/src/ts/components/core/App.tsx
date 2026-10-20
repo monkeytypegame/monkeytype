@@ -22,7 +22,6 @@ export function App(): JSXElement {
   return (
     <Providers>
       <Overlays />
-      <div class="customBackground"></div>
       <Theme />
       <BarTimerProgress />
       <div id="solidmodals">
