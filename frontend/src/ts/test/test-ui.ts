@@ -39,7 +39,6 @@ import {
   isLanguageRightToLeft,
   getActiveWordIndex,
   isTestActive,
-  setCompositionText,
   setCurrentLiveStats,
   setOutOfFocusMaxHeight,
   wordsHaveNewline,
@@ -1456,9 +1455,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     AdController.updateFooterAndVerticalAds(false);
   }
   AdController.destroyResult();
-  if (Config.compositionDisplay === "below") {
-    setCompositionText(" ");
-  }
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();

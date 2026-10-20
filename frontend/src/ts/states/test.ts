@@ -96,11 +96,9 @@ export const [getTestInitError, setTestInitError] = createSignal<string | null>(
 // shown between the words fading out and the result appearing.
 export const [isResultLoading, setResultLoading] = createSignal(false);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
-
-// IME composition in progress and its data so far, read by the input
-// handlers and the caret. Unlike getCompositionText, never a display placeholder.
+// IME composition in progress and its data so far, pushed from the
+// composition events. Read by the input handlers, the caret and the
+// composition display.
 export const [isComposing, setComposing] = createSignal(false);
 export const [getCompositionData, setCompositionData] = createSignal("");
 
@@ -123,15 +121,6 @@ createEffect(
     () => getConfig.showOutOfFocusWarning,
     (show) => {
       if (!show) setTestFocusState("focused");
-    },
-    { defer: true },
-  ),
-);
-createEffect(
-  on(
-    () => getConfig.compositionDisplay,
-    (display) => {
-      if (display === "below") setCompositionText(" ");
     },
     { defer: true },
   ),

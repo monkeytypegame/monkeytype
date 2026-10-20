@@ -8,7 +8,6 @@ import {
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,
-  setCompositionText,
   setComposing,
   setCompositionData,
 } from "../../states/test";
@@ -52,7 +51,6 @@ export function init(signal: AbortSignal): void {
 
       if (isTestRestarting() || isResultCalculating()) return;
       setCompositionData(event.data);
-      setCompositionText(event.data);
 
       const now = performance.now();
 
@@ -76,7 +74,6 @@ export function init(signal: AbortSignal): void {
       if (isTestRestarting() || isResultCalculating()) return;
       setComposing(false);
       setCompositionData("");
-      setCompositionText("");
       setLastInsertCompositionTextData("");
 
       const now = performance.now();
