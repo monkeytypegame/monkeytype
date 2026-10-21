@@ -1131,10 +1131,6 @@ function highlightBadWord(index: number): void {
   setWordFlags(index, { isIncorrect: true });
 }
 
-function highlightAllLettersAsCorrect(wordIndex: number): void {
-  setWordFlags(wordIndex, { allCorrect: true });
-}
-
 /**
  * Whether appending `data` to the active word would push it onto the next line
  * or wrap its letters. Expensive - causes layout reflows.
@@ -1291,9 +1287,7 @@ export function beforeTestWordChange(
   }
 
   if (direction === "forward") {
-    if (Config.blindMode) {
-      highlightAllLettersAsCorrect(getActiveWordIndex());
-    } else if (correct === false) {
+    if (!Config.blindMode && correct === false) {
       highlightBadWord(getActiveWordIndex());
     }
   }
@@ -1310,7 +1304,6 @@ export async function afterTestWordChange(
   setWordFlags(activeWordIndex, {
     isTyped: false,
     isIncorrect: false,
-    allCorrect: false,
   });
   setActiveWord(activeWordIndex);
   pendingWordChange = direction;

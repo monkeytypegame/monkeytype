@@ -72,6 +72,7 @@ afterEach(() => {
   setConfigStore("mode", defaults.mode);
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
+  setConfigStore("blindMode", defaults.blindMode);
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -354,17 +355,23 @@ describe("Words", () => {
       expect(word?.classList.contains("typed")).toBe(true);
     });
 
-    it("shows all letters as correct for allCorrect words", () => {
+    it("shows all letters of typed words as correct in blind mode", () => {
+      setConfigStore("blindMode", true);
       const container = renderWords();
       appendWord("abc");
+      appendWord("de");
       setWordInput(0, "xb");
-      setWordFlags(0, { allCorrect: true });
+      setWordInput(1, "x");
+      setWordFlags(0, { isTyped: true });
       flush();
-      expect(letterClasses(wordEls(container)[0])).toEqual([
+      const [typed, active] = wordEls(container);
+      expect(letterClasses(typed)).toEqual([
         "correct incorrect",
         "correct",
         "correct",
       ]);
+      // the active word still shows its letters as typed
+      expect(letterClasses(active)).toEqual(["incorrect", ""]);
     });
 
     it("marks fully right-to-left words when enabled", () => {

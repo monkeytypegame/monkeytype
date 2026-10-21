@@ -17,8 +17,6 @@ import { createStore, produce } from "solid-js/store";
 export type WordFlags = {
   isTyped: boolean;
   isIncorrect: boolean;
-  /** blind mode: all letters of a committed word shown as correct */
-  allCorrect: boolean;
 };
 
 export type RenderedWord = WordFlags & {
@@ -112,7 +110,6 @@ function newWord(index: number, text: string): RenderedWord {
     composition: "",
     isTyped: false,
     isIncorrect: false,
-    allCorrect: false,
   };
 }
 
