@@ -75,7 +75,7 @@ function visibleChar(typed: string): string {
   return typed === " " ? "_" : typed;
 }
 
-function typedStatus(
+function getLetterStatus(
   typed: string,
   expected: string | undefined,
 ): LetterStatus {
@@ -99,11 +99,8 @@ function zenLetters(input: string, composition: string): Letter[] {
   return letters;
 }
 
-function wordLetters(word: RenderedWord): Letter[] {
-  if (wordsRenderState.rendersLettersFromInput) {
-    return zenLetters(word.input, word.composition);
-  }
-
+/** letters of `word.text`, marked against the input */
+function textLetters(word: RenderedWord): Letter[] {
   const config = getConfig;
   const wordChars = splitIntoCharacters(word.text);
   const inputChars = splitIntoCharacters(word.input);
@@ -115,7 +112,7 @@ function wordLetters(word: RenderedWord): Letter[] {
   for (let i = 0; i < inputChars.length; i++) {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
-    const status = typedStatus(typed, expected);
+    const status = getLetterStatus(typed, expected);
     // typos show the expected letter unless replaced; extras only have the typed one
     const showExpected =
       expected !== undefined && (status === "correct" || !replaceTypos);
@@ -156,7 +153,11 @@ export function Word(props: {
   word: RenderedWord;
   isActive: (index: number) => boolean;
 }): JSXElement {
-  const letters = createMemo(() => wordLetters(props.word));
+  const letters = createMemo(() =>
+    wordsRenderState.rendersLettersFromInput
+      ? zenLetters(props.word.input, props.word.composition)
+      : textLetters(props.word),
+  );
   const hasNewline = (): boolean => wordEndsLine(props.word);
   // whole word right-to-left: bidi override keeps its letters in order
   const isRtl = createMemo(
