@@ -715,15 +715,14 @@ function updateWordsWrapperHeight(force = false): void {
   } else {
     if (Config.tapeMode === "off") {
       //tape off, showAllLines off, non-zen mode
-      const wordElements = wordsEl().qsa(".word");
       let lines = 0;
       let lastTop = 0;
-      let wordIndex = 0;
+      let wordIndex = wordsRenderState.firstRenderedWordIndex;
       let wrapperHeight = 0;
 
       while (lines < 3) {
-        const word = wordElements[wordIndex];
-        if (!word) break;
+        const word = getWordElement(wordIndex);
+        if (word === null) break;
         const top = word.getOffsetTop();
         if (top > lastTop) {
           lines++;
