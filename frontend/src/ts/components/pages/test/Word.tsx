@@ -6,8 +6,6 @@ import {
   wordEndsLine,
   wordsRenderState,
 } from "../../../states/words-render";
-import { getActiveFunboxes } from "../../../test/funbox/list";
-import { FaSolidIcon } from "../../../types/font-awesome";
 import { splitIntoCharacters } from "../../../utils/strings";
 import { FaProps } from "../../common/Fa";
 import { Letter, WordLetter } from "./WordLetter";
@@ -24,30 +22,29 @@ const NEWLINE_ICON: FaProps = {
   class: "fa-rotate-90",
 };
 
-function charIcon(char: string | undefined): FaProps | undefined {
+// arrows (arrows funbox) render as icons too
+const ARROW_ICONS: Partial<Record<string, FaProps>> = {
+  "←": { variant: "solid", icon: "fa-arrow-left" },
+  "↓": { variant: "solid", icon: "fa-arrow-down" },
+  "↑": { variant: "solid", icon: "fa-arrow-up" },
+  "→": { variant: "solid", icon: "fa-arrow-right" },
+};
+
+/** tab and newline: icons that zen hides */
+function whitespaceIcon(char: string | undefined): FaProps | undefined {
   if (char === "\t") return TAB_ICON;
   if (char === "\n") return NEWLINE_ICON;
   return undefined;
 }
 
-type FunboxIcon = (char: string) => FaSolidIcon | undefined;
-
-/** reads the reactive config, so letters re-render when funboxes change */
-function funboxIcon(): FunboxIcon | undefined {
-  return getActiveFunboxes().find(
-    (funbox) => funbox.functions?.getLetterIcon !== undefined,
-  )?.functions?.getLetterIcon;
+function charIcon(char: string | undefined): FaProps | undefined {
+  return (
+    whitespaceIcon(char) ?? (char === undefined ? undefined : ARROW_ICONS[char])
+  );
 }
 
-/**
- * untyped or expected letter: funbox icon if any, tab/newline get their
- * icon and marker class
- */
-function expectedLetter(char: string, getFunboxIcon?: FunboxIcon): Letter {
-  const funboxIconName = getFunboxIcon?.(char);
-  if (funboxIconName !== undefined) {
-    return { text: "", icon: { icon: funboxIconName } };
-  }
+/** untyped or expected letter: tab/newline get their icon and marker class */
+function expectedLetter(char: string): Letter {
   const icon = charIcon(char);
   return {
     text: icon === undefined ? char : "",
@@ -67,7 +64,7 @@ function typedLetter(char: string): Letter {
 
 function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
-    const icon = charIcon(char);
+    const icon = whitespaceIcon(char);
     if (icon === undefined) return { text: char, correct: true };
     return { ...expectedLetter(char), correct: true, hidden: true };
   });
@@ -91,18 +88,17 @@ function wordLetters(word: RenderedWord): Letter[] {
   const compositionChars = splitIntoCharacters(word.composition);
   const replaceTypos =
     config.indicateTypos === "replace" || config.indicateTypos === "both";
-  const getFunboxIcon = funboxIcon();
   const letters: Letter[] = [];
 
   for (let i = 0; i < inputChars.length; i++) {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
     if (expected === typed) {
-      letters.push({ ...expectedLetter(typed, getFunboxIcon), correct: true });
+      letters.push({ ...expectedLetter(typed), correct: true });
     } else if (expected === undefined) {
       letters.push({ ...typedLetter(typed), incorrect: true, extra: true });
     } else {
-      const shown = expectedLetter(expected, getFunboxIcon);
+      const shown = expectedLetter(expected);
       letters.push({
         ...shown,
         ...(replaceTypos ? typedLetter(typed) : {}),
@@ -128,7 +124,7 @@ function wordLetters(word: RenderedWord): Letter[] {
     i < wordChars.length;
     i++
   ) {
-    letters.push(expectedLetter(wordChars[i] as string, getFunboxIcon));
+    letters.push(expectedLetter(wordChars[i] as string));
   }
 
   if (word.allCorrect) {

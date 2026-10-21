@@ -178,10 +178,6 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("getEmulatedChar"),
     ).length <= 1;
-  const oneCharReplacerMax =
-    funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("getLetterIcon"),
-    ).length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation"),
@@ -237,7 +233,6 @@ export function checkCompatibility(
     oneToPushOrPullSectionMax &&
     onePunctuateWordMax &&
     oneGetEmulatedCharMax &&
-    oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
     oneCssModificationPerElement &&
     noConfigConflicts &&

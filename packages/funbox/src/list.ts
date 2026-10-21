@@ -104,12 +104,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       numbers: [false],
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: [
-      "getWord",
-      "rememberSettings",
-      "getEmulatedChar",
-      "getLetterIcon",
-    ],
+    frontendFunctions: ["getWord", "rememberSettings", "getEmulatedChar"],
     name: "arrows",
   },
   rAnDoMcAsE: {

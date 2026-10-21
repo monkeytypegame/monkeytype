@@ -34,7 +34,6 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 import { qs } from "../../utils/dom";
-import { FaSolidIcon } from "../../types/font-awesome";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -53,7 +52,6 @@ export type FunboxFunctions = {
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
-  getLetterIcon?: (char: string) => FaSolidIcon | undefined;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
@@ -273,13 +271,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    getLetterIcon(char: string): FaSolidIcon | undefined {
-      if (char === "↑") return "fa-arrow-up";
-      if (char === "↓") return "fa-arrow-down";
-      if (char === "←") return "fa-arrow-left";
-      if (char === "→") return "fa-arrow-right";
-      return undefined;
     },
   },
   rAnDoMcAsE: {

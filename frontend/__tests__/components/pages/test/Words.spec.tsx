@@ -6,12 +6,6 @@ import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import * as WordsRender from "../../../../src/ts/states/words-render";
 
-// funbox functions pull in test state, which fetches keyboard layouts on load
-vi.mock("../../../../src/ts/utils/json-data", async (importOriginal) => ({
-  ...(await importOriginal()),
-  getLayout: vi.fn(async () => new Promise(() => undefined)),
-}));
-
 let frames: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
 
@@ -66,7 +60,6 @@ beforeEach(() => {
 afterEach(() => {
   const defaults = getDefaultConfig();
   setConfigStore("mode", defaults.mode);
-  setConfigStore("funbox", defaults.funbox);
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   WordsRender.reset();
@@ -221,8 +214,7 @@ describe("Words", () => {
       ]);
     });
 
-    it("renders arrows funbox letters as arrow icons", () => {
-      setConfigStore("funbox", ["arrows"]);
+    it("renders arrow characters as arrow icons", () => {
       const word = renderWord("↑↓←→", "↑←");
       expect(letterIcons(word)).toEqual([
         "fa-arrow-up fas",
@@ -235,7 +227,6 @@ describe("Words", () => {
 
     it("shows the typed letter instead of an icon with indicate typos replace", () => {
       setConfigStore("indicateTypos", "replace");
-      setConfigStore("funbox", ["arrows"]);
       const word = renderWord("↑\t", "xy");
       expect(letterIcons(word)).toEqual(["", ""]);
       expect(letterTexts(word)).toEqual(["x", "y"]);
