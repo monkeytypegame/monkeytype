@@ -55,6 +55,7 @@ import {
 import { createEffect, on, untrack } from "solid-js";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
+import { FaSolidIcon } from "../types/font-awesome";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -392,7 +393,7 @@ async function updateHintsPosition(): Promise<void> {
 }
 
 // arrows (arrows funbox) render as icons, like tab and newline
-const arrowIcons: Record<string, string> = {
+const arrowIcons: Record<string, FaSolidIcon> = {
   "←": "fa-arrow-left",
   "↓": "fa-arrow-down",
   "↑": "fa-arrow-up",
