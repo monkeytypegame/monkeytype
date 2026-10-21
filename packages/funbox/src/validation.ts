@@ -179,8 +179,11 @@ export function checkCompatibility(
       f.frontendFunctions?.includes("getEmulatedChar"),
     ).length <= 1;
   const oneCharReplacerMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
-      .length <= 1;
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.some(
+        (fn) => fn === "getWordHtml" || fn === "getLetterIcon",
+      ),
+    ).length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation"),

@@ -6,6 +6,12 @@ import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import * as WordsRender from "../../../../src/ts/states/words-render";
 
+// funbox functions pull in test state, which fetches keyboard layouts on load
+vi.mock("../../../../src/ts/utils/json-data", async (importOriginal) => ({
+  ...(await importOriginal()),
+  getLayout: vi.fn(async () => new Promise(() => undefined)),
+}));
+
 let frames: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
 
@@ -31,6 +37,13 @@ function letterClasses(word: HTMLElement | undefined): string[] {
   );
 }
 
+/** sorted icon classes per letter, "" for letters without an icon */
+function letterIcons(word: HTMLElement | undefined): string[] {
+  return [...(word?.querySelectorAll("letter") ?? [])].map((l) =>
+    [...(l.querySelector("i")?.classList ?? [])].sort().join(" "),
+  );
+}
+
 function letterTexts(word: HTMLElement | undefined): string[] {
   return [...(word?.querySelectorAll("letter") ?? [])].map(
     (l) => l.textContent ?? "",
@@ -53,6 +66,7 @@ beforeEach(() => {
 afterEach(() => {
   const defaults = getDefaultConfig();
   setConfigStore("mode", defaults.mode);
+  setConfigStore("funbox", defaults.funbox);
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   WordsRender.reset();
@@ -195,6 +209,37 @@ describe("Words", () => {
         "incorrect",
         "nlChar",
       ]);
+    });
+
+    it("renders tab and newline letters as icons", () => {
+      const word = renderWord("a\tb\n", "a\t");
+      expect(letterIcons(word)).toEqual([
+        "",
+        "fa-fw fa-long-arrow-alt-right fas",
+        "",
+        "fa-fw fa-level-down-alt fa-rotate-90 fas",
+      ]);
+    });
+
+    it("renders arrows funbox letters as arrow icons", () => {
+      setConfigStore("funbox", ["arrows"]);
+      const word = renderWord("↑↓←→", "↑←");
+      expect(letterIcons(word)).toEqual([
+        "fa-arrow-up fas",
+        "fa-arrow-down fas",
+        "fa-arrow-left fas",
+        "fa-arrow-right fas",
+      ]);
+      expect(letterClasses(word)).toEqual(["correct", "incorrect", "", ""]);
+    });
+
+    it("shows the typed letter instead of an icon with indicate typos replace", () => {
+      setConfigStore("indicateTypos", "replace");
+      setConfigStore("funbox", ["arrows"]);
+      const word = renderWord("↑\t", "xy");
+      expect(letterIcons(word)).toEqual(["", ""]);
+      expect(letterTexts(word)).toEqual(["x", "y"]);
+      expect(letterClasses(word)).toEqual(["incorrect", "incorrect tabChar"]);
     });
 
     it("reuses letter nodes when input changes", () => {

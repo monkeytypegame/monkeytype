@@ -1,6 +1,6 @@
 # 02 — Letter icons via `Fa` (`getLetterIcon`)
 
-Status: open
+Status: done
 Blocked by: 01
 
 ## What

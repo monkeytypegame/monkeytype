@@ -9,8 +9,11 @@ import {
 
 import { getConfig } from "../../../config/store";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
+import { get as getFunboxes } from "../../../test/funbox/list";
+import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
 import { splitIntoCharacters } from "../../../utils/strings";
+import { Fa } from "../../common/Fa";
 
 declare module "solid-js" {
   // oxlint-disable-next-line typescript/no-namespace
@@ -23,7 +26,21 @@ declare module "solid-js" {
   }
 }
 
-type LetterIcon = "tab" | "newline";
+type LetterIcon = {
+  icon: FaSolidIcon;
+  fixedWidth?: boolean;
+  class?: string;
+};
+
+const TAB_ICON: LetterIcon = {
+  icon: "fa-long-arrow-alt-right",
+  fixedWidth: true,
+};
+const NEWLINE_ICON: LetterIcon = {
+  icon: "fa-level-down-alt",
+  fixedWidth: true,
+  class: "fa-rotate-90",
+};
 
 type Letter = {
   text: string;
@@ -40,19 +57,35 @@ type Letter = {
 };
 
 function charIcon(char: string | undefined): LetterIcon | undefined {
-  if (char === "\t") return "tab";
-  if (char === "\n") return "newline";
+  if (char === "\t") return TAB_ICON;
+  if (char === "\n") return NEWLINE_ICON;
   return undefined;
 }
 
-/** untyped or expected letter: tab/newline get their marker class */
-function expectedLetter(char: string): Letter {
+type FunboxIcon = (char: string) => FaSolidIcon | undefined;
+
+/** reads the reactive config, so letters re-render when funboxes change */
+function funboxIcon(): FunboxIcon | undefined {
+  return getFunboxes(getConfig.funbox).find(
+    (funbox) => funbox.functions?.getLetterIcon !== undefined,
+  )?.functions?.getLetterIcon;
+}
+
+/**
+ * untyped or expected letter: funbox icon if any, tab/newline get their
+ * icon and marker class
+ */
+function expectedLetter(char: string, getFunboxIcon?: FunboxIcon): Letter {
+  const funboxIconName = getFunboxIcon?.(char);
+  if (funboxIconName !== undefined) {
+    return { text: "", icon: { icon: funboxIconName } };
+  }
   const icon = charIcon(char);
   return {
     text: icon === undefined ? char : "",
     icon,
-    tabChar: icon === "tab",
-    nlChar: icon === "newline",
+    tabChar: char === "\t",
+    nlChar: char === "\n",
   };
 }
 
@@ -60,7 +93,8 @@ function expectedLetter(char: string): Letter {
 function typedLetter(char: string): Letter {
   const icon = charIcon(char);
   if (icon !== undefined) return { text: "", icon };
-  return { text: char === " " ? "_" : char };
+  // explicit undefined: overrides the expected letter's icon on typos
+  return { text: char === " " ? "_" : char, icon: undefined };
 }
 
 function zenLetters(input: string, composition: string): Letter[] {
@@ -87,17 +121,18 @@ function wordLetters(word: RenderedWord): Letter[] {
   const compositionChars = splitIntoCharacters(word.composition);
   const replaceTypos =
     config.indicateTypos === "replace" || config.indicateTypos === "both";
+  const getFunboxIcon = funboxIcon();
   const letters: Letter[] = [];
 
   for (let i = 0; i < inputChars.length; i++) {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
     if (expected === typed) {
-      letters.push({ ...expectedLetter(typed), correct: true });
+      letters.push({ ...expectedLetter(typed, getFunboxIcon), correct: true });
     } else if (expected === undefined) {
       letters.push({ ...typedLetter(typed), incorrect: true, extra: true });
     } else {
-      const shown = expectedLetter(expected);
+      const shown = expectedLetter(expected, getFunboxIcon);
       letters.push({
         ...shown,
         ...(replaceTypos ? typedLetter(typed) : {}),
@@ -123,7 +158,7 @@ function wordLetters(word: RenderedWord): Letter[] {
     i < wordChars.length;
     i++
   ) {
-    letters.push(expectedLetter(wordChars[i] as string));
+    letters.push(expectedLetter(wordChars[i] as string, getFunboxIcon));
   }
 
   if (word.allCorrect) {
@@ -147,7 +182,15 @@ function WordLetter(props: { letter: Letter }): JSXElement {
       })}
       style={props.letter.hidden ? { opacity: 0 } : undefined}
     >
-      {props.letter.text}
+      <Show when={props.letter.icon} fallback={props.letter.text}>
+        {(icon) => (
+          <Fa
+            icon={icon().icon}
+            fixedWidth={icon().fixedWidth}
+            class={icon().class}
+          />
+        )}
+      </Show>
     </letter>
   );
 }
