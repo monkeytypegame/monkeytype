@@ -46,36 +46,49 @@ function getCharIconProps(char: string | undefined): FaProps | undefined {
   return ICONS.get(char ?? "");
 }
 
-function getLetterControlType(char: string): Letter["controlType"] {
+function getLetterControlType(char: string | undefined): Letter["controlType"] {
   if (char === "\t") return "tab";
   if (char === "\n") return "newline";
   return undefined;
 }
 
-/** letter showing `char`: tab/newline get their icon and marker class */
-function createLetter(char: string, status: LetterStatus = "untyped"): Letter {
-  const icon = getCharIconProps(char);
+/**
+ * Letter showing `shown` (icon chars as icons). The tab/newline marker class
+ * comes from the `expected` char, so a typo on a tab/newline keeps it.
+ */
+function createLetter(
+  shown: string,
+  status: LetterStatus,
+  expected: string | undefined,
+): Letter {
+  const icon = getCharIconProps(shown);
   return {
-    text: icon === undefined ? char : "",
+    text: icon === undefined ? shown : "",
     icon,
     status,
-    controlType: getLetterControlType(char),
+    controlType: getLetterControlType(expected),
   };
 }
 
-/** visible form of a typed character: space -> "_", tab/newline -> icons */
-function typedDisplay(char: string): Pick<Letter, "text" | "icon"> {
-  const icon = getCharIconProps(char);
-  if (icon !== undefined) return { text: "", icon };
-  // explicit undefined: overrides the expected letter's icon on typos
-  return { text: char === " " ? "_" : char, icon: undefined };
+/** typed space shows as "_" */
+function visibleChar(typed: string): string {
+  return typed === " " ? "_" : typed;
+}
+
+function typedStatus(
+  typed: string,
+  expected: string | undefined,
+): LetterStatus {
+  if (typed === expected) return "correct";
+  if (expected === undefined) return "extra";
+  return "incorrect";
 }
 
 function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
     const icon = getCharIconProps(char);
     if (icon === undefined) return { text: char, status: "correct" };
-    return { ...createLetter(char, "correct"), hidden: true };
+    return { ...createLetter(char, "correct", char), hidden: true };
   });
   if (input === "" && composition === "") {
     letters.push({ text: "_", status: "untyped", hidden: true });
@@ -102,29 +115,27 @@ function wordLetters(word: RenderedWord): Letter[] {
   for (let i = 0; i < inputChars.length; i++) {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
-    if (expected === typed) {
-      letters.push(createLetter(typed, "correct"));
-    } else if (expected === undefined) {
-      letters.push({ ...typedDisplay(typed), status: "extra" });
-    } else {
-      letters.push({
-        ...createLetter(expected, "incorrect"),
-        ...(replaceTypos ? typedDisplay(typed) : {}),
-      });
-    }
+    const status = typedStatus(typed, expected);
+    // typos show the expected letter unless replaced; extras only have the typed one
+    const showExpected =
+      expected !== undefined && (status === "correct" || !replaceTypos);
+    letters.push(
+      createLetter(
+        showExpected ? expected : visibleChar(typed),
+        status,
+        expected,
+      ),
+    );
   }
 
   for (let i = 0; i < compositionChars.length; i++) {
     const char = compositionChars[i] as string;
     const expected = wordChars[inputChars.length + i];
-    const text =
-      config.compositionDisplay === "replace"
-        ? char === " "
-          ? "_"
-          : char
-        : (expected ?? char);
     letters.push({
-      text,
+      text:
+        config.compositionDisplay === "replace"
+          ? visibleChar(char)
+          : (expected ?? char),
       status: char === expected ? "deadCorrect" : "dead",
     });
   }
@@ -134,7 +145,8 @@ function wordLetters(word: RenderedWord): Letter[] {
     i < wordChars.length;
     i++
   ) {
-    letters.push(createLetter(wordChars[i] as string));
+    const char = wordChars[i] as string;
+    letters.push(createLetter(char, "untyped", char));
   }
 
   return letters;
