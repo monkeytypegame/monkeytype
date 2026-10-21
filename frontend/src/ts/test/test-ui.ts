@@ -1185,18 +1185,6 @@ function highlightBadWord(index: number): void {
   });
 }
 
-function highlightAllLettersAsCorrect(wordIndex: number): void {
-  requestDebouncedAnimationFrame(
-    `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
-    () => {
-      const letters = getWordElement(wordIndex)?.getChildren();
-      for (const letter of letters ?? []) {
-        letter.addClass("correct");
-      }
-    },
-  );
-}
-
 /**
  * Whether appending `data` to the active word would push it onto the next line
  * or wrap its letters. Expensive - causes layout reflows.
@@ -1338,9 +1326,8 @@ export function beforeTestWordChange(
   }
 
   if (direction === "forward") {
-    if (Config.blindMode) {
-      highlightAllLettersAsCorrect(getActiveWordIndex());
-    } else if (correct === false) {
+    // blind mode: CSS hides mistakes in typed words
+    if (!Config.blindMode && correct === false) {
       highlightBadWord(getActiveWordIndex());
     }
   }

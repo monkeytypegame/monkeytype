@@ -77,6 +77,7 @@ footer button:hover > .relative > i,
 }
 
 #words .word.typed letter.correct,
+#words.blind .word.typed letter,
 #words.highlight-word .word.typed letter,
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,
