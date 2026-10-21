@@ -58,6 +58,8 @@ export type Letter = {
   controlType?: "tab" | "newline";
   /** zen: empty-word placeholder, typed tab/newline */
   hidden?: boolean;
+  /** adds the correct class on top of the status class (blind mode) */
+  markedCorrect?: boolean;
 };
 
 const STATUS_CLASS: Record<LetterStatus, string> = {
@@ -70,29 +72,18 @@ const STATUS_CLASS: Record<LetterStatus, string> = {
 };
 
 // hot path: plain join, the class names are fixed (no tailwind-merge needed)
-function letterClass(letter: Letter, allCorrect: boolean): string {
+function letterClass(letter: Letter): string {
   let cls = STATUS_CLASS[letter.status];
-  // blind mode: shown as correct, but incorrect/extra keep their classes
-  // (blind CSS hides extras)
-  if (
-    allCorrect &&
-    letter.status !== "correct" &&
-    letter.status !== "deadCorrect"
-  ) {
-    cls += " correct";
-  }
+  if (letter.markedCorrect) cls += " correct";
   if (letter.controlType === "tab") cls += " tabChar";
   if (letter.controlType === "newline") cls += " nlChar";
   if (letter.hidden) cls += " invisible";
   return cls.slice(1);
 }
 
-export function WordLetter(props: {
-  letter: Letter;
-  allCorrect: boolean;
-}): JSXElement {
+export function WordLetter(props: { letter: Letter }): JSXElement {
   return (
-    <letter class={letterClass(props.letter, props.allCorrect)}>
+    <letter class={letterClass(props.letter)}>
       <Show
         when={getCharIconProps(props.letter.text)}
         fallback={props.letter.text}

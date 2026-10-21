@@ -13,7 +13,13 @@ export type TextLettersSettings = {
   replaceComposition: boolean;
 };
 
-type WordChars = { text: string; input: string; composition: string };
+type WordChars = {
+  text: string;
+  input: string;
+  composition: string;
+  /** blind mode: the word's letters show as correct */
+  allCorrect: boolean;
+};
 
 function getControlType(char: string | undefined): Letter["controlType"] {
   if (char === "\t") return "tab";
@@ -109,6 +115,15 @@ export function createTextLetters(
       status: "untyped",
       controlType: getControlType(targetChar),
     });
+  }
+
+  if (word.allCorrect) {
+    // incorrect/extra keep their classes: blind CSS hides extras
+    for (const letter of letters) {
+      if (letter.status !== "correct" && letter.status !== "deadCorrect") {
+        letter.markedCorrect = true;
+      }
+    }
   }
 
   return letters;

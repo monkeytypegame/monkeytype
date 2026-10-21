@@ -66,9 +66,7 @@ export function Word(props: {
         }}
       >
         <Index each={letters()}>
-          {(letter) => (
-            <WordLetter letter={letter()} allCorrect={props.word.allCorrect} />
-          )}
+          {(letter) => <WordLetter letter={letter()} />}
         </Index>
         <div class="hints"></div>
       </div>
