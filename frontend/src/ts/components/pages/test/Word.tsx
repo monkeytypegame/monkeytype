@@ -44,8 +44,8 @@ function expectedLetter(char: string): Letter {
   return {
     text: icon === undefined ? char : "",
     icon,
-    tabChar: char === "\t",
-    nlChar: char === "\n",
+    isTab: char === "\t",
+    isNewline: char === "\n",
   };
 }
 

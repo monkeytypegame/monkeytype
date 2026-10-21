@@ -20,8 +20,8 @@ export type Letter = {
   incorrect?: boolean;
   extra?: boolean;
   dead?: boolean;
-  tabChar?: boolean;
-  nlChar?: boolean;
+  isTab?: boolean;
+  isNewline?: boolean;
   invisible?: boolean;
   /** zen: typed tab/newline take up space but stay invisible */
   hidden?: boolean;
@@ -34,8 +34,8 @@ function letterClass(letter: Letter): string {
   if (letter.incorrect) cls += " incorrect";
   if (letter.extra) cls += " extra";
   if (letter.dead) cls += " dead";
-  if (letter.tabChar) cls += " tabChar";
-  if (letter.nlChar) cls += " nlChar";
+  if (letter.isTab) cls += " tabChar";
+  if (letter.isNewline) cls += " nlChar";
   if (letter.invisible) cls += " invisible";
   if (letter.hidden) cls += " opacity-0";
   return cls.slice(1);
