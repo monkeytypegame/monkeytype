@@ -192,9 +192,12 @@ if (DEV && !isProfilerMode()) {
       }
 
       const isStore = info.type === "store";
-      const [get, set] = createSignal(node.value, {
-        equals: isStore ? false : undefined,
-      });
+      // `equals: undefined` would drop the default comparator, so only pass
+      // options for stores
+      const [get, set] = createSignal(
+        node.value,
+        isStore ? { equals: false } : undefined,
+      );
       const tracked: TrackedSignal = {
         name: info.name,
         type: info.type,
