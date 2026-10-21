@@ -41,7 +41,11 @@ import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
 } from "../../src/ts/states/test";
-import * as WordsRender from "../../src/ts/states/words-render";
+import {
+  appendWord,
+  reset,
+  setActiveWord,
+} from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
 import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
@@ -151,7 +155,7 @@ describe("test-ui words rendering", () => {
 
   afterEach(() => {
     for (const cleanup of cleanups.splice(0)) cleanup();
-    WordsRender.reset();
+    reset();
     TestWords.words.reset();
     resetActiveWordIndex();
     vi.restoreAllMocks();
@@ -162,8 +166,8 @@ describe("test-ui words rendering", () => {
 
   it("renders a word change only in the next frame, then lays out against the new active word", () => {
     const { words, input } = mount();
-    for (let i = 0; i < 10; i++) WordsRender.appendWord("word");
-    WordsRender.setActiveWord(0);
+    for (let i = 0; i < 10; i++) appendWord("word");
+    setActiveWord(0);
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
@@ -197,8 +201,8 @@ describe("test-ui words rendering", () => {
 
   it("marks the previous word typed and a bad word as error on the next frame", () => {
     const { words } = mount();
-    for (let i = 0; i < 3; i++) WordsRender.appendWord("word");
-    WordsRender.setActiveWord(0);
+    for (let i = 0; i < 3; i++) appendWord("word");
+    setActiveWord(0);
     runFrames();
 
     TestUI.beforeTestWordChange("forward", false);
@@ -219,9 +223,9 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
-    WordsRender.reset({ zen: true });
-    WordsRender.appendWord("");
-    WordsRender.setActiveWord(0);
+    reset({ zen: true });
+    appendWord("");
+    setActiveWord(0);
     runFrames();
     increaseActiveWordIndex();
     TestUI.appendEmptyWord();
@@ -241,8 +245,8 @@ describe("test-ui words rendering", () => {
 
   it("breaks the joining of every word passed within one frame", () => {
     const { words } = mount();
-    for (let i = 0; i < 5; i++) WordsRender.appendWord("word");
-    WordsRender.setActiveWord(0);
+    for (let i = 0; i < 5; i++) appendWord("word");
+    setActiveWord(0);
     runFrames();
     joiningSet.mockClear();
 
@@ -322,8 +326,8 @@ describe("test-ui words rendering", () => {
   describe("overflow guard", () => {
     function mountTwoLetterWords(count: number): HTMLElement {
       const { words } = mount();
-      for (let i = 0; i < count; i++) WordsRender.appendWord("ab");
-      WordsRender.setActiveWord(0);
+      for (let i = 0; i < count; i++) appendWord("ab");
+      setActiveWord(0);
       runFrames();
       return words;
     }
@@ -361,9 +365,9 @@ describe("test-ui words rendering", () => {
       });
       const { words } = mount();
       for (let i = 0; i < 15; i++) {
-        WordsRender.appendWord(i === 4 ? "word\n" : "word");
+        appendWord(i === 4 ? "word\n" : "word");
       }
-      WordsRender.setActiveWord(0);
+      setActiveWord(0);
       runFrames();
 
       // to the third line: the first line scrolls out of view
@@ -382,8 +386,8 @@ describe("test-ui words rendering", () => {
         smoothLineScroll: false,
       });
       const { words } = mount();
-      for (let i = 0; i < 20; i++) WordsRender.appendWord("word");
-      WordsRender.setActiveWord(0);
+      for (let i = 0; i < 20; i++) appendWord("word");
+      setActiveWord(0);
       runFrames();
 
       await goForward();
@@ -459,8 +463,8 @@ describe("test-ui words rendering", () => {
       it("stops rendering words scrolled off the left edge", async () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
-        for (let i = 0; i < 20; i++) WordsRender.appendWord("word");
-        WordsRender.setActiveWord(0);
+        for (let i = 0; i < 20; i++) appendWord("word");
+        setActiveWord(0);
         runFrames();
 
         for (let i = 0; i < 10; i++) await goForward();
@@ -479,9 +483,9 @@ describe("test-ui words rendering", () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
         for (let i = 0; i < 20; i++) {
-          WordsRender.appendWord(i === 2 ? "word\n" : "word");
+          appendWord(i === 2 ? "word\n" : "word");
         }
-        WordsRender.setActiveWord(0);
+        setActiveWord(0);
         runFrames();
 
         // word 10 at the tape margin (250px) leaves words 0-3 left of -50px
@@ -511,8 +515,8 @@ describe("test-ui words rendering", () => {
 
     function mountWord(): HTMLElement {
       const { words } = mount();
-      WordsRender.appendWord("word");
-      WordsRender.setActiveWord(0);
+      appendWord("word");
+      setActiveWord(0);
       runFrames();
       return words;
     }

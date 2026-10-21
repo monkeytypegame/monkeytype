@@ -28,7 +28,21 @@ import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
 import { getFontPreview } from "../states/font";
-import * as WordsRender from "../states/words-render";
+import {
+  appendWord,
+  flush as flushWordsRender,
+  getPendingWordInput,
+  isWordRendered as isWordRenderedInState,
+  reset as resetWordsRender,
+  setActiveWord,
+  setFirstRenderedWordIndex,
+  setLayoutHook,
+  setTapeHiddenBefore,
+  setWordFlags,
+  setWordInput,
+  truncateWords,
+  wordsRenderState,
+} from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
@@ -155,7 +169,7 @@ function getWordElement(index: number): ElementWithUtils | null {
  * False once a word has scrolled off (line jump / tape stop rendering it).
  */
 export function isWordRendered(index: number): boolean {
-  return WordsRender.isWordRendered(index);
+  return isWordRenderedInState(index);
 }
 
 function getWordIndex(el: ElementWithUtils): number {
@@ -213,7 +227,7 @@ function indicatesTyposBelow(): boolean {
  * against the word's freshly rendered letters.
  */
 async function updateWordHints(wordIndex: number): Promise<void> {
-  const word = WordsRender.wordsRenderState.words[wordIndex];
+  const word = wordsRenderState.words[wordIndex];
   if (word === undefined) return;
 
   const hintIndices: number[][] = [];
@@ -561,24 +575,24 @@ function updateLayout(): void {
 function showWords(): void {
   invalidateAsyncLayout();
   wordsEl().setStyle({ marginTop: "0" });
-  WordsRender.reset({ zen: Config.mode === "zen" });
+  resetWordsRender({ zen: Config.mode === "zen" });
   clearPendingLayout();
   wordsWithHints.clear();
   laidOutActiveWordIndex = undefined;
 
   if (Config.mode === "zen") {
-    WordsRender.appendWord("");
+    appendWord("");
   } else {
     for (let i = 0; i < TestWords.words.length; i++) {
       const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      WordsRender.appendWord(word.display);
+      appendWord(word.display);
     }
   }
-  WordsRender.setActiveWord(getActiveWordIndex());
+  setActiveWord(getActiveWordIndex());
   // not on the input path: render now, the layout below measures the words
   snapCaretInNextLayout = true;
-  WordsRender.flush();
+  flushWordsRender();
 
   updateLayout();
   void layoutActiveWord("initial");
@@ -587,7 +601,7 @@ function showWords(): void {
 
 /** Zen mode: adds the next (empty) word. */
 export function appendEmptyWord(): void {
-  WordsRender.appendWord("");
+  appendWord("");
 }
 
 export function updateWordsInputPosition(): void {
@@ -751,7 +765,7 @@ function updateWordsMargin(): void {
 }
 
 export function addWord(word: string): void {
-  WordsRender.appendWord(word);
+  appendWord(word);
 }
 
 // buffered, rendered in the next words frame
@@ -764,7 +778,7 @@ function updateWordLetters({
   input: string;
   compositionData: string;
 }): void {
-  WordsRender.setWordInput(wordIndex, input, compositionData);
+  setWordInput(wordIndex, input, compositionData);
   pendingUpdatedWords.add(wordIndex);
 }
 
@@ -892,7 +906,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* remove overflown elements */
   if (lastWordToRemove !== undefined) {
-    WordsRender.setTapeHiddenBefore(getWordIndex(lastWordToRemove) + 1);
+    setTapeHiddenBefore(getWordIndex(lastWordToRemove) + 1);
     // keep every line in place: the first line starts at #words' margin, the
     // others at #words' margin plus their .afterNewline's margin
     const firstLineWidthRemoved = lineWidthRemoved[0] ?? 0;
@@ -1013,7 +1027,7 @@ function removeTestElements(lastElementIndexToRemove: number): void {
     : undefined;
   const indent = parseFloat(afterNewline?.getStyle().marginLeft ?? "") || 0;
 
-  WordsRender.setFirstRenderedWordIndex(getWordIndex(lastWord) + 1);
+  setFirstRenderedWordIndex(getWordIndex(lastWord) + 1);
 
   if (indent === 0) return;
   // the indent is gone: shift #words by it instead, keeping the lines in place
@@ -1110,11 +1124,11 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
 }
 
 function highlightBadWord(index: number): void {
-  WordsRender.setWordFlags(index, { error: true });
+  setWordFlags(index, { error: true });
 }
 
 function highlightAllLettersAsCorrect(wordIndex: number): void {
-  WordsRender.setWordFlags(wordIndex, { allCorrect: true });
+  setWordFlags(wordIndex, { allCorrect: true });
 }
 
 /**
@@ -1142,7 +1156,7 @@ export function wouldActiveWordOverflow(
   const baseHeight = laidOut ? activeWordHeight : activeWord.getOffsetHeight();
 
   // pending (not yet rendered) input has to be accounted for
-  const pending = WordsRender.getPendingWordInput(activeWordIndex);
+  const pending = getPendingWordInput(activeWordIndex);
   const { top, height } = getTopAndHeightWithDifferentData(
     activeWord,
     (pending ?? inputValue) + data,
@@ -1287,14 +1301,14 @@ export async function afterTestWordChange(
 ): Promise<void> {
   const activeWordIndex = getActiveWordIndex();
   if (direction === "forward") {
-    WordsRender.setWordFlags(activeWordIndex - 1, { typed: true });
+    setWordFlags(activeWordIndex - 1, { typed: true });
   }
-  WordsRender.setWordFlags(activeWordIndex, {
+  setWordFlags(activeWordIndex, {
     typed: false,
     error: false,
     allCorrect: false,
   });
-  WordsRender.setActiveWord(activeWordIndex);
+  setActiveWord(activeWordIndex);
   pendingWordChange = direction;
 
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
@@ -1310,7 +1324,7 @@ export async function afterTestWordChange(
   }
 
   if (direction === "back" && Config.mode === "zen") {
-    WordsRender.truncateWords(activeWordIndex + 1);
+    truncateWords(activeWordIndex + 1);
   }
 }
 
@@ -1388,7 +1402,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 /** Frees the test words DOM once the result is shown. */
 export function clearWords(): void {
   invalidateAsyncLayout();
-  WordsRender.reset();
+  resetWordsRender();
   clearPendingLayout();
   wordsWithHints.clear();
 }
@@ -1424,7 +1438,7 @@ export function init(
   });
   markTestPageMounted(signal);
   // stays registered across remounts, layoutWords bails while unmounted
-  WordsRender.setLayoutHook(layoutWords);
+  setLayoutHook(layoutWords);
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config
