@@ -85,14 +85,19 @@ function getLetterStatus(
 }
 
 function createZenLetters(input: string, composition: string): Letter[] {
+  // placeholder for empty input
+  if (input === "" && composition === "") {
+    return [{ text: "_", status: "untyped", hidden: true }];
+  }
+
+  // input
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
     const icon = getCharIconProps(char);
     if (icon === undefined) return { text: char, status: "correct" };
     return { ...createLetter(char, "correct", char), hidden: true };
   });
-  if (input === "" && composition === "") {
-    letters.push({ text: "_", status: "untyped", hidden: true });
-  }
+
+  // composition
   for (const char of splitIntoCharacters(composition)) {
     letters.push({ text: char, status: "dead" });
   }
