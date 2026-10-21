@@ -23,7 +23,7 @@ const NEWLINE_ICON: FaProps = {
 };
 
 // arrows (arrows funbox) render as icons too
-const ARROW_ICONS: Partial<Record<string, FaProps>> = {
+const ARROW_ICONS: Record<string, FaProps> = {
   "←": { variant: "solid", icon: "fa-arrow-left" },
   "↓": { variant: "solid", icon: "fa-arrow-down" },
   "↑": { variant: "solid", icon: "fa-arrow-up" },
