@@ -31,8 +31,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-chart-line",
             fixedWidth: true,
           }}
-          href="/account"
-          router-link
+          to="/account"
         />
         <Show when={getServerConfiguration()?.connections.enabled}>
           <Button
@@ -42,8 +41,7 @@ export function AccountMenu(props: Props): JSXElement {
               icon: "fa-user-friends",
               fixedWidth: true,
             }}
-            href="/friends"
-            router-link
+            to="/friends"
           >
             <NotificationBubble
               show={props.showFriendsNotificationBubble ?? false}
@@ -59,8 +57,8 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-globe-americas",
             fixedWidth: true,
           }}
-          href={`/profile/${getSnapshot()?.name ?? ""}`}
-          router-link
+          to="/profile/$uidOrName"
+          params={{ uidOrName: getSnapshot()?.name ?? "" }}
         />
         <Button
           text="Account settings"
@@ -69,8 +67,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-cog",
             fixedWidth: true,
           }}
-          href="/account-settings"
-          router-link
+          to="/account-settings"
         />
         <Button
           text="Sign out"

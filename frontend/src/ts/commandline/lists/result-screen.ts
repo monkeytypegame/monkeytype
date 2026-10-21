@@ -1,6 +1,5 @@
 import * as TestLogic from "../../test/test-logic";
-import * as TestUI from "../../test/test-ui";
-import * as PractiseWordsModal from "../../modals/practise-words";
+import { toggleResultWords } from "../../test/words-history";
 import {
   showErrorNotification,
   showSuccessNotification,
@@ -9,9 +8,13 @@ import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
-import { getLastEventLog, getResultVisible } from "../../states/test";
+import { getLastEventLog, isTestFinished } from "../../states/test";
+import { showModal } from "../../states/modals";
+import {
+  captureAndCopyToClipboard,
+  captureAndDownload,
+} from "../../test/screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -50,11 +53,8 @@ const practiceSubgroup: CommandsSubgroup = {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
-      exec: (options): void => {
-        PractiseWordsModal.show({
-          animationMode: "modalOnly",
-          modalChain: options.commandlineModal,
-        });
+      exec: (): void => {
+        showModal("PractiseWords");
       },
     },
   ],
@@ -67,7 +67,7 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     icon: "fa-chevron-right",
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
     exec: (): void => {
       void TestLogic.restart();
@@ -83,7 +83,7 @@ const commands: Command[] = [
       });
     },
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
   {
@@ -92,7 +92,7 @@ const commands: Command[] = [
     icon: "fa-exclamation-triangle",
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
   {
@@ -100,10 +100,10 @@ const commands: Command[] = [
     display: "Toggle word history",
     icon: "fa-align-left",
     exec: (): void => {
-      void TestUI.toggleResultWords();
+      toggleResultWords();
     },
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
   {
@@ -113,11 +113,11 @@ const commands: Command[] = [
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void TestScreenshot.copyToClipboard();
+        void captureAndCopyToClipboard();
       }, 500);
     },
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
   {
@@ -127,11 +127,11 @@ const commands: Command[] = [
     alias: "save image download file",
     exec: (): void => {
       setTimeout(async () => {
-        void TestScreenshot.download();
+        void captureAndDownload();
       }, 500);
     },
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
   {
@@ -165,7 +165,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return getResultVisible();
+      return isTestFinished();
     },
   },
 ];

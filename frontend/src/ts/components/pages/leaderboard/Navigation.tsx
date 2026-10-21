@@ -1,7 +1,6 @@
 import { JSXElement, Setter, Show } from "solid-js";
 import { z } from "zod";
 
-import { setPage } from "../../../states/leaderboard-selection";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
@@ -11,7 +10,7 @@ export function Navigation(props: {
   lastPage: number;
   userPage?: number;
   currentPage: number;
-  onPageChange: Setter<number>;
+  onPageChange: (page: number) => void;
   onScrollToUser: Setter<boolean>;
   isLoading?: boolean;
   class?: string;
@@ -50,7 +49,9 @@ export function Navigation(props: {
       <Button
         onClick={() => {
           const lastPage = props.lastPage;
-          props.onPageChange((old) => Math.max(0, Math.min(old, lastPage) - 1));
+          props.onPageChange(
+            Math.max(0, Math.min(props.currentPage, lastPage) - 1),
+          );
         }}
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
@@ -72,7 +73,7 @@ export function Navigation(props: {
             },
             buttonText: "Go",
             execFn: async ({ pageNumber }) => {
-              setPage(pageNumber - 1);
+              props.onPageChange(pageNumber - 1);
               return {
                 status: "success",
                 showNotification: false,
@@ -88,7 +89,7 @@ export function Navigation(props: {
         {props.currentPage + 1}
       </Button>
       <Button
-        onClick={() => props.onPageChange((old) => old + 1)}
+        onClick={() => props.onPageChange(props.currentPage + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
         disabled={props.currentPage + 1 >= props.lastPage}
         class={buttonClass}

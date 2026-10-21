@@ -22,6 +22,7 @@ import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
+import { deleteUserAccount } from "../../services/user-deletion";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
@@ -40,7 +41,7 @@ import {
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
-import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
+import { addImportantLog, addLog } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AddCustomThemeRequest,
@@ -260,62 +261,7 @@ export async function sendForgotPasswordEmail(
 export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const { data: userInfo, error } = await tryCatch(
-    UserDAL.getPartialUser(uid, "delete user", [
-      "banned",
-      "name",
-      "email",
-      "discordId",
-    ]),
-  );
-
-  if (error) {
-    if (error instanceof MonkeyError && error.status === 404) {
-      //userinfo was already deleted. We ignore this and still try to remove the  other data
-    } else {
-      throw error;
-    }
-  }
-
-  if (userInfo?.banned === true) {
-    await BlocklistDal.add(userInfo);
-  }
-
-  //cleanup database
-  const tasks = [
-    UserDAL.deleteUser(uid),
-    deleteUserLogs(uid),
-    deleteAllApeKeys(uid),
-    deleteAllPresets(uid),
-    deleteConfig(uid),
-    deleteAllResults(uid),
-    purgeUserFromDailyLeaderboards(
-      uid,
-      req.ctx.configuration.dailyLeaderboards,
-    ),
-    purgeUserFromXpLeaderboards(
-      uid,
-      req.ctx.configuration.leaderboards.weeklyXp,
-    ),
-    ConnectionsDal.deleteByUid(uid),
-  ];
-
-  if (userInfo?.discordId !== undefined) {
-    tasks.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
-  }
-
-  await Promise.all(tasks);
-
-  try {
-    //delete user from firebase
-    await AuthUtil.deleteUser(uid);
-  } catch (e) {
-    if (isFirebaseError(e) && e.errorInfo.code === "auth/user-not-found") {
-      //user was already deleted, ok to ignore
-    } else {
-      throw e;
-    }
-  }
+  const userInfo = await deleteUserAccount(uid, req.ctx.configuration);
 
   void addImportantLog(
     "user_deleted",
