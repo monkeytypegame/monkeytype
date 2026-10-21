@@ -7,6 +7,8 @@ import {
   Show,
 } from "solid-js";
 
+import type { FaSolidIcon } from "../../../types/font-awesome";
+
 import { getConfig } from "../../../config/store";
 import {
   RenderedWord,
@@ -14,9 +16,8 @@ import {
   wordsRenderState,
 } from "../../../states/words-render";
 import { get as getFunboxes } from "../../../test/funbox/list";
-import { FaSolidIcon } from "../../../types/font-awesome";
 import { splitIntoCharacters } from "../../../utils/strings";
-import { Fa } from "../../common/Fa";
+import { Fa, FaProps } from "../../common/Fa";
 
 declare module "solid-js" {
   // oxlint-disable-next-line typescript/no-namespace
@@ -29,17 +30,13 @@ declare module "solid-js" {
   }
 }
 
-type LetterIcon = {
-  icon: FaSolidIcon;
-  fixedWidth?: boolean;
-  class?: string;
-};
-
-const TAB_ICON: LetterIcon = {
+const TAB_ICON: FaProps = {
+  variant: "solid",
   icon: "fa-long-arrow-alt-right",
   fixedWidth: true,
 };
-const NEWLINE_ICON: LetterIcon = {
+const NEWLINE_ICON: FaProps = {
+  variant: "solid",
   icon: "fa-level-down-alt",
   fixedWidth: true,
   class: "fa-rotate-90",
@@ -47,7 +44,7 @@ const NEWLINE_ICON: LetterIcon = {
 
 type Letter = {
   text: string;
-  icon?: LetterIcon;
+  icon?: FaProps;
   correct?: boolean;
   incorrect?: boolean;
   extra?: boolean;
@@ -59,7 +56,7 @@ type Letter = {
   hidden?: boolean;
 };
 
-function charIcon(char: string | undefined): LetterIcon | undefined {
+function charIcon(char: string | undefined): FaProps | undefined {
   if (char === "\t") return TAB_ICON;
   if (char === "\n") return NEWLINE_ICON;
   return undefined;
@@ -191,13 +188,7 @@ function WordLetter(props: { letter: Letter }): JSXElement {
   return (
     <letter class={letterClass(props.letter)}>
       <Show when={props.letter.icon} fallback={props.letter.text}>
-        {(icon) => (
-          <Fa
-            icon={icon().icon}
-            fixedWidth={icon().fixedWidth}
-            class={icon().class}
-          />
-        )}
+        {(icon) => <Fa {...icon()} />}
       </Show>
     </letter>
   );
