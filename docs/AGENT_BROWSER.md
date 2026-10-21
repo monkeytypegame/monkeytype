@@ -60,3 +60,15 @@ Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all
 `read_console_messages` with a `pattern` — logger output is noisy. Errors from `utils/logger.ts` are prefixed `ERR`.
 
 The console buffer survives reloads, so hot-reload errors from earlier edits look current. After reloading, log a marker first (`console.error("MARK")`) and trust only errors after it.
+
+`read_console_messages` only records from its first call on a tab. On a new tab, call it once before the steps you want covered; an empty result from a first call proves nothing.
+
+## Gotchas
+
+- A test in progress blocks navigation with a "Leave site?" dialog: `__mt.restart()` before navigating away.
+- Switching git branches hot-reloads the page and kills a running `javascript_tool` script; wait for `__mt` again after a checkout.
+- `__mt` is dev only. Production builds (`vite preview`) are driven through localStorage and the DOM.
+
+## Profiling
+
+Performance comparisons follow `docs/PROFILING.md`.
