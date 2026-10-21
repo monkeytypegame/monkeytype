@@ -13,97 +13,10 @@ import {
   wordEndsLine,
   wordsRenderState,
 } from "../../../states/words-render";
-import { isWordRightToLeft, splitIntoCharacters } from "../../../utils/strings";
+import { isWordRightToLeft } from "../../../utils/strings";
+import { createTextLetters, createZenLetters } from "./letters";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
-import { Letter, LetterStatus, WordLetter } from "./WordLetter";
-
-function isControlChar(char: string): boolean {
-  return char === "\t" || char === "\n";
-}
-
-/** typed space shows as "_" */
-function visibleChar(typed: string): string {
-  return typed === " " ? "_" : typed;
-}
-
-function getLetterStatus(
-  typed: string,
-  expected: string | undefined,
-): LetterStatus {
-  if (typed === expected) return "correct";
-  if (expected === undefined) return "extra";
-  return "incorrect";
-}
-
-function createZenLetters(input: string, composition: string): Letter[] {
-  // placeholder for empty input
-  if (input === "" && composition === "") {
-    return [{ text: "_", status: "untyped", hidden: true }];
-  }
-
-  // input: typed tab/newline take up space but stay invisible
-  const letters: Letter[] = splitIntoCharacters(input).map((inputChar) => ({
-    text: inputChar,
-    targetChar: inputChar,
-    status: "correct",
-    hidden: isControlChar(inputChar),
-  }));
-
-  // composition
-  for (const char of splitIntoCharacters(composition)) {
-    letters.push({ text: char, status: "dead" });
-  }
-
-  return letters;
-}
-
-/** letters of `word.text`, marked against the input */
-function createTextLetters(word: RenderedWord): Letter[] {
-  const config = getConfig;
-  const wordChars = splitIntoCharacters(word.text);
-  const inputChars = splitIntoCharacters(word.input);
-  const compositionChars = splitIntoCharacters(word.composition);
-  const replaceTypos =
-    config.indicateTypos === "replace" || config.indicateTypos === "both";
-  const letters: Letter[] = [];
-
-  for (let i = 0; i < inputChars.length; i++) {
-    const targetChar = wordChars[i];
-    const inputChar = inputChars[i] as string;
-    const status = getLetterStatus(inputChar, targetChar);
-    // typos show the expected letter unless replaced; extras only have the typed one
-    const showTarget =
-      targetChar !== undefined && (status === "correct" || !replaceTypos);
-    letters.push({
-      text: showTarget ? targetChar : visibleChar(inputChar),
-      targetChar,
-      status,
-    });
-  }
-
-  for (let i = 0; i < compositionChars.length; i++) {
-    const char = compositionChars[i] as string;
-    const expected = wordChars[inputChars.length + i];
-    letters.push({
-      text:
-        config.compositionDisplay === "replace"
-          ? visibleChar(char)
-          : (expected ?? char),
-      status: char === expected ? "deadCorrect" : "dead",
-    });
-  }
-
-  for (
-    let i = inputChars.length + compositionChars.length;
-    i < wordChars.length;
-    i++
-  ) {
-    const targetChar = wordChars[i] as string;
-    letters.push({ text: targetChar, targetChar, status: "untyped" });
-  }
-
-  return letters;
-}
+import { WordLetter } from "./WordLetter";
 
 export function Word(props: {
   word: RenderedWord;
@@ -112,7 +25,12 @@ export function Word(props: {
   const letters = createMemo(() =>
     wordsRenderState.rendersLettersFromInput
       ? createZenLetters(props.word.input, props.word.composition)
-      : createTextLetters(props.word),
+      : createTextLetters(props.word, {
+          replaceTypos:
+            getConfig.indicateTypos === "replace" ||
+            getConfig.indicateTypos === "both",
+          replaceComposition: getConfig.compositionDisplay === "replace",
+        }),
   );
   const hasNewline = (): boolean => wordEndsLine(props.word);
   // whole word right-to-left: bidi override keeps its letters in order

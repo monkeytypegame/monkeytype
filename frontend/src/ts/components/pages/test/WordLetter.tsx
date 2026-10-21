@@ -53,12 +53,9 @@ export type LetterStatus =
 export type Letter = {
   /** shown char, icon chars render as icons */
   text: string;
-  /**
-   * the word's char at this position, decides the tabChar/nlChar class: a typo
-   * on a tab/newline keeps it, extras (no target) don't get it
-   */
-  targetChar?: string;
   status: LetterStatus;
+  /** tabChar/nlChar marker class */
+  controlType?: "tab" | "newline";
   /** zen: empty-word placeholder, typed tab/newline */
   hidden?: boolean;
 };
@@ -84,8 +81,8 @@ function letterClass(letter: Letter, allCorrect: boolean): string {
   ) {
     cls += " correct";
   }
-  if (letter.targetChar === "\t") cls += " tabChar";
-  if (letter.targetChar === "\n") cls += " nlChar";
+  if (letter.controlType === "tab") cls += " tabChar";
+  if (letter.controlType === "newline") cls += " nlChar";
   if (letter.hidden) cls += " invisible";
   return cls.slice(1);
 }
