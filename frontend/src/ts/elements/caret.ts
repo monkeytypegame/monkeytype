@@ -2,7 +2,10 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
-import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
+import {
+  cancelPendingAnimationFrame,
+  requestDebouncedAnimationFrame,
+} from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
@@ -24,6 +27,18 @@ export function toggleCaretDebug(): void {
     }
   }
 }
+
+type GoToOptions = {
+  wordIndex: number;
+  letterIndex: number;
+  isLanguageRightToLeft: boolean;
+  isDirectionReversed: boolean;
+  animate?: boolean;
+  animationOptions?: {
+    duration?: number;
+    easing?: string;
+  };
+};
 
 export class Caret {
   private id: string;
@@ -276,119 +291,118 @@ export class Caret {
     });
   }
 
-  public goTo(options: {
-    wordIndex: number;
-    letterIndex: number;
-    isLanguageRightToLeft: boolean;
-    isDirectionReversed: boolean;
-    animate?: boolean;
-    animationOptions?: {
-      duration?: number;
-      easing?: string;
-    };
-  }): void {
+  public goTo(options: GoToOptions): void {
     if (this.style === "off") return;
     requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      const word = this.wordsEl.qs(
-        `.word[data-wordindex="${options.wordIndex}"]`,
-      );
-      const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
-      const wordLength = Array.from(wordText).length;
+      this.moveTo(options);
+    });
+  }
 
-      // caret can be either on the left side of the target letter or the right
-      // we stick to the left side unless we are on the last letter or beyond
-      // then we switch to the right side
+  /** Like goTo, but moves now. Only call once the words DOM is up to date. */
+  public goToNow(options: GoToOptions): void {
+    cancelPendingAnimationFrame(`caret.${this.id}.goTo`);
+    if (this.style === "off") return;
+    this.moveTo(options);
+  }
 
-      // we also clamp the letterIndex to be within the range of actual letters
-      // anything beyond just goes to the edge of the word
-      let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (Config.mode === "zen") {
-        if (options.letterIndex > 0) {
-          side = "afterLetter";
+  private moveTo(options: GoToOptions): void {
+    const word = this.wordsEl.qs(
+      `.word[data-wordindex="${options.wordIndex}"]`,
+    );
+    const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
+    const wordLength = Array.from(wordText).length;
+
+    // caret can be either on the left side of the target letter or the right
+    // we stick to the left side unless we are on the last letter or beyond
+    // then we switch to the right side
+
+    // we also clamp the letterIndex to be within the range of actual letters
+    // anything beyond just goes to the edge of the word
+    let side: "beforeLetter" | "afterLetter" = "beforeLetter";
+    if (Config.mode === "zen") {
+      if (options.letterIndex > 0) {
+        side = "afterLetter";
+        options.letterIndex -= 1;
+      }
+    } else {
+      if (options.letterIndex >= wordLength) {
+        side = "afterLetter";
+
+        if (Config.blindMode || Config.hideExtraLetters) {
+          options.letterIndex = wordLength - 1;
+        } else {
           options.letterIndex -= 1;
         }
-      } else {
-        if (options.letterIndex >= wordLength) {
-          side = "afterLetter";
-
-          if (Config.blindMode || Config.hideExtraLetters) {
-            options.letterIndex = wordLength - 1;
-          } else {
-            options.letterIndex -= 1;
-          }
-        }
       }
+    }
 
-      if (options.letterIndex < 0) {
-        options.letterIndex = 0;
-      }
+    if (options.letterIndex < 0) {
+      options.letterIndex = 0;
+    }
 
-      if (word === null) return;
+    if (word === null) return;
 
-      const { left, top, width } = this.getTargetPositionAndWidth({
-        word,
-        letterIndex: options.letterIndex,
-        wordText,
-        side,
-        isLanguageRightToLeft: options.isLanguageRightToLeft,
-        isDirectionReversed: options.isDirectionReversed,
-      });
-
-      // animation uses inline styles, so its fine to read inline here instead
-      // of computed styles which would be much slower
-
-      // if the margin animation finished, we reset it here by removing the margin
-      // and offsetting the top by the same amount
-      let currentMarginTop = parseFloat(
-        this.element.getStyle().marginTop || "0",
-      );
-      if (this.readyToResetMarginTop) {
-        this.readyToResetMarginTop = false;
-        const currentTop = parseFloat(this.element.getStyle().top || "0");
-
-        this.element.setStyle({
-          marginTop: "0px",
-          top: `${currentTop + currentMarginTop}px`,
-        });
-        currentMarginTop = 0;
-      }
-
-      // same for marginLeft
-      let currentMarginLeft = parseFloat(
-        this.element.getStyle().marginLeft || "0",
-      );
-      if (this.readyToResetMarginLeft) {
-        this.readyToResetMarginLeft = false;
-        const currentLeft = parseFloat(this.element.getStyle().left || "0");
-
-        this.element.setStyle({
-          marginLeft: "0px",
-          left: `${currentLeft + currentMarginLeft}px`,
-        });
-        this.cumulativeTapeMarginCorrection += currentMarginLeft;
-        currentMarginLeft = 0;
-      }
-
-      /**
-       * we subtract the margin from the target position in order to arrive at the intended location
-       * if my margin is +20 and I wanna go to +50, then if I set my inline style left/top to +50
-       * I will arrive to +70. However if I set it to (50 - 20), my left/top will be +30 and my margin
-       * will be +20 and I will end up at (30 + 20) = 50
-       */
-
-      const animateOrPositionOptions = {
-        left: left - currentMarginLeft,
-        top: top - currentMarginTop,
-        ...(this.isFullWidth() && { width }),
-        ...(options.animate && options.animationOptions),
-      };
-
-      if (options.animate) {
-        this.animatePosition(animateOrPositionOptions);
-      } else {
-        this.setPosition(animateOrPositionOptions);
-      }
+    const { left, top, width } = this.getTargetPositionAndWidth({
+      word,
+      letterIndex: options.letterIndex,
+      wordText,
+      side,
+      isLanguageRightToLeft: options.isLanguageRightToLeft,
+      isDirectionReversed: options.isDirectionReversed,
     });
+
+    // animation uses inline styles, so its fine to read inline here instead
+    // of computed styles which would be much slower
+
+    // if the margin animation finished, we reset it here by removing the margin
+    // and offsetting the top by the same amount
+    let currentMarginTop = parseFloat(this.element.getStyle().marginTop || "0");
+    if (this.readyToResetMarginTop) {
+      this.readyToResetMarginTop = false;
+      const currentTop = parseFloat(this.element.getStyle().top || "0");
+
+      this.element.setStyle({
+        marginTop: "0px",
+        top: `${currentTop + currentMarginTop}px`,
+      });
+      currentMarginTop = 0;
+    }
+
+    // same for marginLeft
+    let currentMarginLeft = parseFloat(
+      this.element.getStyle().marginLeft || "0",
+    );
+    if (this.readyToResetMarginLeft) {
+      this.readyToResetMarginLeft = false;
+      const currentLeft = parseFloat(this.element.getStyle().left || "0");
+
+      this.element.setStyle({
+        marginLeft: "0px",
+        left: `${currentLeft + currentMarginLeft}px`,
+      });
+      this.cumulativeTapeMarginCorrection += currentMarginLeft;
+      currentMarginLeft = 0;
+    }
+
+    /**
+     * we subtract the margin from the target position in order to arrive at the intended location
+     * if my margin is +20 and I wanna go to +50, then if I set my inline style left/top to +50
+     * I will arrive to +70. However if I set it to (50 - 20), my left/top will be +30 and my margin
+     * will be +20 and I will end up at (30 + 20) = 50
+     */
+
+    const animateOrPositionOptions = {
+      left: left - currentMarginLeft,
+      top: top - currentMarginTop,
+      ...(this.isFullWidth() && { width }),
+      ...(options.animate && options.animationOptions),
+    };
+
+    if (options.animate) {
+      this.animatePosition(animateOrPositionOptions);
+    } else {
+      this.setPosition(animateOrPositionOptions);
+    }
   }
 
   private getTargetPositionAndWidth(options: {
