@@ -392,7 +392,7 @@ async function updateHintsPosition(): Promise<void> {
 }
 
 // arrows (arrows funbox) render as icons, like tab and newline
-const arrowIcons: Partial<Record<string, string>> = {
+const arrowIcons: Record<string, string> = {
   "←": "fa-arrow-left",
   "↓": "fa-arrow-down",
   "↑": "fa-arrow-up",
