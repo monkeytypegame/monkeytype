@@ -177,14 +177,9 @@ describe("InputField", () => {
 
   it("renders password toggle button when type is password", () => {
     const field = makeField("password");
-    const { container } = render(() => (
-      <InputField field={() => field} type="password" />
-    ));
+    render(() => <InputField field={() => field} type="password" />);
 
-    const toggleButton = container.querySelector(
-      'button[type="button"]',
-    ) as HTMLButtonElement;
-    expect(toggleButton).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
   it("password field starts with type=password (masked)", () => {
@@ -199,54 +194,41 @@ describe("InputField", () => {
     );
   });
 
-  it("toggling password button switches input type to text", async () => {
+  it("toggling password button switches input type to text", () => {
     const field = makeField("password");
     const { container } = render(() => (
       <InputField field={() => field} type="password" />
     ));
 
-    const toggleButton = container.querySelector(
-      'button[type="button"]',
-    ) as HTMLButtonElement;
-    expect(container.querySelector("input")).toHaveAttribute(
-      "type",
-      "password",
-    );
+    const input = container.querySelector("input");
+    expect(input).toHaveAttribute("type", "password");
 
-    fireEvent.click(toggleButton);
-    expect(container.querySelector("input")).toHaveAttribute("type", "text");
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
   });
 
-  it("toggling password button a second time switches back to password", async () => {
+  it("toggling password button a second time switches back to password", () => {
     const field = makeField("password");
     const { container } = render(() => (
       <InputField field={() => field} type="password" />
     ));
 
-    const toggleButton = container.querySelector(
-      'button[type="button"]',
-    ) as HTMLButtonElement;
+    const input = container.querySelector("input");
 
     // First toggle: show
-    fireEvent.click(toggleButton);
-    expect(container.querySelector("input")).toHaveAttribute("type", "text");
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
 
     // Second toggle: hide
-    fireEvent.click(toggleButton);
-    expect(container.querySelector("input")).toHaveAttribute(
-      "type",
-      "password",
-    );
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "password");
   });
 
   it("does not render password toggle when type is not password", () => {
     const field = makeField("name");
-    const { container } = render(() => (
-      <InputField field={() => field} type="text" />
-    ));
+    render(() => <InputField field={() => field} type="text" />);
 
-    const toggleButton = container.querySelector('button[type="button"]');
-    expect(toggleButton).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("shows eye icon when password is hidden (masked)", () => {
@@ -255,27 +237,18 @@ describe("InputField", () => {
       <InputField field={() => field} type="password" />
     ));
 
-    expect(
-      container.querySelector(".fa-eye")?.classList.contains("fa-eye"),
-    ).toBe(true);
+    expect(container.querySelector(".fa-eye")).toBeInTheDocument();
   });
 
-  it("shows eye-slash icon when password is visible", async () => {
+  it("shows eye-slash icon when password is visible", () => {
     const field = makeField("password");
     const { container } = render(() => (
       <InputField field={() => field} type="password" />
     ));
 
-    const toggleButton = container.querySelector(
-      'button[type="button"]',
-    ) as HTMLButtonElement;
-    fireEvent.click(toggleButton);
+    fireEvent.click(screen.getByRole("button"));
 
-    expect(
-      container
-        .querySelector(".fa-eye-slash")
-        ?.classList.contains("fa-eye-slash"),
-    ).toBe(true);
+    expect(container.querySelector(".fa-eye-slash")).toBeInTheDocument();
   });
 
   it("keeps empty string for string values", async () => {

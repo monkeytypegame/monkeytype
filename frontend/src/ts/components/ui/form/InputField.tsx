@@ -137,12 +137,7 @@ export function InputField(props: {
             "col-start-1 row-start-1 cursor-pointer self-center justify-self-end text-em-base hover:text-main focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
             hasValidators() ? "pr-[1.8em]" : "pr-[0.4em]",
           )}
-          onClick={() => {
-            setShowPassword((prev) => {
-              const next = !prev;
-              return next;
-            });
-          }}
+          onClick={() => setShowPassword((v) => !v)}
         />
       </Show>
       <Show when={props.field().options.validators}>
