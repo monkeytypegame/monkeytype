@@ -38,7 +38,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   displayString?: string;
   /**
-   * Should the config change trigger a resize event? handled in ui.ts:108
+   * Should the config change trigger a resize event? handled in config/setters.ts
    */
   triggerResize?: true;
 
@@ -509,6 +509,25 @@ export const configMetadata: ConfigMetadataObject = {
       if (value !== "off") {
         return {
           confidenceMode: "off",
+          deleteOnError: "off",
+        };
+      }
+      return {};
+    },
+  },
+  deleteOnError: {
+    key: "deleteOnError",
+    fa: { icon: "fa-eraser" },
+    displayString: "delete on error",
+    changeRequiresRestart: false,
+    group: "input",
+    description:
+      "Letter mode will automatically delete the incorrect character and the one before it. Word mode will delete the entire current word. The hard variants will additionally jump back to the previous word if you make a mistake on the first character.",
+    overrideConfig: ({ value }) => {
+      if (value !== "off") {
+        return {
+          confidenceMode: "off",
+          stopOnError: "off",
         };
       }
       return {};
@@ -527,6 +546,7 @@ export const configMetadata: ConfigMetadataObject = {
         return {
           freedomMode: false,
           stopOnError: "off",
+          deleteOnError: "off",
         };
       }
       return {};

@@ -134,8 +134,12 @@ const authenticationMemos = Object.fromEntries(
 
       const user = getAuthenticatedUserReactive();
       if (user === null) return undefined;
+      const provider = user.providerData.find(
+        (p) => p.providerId === providerId,
+      );
       const result = {
-        isInUse: user.providerData.some((p) => p.providerId === providerId),
+        isInUse: provider !== undefined,
+        email: provider?.email ?? undefined,
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
 
@@ -246,9 +250,26 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
+  dispatchAuthStateChanged(user, userPromise);
+}
+
+/**
+ * Announces a new auth state: `user` signed in (null: signed out), with
+ * `loadPromise` downloading their user data.
+ */
+export function dispatchAuthStateChanged(
+  user: UserType | null,
+  loadPromise: Promise<void>,
+): void {
   authEvent.dispatch({
     type: "authStateChanged",
-    data: { isUserSignedIn: user !== null, loadPromise: userPromise },
+    data: {
+      isUserSignedIn: user !== null,
+      loadPromise,
+      reloadUserData: async () => {
+        if (user !== null) await loadUser(user);
+      },
+    },
   });
 }
 
@@ -376,7 +397,6 @@ async function addPopupProvider(
   }
 
   await linkWithPopup(user, provider);
-  authEvent.dispatch({ type: "authConfigUpdated" });
 }
 
 export async function removeAuthProvider(
@@ -611,6 +631,12 @@ export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
   return typedKeys(authMethods).some(
     (it) => it !== authMethod && isUsingAuthentication(it),
   );
+}
+
+export function getAuthMethodEmailReactive(
+  authMethod: AuthMethod,
+): string | undefined {
+  return authenticationMemos[authMethod]?.()?.email;
 }
 
 export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {

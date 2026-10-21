@@ -1,11 +1,11 @@
 import { Config } from "../../config/store";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
 import * as TestUI from "../../test/test-ui";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
 import {
+  isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
   isTestActive,
@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (TestState.testRestarting) {
+  if (isTestRestarting()) {
     event.preventDefault();
     return;
   }
@@ -39,9 +39,8 @@ export function onBeforeDelete(event: InputEvent): void {
       return;
     }
 
-    // this is nested because we only wanna pull the element from the dom if needed
-    const previousWordElement = TestUI.getWordElement(getActiveWordIndex() - 1);
-    if (previousWordElement === null) {
+    // this is nested because we only wanna check the dom if needed
+    if (!TestUI.isWordRendered(getActiveWordIndex() - 1)) {
       event.preventDefault();
       return;
     }

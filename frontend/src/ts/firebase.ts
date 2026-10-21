@@ -31,7 +31,7 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { googleSignUpEvent } from "./events/google-sign-up";
+import { showGoogleSignUpModal } from "./states/google-sign-up";
 import { addBanner } from "./states/banners";
 import { setUserId, setUserVerified } from "./states/core";
 import { lastAuthenticationState } from "./legacy-states/last-authentication";
@@ -175,7 +175,7 @@ export async function signInWithPopup(
   }
   const additionalUserInfo = getAdditionalUserInfo(signedInUser);
   if (additionalUserInfo?.isNewUser) {
-    googleSignUpEvent.dispatch({ signedInUser, isNewUser: true });
+    showGoogleSignUpModal(signedInUser);
   } else {
     setUserState(signedInUser.user);
     ignoreAuthCallback = false;

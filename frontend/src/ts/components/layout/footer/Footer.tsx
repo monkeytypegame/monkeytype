@@ -19,10 +19,9 @@ export function Footer(): JSXElement {
       <Keytips />
 
       <div
-        class="-m-2 flex justify-between gap-8 transition-opacity"
-        classList={{
+        class={cn("-m-2 flex justify-between gap-8 transition-opacity", {
           "opacity-0": getFocus(),
-        }}
+        })}
       >
         <div class="grid grid-cols-1 justify-items-start xs:grid-cols-2 sm:grid-cols-4 lg:flex">
           <Button

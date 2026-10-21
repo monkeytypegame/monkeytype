@@ -39,6 +39,9 @@ export function MediaQueryDebugger(): JSXElement {
             <Match when={bp().xxs}>xxs</Match>
           </Switch>
         </div>
+        <div class="hidden w-min rounded-r bg-sub-alt px-2 py-1 motion-reduce:flex">
+          <div class="mr-2">reduced motion</div>
+        </div>
       </div>
     </Show>
   );
