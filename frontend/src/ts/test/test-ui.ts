@@ -12,7 +12,6 @@ import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
@@ -392,15 +391,23 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
+// arrows (arrows funbox) render as icons, like tab and newline
+const arrowIcons: Partial<Record<string, string>> = {
+  "←": "fa-arrow-left",
+  "↓": "fa-arrow-down",
+  "↑": "fa-arrow-up",
+  "→": "fa-arrow-right",
+};
+
 function buildWordHTML(word: string, wordIndex: number): string {
   let newlineafter = false;
   let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
 
-  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox) {
-      retval += funbox.functions.getWordHtml(char, true);
+    const arrowIcon = arrowIcons[char];
+    if (arrowIcon !== undefined) {
+      retval += `<letter><i class="fas ${arrowIcon}"></i></letter>`;
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (char === "\n") {
@@ -719,8 +726,6 @@ function updateWordLetters({
           ret += `<letter class="dead">${char}</letter>`;
         }
       } else {
-        const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-
         const inputChars = Strings.splitIntoCharacters(input);
         const currentWordChars = Strings.splitIntoCharacters(currentWord ?? "");
         for (let i = 0; i < inputChars.length; i++) {
@@ -729,11 +734,9 @@ function updateWordLetters({
           let currentLetter = currentWordChars[i] as string;
           let tabChar = "";
           let nlChar = "";
-          if (funbox) {
-            const cl = funbox.functions.getWordHtml(currentLetter);
-            if (cl !== "") {
-              currentLetter = cl;
-            }
+          const arrowIcon = arrowIcons[currentLetter];
+          if (arrowIcon !== undefined) {
+            currentLetter = `<i class="fas ${arrowIcon}"></i>`;
           } else if (currentLetter === "\t") {
             tabChar = "tabChar";
             currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
@@ -795,8 +798,9 @@ function updateWordLetters({
           i++
         ) {
           const currentLetter = currentWordChars[i];
-          if (funbox?.functions?.getWordHtml) {
-            ret += funbox.functions.getWordHtml(currentLetter as string, true);
+          const arrowIcon = arrowIcons[currentLetter as string];
+          if (arrowIcon !== undefined) {
+            ret += `<letter><i class="fas ${arrowIcon}"></i></letter>`;
           } else if (currentLetter === "\t") {
             ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
           } else if (currentLetter === "\n") {
