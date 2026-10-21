@@ -355,23 +355,18 @@ describe("Words", () => {
       expect(word?.classList.contains("typed")).toBe(true);
     });
 
-    it("shows all letters of typed words as correct in blind mode", () => {
+    it("keeps true letter classes in blind mode (blind CSS hides mistakes)", () => {
       setConfigStore("blindMode", true);
       const container = renderWords();
       appendWord("abc");
-      appendWord("de");
       setWordInput(0, "xb");
-      setWordInput(1, "x");
       setWordFlags(0, { isTyped: true });
       flush();
-      const [typed, active] = wordEls(container);
-      expect(letterClasses(typed)).toEqual([
-        "correct incorrect",
+      expect(letterClasses(wordEls(container)[0])).toEqual([
+        "incorrect",
         "correct",
-        "correct",
+        "",
       ]);
-      // the active word still shows its letters as typed
-      expect(letterClasses(active)).toEqual(["incorrect", ""]);
     });
 
     it("marks fully right-to-left words when enabled", () => {

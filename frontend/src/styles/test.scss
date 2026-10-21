@@ -225,6 +225,12 @@
         border-bottom: 2px solid transparent;
       }
     }
+    // typed words don't reveal missed letters. :where keeps the specificity
+    // low, so the highlight modes below still win for typed words
+    &:where(:not(.highlight-off)) .word.typed letter {
+      color: var(--correct-letter-color);
+      animation: var(--correct-letter-animation);
+    }
     // &.highlight-word {
     //   .word.typed.error,
     //   .word.active:has(letter.incorrect) {

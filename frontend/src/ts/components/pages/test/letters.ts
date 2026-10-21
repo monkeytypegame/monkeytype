@@ -11,16 +11,12 @@ type Settings = {
   replaceTypos: boolean;
   /** composition display replace: composing chars show as typed */
   replaceComposition: boolean;
-  /** blind mode: typed words show all letters as correct */
-  blind: boolean;
 };
 
 type WordChars = {
   text: string;
   input: string;
   composition: string;
-  /** typed past (committed) */
-  isTyped: boolean;
 };
 
 function getControlType(char: string | undefined): Letter["controlType"] {
@@ -114,16 +110,6 @@ export function createLetters(word: WordChars, settings: Settings): Letter[] {
       status: "untyped",
       controlType: getControlType(targetChar),
     });
-  }
-
-  if (settings.blind && word.isTyped) {
-    // committed words don't reveal mistakes. Incorrect/extra keep their
-    // classes: blind CSS hides extras
-    for (const letter of letters) {
-      if (letter.status !== "correct" && letter.status !== "deadCorrect") {
-        letter.markedCorrect = true;
-      }
-    }
   }
 
   return letters;

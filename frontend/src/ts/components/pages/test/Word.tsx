@@ -30,7 +30,6 @@ export function Word(props: {
             getConfig.indicateTypos === "replace" ||
             getConfig.indicateTypos === "both",
           replaceComposition: getConfig.compositionDisplay === "replace",
-          blind: getConfig.blindMode,
         }),
   );
   const hasNewline = (): boolean => wordEndsLine(props.word);

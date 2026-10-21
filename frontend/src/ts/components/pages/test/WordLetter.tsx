@@ -58,8 +58,6 @@ export type Letter = {
   controlType?: "tab" | "newline";
   /** zen: empty-word placeholder, typed tab/newline */
   hidden?: boolean;
-  /** adds the correct class on top of the status class (blind mode) */
-  markedCorrect?: boolean;
 };
 
 const STATUS_CLASS: Record<LetterStatus, string> = {
@@ -74,7 +72,6 @@ const STATUS_CLASS: Record<LetterStatus, string> = {
 // hot path: plain join, the class names are fixed (no tailwind-merge needed)
 function letterClass(letter: Letter): string {
   let cls = STATUS_CLASS[letter.status];
-  if (letter.markedCorrect) cls += " correct";
   if (letter.controlType === "tab") cls += " tabChar";
   if (letter.controlType === "newline") cls += " nlChar";
   if (letter.hidden) cls += " invisible";
