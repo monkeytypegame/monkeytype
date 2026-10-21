@@ -70,6 +70,7 @@ export function createLetters(
   const compositionChars = splitIntoCharacters(word.composition);
   const letters: RenderedLetter[] = [];
 
+  // input
   for (let i = 0; i < inputChars.length; i++) {
     const targetChar = wordChars[i];
     const inputChar = inputChars[i] as string;
@@ -85,6 +86,7 @@ export function createLetters(
     letters.push({ text, status });
   }
 
+  // composition
   for (let i = 0; i < compositionChars.length; i++) {
     const char = compositionChars[i] as string;
     const expected = wordChars[inputChars.length + i];
@@ -96,6 +98,7 @@ export function createLetters(
     });
   }
 
+  // untyped letters at the end of the word
   for (
     let i = inputChars.length + compositionChars.length;
     i < wordChars.length;
