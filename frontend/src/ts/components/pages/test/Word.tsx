@@ -52,11 +52,8 @@ function getLetterControlType(char: string): Letter["controlType"] {
   return undefined;
 }
 
-/** expected letter: tab/newline get their icon and marker class */
-function expectedLetter(
-  char: string,
-  status: LetterStatus = "untyped",
-): Letter {
+/** letter showing `char`: tab/newline get their icon and marker class */
+function createLetter(char: string, status: LetterStatus = "untyped"): Letter {
   const icon = getCharIconProps(char);
   return {
     text: icon === undefined ? char : "",
@@ -67,7 +64,7 @@ function expectedLetter(
 }
 
 /** visible form of a typed character: space -> "_", tab/newline -> icons */
-function typedLetter(char: string): Pick<Letter, "text" | "icon"> {
+function typedDisplay(char: string): Pick<Letter, "text" | "icon"> {
   const icon = getCharIconProps(char);
   if (icon !== undefined) return { text: "", icon };
   // explicit undefined: overrides the expected letter's icon on typos
@@ -78,7 +75,7 @@ function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
     const icon = getCharIconProps(char);
     if (icon === undefined) return { text: char, status: "correct" };
-    return { ...expectedLetter(char, "correct"), hidden: true };
+    return { ...createLetter(char, "correct"), hidden: true };
   });
   if (input === "" && composition === "") {
     letters.push({ text: "_", status: "untyped", hidden: true });
@@ -106,13 +103,13 @@ function wordLetters(word: RenderedWord): Letter[] {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
     if (expected === typed) {
-      letters.push(expectedLetter(typed, "correct"));
+      letters.push(createLetter(typed, "correct"));
     } else if (expected === undefined) {
-      letters.push({ ...typedLetter(typed), status: "extra" });
+      letters.push({ ...typedDisplay(typed), status: "extra" });
     } else {
       letters.push({
-        ...expectedLetter(expected, "incorrect"),
-        ...(replaceTypos ? typedLetter(typed) : {}),
+        ...createLetter(expected, "incorrect"),
+        ...(replaceTypos ? typedDisplay(typed) : {}),
       });
     }
   }
@@ -137,7 +134,7 @@ function wordLetters(word: RenderedWord): Letter[] {
     i < wordChars.length;
     i++
   ) {
-    letters.push(expectedLetter(wordChars[i] as string));
+    letters.push(createLetter(wordChars[i] as string));
   }
 
   return letters;
