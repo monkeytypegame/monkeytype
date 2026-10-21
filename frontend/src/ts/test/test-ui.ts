@@ -177,10 +177,61 @@ function layoutWords(): void {
     void scrollTape();
   }
   for (const wordIndex of updatedWords) {
+    void updateWordHints(wordIndex);
     void lineJumpIfWrapped(wordIndex);
   }
-  void updateHintsPositionDebounced();
   Caret.updatePositionNow();
+}
+
+function indicatesTyposBelow(): boolean {
+  return Config.indicateTypos === "below" || Config.indicateTypos === "both";
+}
+
+/**
+ * Rebuilds the hints of a word inside its component-owned hints container,
+ * against the word's freshly rendered letters.
+ */
+async function updateWordHints(wordIndex: number): Promise<void> {
+  const word = WordsRender.wordsRenderState.words[wordIndex];
+  const wordElement = getWordElement(wordIndex);
+  const hintsContainer = wordElement?.qs(":scope > .hints");
+  if (word === undefined || !wordElement || !hintsContainer) return;
+
+  const hintIndices: number[][] = [];
+  if (indicatesTyposBelow() && Config.mode !== "zen") {
+    const wordChars = Strings.splitIntoCharacters(word.text);
+    const inputChars = Strings.splitIntoCharacters(word.input);
+    for (let i = 0; i < inputChars.length; i++) {
+      const expected = wordChars[i];
+      // extra letters get no hint
+      if (expected === undefined || expected === inputChars[i]) continue;
+      const lastBlock = hintIndices[hintIndices.length - 1];
+      if (lastBlock?.[lastBlock.length - 1] === i - 1) {
+        lastBlock.push(i);
+      } else {
+        hintIndices.push([i]);
+      }
+    }
+  }
+
+  if (hintIndices.length === 0) {
+    hintsContainer.setHtml("");
+    return;
+  }
+
+  const letterElements = wordElement.qsa("letter");
+  hintsContainer.setHtml(
+    createHintsHtml(
+      hintIndices,
+      letterElements,
+      Config.indicateTypos === "both" ? word.text : word.input,
+    ),
+  );
+  await joinOverlappingHints(
+    hintIndices,
+    letterElements,
+    hintsContainer.native.getElementsByTagName("hint"),
+  );
 }
 
 async function layoutActiveWord(wordChange: WordChange): Promise<void> {
@@ -252,7 +303,6 @@ function createHintsHtml(
   incorrectLettersIndices: number[][],
   activeWordLetters: ElementsWithUtils,
   input: string | string[],
-  wrapWithDiv: boolean = true,
 ): string {
   // if input is an array, it contains only incorrect letters input.
   // if input is a string, it contains the whole word input.
@@ -275,7 +325,6 @@ function createHintsHtml(
       }px;">${blockChars}</hint>`;
     }
   }
-  if (wrapWithDiv) hintsHtml = `<div class="hints">${hintsHtml}</div>`;
   return hintsHtml;
 }
 
@@ -423,7 +472,6 @@ async function updateHintsPosition(): Promise<void> {
       hintIndices,
       letterElements,
       hintText,
-      false,
     );
     const wordHintsElements = wordElement.native.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, letterElements, wordHintsElements);

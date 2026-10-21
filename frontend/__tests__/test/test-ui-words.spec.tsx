@@ -15,6 +15,12 @@ vi.mock("../../src/ts/utils/json-data", async (importOriginal) => ({
   ...(await importOriginal()),
   getLayout: vi.fn(async () => new Promise(() => undefined)),
 }));
+// input source for test-ui's letter updates
+let currentInput = "";
+vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentInput: (): string => currentInput,
+}));
 
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { __testing as configTesting } from "../../src/ts/config/testing";
@@ -123,6 +129,7 @@ describe("test-ui words rendering", () => {
       fontSize: 1,
     });
     resetActiveWordIndex();
+    currentInput = "";
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
   });
@@ -333,6 +340,90 @@ describe("test-ui words rendering", () => {
         ]);
         expect(TestUI.isWordRendered(1)).toBe(false);
       });
+    });
+  });
+
+  describe("typo hints", () => {
+    function hintsOf(words: HTMLElement, index: number): HTMLElement[] {
+      const container = words.querySelector(
+        `.word[data-wordindex='${index}'] > .hints`,
+      );
+      return [...(container?.children ?? [])] as HTMLElement[];
+    }
+
+    function mountWord(): HTMLElement {
+      const { words } = mount();
+      WordsRender.appendWord("word");
+      WordsRender.setActiveWord(0);
+      runFrames();
+      return words;
+    }
+
+    function typeIntoActiveWord(input: string): void {
+      currentInput = input;
+      TestUI.afterTestDelete();
+    }
+
+    it("fills the word's hints container with the typed char only in the next frame", () => {
+      configTesting.replaceConfig({ indicateTypos: "below" });
+      const words = mountWord();
+
+      typeIntoActiveWord("wx");
+
+      expect(hintsOf(words, 0)).toHaveLength(0);
+
+      runFrames();
+
+      const hints = hintsOf(words, 0);
+      expect(hints.map((hint) => hint.tagName.toLowerCase())).toEqual(["hint"]);
+      expect(hints[0]?.textContent).toBe("x");
+      expect(hints[0]?.dataset["charsIndex"]).toBe("1");
+    });
+
+    it("shows the expected char when indicating typos both ways", () => {
+      configTesting.replaceConfig({ indicateTypos: "both" });
+      const words = mountWord();
+
+      typeIntoActiveWord("wx");
+      runFrames();
+
+      expect(hintsOf(words, 0).map((hint) => hint.textContent)).toEqual(["o"]);
+    });
+
+    it("keeps the hints container across letter re-renders and updates its hints", () => {
+      configTesting.replaceConfig({ indicateTypos: "below" });
+      const words = mountWord();
+      const container = words.querySelector(".word > .hints");
+
+      typeIntoActiveWord("wx");
+      runFrames();
+      typeIntoActiveWord("wxy");
+      runFrames();
+
+      expect(words.querySelector(".word > .hints")).toBe(container);
+      expect(hintsOf(words, 0).map((hint) => hint.textContent)).toEqual([
+        "x",
+        "y",
+      ]);
+
+      typeIntoActiveWord("wo");
+      runFrames();
+
+      expect(words.querySelector(".word > .hints")).toBe(container);
+      expect(hintsOf(words, 0)).toHaveLength(0);
+    });
+
+    it("adds no hints for extra letters or when typos are not indicated below", () => {
+      configTesting.replaceConfig({ indicateTypos: "below" });
+      const words = mountWord();
+      typeIntoActiveWord("wordz");
+      runFrames();
+      expect(hintsOf(words, 0)).toHaveLength(0);
+
+      configTesting.replaceConfig({ indicateTypos: "replace" });
+      typeIntoActiveWord("wx");
+      runFrames();
+      expect(hintsOf(words, 0)).toHaveLength(0);
     });
   });
 });
