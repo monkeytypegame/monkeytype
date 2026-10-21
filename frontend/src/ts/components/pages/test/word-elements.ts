@@ -2,6 +2,10 @@
  * Rendered word elements by word index, registered by the Word component
  * while mounted. Lets imperative code (caret, layout) find a word without
  * querying the DOM.
+ *
+ * Exposes the whole element because some callers still write to it: hints
+ * (.hints container), break-joining (classes/styles), caret (wordRtl). Once
+ * those move into the component, narrow this to read-only measurements.
  */
 const wordElements = new Map<number, HTMLElement>();
 

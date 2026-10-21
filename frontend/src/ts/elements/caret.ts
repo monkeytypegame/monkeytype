@@ -464,6 +464,7 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
+      // writes to a component-owned word: should become a render store flag
       if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
