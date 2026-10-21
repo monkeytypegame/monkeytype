@@ -1,6 +1,6 @@
 # 04 — Hints into component-owned container
 
-Status: open
+Status: done
 Blocked by: 03
 
 ## What
