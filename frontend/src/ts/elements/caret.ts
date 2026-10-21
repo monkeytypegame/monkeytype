@@ -25,6 +25,15 @@ export function toggleCaretDebug(): void {
   }
 }
 
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    Config.mode === "zen" ||
+    Config.mode === "custom" ||
+    Config.funbox.includes("polyglot")
+  );
+}
+
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
@@ -422,12 +431,8 @@ export class Caret {
       this.element.removeClass("debug");
     }
 
-    // in zen, custom or polyglot mode we need to check per-letter
-    const checkRtlByLetter =
-      Config.mode === "zen" ||
-      Config.mode === "custom" ||
-      Config.funbox.includes("polyglot");
-    const [isWordRTL, isFullMatch] = isWordRightToLeft(
+    const checkRtlByLetter = isRtlCheckedByLetter();
+    const [isWordRTL] = isWordRightToLeft(
       checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
@@ -464,8 +469,6 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
-      // writes to a component-owned word: should become a render store flag
-      if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {

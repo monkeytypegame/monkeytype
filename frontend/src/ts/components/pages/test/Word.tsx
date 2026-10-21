@@ -13,7 +13,7 @@ import {
   wordEndsLine,
   wordsRenderState,
 } from "../../../states/words-render";
-import { splitIntoCharacters } from "../../../utils/strings";
+import { isWordRightToLeft, splitIntoCharacters } from "../../../utils/strings";
 import { FaProps } from "../../common/Fa";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { Letter, LetterStatus, WordLetter } from "./WordLetter";
@@ -149,6 +149,12 @@ export function Word(props: {
 }): JSXElement {
   const letters = createMemo(() => wordLetters(props.word));
   const hasNewline = (): boolean => wordEndsLine(props.word);
+  // whole word right-to-left: bidi override keeps its letters in order
+  const isRtl = createMemo(
+    () =>
+      wordsRenderState.marksRtlWords &&
+      isWordRightToLeft(props.word.text, false)[1],
+  );
   let wordRef: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -172,6 +178,7 @@ export function Word(props: {
           active: props.isActive(props.word.index),
           typed: props.word.isTyped,
           error: props.word.isIncorrect,
+          wordRtl: isRtl(),
         }}
       >
         <Index each={letters()}>

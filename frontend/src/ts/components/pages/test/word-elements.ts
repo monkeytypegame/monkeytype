@@ -4,8 +4,8 @@
  * querying the DOM.
  *
  * Exposes the whole element because some callers still write to it: hints
- * (.hints container), break-joining (classes/styles), caret (wordRtl). Once
- * those move into the component, narrow this to read-only measurements.
+ * (.hints container) and break-joining (classes/styles). Once those move into
+ * the component, narrow this to read-only measurements.
  */
 const wordElements = new Map<number, HTMLElement>();
 

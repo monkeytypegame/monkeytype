@@ -367,13 +367,33 @@ describe("Words", () => {
       ]);
     });
 
+    it("marks fully right-to-left words when enabled", () => {
+      reset({ marksRtlWords: true });
+      const container = renderWords();
+      appendWord("שלום");
+      appendWord("שלוםabc");
+      appendWord("abc");
+      flush();
+      expect(
+        wordEls(container).map((w) => w.classList.contains("wordRtl")),
+      ).toEqual([true, false, false]);
+    });
+
+    it("does not mark right-to-left words when disabled", () => {
+      reset({ marksRtlWords: false });
+      const container = renderWords();
+      appendWord("שלום");
+      flush();
+      expect(wordEls(container)[0]?.classList.contains("wordRtl")).toBe(false);
+    });
+
     it("keeps imperatively added classes and styles across re-renders", () => {
       const container = renderWords();
       appendWord("abc");
       setActiveWord(0);
       flush();
       const word = wordEls(container)[0] as HTMLElement;
-      word.classList.add("broken-joining", "wordRtl");
+      word.classList.add("broken-joining", "needs-wrap");
       word.style.width = "10px";
 
       setWordInput(0, "ab");
@@ -383,7 +403,7 @@ describe("Words", () => {
 
       expect(wordEls(container)[0]).toBe(word);
       expect(word.classList.contains("broken-joining")).toBe(true);
-      expect(word.classList.contains("wordRtl")).toBe(true);
+      expect(word.classList.contains("needs-wrap")).toBe(true);
       expect(word.style.width).toBe("10px");
     });
   });

@@ -44,6 +44,11 @@ type WordsRenderState = {
    * mode change doesn't re-render the current words before the restart
    */
   rendersLettersFromInput: boolean;
+  /**
+   * fully right-to-left words get the wordRtl class (bidi override). Off when
+   * direction is checked per letter or reversed. Fixed per test at reset
+   */
+  marksRtlWords: boolean;
 };
 
 const [store, setStore] = createStore<WordsRenderState>({
@@ -52,6 +57,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   tapeHiddenBefore: 0,
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
+  marksRtlWords: false,
 });
 
 /** Read-only reactive view for the Words component. */
@@ -232,7 +238,9 @@ export function truncateWords(length: number): void {
 }
 
 /** Cancels a pending flush, clears the buffer and empties the store. */
-export function reset(options: { zen?: boolean } = {}): void {
+export function reset(
+  options: { zen?: boolean; marksRtlWords?: boolean } = {},
+): void {
   cancelPendingFlush();
   buffer = emptyBuffer();
   setStore({
@@ -241,5 +249,6 @@ export function reset(options: { zen?: boolean } = {}): void {
     tapeHiddenBefore: 0,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
+    marksRtlWords: options.marksRtlWords ?? false,
   });
 }
