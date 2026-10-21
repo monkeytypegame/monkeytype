@@ -46,7 +46,7 @@ function charIcon(char: string | undefined): FaProps | undefined {
   return ICONS.get(char ?? "");
 }
 
-function controlType(char: string): Letter["controlType"] {
+function getLetterControlType(char: string): Letter["controlType"] {
   if (char === "\t") return "tab";
   if (char === "\n") return "newline";
   return undefined;
@@ -62,7 +62,7 @@ function expectedLetter(
     text: icon === undefined ? char : "",
     icon,
     status,
-    controlType: controlType(char),
+    controlType: getLetterControlType(char),
   };
 }
 
