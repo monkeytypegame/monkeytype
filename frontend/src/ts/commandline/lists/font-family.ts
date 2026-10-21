@@ -6,7 +6,6 @@ import FileStorage from "../../utils/file-storage";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { applyFontFamily } from "../../ui";
 
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
@@ -80,7 +79,6 @@ if (fromMeta.subgroup) {
                 const dataUrl = readerEvent.target?.result as string;
                 try {
                   await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
-                  await applyFontFamily();
                 } catch (e) {
                   showNoticeNotification(
                     `Error uploading font: ${(e as Error).message}`,
@@ -105,7 +103,6 @@ if (fromMeta.subgroup) {
           exec: async (): Promise<void> => {
             try {
               await FileStorage.deleteFile("LocalFontFamilyFile");
-              await applyFontFamily();
             } catch (e) {
               showNoticeNotification(
                 `Error removing font: ${(e as Error).message}`,
