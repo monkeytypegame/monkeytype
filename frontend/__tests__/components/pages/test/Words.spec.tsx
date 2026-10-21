@@ -6,6 +6,7 @@ import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendWord,
+  getWordElement,
   reset,
   setActiveWord,
   setFirstRenderedWordIndex,
@@ -289,6 +290,21 @@ describe("Words", () => {
       const hints = wordEls(container)[0]?.querySelector(".hints");
       expect(hints).not.toBeNull();
       expect(hints?.childNodes).toHaveLength(0);
+    });
+
+    it("registers rendered word elements by index", () => {
+      const container = renderWords();
+      appendWord("a");
+      appendWord("b");
+      flush();
+      expect(getWordElement(1)).toBe(wordEls(container)[1]);
+
+      setFirstRenderedWordIndex(1);
+      expect(getWordElement(0)).toBeUndefined();
+      expect(getWordElement(1)).toBe(wordEls(container)[0]);
+
+      reset();
+      expect(getWordElement(1)).toBeUndefined();
     });
 
     it("does not render words below the first rendered index", () => {

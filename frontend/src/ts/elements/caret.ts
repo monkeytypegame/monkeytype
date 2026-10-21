@@ -5,6 +5,7 @@ import { isWordRightToLeft } from "../utils/strings";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
+import { getWordElement } from "../states/words-render";
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -27,7 +28,6 @@ export function toggleCaretDebug(): void {
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
-  private wordsEl: ElementWithUtils;
   private wordsWrapperEl: ElementWithUtils;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
@@ -42,11 +42,10 @@ export class Caret {
   constructor(
     element: ElementWithUtils,
     style: CaretStyle,
-    refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
+    refs: { wordsWrapper: ElementWithUtils },
   ) {
     this.id = element.native.id;
     this.element = element;
-    this.wordsEl = refs.words;
     this.wordsWrapperEl = refs.wordsWrapper;
     this.setStyle(style);
     if (this.id === "caret") {
@@ -287,9 +286,8 @@ export class Caret {
     };
   }): void {
     if (this.style === "off") return;
-    const word = this.wordsEl.qs(
-      `.word[data-wordindex="${options.wordIndex}"]`,
-    );
+    const wordEl = getWordElement(options.wordIndex);
+    const word = wordEl === undefined ? null : new ElementWithUtils(wordEl);
     const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
     const wordLength = Array.from(wordText).length;
 

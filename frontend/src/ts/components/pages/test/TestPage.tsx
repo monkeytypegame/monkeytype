@@ -111,11 +111,11 @@ export function TestPage(): JSXElement {
     const words = new ElementWithUtils(wordsRef);
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
     Caret.initElement(
-      { caret: new ElementWithUtils(caretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(caretRef), wordsWrapper },
       signal,
     );
     PaceCaret.initElement(
-      { caret: new ElementWithUtils(paceCaretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(paceCaretRef), wordsWrapper },
       signal,
     );
 

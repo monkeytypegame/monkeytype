@@ -1,8 +1,17 @@
-import { createMemo, Index, JSXElement, Show } from "solid-js";
+import {
+  createMemo,
+  Index,
+  JSXElement,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import {
+  registerWordElement,
   RenderedWord,
+  unregisterWordElement,
   wordEndsLine,
   wordsRenderState,
 } from "../../../states/words-render";
@@ -141,10 +150,20 @@ export function Word(props: {
 }): JSXElement {
   const letters = createMemo(() => wordLetters(props.word));
   const hasNewline = (): boolean => wordEndsLine(props.word);
+  let wordRef: HTMLDivElement | undefined;
+
+  onMount(() => {
+    const el = wordRef;
+    if (el === undefined) return;
+    const index = props.word.index;
+    registerWordElement(index, el);
+    onCleanup(() => unregisterWordElement(index, el));
+  });
 
   return (
     <>
       <div
+        ref={(el) => (wordRef = el)}
         class="word"
         data-wordindex={props.word.index}
         // per-class toggles: classes and styles added imperatively

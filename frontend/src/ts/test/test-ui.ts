@@ -31,6 +31,7 @@ import { getFontPreview } from "../states/font";
 import {
   appendWord,
   flush as flushWordsRender,
+  getWordElement as getRenderedWordElement,
   getPendingWordInput,
   isWordRendered as isWordRenderedInState,
   reset as resetWordsRender,
@@ -161,8 +162,8 @@ function keepWordsInputInTheCenter(force = false): void {
 }
 
 function getWordElement(index: number): ElementWithUtils | null {
-  const el = wordsEl().qs(`.word[data-wordindex='${index}']`);
-  return el;
+  const el = getRenderedWordElement(index);
+  return el === undefined ? null : new ElementWithUtils(el);
 }
 
 /**
