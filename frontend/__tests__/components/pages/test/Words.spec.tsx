@@ -445,6 +445,14 @@ describe("Words", () => {
       expect(letterTexts(word)).toEqual(["a", "b", "c"]);
     });
 
+    it("keeps typed arrows visible", () => {
+      const container = renderWords();
+      appendWord("");
+      setWordInput(0, "←");
+      flush();
+      expect(letterClasses(wordEls(container)[0])).toEqual(["correct"]);
+    });
+
     it("renders typed newlines invisibly, followed by newline siblings", () => {
       const container = renderWords();
       appendWord("");

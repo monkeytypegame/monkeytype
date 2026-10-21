@@ -90,11 +90,10 @@ function createZenLetters(input: string, composition: string): Letter[] {
     return [{ text: "_", status: "untyped", hidden: true }];
   }
 
-  // input
+  // input: typed tab/newline take up space but stay invisible
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
-    const icon = getCharIconProps(char);
-    if (icon === undefined) return { text: char, status: "correct" };
-    return { ...createLetter(char, "correct", char), hidden: true };
+    const letter = createLetter(char, "correct", char);
+    return { ...letter, hidden: letter.controlType !== undefined };
   });
 
   // composition
