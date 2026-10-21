@@ -19,14 +19,6 @@ type WordChars = {
   composition: string;
 };
 
-function getControlType(
-  char: string | undefined,
-): RenderedLetter["controlType"] {
-  if (char === "\t") return "tab";
-  if (char === "\n") return "newline";
-  return undefined;
-}
-
 /** typed space shows as "_" */
 function visibleChar(typed: string): string {
   return typed === " " ? "_" : typed;
@@ -53,15 +45,11 @@ export function createZenLetters(
 
   // input: typed tab/newline take up space but stay invisible
   const letters: RenderedLetter[] = splitIntoCharacters(input).map(
-    (inputChar) => {
-      const controlType = getControlType(inputChar);
-      return {
-        text: inputChar,
-        status: "correct",
-        controlType,
-        invisible: controlType !== undefined,
-      };
-    },
+    (inputChar) => ({
+      text: inputChar,
+      status: "correct",
+      invisible: inputChar === "\t" || inputChar === "\n",
+    }),
   );
 
   // composition
@@ -86,18 +74,15 @@ export function createLetters(
     const targetChar = wordChars[i];
     const inputChar = inputChars[i] as string;
     const status = getLetterStatus(inputChar, targetChar);
+
     let text = visibleChar(inputChar);
+
     // typos show the expected letter unless replaced
     if (status === "incorrect" && !settings.replaceTypos) {
       text = targetChar ?? text;
     }
 
-    letters.push({
-      text,
-      status,
-      // from the target: a typo on a tab/newline keeps its marker class
-      controlType: getControlType(targetChar),
-    });
+    letters.push({ text, status });
   }
 
   for (let i = 0; i < compositionChars.length; i++) {
@@ -117,11 +102,7 @@ export function createLetters(
     i++
   ) {
     const targetChar = wordChars[i] as string;
-    letters.push({
-      text: targetChar,
-      status: "untyped",
-      controlType: getControlType(targetChar),
-    });
+    letters.push({ text: targetChar, status: "untyped" });
   }
 
   return letters;
