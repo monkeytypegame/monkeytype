@@ -43,6 +43,10 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `setConfig(key, value)` | write config |
 | `showModal(id)` | open a modal by `ModalId` |
 | `restart()` | restart the typing test |
+| `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
+| `wordsSnapshot()` | rendered `#words` children: words (index, classes, letters with text/icon/classes) and newline siblings |
+| `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
+| `setCustomText(text)` | start a custom test with `text` (newlines become line breaks), as the custom text modal's simple mode |
 | `setPreloading(enabled)` | turn intent preloading (hovered/focused links run the next page's guards and loaders) off or back on, no rebuild; resets on reload. Permanent switch: `INTENT_PRELOADING` in `router/create-router.ts` |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
 | `getSignal(name)` / `setSignal(name, value)` | read/write a tracked signal by exact name |
@@ -56,3 +60,15 @@ Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all
 `read_console_messages` with a `pattern` — logger output is noisy. Errors from `utils/logger.ts` are prefixed `ERR`.
 
 The console buffer survives reloads, so hot-reload errors from earlier edits look current. After reloading, log a marker first (`console.error("MARK")`) and trust only errors after it.
+
+`read_console_messages` only records from its first call on a tab. On a new tab, call it once before the steps you want covered; an empty result from a first call proves nothing.
+
+## Gotchas
+
+- A test in progress blocks navigation with a "Leave site?" dialog: `__mt.restart()` before navigating away.
+- Switching git branches hot-reloads the page and kills a running `javascript_tool` script; wait for `__mt` again after a checkout.
+- `__mt` is dev only. Production builds (`vite preview`) are driven through localStorage and the DOM.
+
+## Profiling
+
+Performance comparisons follow `docs/PROFILING.md`.

@@ -47,7 +47,9 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
+node_modules
+# vite cache of worktrees linked by scripts/setup-worktree.sh
+.vite-worktree/
 node_modules_bak/
 
 # Optional npm cache directory
