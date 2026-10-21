@@ -60,5 +60,15 @@ describe("test-words", () => {
       expect(() => words.removeCommitCharacterFromLastWord()).not.toThrow();
       expect(words.get()).toEqual([]);
     });
+
+    it("does not empty the last word when it's only a newline", () => {
+      words.push("word\n", 0);
+      words.push("\n", 0);
+      words.removeCommitCharacterFromLastWord();
+      expect(words.get().map((w) => w.textWithCommit)).toEqual([
+        "word\n",
+        "\n",
+      ]);
+    });
   });
 });

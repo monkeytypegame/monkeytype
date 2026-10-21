@@ -25,7 +25,7 @@ export function LiveStatsMini() {
         style={{
           "font-size": `${getConfig.fontSize}rem`,
           opacity: getConfig.timerOpacity,
-          "margin-left": isTape() ? `${getConfig.tapeMargin}%` : "-0.25em",
+          "margin-left": isTape() ? `${getConfig.tapeMargin}%` : "0.25em",
         }}
       >
         <AnimeShow
