@@ -1,5 +1,5 @@
 import { splitIntoCharacters } from "../../../utils/strings";
-import type { Letter, LetterStatus } from "./WordLetter";
+import type { RenderedLetter, LetterStatus } from "./WordLetter";
 
 /**
  * Display rules of the test words: what each letter shows and how it's
@@ -19,7 +19,9 @@ type WordChars = {
   composition: string;
 };
 
-function getControlType(char: string | undefined): Letter["controlType"] {
+function getControlType(
+  char: string | undefined,
+): RenderedLetter["controlType"] {
   if (char === "\t") return "tab";
   if (char === "\n") return "newline";
   return undefined;
@@ -40,22 +42,27 @@ function getLetterStatus(
 }
 
 /** zen: letters come from the input only */
-export function createZenLetters(input: string, composition: string): Letter[] {
+export function createZenLetters(
+  input: string,
+  composition: string,
+): RenderedLetter[] {
   // placeholder for empty input
   if (input === "" && composition === "") {
-    return [{ text: "_", status: "untyped", hidden: true }];
+    return [{ text: "_", status: "untyped", invisible: true }];
   }
 
   // input: typed tab/newline take up space but stay invisible
-  const letters: Letter[] = splitIntoCharacters(input).map((inputChar) => {
-    const controlType = getControlType(inputChar);
-    return {
-      text: inputChar,
-      status: "correct",
-      controlType,
-      hidden: controlType !== undefined,
-    };
-  });
+  const letters: RenderedLetter[] = splitIntoCharacters(input).map(
+    (inputChar) => {
+      const controlType = getControlType(inputChar);
+      return {
+        text: inputChar,
+        status: "correct",
+        controlType,
+        invisible: controlType !== undefined,
+      };
+    },
+  );
 
   // composition
   for (const char of splitIntoCharacters(composition)) {
@@ -66,11 +73,14 @@ export function createZenLetters(input: string, composition: string): Letter[] {
 }
 
 /** letters of `word.text`, marked against the input */
-export function createLetters(word: WordChars, settings: Settings): Letter[] {
+export function createLetters(
+  word: WordChars,
+  settings: Settings,
+): RenderedLetter[] {
   const wordChars = splitIntoCharacters(word.text);
   const inputChars = splitIntoCharacters(word.input);
   const compositionChars = splitIntoCharacters(word.composition);
-  const letters: Letter[] = [];
+  const letters: RenderedLetter[] = [];
 
   for (let i = 0; i < inputChars.length; i++) {
     const targetChar = wordChars[i];

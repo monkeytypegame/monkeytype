@@ -50,14 +50,14 @@ export type LetterStatus =
   | "dead"
   | "deadCorrect";
 
-export type Letter = {
+export type RenderedLetter = {
   /** shown char, icon chars render as icons */
   text: string;
   status: LetterStatus;
   /** tabChar/nlChar marker class */
   controlType?: "tab" | "newline";
   /** zen: empty-word placeholder, typed tab/newline */
-  hidden?: boolean;
+  invisible?: boolean;
 };
 
 const STATUS_CLASS: Record<LetterStatus, string> = {
@@ -70,15 +70,15 @@ const STATUS_CLASS: Record<LetterStatus, string> = {
 };
 
 // hot path: plain join, the class names are fixed (no tailwind-merge needed)
-function letterClass(letter: Letter): string {
+function letterClass(letter: RenderedLetter): string {
   let cls = STATUS_CLASS[letter.status];
   if (letter.controlType === "tab") cls += " tabChar";
   if (letter.controlType === "newline") cls += " nlChar";
-  if (letter.hidden) cls += " invisible";
+  if (letter.invisible) cls += " invisible";
   return cls.slice(1);
 }
 
-export function WordLetter(props: { letter: Letter }): JSXElement {
+export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
   return (
     <letter class={letterClass(props.letter)}>
       <Show
