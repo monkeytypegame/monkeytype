@@ -1,4 +1,5 @@
 import { defineConfig, UserWorkspaceConfig } from "vitest/config";
+import { workspacePackagesAlias } from "./vite-plugins/workspace-packages";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { envConfig } from "./vite-plugins/env-config";
 import solidPlugin from "vite-plugin-solid";
@@ -8,6 +9,8 @@ const plugins = [
   envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
   solidPlugin({ hot: false }),
 ];
+
+const resolve = { alias: workspacePackagesAlias };
 
 const tanstackSolidNoExternal: (string | RegExp)[] = [
   "@solidjs/meta",
@@ -33,6 +36,7 @@ export const projects: UserWorkspaceConfig[] = [
       ],
     },
     plugins,
+    resolve,
   },
   {
     ssr: {
@@ -45,6 +49,7 @@ export const projects: UserWorkspaceConfig[] = [
       globalSetup: "__tests__/global-setup.ts",
     },
     plugins,
+    resolve,
   },
   {
     ssr: {
@@ -63,6 +68,7 @@ export const projects: UserWorkspaceConfig[] = [
       globals: true,
     },
     plugins,
+    resolve,
   },
 ];
 export default defineConfig({
@@ -70,13 +76,6 @@ export default defineConfig({
     projects: projects,
     coverage: {
       include: ["**/*.ts", "**/*.tsx"],
-    },
-    deps: {
-      optimizer: {
-        web: {
-          include: ["@monkeytype/funbox"],
-        },
-      },
     },
   },
   plugins,
