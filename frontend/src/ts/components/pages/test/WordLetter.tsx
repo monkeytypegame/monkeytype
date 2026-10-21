@@ -2,6 +2,17 @@ import { JSXElement, Show } from "solid-js";
 
 import { Fa, type FaProps } from "../../common/Fa";
 
+declare module "solid-js" {
+  // oxlint-disable-next-line typescript/no-namespace
+  namespace JSX {
+    // interface needed for declaration merging
+    // oxlint-disable-next-line typescript/consistent-type-definitions
+    interface IntrinsicElements {
+      letter: JSX.HTMLAttributes<HTMLElement>;
+    }
+  }
+}
+
 export type Letter = {
   text: string;
   icon?: FaProps;

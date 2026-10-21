@@ -3,17 +3,6 @@ import { createMemo, createSelector, For, JSXElement } from "solid-js";
 import { wordEndsLine, wordsRenderState } from "../../../states/words-render";
 import { Word } from "./Word";
 
-declare module "solid-js" {
-  // oxlint-disable-next-line typescript/no-namespace
-  namespace JSX {
-    // interface needed for declaration merging
-    // oxlint-disable-next-line typescript/consistent-type-definitions
-    interface IntrinsicElements {
-      letter: JSX.HTMLAttributes<HTMLElement>;
-    }
-  }
-}
-
 /** Renders the test words. Mounted inside #words. */
 export function Words(): JSXElement {
   const isActive = createSelector(
