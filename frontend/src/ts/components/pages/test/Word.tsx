@@ -42,7 +42,7 @@ const ICONS: Map<string, FaProps> = new Map([
   ["→", { variant: "solid", icon: "fa-arrow-right" }],
 ]);
 
-function charIcon(char: string | undefined): FaProps | undefined {
+function getCharIconProps(char: string | undefined): FaProps | undefined {
   return ICONS.get(char ?? "");
 }
 
@@ -57,7 +57,7 @@ function expectedLetter(
   char: string,
   status: LetterStatus = "untyped",
 ): Letter {
-  const icon = charIcon(char);
+  const icon = getCharIconProps(char);
   return {
     text: icon === undefined ? char : "",
     icon,
@@ -68,7 +68,7 @@ function expectedLetter(
 
 /** visible form of a typed character: space -> "_", tab/newline -> icons */
 function typedLetter(char: string): Pick<Letter, "text" | "icon"> {
-  const icon = charIcon(char);
+  const icon = getCharIconProps(char);
   if (icon !== undefined) return { text: "", icon };
   // explicit undefined: overrides the expected letter's icon on typos
   return { text: char === " " ? "_" : char, icon: undefined };
@@ -76,7 +76,7 @@ function typedLetter(char: string): Pick<Letter, "text" | "icon"> {
 
 function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
-    const icon = charIcon(char);
+    const icon = getCharIconProps(char);
     if (icon === undefined) return { text: char, status: "correct" };
     return { ...expectedLetter(char, "correct"), hidden: true };
   });
