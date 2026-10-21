@@ -10,37 +10,32 @@ import { splitIntoCharacters } from "../../../utils/strings";
 import { FaProps } from "../../common/Fa";
 import { Letter, WordLetter } from "./WordLetter";
 
-const TAB_ICON: FaProps = {
-  variant: "solid",
-  icon: "fa-long-arrow-alt-right",
-  fixedWidth: true,
-};
-const NEWLINE_ICON: FaProps = {
-  variant: "solid",
-  icon: "fa-level-down-alt",
-  fixedWidth: true,
-  class: "fa-rotate-90",
-};
-
-// arrows (arrows funbox) render as icons too
-const ARROW_ICONS: Record<string, FaProps> = {
-  "←": { variant: "solid", icon: "fa-arrow-left" },
-  "↓": { variant: "solid", icon: "fa-arrow-down" },
-  "↑": { variant: "solid", icon: "fa-arrow-up" },
-  "→": { variant: "solid", icon: "fa-arrow-right" },
-};
-
-/** tab and newline: icons that zen hides */
-function whitespaceIcon(char: string | undefined): FaProps | undefined {
-  if (char === "\t") return TAB_ICON;
-  if (char === "\n") return NEWLINE_ICON;
-  return undefined;
-}
+const ICONS: Map<string, FaProps> = new Map([
+  [
+    "\t",
+    {
+      variant: "solid",
+      icon: "fa-long-arrow-alt-right",
+      fixedWidth: true,
+    },
+  ],
+  [
+    "\n",
+    {
+      variant: "solid",
+      icon: "fa-level-down-alt",
+      fixedWidth: true,
+      class: "fa-rotate-90",
+    },
+  ],
+  ["←", { variant: "solid", icon: "fa-arrow-left" }],
+  ["↓", { variant: "solid", icon: "fa-arrow-down" }],
+  ["↑", { variant: "solid", icon: "fa-arrow-up" }],
+  ["→", { variant: "solid", icon: "fa-arrow-right" }],
+]);
 
 function charIcon(char: string | undefined): FaProps | undefined {
-  return (
-    whitespaceIcon(char) ?? (char === undefined ? undefined : ARROW_ICONS[char])
-  );
+  return ICONS.get(char ?? "");
 }
 
 /** untyped or expected letter: tab/newline get their icon and marker class */
@@ -64,7 +59,7 @@ function typedLetter(char: string): Letter {
 
 function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
-    const icon = whitespaceIcon(char);
+    const icon = charIcon(char);
     if (icon === undefined) return { text: char, correct: true };
     return { ...expectedLetter(char), correct: true, hidden: true };
   });
