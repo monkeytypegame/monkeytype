@@ -8,7 +8,10 @@ export type TrackedSignal = {
   ownerChain: string;
   source: string;
   initialValue: string;
+  /** Reactive, synced once per animation frame (paused in hidden tabs). For UI. */
   get: () => unknown;
+  /** Current value, read straight from the node. */
+  peek: () => unknown;
   set: (v: unknown) => void;
   getObserverCount: () => number;
 };
@@ -128,15 +131,34 @@ if (DEV && !isProfilerMode()) {
       ownerChain: getOwnerChain(node),
       initialValue: formatInitialValue(node.value),
     });
+    // signals are registered in batches - module load, component mounts, hot
+    // reloads - so flush after each batch rather than once at startup
+    if (!isFlushQueued) {
+      isFlushQueued = true;
+      queueMicrotask(flush);
+    }
   };
 
-  queueMicrotask(() => {
-    const mirrors: { node: SolidNode; set: (v: unknown) => void }[] = [];
+  const mirrors = new Map<
+    TrackedSignal,
+    { node: SolidNode; set: (v: unknown) => void }
+  >();
+  let isFlushQueued = false;
 
+  const flush = (): void => {
+    isFlushQueued = false;
     for (const [node, info] of pendingNodes) {
-      const [get, set] = createSignal(node.value);
+      // a hot reloaded module recreates its signals - the newest one wins
+      const index = trackedSignals.findIndex(
+        (s) => s.name === info.name && s.source === info.source,
+      );
+      if (index !== -1) {
+        const [stale] = trackedSignals.splice(index, 1);
+        if (stale !== undefined) mirrors.delete(stale);
+      }
 
-      trackedSignals.push({
+      const [get, set] = createSignal(node.value);
+      const tracked: TrackedSignal = {
         name: info.name,
         type: info.type,
         owner: getOwnerName(node),
@@ -144,21 +166,22 @@ if (DEV && !isProfilerMode()) {
         source: info.source,
         initialValue: info.initialValue,
         get,
+        peek: () => node.value,
         set: (v: unknown) => writeSignal(node, v),
         getObserverCount: () => node.observers?.length ?? 0,
-      });
-
-      mirrors.push({ node, set });
+      };
+      trackedSignals.push(tracked);
+      mirrors.set(tracked, { node, set });
     }
     pendingNodes.clear();
+  };
 
-    // Sync node values to reactive mirrors, only when tab is visible
-    const syncLoop = (): void => {
-      for (const mirror of mirrors) {
-        mirror.set(() => mirror.node.value);
-      }
-      requestAnimationFrame(syncLoop);
-    };
+  // sync node values to the reactive mirrors, only while the tab is visible
+  const syncLoop = (): void => {
+    for (const { node, set } of mirrors.values()) {
+      set(() => node.value);
+    }
     requestAnimationFrame(syncLoop);
-  });
+  };
+  requestAnimationFrame(syncLoop);
 }

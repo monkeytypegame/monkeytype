@@ -47,6 +47,9 @@ export async function getQuoteStats(
     query: { quoteId: quote.id, language: quote.language },
   });
 
+  // a newer request replaced this one
+  if (selectedQuote() !== quote) return;
+
   if (response.status !== 200) {
     showErrorNotification("Failed to get quote ratings", { response });
     return;

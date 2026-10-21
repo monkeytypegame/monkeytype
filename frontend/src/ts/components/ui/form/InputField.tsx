@@ -29,6 +29,7 @@ export function InputField(props: {
   max?: number;
   step?: string | number;
   alwaysShowFieldIndicator?: boolean;
+  ref?: (el: HTMLInputElement) => void;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
   const [showPassword, setShowPassword] = createSignal(false);
@@ -61,6 +62,7 @@ export function InputField(props: {
       }
     >
       <input
+        ref={props.ref}
         class={cn(
           "col-start-1 row-start-1 w-full",
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
@@ -207,7 +209,7 @@ function convertStringToValue<T extends unknown | undefined>(
     // oxlint-disable-next-line typescript/no-unsafe-member-access
     field.form.options.defaultValues?.[field.name];
   if (defaultValue === undefined || defaultValue === null) return newValue as T;
-  if (newValue === "") return undefined;
+  if (newValue === "" && typeof defaultValue !== "string") return undefined;
   if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
 
   return newValue as T;

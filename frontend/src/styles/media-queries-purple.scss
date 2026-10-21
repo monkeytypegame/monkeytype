@@ -5,62 +5,7 @@
     --content-max-width: 100%;
     --padding-inline: 1rem;
   }
-  .ad.ad-h {
-    display: none;
-  }
-  .ad.ad-h-s {
-    display: grid;
-  }
 
-  .pageLogin {
-    flex-direction: column;
-    gap: 4rem;
-    .side {
-      width: 100%;
-      input[type="email"],
-      input[type="password"],
-      input[type="text"] {
-        width: 100%;
-        max-width: 100%;
-      }
-    }
-  }
-  .pageTest {
-    #liveStatsTextTop,
-    #liveStatsTextBottom {
-      font-size: 12vw;
-    }
-    #result .wrapper {
-      .stats {
-        grid-template-columns: 1fr;
-        grid-template-areas: "wpm" "acc";
-        width: max-content;
-        justify-items: start;
-        justify-self: center;
-      }
-      .morestats {
-        justify-self: unset;
-        width: unset;
-
-        .group .bottom::after {
-          transform: none;
-          left: 0;
-        }
-      }
-      .buttons {
-        grid-template-columns: 1fr 1fr;
-        grid-auto-flow: unset;
-        #nextTestButton {
-          grid-column: span 2;
-        }
-      }
-    }
-  }
-
-  .popupWrapper .modal,
-  .modalWrapper .modal {
-    padding: 1rem;
-  }
   .testActivity {
     .wrapper {
       width: 100%;
@@ -77,9 +22,5 @@
       height: unset;
       aspect-ratio: 1;
     }
-  }
-  .popupWrapper .modal .inputs.withLabel,
-  .modalWrapper .modal .inputs.withLabel {
-    grid-template-columns: 1fr;
   }
 }

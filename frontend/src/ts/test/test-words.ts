@@ -1,4 +1,4 @@
-import * as TestState from "./test-state";
+import { getActiveWordIndex } from "../states/test";
 
 type CommitChar = " " | "\n" | "";
 
@@ -47,7 +47,7 @@ class Words {
     }
   }
   getCurrent(): Word | undefined {
-    return this.list[TestState.activeWordIndex];
+    return this.list[getActiveWordIndex()];
   }
   push(word: string, sectionIndex: number): Word {
     let commit: CommitChar = "";
@@ -79,7 +79,7 @@ class Words {
   removeCommitCharacterFromLastWord(): void {
     if (this.length === 0) return;
     const lastWord = this.list[this.length - 1];
-    if (lastWord === undefined) return;
+    if (lastWord === undefined || lastWord.text === "") return;
     if (lastWord.commit === " " || lastWord.commit === "\n") {
       lastWord.commit = "";
       lastWord.textWithCommit = lastWord.text;
