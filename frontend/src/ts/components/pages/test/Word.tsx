@@ -17,26 +17,8 @@ import { isWordRightToLeft, splitIntoCharacters } from "../../../utils/strings";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { Letter, LetterStatus, WordLetter } from "./WordLetter";
 
-function getLetterControlType(char: string | undefined): Letter["controlType"] {
-  if (char === "\t") return "tab";
-  if (char === "\n") return "newline";
-  return undefined;
-}
-
-/**
- * Letter showing `shown`. The tab/newline marker class comes from the target
- * char, so a typo on a tab/newline keeps it.
- */
-function createLetter(
-  shown: string,
-  status: LetterStatus,
-  targetChar: string | undefined,
-): Letter {
-  return {
-    text: shown,
-    status,
-    controlType: getLetterControlType(targetChar),
-  };
+function isControlChar(char: string): boolean {
+  return char === "\t" || char === "\n";
 }
 
 /** typed space shows as "_" */
@@ -60,10 +42,12 @@ function createZenLetters(input: string, composition: string): Letter[] {
   }
 
   // input: typed tab/newline take up space but stay invisible
-  const letters: Letter[] = splitIntoCharacters(input).map((inputChar) => {
-    const letter = createLetter(inputChar, "correct", inputChar);
-    return { ...letter, hidden: letter.controlType !== undefined };
-  });
+  const letters: Letter[] = splitIntoCharacters(input).map((inputChar) => ({
+    text: inputChar,
+    targetChar: inputChar,
+    status: "correct",
+    hidden: isControlChar(inputChar),
+  }));
 
   // composition
   for (const char of splitIntoCharacters(composition)) {
@@ -90,13 +74,11 @@ function createTextLetters(word: RenderedWord): Letter[] {
     // typos show the expected letter unless replaced; extras only have the typed one
     const showTarget =
       targetChar !== undefined && (status === "correct" || !replaceTypos);
-    letters.push(
-      createLetter(
-        showTarget ? targetChar : visibleChar(inputChar),
-        status,
-        targetChar,
-      ),
-    );
+    letters.push({
+      text: showTarget ? targetChar : visibleChar(inputChar),
+      targetChar,
+      status,
+    });
   }
 
   for (let i = 0; i < compositionChars.length; i++) {
@@ -117,7 +99,7 @@ function createTextLetters(word: RenderedWord): Letter[] {
     i++
   ) {
     const targetChar = wordChars[i] as string;
-    letters.push(createLetter(targetChar, "untyped", targetChar));
+    letters.push({ text: targetChar, targetChar, status: "untyped" });
   }
 
   return letters;

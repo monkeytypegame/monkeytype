@@ -51,10 +51,14 @@ export type LetterStatus =
   | "deadCorrect";
 
 export type Letter = {
+  /** shown char, icon chars render as icons */
   text: string;
+  /**
+   * the word's char at this position, decides the tabChar/nlChar class: a typo
+   * on a tab/newline keeps it, extras (no target) don't get it
+   */
+  targetChar?: string;
   status: LetterStatus;
-  /** expected char is a tab/newline: keeps its marker class on typos too */
-  controlType?: "tab" | "newline";
   /** zen: empty-word placeholder, typed tab/newline */
   hidden?: boolean;
 };
@@ -68,11 +72,6 @@ const STATUS_CLASS: Record<LetterStatus, string> = {
   deadCorrect: " dead correct",
 };
 
-const CONTROL_TYPE_CLASS = {
-  tab: " tabChar",
-  newline: " nlChar",
-} as const;
-
 // hot path: plain join, the class names are fixed (no tailwind-merge needed)
 function letterClass(letter: Letter, allCorrect: boolean): string {
   let cls = STATUS_CLASS[letter.status];
@@ -85,9 +84,8 @@ function letterClass(letter: Letter, allCorrect: boolean): string {
   ) {
     cls += " correct";
   }
-  if (letter.controlType !== undefined) {
-    cls += CONTROL_TYPE_CLASS[letter.controlType];
-  }
+  if (letter.targetChar === "\t") cls += " tabChar";
+  if (letter.targetChar === "\n") cls += " nlChar";
   if (letter.hidden) cls += " invisible";
   return cls.slice(1);
 }
