@@ -2320,6 +2320,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  red_beetle: {
+    bg: "#616161",
+    caret: "#701515",
+    main: "#000000",
+    sub: "#660a0a",
+    subAlt: "#808080",
+    text: "#000000",
+    error: "#303030",
+    errorExtra: "#000000",
+    colorfulError: "#076b00",
+    colorfulErrorExtra: "#055200",
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
