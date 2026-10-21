@@ -60,6 +60,7 @@ import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
+import { Words } from "./Words";
 
 function prefixedClass(
   prefix: string,
@@ -303,7 +304,9 @@ export function TestPage(): JSXElement {
               joiningScript: isJoiningScript(),
             })}
             style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
-          ></div>
+          >
+            <Words />
+          </div>
         </div>
 
         <div>

@@ -53,7 +53,6 @@ export type FunboxFunctions = {
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
   getLetterIcon?: (char: string) => FaSolidIcon | undefined;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
@@ -281,30 +280,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (char === "←") return "fa-arrow-left";
       if (char === "→") return "fa-arrow-right";
       return undefined;
-    },
-    getWordHtml(char: string, letterTag?: boolean): string {
-      let retval = "";
-      if (char === "↑") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-up"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "↓") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-down"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "←") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-left"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "→") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-right"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      return retval;
     },
   },
   rAnDoMcAsE: {

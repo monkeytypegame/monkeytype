@@ -12,12 +12,7 @@ import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
-import {
-  cancelPendingAnimationFramesStartingWith,
-  requestDebouncedAnimationFrame,
-} from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Focus from "../test/focus";
@@ -33,6 +28,7 @@ import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
 import { getFontPreview } from "../states/font";
+import * as WordsRender from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
@@ -151,63 +147,101 @@ function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-function updateActiveElement(
-  options:
-    | { direction: "forward" | "back"; initial?: undefined }
-    | { direction?: undefined; initial: true },
-): void {
-  requestDebouncedAnimationFrame("test-ui.updateActiveElement", async () => {
-    const { direction, initial } = options;
+type WordChange = "forward" | "back" | "initial";
 
-    let previousActiveWordTop: number | null = null;
-    if (initial === undefined) {
-      const previousActiveWord = wordsEl().qs(".active");
-      // in zen mode, because of the animation frame, previousActiveWord will be removed at this point, so check for null
-      if (previousActiveWord !== null) {
-        if (direction === "forward") {
-          previousActiveWord.addClass("typed");
-          Joining.set(previousActiveWord, true);
-        } else if (direction === "back") {
-          //
-        }
-        previousActiveWord.removeClass("active");
-        previousActiveWordTop = previousActiveWord.getOffsetTop();
+// what the next words frame has to lay out. Plain state written on the input
+// path; consumed by layoutWords once the DOM reflects the render store
+let pendingWordChange: WordChange | undefined;
+const pendingUpdatedWords = new Set<number>();
+let laidOutActiveWordIndex: number | undefined;
+
+function clearPendingLayout(): void {
+  pendingWordChange = undefined;
+  pendingUpdatedWords.clear();
+}
+
+/** Layout step of the shared words frame, runs after the DOM is updated. */
+function layoutWords(): void {
+  const wordChange = pendingWordChange;
+  const updatedWords = [...pendingUpdatedWords];
+  clearPendingLayout();
+  if (!isMounted()) return;
+
+  if (wordChange !== undefined) {
+    void layoutActiveWord(wordChange);
+  } else if (updatedWords.length > 0 && Config.tapeMode !== "off") {
+    void scrollTape();
+  }
+  for (const wordIndex of updatedWords) {
+    void lineJumpIfWrapped(wordIndex);
+  }
+  void updateHintsPositionDebounced();
+  Caret.updatePositionNow();
+}
+
+async function layoutActiveWord(wordChange: WordChange): Promise<void> {
+  let previousActiveWordTop: number | null = null;
+  if (wordChange !== "initial" && laidOutActiveWordIndex !== undefined) {
+    const previousActiveWord = getWordElement(laidOutActiveWordIndex);
+    // in zen mode, going back removes the previous word, so check for null
+    if (previousActiveWord !== null) {
+      if (wordChange === "forward") {
+        Joining.set(previousActiveWord, true);
+      }
+      previousActiveWordTop = previousActiveWord.getOffsetTop();
+    }
+  }
+
+  const newActiveWord = getActiveWordElement();
+  laidOutActiveWordIndex = getActiveWordIndex();
+  if (newActiveWord === null) return;
+
+  Joining.set(newActiveWord, false);
+
+  activeWordTop = newActiveWord.getOffsetTop();
+  activeWordHeight = newActiveWord.getOffsetHeight();
+
+  if (previousActiveWordTop !== null) {
+    const isTimedTest =
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
+
+    if (isTimedTest || !Config.showAllLines) {
+      const newActiveWordTop = newActiveWord.getOffsetTop();
+      if (newActiveWordTop > previousActiveWordTop) {
+        await lineJump(previousActiveWordTop);
       }
     }
+  }
 
-    const newActiveWord = getActiveWordElement();
-    if (newActiveWord === null) {
-      throw new Error("activeWord is null - can't update active element");
+  if (wordChange !== "initial" && Config.tapeMode !== "off") {
+    await scrollTape();
+  }
+
+  updateWordsInputPosition();
+}
+
+async function lineJumpIfWrapped(wordIndex: number): Promise<void> {
+  // because we block word jumps in before-insert-text
+  // this check only needs to happen in zen mode
+  // unless slow timer is on, then it needs to happen
+  // because the word jump check is disabled
+  if (Config.mode !== "zen" && !isSlowTimer()) return;
+  if (Config.showAllLines) return;
+  const wordAtIndex = getWordElement(wordIndex);
+  if (wordAtIndex === null) return;
+  const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
+  if (wordTopAfterUpdate > activeWordTop) {
+    let jump = false;
+    if (!lineTransition) {
+      wordTopBeforeLineJump = wordTopAfterUpdate;
+      jump = true;
+    } else if (wordTopAfterUpdate > wordTopBeforeLineJump) {
+      jump = true;
     }
-
-    newActiveWord.addClass("active");
-    newActiveWord.removeClass("error");
-    newActiveWord.removeClass("typed");
-    Joining.set(newActiveWord, false);
-
-    activeWordTop = newActiveWord.getOffsetTop();
-    activeWordHeight = newActiveWord.getOffsetHeight();
-
-    if (previousActiveWordTop !== null) {
-      const isTimedTest =
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-        (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-      if (isTimedTest || !Config.showAllLines) {
-        const newActiveWordTop = newActiveWord.getOffsetTop();
-        if (newActiveWordTop > previousActiveWordTop) {
-          await lineJump(previousActiveWordTop);
-        }
-      }
-    }
-
-    if (!initial && Config.tapeMode !== "off") {
-      await scrollTape();
-    }
-
-    updateWordsInputPosition();
-  });
+    if (jump) await lineJump(activeWordTop);
+  }
 }
 
 function createHintsHtml(
@@ -392,32 +426,6 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
-function buildWordHTML(word: string, wordIndex: number): string {
-  let newlineafter = false;
-  let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
-
-  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-  const chars = Strings.splitIntoCharacters(word);
-  for (const char of chars) {
-    if (funbox) {
-      retval += funbox.functions.getWordHtml(char, true);
-    } else if (char === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-    } else if (char === "\n") {
-      newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-    } else {
-      retval += `<letter>${char}</letter>`;
-    }
-  }
-  retval += "</div>";
-  if (newlineafter) {
-    retval +=
-      "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
-  }
-  return retval;
-}
-
 // measures #words, so it has to run after TestPage applied the config classes
 function updateLayout(): void {
   // outoffocus applies transition, need to remove it
@@ -438,31 +446,31 @@ function updateLayout(): void {
 }
 
 function showWords(): void {
-  wordsEl().setHtml("");
+  WordsRender.reset();
+  clearPendingLayout();
+  laidOutActiveWordIndex = undefined;
 
   if (Config.mode === "zen") {
-    appendEmptyWordElement(0);
+    WordsRender.appendWord("");
   } else {
-    let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      wordsHTML += buildWordHTML(word.display, i);
+      WordsRender.appendWord(word.display);
     }
-    wordsEl().setHtml(wordsHTML);
   }
+  WordsRender.setActiveWord(getActiveWordIndex());
+  // not on the input path: render now, the layout below measures the words
+  WordsRender.flush();
 
-  updateActiveElement({
-    initial: true,
-  });
   updateLayout();
+  void layoutActiveWord("initial");
   PaceCaret.resetCaretPosition();
 }
 
-export function appendEmptyWordElement(index: number): void {
-  wordsEl().appendHtml(
-    `<div class='word' data-wordindex='${index}'><letter class='invisible'>_</letter></div>`,
-  );
+/** Zen mode: adds the next (empty) word. */
+export function appendEmptyWord(): void {
+  WordsRender.appendWord("");
 }
 
 export function updateWordsInputPosition(): void {
@@ -625,58 +633,11 @@ function updateWordsMargin(): void {
   }
 }
 
-export function addWord(
-  word: string,
-  wordIndex = TestWords.words.length - 1,
-): void {
-  // if the current active word is the last word, we need to NOT use raf
-  // because other ui parts depend on the word existing
-  if (getActiveWordIndex() === wordIndex - 1) {
-    wordsEl().appendHtml(buildWordHTML(word, wordIndex));
-  } else {
-    requestAnimationFrame(async () => {
-      wordsEl().appendHtml(buildWordHTML(word, wordIndex));
-    });
-  }
-
-  // maybe ill come back to this
-  // requestAnimationFrame(async () => {
-  //   wordsEl().insertAdjacentHTML("beforeend", buildWordHTML(word, wordIndex));
-  //   // in case word addition took a long time and some input happened in the mean time
-  //   // we need to update word letters for that word
-  //   const inputHistory = [
-  //     ...getInputHistory(),
-  //     getCurrentInput(),
-  //   ];
-  //   const input = inputHistory[wordIndex];
-  //   if (input !== undefined && input !== "") {
-  //     await updateWordLetters({
-  //       wordIndex,
-  //       input,
-  //       compositionData: getCompositionData(),
-  //     });
-  //   }
-  // });
+export function addWord(word: string): void {
+  WordsRender.appendWord(word);
 }
 
-// because of the requestAnimationFrame, multiple calls to updateWordLetters
-// can be made before the actual update happens. This map keeps track of the
-// latest input for each word and is used in before-insert-text to
-// make sure the currently typed word will not overflow to the next line
-const pendingWordData: Map<number, string> = new Map();
-
-const TAB_ICON = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
-const NEWLINE_ICON = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
-
-// visible form of a typed character: space -> "_", tab/newline -> their icons
-function displayTypedChar(char: string | undefined): string {
-  if (char === " ") return "_";
-  if (char === "\t") return TAB_ICON;
-  if (char === "\n") return NEWLINE_ICON;
-  return char ?? "";
-}
-
-// deferred to the next animation frame - not awaitable
+// buffered, rendered in the next words frame
 function updateWordLetters({
   wordIndex,
   input,
@@ -686,180 +647,8 @@ function updateWordLetters({
   input: string;
   compositionData: string;
 }): void {
-  pendingWordData.set(wordIndex, input);
-  requestDebouncedAnimationFrame(
-    `test-ui.updateWordLetters.${wordIndex}`,
-    async () => {
-      pendingWordData.delete(wordIndex);
-      const currentWord = TestWords.words.get(wordIndex)?.display;
-      if (currentWord === undefined && Config.mode !== "zen") return;
-      let ret = "";
-      const wordAtIndex = getWordElement(wordIndex);
-      if (!wordAtIndex) return;
-      const hintIndices: number[][] = [];
-
-      let newlineafter = false;
-
-      if (Config.mode === "zen") {
-        for (const char of input) {
-          if (char === "\t") {
-            ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-          } else if (char === "\n") {
-            newlineafter = true;
-            ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-          } else {
-            ret += `<letter class="correct">${char}</letter>`;
-          }
-        }
-        if (input === "" && compositionData === "") {
-          ret += `<letter class='invisible'>_</letter>`;
-        }
-
-        for (const char of compositionData) {
-          ret += `<letter class="dead">${char}</letter>`;
-        }
-      } else {
-        const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-
-        const inputChars = Strings.splitIntoCharacters(input);
-        const currentWordChars = Strings.splitIntoCharacters(currentWord ?? "");
-        for (let i = 0; i < inputChars.length; i++) {
-          const charCorrect = currentWordChars[i] === inputChars[i];
-
-          let currentLetter = currentWordChars[i] as string;
-          let tabChar = "";
-          let nlChar = "";
-          if (funbox) {
-            const cl = funbox.functions.getWordHtml(currentLetter);
-            if (cl !== "") {
-              currentLetter = cl;
-            }
-          } else if (currentLetter === "\t") {
-            tabChar = "tabChar";
-            currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
-          } else if (currentLetter === "\n") {
-            nlChar = "nlChar";
-            currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
-          }
-
-          if (charCorrect) {
-            ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-          } else if (currentLetter === undefined) {
-            const letter = displayTypedChar(inputChars[i]);
-            ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
-          } else {
-            let charString = currentLetter;
-
-            if (
-              Config.indicateTypos === "replace" ||
-              Config.indicateTypos === "both"
-            ) {
-              charString = displayTypedChar(inputChars[i] ?? currentLetter);
-            }
-
-            ret += `<letter class="incorrect ${tabChar}${nlChar}">${charString}</letter>`;
-            if (
-              Config.indicateTypos === "below" ||
-              Config.indicateTypos === "both"
-            ) {
-              const lastBlock = hintIndices[hintIndices.length - 1];
-              if (lastBlock?.[lastBlock.length - 1] === i - 1) {
-                lastBlock.push(i);
-              } else {
-                hintIndices.push([i]);
-              }
-            }
-          }
-        }
-
-        for (let i = 0; i < compositionData.length; i++) {
-          const compositionChar = compositionData[i];
-          let charToShow =
-            currentWordChars[input.length + i] ?? compositionChar;
-
-          if (Config.compositionDisplay === "replace") {
-            charToShow = compositionChar === " " ? "_" : compositionChar;
-          }
-
-          let correctClass = "";
-          if (compositionChar === currentWordChars[input.length + i]) {
-            correctClass = "correct";
-          }
-
-          ret += `<letter class="dead ${correctClass}">${charToShow}</letter>`;
-        }
-
-        for (
-          let i = inputChars.length + compositionData.length;
-          i < currentWordChars.length;
-          i++
-        ) {
-          const currentLetter = currentWordChars[i];
-          if (funbox?.functions?.getWordHtml) {
-            ret += funbox.functions.getWordHtml(currentLetter as string, true);
-          } else if (currentLetter === "\t") {
-            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-          } else if (currentLetter === "\n") {
-            ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-          } else {
-            ret += `<letter>${currentLetter}</letter>`;
-          }
-        }
-      }
-
-      wordAtIndex.setHtml(ret);
-
-      if (hintIndices?.length) {
-        const wordAtIndexLetters = wordAtIndex.qsa("letter");
-        let hintsHtml;
-        if (Config.indicateTypos === "both") {
-          hintsHtml = createHintsHtml(
-            hintIndices,
-            wordAtIndexLetters,
-            currentWord ?? "",
-          );
-        } else {
-          hintsHtml = createHintsHtml(hintIndices, wordAtIndexLetters, input);
-        }
-        wordAtIndex.appendHtml(hintsHtml);
-        const hintElements = wordAtIndex.native.getElementsByTagName("hint");
-        await joinOverlappingHints(
-          hintIndices,
-          wordAtIndexLetters,
-          hintElements,
-        );
-      }
-
-      if (newlineafter) {
-        wordAtIndex.native.insertAdjacentHTML(
-          "afterend",
-          "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>",
-        );
-      }
-      if (Config.tapeMode !== "off") {
-        void scrollTape();
-      }
-      if (Config.mode === "zen" || isSlowTimer()) {
-        // because we block word jumps in before-insert-text
-        // this check only needs to happen in zen mode
-        // unless slow timer is on, then it needs to happen
-        // because the word jump check is disabled
-        if (!Config.showAllLines) {
-          const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
-          if (wordTopAfterUpdate > activeWordTop) {
-            let jump = false;
-            if (!lineTransition) {
-              wordTopBeforeLineJump = wordTopAfterUpdate;
-              jump = true;
-            } else if (wordTopAfterUpdate > wordTopBeforeLineJump) {
-              jump = true;
-            }
-            if (jump) await lineJump(activeWordTop);
-          }
-        }
-      }
-    }, //end of raf
-  );
+  WordsRender.setWordInput(wordIndex, input, compositionData);
+  pendingUpdatedWords.add(wordIndex);
 }
 
 // this is needed in tape mode because sometimes we want the newline character to appear above the next line
@@ -1175,21 +964,11 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
 }
 
 function highlightBadWord(index: number): void {
-  requestDebouncedAnimationFrame(`test-ui.highlightBadWord.${index}`, () => {
-    getWordElement(index)?.addClass("error");
-  });
+  WordsRender.setWordFlags(index, { error: true });
 }
 
 function highlightAllLettersAsCorrect(wordIndex: number): void {
-  requestDebouncedAnimationFrame(
-    `test-ui.highlightAllLettersAsCorrect.${wordIndex}`,
-    () => {
-      const letters = getWordElement(wordIndex)?.getChildren();
-      for (const letter of letters ?? []) {
-        letter.addClass("correct");
-      }
-    },
-  );
+  WordsRender.setWordFlags(wordIndex, { allCorrect: true });
 }
 
 /**
@@ -1201,10 +980,13 @@ export function wouldActiveWordOverflow(
   data: string,
 ): boolean {
   // pending (not yet rendered) input has to be accounted for
-  const pending = pendingWordData.get(getActiveWordIndex());
-  const { top, height } = getActiveWordTopAndHeightWithDifferentData(
+  const pending = WordsRender.getPendingWordInput(getActiveWordIndex());
+  const measured = getActiveWordTopAndHeightWithDifferentData(
     (pending ?? inputValue) + data,
   );
+  // active word not rendered yet
+  if (measured === null) return false;
+  const { top, height } = measured;
   // word jumped to next line, or letters wrapped to next line
   return top > activeWordTop || height > activeWordHeight;
 }
@@ -1212,10 +994,10 @@ export function wouldActiveWordOverflow(
 function getActiveWordTopAndHeightWithDifferentData(data: string): {
   top: number;
   height: number;
-} {
+} | null {
   const activeWord = getActiveWordElement();
 
-  if (!activeWord) throw new Error("No active word element found");
+  if (!activeWord) return null;
 
   const lettersEls = activeWord.qsa("letter");
   const domLettersCount = lettersEls.length;
@@ -1272,7 +1054,6 @@ function afterAnyTestInput(
 
   Focus.set(true);
   Caret.stopAnimation();
-  Caret.updatePosition();
 }
 
 export function afterTestTextInput(
@@ -1345,10 +1126,17 @@ export async function afterTestWordChange(
   direction: "forward" | "back",
   lastBurst?: number | null,
 ): Promise<void> {
-  updateActiveElement({
-    direction,
+  const activeWordIndex = getActiveWordIndex();
+  if (direction === "forward") {
+    WordsRender.setWordFlags(activeWordIndex - 1, { typed: true });
+  }
+  WordsRender.setWordFlags(activeWordIndex, {
+    typed: false,
+    error: false,
+    allCorrect: false,
   });
-  Caret.updatePosition();
+  WordsRender.setActiveWord(activeWordIndex);
+  pendingWordChange = direction;
 
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     setCurrentLiveStats({ burst: Math.round(lastBurst) });
@@ -1362,26 +1150,8 @@ export async function afterTestWordChange(
     }
   }
 
-  if (direction === "forward") {
-    //
-  } else if (direction === "back") {
-    if (Config.mode === "zen") {
-      // because we need to delete newline, beforenewline and afternewline elements which dont have wordindex attributes
-      // we need to do this loop thingy and delete all elements after the active word
-      let deleteElements = false;
-      for (const child of wordsEl().getChildren()) {
-        if (deleteElements) {
-          child.remove();
-          continue;
-        }
-        const attr = child.getAttribute("data-wordindex");
-        if (attr === null) continue;
-        const wordIndex = parseInt(attr, 10);
-        if (wordIndex === getActiveWordIndex()) {
-          deleteElements = true;
-        }
-      }
-    }
+  if (direction === "back" && Config.mode === "zen") {
+    WordsRender.truncateWords(activeWordIndex + 1);
   }
 }
 
@@ -1453,13 +1223,13 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   currentTestLine = 0;
   AdController.destroyResult();
   void SoundController.clearAllSounds();
-  cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
 }
 
 /** Frees the test words DOM once the result is shown. */
 export function clearWords(): void {
-  wordsEl().empty();
+  WordsRender.reset();
+  clearPendingLayout();
 }
 
 export function onTestFinish(): void {
@@ -1492,6 +1262,8 @@ export function init(
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
   markTestPageMounted(signal);
+  // stays registered across remounts, layoutWords bails while unmounted
+  WordsRender.setLayoutHook(layoutWords);
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config

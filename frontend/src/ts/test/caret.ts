@@ -34,14 +34,23 @@ export function resetPosition(): void {
   });
 }
 
-export function updatePosition(noAnim = false): void {
-  caret?.goTo({
+function positionOptions(noAnim: boolean): Parameters<Caret["goTo"]>[0] {
+  return {
     wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + getCompositionData().length,
     isLanguageRightToLeft: isLanguageRightToLeft(),
     isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
-  });
+  };
+}
+
+export function updatePosition(noAnim = false): void {
+  caret?.goTo(positionOptions(noAnim));
+}
+
+/** Moves the caret now. Only call once the words DOM is up to date. */
+export function updatePositionNow(noAnim = false): void {
+  caret?.goToNow(positionOptions(noAnim));
 }
 
 // #caret is rendered by TestPage, set via initElement() on every mount

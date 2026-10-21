@@ -1,6 +1,6 @@
 # 03 — Wire `Words` into test page, delete old renderer
 
-Status: open
+Status: done
 Blocked by: 01, 02
 
 ## What

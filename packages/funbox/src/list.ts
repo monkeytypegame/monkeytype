@@ -108,7 +108,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "getWord",
       "rememberSettings",
       "getEmulatedChar",
-      "getWordHtml",
       "getLetterIcon",
     ],
     name: "arrows",

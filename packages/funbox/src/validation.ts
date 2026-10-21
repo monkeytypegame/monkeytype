@@ -180,9 +180,7 @@ export function checkCompatibility(
     ).length <= 1;
   const oneCharReplacerMax =
     funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.some(
-        (fn) => fn === "getWordHtml" || fn === "getLetterIcon",
-      ),
+      f.frontendFunctions?.includes("getLetterIcon"),
     ).length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>

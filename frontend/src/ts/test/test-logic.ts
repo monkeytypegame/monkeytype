@@ -624,7 +624,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
+    TestUI.appendEmptyWord();
     return;
   }
 

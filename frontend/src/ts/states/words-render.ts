@@ -141,6 +141,11 @@ function wordCount(): number {
   return (buffer.truncateTo ?? store.words.length) + buffer.appended.length;
 }
 
+/** Input written for a word that hasn't been flushed yet. */
+export function getPendingWordInput(index: number): string | undefined {
+  return buffer.inputs.get(index)?.input;
+}
+
 export function appendWord(text: string): void {
   buffer.appended.push(text);
   scheduleFlush();
