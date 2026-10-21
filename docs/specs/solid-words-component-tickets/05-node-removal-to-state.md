@@ -1,6 +1,6 @@
 # 05 — Node removal → state
 
-Status: open
+Status: done
 Blocked by: 03
 
 ## What

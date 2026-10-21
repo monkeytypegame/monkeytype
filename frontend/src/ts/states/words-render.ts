@@ -8,6 +8,9 @@ import { createStore, produce } from "solid-js/store";
  * Writers (input path) only touch a plain buffer. One shared animation frame
  * applies the buffer to the reactive store inside a batch, then runs the
  * registered layout hook against the updated DOM.
+ *
+ * Exception: the first rendered index is only raised by layout code (line
+ * jump, tape scroll) and applies immediately, so it can measure the result.
  */
 
 export type WordFlags = {
@@ -47,7 +50,6 @@ type Buffer = {
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
   flags: Map<number, Partial<WordFlags>>;
-  firstRenderedWordIndex: number | undefined;
 };
 
 function emptyBuffer(): Buffer {
@@ -57,7 +59,6 @@ function emptyBuffer(): Buffer {
     inputs: new Map(),
     activeWordIndex: undefined,
     flags: new Map(),
-    firstRenderedWordIndex: undefined,
   };
 }
 
@@ -120,16 +121,13 @@ export function flush(): void {
       if (store.words[index] === undefined) continue;
       setStore("words", index, { input, composition });
     }
-    // 3. active index, flags, rendered range
+    // 3. active index, flags
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
     }
     for (const [index, flags] of b.flags) {
       if (store.words[index] === undefined) continue;
       setStore("words", index, flags);
-    }
-    if (b.firstRenderedWordIndex !== undefined) {
-      setStore("firstRenderedWordIndex", b.firstRenderedWordIndex);
     }
   });
 
@@ -170,9 +168,16 @@ export function setWordFlags(index: number, flags: Partial<WordFlags>): void {
   scheduleFlush();
 }
 
+/**
+ * Stops rendering words below `index`. Not for the input path: renders
+ * synchronously so the caller can measure the updated DOM.
+ */
 export function setFirstRenderedWordIndex(index: number): void {
-  buffer.firstRenderedWordIndex = index;
-  scheduleFlush();
+  setStore("firstRenderedWordIndex", index);
+}
+
+export function getFirstRenderedWordIndex(): number {
+  return store.firstRenderedWordIndex;
 }
 
 /** Drops all words from `length` on (zen backspace). */

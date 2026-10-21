@@ -76,6 +76,23 @@ function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
   return { words, input };
 }
 
+function childClasses(words: HTMLElement): string[] {
+  return [...words.children].map((el) =>
+    el.classList.contains("word")
+      ? `word${(el as HTMLElement).dataset["wordindex"]}`
+      : el.className,
+  );
+}
+
+/** Goes to the next word and runs the words frame and its layout. */
+async function goForward(): Promise<void> {
+  increaseActiveWordIndex();
+  void TestUI.afterTestWordChange("forward");
+  runFrames();
+  // layout (line jump, tape scroll) continues asynchronously
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 function activeWordIndex(words: HTMLElement): string | undefined {
   return words.querySelector<HTMLElement>(".word.active")?.dataset["wordindex"];
 }
@@ -196,5 +213,126 @@ describe("test-ui words rendering", () => {
 
     expect(words.querySelectorAll(".word")).toHaveLength(1);
     expect(activeWordIndex(words)).toBe("0");
+  });
+
+  describe("removing passed words", () => {
+    it("line jump stops rendering the hidden line, newline siblings included", async () => {
+      configTesting.replaceConfig({
+        mode: "words",
+        tapeMode: "off",
+        showAllLines: false,
+        smoothLineScroll: false,
+      });
+      const { words } = mount();
+      for (let i = 0; i < 15; i++) {
+        WordsRender.appendWord(i === 4 ? "word\n" : "word");
+      }
+      WordsRender.setActiveWord(0);
+      runFrames();
+
+      // to the third line: the first line scrolls out of view
+      for (let i = 0; i < 10; i++) await goForward();
+
+      expect(childClasses(words).slice(0, 2)).toEqual(["word5", "word6"]);
+      expect(TestUI.isWordRendered(4)).toBe(false);
+      expect(TestUI.isWordRendered(5)).toBe(true);
+    });
+
+    describe("tape mode", () => {
+      const wordWidth = 50;
+      const wrapperWidth = 500;
+
+      function fakeTapeLayout(wordsWrapper: HTMLElement): void {
+        // a single row: words are laid out left to right after #words' margin
+        vi.spyOn(HTMLElement.prototype, "offsetTop", "get").mockReturnValue(0);
+        vi.spyOn(HTMLElement.prototype, "offsetLeft", "get").mockImplementation(
+          function (this: HTMLElement) {
+            const parent = this.parentElement;
+            if (!this.classList.contains("word") || parent === null) return 0;
+            const position = [
+              ...parent.querySelectorAll(":scope > .word"),
+            ].indexOf(this);
+            return (
+              (parseFloat(parent.style.marginLeft) || 0) + position * wordWidth
+            );
+          },
+        );
+        vi.spyOn(
+          HTMLElement.prototype,
+          "offsetWidth",
+          "get",
+        ).mockImplementation(function (this: HTMLElement) {
+          // #words fills the wrapper
+          if (this === wordsWrapper || this.parentElement === wordsWrapper) {
+            return wrapperWidth;
+          }
+          return this.classList.contains("word") ? wordWidth : 0;
+        });
+        vi.spyOn(
+          HTMLElement.prototype,
+          "getBoundingClientRect",
+        ).mockImplementation(function (this: HTMLElement) {
+          const width = this.classList.contains("word") ? wordWidth : 0;
+          return new DOMRect(0, 0, width, 0);
+        });
+        const getComputedStyle = window.getComputedStyle.bind(window);
+        vi.spyOn(window, "getComputedStyle").mockImplementation((el) => ({
+          ...getComputedStyle(el),
+          marginLeft: "0px",
+          marginRight: "0px",
+          marginTop: "0px",
+          marginBottom: "0px",
+        }));
+      }
+
+      beforeEach(() => {
+        configTesting.replaceConfig({
+          mode: "words",
+          tapeMode: "word",
+          tapeMargin: 50,
+          showAllLines: false,
+          smoothLineScroll: false,
+        });
+      });
+
+      it("stops rendering words scrolled off the left edge", async () => {
+        const { words } = mount();
+        fakeTapeLayout(words.parentElement as HTMLElement);
+        for (let i = 0; i < 20; i++) WordsRender.appendWord("word");
+        WordsRender.setActiveWord(0);
+        runFrames();
+
+        for (let i = 0; i < 10; i++) await goForward();
+
+        // the previous scroll put word 9 at the tape margin (250px), so words
+        // 0-2 ended up left of -50px
+        expect(childClasses(words)[0]).toBe("word3");
+        expect(TestUI.isWordRendered(2)).toBe(false);
+        expect(TestUI.isWordRendered(3)).toBe(true);
+        // removing words doesn't move the tape
+        const active = words.querySelector<HTMLElement>(".word.active");
+        expect(active?.offsetLeft).toBe(wrapperWidth / 2);
+      });
+
+      it("keeps a word ending a line rendered, so the line break stays", async () => {
+        const { words } = mount();
+        fakeTapeLayout(words.parentElement as HTMLElement);
+        for (let i = 0; i < 20; i++) {
+          WordsRender.appendWord(i === 2 ? "word\n" : "word");
+        }
+        WordsRender.setActiveWord(0);
+        runFrames();
+
+        for (let i = 0; i < 10; i++) await goForward();
+
+        expect(childClasses(words).slice(0, 4)).toEqual([
+          "word2",
+          "beforeNewline",
+          "newline",
+          "afterNewline",
+        ]);
+        expect(TestUI.isWordRendered(1)).toBe(false);
+      });
+    });
   });
 });
