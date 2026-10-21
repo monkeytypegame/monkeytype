@@ -2,11 +2,19 @@
 // or browser automation. Loaded via dynamic import behind `import.meta.env.DEV`.
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
-import { navigate } from "../controllers/route-controller";
-import { getActivePage } from "../states/core";
+import { setPreloading } from "../router/create-router";
+import { getRouter } from "../router/instance";
+import { navigate } from "../router/navigate";
+import { getRoutePage } from "../states/router";
 import { showModal } from "../states/modals";
 import { restart } from "../test/test-logic";
 import { trackedSignals } from "./signal-tracker";
+import {
+  caretOffset,
+  setCustomText,
+  typeText,
+  wordsSnapshot,
+} from "./test-helpers";
 
 function findSignal(name: string): (typeof trackedSignals)[number] {
   const matches = trackedSignals.filter((s) => s.name === name);
@@ -23,11 +31,19 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
 
 const mt = {
   navigate,
-  getActivePage,
+  getRoutePage,
+  /** Whether a navigation is in progress (the loading page may cover the page). */
+  isNavigating: (): boolean => getRouter()?.state.status === "pending",
+  /** Turns intent preloading (hovered links) off or back on. */
+  setPreloading,
   getConfig,
   setConfig,
   showModal,
   restart,
+  typeText,
+  wordsSnapshot,
+  caretOffset,
+  setCustomText,
   /** List tracked signals, optionally filtered by substring of name or source. */
   signals: (filter = "") =>
     trackedSignals

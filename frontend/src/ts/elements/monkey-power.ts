@@ -1,4 +1,4 @@
-import * as SlowTimer from "../legacy-states/slow-timer";
+import { isSlowTimer } from "../states/test";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
@@ -204,7 +204,7 @@ function randomColor(): string {
  * @param {boolean} good Good power or not?
  */
 export async function addPower(good = true, extra = false): Promise<void> {
-  if (Config.monkeyPowerLevel === "off" || SlowTimer.get()) return;
+  if (Config.monkeyPowerLevel === "off" || isSlowTimer()) return;
 
   requestDebouncedAnimationFrame("monkey-power.addPower", async () => {
     if (Config.blindMode) good = true;

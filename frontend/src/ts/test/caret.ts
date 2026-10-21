@@ -4,10 +4,10 @@ import {
   isDirectionReversed,
   isLanguageRightToLeft,
   getActiveWordIndex,
+  getCompositionData,
 } from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
-import * as CompositionState from "../legacy-states/composition";
 import { ElementWithUtils } from "../utils/dom";
 
 export function stopAnimation(): void {
@@ -37,7 +37,7 @@ export function resetPosition(): void {
 export function updatePosition(noAnim = false): void {
   caret?.goTo({
     wordIndex: getActiveWordIndex(),
-    letterIndex: getCurrentInput().length + CompositionState.getData().length,
+    letterIndex: getCurrentInput().length + getCompositionData().length,
     isLanguageRightToLeft: isLanguageRightToLeft(),
     isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,

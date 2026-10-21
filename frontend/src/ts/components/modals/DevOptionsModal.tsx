@@ -1,5 +1,5 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { createSignal, For, JSXElement } from "solid-js";
+import { createEffect, createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 import { z } from "zod";
 
@@ -19,14 +19,13 @@ import {
 import { showSimpleModal } from "../../states/simple-modal";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
-import { setMediaQueryDebugLevel } from "../../ui";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
-const [mediaQueryDebugLevel, setLocalMediaQueryDebugLevel] = createSignal(0);
+const [mediaQueryDebugLevel, setMediaQueryDebugLevel] = createSignal(0);
 
 type DevButton = {
   icon: FaSolidIcon;
@@ -35,6 +34,16 @@ type DevButton = {
 };
 
 export function DevOptionsModal(): JSXElement {
+  createEffect(() => {
+    const current = mediaQueryDebugLevel();
+    for (const level of [1, 2]) {
+      document.body.classList.toggle(
+        `mediaQueryDebugLevel${level}`,
+        level === current,
+      );
+    }
+  });
+
   const buttons: DevButton[] = [
     {
       icon: "fa-database",
@@ -64,9 +73,8 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
-        setLocalMediaQueryDebugLevel(next);
-        showNoticeNotification(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
+        showNoticeNotification(`Setting media query debug level to ${next}`);
       },
     },
     {

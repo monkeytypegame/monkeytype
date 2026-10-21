@@ -1,25 +1,26 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
-import { getConfig } from "../../../config/store";
-import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
+import { Config, getConfig } from "../../../config/store";
 import {
   isInputElementFocused,
   registerInputElement,
 } from "../../../input/input-element";
 import { initInputListeners } from "../../../input/listeners";
+import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { getShowResult } from "../../../states/result";
+import { isResultShown } from "../../../states/result";
 import {
   getFocus,
   getLayoutfluidTimerText,
-  getResultVisible,
+  isTestFinished,
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
   isLayoutfluidTimerVisible,
   isReadAheadDisabled,
   isResultLoading,
+  isTestActive,
   isTestInitFailed,
   isTypingTestHidden,
   isWordsHidden,
@@ -29,6 +30,7 @@ import {
   showOutOfFocusWarning,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
+import * as CustomText from "../../../test/custom-text";
 import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
 import {
@@ -40,6 +42,7 @@ import {
 import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -72,8 +75,9 @@ function prefixedClass(
  * Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
-  // page-controller ends the test as soon as a navigation away starts. This
-  // also ends it when the page unmounts without one
+  // the router ends the test as soon as a navigation away starts (see
+  // createAppRouter). This also ends it when the page unmounts without one,
+  // eg. the loading page covering it while user data downloads after sign in
   onCleanup(leaveTestPage);
 
   let typingTestRef: HTMLDivElement | undefined;
@@ -124,12 +128,10 @@ export function TestPage(): JSXElement {
     // any previously rendered words are gone, start a fresh test
     void restart({ noAnim: true });
 
-    updateFooterAndVerticalAds(false);
     resetIncompleteTests();
     // registered last so it runs after the modules above have unbound
     signal.addEventListener("abort", () => {
       void Funbox.clear();
-      updateFooterAndVerticalAds(true);
     });
 
     window.addEventListener(
@@ -138,6 +140,29 @@ export function TestPage(): JSXElement {
       { signal },
     );
     window.addEventListener("focus", restartIfNotStarted, { signal });
+    // confirm leaving mid test, unless it's quick to redo
+    window.addEventListener(
+      "beforeunload",
+      (event) => {
+        if (!isTestActive()) return;
+        if (
+          canQuickRestart(
+            Config.mode,
+            Config.words,
+            Config.time,
+            CustomText.getData(),
+            getCustomTextIndicator()?.isLong ?? false,
+          )
+        ) {
+          return;
+        }
+        event.preventDefault();
+        // Included for legacy support, e.g. Chrome/Edge < 119
+        // oxlint-disable-next-line no-deprecated
+        event.returnValue = "";
+      },
+      { signal },
+    );
     // little roadblock for basic cheating
     document.addEventListener(
       "visibilitychange",
@@ -234,7 +259,7 @@ export function TestPage(): JSXElement {
             style={{ "font-size": fontSize() }}
             onFocus={() => {
               if (!isInputElementFocused()) return;
-              if (!getResultVisible() && getConfig.showOutOfFocusWarning) {
+              if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
                 setTestFocusState("focused");
               }
               Caret.show(true);
@@ -326,7 +351,7 @@ export function TestPage(): JSXElement {
           <LoadingCircle />
         </div>
       </Show>
-      <Show when={getShowResult()}>
+      <Show when={isResultShown()}>
         <TestResult />
       </Show>
     </>

@@ -1,11 +1,11 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, createEffect, createSignal, Setter } from "solid-js";
+import { Accessor, Setter } from "solid-js";
 import { z } from "zod";
-import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
+import { SearchFlagSchema } from "../router/search-params";
 import { getSnapshot } from "./snapshot";
 
 export const pageSize = 50;
@@ -31,99 +31,75 @@ const SpeedSelection = z.object({
 export const SelectionSchema = SpeedSelection.or(XpSelection);
 export type Selection = z.infer<typeof SelectionSchema>;
 
-export const LeaderboardUrlParamsSchema = z
-  .object({
-    type: z.enum(["allTime", "daily", "weekly"]),
-    mode: ModeSchema.optional(),
-    mode2: z.string().optional(),
-    language: LanguageSchema.optional(),
-    yesterday: z.boolean().optional(),
-    lastWeek: z.boolean().optional(),
-    friendsOnly: z.boolean().optional(),
-    page: z.number().optional(),
-    goToUserPage: z.boolean().optional(),
-  })
-  .partial();
-export type LeaderboardUrlParams = z.infer<typeof LeaderboardUrlParamsSchema>;
-
-const [getSelectionLs, setSelection] = lsSelection();
-export const [getPage, setPage] = createSignal(0);
-export const [getGoToUserPage, setGoToUserPage] = createSignal(false);
-
-// Reset friendsOnly when connections are disabled
-createEffect(() => {
-  if (
-    getSelectionLs().friendsOnly &&
-    (getSnapshot() === undefined ||
-      getServerConfiguration()?.connections.enabled === false)
-  ) {
-    setSelection((old) => ({ ...old, friendsOnly: false }));
-  }
+/**
+ * The leaderboards url search params. Takes strings in (see the router's
+ * search serializer); an invalid value is dropped, falling back to its default.
+ */
+export const LeaderboardSearchSchema = z.object({
+  type: z.enum(["allTime", "daily", "weekly"]).optional().catch(undefined),
+  mode: ModeSchema.optional().catch(undefined),
+  mode2: z.string().optional().catch(undefined),
+  language: LanguageSchema.optional().catch(undefined),
+  yesterday: SearchFlagSchema,
+  lastWeek: SearchFlagSchema,
+  friendsOnly: SearchFlagSchema,
+  /** 1-based */
+  page: z.coerce.number().int().min(1).optional().catch(undefined),
+  /** jump to the page containing the user once their rank is known */
+  goToUserPage: SearchFlagSchema,
 });
+export type LeaderboardSearch = z.infer<typeof LeaderboardSearchSchema>;
 
-export const getSelection = (): Selection => {
-  return getSelectionLs();
-};
+// the last shown selection, used when opening the leaderboards without one.
+// the leaderboards page sets it (useLeaderboardSearch)
+const [getLastSelection, setLastSelection] = lsSelection();
+export { setLastSelection };
 
-export { setSelection };
-
-export function readLeaderboardGetParameters(
-  params: LeaderboardUrlParams | undefined,
-): void {
-  if (params?.type === undefined) return;
-
-  let newSelection: Partial<Selection> = {
-    type: params.type,
-    friendsOnly: params.friendsOnly ?? false,
-  };
-
-  if (params.type === "weekly") {
-    newSelection.previous = params.lastWeek ?? false;
-  } else {
-    newSelection.mode = params.mode ?? "time";
-    newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "english";
-    newSelection.previous =
-      params.type === "daily" && (params.yesterday ?? false);
-  }
-
-  setSelection({ ...getSelection(), ...newSelection } as Selection);
-
-  if (params.goToUserPage === true) {
-    setGoToUserPage(true);
-  } else if (params.page !== undefined) {
-    setPage(Math.max(0, params.page - 1));
-  }
-}
-
-export function updateGetParameters(
+/** The search params showing `selection` on the 0-based `page`. */
+export function toLeaderboardSearch(
   selection: Selection,
-  pageNumber: number,
-): void {
-  const params: LeaderboardUrlParams = {
+  page = 0,
+): LeaderboardSearch {
+  const previous = selection.previous ? true : undefined;
+  return {
     type: selection.type,
     mode: selection.mode,
     mode2: selection.mode2,
     language: selection.language,
-    page: pageNumber + 1,
+    page: page + 1,
+    lastWeek: selection.type === "weekly" ? previous : undefined,
+    yesterday: selection.type === "daily" ? previous : undefined,
+    friendsOnly: selection.friendsOnly ? true : undefined,
   };
+}
 
-  if (selection.type === "weekly" && selection.previous) {
-    params.lastWeek = true;
-  }
-  if (selection.type === "daily" && selection.previous) {
-    params.yesterday = true;
-  }
-  if (selection.friendsOnly) {
-    params.friendsOnly = true;
-  }
+/** Search params with the last shown selection, if `search` has no selection. */
+export function getMissingLeaderboardSearch(
+  search: LeaderboardSearch,
+): LeaderboardSearch | undefined {
+  if (search.type !== undefined) return undefined;
+  return toLeaderboardSearch(getLastSelection());
+}
 
-  const urlParams = serializeUrlSearchParams({
-    schema: LeaderboardUrlParamsSchema,
-    data: params,
-  });
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
+/** The selection `search` shows (friends only needs a signed in user). */
+export function toSelection(search: LeaderboardSearch): Selection {
+  if (search.type === undefined) return getLastSelection();
+  const friendsOnly =
+    (search.friendsOnly ?? false) &&
+    getSnapshot() !== undefined &&
+    getServerConfiguration()?.connections.enabled !== false;
+
+  if (search.type === "weekly") {
+    return { type: "weekly", friendsOnly, previous: search.lastWeek ?? false };
+  }
+  return {
+    type: search.type,
+    friendsOnly,
+    mode: search.mode ?? "time",
+    mode2: search.mode2 ?? "15",
+    language: search.language ?? "english",
+    previous: search.type === "daily" && (search.yesterday ?? false),
+  };
 }
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {

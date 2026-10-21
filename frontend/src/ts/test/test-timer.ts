@@ -11,9 +11,7 @@ import {
   removeNotification,
 } from "../states/notifications";
 import * as Caret from "./caret";
-import * as SlowTimer from "../legacy-states/slow-timer";
 import { timerEvent } from "../events/timer";
-import { highlight } from "../events/keymap";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -34,6 +32,10 @@ import {
   setCurrentLiveStats,
   setLayoutfluidTimerText,
   setLayoutfluidTimerVisible,
+  isSlowTimer,
+  setSlowTimer,
+  clearSlowTimer,
+  highlightKeymapKey,
 } from "../states/test";
 import { capitalizeFirstLetter } from "../utils/strings";
 
@@ -80,7 +82,7 @@ const newTimer = createTimer({
       logTestEvent("timer", now, {
         event: "step",
         timer: emittedTicks,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
         catchup: true,
       });
     }
@@ -92,7 +94,7 @@ const newTimer = createTimer({
       logTestEvent("timer", now, {
         event: "step",
         timer: emittedTicks,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
         drift,
       });
     }
@@ -179,7 +181,7 @@ function layoutfluid(time: number): void {
 
       if (Config.keymapMode === "next") {
         setTimeout(() => {
-          highlight(
+          highlightKeymapKey(
             TestWords.words
               .getCurrent()
               ?.text.charAt(getCurrentInput().length) ?? "",
@@ -202,14 +204,14 @@ function checkIfFailed(
     getActiveWordIndex() > 3
   ) {
     if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "fail", value: "min speed" });
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "fail", value: "min accuracy" });
     return true;
@@ -232,7 +234,7 @@ function checkIfTimeIsUp(testTime: number): void {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
     timerEvent.dispatch({ key: "finish" });
     return;
@@ -326,7 +328,7 @@ function checkIfTimerIsSlow(drift: number): void {
   ) {
     if (drift > 125) {
       //slow timer
-      SlowTimer.set();
+      setSlowTimer();
       setLowFpsMode();
     }
     if (drift > 250) {
@@ -352,7 +354,7 @@ function checkIfTimerIsSlow(drift: number): void {
 }
 
 export async function start(now: number): Promise<void> {
-  SlowTimer.clear();
+  clearSlowTimer();
   slowTimerCount = 0;
   emittedTicks = 0;
   for (const id of slowTimerNotifIds) {
@@ -395,7 +397,7 @@ async function _startOld(now: number): Promise<void> {
     timer = setTimeout(function () {
       if (!isTestActive()) {
         if (timer !== null) clearTimeout(timer);
-        SlowTimer.clear();
+        clearSlowTimer();
         slowTimerCount = 0;
         return;
       }
@@ -406,7 +408,7 @@ async function _startOld(now: number): Promise<void> {
         event: "step",
         timer: getLiveCachedTestSeconds(now),
         drift: drift,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
       });
 
       timerStep(now, false);

@@ -1,8 +1,18 @@
+import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import { createMemo, JSXElement, onCleanup, onMount, Show } from "solid-js";
+import {
+  createMemo,
+  JSXElement,
+  Match,
+  onCleanup,
+  onMount,
+  Show,
+  Switch,
+} from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
+import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
@@ -15,6 +25,8 @@ import {
   applyReducedMotion,
   scrollToCenterOrTop,
 } from "../../../../utils/misc";
+import { AdIcon } from "../../../common/AdIcon";
+import { adSlotClass } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
@@ -102,10 +114,7 @@ function LoginPrompt(): JSXElement {
   return (
     <Show when={!isAuthenticated() && !getIsScreenshotting()}>
       <div class="mb-4 text-center text-sub">
-        <a href="/login" router-link>
-          Sign in
-        </a>{" "}
-        to save your result
+        <Link to="/login">Sign in</Link> to save your result
       </div>
     </Show>
   );
@@ -158,7 +167,7 @@ function Watermark(): JSXElement {
 }
 
 /**
- * Ad slots are filled and removed by the ad controllers, so the markup must stay static.
+ * Ad slots are filled by the ad controllers, so the markup must stay static.
  */
 function ResultAds(): JSXElement {
   return (
@@ -167,19 +176,42 @@ function ResultAds(): JSXElement {
         hidden: getIsScreenshotting() || getConfig.ads === "off",
       })}
     >
-      <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
-        <div class="iconAndText">
-          <div class="icon">
-            <Fa icon="fa-ad" />
+      <div
+        id="ad-result-wrapper"
+        class={cn(adSlotClass("h"), "full-width mx-auto")}
+      >
+        <div class="grid grid-cols-[auto_1fr] items-center justify-center gap-4 justify-self-center">
+          <AdIcon class="h-auto w-auto" />
+          <div class="text-base text-sub">
+            <Switch>
+              <Match when={getAdBlock()}>
+                Using an ad blocker? No worries
+                <div class="text-[0.7rem]">
+                  We understand ads can be annoying
+                  <br />
+                  You can <i>disable all ads</i> in the settings
+                </div>
+              </Match>
+              <Match when={getCookieBlocker()}>
+                Ads not working? Ooops
+                <div class="text-[0.7rem]">
+                  You may have a cookie popup blocker enabled - ads will not
+                  show without your consent
+                  <br />
+                  You can also <i>disable all ads</i> in the settings if you
+                  wish
+                </div>
+              </Match>
+            </Switch>
           </div>
-          <div class="text textRight"></div>
         </div>
         <div id="ad-result"></div>
       </div>
-      <div id="ad-result-small-wrapper" class="ad advertisement ad-h-s">
-        <div class="icon small">
-          <Fa icon="fa-ad" />
-        </div>
+      <div
+        id="ad-result-small-wrapper"
+        class={cn(adSlotClass("hs"), "mx-auto")}
+      >
+        <AdIcon small />
         <div id="ad-result-small"></div>
       </div>
     </div>

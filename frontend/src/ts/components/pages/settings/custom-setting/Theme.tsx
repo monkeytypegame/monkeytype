@@ -30,6 +30,7 @@ import {
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
+import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
 import { hexToHSL } from "../../../../utils/colors";
 import {
@@ -138,24 +139,16 @@ export function Theme(): JSXElement {
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
               execFn: async ({ includeBackground }) => {
-                const newTheme: {
-                  c: string[]; //colors
-                  i?: string; //image
-                  s?: string; //size
-                  f?: object; //filter
-                } = {
-                  c: convertThemeToCustomColors(getTheme()),
-                };
-
-                if (includeBackground) {
-                  newTheme.i = getConfig.customBackground;
-                  newTheme.s = getConfig.customBackgroundSize;
-                  newTheme.f = getConfig.customBackgroundFilter;
-                }
-
-                const link = `${window.location.origin}?customTheme=${btoa(
-                  JSON.stringify(newTheme),
-                )}`;
+                const link = buildCustomThemeLink({
+                  colors: convertThemeToCustomColors(getTheme()),
+                  background: includeBackground
+                    ? {
+                        image: getConfig.customBackground,
+                        size: getConfig.customBackgroundSize,
+                        filter: getConfig.customBackgroundFilter,
+                      }
+                    : undefined,
+                });
 
                 try {
                   await navigator.clipboard.writeText(link);

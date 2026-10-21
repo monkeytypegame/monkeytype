@@ -1,3 +1,4 @@
+import { isOnline, showOfflineBanner } from "../states/connection";
 import { Config, getConfig } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
@@ -6,13 +7,11 @@ import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as CompositionState from "../legacy-states/composition";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import { convertRemToPixels } from "../utils/numbers";
-import { findSingleActiveFunboxWithFunction } from "./funbox/list";
 import * as PaceCaret from "./pace-caret";
 import {
   cancelPendingAnimationFramesStartingWith,
@@ -20,7 +19,6 @@ import {
 } from "../utils/debounced-animation-frame";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import { highlight } from "../events/keymap";
 import * as Focus from "../test/focus";
 import {
   blurInputElement,
@@ -29,33 +27,35 @@ import {
   isInputElementFocused,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
-import * as SlowTimer from "../legacy-states/slow-timer";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
+import { getFontPreview } from "../states/font";
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
   getActiveWordIndex,
   isTestActive,
-  setCompositionText,
   setCurrentLiveStats,
   setOutOfFocusMaxHeight,
   wordsHaveNewline,
   setTestFocusState,
-  getResultVisible,
+  isTestFinished,
   setWordsWrapperHidden,
   setLayoutfluidTimerVisible,
   setTestInitError,
   setTestInitFailed,
   setTypingTestHidden,
+  getCompositionData,
+  isSlowTimer,
+  highlightKeymapKey,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
-import * as ConnectionState from "../legacy-states/connection";
-import { setShowResult } from "../states/result";
+import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
+import { FaSolidIcon } from "../types/font-awesome";
 
 export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
   updateHintsPosition,
@@ -328,7 +328,7 @@ async function joinOverlappingHints(
 async function updateHintsPosition(): Promise<void> {
   if (
     !isMounted() ||
-    getResultVisible() ||
+    isTestFinished() ||
     (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
   ) {
     return;
@@ -392,15 +392,23 @@ async function updateHintsPosition(): Promise<void> {
   }
 }
 
+// arrows (arrows funbox) render as icons, like tab and newline
+const arrowIcons: Record<string, FaSolidIcon> = {
+  "←": "fa-arrow-left",
+  "↓": "fa-arrow-down",
+  "↑": "fa-arrow-up",
+  "→": "fa-arrow-right",
+};
+
 function buildWordHTML(word: string, wordIndex: number): string {
   let newlineafter = false;
   let retval = `<div class='word' data-wordindex='${wordIndex}'>`;
 
-  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox) {
-      retval += funbox.functions.getWordHtml(char, true);
+    const arrowIcon = arrowIcons[char];
+    if (arrowIcon !== undefined) {
+      retval += `<letter><i class="fas ${arrowIcon}"></i></letter>`;
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (char === "\n") {
@@ -546,7 +554,7 @@ export async function centerActiveLine(): Promise<void> {
 }
 
 function updateWordsWrapperHeight(force = false): void {
-  if (!isMounted() || getResultVisible()) return;
+  if (!isMounted() || isTestFinished()) return;
   if (!force && Config.mode !== "custom") return;
   const activeWordEl = getActiveWordElement();
   if (!activeWordEl) return;
@@ -653,7 +661,7 @@ export function addWord(
   //     await updateWordLetters({
   //       wordIndex,
   //       input,
-  //       compositionData: CompositionState.getData(),
+  //       compositionData: getCompositionData(),
   //     });
   //   }
   // });
@@ -719,8 +727,6 @@ function updateWordLetters({
           ret += `<letter class="dead">${char}</letter>`;
         }
       } else {
-        const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
-
         const inputChars = Strings.splitIntoCharacters(input);
         const currentWordChars = Strings.splitIntoCharacters(currentWord ?? "");
         for (let i = 0; i < inputChars.length; i++) {
@@ -729,11 +735,9 @@ function updateWordLetters({
           let currentLetter = currentWordChars[i] as string;
           let tabChar = "";
           let nlChar = "";
-          if (funbox) {
-            const cl = funbox.functions.getWordHtml(currentLetter);
-            if (cl !== "") {
-              currentLetter = cl;
-            }
+          const arrowIcon = arrowIcons[currentLetter];
+          if (arrowIcon !== undefined) {
+            currentLetter = `<i class="fas ${arrowIcon}"></i>`;
           } else if (currentLetter === "\t") {
             tabChar = "tabChar";
             currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
@@ -795,8 +799,9 @@ function updateWordLetters({
           i++
         ) {
           const currentLetter = currentWordChars[i];
-          if (funbox?.functions?.getWordHtml) {
-            ret += funbox.functions.getWordHtml(currentLetter as string, true);
+          const arrowIcon = arrowIcons[currentLetter as string];
+          if (arrowIcon !== undefined) {
+            ret += `<letter><i class="fas ${arrowIcon}"></i></letter>`;
           } else if (currentLetter === "\t") {
             ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
           } else if (currentLetter === "\n") {
@@ -839,7 +844,7 @@ function updateWordLetters({
       if (Config.tapeMode !== "off") {
         void scrollTape();
       }
-      if (Config.mode === "zen" || SlowTimer.get()) {
+      if (Config.mode === "zen" || isSlowTimer()) {
         // because we block word jumps in before-insert-text
         // this check only needs to happen in zen mode
         // unless slow timer is on, then it needs to happen
@@ -885,7 +890,7 @@ function getNlCharWidth(
 }
 
 export async function scrollTape(noAnimation = false): Promise<void> {
-  if (!isMounted() || getResultVisible()) return;
+  if (!isMounted() || isTestFinished()) return;
 
   await centeringActiveLine;
 
@@ -1266,7 +1271,7 @@ function afterAnyTestInput(
     const keyToHighlight =
       TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
     if (keyToHighlight !== undefined) {
-      highlight(keyToHighlight);
+      highlightKeymapKey(keyToHighlight);
     }
   }
 
@@ -1290,7 +1295,7 @@ export function afterTestTextInput(
   updateWordLetters({
     input,
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
 
   afterAnyTestInput("textInput", correct);
@@ -1300,7 +1305,7 @@ export function afterTestCompositionUpdate(): void {
   updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
   // correct needs to be true to get the normal click sound
   afterAnyTestInput("compositionUpdate", true);
@@ -1310,7 +1315,7 @@ export function afterTestDelete(): void {
   updateWordLetters({
     input: getCurrentInput(),
     wordIndex: getActiveWordIndex(),
-    compositionData: CompositionState.getData(),
+    compositionData: getCompositionData(),
   });
   afterAnyTestInput("delete", null);
 }
@@ -1328,7 +1333,7 @@ export function beforeTestWordChange(
     updateWordLetters({
       input: getCurrentInput(),
       wordIndex: getActiveWordIndex(),
-      compositionData: CompositionState.getData(),
+      compositionData: getCompositionData(),
     });
   }
 
@@ -1358,7 +1363,7 @@ export async function afterTestWordChange(
     const keyToHighlight =
       TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
     if (keyToHighlight !== undefined) {
-      highlight(keyToHighlight);
+      highlightKeymapKey(keyToHighlight);
     }
   }
 
@@ -1419,7 +1424,7 @@ export async function fadeInTest(noAnim: boolean): Promise<void> {
 }
 
 export function onTestRestart(source: "testPage" | "resultPage"): void {
-  setShowResult(false);
+  setResultShown(false);
   typingTestEl().setStyle({ opacity: "0" });
   setTypingTestHidden(false);
   getInputElement().style.left = "0";
@@ -1439,8 +1444,8 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   setTestInitError(null);
   focusWords(true);
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
+  if (!isOnline()) {
+    showOfflineBanner();
   }
 
   if (source === "resultPage") {
@@ -1451,14 +1456,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   }
 
   currentTestLine = 0;
-  // the page may have unmounted during the restart
-  if (isMounted()) {
-    AdController.updateFooterAndVerticalAds(false);
-  }
   AdController.destroyResult();
-  if (Config.compositionDisplay === "below") {
-    setCompositionText(" ");
-  }
   void SoundController.clearAllSounds();
   cancelPendingAnimationFramesStartingWith("test-ui");
   showWords();
@@ -1529,7 +1527,7 @@ export function init(
         updateWordLetters({
           input: getCurrentInput(),
           wordIndex: getActiveWordIndex(),
-          compositionData: CompositionState.getData(),
+          compositionData: getCompositionData(),
         }),
       { defer: true },
     ),
@@ -1543,7 +1541,7 @@ export function init(
   );
   createEffect(
     on(
-      () => [getConfig.fontFamily, getConfig.fontSize],
+      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
         Joining.update("fontSize", wordsEl());
         void updateHintsPositionDebounced();
@@ -1556,7 +1554,7 @@ export function init(
   document.addEventListener("keydown", autofocusWords, { signal });
 
   const recenter = debounce(250, () => {
-    if (getResultVisible()) return;
+    if (isTestFinished()) return;
     if (Config.tapeMode !== "off") {
       void scrollTape();
     } else {
@@ -1598,7 +1596,7 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 
-  if (getResultVisible() || isInputElementFocused()) return;
+  if (isTestFinished() || isInputElementFocused()) return;
   // checked last, isAnyPopupVisible is a bit expensive
   if (
     ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
@@ -1613,3 +1611,7 @@ function autofocusWords(e: KeyboardEvent): void {
     e.preventDefault();
   }
 }
+
+export const __testing = {
+  updateWordsWrapperHeight,
+};
