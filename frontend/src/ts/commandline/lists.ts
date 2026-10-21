@@ -23,7 +23,6 @@ import {
   clearAllNotifications,
   showSuccessNotification,
 } from "../states/notifications";
-import * as VideoAdPopup from "../popups/video-ad-popup";
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigMetadataObject } from "./commandline-metadata";
@@ -212,15 +211,6 @@ export const commands: CommandsSubgroup = {
     //other
     ...LoadChallengeCommands,
     ...NavigationCommands,
-    {
-      id: "watchVideoAd",
-      display: "Watch video ad",
-      alias: "support donate",
-      icon: "fa-ad",
-      exec: (): void => {
-        void VideoAdPopup.show();
-      },
-    },
     {
       id: "importSettingsJSON",
       display: "Import settings JSON",
@@ -470,12 +460,6 @@ function buildSingleListCommands(
         /\s?\.\.\.$/g,
         "",
       );
-      const singleListDisplay = `${
-        parentCommandDisplay
-      }<i class="fas fa-fw fa-chevron-right chevronIcon"></i>${
-        command.display
-      }`;
-
       const singleListDisplayNoIcon = `${parentCommandDisplay} ${command.display}`;
 
       let newAlias: string | undefined = undefined;
@@ -488,7 +472,7 @@ function buildSingleListCommands(
 
       const newCommand = {
         ...command,
-        singleListDisplay,
+        singleListParentDisplay: parentCommandDisplay,
         singleListDisplayNoIcon,
         configKey: parentCommand.subgroup?.configKey,
         icon: parentCommand.icon,

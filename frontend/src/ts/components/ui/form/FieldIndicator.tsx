@@ -17,7 +17,7 @@ export function FieldIndicator(props: FieldIndicatorProps) {
   //@ts-expect-error custom meta attributes
   const getWarnings = () => props.field.getMeta().warnings as string[];
   return (
-    <div class="col-start-1 row-start-1 self-center justify-self-end pr-[0.40em]">
+    <div class="col-start-1 row-start-1 mr-[0.40em] self-center justify-self-end">
       <Switch>
         <Match when={props.field.state.meta.isValidating}>
           <LoadingCircle />

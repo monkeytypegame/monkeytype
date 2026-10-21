@@ -79,6 +79,9 @@ vi.mock("../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
   getBailedOut: () => false,
   getKoreanStatus: () => false,
+  isComposing: () => false,
+  getCompositionData: () => "",
+  flashKeymapKey: vi.fn(),
 }));
 
 vi.mock("../../../src/ts/input/state", () => ({
@@ -97,10 +100,9 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 vi.mock("../../../src/ts/test/test-ui", () => ({
   afterTestTextInput: vi.fn(),
   // words scrolled off the screen are removed from the dom
-  getWordElement: vi.fn((index: number) =>
-    mockState.wordsScrolledOff.has(index) ? null : {},
+  isWordRendered: vi.fn(
+    (index: number) => !mockState.wordsScrolledOff.has(index),
   ),
-  pendingWordData: new Map<number, string>(),
 }));
 vi.mock("../../../src/ts/test/test-logic", () => ({
   startTest: vi.fn(),
@@ -109,13 +111,8 @@ vi.mock("../../../src/ts/test/test-logic", () => ({
   addWord: vi.fn(),
 }));
 vi.mock("../../../src/ts/test/weak-spot", () => ({ updateScore: vi.fn() }));
-vi.mock("../../../src/ts/events/keymap", () => ({ flash: vi.fn() }));
 vi.mock("../../../src/ts/states/notifications", () => ({
   showNoticeNotification: vi.fn(),
-}));
-vi.mock("../../../src/ts/legacy-states/composition", () => ({
-  getComposing: () => false,
-  getData: () => "",
 }));
 vi.mock("../../../src/ts/test/words-generator", () => ({
   areAllWordsGenerated: () => true,
