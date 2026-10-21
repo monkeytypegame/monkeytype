@@ -9,14 +9,13 @@ import {
 
 import { getConfig } from "../../../config/store";
 import {
-  registerWordElement,
   RenderedWord,
-  unregisterWordElement,
   wordEndsLine,
   wordsRenderState,
 } from "../../../states/words-render";
 import { splitIntoCharacters } from "../../../utils/strings";
 import { FaProps } from "../../common/Fa";
+import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { Letter, LetterStatus, WordLetter } from "./WordLetter";
 
 const ICONS: Map<string, FaProps> = new Map([

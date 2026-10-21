@@ -212,22 +212,6 @@ export function isWordRendered(index: number): boolean {
   return word !== undefined && wordEndsLine(word);
 }
 
-// rendered word elements, registered by the Word component while mounted
-const wordElements = new Map<number, HTMLElement>();
-
-export function registerWordElement(index: number, el: HTMLElement): void {
-  wordElements.set(index, el);
-}
-
-export function unregisterWordElement(index: number, el: HTMLElement): void {
-  if (wordElements.get(index) === el) wordElements.delete(index);
-}
-
-/** The word's element, as of the last flush. */
-export function getWordElement(index: number): HTMLElement | undefined {
-  return wordElements.get(index);
-}
-
 /** Drops all words from `length` on (zen backspace). */
 export function truncateWords(length: number): void {
   if (length >= wordCount()) return;

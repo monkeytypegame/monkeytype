@@ -10,7 +10,7 @@ import { __testing as configTesting } from "../../src/ts/config/testing";
 import {
   registerWordElement,
   unregisterWordElement,
-} from "../../src/ts/states/words-render";
+} from "../../src/ts/components/pages/test/word-elements";
 import * as TestUI from "../../src/ts/test/test-ui";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 

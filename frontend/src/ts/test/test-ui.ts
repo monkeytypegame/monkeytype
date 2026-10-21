@@ -28,10 +28,10 @@ import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
 import { getFontPreview } from "../states/font";
+import { getWordElement as getRenderedWordElement } from "../components/pages/test/word-elements";
 import {
   appendWord,
   flush as flushWordsRender,
-  getWordElement as getRenderedWordElement,
   getPendingWordInput,
   isWordRendered as isWordRenderedInState,
   reset as resetWordsRender,

@@ -5,7 +5,7 @@ import { isWordRightToLeft } from "../utils/strings";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
-import { getWordElement } from "../states/words-render";
+import { getWordElement } from "../components/pages/test/word-elements";
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
