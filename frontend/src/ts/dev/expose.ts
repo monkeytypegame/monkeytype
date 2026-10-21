@@ -9,6 +9,12 @@ import { getRoutePage } from "../states/router";
 import { showModal } from "../states/modals";
 import { restart } from "../test/test-logic";
 import { trackedSignals } from "./signal-tracker";
+import {
+  caretOffset,
+  setCustomText,
+  typeText,
+  wordsSnapshot,
+} from "./test-helpers";
 
 function findSignal(name: string): (typeof trackedSignals)[number] {
   const matches = trackedSignals.filter((s) => s.name === name);
@@ -34,6 +40,10 @@ const mt = {
   setConfig,
   showModal,
   restart,
+  typeText,
+  wordsSnapshot,
+  caretOffset,
+  setCustomText,
   /** List tracked signals, optionally filtered by substring of name or source. */
   signals: (filter = "") =>
     trackedSignals

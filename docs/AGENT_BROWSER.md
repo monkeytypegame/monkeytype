@@ -43,6 +43,10 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `setConfig(key, value)` | write config |
 | `showModal(id)` | open a modal by `ModalId` |
 | `restart()` | restart the typing test |
+| `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
+| `wordsSnapshot()` | rendered `#words` children: words (index, classes, letters with text/icon/classes) and newline siblings |
+| `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
+| `setCustomText(text)` | start a custom test with `text` (newlines become line breaks), as the custom text modal's simple mode |
 | `setPreloading(enabled)` | turn intent preloading (hovered/focused links run the next page's guards and loaders) off or back on, no rebuild; resets on reload. Permanent switch: `INTENT_PRELOADING` in `router/create-router.ts` |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
 | `getSignal(name)` / `setSignal(name, value)` | read/write a tracked signal by exact name |
