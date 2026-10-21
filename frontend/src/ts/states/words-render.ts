@@ -9,8 +9,9 @@ import { createStore, produce } from "solid-js/store";
  * applies the buffer to the reactive store inside a batch, then runs the
  * registered layout hook against the updated DOM.
  *
- * Exception: the first rendered index is only raised by layout code (line
- * jump, tape scroll) and applies immediately, so it can measure the result.
+ * Exception: the first rendered/tape hidden indices are only raised by layout
+ * code (line jump, tape scroll) and apply immediately, so it can measure the
+ * result.
  */
 
 export type WordFlags = {
@@ -32,12 +33,18 @@ type WordsRenderState = {
   words: RenderedWord[];
   /** words below this index are not rendered */
   firstRenderedWordIndex: number;
+  /**
+   * tape mode: words below this index are not rendered either, except words
+   * ending a line - they keep the line break
+   */
+  tapeHiddenBefore: number;
   renderedActiveWordIndex: number;
 };
 
 const [store, setStore] = createStore<WordsRenderState>({
   words: [],
   firstRenderedWordIndex: 0,
+  tapeHiddenBefore: 0,
   renderedActiveWordIndex: 0,
 });
 
@@ -176,8 +183,25 @@ export function setFirstRenderedWordIndex(index: number): void {
   setStore("firstRenderedWordIndex", index);
 }
 
-export function getFirstRenderedWordIndex(): number {
-  return store.firstRenderedWordIndex;
+/**
+ * Tape mode: stops rendering words below `index`, except words ending a line.
+ * Not for the input path, renders synchronously like setFirstRenderedWordIndex.
+ */
+export function setTapeHiddenBefore(index: number): void {
+  setStore("tapeHiddenBefore", index);
+}
+
+/** Whether the word is followed by a line break (zen: typed newline). */
+export function wordEndsLine(word: RenderedWord, zen: boolean): boolean {
+  return (zen ? word.input : word.text).includes("\n");
+}
+
+/** Whether the word is rendered, as of the last flush. */
+export function isWordRendered(index: number, zen: boolean): boolean {
+  if (index < store.firstRenderedWordIndex) return false;
+  if (index >= store.tapeHiddenBefore) return true;
+  const word = store.words[index];
+  return word !== undefined && wordEndsLine(word, zen);
 }
 
 /** Drops all words from `length` on (zen backspace). */
@@ -206,6 +230,7 @@ export function reset(): void {
   setStore({
     words: [],
     firstRenderedWordIndex: 0,
+    tapeHiddenBefore: 0,
     renderedActiveWordIndex: 0,
   });
 }

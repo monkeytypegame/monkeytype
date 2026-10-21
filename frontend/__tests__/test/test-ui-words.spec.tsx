@@ -22,6 +22,18 @@ vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
   getCurrentInput: (): string => currentInput,
 }));
 
+// records which words get their joining broken
+const joiningSet = vi.hoisted(() => vi.fn());
+vi.mock("../../src/ts/test/break-joining", async (importOriginal) => ({
+  ...(await importOriginal()),
+  set: joiningSet,
+}));
+const caretUpdatePositionNow = vi.hoisted(() => vi.fn());
+vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
+  ...(await importOriginal()),
+  updatePositionNow: caretUpdatePositionNow,
+}));
+
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { registerInputElement } from "../../src/ts/input/input-element";
@@ -31,6 +43,7 @@ import {
 } from "../../src/ts/states/test";
 import * as WordsRender from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
+import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
 // jsdom has no layout: words get a fake one, 5 per line
@@ -130,6 +143,8 @@ describe("test-ui words rendering", () => {
     });
     resetActiveWordIndex();
     currentInput = "";
+    joiningSet.mockClear();
+    caretUpdatePositionNow.mockClear();
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
   });
@@ -137,6 +152,7 @@ describe("test-ui words rendering", () => {
   afterEach(() => {
     for (const cleanup of cleanups.splice(0)) cleanup();
     WordsRender.reset();
+    TestWords.words.reset();
     resetActiveWordIndex();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -220,6 +236,118 @@ describe("test-ui words rendering", () => {
 
     expect(words.querySelectorAll(".word")).toHaveLength(1);
     expect(activeWordIndex(words)).toBe("0");
+  });
+
+  it("breaks the joining of every word passed within one frame", () => {
+    const { words } = mount();
+    for (let i = 0; i < 5; i++) WordsRender.appendWord("word");
+    WordsRender.setActiveWord(0);
+    runFrames();
+    joiningSet.mockClear();
+
+    for (let i = 0; i < 2; i++) {
+      increaseActiveWordIndex();
+      void TestUI.afterTestWordChange("forward");
+    }
+    runFrames();
+
+    const brokenWords = joiningSet.mock.calls
+      .filter(([, broken]) => broken === true)
+      .map(([el]) => (el as ElementWithUtils).native.dataset["wordindex"]);
+    expect(brokenWords).toEqual(["0", "1"]);
+    expect(activeWordIndex(words)).toBe("2");
+  });
+
+  describe("restart", () => {
+    beforeEach(() => {
+      // jsdom lacks it, focusing the words scrolls them into view
+      Element.prototype.scrollIntoView = vi.fn();
+    });
+
+    function startTest(count: number): void {
+      TestWords.words.reset();
+      for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
+      resetActiveWordIndex();
+      TestUI.onTestRestart("testPage");
+    }
+
+    it("snaps the caret to the new words instead of animating", () => {
+      mount();
+      caretUpdatePositionNow.mockClear();
+
+      startTest(10);
+
+      expect(caretUpdatePositionNow).toHaveBeenCalledWith(true);
+      expect(caretUpdatePositionNow).not.toHaveBeenCalledWith(false);
+    });
+
+    it("drops a line jump still animating when the test restarts", async () => {
+      configTesting.replaceConfig({
+        mode: "words",
+        tapeMode: "off",
+        showAllLines: false,
+        smoothLineScroll: true,
+      });
+      const completions: (() => void)[] = [];
+      const cancel = vi.fn();
+      vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
+        (params) => {
+          completions.push(() => {
+            params.onComplete?.({} as never, {} as never);
+          });
+          return { cancel } as never;
+        },
+      );
+      const { words } = mount();
+      startTest(20);
+
+      // to the third line: starts the animated jump hiding the first line
+      for (let i = 0; i < 10; i++) await goForward();
+      expect(completions).toHaveLength(1);
+
+      startTest(20);
+      expect(cancel).toHaveBeenCalled();
+      // the stale animation completes anyway
+      for (const complete of completions) complete();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(childClasses(words)[0]).toBe("word0");
+      expect(TestUI.isWordRendered(0)).toBe(true);
+      expect(activeWordIndex(words)).toBe("0");
+      expect(words.style.marginTop).toBe("0px");
+    });
+  });
+
+  describe("overflow guard", () => {
+    function mountTwoLetterWords(count: number): HTMLElement {
+      const { words } = mount();
+      for (let i = 0; i < count; i++) WordsRender.appendWord("ab");
+      WordsRender.setActiveWord(0);
+      runFrames();
+      return words;
+    }
+
+    it("measures the active word itself while its word change isn't laid out", async () => {
+      mountTwoLetterWords(10);
+      // to the last word of the first line, laid out
+      for (let i = 0; i < 4; i++) await goForward();
+      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+
+      // to the first word of the second line, same frame
+      increaseActiveWordIndex();
+      void TestUI.afterTestWordChange("forward");
+
+      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+    });
+
+    it("blocks the extra letter while the active word isn't rendered yet", () => {
+      mountTwoLetterWords(3);
+      for (let i = 0; i < 3; i++) increaseActiveWordIndex();
+      TestUI.addWord("ab");
+      void TestUI.afterTestWordChange("forward");
+
+      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(true);
+    });
   });
 
   describe("removing passed words", () => {
@@ -321,7 +449,7 @@ describe("test-ui words rendering", () => {
         expect(active?.offsetLeft).toBe(wrapperWidth / 2);
       });
 
-      it("keeps a word ending a line rendered, so the line break stays", async () => {
+      it("keeps a word ending a line rendered, so the line break stays, still removing overflown words after it", async () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
         for (let i = 0; i < 20; i++) {
@@ -330,15 +458,19 @@ describe("test-ui words rendering", () => {
         WordsRender.setActiveWord(0);
         runFrames();
 
-        for (let i = 0; i < 10; i++) await goForward();
+        // word 10 at the tape margin (250px) leaves words 0-3 left of -50px
+        for (let i = 0; i < 11; i++) await goForward();
 
-        expect(childClasses(words).slice(0, 4)).toEqual([
+        expect(childClasses(words).slice(0, 5)).toEqual([
           "word2",
           "beforeNewline",
           "newline",
           "afterNewline",
+          "word4",
         ]);
         expect(TestUI.isWordRendered(1)).toBe(false);
+        expect(TestUI.isWordRendered(2)).toBe(true);
+        expect(TestUI.isWordRendered(3)).toBe(false);
       });
     });
   });
@@ -410,6 +542,32 @@ describe("test-ui words rendering", () => {
       runFrames();
 
       expect(words.querySelector(".word > .hints")).toBe(container);
+      expect(hintsOf(words, 0)).toHaveLength(0);
+    });
+
+    it("leaves the hints container alone while there are no hints to add or clear", () => {
+      configTesting.replaceConfig({ indicateTypos: "off" });
+      const words = mountWord();
+      const setHtml = vi.spyOn(ElementWithUtils.prototype, "setHtml");
+
+      typeIntoActiveWord("wx");
+      runFrames();
+
+      expect(setHtml).not.toHaveBeenCalled();
+      expect(hintsOf(words, 0)).toHaveLength(0);
+    });
+
+    it("clears the hints once typos are no longer indicated below", () => {
+      configTesting.replaceConfig({ indicateTypos: "below" });
+      const words = mountWord();
+      typeIntoActiveWord("wx");
+      runFrames();
+      expect(hintsOf(words, 0)).toHaveLength(1);
+
+      configTesting.replaceConfig({ indicateTypos: "off" });
+      typeIntoActiveWord("wxy");
+      runFrames();
+
       expect(hintsOf(words, 0)).toHaveLength(0);
     });
 

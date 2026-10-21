@@ -8,7 +8,11 @@ import {
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { RenderedWord, wordsRenderState } from "../../../states/words-render";
+import {
+  RenderedWord,
+  wordEndsLine,
+  wordsRenderState,
+} from "../../../states/words-render";
 import { get as getFunboxes } from "../../../test/funbox/list";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { splitIntoCharacters } from "../../../utils/strings";
@@ -203,9 +207,7 @@ function Word(props: {
 }): JSXElement {
   const letters = createMemo(() => wordLetters(props.word));
   const hasNewline = (): boolean =>
-    (getConfig.mode === "zen" ? props.word.input : props.word.text).includes(
-      "\n",
-    );
+    wordEndsLine(props.word, getConfig.mode === "zen");
 
   return (
     <>
@@ -240,9 +242,19 @@ export function Words(): JSXElement {
   const isActive = createSelector(
     () => wordsRenderState.renderedActiveWordIndex,
   );
-  const visibleWords = createMemo(() =>
-    wordsRenderState.words.slice(wordsRenderState.firstRenderedWordIndex),
-  );
+  const visibleWords = createMemo(() => {
+    const { words, firstRenderedWordIndex, tapeHiddenBefore } =
+      wordsRenderState;
+    const shownFrom = Math.max(firstRenderedWordIndex, tapeHiddenBefore);
+    const shown = words.slice(shownFrom);
+    if (shownFrom === firstRenderedWordIndex) return shown;
+    // tape hidden words ending a line stay, so the lines don't collapse
+    const zen = getConfig.mode === "zen";
+    const lineEnds = words
+      .slice(firstRenderedWordIndex, shownFrom)
+      .filter((word) => wordEndsLine(word, zen));
+    return lineEnds.length === 0 ? shown : [...lineEnds, ...shown];
+  });
 
   return (
     <For each={visibleWords()}>
