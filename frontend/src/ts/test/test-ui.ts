@@ -1287,6 +1287,7 @@ export function beforeTestWordChange(
   }
 
   if (direction === "forward") {
+    // blind mode: CSS hides mistakes in typed words
     if (!Config.blindMode && correct === false) {
       highlightBadWord(getActiveWordIndex());
     }
