@@ -1,3 +1,6 @@
+import { lstatSync, realpathSync } from "node:fs";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, UserWorkspaceConfig } from "vitest/config";
 import { workspacePackagesAlias } from "./vite-plugins/workspace-packages";
 import { languageHashes } from "./vite-plugins/language-hashes";
@@ -11,6 +14,30 @@ const plugins = [
 ];
 
 const resolve = { alias: workspacePackagesAlias };
+
+// worktrees set up by scripts/setup-worktree.sh link node_modules from the main
+// checkout: allow reading the linked deps, and keep vite's cache in the
+// worktree (agents' sandboxes can only write there)
+const nodeModules = fileURLToPath(new URL("./node_modules", import.meta.url));
+const linkedCheckout = lstatSync(nodeModules, {
+  throwIfNoEntry: false,
+})?.isSymbolicLink()
+  ? dirname(dirname(realpathSync(nodeModules)))
+  : undefined;
+const worktree =
+  linkedCheckout === undefined
+    ? {}
+    : {
+        cacheDir: ".vite-worktree",
+        server: {
+          fs: {
+            allow: [
+              fileURLToPath(new URL("..", import.meta.url)),
+              linkedCheckout,
+            ],
+          },
+        },
+      };
 
 const tanstackSolidNoExternal: (string | RegExp)[] = [
   "@solidjs/meta",
@@ -37,6 +64,7 @@ export const projects: UserWorkspaceConfig[] = [
     },
     plugins,
     resolve,
+    ...worktree,
   },
   {
     ssr: {
@@ -50,6 +78,7 @@ export const projects: UserWorkspaceConfig[] = [
     },
     plugins,
     resolve,
+    ...worktree,
   },
   {
     ssr: {
@@ -69,6 +98,7 @@ export const projects: UserWorkspaceConfig[] = [
     },
     plugins,
     resolve,
+    ...worktree,
   },
 ];
 export default defineConfig({
