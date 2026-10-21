@@ -401,12 +401,10 @@ describe("Words", () => {
       WordsRender.appendWord("");
       WordsRender.setWordInput(0, "a\n");
       flush();
-      const letters = wordEls(container)[0]?.querySelectorAll("letter");
       expect(letterClasses(wordEls(container)[0])).toEqual([
         "correct",
-        "correct nlChar",
+        "correct nlChar opacity-0",
       ]);
-      expect((letters?.[1] as HTMLElement).style.opacity).toBe("0");
       expect(container.querySelectorAll(".newline")).toHaveLength(1);
     });
 

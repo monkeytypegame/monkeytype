@@ -11,7 +11,6 @@ import { getConfig } from "../../../config/store";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
 import { get as getFunboxes } from "../../../test/funbox/list";
 import { FaSolidIcon } from "../../../types/font-awesome";
-import { cn } from "../../../utils/cn";
 import { splitIntoCharacters } from "../../../utils/strings";
 import { Fa } from "../../common/Fa";
 
@@ -168,20 +167,23 @@ function wordLetters(word: RenderedWord): Letter[] {
   return letters;
 }
 
+// hot path: plain join, the class names are fixed (no tailwind-merge needed)
+function letterClass(letter: Letter): string {
+  let cls = "";
+  if (letter.correct) cls += " correct";
+  if (letter.incorrect) cls += " incorrect";
+  if (letter.extra) cls += " extra";
+  if (letter.dead) cls += " dead";
+  if (letter.tabChar) cls += " tabChar";
+  if (letter.nlChar) cls += " nlChar";
+  if (letter.invisible) cls += " invisible";
+  if (letter.hidden) cls += " opacity-0";
+  return cls.slice(1);
+}
+
 function WordLetter(props: { letter: Letter }): JSXElement {
   return (
-    <letter
-      class={cn({
-        correct: props.letter.correct,
-        incorrect: props.letter.incorrect,
-        extra: props.letter.extra,
-        dead: props.letter.dead,
-        tabChar: props.letter.tabChar,
-        nlChar: props.letter.nlChar,
-        invisible: props.letter.invisible,
-      })}
-      style={props.letter.hidden ? { opacity: 0 } : undefined}
-    >
+    <letter class={letterClass(props.letter)}>
       <Show when={props.letter.icon} fallback={props.letter.text}>
         {(icon) => (
           <Fa

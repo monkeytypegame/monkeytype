@@ -112,7 +112,7 @@ function handleDeleteOnError(now: number): void {
   }
 
   //mistake on the first character of the word - the hard modes send you back
-  //but only if the previous word is still in the dom (it might have scrolled
+  //but only if the previous word is still rendered (it might have scrolled
   //off), same check as the one a normal backspace does in onBeforeDelete
   if (
     goBackAWord &&
