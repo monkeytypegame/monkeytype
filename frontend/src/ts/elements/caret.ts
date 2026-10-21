@@ -275,7 +275,6 @@ export class Caret {
     });
   }
 
-  /** Moves now: callers run once the words DOM is up to date. */
   public goTo(options: {
     wordIndex: number;
     letterIndex: number;
