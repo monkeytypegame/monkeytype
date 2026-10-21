@@ -86,12 +86,14 @@ export function createLetters(
     const targetChar = wordChars[i];
     const inputChar = inputChars[i] as string;
     const status = getLetterStatus(inputChar, targetChar);
-    // typos show the expected letter unless replaced; extras only have the typed one
-    const showTarget =
-      targetChar !== undefined &&
-      (status === "correct" || !settings.replaceTypos);
+    let text = visibleChar(inputChar);
+    // typos show the expected letter unless replaced
+    if (status === "incorrect" && !settings.replaceTypos) {
+      text = targetChar ?? text;
+    }
+
     letters.push({
-      text: showTarget ? targetChar : visibleChar(inputChar),
+      text,
       status,
       // from the target: a typo on a tab/newline keeps its marker class
       controlType: getControlType(targetChar),
