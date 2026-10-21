@@ -416,7 +416,7 @@ describe("Words", () => {
       flush();
       expect(letterClasses(wordEls(container)[0])).toEqual([
         "correct",
-        "correct nlChar opacity-0",
+        "correct invisible nlChar",
       ]);
       expect(container.querySelectorAll(".newline")).toHaveLength(1);
     });

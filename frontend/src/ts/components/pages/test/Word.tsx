@@ -8,7 +8,7 @@ import {
 } from "../../../states/words-render";
 import { splitIntoCharacters } from "../../../utils/strings";
 import { FaProps } from "../../common/Fa";
-import { Letter, WordLetter } from "./WordLetter";
+import { Letter, LetterStatus, WordLetter } from "./WordLetter";
 
 const ICONS: Map<string, FaProps> = new Map([
   [
@@ -38,19 +38,28 @@ function charIcon(char: string | undefined): FaProps | undefined {
   return ICONS.get(char ?? "");
 }
 
-/** untyped or expected letter: tab/newline get their icon and marker class */
-function expectedLetter(char: string): Letter {
+function controlType(char: string): Letter["controlType"] {
+  if (char === "\t") return "tab";
+  if (char === "\n") return "newline";
+  return undefined;
+}
+
+/** expected letter: tab/newline get their icon and marker class */
+function expectedLetter(
+  char: string,
+  status: LetterStatus = "untyped",
+): Letter {
   const icon = charIcon(char);
   return {
     text: icon === undefined ? char : "",
     icon,
-    isTab: char === "\t",
-    isNewline: char === "\n",
+    status,
+    controlType: controlType(char),
   };
 }
 
 /** visible form of a typed character: space -> "_", tab/newline -> icons */
-function typedLetter(char: string): Letter {
+function typedLetter(char: string): Pick<Letter, "text" | "icon"> {
   const icon = charIcon(char);
   if (icon !== undefined) return { text: "", icon };
   // explicit undefined: overrides the expected letter's icon on typos
@@ -60,14 +69,14 @@ function typedLetter(char: string): Letter {
 function zenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
     const icon = charIcon(char);
-    if (icon === undefined) return { text: char, correct: true };
-    return { ...expectedLetter(char), correct: true, hidden: true };
+    if (icon === undefined) return { text: char, status: "correct" };
+    return { ...expectedLetter(char, "correct"), hidden: true };
   });
   if (input === "" && composition === "") {
-    letters.push({ text: "_", invisible: true });
+    letters.push({ text: "_", status: "untyped", hidden: true });
   }
   for (const char of splitIntoCharacters(composition)) {
-    letters.push({ text: char, dead: true });
+    letters.push({ text: char, status: "dead" });
   }
   return letters;
 }
@@ -89,15 +98,13 @@ function wordLetters(word: RenderedWord): Letter[] {
     const expected = wordChars[i];
     const typed = inputChars[i] as string;
     if (expected === typed) {
-      letters.push({ ...expectedLetter(typed), correct: true });
+      letters.push(expectedLetter(typed, "correct"));
     } else if (expected === undefined) {
-      letters.push({ ...typedLetter(typed), incorrect: true, extra: true });
+      letters.push({ ...typedLetter(typed), status: "extra" });
     } else {
-      const shown = expectedLetter(expected);
       letters.push({
-        ...shown,
+        ...expectedLetter(expected, "incorrect"),
         ...(replaceTypos ? typedLetter(typed) : {}),
-        incorrect: true,
       });
     }
   }
@@ -111,7 +118,10 @@ function wordLetters(word: RenderedWord): Letter[] {
           ? "_"
           : char
         : (expected ?? char);
-    letters.push({ text, dead: true, correct: char === expected });
+    letters.push({
+      text,
+      status: char === expected ? "deadCorrect" : "dead",
+    });
   }
 
   for (
@@ -120,10 +130,6 @@ function wordLetters(word: RenderedWord): Letter[] {
     i++
   ) {
     letters.push(expectedLetter(wordChars[i] as string));
-  }
-
-  if (word.allCorrect) {
-    for (const letter of letters) letter.correct = true;
   }
 
   return letters;
@@ -151,7 +157,9 @@ export function Word(props: {
         }}
       >
         <Index each={letters()}>
-          {(letter) => <WordLetter letter={letter()} />}
+          {(letter) => (
+            <WordLetter letter={letter()} allCorrect={props.word.allCorrect} />
+          )}
         </Index>
         <div class="hints"></div>
       </div>
