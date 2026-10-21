@@ -13,7 +13,6 @@ import {
   showNoticeNotification,
 } from "../../../states/notifications";
 import {
-  getResultVisible,
   isTestFinished,
   getFocus,
   isTestRestarting,
@@ -28,7 +27,6 @@ import {
   supportedFileTypes,
   TextExtractionError,
 } from "../../../utils/file-text-extractor";
-import { Anime, AnimeShow } from "../../common/anime";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
