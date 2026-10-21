@@ -32,10 +32,10 @@ import { getFontPreview } from "../states/font";
 import { getWordElement as getRenderedWordElement } from "../components/pages/test/word-elements";
 import {
   appendWord,
-  flush as flushWordsRender,
+  flushWordsRender,
   getPendingWordInput,
   isWordRendered as isWordRenderedInState,
-  reset as resetWordsRender,
+  resetWordsRender,
   setActiveWord,
   setFirstRenderedWordIndex,
   setLayoutHook,

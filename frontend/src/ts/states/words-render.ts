@@ -94,7 +94,7 @@ function scheduleFlush(): void {
   if (pendingFrame !== undefined) return;
   pendingFrame = requestAnimationFrame(() => {
     pendingFrame = undefined;
-    flush();
+    flushWordsRender();
   });
 }
 
@@ -117,7 +117,7 @@ function newWord(index: number, text: string): RenderedWord {
 }
 
 /** Applies the buffer now, then runs the layout hook. */
-export function flush(): void {
+export function flushWordsRender(): void {
   cancelPendingFlush();
   const b = buffer;
   buffer = emptyBuffer();
@@ -238,7 +238,7 @@ export function truncateWords(length: number): void {
 }
 
 /** Cancels a pending flush, clears the buffer and empties the store. */
-export function reset(
+export function resetWordsRender(
   options: { zen?: boolean; marksRtlWords?: boolean } = {},
 ): void {
   cancelPendingFlush();

@@ -7,7 +7,7 @@ import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendWord,
-  reset,
+  resetWordsRender,
   setActiveWord,
   setFirstRenderedWordIndex,
   setLayoutHook,
@@ -72,7 +72,7 @@ afterEach(() => {
   setConfigStore("mode", defaults.mode);
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
-  reset();
+  resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
 });
@@ -303,7 +303,7 @@ describe("Words", () => {
       expect(getWordElement(0)).toBeUndefined();
       expect(getWordElement(1)).toBe(wordEls(container)[0]);
 
-      reset();
+      resetWordsRender();
       expect(getWordElement(1)).toBeUndefined();
     });
 
@@ -368,7 +368,7 @@ describe("Words", () => {
     });
 
     it("marks fully right-to-left words when enabled", () => {
-      reset({ marksRtlWords: true });
+      resetWordsRender({ marksRtlWords: true });
       const container = renderWords();
       appendWord("שלום");
       appendWord("שלוםabc");
@@ -380,7 +380,7 @@ describe("Words", () => {
     });
 
     it("does not mark right-to-left words when disabled", () => {
-      reset({ marksRtlWords: false });
+      resetWordsRender({ marksRtlWords: false });
       const container = renderWords();
       appendWord("שלום");
       flush();
@@ -410,7 +410,7 @@ describe("Words", () => {
 
   describe("zen", () => {
     beforeEach(() => {
-      reset({ zen: true });
+      resetWordsRender({ zen: true });
     });
 
     it("keeps zen letters when the mode changes before the restart", () => {
@@ -493,7 +493,7 @@ describe("Words", () => {
       appendWord("a");
       setFirstRenderedWordIndex(0);
       flush();
-      reset();
+      resetWordsRender();
       expect(container.children).toHaveLength(0);
     });
 
@@ -502,7 +502,7 @@ describe("Words", () => {
       const hook = vi.fn();
       setLayoutHook(hook);
       appendWord("a");
-      reset();
+      resetWordsRender();
       flush();
       expect(container.children).toHaveLength(0);
       expect(hook).not.toHaveBeenCalled();
@@ -516,7 +516,7 @@ describe("Words", () => {
       setFirstRenderedWordIndex(1);
       setActiveWord(1);
       flush();
-      reset();
+      resetWordsRender();
       appendWord("c");
       flush();
       const words = wordEls(container);

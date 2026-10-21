@@ -43,7 +43,7 @@ import {
 } from "../../src/ts/states/test";
 import {
   appendWord,
-  reset,
+  resetWordsRender,
   setActiveWord,
 } from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
@@ -155,7 +155,7 @@ describe("test-ui words rendering", () => {
 
   afterEach(() => {
     for (const cleanup of cleanups.splice(0)) cleanup();
-    reset();
+    resetWordsRender();
     TestWords.words.reset();
     resetActiveWordIndex();
     vi.restoreAllMocks();
@@ -223,7 +223,7 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
-    reset({ zen: true });
+    resetWordsRender({ zen: true });
     appendWord("");
     setActiveWord(0);
     runFrames();
