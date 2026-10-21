@@ -1,6 +1,6 @@
 # 01 — Render-state store + `Words` component (standalone)
 
-Status: open
+Status: done
 Blocked by: –
 
 ## What
