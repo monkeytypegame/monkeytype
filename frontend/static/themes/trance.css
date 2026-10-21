@@ -35,7 +35,7 @@ header .button.discord.dotHidden::after {
   animation-name: none !important;
 }
 
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {

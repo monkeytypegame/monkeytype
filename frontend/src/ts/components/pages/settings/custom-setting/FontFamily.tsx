@@ -1,6 +1,6 @@
 import { ConfigSchema } from "@monkeytype/schemas/configs";
 import { FontNameSchema } from "@monkeytype/schemas/fonts";
-import { createResource, For, JSXElement, Show } from "solid-js";
+import { createResource, For, JSXElement, Show, Suspense } from "solid-js";
 import { z } from "zod";
 
 import {
@@ -11,11 +11,11 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
-import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
 import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
+import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
 import { SearchableSetting } from "../SearchableSetting";
 
@@ -55,144 +55,146 @@ export function FontFamily(): JSXElement {
       }
       inputs={
         <div class="grid gap-2 self-end">
-          <Show
-            when={!hasLocalFont()}
-            fallback={
-              <Button
-                fa={{ icon: "fa-trash" }}
-                text="remove local font"
-                onClick={() => {
-                  void FileStorage.deleteFile("LocalFontFamilyFile").then(
-                    () => {
-                      void applyFontFamily();
-                      void refetch();
-                    },
-                  );
-                }}
-              />
-            }
-          >
-            <>
-              <input
-                type="file"
-                id="customFontUploadSolid"
-                accept="font/woff,font/woff2,font/ttf,font/otf"
-                class="hidden"
-                onChange={async (e) => {
-                  const fileInput = e.target;
-                  const file = fileInput.files?.[0];
-
-                  if (!file) {
-                    return;
-                  }
-
-                  // check type
-                  if (
-                    !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
-                    !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
-                  ) {
-                    showNoticeNotification(
-                      "Unsupported font format, must be woff, woff2, ttf or otf.",
+          {/* latest: a refetch keeps the old value instead of suspending */}
+          <Suspense>
+            <Show
+              when={!hasLocalFont.latest}
+              fallback={
+                <Button
+                  fa={{ icon: "fa-trash" }}
+                  text="remove local font"
+                  onClick={() => {
+                    void FileStorage.deleteFile("LocalFontFamilyFile").then(
+                      () => {
+                        void refetch();
+                      },
                     );
+                  }}
+                />
+              }
+            >
+              <>
+                <input
+                  type="file"
+                  id="customFontUploadSolid"
+                  accept="font/woff,font/woff2,font/ttf,font/otf"
+                  class="hidden"
+                  onChange={async (e) => {
+                    const fileInput = e.target;
+                    const file = fileInput.files?.[0];
+
+                    if (!file) {
+                      return;
+                    }
+
+                    // check type
+                    if (
+                      !/font\/(woff|woff2|ttf|otf)/.exec(file.type) &&
+                      !/\.(woff|woff2|ttf|otf)$/i.exec(file.name)
+                    ) {
+                      showNoticeNotification(
+                        "Unsupported font format, must be woff, woff2, ttf or otf.",
+                      );
+                      fileInput.value = "";
+                      return;
+                    }
+
+                    const dataUrl = await readFileAsDataURL(file);
+                    await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
+                    void refetch();
+
                     fileInput.value = "";
-                    return;
-                  }
-
-                  const dataUrl = await readFileAsDataURL(file);
-                  await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
-
-                  await applyFontFamily();
-                  void refetch();
-
-                  fileInput.value = "";
-                }}
-              />
-              {/* i cant figure out how to trigger the file input with a Button component */}
-              <label
-                // oxlint-disable-next-line react/no-unknown-property
-                for="customFontUploadSolid"
-                class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
-              >
-                <i class="fas fa-file-import"></i>
-                use local font
-              </label>
-              <Separator text="or" />
-            </>
-          </Show>
+                  }}
+                />
+                {/* i cant figure out how to trigger the file input with a Button component */}
+                <label
+                  // oxlint-disable-next-line react/no-unknown-property
+                  for="customFontUploadSolid"
+                  class="inline-flex w-full cursor-pointer items-center justify-center gap-[0.5em] rounded border-0 bg-sub-alt p-[0.5em] text-text transition-[color,background,opacity] duration-125 hover:bg-text hover:text-bg"
+                >
+                  <Fa icon="fa-file-import" />
+                  use local font
+                </label>
+                <Separator text="or" />
+              </>
+            </Show>
+          </Suspense>
         </div>
       }
       fullWidthInputs={
-        <Show when={!hasLocalFont()}>
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))] gap-2">
-            <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
-              {(option) => {
-                const optionsMeta = configMetadata.fontFamily.optionsMetadata;
-                const match = optionsMeta?.[option];
-                const displayString =
-                  match?.displayString ?? option.replace(/_/g, " ");
+        <Suspense>
+          <Show when={!hasLocalFont.latest}>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(13.5rem,1fr))] gap-2">
+              <For each={getOptions(ConfigSchema.shape.fontFamily)?.sort()}>
+                {(option) => {
+                  const optionsMeta = configMetadata.fontFamily.optionsMetadata;
+                  const match = optionsMeta?.[option];
+                  const displayString =
+                    match?.displayString ?? option.replace(/_/g, " ");
 
-                const fontFamily = () => {
-                  if (option === "Comic_Sans_MS") {
-                    return "Comic Sans MS";
-                  }
+                  const fontFamily = () => {
+                    if (option === "Comic_Sans_MS") {
+                      return "Comic Sans MS";
+                    }
 
-                  return `${option.replace(/_/g, " ")} Preview`;
-                };
+                    return `${option.replace(/_/g, " ")} Preview`;
+                  };
 
-                return (
-                  <div
-                    style={{
-                      "font-family": fontFamily(),
-                    }}
-                  >
-                    <Button
-                      class="w-full"
-                      text={displayString}
-                      active={getConfig.fontFamily === option}
-                      onClick={() => {
-                        if (getConfig.fontFamily === option) return;
-                        setConfig("fontFamily", option);
+                  return (
+                    <div
+                      style={{
+                        "font-family": fontFamily(),
                       }}
-                    />
-                  </div>
-                );
-              }}
-            </For>
-            <Button
-              class="w-full"
-              text={
-                isCustomFont()
-                  ? `custom (${getConfig.fontFamily.replace(/_/g, " ")})`
-                  : "custom"
-              }
-              active={isCustomFont()}
-              onClick={() => {
-                showSimpleModal({
-                  title: "Custom font",
-                  text: "Make sure you have the font installed on your computer before applying",
-                  buttonText: "apply",
-                  schema: z.object({
-                    fontName: FontNameSchema,
-                  }),
-                  inputs: {
-                    fontName: {
-                      type: "text",
-                      placeholder: "font name",
-                      preprocess: normalizeName,
+                    >
+                      <Button
+                        class="w-full"
+                        text={displayString}
+                        active={getConfig.fontFamily === option}
+                        onClick={() => {
+                          if (getConfig.fontFamily === option) return;
+                          setConfig("fontFamily", option);
+                        }}
+                      />
+                    </div>
+                  );
+                }}
+              </For>
+              <Button
+                class="w-full"
+                text={
+                  isCustomFont()
+                    ? `custom (${getConfig.fontFamily.replace(/_/g, " ")})`
+                    : "custom"
+                }
+                active={isCustomFont()}
+                onClick={() => {
+                  showSimpleModal({
+                    title: "Custom font",
+                    text: "Make sure you have the font installed on your computer before applying",
+                    buttonText: "apply",
+                    schema: z.object({
+                      fontName: FontNameSchema,
+                    }),
+                    inputs: {
+                      fontName: {
+                        type: "text",
+                        placeholder: "font name",
+                        preprocess: normalizeName,
+                      },
                     },
-                  },
-                  execFn: async ({ fontName }) => {
-                    setConfig("fontFamily", fontName);
-                    return {
-                      status: "success",
-                      message: "Font applied",
-                    };
-                  },
-                });
-              }}
-            />
-          </div>
-        </Show>
+                    execFn: async ({ fontName }) => {
+                      setConfig("fontFamily", fontName);
+                      return {
+                        status: "success",
+                        message: "Font applied",
+                      };
+                    },
+                  });
+                }}
+              />
+            </div>
+          </Show>
+        </Suspense>
       }
     />
   );

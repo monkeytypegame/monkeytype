@@ -14,9 +14,7 @@ import {
 import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
 import { Config } from "../../config/store";
-import { flash } from "../../events/keymap";
 import * as WeakSpot from "../../test/weak-spot";
-import * as CompositionState from "../../legacy-states/composition";
 import {
   isCorrectShiftUsed,
   getIncorrectShiftsInARow,
@@ -30,7 +28,12 @@ import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
-import { getActiveWordIndex, isTestActive } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isTestActive,
+  isComposing,
+  flashKeymapKey,
+} from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
 
 const charOverrides = new Map<string, string>([
@@ -115,7 +118,7 @@ function handleDeleteOnError(now: number): void {
     goBackAWord &&
     inputLength <= 1 &&
     getActiveWordIndex() > 0 &&
-    TestUI.getWordElement(getActiveWordIndex() - 1) !== null
+    TestUI.isWordRendered(getActiveWordIndex() - 1)
   ) {
     //pretend its a normal backspace, not insertText
     const inputType: DeleteInputType = deleteWholeWord
@@ -266,7 +269,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     });
 
   if (Config.keymapMode === "react") {
-    flash(data, correct);
+    flashKeymapKey(data, correct);
   }
 
   if (removeLastChar) {
@@ -339,7 +342,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     }, 0);
   }
 
-  if (!CompositionState.getComposing() && lastInMultiOrSingle) {
+  if (!isComposing() && lastInMultiOrSingle) {
     if (
       checkIfFailedDueToDifficulty({
         data,

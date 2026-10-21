@@ -77,7 +77,7 @@ export function getBarTarget(): {
   }
   // the active word index stops on the last word instead of going one past it,
   // so the word count alone tops out at (n-1)/n — fill the bar on finish.
-  // isResultCalculating flips on the first line of finish(); getResultVisible
+  // isResultCalculating flips on the first line of finish(); isTestFinished
   // would be a fade-out too late, since the bar outlives the words fading out.
   if (isResultCalculating() && !getBailedOut()) {
     return { width: "100vw", duration: 125 };
