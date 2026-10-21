@@ -84,7 +84,7 @@ function getLetterStatus(
   return "incorrect";
 }
 
-function zenLetters(input: string, composition: string): Letter[] {
+function createZenLetters(input: string, composition: string): Letter[] {
   const letters: Letter[] = splitIntoCharacters(input).map((char) => {
     const icon = getCharIconProps(char);
     if (icon === undefined) return { text: char, status: "correct" };
@@ -100,7 +100,7 @@ function zenLetters(input: string, composition: string): Letter[] {
 }
 
 /** letters of `word.text`, marked against the input */
-function textLetters(word: RenderedWord): Letter[] {
+function createTextLetters(word: RenderedWord): Letter[] {
   const config = getConfig;
   const wordChars = splitIntoCharacters(word.text);
   const inputChars = splitIntoCharacters(word.input);
@@ -155,8 +155,8 @@ export function Word(props: {
 }): JSXElement {
   const letters = createMemo(() =>
     wordsRenderState.rendersLettersFromInput
-      ? zenLetters(props.word.input, props.word.composition)
-      : textLetters(props.word),
+      ? createZenLetters(props.word.input, props.word.composition)
+      : createTextLetters(props.word),
   );
   const hasNewline = (): boolean => wordEndsLine(props.word);
   // whole word right-to-left: bidi override keeps its letters in order
