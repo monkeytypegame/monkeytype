@@ -15,8 +15,8 @@ import { createStore, produce } from "solid-js/store";
  */
 
 export type WordFlags = {
-  typed: boolean;
-  error: boolean;
+  isTyped: boolean;
+  isIncorrect: boolean;
   /** blind mode: all letters of a committed word shown as correct */
   allCorrect: boolean;
 };
@@ -43,7 +43,7 @@ type WordsRenderState = {
    * zen test: letters come from the input only. Fixed per test at reset, so a
    * mode change doesn't re-render the current words before the restart
    */
-  zen: boolean;
+  rendersLettersFromInput: boolean;
 };
 
 const [store, setStore] = createStore<WordsRenderState>({
@@ -51,7 +51,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   firstRenderedWordIndex: 0,
   tapeHiddenBefore: 0,
   renderedActiveWordIndex: 0,
-  zen: false,
+  rendersLettersFromInput: false,
 });
 
 /** Read-only reactive view for the Words component. */
@@ -104,8 +104,8 @@ function newWord(index: number, text: string): RenderedWord {
     text,
     input: "",
     composition: "",
-    typed: false,
-    error: false,
+    isTyped: false,
+    isIncorrect: false,
     allCorrect: false,
   };
 }
@@ -199,7 +199,9 @@ export function setTapeHiddenBefore(index: number): void {
 
 /** Whether the word is followed by a line break (zen: typed newline). */
 export function wordEndsLine(word: RenderedWord): boolean {
-  return (store.zen ? word.input : word.text).includes("\n");
+  return (store.rendersLettersFromInput ? word.input : word.text).includes(
+    "\n",
+  );
 }
 
 /** Whether the word is rendered, as of the last flush. */
@@ -238,6 +240,6 @@ export function reset(options: { zen?: boolean } = {}): void {
     firstRenderedWordIndex: 0,
     tapeHiddenBefore: 0,
     renderedActiveWordIndex: 0,
-    zen: options.zen ?? false,
+    rendersLettersFromInput: options.zen ?? false,
   });
 }

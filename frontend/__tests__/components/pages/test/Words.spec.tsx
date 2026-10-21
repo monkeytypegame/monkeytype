@@ -326,13 +326,13 @@ describe("Words", () => {
     it("marks typed and error words", () => {
       const container = renderWords();
       appendWord("a");
-      setWordFlags(0, { typed: true });
-      setWordFlags(0, { error: true });
+      setWordFlags(0, { isTyped: true });
+      setWordFlags(0, { isIncorrect: true });
       flush();
       const word = wordEls(container)[0];
       expect(word?.classList.contains("typed")).toBe(true);
       expect(word?.classList.contains("error")).toBe(true);
-      setWordFlags(0, { error: false });
+      setWordFlags(0, { isIncorrect: false });
       flush();
       expect(word?.classList.contains("error")).toBe(false);
       expect(word?.classList.contains("typed")).toBe(true);
@@ -361,7 +361,7 @@ describe("Words", () => {
       word.style.width = "10px";
 
       setWordInput(0, "ab");
-      setWordFlags(0, { typed: true, error: true });
+      setWordFlags(0, { isTyped: true, isIncorrect: true });
       setActiveWord(1);
       flush();
 

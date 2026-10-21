@@ -1124,7 +1124,7 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
 }
 
 function highlightBadWord(index: number): void {
-  setWordFlags(index, { error: true });
+  setWordFlags(index, { isIncorrect: true });
 }
 
 function highlightAllLettersAsCorrect(wordIndex: number): void {
@@ -1301,11 +1301,11 @@ export async function afterTestWordChange(
 ): Promise<void> {
   const activeWordIndex = getActiveWordIndex();
   if (direction === "forward") {
-    setWordFlags(activeWordIndex - 1, { typed: true });
+    setWordFlags(activeWordIndex - 1, { isTyped: true });
   }
   setWordFlags(activeWordIndex, {
-    typed: false,
-    error: false,
+    isTyped: false,
+    isIncorrect: false,
     allCorrect: false,
   });
   setActiveWord(activeWordIndex);

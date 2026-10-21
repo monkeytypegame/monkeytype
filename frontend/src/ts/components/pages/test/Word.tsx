@@ -82,7 +82,7 @@ function zenLetters(input: string, composition: string): Letter[] {
 }
 
 function wordLetters(word: RenderedWord): Letter[] {
-  if (wordsRenderState.zen) {
+  if (wordsRenderState.rendersLettersFromInput) {
     return zenLetters(word.input, word.composition);
   }
 
@@ -152,8 +152,8 @@ export function Word(props: {
         // oxlint-disable-next-line monkeytype-rules/no-classlist
         classList={{
           active: props.isActive(props.word.index),
-          typed: props.word.typed,
-          error: props.word.error,
+          typed: props.word.isTyped,
+          error: props.word.isIncorrect,
         }}
       >
         <Index each={letters()}>
