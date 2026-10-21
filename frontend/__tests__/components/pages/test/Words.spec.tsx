@@ -374,7 +374,20 @@ describe("Words", () => {
 
   describe("zen", () => {
     beforeEach(() => {
+      WordsRender.reset({ zen: true });
+    });
+
+    it("keeps zen letters when the mode changes before the restart", () => {
       setConfigStore("mode", "zen");
+      const container = renderWords();
+      WordsRender.appendWord("");
+      flush();
+
+      setConfigStore("mode", "words");
+
+      const word = wordEls(container)[0];
+      expect(letterTexts(word)).toEqual(["_"]);
+      expect(letterClasses(word)).toEqual(["invisible"]);
     });
 
     it("shows an invisible placeholder for an empty word", () => {

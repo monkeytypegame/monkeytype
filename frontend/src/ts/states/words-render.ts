@@ -39,6 +39,11 @@ type WordsRenderState = {
    */
   tapeHiddenBefore: number;
   renderedActiveWordIndex: number;
+  /**
+   * zen test: letters come from the input only. Fixed per test at reset, so a
+   * mode change doesn't re-render the current words before the restart
+   */
+  zen: boolean;
 };
 
 const [store, setStore] = createStore<WordsRenderState>({
@@ -46,6 +51,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   firstRenderedWordIndex: 0,
   tapeHiddenBefore: 0,
   renderedActiveWordIndex: 0,
+  zen: false,
 });
 
 /** Read-only reactive view for the Words component. */
@@ -192,16 +198,16 @@ export function setTapeHiddenBefore(index: number): void {
 }
 
 /** Whether the word is followed by a line break (zen: typed newline). */
-export function wordEndsLine(word: RenderedWord, zen: boolean): boolean {
-  return (zen ? word.input : word.text).includes("\n");
+export function wordEndsLine(word: RenderedWord): boolean {
+  return (store.zen ? word.input : word.text).includes("\n");
 }
 
 /** Whether the word is rendered, as of the last flush. */
-export function isWordRendered(index: number, zen: boolean): boolean {
+export function isWordRendered(index: number): boolean {
   if (index < store.firstRenderedWordIndex) return false;
   if (index >= store.tapeHiddenBefore) return true;
   const word = store.words[index];
-  return word !== undefined && wordEndsLine(word, zen);
+  return word !== undefined && wordEndsLine(word);
 }
 
 /** Drops all words from `length` on (zen backspace). */
@@ -224,7 +230,7 @@ export function truncateWords(length: number): void {
 }
 
 /** Cancels a pending flush, clears the buffer and empties the store. */
-export function reset(): void {
+export function reset(options: { zen?: boolean } = {}): void {
   cancelPendingFlush();
   buffer = emptyBuffer();
   setStore({
@@ -232,5 +238,6 @@ export function reset(): void {
     firstRenderedWordIndex: 0,
     tapeHiddenBefore: 0,
     renderedActiveWordIndex: 0,
+    zen: options.zen ?? false,
   });
 }

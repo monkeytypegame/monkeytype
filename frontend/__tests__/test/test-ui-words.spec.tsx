@@ -219,6 +219,7 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
+    WordsRender.reset({ zen: true });
     WordsRender.appendWord("");
     WordsRender.setActiveWord(0);
     runFrames();
@@ -371,6 +372,31 @@ describe("test-ui words rendering", () => {
       expect(childClasses(words).slice(0, 2)).toEqual(["word5", "word6"]);
       expect(TestUI.isWordRendered(4)).toBe(false);
       expect(TestUI.isWordRendered(5)).toBe(true);
+    });
+
+    it("line jump hides every passed line when several lines are crossed within one frame", async () => {
+      configTesting.replaceConfig({
+        mode: "words",
+        tapeMode: "off",
+        showAllLines: false,
+        smoothLineScroll: false,
+      });
+      const { words } = mount();
+      for (let i = 0; i < 20; i++) WordsRender.appendWord("word");
+      WordsRender.setActiveWord(0);
+      runFrames();
+
+      await goForward();
+      // first line to third line in a single frame
+      for (let i = 0; i < 9; i++) {
+        increaseActiveWordIndex();
+        void TestUI.afterTestWordChange("forward");
+      }
+      runFrames();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(childClasses(words)[0]).toBe("word5");
+      expect(activeWordIndex(words)).toBe("10");
     });
 
     describe("tape mode", () => {

@@ -155,7 +155,7 @@ function getWordElement(index: number): ElementWithUtils | null {
  * False once a word has scrolled off (line jump / tape stop rendering it).
  */
 export function isWordRendered(index: number): boolean {
-  return WordsRender.isWordRendered(index, Config.mode === "zen");
+  return WordsRender.isWordRendered(index);
 }
 
 function getWordIndex(el: ElementWithUtils): number {
@@ -263,6 +263,21 @@ async function updateWordHints(wordIndex: number): Promise<void> {
   );
 }
 
+/** Top of the closest line above `word`, undefined if it's on the first line. */
+function getLineAboveTop(
+  word: ElementWithUtils,
+  wordTop: number,
+): number | undefined {
+  let sibling = word.native.previousElementSibling as HTMLElement | null;
+  while (sibling !== null) {
+    if (sibling.classList.contains("word") && sibling.offsetTop < wordTop) {
+      return sibling.offsetTop;
+    }
+    sibling = sibling.previousElementSibling as HTMLElement | null;
+  }
+  return undefined;
+}
+
 async function layoutActiveWord(wordChange: WordChange): Promise<void> {
   const generation = layoutGeneration;
   const newActiveWordIndex = getActiveWordIndex();
@@ -301,7 +316,16 @@ async function layoutActiveWord(wordChange: WordChange): Promise<void> {
     if (isTimedTest || !Config.showAllLines) {
       const newActiveWordTop = newActiveWord.getOffsetTop();
       if (newActiveWordTop > previousActiveWordTop) {
-        await lineJump(previousActiveWordTop);
+        // several word changes in one frame can cross more than one line:
+        // jump to the line right above the active word, hiding all lines
+        // before it
+        const lineAboveTop = getLineAboveTop(newActiveWord, newActiveWordTop);
+        const crossedLines =
+          lineAboveTop !== undefined && lineAboveTop > previousActiveWordTop;
+        await lineJump(
+          crossedLines ? lineAboveTop : previousActiveWordTop,
+          crossedLines,
+        );
         if (generation !== layoutGeneration) return;
       }
     }
@@ -537,7 +561,7 @@ function updateLayout(): void {
 function showWords(): void {
   invalidateAsyncLayout();
   wordsEl().setStyle({ marginTop: "0" });
-  WordsRender.reset();
+  WordsRender.reset({ zen: Config.mode === "zen" });
   clearPendingLayout();
   wordsWithHints.clear();
   laidOutActiveWordIndex = undefined;

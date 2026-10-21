@@ -116,9 +116,11 @@ function zenLetters(input: string, composition: string): Letter[] {
 }
 
 function wordLetters(word: RenderedWord): Letter[] {
-  const config = getConfig;
-  if (config.mode === "zen") return zenLetters(word.input, word.composition);
+  if (wordsRenderState.zen) {
+    return zenLetters(word.input, word.composition);
+  }
 
+  const config = getConfig;
   const wordChars = splitIntoCharacters(word.text);
   const inputChars = splitIntoCharacters(word.input);
   const compositionChars = splitIntoCharacters(word.composition);
@@ -206,8 +208,7 @@ function Word(props: {
   isActive: (index: number) => boolean;
 }): JSXElement {
   const letters = createMemo(() => wordLetters(props.word));
-  const hasNewline = (): boolean =>
-    wordEndsLine(props.word, getConfig.mode === "zen");
+  const hasNewline = (): boolean => wordEndsLine(props.word);
 
   return (
     <>
@@ -249,10 +250,9 @@ export function Words(): JSXElement {
     const shown = words.slice(shownFrom);
     if (shownFrom === firstRenderedWordIndex) return shown;
     // tape hidden words ending a line stay, so the lines don't collapse
-    const zen = getConfig.mode === "zen";
     const lineEnds = words
       .slice(firstRenderedWordIndex, shownFrom)
-      .filter((word) => wordEndsLine(word, zen));
+      .filter((word) => wordEndsLine(word));
     return lineEnds.length === 0 ? shown : [...lineEnds, ...shown];
   });
 
