@@ -2,10 +2,6 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
-import {
-  cancelPendingAnimationFrame,
-  requestDebouncedAnimationFrame,
-} from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
@@ -27,18 +23,6 @@ export function toggleCaretDebug(): void {
     }
   }
 }
-
-type GoToOptions = {
-  wordIndex: number;
-  letterIndex: number;
-  isLanguageRightToLeft: boolean;
-  isDirectionReversed: boolean;
-  animate?: boolean;
-  animationOptions?: {
-    duration?: number;
-    easing?: string;
-  };
-};
 
 export class Caret {
   private id: string;
@@ -291,21 +275,19 @@ export class Caret {
     });
   }
 
-  public goTo(options: GoToOptions): void {
+  /** Moves now: callers run once the words DOM is up to date. */
+  public goTo(options: {
+    wordIndex: number;
+    letterIndex: number;
+    isLanguageRightToLeft: boolean;
+    isDirectionReversed: boolean;
+    animate?: boolean;
+    animationOptions?: {
+      duration?: number;
+      easing?: string;
+    };
+  }): void {
     if (this.style === "off") return;
-    requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      this.moveTo(options);
-    });
-  }
-
-  /** Like goTo, but moves now. Only call once the words DOM is up to date. */
-  public goToNow(options: GoToOptions): void {
-    cancelPendingAnimationFrame(`caret.${this.id}.goTo`);
-    if (this.style === "off") return;
-    this.moveTo(options);
-  }
-
-  private moveTo(options: GoToOptions): void {
     const word = this.wordsEl.qs(
       `.word[data-wordindex="${options.wordIndex}"]`,
     );

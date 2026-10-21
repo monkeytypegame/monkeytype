@@ -28,10 +28,10 @@ vi.mock("../../src/ts/test/break-joining", async (importOriginal) => ({
   ...(await importOriginal()),
   set: joiningSet,
 }));
-const caretUpdatePositionNow = vi.hoisted(() => vi.fn());
+const caretUpdatePosition = vi.hoisted(() => vi.fn());
 vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
   ...(await importOriginal()),
-  updatePositionNow: caretUpdatePositionNow,
+  updatePosition: caretUpdatePosition,
 }));
 
 import { Words } from "../../src/ts/components/pages/test/Words";
@@ -144,7 +144,7 @@ describe("test-ui words rendering", () => {
     resetActiveWordIndex();
     currentInput = "";
     joiningSet.mockClear();
-    caretUpdatePositionNow.mockClear();
+    caretUpdatePosition.mockClear();
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
   });
@@ -274,12 +274,12 @@ describe("test-ui words rendering", () => {
 
     it("snaps the caret to the new words instead of animating", () => {
       mount();
-      caretUpdatePositionNow.mockClear();
+      caretUpdatePosition.mockClear();
 
       startTest(10);
 
-      expect(caretUpdatePositionNow).toHaveBeenCalledWith(true);
-      expect(caretUpdatePositionNow).not.toHaveBeenCalledWith(false);
+      expect(caretUpdatePosition).toHaveBeenCalledWith(true);
+      expect(caretUpdatePosition).not.toHaveBeenCalledWith(false);
     });
 
     it("drops a line jump still animating when the test restarts", async () => {

@@ -201,7 +201,7 @@ function layoutWords(): void {
     void updateWordHints(wordIndex);
     void lineJumpIfWrapped(wordIndex);
   }
-  Caret.updatePositionNow(snapCaret);
+  Caret.updatePosition(snapCaret);
 }
 
 function indicatesTyposBelow(): boolean {
