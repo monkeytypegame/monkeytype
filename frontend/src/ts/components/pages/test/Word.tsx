@@ -14,37 +14,8 @@ import {
   wordsRenderState,
 } from "../../../states/words-render";
 import { isWordRightToLeft, splitIntoCharacters } from "../../../utils/strings";
-import { FaProps } from "../../common/Fa";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { Letter, LetterStatus, WordLetter } from "./WordLetter";
-
-const ICONS: Map<string, FaProps> = new Map([
-  [
-    "\t",
-    {
-      variant: "solid",
-      icon: "fa-long-arrow-alt-right",
-      fixedWidth: true,
-    },
-  ],
-  [
-    "\n",
-    {
-      variant: "solid",
-      icon: "fa-level-down-alt",
-      fixedWidth: true,
-      class: "fa-rotate-90",
-    },
-  ],
-  ["←", { variant: "solid", icon: "fa-arrow-left" }],
-  ["↓", { variant: "solid", icon: "fa-arrow-down" }],
-  ["↑", { variant: "solid", icon: "fa-arrow-up" }],
-  ["→", { variant: "solid", icon: "fa-arrow-right" }],
-]);
-
-function getCharIconProps(char: string | undefined): FaProps | undefined {
-  return ICONS.get(char ?? "");
-}
 
 function getLetterControlType(char: string | undefined): Letter["controlType"] {
   if (char === "\t") return "tab";
@@ -53,20 +24,18 @@ function getLetterControlType(char: string | undefined): Letter["controlType"] {
 }
 
 /**
- * Letter showing `shown` (icon chars as icons). The tab/newline marker class
- * comes from the `expected` char, so a typo on a tab/newline keeps it.
+ * Letter showing `shown`. The tab/newline marker class comes from the target
+ * char, so a typo on a tab/newline keeps it.
  */
 function createLetter(
   shown: string,
   status: LetterStatus,
-  expected: string | undefined,
+  targetChar: string | undefined,
 ): Letter {
-  const icon = getCharIconProps(shown);
   return {
-    text: icon === undefined ? shown : "",
-    icon,
+    text: shown,
     status,
-    controlType: getLetterControlType(expected),
+    controlType: getLetterControlType(targetChar),
   };
 }
 
@@ -91,8 +60,8 @@ function createZenLetters(input: string, composition: string): Letter[] {
   }
 
   // input: typed tab/newline take up space but stay invisible
-  const letters: Letter[] = splitIntoCharacters(input).map((char) => {
-    const letter = createLetter(char, "correct", char);
+  const letters: Letter[] = splitIntoCharacters(input).map((inputChar) => {
+    const letter = createLetter(inputChar, "correct", inputChar);
     return { ...letter, hidden: letter.controlType !== undefined };
   });
 
@@ -100,6 +69,7 @@ function createZenLetters(input: string, composition: string): Letter[] {
   for (const char of splitIntoCharacters(composition)) {
     letters.push({ text: char, status: "dead" });
   }
+
   return letters;
 }
 
@@ -114,17 +84,17 @@ function createTextLetters(word: RenderedWord): Letter[] {
   const letters: Letter[] = [];
 
   for (let i = 0; i < inputChars.length; i++) {
-    const expected = wordChars[i];
-    const typed = inputChars[i] as string;
-    const status = getLetterStatus(typed, expected);
+    const targetChar = wordChars[i];
+    const inputChar = inputChars[i] as string;
+    const status = getLetterStatus(inputChar, targetChar);
     // typos show the expected letter unless replaced; extras only have the typed one
-    const showExpected =
-      expected !== undefined && (status === "correct" || !replaceTypos);
+    const showTarget =
+      targetChar !== undefined && (status === "correct" || !replaceTypos);
     letters.push(
       createLetter(
-        showExpected ? expected : visibleChar(typed),
+        showTarget ? targetChar : visibleChar(inputChar),
         status,
-        expected,
+        targetChar,
       ),
     );
   }
@@ -146,8 +116,8 @@ function createTextLetters(word: RenderedWord): Letter[] {
     i < wordChars.length;
     i++
   ) {
-    const char = wordChars[i] as string;
-    letters.push(createLetter(char, "untyped", char));
+    const targetChar = wordChars[i] as string;
+    letters.push(createLetter(targetChar, "untyped", targetChar));
   }
 
   return letters;

@@ -13,6 +13,35 @@ declare module "solid-js" {
   }
 }
 
+const ICONS: Map<string, FaProps> = new Map([
+  [
+    "\t",
+    {
+      variant: "solid",
+      icon: "fa-long-arrow-alt-right",
+      fixedWidth: true,
+    },
+  ],
+  [
+    "\n",
+    {
+      variant: "solid",
+      icon: "fa-level-down-alt",
+      fixedWidth: true,
+      class: "fa-rotate-90",
+    },
+  ],
+  ["←", { variant: "solid", icon: "fa-arrow-left" }],
+  ["↓", { variant: "solid", icon: "fa-arrow-down" }],
+  ["↑", { variant: "solid", icon: "fa-arrow-up" }],
+  ["→", { variant: "solid", icon: "fa-arrow-right" }],
+]);
+
+// chars rendered as icons instead of text
+function getCharIconProps(char: string): FaProps | undefined {
+  return ICONS.get(char);
+}
+
 export type LetterStatus =
   | "untyped"
   | "correct"
@@ -23,11 +52,10 @@ export type LetterStatus =
 
 export type Letter = {
   text: string;
-  icon?: FaProps;
   status: LetterStatus;
   /** expected char is a tab/newline: keeps its marker class on typos too */
   controlType?: "tab" | "newline";
-  /** zen: empty-word placeholder, typed tab/newline icons */
+  /** zen: empty-word placeholder, typed tab/newline */
   hidden?: boolean;
 };
 
@@ -70,7 +98,10 @@ export function WordLetter(props: {
 }): JSXElement {
   return (
     <letter class={letterClass(props.letter, props.allCorrect)}>
-      <Show when={props.letter.icon} fallback={props.letter.text}>
+      <Show
+        when={getCharIconProps(props.letter.text)}
+        fallback={props.letter.text}
+      >
         {(icon) => <Fa {...icon()} />}
       </Show>
     </letter>
