@@ -241,7 +241,8 @@ describe("Words", () => {
       const word = renderWord("↑\t", "xy");
       expect(letterIcons(word)).toEqual(["", ""]);
       expect(letterTexts(word)).toEqual(["x", "y"]);
-      expect(letterClasses(word)).toEqual(["incorrect", "incorrect tabChar"]);
+      // the marker class follows the shown char, not the target
+      expect(letterClasses(word)).toEqual(["incorrect", "incorrect"]);
     });
 
     it("reuses letter nodes when input changes", () => {
