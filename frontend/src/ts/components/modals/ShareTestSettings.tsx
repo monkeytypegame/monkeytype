@@ -1,5 +1,5 @@
 import { createForm } from "@tanstack/solid-form";
-import { JSXElement, Show } from "solid-js";
+import { batch, createEffect, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
@@ -29,6 +29,14 @@ export function ShareTestSettings(): JSXElement {
   }));
 
   const formValues = form.useStore((s) => s.values);
+
+  createEffect(() => {
+    if (formValues().mode) return;
+    batch(() => {
+      if (formValues().mode2) form.setFieldValue("mode2", false);
+      if (formValues().customText) form.setFieldValue("customText", false);
+    });
+  });
 
   const url = () => {
     const values = formValues();
