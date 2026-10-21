@@ -9,10 +9,11 @@ import {
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage, isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../states/core";
+import { getRoutePage } from "../states/router";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
-import * as UI from "../ui";
+import { setFontPreview } from "../states/font";
 import { Validation } from "../types/validation";
 import { typedKeys } from "@monkeytype/util/objects";
 
@@ -38,12 +39,14 @@ type SkippedConfigKeys =
   | "theme" //themes are sorted by color and also affected by config.favThemes
   | "funbox"; //is using a special non schema command at the top to clear funboxes
 
+type CommandlineConfigKey = keyof Omit<
+  ConfigSchemas.Config,
+  ConfigKeysWithoutCommands | SkippedConfigKeys
+>;
+
 export type CommandlineConfigMetadataObject = {
-  [K in keyof Omit<
-    ConfigSchemas.Config,
-    ConfigKeysWithoutCommands | SkippedConfigKeys
-    // oxlint-disable-next-line no-explicit-any
-  >]: CommandlineConfigMetadata<K, any>;
+  // oxlint-disable-next-line no-explicit-any
+  [K in CommandlineConfigKey]: CommandlineConfigMetadata<K, any>;
 };
 
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
@@ -284,7 +287,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       inputValueConvert: (val) =>
         val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
       afterExec: () => {
-        if (getActivePage() === "test") {
+        if (getRoutePage() === "test") {
           void TestLogic.restart();
         }
       },
@@ -636,7 +639,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           display: fontConfig.display,
         } as Record<string, string | boolean>;
       },
-      hover: (name) => UI.previewFontFamily(name),
+      hover: (name) => setFontPreview(name),
     },
   },
   keymapMode: {

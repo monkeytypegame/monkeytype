@@ -69,8 +69,9 @@ export const [resultState, setResultState] = createStore<ResultState>({
   },
 });
 
-// visibility of the #result element. Fade in/out is still animated imperatively.
-export const [getShowResult, setShowResult] = createSignal(false);
+// visibility of the #result element, set once the result is built. Fade in/out
+// is still animated imperatively. Whether the test has ended: isTestFinished()
+export const [isResultShown, setResultShown] = createSignal(false);
 
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });
@@ -99,11 +100,6 @@ export function setResultTagsAfterEdit(
     ),
   );
 }
-
-// words history
-
-export const [isResultWordsJoiningScript, setResultWordsJoiningScript] =
-  createSignal(false);
 
 // smoothed burst (chart)
 

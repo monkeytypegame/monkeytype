@@ -28,6 +28,11 @@ vi.mock("../../../../src/ts/utils/misc", () => ({
 
 import { AnimeShow } from "../../../../src/ts/components/common/anime/AnimeShow";
 
+// Anime starts its enter animation on the next frame
+async function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 describe("AnimeShow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -69,6 +74,40 @@ describe("AnimeShow", () => {
     expect(screen.queryByTestId("content")).not.toBeInTheDocument();
     setVisible(true);
     expect(screen.getByTestId("content")).toBeInTheDocument();
+  });
+
+  it("updates reactive content in place, animating only when `when` changes", async () => {
+    const [text, setText] = createSignal("100");
+    const [visible, setVisible] = createSignal(true);
+    render(() => <AnimeShow when={visible()}>{text()}</AnimeShow>);
+    await nextFrame();
+    const wrapper = screen.getByText("100");
+    const animations = mockAnimate.mock.calls.length;
+
+    setText("120");
+    await nextFrame();
+    expect(screen.getByText("120")).toBe(wrapper);
+    expect(mockAnimate.mock.calls.length).toBe(animations);
+
+    setVisible(false);
+    expect(mockAnimate.mock.calls.length).toBeGreaterThan(animations);
+  });
+
+  it("updates reactive fallback content in place", async () => {
+    const [text, setText] = createSignal("a");
+    render(() => (
+      <AnimeShow when={false} fallback={text()}>
+        content
+      </AnimeShow>
+    ));
+    await nextFrame();
+    const wrapper = screen.getByText("a");
+    const animations = mockAnimate.mock.calls.length;
+
+    setText("b");
+    await nextFrame();
+    expect(screen.getByText("b")).toBe(wrapper);
+    expect(mockAnimate.mock.calls.length).toBe(animations);
   });
 
   it("applies class to the wrapper element when visible", () => {
@@ -192,12 +231,13 @@ describe("AnimeShow", () => {
   });
 
   describe("duration prop", () => {
-    it("uses the provided duration", () => {
+    it("uses the provided duration", async () => {
       render(() => (
         <AnimeShow when={true} duration={400}>
           <div>content</div>
         </AnimeShow>
       ));
+      await nextFrame();
 
       const durationCalls = mockAnimate.mock.calls.filter(
         ([, params]) => params.duration === 400,
@@ -205,12 +245,13 @@ describe("AnimeShow", () => {
       expect(durationCalls.length).toBeGreaterThan(0);
     });
 
-    it("defaults to 125ms when no duration is provided", () => {
+    it("defaults to 125ms when no duration is provided", async () => {
       render(() => (
         <AnimeShow when={true}>
           <div>content</div>
         </AnimeShow>
       ));
+      await nextFrame();
 
       const defaultDurationCalls = mockAnimate.mock.calls.filter(
         ([, params]) => params.duration === 125,

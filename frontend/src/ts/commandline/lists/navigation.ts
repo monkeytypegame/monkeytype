@@ -1,4 +1,4 @@
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command, withValidation } from "../types";
@@ -13,7 +13,7 @@ const commands: Command[] = [
     alias: "navigate go to start begin type test",
     icon: "fa-keyboard",
     exec: (): void => {
-      void navigate("/");
+      void navigate({ to: "/" });
     },
   },
   {
@@ -22,7 +22,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-crown",
     exec: (): void => {
-      void navigate("/leaderboards");
+      void navigate({ to: "/leaderboards" });
     },
   },
   {
@@ -31,7 +31,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-info",
     exec: (): void => {
-      void navigate("/about");
+      void navigate({ to: "/about" });
     },
   },
   {
@@ -40,7 +40,7 @@ const commands: Command[] = [
     alias: "navigate go to",
     icon: "fa-cog",
     exec: (): void => {
-      void navigate("/settings");
+      void navigate({ to: "/settings" });
     },
   },
 
@@ -50,7 +50,7 @@ const commands: Command[] = [
     alias: "navigate go to stats",
     icon: "fa-user",
     exec: (): void => {
-      isAuthenticated() ? void navigate("/account") : void navigate("/login");
+      void navigate({ to: isAuthenticated() ? "/account" : "/login" });
     },
   },
   withValidation({
@@ -71,7 +71,10 @@ const commands: Command[] = [
     },
     exec: ({ input }): void => {
       if (input === undefined) return;
-      void navigate(`/profile/${input}`);
+      void navigate({
+        to: "/profile/$uidOrName",
+        params: { uidOrName: input },
+      });
     },
   }),
   {

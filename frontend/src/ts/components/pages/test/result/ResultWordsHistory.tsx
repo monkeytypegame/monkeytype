@@ -5,6 +5,7 @@ import {
   For,
   JSXElement,
   on,
+  onCleanup,
   Show,
   untrack,
 } from "solid-js";
@@ -13,10 +14,7 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import {
-  getResultVisible,
-  isErrorBorderDisabled,
-} from "../../../../states/test";
+import { isTestFinished, isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/events/stats";
 import { EventLog } from "../../../../test/events/types";
@@ -114,6 +112,12 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
     setConfig("burstHeatmap", !getConfig.burstHeatmap);
     ResultWordHighlight.destroy();
   };
+
+  // highlights are positioned absolutely, stale after a resize
+  window.addEventListener("resize", ResultWordHighlight.destroy);
+  onCleanup(() =>
+    window.removeEventListener("resize", ResultWordHighlight.destroy),
+  );
 
   // element is remounted on every open, so drop highlights tied to the old one
   createEffect(
@@ -276,7 +280,7 @@ function Word(props: {
       <Show
         when={
           isHovered() &&
-          getResultVisible() &&
+          isTestFinished() &&
           props.word.input !== "" &&
           !getIsScreenshotting()
         }

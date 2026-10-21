@@ -89,11 +89,16 @@ export function ChartJs<T extends ChartType, TData = DefaultDataPoint<T>>(
     if (canvas === undefined) return;
     if (chart !== undefined) return;
 
+    // created empty, then filled without animations: the constructor's first
+    // update sets up animations for every data point even at duration 0
+    // (~60ms for the account history chart's 7k points, ~4ms this way)
     chart = new Chart(canvas.native, {
       type: props.type,
-      data: props.data,
+      data: { datasets: [] },
       options: addColorsToOptions(props.options as ChartOptions<T>, getTheme),
     });
+    chart.data = props.data;
+    chart.update("none");
     props.onChartInit?.(chart);
   });
 

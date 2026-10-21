@@ -9,14 +9,14 @@ import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import {
-  getResultVisible,
+  isTestFinished,
   getFocus,
   isTestRestarting,
 } from "../../../states/test";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
-import { Anime, AnimeShow } from "../../common/anime";
+import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
 const variables = cn(
@@ -38,9 +38,7 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || getResultVisible()
-            ? "pointer-events-none opacity-0"
-            : "",
+          getFocus() || isTestFinished() ? "pointer-events-none opacity-0" : "",
         )}
         data-ui-element="testConfig"
       >
@@ -84,7 +82,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={getFocus() || getResultVisible() || props.disabled}
+      disabled={getFocus() || isTestFinished() || props.disabled}
     />
   );
 }
@@ -101,26 +99,22 @@ function PuncAndNum(): JSXElement {
         duration: durationMs,
       }}
     >
-      <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
-        <div class={cardClass}>
-          <For each={buttons}>
-            {(configKey) => (
-              <TCButton
-                fa={configMetadata[configKey].fa}
-                text={configMetadata[configKey].displayString ?? configKey}
-                active={getConfig[configKey]}
-                disabled={
-                  getConfig.mode === "zen" || getConfig.mode === "quote"
-                }
-                onClick={() => {
-                  setConfig(configKey, !getConfig[configKey]);
-                  restartTestEvent.dispatch();
-                }}
-              />
-            )}
-          </For>
-        </div>
-      </AnimeShow>
+      <div class={cardClass}>
+        <For each={buttons}>
+          {(configKey) => (
+            <TCButton
+              fa={configMetadata[configKey].fa}
+              text={configMetadata[configKey].displayString ?? configKey}
+              active={getConfig[configKey]}
+              disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
+              onClick={() => {
+                setConfig(configKey, !getConfig[configKey]);
+                restartTestEvent.dispatch();
+              }}
+            />
+          )}
+        </For>
+      </div>
     </Anime>
   );
 }

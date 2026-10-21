@@ -17,6 +17,12 @@
       }
     },
     {
+      "files": ["src/**/*.ts", "src/**/*.tsx"],
+      "rules": {
+        "monkeytype-rules/no-module-scope-dom-query": "error"
+      }
+    },
+    {
       "files": ["storybook/**/*.tsx"],
       "rules": {
         "explicit-function-return-type": "off",

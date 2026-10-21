@@ -1,5 +1,6 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { isSafeNumber, roundTo2 } from "@monkeytype/util/numbers";
+import { Link } from "@tanstack/solid-router";
 import {
   createMemo,
   createResource,
@@ -7,6 +8,7 @@ import {
   For,
   JSXElement,
   Show,
+  Suspense,
 } from "solid-js";
 
 import Ape from "../../../../ape";
@@ -15,7 +17,6 @@ import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import { navigate } from "../../../../controllers/route-controller";
 import * as DB from "../../../../db";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
@@ -90,7 +91,9 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         <div class="text-main" data-ui-element="resultStatValue">
           <Lines lines={testType()} />
         </div>
-        <Tags />
+        <Suspense>
+          <Tags />
+        </Suspense>
       </div>
       <Show when={other().length > 0}>
         <div data-ui-element="resultStat">
@@ -156,24 +159,28 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         class="max-w-52 whitespace-nowrap"
       >
         <div class="text-sub">daily leaderboard</div>
-        <Balloon
-          data-ui-element="resultStatValue"
-          text="Show daily leaderboard"
-          class={cn(
-            "text-[2em] leading-[1em] text-main",
-            mobileBalloonClass,
-            "cursor-pointer",
-          )}
-          onClick={() => {
-            void navigate(
-              `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
-            );
+        <Link
+          to="/leaderboards"
+          search={{
+            type: "daily",
+            language: props.result.language,
+            mode2: props.result.mode2,
+            goToUserPage: true,
           }}
         >
-          {format().rank(resultState.dailyLeaderboardRank, {
-            fallback: "",
-          })}
-        </Balloon>
+          <Balloon
+            data-ui-element="resultStatValue"
+            text="Show daily leaderboard"
+            class={cn(
+              "block text-[2em] leading-[1em] text-main",
+              mobileBalloonClass,
+            )}
+          >
+            {format().rank(resultState.dailyLeaderboardRank, {
+              fallback: "",
+            })}
+          </Balloon>
+        </Link>
       </AnimeShow>
 
       <Show when={resultState.details?.quote}>
