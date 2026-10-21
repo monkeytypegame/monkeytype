@@ -6,7 +6,7 @@ import type { Letter, LetterStatus } from "./WordLetter";
  * marked. Pure, the WordLetter component only renders the result.
  */
 
-export type TextLettersSettings = {
+type Settings = {
   /** indicate typos replace/both: typos show the typed char */
   replaceTypos: boolean;
   /** composition display replace: composing chars show as typed */
@@ -70,10 +70,7 @@ export function createZenLetters(input: string, composition: string): Letter[] {
 }
 
 /** letters of `word.text`, marked against the input */
-export function createTextLetters(
-  word: WordChars,
-  settings: TextLettersSettings,
-): Letter[] {
+export function createLetters(word: WordChars, settings: Settings): Letter[] {
   const wordChars = splitIntoCharacters(word.text);
   const inputChars = splitIntoCharacters(word.input);
   const compositionChars = splitIntoCharacters(word.composition);

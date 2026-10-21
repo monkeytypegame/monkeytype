@@ -14,7 +14,7 @@ import {
   wordsRenderState,
 } from "../../../states/words-render";
 import { isWordRightToLeft } from "../../../utils/strings";
-import { createTextLetters, createZenLetters } from "./letters";
+import { createLetters, createZenLetters } from "./letters";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
@@ -25,7 +25,7 @@ export function Word(props: {
   const letters = createMemo(() =>
     wordsRenderState.rendersLettersFromInput
       ? createZenLetters(props.word.input, props.word.composition)
-      : createTextLetters(props.word, {
+      : createLetters(props.word, {
           replaceTypos:
             getConfig.indicateTypos === "replace" ||
             getConfig.indicateTypos === "both",
