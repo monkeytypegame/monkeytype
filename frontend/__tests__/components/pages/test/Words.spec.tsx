@@ -7,6 +7,7 @@ import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendRenderedWord,
+  firstMountedIndex,
   resetWordsRender,
   setActiveWord,
   setFirstRenderedLine,
@@ -364,30 +365,26 @@ describe("Words", () => {
       expect(wordsRenderState.words[0]?.endsLine).toBe(true);
     });
 
-    it("keeps the first rendered line break index at the first hidden word ending a line", () => {
-      const indices = (): [number, number] => [
-        wordsRenderState.firstRenderedWordIndex,
-        wordsRenderState.firstRenderedLineBreakIndex,
-      ];
-      for (let i = 0; i < 10; i++) {
-        appendRenderedWord(i === 3 || i === 5 ? "w\n" : "w");
-      }
+    it("mounts from the first rendered word until a word ends a line", () => {
+      appendRenderedWord("a");
+      appendRenderedWord("b");
       flush();
-
-      // no line breaks below: in sync
-      setFirstRenderedWordIndex(2);
-      expect(indices()).toEqual([2, 2]);
-      // stops at the first hidden word ending a line
-      setFirstRenderedWordIndex(7);
-      expect(indices()).toEqual([7, 3]);
-      // line jump hides line breaks, moving on to the next one kept
-      setFirstRenderedLine(4);
-      expect(indices()).toEqual([7, 5]);
-      setFirstRenderedLine(6);
-      expect(indices()).toEqual([7, 7]);
-      // never lowered
       setFirstRenderedWordIndex(1);
-      expect(indices()).toEqual([7, 7]);
+      expect(firstMountedIndex()).toBe(1);
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
+
+      appendRenderedWord("c\n");
+      appendRenderedWord("d");
+      flush();
+      expect(wordsRenderState.keepsLineBreaks).toBe(true);
+      setFirstRenderedWordIndex(3);
+      // line breaks of hidden words are kept, from the last line jump on
+      expect(firstMountedIndex()).toBe(0);
+      setFirstRenderedLine(3);
+      expect(firstMountedIndex()).toBe(3);
+
+      resetWordsRender();
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
     });
 
     it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {

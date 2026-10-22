@@ -31,11 +31,15 @@ type WordsRenderState = {
   /** words below this index are not rendered (line jump, tape scroll) */
   firstRenderedWordIndex: number;
   /**
-   * first word whose line break is rendered, firstRenderedWordIndex if none
-   * below it. Line jump hides line breaks, tape scroll hides words only: their
-   * line breaks keep the lines in place
+   * line breaks of words below this index are not rendered (line jump). Tape
+   * scroll hides words only, their line breaks keep the lines in place
    */
   firstRenderedLineBreakIndex: number;
+  /**
+   * hidden words keep their line breaks: set once a word ends a line this test
+   * (zen: typed newline), stays set after zen backspace
+   */
+  keepsLineBreaks: boolean;
   renderedActiveWordIndex: number;
   /**
    * zen test: letters come from the input only. Fixed per test at reset, so a
@@ -53,6 +57,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   words: [],
   firstRenderedWordIndex: 0,
   firstRenderedLineBreakIndex: 0,
+  keepsLineBreaks: false,
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
   marksRtlWords: false,
@@ -121,6 +126,7 @@ export function flushWordsRender(): void {
   buffer = emptyBuffer();
 
   batch(() => {
+    let endsLine = false;
     // 1. structure: truncate, then append
     setStore(
       "words",
@@ -129,7 +135,9 @@ export function flushWordsRender(): void {
           words.length = b.truncateTo;
         }
         for (const text of b.appended) {
-          words.push(newWord(words.length, text));
+          const word = newWord(words.length, text);
+          endsLine ||= word.endsLine;
+          words.push(word);
         }
       }),
     );
@@ -137,12 +145,18 @@ export function flushWordsRender(): void {
     for (const [index, { input, composition }] of b.inputs) {
       if (store.words[index] === undefined) continue;
       if (store.rendersLettersFromInput) {
-        const endsLine = input.includes("\n");
-        setStore("words", index, { input, composition, endsLine });
+        const inputEndsLine = input.includes("\n");
+        endsLine ||= inputEndsLine;
+        setStore("words", index, {
+          input,
+          composition,
+          endsLine: inputEndsLine,
+        });
       } else {
         setStore("words", index, { input, composition });
       }
     }
+    if (endsLine && !store.keepsLineBreaks) setStore("keepsLineBreaks", true);
     // 3. active index, typed
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
@@ -196,7 +210,7 @@ export function setWordTyped(index: number, isTyped: boolean): void {
  * updated DOM.
  */
 export function setFirstRenderedWordIndex(index: number): void {
-  raiseFirstRendered(index, store.firstRenderedLineBreakIndex);
+  setStore("firstRenderedWordIndex", (current) => Math.max(current, index));
 }
 
 /**
@@ -204,25 +218,11 @@ export function setFirstRenderedWordIndex(index: number): void {
  * for the input path, renders synchronously like setFirstRenderedWordIndex.
  */
 export function setFirstRenderedLine(index: number): void {
-  raiseFirstRendered(index, index);
-}
-
-function raiseFirstRendered(wordIndex: number, lineBreakIndex: number): void {
-  const firstWord = Math.max(store.firstRenderedWordIndex, wordIndex);
-  let firstLineBreak = Math.max(
-    store.firstRenderedLineBreakIndex,
-    lineBreakIndex,
-  );
-  // hidden words without a line break render nothing
-  while (
-    firstLineBreak < firstWord &&
-    store.words[firstLineBreak]?.endsLine !== true
-  ) {
-    firstLineBreak++;
-  }
-  setStore({
-    firstRenderedWordIndex: firstWord,
-    firstRenderedLineBreakIndex: firstLineBreak,
+  batch(() => {
+    setFirstRenderedWordIndex(index);
+    setStore("firstRenderedLineBreakIndex", (current) =>
+      Math.max(current, index),
+    );
   });
 }
 
@@ -236,7 +236,10 @@ export function isWordRendered(index: number): boolean {
  * Reactive.
  */
 export function firstMountedIndex(): number {
-  return store.firstRenderedLineBreakIndex;
+  // without line breaks, hidden words mount nothing
+  return store.keepsLineBreaks
+    ? store.firstRenderedLineBreakIndex
+    : store.firstRenderedWordIndex;
 }
 
 /** Drops all words from `length` on (zen backspace). */
@@ -268,6 +271,7 @@ export function resetWordsRender(
     words: [],
     firstRenderedWordIndex: 0,
     firstRenderedLineBreakIndex: 0,
+    keepsLineBreaks: false,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,
