@@ -172,10 +172,12 @@ describe("test-ui words rendering", () => {
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
+      TestUI.beforeTestWordChange("forward", true);
       increaseActiveWordIndex();
       void TestUI.afterTestWordChange("forward");
     }
     runFrames();
+    TestUI.beforeTestWordChange("forward", true);
     increaseActiveWordIndex();
     const topBefore = input.style.top;
 

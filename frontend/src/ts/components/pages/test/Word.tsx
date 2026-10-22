@@ -60,8 +60,8 @@ export function Word(props: {
         // oxlint-disable-next-line monkeytype-rules/no-classlist
         classList={{
           active: props.isActive(props.word.index),
-          typed: props.word.isTyped,
-          error: props.word.isIncorrect,
+          typed: props.word.status !== "untyped",
+          error: props.word.status === "incorrect",
           wordRtl: isRtl(),
         }}
       >

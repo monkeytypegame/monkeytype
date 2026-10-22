@@ -39,7 +39,7 @@ import {
   setFirstRenderedWordIndex,
   setLayoutHook,
   setTapeHiddenBefore,
-  setWordFlags,
+  setWordStatus,
   setWordInput,
   truncateWords,
   wordsRenderState,
@@ -1110,10 +1110,6 @@ async function lineJump(currentTop: number, force = false): Promise<void> {
   return;
 }
 
-function highlightBadWord(index: number): void {
-  setWordFlags(index, { isIncorrect: true });
-}
-
 /**
  * Whether appending `data` to the active word would push it onto the next line
  * or wrap its letters. Expensive - causes layout reflows.
@@ -1271,9 +1267,10 @@ export function beforeTestWordChange(
 
   if (direction === "forward") {
     // blind mode: CSS hides mistakes in typed words
-    if (!Config.blindMode && correct === false) {
-      highlightBadWord(getActiveWordIndex());
-    }
+    setWordStatus(
+      getActiveWordIndex(),
+      !Config.blindMode && correct === false ? "incorrect" : "typed",
+    );
   }
 }
 
@@ -1282,13 +1279,7 @@ export async function afterTestWordChange(
   lastBurst?: number | null,
 ): Promise<void> {
   const activeWordIndex = getActiveWordIndex();
-  if (direction === "forward") {
-    setWordFlags(activeWordIndex - 1, { isTyped: true });
-  }
-  setWordFlags(activeWordIndex, {
-    isTyped: false,
-    isIncorrect: false,
-  });
+  setWordStatus(activeWordIndex, "untyped");
   setActiveWord(activeWordIndex);
   pendingWordChange = direction;
 

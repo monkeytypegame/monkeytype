@@ -11,7 +11,7 @@ import {
   setActiveWord,
   setFirstRenderedWordIndex,
   setLayoutHook,
-  setWordFlags,
+  setWordStatus,
   setWordInput,
   truncateWords,
 } from "../../../../src/ts/states/words-render";
@@ -344,13 +344,12 @@ describe("Words", () => {
     it("marks typed and error words", () => {
       const container = renderWords();
       appendRenderedWord("a");
-      setWordFlags(0, { isTyped: true });
-      setWordFlags(0, { isIncorrect: true });
+      setWordStatus(0, "incorrect");
       flush();
       const word = wordEls(container)[0];
       expect(word?.classList.contains("typed")).toBe(true);
       expect(word?.classList.contains("error")).toBe(true);
-      setWordFlags(0, { isIncorrect: false });
+      setWordStatus(0, "typed");
       flush();
       expect(word?.classList.contains("error")).toBe(false);
       expect(word?.classList.contains("typed")).toBe(true);
@@ -361,7 +360,7 @@ describe("Words", () => {
       const container = renderWords();
       appendRenderedWord("abc");
       setWordInput(0, "xb");
-      setWordFlags(0, { isTyped: true });
+      setWordStatus(0, "typed");
       flush();
       expect(letterClasses(wordEls(container)[0])).toEqual([
         "incorrect",
@@ -400,7 +399,7 @@ describe("Words", () => {
       word.style.width = "10px";
 
       setWordInput(0, "ab");
-      setWordFlags(0, { isTyped: true, isIncorrect: true });
+      setWordStatus(0, "incorrect");
       setActiveWord(1);
       flush();
 

@@ -14,17 +14,16 @@ import { createStore, produce } from "solid-js/store";
  * result.
  */
 
-export type WordFlags = {
-  isTyped: boolean;
-  isIncorrect: boolean;
-};
+/** incorrect: typed with a mistake (not set in blind mode) */
+export type WordStatus = "untyped" | "typed" | "incorrect";
 
-export type RenderedWord = WordFlags & {
+export type RenderedWord = {
   index: number;
   text: string;
   input: string;
   /** in-progress IME composition, active word only */
   composition: string;
+  status: WordStatus;
 };
 
 type WordsRenderState = {
@@ -66,7 +65,7 @@ type Buffer = {
   appended: string[];
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
-  flags: Map<number, Partial<WordFlags>>;
+  statuses: Map<number, WordStatus>;
 };
 
 function emptyBuffer(): Buffer {
@@ -75,7 +74,7 @@ function emptyBuffer(): Buffer {
     appended: [],
     inputs: new Map(),
     activeWordIndex: undefined,
-    flags: new Map(),
+    statuses: new Map(),
   };
 }
 
@@ -108,8 +107,7 @@ function newWord(index: number, text: string): RenderedWord {
     text,
     input: "",
     composition: "",
-    isTyped: false,
-    isIncorrect: false,
+    status: "untyped",
   };
 }
 
@@ -137,13 +135,13 @@ export function flushWordsRender(): void {
       if (store.words[index] === undefined) continue;
       setStore("words", index, { input, composition });
     }
-    // 3. active index, flags
+    // 3. active index, statuses
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
     }
-    for (const [index, flags] of b.flags) {
+    for (const [index, status] of b.statuses) {
       if (store.words[index] === undefined) continue;
-      setStore("words", index, flags);
+      setStore("words", index, "status", status);
     }
   });
 
@@ -179,8 +177,8 @@ export function setActiveWord(index: number): void {
   scheduleFlush();
 }
 
-export function setWordFlags(index: number, flags: Partial<WordFlags>): void {
-  buffer.flags.set(index, { ...buffer.flags.get(index), ...flags });
+export function setWordStatus(index: number, status: WordStatus): void {
+  buffer.statuses.set(index, status);
   scheduleFlush();
 }
 
@@ -228,8 +226,8 @@ export function truncateWords(length: number): void {
   for (const index of [...buffer.inputs.keys()]) {
     if (index >= length) buffer.inputs.delete(index);
   }
-  for (const index of [...buffer.flags.keys()]) {
-    if (index >= length) buffer.flags.delete(index);
+  for (const index of [...buffer.statuses.keys()]) {
+    if (index >= length) buffer.statuses.delete(index);
   }
   scheduleFlush();
 }
