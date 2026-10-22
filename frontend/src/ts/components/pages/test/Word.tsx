@@ -15,13 +15,20 @@ import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
 /** Whether the word is followed by a line break (zen: typed newline). */
-function wordHasNewline(word: RenderedWord): boolean {
+export function wordHasNewline(word: RenderedWord): boolean {
   return (
     wordsRenderState.rendersLettersFromInput ? word.input : word.text
   ).includes("\n");
 }
 
-/** A word and its line break. Tape scroll hides the word, keeping the break. */
+/**
+ * A word and its line break. Tape scroll hides the word, keeping the break.
+ *
+ * The word div is its own component (WordElement) because it can unmount
+ * while Word stays mounted for the break: its element registration and letter
+ * memos must follow the div's lifetime, not Word's. Otherwise a hidden word
+ * would stay registered as a detached element and keep computing letters.
+ */
 export function Word(props: {
   word: RenderedWord;
   isActive: (index: number) => boolean;
