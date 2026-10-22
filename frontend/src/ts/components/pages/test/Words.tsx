@@ -17,11 +17,13 @@ export function Words(): JSXElement {
       firstRenderedLineBreakIndex,
       keepsLineBreaks,
     } = wordsRenderState;
-    // no line breaks to keep
-    if (!keepsLineBreaks) return words.slice(firstRenderedWordIndex);
-    return words
-      .slice(firstRenderedLineBreakIndex)
-      .filter((word) => isWordRendered(word.index) || word.endsLine);
+    if (keepsLineBreaks) {
+      return words
+        .slice(firstRenderedLineBreakIndex)
+        .filter((word) => isWordRendered(word.index) || word.endsLine);
+    } else {
+      return words.slice(firstRenderedWordIndex);
+    }
   });
 
   return (
