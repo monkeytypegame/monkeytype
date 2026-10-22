@@ -19,20 +19,16 @@ export function Words(): JSXElement {
   const isActive = createSelector(
     () => wordsRenderState.renderedActiveWordIndex,
   );
-  const visibleWords = createMemo(() => {
-    const { words, firstRenderedWordIndex, firstRenderedLineBreakIndex } =
-      wordsRenderState;
-    const shown = words.slice(firstRenderedWordIndex);
-    // tape hidden words ending a line keep their line break, so the lines
-    // don't collapse
-    const lineEnds = words
-      .slice(firstRenderedLineBreakIndex, firstRenderedWordIndex)
-      .filter((word) => wordHasNewline(word));
-    return lineEnds.length === 0 ? shown : [...lineEnds, ...shown];
-  });
+  // words that render anything: the word, or only its line break (tape
+  // hidden words ending a line keep it, so the lines don't collapse)
+  const wordItems = createMemo(() =>
+    wordsRenderState.words
+      .slice(wordsRenderState.firstRenderedLineBreakIndex)
+      .filter((word) => isWordRendered(word.index) || wordHasNewline(word)),
+  );
 
   return (
-    <For each={visibleWords()}>
+    <For each={wordItems()}>
       {(word) => (
         <>
           <Show when={isWordRendered(word.index)}>
