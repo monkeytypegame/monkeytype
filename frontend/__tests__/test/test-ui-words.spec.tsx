@@ -43,6 +43,7 @@ import {
 } from "../../src/ts/states/test";
 import {
   appendRenderedWord,
+  isWordRendered,
   resetWordsRender,
   setActiveWord,
 } from "../../src/ts/states/words-render";
@@ -317,7 +318,7 @@ describe("test-ui words rendering", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(childClasses(words)[0]).toBe("word0");
-      expect(TestUI.isWordRendered(0)).toBe(true);
+      expect(isWordRendered(0)).toBe(true);
       expect(activeWordIndex(words)).toBe("0");
       expect(words.style.marginTop).toBe("0px");
     });
@@ -374,8 +375,8 @@ describe("test-ui words rendering", () => {
       for (let i = 0; i < 10; i++) await goForward();
 
       expect(childClasses(words).slice(0, 2)).toEqual(["word5", "word6"]);
-      expect(TestUI.isWordRendered(4)).toBe(false);
-      expect(TestUI.isWordRendered(5)).toBe(true);
+      expect(isWordRendered(4)).toBe(false);
+      expect(isWordRendered(5)).toBe(true);
     });
 
     it("line jump hides every passed line when several lines are crossed within one frame", async () => {
@@ -472,8 +473,8 @@ describe("test-ui words rendering", () => {
         // the previous scroll put word 9 at the tape margin (250px), so words
         // 0-2 ended up left of -50px
         expect(childClasses(words)[0]).toBe("word3");
-        expect(TestUI.isWordRendered(2)).toBe(false);
-        expect(TestUI.isWordRendered(3)).toBe(true);
+        expect(isWordRendered(2)).toBe(false);
+        expect(isWordRendered(3)).toBe(true);
         // removing words doesn't move the tape
         const active = words.querySelector<HTMLElement>(".word.active");
         expect(active?.offsetLeft).toBe(wrapperWidth / 2);
@@ -498,9 +499,9 @@ describe("test-ui words rendering", () => {
           "afterNewline",
           "word4",
         ]);
-        expect(TestUI.isWordRendered(1)).toBe(false);
-        expect(TestUI.isWordRendered(2)).toBe(true);
-        expect(TestUI.isWordRendered(3)).toBe(false);
+        expect(isWordRendered(1)).toBe(false);
+        expect(isWordRendered(2)).toBe(true);
+        expect(isWordRendered(3)).toBe(false);
       });
     });
   });

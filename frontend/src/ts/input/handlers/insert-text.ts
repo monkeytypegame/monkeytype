@@ -35,6 +35,7 @@ import {
   flashKeymapKey,
 } from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
+import { isWordRendered } from "../../states/words-render";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -118,7 +119,7 @@ function handleDeleteOnError(now: number): void {
     goBackAWord &&
     inputLength <= 1 &&
     getActiveWordIndex() > 0 &&
-    TestUI.isWordRendered(getActiveWordIndex() - 1)
+    isWordRendered(getActiveWordIndex() - 1)
   ) {
     //pretend its a normal backspace, not insertText
     const inputType: DeleteInputType = deleteWholeWord

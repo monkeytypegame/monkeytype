@@ -34,7 +34,6 @@ import {
   appendRenderedWord,
   flushWordsRender,
   getPendingWordInput,
-  isWordRendered as isWordRenderedInState,
   resetWordsRender,
   setActiveWord,
   setFirstRenderedWordIndex,
@@ -165,13 +164,6 @@ function keepWordsInputInTheCenter(force = false): void {
 function getWordElement(index: number): ElementWithUtils | null {
   const el = getRenderedWordElement(index);
   return el === undefined ? null : new ElementWithUtils(el);
-}
-
-/**
- * False once a word has scrolled off (line jump / tape stop rendering it).
- */
-export function isWordRendered(index: number): boolean {
-  return isWordRenderedInState(index);
 }
 
 function getWordIndex(el: ElementWithUtils): number {
