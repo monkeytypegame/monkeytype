@@ -344,7 +344,7 @@ describe("Words", () => {
     it("marks typed and error words", () => {
       const container = renderWords();
       appendRenderedWord("a");
-      setWordStatus(0, "incorrect");
+      setWordStatus(0, "typedIncorrect");
       flush();
       const word = wordEls(container)[0];
       expect(word?.classList.contains("typed")).toBe(true);
@@ -399,7 +399,7 @@ describe("Words", () => {
       word.style.width = "10px";
 
       setWordInput(0, "ab");
-      setWordStatus(0, "incorrect");
+      setWordStatus(0, "typedIncorrect");
       setActiveWord(1);
       flush();
 

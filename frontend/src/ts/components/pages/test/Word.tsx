@@ -61,7 +61,7 @@ export function Word(props: {
         classList={{
           active: props.isActive(props.word.index),
           typed: props.word.status !== "untyped",
-          error: props.word.status === "incorrect",
+          error: props.word.status === "typedIncorrect",
           wordRtl: isRtl(),
         }}
       >

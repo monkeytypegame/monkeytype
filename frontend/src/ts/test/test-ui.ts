@@ -1269,7 +1269,7 @@ export function beforeTestWordChange(
     // blind mode: CSS hides mistakes in typed words
     setWordStatus(
       getActiveWordIndex(),
-      !Config.blindMode && correct === false ? "incorrect" : "typed",
+      !Config.blindMode && correct === false ? "typedIncorrect" : "typed",
     );
   }
 }

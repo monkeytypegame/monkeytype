@@ -14,8 +14,8 @@ import { createStore, produce } from "solid-js/store";
  * result.
  */
 
-/** incorrect: typed with a mistake (not set in blind mode) */
-export type WordStatus = "untyped" | "typed" | "incorrect";
+/** typedIncorrect: typed with a mistake (not set in blind mode) */
+export type WordStatus = "untyped" | "typed" | "typedIncorrect";
 
 export type RenderedWord = {
   index: number;
