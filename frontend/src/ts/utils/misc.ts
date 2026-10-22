@@ -52,52 +52,6 @@ export function convertNumberToHindi(numString: string): string {
   return ret;
 }
 
-export function findGetParameter(
-  parameterName: string,
-  getOverride?: string,
-): string | null {
-  let result = null;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) {
-        result = decodeURIComponent(tmp[1] as string);
-      }
-    });
-  return result;
-}
-
-export function checkIfGetParameterExists(
-  parameterName: string,
-  getOverride?: string,
-): boolean {
-  let result = false;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = true;
-    });
-  return result;
-}
-
 export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>,
 ): string {
@@ -343,16 +297,11 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return (
-    isElementVisible(`#popups #${popupId}`) ||
-    isElementVisible(`#solidmodals #${popupId}`)
-  );
+  return isElementVisible(`#solidmodals #${popupId}`);
 }
 
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
-  );
+  const popups = document.querySelectorAll("#solidmodals dialog");
   let popupVisible = false;
   for (const popup of popups) {
     if (isPopupVisible(popup.id)) {
