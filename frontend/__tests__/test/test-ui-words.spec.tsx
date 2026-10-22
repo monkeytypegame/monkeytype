@@ -46,6 +46,7 @@ import {
   isWordRendered,
   resetWordsRender,
   setActiveWord,
+  setWordInput,
 } from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
 import * as TestWords from "../../src/ts/test/test-words";
@@ -172,12 +173,10 @@ describe("test-ui words rendering", () => {
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
-      TestUI.beforeTestWordChange("forward", true);
       increaseActiveWordIndex();
       void TestUI.afterTestWordChange("forward");
     }
     runFrames();
-    TestUI.beforeTestWordChange("forward", true);
     increaseActiveWordIndex();
     const topBefore = input.style.top;
 
@@ -208,7 +207,8 @@ describe("test-ui words rendering", () => {
     setActiveWord(0);
     runFrames();
 
-    TestUI.beforeTestWordChange("forward", false);
+    // committed with a typo
+    setWordInput(0, "wrod");
     increaseActiveWordIndex();
     void TestUI.afterTestWordChange("forward");
 

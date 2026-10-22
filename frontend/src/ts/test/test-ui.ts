@@ -39,7 +39,7 @@ import {
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   setLayoutHook,
-  setWordStatus,
+  setWordTyped,
   setWordInput,
   truncateWords,
   wordsRenderState,
@@ -1253,29 +1253,13 @@ export function afterTestDelete(): void {
   afterAnyTestInput("delete", null);
 }
 
-export function beforeTestWordChange(
-  direction: "forward",
-  correct: boolean,
-): void;
-export function beforeTestWordChange(direction: "back", correct: null): void;
-export function beforeTestWordChange(
-  direction: "forward" | "back",
-  correct: boolean | null,
-): void {
+export function beforeTestWordChange(direction: "forward" | "back"): void {
   if (direction === "back") {
     updateWordLetters({
       input: getCurrentInput(),
       wordIndex: getActiveWordIndex(),
       compositionData: getCompositionData(),
     });
-  }
-
-  if (direction === "forward") {
-    // blind mode: CSS hides mistakes in typed words
-    setWordStatus(
-      getActiveWordIndex(),
-      !Config.blindMode && correct === false ? "typedIncorrect" : "typed",
-    );
   }
 }
 
@@ -1284,7 +1268,8 @@ export async function afterTestWordChange(
   lastBurst?: number | null,
 ): Promise<void> {
   const activeWordIndex = getActiveWordIndex();
-  setWordStatus(activeWordIndex, "untyped");
+  if (direction === "forward") setWordTyped(activeWordIndex - 1, true);
+  setWordTyped(activeWordIndex, false);
   setActiveWord(activeWordIndex);
   pendingWordChange = direction;
 

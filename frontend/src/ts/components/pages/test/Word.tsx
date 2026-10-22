@@ -28,6 +28,14 @@ export function Word(props: {
       wordsRenderState.marksRtlWords &&
       isWordRightToLeft(props.word.text, false)[1],
   );
+  // committed input (trailing space stripped) differs from the word, same as
+  // the commit check. Not in blind mode: some themes style .error without a
+  // blind guard. Zen words have no text to compare against
+  const isIncorrect = (): boolean =>
+    props.word.isTyped &&
+    !wordsRenderState.rendersLettersFromInput &&
+    !getConfig.blindMode &&
+    props.word.input !== props.word.text;
   let wordRef: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -48,8 +56,8 @@ export function Word(props: {
       // oxlint-disable-next-line monkeytype-rules/no-classlist
       classList={{
         active: props.isActive(props.word.index),
-        typed: props.word.status !== "untyped",
-        error: props.word.status === "typedIncorrect",
+        typed: props.word.isTyped,
+        error: isIncorrect(),
         wordRtl: isRtl(),
       }}
     >

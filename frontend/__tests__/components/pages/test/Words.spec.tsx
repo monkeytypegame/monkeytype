@@ -12,7 +12,7 @@ import {
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   setLayoutHook,
-  setWordStatus,
+  setWordTyped,
   setWordInput,
   truncateWords,
 } from "../../../../src/ts/states/words-render";
@@ -359,18 +359,51 @@ describe("Words", () => {
       expect(second?.classList.contains("active")).toBe(true);
     });
 
-    it("marks typed and error words", () => {
+    it("marks typed words, as error when the input differs from the word", () => {
       const container = renderWords();
-      appendRenderedWord("a");
-      setWordStatus(0, "typedIncorrect");
+      appendRenderedWord("ab");
+      appendRenderedWord("cd\n");
+      setWordInput(0, "ax");
+      setWordInput(1, "cd\n");
+      setWordTyped(0, true);
+      setWordTyped(1, true);
       flush();
-      const word = wordEls(container)[0];
-      expect(word?.classList.contains("typed")).toBe(true);
-      expect(word?.classList.contains("error")).toBe(true);
-      setWordStatus(0, "typed");
+      const [first, second] = wordEls(container);
+      expect(first?.classList.contains("typed")).toBe(true);
+      expect(first?.classList.contains("error")).toBe(true);
+      expect(second?.classList.contains("typed")).toBe(true);
+      expect(second?.classList.contains("error")).toBe(false);
+
+      setWordInput(0, "ab");
       flush();
-      expect(word?.classList.contains("error")).toBe(false);
-      expect(word?.classList.contains("typed")).toBe(true);
+      expect(first?.classList.contains("error")).toBe(false);
+
+      // going back into a word: no longer typed, no error
+      setWordInput(0, "ax");
+      setWordTyped(0, false);
+      flush();
+      expect(first?.classList.contains("typed")).toBe(false);
+      expect(first?.classList.contains("error")).toBe(false);
+    });
+
+    it("does not mark error words in blind mode", () => {
+      setConfigStore("blindMode", true);
+      const container = renderWords();
+      appendRenderedWord("ab");
+      setWordInput(0, "ax");
+      setWordTyped(0, true);
+      flush();
+      expect(wordEls(container)[0]?.classList.contains("error")).toBe(false);
+    });
+
+    it("does not mark error words in zen", () => {
+      resetWordsRender({ zen: true });
+      const container = renderWords();
+      appendRenderedWord("");
+      setWordInput(0, "ax");
+      setWordTyped(0, true);
+      flush();
+      expect(wordEls(container)[0]?.classList.contains("error")).toBe(false);
     });
 
     it("keeps true letter classes in blind mode (blind CSS hides mistakes)", () => {
@@ -378,7 +411,7 @@ describe("Words", () => {
       const container = renderWords();
       appendRenderedWord("abc");
       setWordInput(0, "xb");
-      setWordStatus(0, "typed");
+      setWordTyped(0, true);
       flush();
       expect(letterClasses(wordEls(container)[0])).toEqual([
         "incorrect",
@@ -417,7 +450,7 @@ describe("Words", () => {
       word.style.width = "10px";
 
       setWordInput(0, "ab");
-      setWordStatus(0, "typedIncorrect");
+      setWordTyped(0, true);
       setActiveWord(1);
       flush();
 

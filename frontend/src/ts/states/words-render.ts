@@ -14,16 +14,14 @@ import { createStore, produce } from "solid-js/store";
  * measure the result.
  */
 
-/** typedIncorrect: typed with a mistake (not set in blind mode) */
-export type WordStatus = "untyped" | "typed" | "typedIncorrect";
-
 export type RenderedWord = {
   index: number;
   text: string;
   input: string;
   /** in-progress IME composition, active word only */
   composition: string;
-  status: WordStatus;
+  /** typed past (committed) */
+  isTyped: boolean;
 };
 
 type WordsRenderState = {
@@ -65,7 +63,7 @@ type Buffer = {
   appended: string[];
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
-  statuses: Map<number, WordStatus>;
+  typed: Map<number, boolean>;
 };
 
 function emptyBuffer(): Buffer {
@@ -74,7 +72,7 @@ function emptyBuffer(): Buffer {
     appended: [],
     inputs: new Map(),
     activeWordIndex: undefined,
-    statuses: new Map(),
+    typed: new Map(),
   };
 }
 
@@ -107,7 +105,7 @@ function newWord(index: number, text: string): RenderedWord {
     text,
     input: "",
     composition: "",
-    status: "untyped",
+    isTyped: false,
   };
 }
 
@@ -135,13 +133,13 @@ export function flushWordsRender(): void {
       if (store.words[index] === undefined) continue;
       setStore("words", index, { input, composition });
     }
-    // 3. active index, statuses
+    // 3. active index, typed
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
     }
-    for (const [index, status] of b.statuses) {
+    for (const [index, isTyped] of b.typed) {
       if (store.words[index] === undefined) continue;
-      setStore("words", index, "status", status);
+      setStore("words", index, "isTyped", isTyped);
     }
   });
 
@@ -177,8 +175,8 @@ export function setActiveWord(index: number): void {
   scheduleFlush();
 }
 
-export function setWordStatus(index: number, status: WordStatus): void {
-  buffer.statuses.set(index, status);
+export function setWordTyped(index: number, isTyped: boolean): void {
+  buffer.typed.set(index, isTyped);
   scheduleFlush();
 }
 
@@ -222,8 +220,8 @@ export function truncateWords(length: number): void {
   for (const index of [...buffer.inputs.keys()]) {
     if (index >= length) buffer.inputs.delete(index);
   }
-  for (const index of [...buffer.statuses.keys()]) {
-    if (index >= length) buffer.statuses.delete(index);
+  for (const index of [...buffer.typed.keys()]) {
+    if (index >= length) buffer.typed.delete(index);
   }
   scheduleFlush();
 }
