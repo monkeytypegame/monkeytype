@@ -386,14 +386,14 @@ describe("Words", () => {
       expect(first?.classList.contains("error")).toBe(false);
     });
 
-    it("does not mark error words in blind mode", () => {
+    it("marks error words in blind mode too (blind CSS hides them)", () => {
       setConfigStore("blindMode", true);
       const container = renderWords();
       appendRenderedWord("ab");
       setWordInput(0, "ax");
       setWordTyped(0, true);
       flush();
-      expect(wordEls(container)[0]?.classList.contains("error")).toBe(false);
+      expect(wordEls(container)[0]?.classList.contains("error")).toBe(true);
     });
 
     it("does not mark error words in zen", () => {

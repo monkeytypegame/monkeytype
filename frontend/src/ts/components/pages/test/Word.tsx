@@ -29,12 +29,11 @@ export function Word(props: {
       isWordRightToLeft(props.word.text, false)[1],
   );
   // committed input (trailing space stripped) differs from the word, same as
-  // the commit check. Not in blind mode: some themes style .error without a
-  // blind guard. Zen words have no text to compare against
+  // the commit check. Blind CSS hides it. Zen words have no text to compare
+  // against
   const isIncorrect = (): boolean =>
     props.word.isTyped &&
     !wordsRenderState.rendersLettersFromInput &&
-    !getConfig.blindMode &&
     props.word.input !== props.word.text;
   let wordRef: HTMLDivElement | undefined;
 
