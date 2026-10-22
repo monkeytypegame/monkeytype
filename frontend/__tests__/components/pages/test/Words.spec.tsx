@@ -347,27 +347,47 @@ describe("Words", () => {
 
     it("tracks words ending a line: from the text, in zen from the input", () => {
       appendRenderedWord("a");
-      flush();
-      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       appendRenderedWord("b\n");
       flush();
       expect(wordsRenderState.words.map((w) => w.endsLine)).toEqual([
         false,
         true,
       ]);
-      expect(wordsRenderState.keepsLineBreaks).toBe(true);
 
       resetWordsRender({ zen: true });
-      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       appendRenderedWord("");
       setWordInput(0, "a");
       flush();
       expect(wordsRenderState.words[0]?.endsLine).toBe(false);
-      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       setWordInput(0, "a\n");
       flush();
       expect(wordsRenderState.words[0]?.endsLine).toBe(true);
-      expect(wordsRenderState.keepsLineBreaks).toBe(true);
+    });
+
+    it("keeps the first rendered line break index at the first hidden word ending a line", () => {
+      const indices = (): [number, number] => [
+        wordsRenderState.firstRenderedWordIndex,
+        wordsRenderState.firstRenderedLineBreakIndex,
+      ];
+      for (let i = 0; i < 10; i++) {
+        appendRenderedWord(i === 3 || i === 5 ? "w\n" : "w");
+      }
+      flush();
+
+      // no line breaks below: in sync
+      setFirstRenderedWordIndex(2);
+      expect(indices()).toEqual([2, 2]);
+      // stops at the first hidden word ending a line
+      setFirstRenderedWordIndex(7);
+      expect(indices()).toEqual([7, 3]);
+      // line jump hides line breaks, moving on to the next one kept
+      setFirstRenderedLine(4);
+      expect(indices()).toEqual([7, 5]);
+      setFirstRenderedLine(6);
+      expect(indices()).toEqual([7, 7]);
+      // never lowered
+      setFirstRenderedWordIndex(1);
+      expect(indices()).toEqual([7, 7]);
     });
 
     it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {

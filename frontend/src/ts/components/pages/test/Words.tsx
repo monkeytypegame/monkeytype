@@ -10,21 +10,11 @@ export function Words(): JSXElement {
   );
   // words that render anything: the word, or only its line break (tape
   // hidden words ending a line keep it, so the lines don't collapse)
-  const wordItems = createMemo(() => {
-    const {
-      words,
-      firstRenderedWordIndex,
-      firstRenderedLineBreakIndex,
-      keepsLineBreaks,
-    } = wordsRenderState;
-    if (keepsLineBreaks) {
-      return words
-        .slice(firstRenderedLineBreakIndex)
-        .filter((word) => isWordRendered(word.index) || word.endsLine);
-    } else {
-      return words.slice(firstRenderedWordIndex);
-    }
-  });
+  const wordItems = createMemo(() =>
+    wordsRenderState.words
+      .slice(wordsRenderState.firstRenderedLineBreakIndex)
+      .filter((word) => isWordRendered(word.index) || word.endsLine),
+  );
 
   return (
     <For each={wordItems()}>
