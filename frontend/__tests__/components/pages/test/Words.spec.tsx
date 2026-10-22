@@ -6,7 +6,7 @@ import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
-  appendWord,
+  appendRenderedWord,
   resetWordsRender,
   setActiveWord,
   setFirstRenderedWordIndex,
@@ -81,8 +81,8 @@ afterEach(() => {
 describe("Words", () => {
   it("renders appended words with letters after flush", () => {
     const container = renderWords();
-    appendWord("hello");
-    appendWord("world");
+    appendRenderedWord("hello");
+    appendRenderedWord("world");
     flush();
 
     const words = wordEls(container);
@@ -96,7 +96,7 @@ describe("Words", () => {
   describe("flush", () => {
     it("renders nothing before the frame runs", () => {
       const container = renderWords();
-      appendWord("hello");
+      appendRenderedWord("hello");
       setWordInput(0, "he");
       setActiveWord(0);
 
@@ -105,7 +105,7 @@ describe("Words", () => {
 
     it("coalesces multiple writes into one frame", () => {
       const container = renderWords();
-      appendWord("hello");
+      appendRenderedWord("hello");
       setWordInput(0, "h");
       setWordInput(0, "he");
       setActiveWord(0);
@@ -132,8 +132,8 @@ describe("Words", () => {
         );
       });
       setLayoutHook(hook);
-      appendWord("a");
-      appendWord("b");
+      appendRenderedWord("a");
+      appendRenderedWord("b");
       setActiveWord(1);
       setWordInput(1, "b");
 
@@ -152,7 +152,7 @@ describe("Words", () => {
       composition = "",
     ): HTMLElement | undefined {
       const container = renderWords();
-      appendWord(text);
+      appendRenderedWord(text);
       setWordInput(0, input, composition);
       flush();
       return wordEls(container)[0];
@@ -247,7 +247,7 @@ describe("Words", () => {
 
     it("reuses letter nodes when input changes", () => {
       const container = renderWords();
-      appendWord("abc");
+      appendRenderedWord("abc");
       flush();
       const before = [
         ...(wordEls(container)[0]?.querySelectorAll("letter") ?? []),
@@ -273,8 +273,8 @@ describe("Words", () => {
 
     it("follows words containing a newline with newline siblings", () => {
       const container = renderWords();
-      appendWord("a\n");
-      appendWord("b");
+      appendRenderedWord("a\n");
+      appendRenderedWord("b");
       flush();
       expect(childClasses(container)).toEqual([
         "word0",
@@ -287,7 +287,7 @@ describe("Words", () => {
 
     it("renders each word with an empty hints container", () => {
       const container = renderWords();
-      appendWord("a");
+      appendRenderedWord("a");
       flush();
       const hints = wordEls(container)[0]?.querySelector(".hints");
       expect(hints).not.toBeNull();
@@ -296,8 +296,8 @@ describe("Words", () => {
 
     it("registers rendered word elements by index", () => {
       const container = renderWords();
-      appendWord("a");
-      appendWord("b");
+      appendRenderedWord("a");
+      appendRenderedWord("b");
       flush();
       expect(getWordElement(1)).toBe(wordEls(container)[1]);
 
@@ -311,9 +311,9 @@ describe("Words", () => {
 
     it("does not render words below the first rendered index", () => {
       const container = renderWords();
-      appendWord("a\n");
-      appendWord("b\n");
-      appendWord("c");
+      appendRenderedWord("a\n");
+      appendRenderedWord("b\n");
+      appendRenderedWord("c");
       flush();
       setFirstRenderedWordIndex(1);
       flush();
@@ -330,8 +330,8 @@ describe("Words", () => {
   describe("flags", () => {
     it("marks the active word", () => {
       const container = renderWords();
-      appendWord("a");
-      appendWord("b");
+      appendRenderedWord("a");
+      appendRenderedWord("b");
       setActiveWord(0);
       flush();
       setActiveWord(1);
@@ -343,7 +343,7 @@ describe("Words", () => {
 
     it("marks typed and error words", () => {
       const container = renderWords();
-      appendWord("a");
+      appendRenderedWord("a");
       setWordFlags(0, { isTyped: true });
       setWordFlags(0, { isIncorrect: true });
       flush();
@@ -359,7 +359,7 @@ describe("Words", () => {
     it("keeps true letter classes in blind mode (blind CSS hides mistakes)", () => {
       setConfigStore("blindMode", true);
       const container = renderWords();
-      appendWord("abc");
+      appendRenderedWord("abc");
       setWordInput(0, "xb");
       setWordFlags(0, { isTyped: true });
       flush();
@@ -373,9 +373,9 @@ describe("Words", () => {
     it("marks fully right-to-left words when enabled", () => {
       resetWordsRender({ marksRtlWords: true });
       const container = renderWords();
-      appendWord("שלום");
-      appendWord("שלוםabc");
-      appendWord("abc");
+      appendRenderedWord("שלום");
+      appendRenderedWord("שלוםabc");
+      appendRenderedWord("abc");
       flush();
       expect(
         wordEls(container).map((w) => w.classList.contains("wordRtl")),
@@ -385,14 +385,14 @@ describe("Words", () => {
     it("does not mark right-to-left words when disabled", () => {
       resetWordsRender({ marksRtlWords: false });
       const container = renderWords();
-      appendWord("שלום");
+      appendRenderedWord("שלום");
       flush();
       expect(wordEls(container)[0]?.classList.contains("wordRtl")).toBe(false);
     });
 
     it("keeps imperatively added classes and styles across re-renders", () => {
       const container = renderWords();
-      appendWord("abc");
+      appendRenderedWord("abc");
       setActiveWord(0);
       flush();
       const word = wordEls(container)[0] as HTMLElement;
@@ -419,7 +419,7 @@ describe("Words", () => {
     it("keeps zen letters when the mode changes before the restart", () => {
       setConfigStore("mode", "zen");
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       flush();
 
       setConfigStore("mode", "words");
@@ -431,7 +431,7 @@ describe("Words", () => {
 
     it("shows an invisible placeholder for an empty word", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       flush();
       const word = wordEls(container)[0];
       expect(letterClasses(word)).toEqual(["invisible"]);
@@ -440,7 +440,7 @@ describe("Words", () => {
 
     it("shows typed letters as correct and composition as dead", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       setWordInput(0, "ab", "c");
       flush();
       const word = wordEls(container)[0];
@@ -450,7 +450,7 @@ describe("Words", () => {
 
     it("keeps typed arrows visible", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       setWordInput(0, "←");
       flush();
       expect(letterClasses(wordEls(container)[0])).toEqual(["correct"]);
@@ -458,7 +458,7 @@ describe("Words", () => {
 
     it("renders typed newlines invisibly, followed by newline siblings", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       setWordInput(0, "a\n");
       flush();
       expect(letterClasses(wordEls(container)[0])).toEqual([
@@ -470,10 +470,10 @@ describe("Words", () => {
 
     it("appends and truncates words", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       setWordInput(0, "a");
-      appendWord("");
-      appendWord("");
+      appendRenderedWord("");
+      appendRenderedWord("");
       flush();
       expect(wordEls(container)).toHaveLength(3);
 
@@ -485,10 +485,10 @@ describe("Words", () => {
 
     it("truncates words appended in the same frame", () => {
       const container = renderWords();
-      appendWord("");
+      appendRenderedWord("");
       flush();
-      appendWord("");
-      appendWord("");
+      appendRenderedWord("");
+      appendRenderedWord("");
       truncateWords(2);
       flush();
       expect(wordEls(container).map((w) => w.dataset["wordindex"])).toEqual([
@@ -501,7 +501,7 @@ describe("Words", () => {
   describe("reset", () => {
     it("clears all words", () => {
       const container = renderWords();
-      appendWord("a");
+      appendRenderedWord("a");
       setFirstRenderedWordIndex(0);
       flush();
       resetWordsRender();
@@ -512,7 +512,7 @@ describe("Words", () => {
       const container = renderWords();
       const hook = vi.fn();
       setLayoutHook(hook);
-      appendWord("a");
+      appendRenderedWord("a");
       resetWordsRender();
       flush();
       expect(container.children).toHaveLength(0);
@@ -522,13 +522,13 @@ describe("Words", () => {
 
     it("renders new words from index 0 after reset", () => {
       const container = renderWords();
-      appendWord("a");
-      appendWord("b");
+      appendRenderedWord("a");
+      appendRenderedWord("b");
       setFirstRenderedWordIndex(1);
       setActiveWord(1);
       flush();
       resetWordsRender();
-      appendWord("c");
+      appendRenderedWord("c");
       flush();
       const words = wordEls(container);
       expect(words).toHaveLength(1);

@@ -31,7 +31,7 @@ import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
 import { getFontPreview } from "../states/font";
 import { getWordElement as getRenderedWordElement } from "../components/pages/test/word-elements";
 import {
-  appendWord,
+  appendRenderedWord,
   flushWordsRender,
   getPendingWordInput,
   isWordRendered as isWordRenderedInState,
@@ -586,12 +586,12 @@ function showWords(): void {
   laidOutActiveWordIndex = undefined;
 
   if (Config.mode === "zen") {
-    appendWord("");
+    appendRenderedWord("");
   } else {
     for (let i = 0; i < TestWords.words.length; i++) {
       const word = TestWords.words.get(i);
       if (word === undefined) continue; // won't happen, but ts complains
-      appendWord(word.display);
+      appendRenderedWord(word.display);
     }
   }
   setActiveWord(getActiveWordIndex());
@@ -602,11 +602,6 @@ function showWords(): void {
   updateLayout();
   void layoutActiveWord("initial");
   PaceCaret.resetCaretPosition();
-}
-
-/** Zen mode: adds the next (empty) word. */
-export function appendEmptyWord(): void {
-  appendWord("");
 }
 
 export function updateWordsInputPosition(): void {
@@ -766,10 +761,6 @@ function updateWordsMargin(): void {
       });
     }
   }
-}
-
-export function addWord(word: string): void {
-  appendWord(word);
 }
 
 // buffered, rendered in the next words frame

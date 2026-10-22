@@ -160,7 +160,7 @@ export function getPendingWordInput(index: number): string | undefined {
   return buffer.inputs.get(index)?.input;
 }
 
-export function appendWord(text: string): void {
+export function appendRenderedWord(text: string): void {
   buffer.appended.push(text);
   scheduleFlush();
 }
