@@ -1,7 +1,7 @@
 import { createMemo, createSelector, For, JSXElement } from "solid-js";
 
-import { wordEndsLine, wordsRenderState } from "../../../states/words-render";
-import { Word } from "./Word";
+import { wordsRenderState } from "../../../states/words-render";
+import { Word, wordEndsLine } from "./Word";
 
 /** Renders the test words. Mounted inside #words. */
 export function Words(): JSXElement {
@@ -9,14 +9,13 @@ export function Words(): JSXElement {
     () => wordsRenderState.renderedActiveWordIndex,
   );
   const visibleWords = createMemo(() => {
-    const { words, firstRenderedWordIndex, tapeHiddenBefore } =
+    const { words, firstRenderedWordIndex, firstRenderedLineBreakIndex } =
       wordsRenderState;
-    const shownFrom = Math.max(firstRenderedWordIndex, tapeHiddenBefore);
-    const shown = words.slice(shownFrom);
-    if (shownFrom === firstRenderedWordIndex) return shown;
-    // tape hidden words ending a line stay, so the lines don't collapse
+    const shown = words.slice(firstRenderedWordIndex);
+    // tape hidden words ending a line keep their line break, so the lines
+    // don't collapse
     const lineEnds = words
-      .slice(firstRenderedWordIndex, shownFrom)
+      .slice(firstRenderedLineBreakIndex, firstRenderedWordIndex)
       .filter((word) => wordEndsLine(word));
     return lineEnds.length === 0 ? shown : [...lineEnds, ...shown];
   });

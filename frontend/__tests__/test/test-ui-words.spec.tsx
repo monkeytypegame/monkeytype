@@ -482,7 +482,7 @@ describe("test-ui words rendering", () => {
         expect(active?.offsetLeft).toBe(wrapperWidth / 2);
       });
 
-      it("keeps a word ending a line rendered, so the line break stays, still removing overflown words after it", async () => {
+      it("keeps the line break of a removed word ending a line, still removing overflown words after it", async () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
         for (let i = 0; i < 20; i++) {
@@ -494,16 +494,15 @@ describe("test-ui words rendering", () => {
         // word 10 at the tape margin (250px) leaves words 0-3 left of -50px
         for (let i = 0; i < 11; i++) await goForward();
 
-        expect(childClasses(words).slice(0, 5)).toEqual([
-          "word2",
+        expect(childClasses(words).slice(0, 4)).toEqual([
           "beforeNewline",
           "newline",
           "afterNewline",
           "word4",
         ]);
-        expect(isWordRendered(1)).toBe(false);
-        expect(isWordRendered(2)).toBe(true);
+        expect(isWordRendered(2)).toBe(false);
         expect(isWordRendered(3)).toBe(false);
+        expect(isWordRendered(4)).toBe(true);
       });
     });
   });

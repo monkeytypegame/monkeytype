@@ -9,6 +9,7 @@ import {
   appendRenderedWord,
   resetWordsRender,
   setActiveWord,
+  setFirstRenderedLine,
   setFirstRenderedWordIndex,
   setLayoutHook,
   setWordStatus,
@@ -309,13 +310,13 @@ describe("Words", () => {
       expect(getWordElement(1)).toBeUndefined();
     });
 
-    it("does not render words below the first rendered index", () => {
+    it("does not render lines below the first rendered line, line breaks included", () => {
       const container = renderWords();
       appendRenderedWord("a\n");
       appendRenderedWord("b\n");
       appendRenderedWord("c");
       flush();
-      setFirstRenderedWordIndex(1);
+      setFirstRenderedLine(1);
       flush();
       expect(childClasses(container)).toEqual([
         "word1",
@@ -324,6 +325,23 @@ describe("Words", () => {
         "afterNewline",
         "word2",
       ]);
+    });
+
+    it("keeps the line breaks of words below the first rendered word index", () => {
+      const container = renderWords();
+      appendRenderedWord("a");
+      appendRenderedWord("b\n");
+      appendRenderedWord("c");
+      flush();
+      setFirstRenderedWordIndex(2);
+      flush();
+      expect(childClasses(container)).toEqual([
+        "beforeNewline",
+        "newline",
+        "afterNewline",
+        "word2",
+      ]);
+      expect(getWordElement(1)).toBeUndefined();
     });
   });
 

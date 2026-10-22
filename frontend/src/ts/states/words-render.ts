@@ -9,9 +9,9 @@ import { createStore, produce } from "solid-js/store";
  * applies the buffer to the reactive store inside a batch, then runs the
  * registered layout hook against the updated DOM.
  *
- * Exception: the first rendered/tape hidden indices are only raised by layout
- * code (line jump, tape scroll) and apply immediately, so it can measure the
- * result.
+ * Exception: the first rendered word/line break indices are only raised by
+ * layout code (line jump, tape scroll) and apply immediately, so it can
+ * measure the result.
  */
 
 /** typedIncorrect: typed with a mistake (not set in blind mode) */
@@ -28,13 +28,13 @@ export type RenderedWord = {
 
 type WordsRenderState = {
   words: RenderedWord[];
-  /** words below this index are not rendered */
+  /** words below this index are not rendered (line jump, tape scroll) */
   firstRenderedWordIndex: number;
   /**
-   * tape mode: words below this index are not rendered either, except words
-   * ending a line - they keep the line break
+   * line breaks of words below this index are not rendered (line jump). Tape
+   * scroll hides words only, their line breaks keep the lines in place
    */
-  tapeHiddenBefore: number;
+  firstRenderedLineBreakIndex: number;
   renderedActiveWordIndex: number;
   /**
    * zen test: letters come from the input only. Fixed per test at reset, so a
@@ -51,7 +51,7 @@ type WordsRenderState = {
 const [store, setStore] = createStore<WordsRenderState>({
   words: [],
   firstRenderedWordIndex: 0,
-  tapeHiddenBefore: 0,
+  firstRenderedLineBreakIndex: 0,
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
   marksRtlWords: false,
@@ -183,34 +183,30 @@ export function setWordStatus(index: number, status: WordStatus): void {
 }
 
 /**
- * Stops rendering words below `index`. Not for the input path: renders
- * synchronously so the caller can measure the updated DOM.
+ * Tape scroll: stops rendering words below `index`, keeping their line breaks.
+ * Not for the input path: renders synchronously so the caller can measure the
+ * updated DOM.
  */
 export function setFirstRenderedWordIndex(index: number): void {
-  setStore("firstRenderedWordIndex", index);
+  setStore("firstRenderedWordIndex", (current) => Math.max(current, index));
 }
 
 /**
- * Tape mode: stops rendering words below `index`, except words ending a line.
- * Not for the input path, renders synchronously like setFirstRenderedWordIndex.
+ * Line jump: stops rendering words below `index` and their line breaks. Not
+ * for the input path, renders synchronously like setFirstRenderedWordIndex.
  */
-export function setTapeHiddenBefore(index: number): void {
-  setStore("tapeHiddenBefore", index);
-}
-
-/** Whether the word is followed by a line break (zen: typed newline). */
-export function wordEndsLine(word: RenderedWord): boolean {
-  return (store.rendersLettersFromInput ? word.input : word.text).includes(
-    "\n",
-  );
+export function setFirstRenderedLine(index: number): void {
+  batch(() => {
+    setFirstRenderedWordIndex(index);
+    setStore("firstRenderedLineBreakIndex", (current) =>
+      Math.max(current, index),
+    );
+  });
 }
 
 /** Whether the word is rendered, as of the last flush. */
 export function isWordRendered(index: number): boolean {
-  if (index < store.firstRenderedWordIndex) return false;
-  if (index >= store.tapeHiddenBefore) return true;
-  const word = store.words[index];
-  return word !== undefined && wordEndsLine(word);
+  return index >= store.firstRenderedWordIndex;
 }
 
 /** Drops all words from `length` on (zen backspace). */
@@ -241,7 +237,7 @@ export function resetWordsRender(
   setStore({
     words: [],
     firstRenderedWordIndex: 0,
-    tapeHiddenBefore: 0,
+    firstRenderedLineBreakIndex: 0,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,

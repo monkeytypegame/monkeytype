@@ -36,9 +36,9 @@ import {
   getPendingWordInput,
   resetWordsRender,
   setActiveWord,
+  setFirstRenderedLine,
   setFirstRenderedWordIndex,
   setLayoutHook,
-  setTapeHiddenBefore,
   setWordStatus,
   setWordInput,
   truncateWords,
@@ -814,10 +814,11 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   // removed width per line, the first line of #words first
   const lineWidthRemoved: number[] = [0];
   const afterNewlinesNewMargins: number[] = [];
-  // overflown words are only removed from the start. A word followed by a
-  // newline stays rendered (keeping the line break) until line jump removes
-  // its line, but doesn't stop removing the overflown words after it
+  // overflown words are only removed from the start. Their line breaks stay
+  // rendered until line jump removes their line
   let removing = true;
+  // a line break before the first rendered word ends a line of removed words
+  let wordSeen = false;
   let lastWordToRemove: ElementWithUtils | undefined;
 
   /* get last element to loop over */
@@ -850,14 +851,14 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   for (let i = 0; i <= lastElementIndex; i++) {
     const child = wordsChildrenArr[i] as ElementWithUtils;
     if (child.hasClass("word")) {
+      wordSeen = true;
       const wordOuterWidth = child.getOuterWidth();
       const wordLeft = Math.floor(child.getOffsetLeft());
       const wordWidth = Math.floor(child.getOffsetWidth());
       removing &&=
         (!isTestRightToLeft && wordLeft < 0 - wordWidth) ||
         (isTestRightToLeft && wordLeft > wordsWrapperWidth);
-      const endsLine = wordsChildrenArr[i + 1]?.hasClass("beforeNewline");
-      if (removing && !endsLine) {
+      if (removing) {
         lastWordToRemove = child;
         widthRemoved += wordOuterWidth;
         const line = lineWidthRemoved.length - 1;
@@ -867,8 +868,14 @@ export async function scrollTape(noAnimation = false): Promise<void> {
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
       }
     } else if (child.hasClass("afterNewline")) {
-      const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
-      fullLineWidths -= nlCharWidth + wordRightMargin;
+      if (wordSeen) {
+        const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
+        fullLineWidths -= nlCharWidth + wordRightMargin;
+      } else {
+        // its line's words are removed: the margin they left keeps the next
+        // line in place
+        fullLineWidths = parseFloat(child.getStyle().marginLeft) || 0;
+      }
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
       /** words that are wider than limit can cause a barely visible bottom line shifting,
@@ -893,7 +900,7 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 
   /* remove overflown elements */
   if (lastWordToRemove !== undefined) {
-    setTapeHiddenBefore(getWordIndex(lastWordToRemove) + 1);
+    setFirstRenderedWordIndex(getWordIndex(lastWordToRemove) + 1);
     // keep every line in place: the first line starts at #words' margin, the
     // others at #words' margin plus their .afterNewline's margin
     const firstLineWidthRemoved = lineWidthRemoved[0] ?? 0;
@@ -991,30 +998,29 @@ export async function scrollTape(noAnimation = false): Promise<void> {
 }
 
 /**
- * Stops rendering the words among #words' children up to
- * `lastElementIndexToRemove`, newline siblings of the last one included.
+ * Stops rendering #words' children up to `lastElementIndexToRemove`: the lines
+ * before the first word after it, line breaks included.
  */
 function removeTestElements(lastElementIndexToRemove: number): void {
   const wordsChildren = wordsEl().getChildren();
-  let lastWordElementIndex = lastElementIndexToRemove;
+  // the removed lines may hold only line breaks (tape removed their words)
+  let firstKeptElementIndex = lastElementIndexToRemove + 1;
   while (
-    lastWordElementIndex >= 0 &&
-    !wordsChildren[lastWordElementIndex]?.hasClass("word")
+    firstKeptElementIndex < wordsChildren.length &&
+    !wordsChildren[firstKeptElementIndex]?.hasClass("word")
   ) {
-    lastWordElementIndex--;
+    firstKeptElementIndex++;
   }
-  const lastWord = wordsChildren[lastWordElementIndex];
-  if (lastWord === undefined) return;
+  const firstKeptWord = wordsChildren[firstKeptElementIndex];
+  if (firstKeptWord === undefined) return;
 
   // tape mode indents the line after a newline with its `.afterNewline`
-  const afterNewline = wordsChildren[lastWordElementIndex + 1]?.hasClass(
-    "beforeNewline",
-  )
-    ? wordsChildren[lastWordElementIndex + 3]
-    : undefined;
-  const indent = parseFloat(afterNewline?.getStyle().marginLeft ?? "") || 0;
+  const beforeFirstKept = wordsChildren[firstKeptElementIndex - 1];
+  const indent = beforeFirstKept?.hasClass("afterNewline")
+    ? parseFloat(beforeFirstKept.getStyle().marginLeft) || 0
+    : 0;
 
-  setFirstRenderedWordIndex(getWordIndex(lastWord) + 1);
+  setFirstRenderedLine(getWordIndex(firstKeptWord));
 
   if (indent === 0) return;
   // the indent is gone: shift #words by it instead, keeping the lines in place

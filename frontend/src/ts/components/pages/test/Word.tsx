@@ -8,17 +8,42 @@ import {
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import {
-  RenderedWord,
-  wordEndsLine,
-  wordsRenderState,
-} from "../../../states/words-render";
+import { RenderedWord, wordsRenderState } from "../../../states/words-render";
 import { isWordRightToLeft } from "../../../utils/strings";
 import { createLetters, createZenLetters } from "./letters";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
+/** Whether the word is followed by a line break (zen: typed newline). */
+export function wordEndsLine(word: RenderedWord): boolean {
+  return (
+    wordsRenderState.rendersLettersFromInput ? word.input : word.text
+  ).includes("\n");
+}
+
+/** A word and its line break. Tape scroll hides the word, keeping the break. */
 export function Word(props: {
+  word: RenderedWord;
+  isActive: (index: number) => boolean;
+}): JSXElement {
+  const isHidden = (): boolean =>
+    props.word.index < wordsRenderState.firstRenderedWordIndex;
+
+  return (
+    <>
+      <Show when={!isHidden()}>
+        <WordElement word={props.word} isActive={props.isActive} />
+      </Show>
+      <Show when={wordEndsLine(props.word)}>
+        <div class="beforeNewline"></div>
+        <div class="newline"></div>
+        <div class="afterNewline"></div>
+      </Show>
+    </>
+  );
+}
+
+function WordElement(props: {
   word: RenderedWord;
   isActive: (index: number) => boolean;
 }): JSXElement {
@@ -32,7 +57,6 @@ export function Word(props: {
           replaceComposition: getConfig.compositionDisplay === "replace",
         }),
   );
-  const hasNewline = (): boolean => wordEndsLine(props.word);
   // whole word right-to-left: bidi override keeps its letters in order
   const isRtl = createMemo(
     () =>
@@ -50,31 +74,24 @@ export function Word(props: {
   });
 
   return (
-    <>
-      <div
-        ref={(el) => (wordRef = el)}
-        class="word"
-        data-wordindex={props.word.index}
-        // per-class toggles: classes and styles added imperatively
-        // (break-joining, caret) must survive re-renders
-        // oxlint-disable-next-line monkeytype-rules/no-classlist
-        classList={{
-          active: props.isActive(props.word.index),
-          typed: props.word.status !== "untyped",
-          error: props.word.status === "typedIncorrect",
-          wordRtl: isRtl(),
-        }}
-      >
-        <Index each={letters()}>
-          {(letter) => <WordLetter letter={letter()} />}
-        </Index>
-        <div class="hints"></div>
-      </div>
-      <Show when={hasNewline()}>
-        <div class="beforeNewline"></div>
-        <div class="newline"></div>
-        <div class="afterNewline"></div>
-      </Show>
-    </>
+    <div
+      ref={(el) => (wordRef = el)}
+      class="word"
+      data-wordindex={props.word.index}
+      // per-class toggles: classes and styles added imperatively
+      // (break-joining, caret) must survive re-renders
+      // oxlint-disable-next-line monkeytype-rules/no-classlist
+      classList={{
+        active: props.isActive(props.word.index),
+        typed: props.word.status !== "untyped",
+        error: props.word.status === "typedIncorrect",
+        wordRtl: isRtl(),
+      }}
+    >
+      <Index each={letters()}>
+        {(letter) => <WordLetter letter={letter()} />}
+      </Index>
+      <div class="hints"></div>
+    </div>
   );
 }
