@@ -231,6 +231,14 @@ export function isWordRendered(index: number): boolean {
   return index >= store.firstRenderedWordIndex;
 }
 
+/**
+ * First word with anything mounted: its word, or only its line break (tape).
+ * Reactive.
+ */
+export function firstMountedIndex(): number {
+  return store.firstRenderedLineBreakIndex;
+}
+
 /** Drops all words from `length` on (zen backspace). */
 export function truncateWords(length: number): void {
   if (length >= wordCount()) return;

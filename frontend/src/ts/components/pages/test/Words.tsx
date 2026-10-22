@@ -1,6 +1,10 @@
 import { createMemo, createSelector, For, JSXElement, Show } from "solid-js";
 
-import { isWordRendered, wordsRenderState } from "../../../states/words-render";
+import {
+  firstMountedIndex,
+  isWordRendered,
+  wordsRenderState,
+} from "../../../states/words-render";
 import { Word } from "./Word";
 
 /** Renders the test words. Mounted inside #words. */
@@ -12,7 +16,7 @@ export function Words(): JSXElement {
   // hidden words ending a line keep it, so the lines don't collapse)
   const wordItems = createMemo(() =>
     wordsRenderState.words
-      .slice(wordsRenderState.firstRenderedLineBreakIndex)
+      .slice(firstMountedIndex())
       .filter((word) => isWordRendered(word.index) || word.endsLine),
   );
 
