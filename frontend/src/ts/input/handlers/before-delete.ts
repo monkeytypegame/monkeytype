@@ -39,7 +39,7 @@ export function onBeforeDelete(event: InputEvent): void {
       return;
     }
 
-    // this is nested because we only wanna check the dom if needed
+    // previous word scrolled off (line jump / tape), can't go back to it
     if (!isWordRendered(getActiveWordIndex() - 1)) {
       event.preventDefault();
       return;
