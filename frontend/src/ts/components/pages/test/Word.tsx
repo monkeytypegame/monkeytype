@@ -1,11 +1,4 @@
-import {
-  createMemo,
-  Index,
-  JSXElement,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { createMemo, Index, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
@@ -14,43 +7,8 @@ import { createLetters, createZenLetters } from "./letters";
 import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
-/** Whether the word is followed by a line break (zen: typed newline). */
-export function wordHasNewline(word: RenderedWord): boolean {
-  return (
-    wordsRenderState.rendersLettersFromInput ? word.input : word.text
-  ).includes("\n");
-}
-
-/**
- * A word and its line break. Tape scroll hides the word, keeping the break.
- *
- * The word div is its own component (WordElement) because it can unmount
- * while Word stays mounted for the break: its element registration and letter
- * memos must follow the div's lifetime, not Word's. Otherwise a hidden word
- * would stay registered as a detached element and keep computing letters.
- */
+/** A rendered word: its letters and hints container. */
 export function Word(props: {
-  word: RenderedWord;
-  isActive: (index: number) => boolean;
-}): JSXElement {
-  const isHidden = (): boolean =>
-    props.word.index < wordsRenderState.firstRenderedWordIndex;
-
-  return (
-    <>
-      <Show when={!isHidden()}>
-        <WordElement word={props.word} isActive={props.isActive} />
-      </Show>
-      <Show when={wordHasNewline(props.word)}>
-        <div class="beforeNewline"></div>
-        <div class="newline"></div>
-        <div class="afterNewline"></div>
-      </Show>
-    </>
-  );
-}
-
-function WordElement(props: {
   word: RenderedWord;
   isActive: (index: number) => boolean;
 }): JSXElement {
