@@ -408,20 +408,35 @@ describe("test-ui words rendering", () => {
 
     describe("tape mode", () => {
       const wordWidth = 50;
+      // the next row starts under the newline glyph: it overlaps the row end
+      const nlCharWidth = 20;
       const wrapperWidth = 500;
 
       function fakeTapeLayout(wordsWrapper: HTMLElement): void {
-        // a single row: words are laid out left to right after #words' margin
+        // words are laid out left to right after #words' margin. A line break
+        // starts a new row, indented by its .afterNewline's margin (rows don't
+        // move vertically: no line jumps)
         vi.spyOn(HTMLElement.prototype, "offsetTop", "get").mockReturnValue(0);
         vi.spyOn(HTMLElement.prototype, "offsetLeft", "get").mockImplementation(
           function (this: HTMLElement) {
             const parent = this.parentElement;
             if (!this.classList.contains("word") || parent === null) return 0;
-            const position = [
-              ...parent.querySelectorAll(":scope > .word"),
-            ].indexOf(this);
+            let indent = 0;
+            let position = 0;
+            for (const child of parent.children) {
+              if (child === this) break;
+              if (child.classList.contains("afterNewline")) {
+                indent =
+                  parseFloat((child as HTMLElement).style.marginLeft) || 0;
+                position = 0;
+              } else if (child.classList.contains("word")) {
+                position++;
+              }
+            }
             return (
-              (parseFloat(parent.style.marginLeft) || 0) + position * wordWidth
+              (parseFloat(parent.style.marginLeft) || 0) +
+              indent +
+              position * wordWidth
             );
           },
         );
@@ -434,6 +449,7 @@ describe("test-ui words rendering", () => {
           if (this === wordsWrapper || this.parentElement === wordsWrapper) {
             return wrapperWidth;
           }
+          if (this.classList.contains("nlChar")) return nlCharWidth;
           return this.classList.contains("word") ? wordWidth : 0;
         });
         vi.spyOn(
@@ -503,6 +519,49 @@ describe("test-ui words rendering", () => {
         expect(isWordRendered(2)).toBe(false);
         expect(isWordRendered(3)).toBe(false);
         expect(isWordRendered(4)).toBe(true);
+      });
+
+      it("keeps the rows one continuous tape while their words are removed", async () => {
+        const { words } = mount();
+        fakeTapeLayout(words.parentElement as HTMLElement);
+        // three rows: words 0-2, 3-6, 7-29
+        for (let i = 0; i < 30; i++) {
+          appendRenderedWord(i === 2 || i === 6 ? "word\n" : "word");
+        }
+        setActiveWord(0);
+        runFrames();
+
+        const wordLefts = (): [number, number][] =>
+          [...words.querySelectorAll<HTMLElement>(":scope > .word")].map(
+            (el) => [Number(el.dataset["wordindex"]), el.offsetLeft],
+          );
+        // every word sits where it would on a single row, a line break
+        // pulling the words after it back by the newline glyph. The active
+        // word stays at the tape margin
+        const lineEnds = [2, 6];
+        const tapeX = (index: number): number =>
+          index * wordWidth -
+          lineEnds.filter((end) => end < index).length * nlCharWidth;
+        const expected = (active: number): [number, number][] =>
+          wordLefts().map(([index]) => [
+            index,
+            wrapperWidth / 2 + tapeX(index) - tapeX(active),
+          ]);
+
+        for (let active = 1; active <= 14; active++) {
+          await goForward();
+          expect(wordLefts()).toEqual(expected(active));
+        }
+        // rows one and two lost all their words, their line breaks stay
+        expect(childClasses(words).slice(0, 7)).toEqual([
+          "beforeNewline",
+          "newline",
+          "afterNewline",
+          "beforeNewline",
+          "newline",
+          "afterNewline",
+          "word7",
+        ]);
       });
     });
   });

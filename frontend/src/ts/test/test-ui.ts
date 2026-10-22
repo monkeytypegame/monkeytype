@@ -773,7 +773,8 @@ function updateWordLetters({
 // and sometimes we want it to be shifted to the left
 // (for example if the newline is typed incorrectly, or there are any extra letters after it)
 function getNlCharWidth(lastWordInLine: ElementWithUtils | undefined): number {
-  if (lastWordInLine === undefined) return 0;
+  // not a word: its line's words are removed
+  if (lastWordInLine?.hasClass("word") !== true) return 0;
   const word = wordsRenderState.words[getWordIndex(lastWordInLine)];
   if (word === undefined) return 0;
   // the line break's own letter, not a typed newline (extra or typo) after it
@@ -816,8 +817,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   // overflown words are only removed from the start. Their line breaks stay
   // rendered until line jump removes their line
   let removing = true;
-  // a line break before the first rendered word ends a line of removed words
-  let wordSeen = false;
   let lastWordToRemove: ElementWithUtils | undefined;
 
   /* get last element to loop over */
@@ -850,7 +849,6 @@ export async function scrollTape(noAnimation = false): Promise<void> {
   for (let i = 0; i <= lastElementIndex; i++) {
     const child = wordsChildrenArr[i] as ElementWithUtils;
     if (child.hasClass("word")) {
-      wordSeen = true;
       const wordOuterWidth = child.getOuterWidth();
       const wordLeft = Math.floor(child.getOffsetLeft());
       const wordWidth = Math.floor(child.getOffsetWidth());
@@ -867,14 +865,11 @@ export async function scrollTape(noAnimation = false): Promise<void> {
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
       }
     } else if (child.hasClass("afterNewline")) {
-      if (wordSeen) {
-        const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
-        fullLineWidths -= nlCharWidth + wordRightMargin;
-      } else {
-        // its line's words are removed: the margin they left keeps the next
-        // line in place
-        fullLineWidths = parseFloat(child.getStyle().marginLeft) || 0;
-      }
+      // a line of removed words has no newline glyph (getNlCharWidth: 0).
+      // Its offset carries to every later line and #words' margin, so the
+      // lines stay in place relative to each other
+      const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
+      fullLineWidths -= nlCharWidth + wordRightMargin;
       if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
 
       /** words that are wider than limit can cause a barely visible bottom line shifting,
