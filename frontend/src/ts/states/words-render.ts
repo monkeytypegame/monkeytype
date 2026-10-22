@@ -204,7 +204,7 @@ export function setFirstRenderedLine(index: number): void {
   });
 }
 
-/** Whether the word is rendered, as of the last flush. */
+/** Whether the word is rendered, as of the last flush. Reactive. */
 export function isWordRendered(index: number): boolean {
   return index >= store.firstRenderedWordIndex;
 }

@@ -1,6 +1,10 @@
 import { createMemo, createSelector, For, JSXElement, Show } from "solid-js";
 
-import { RenderedWord, wordsRenderState } from "../../../states/words-render";
+import {
+  isWordRendered,
+  RenderedWord,
+  wordsRenderState,
+} from "../../../states/words-render";
 import { Word } from "./Word";
 
 /** Whether the word is followed by a line break (zen: typed newline). */
@@ -31,7 +35,7 @@ export function Words(): JSXElement {
     <For each={visibleWords()}>
       {(word) => (
         <>
-          <Show when={word.index >= wordsRenderState.firstRenderedWordIndex}>
+          <Show when={isWordRendered(word.index)}>
             <Word word={word} isActive={isActive} />
           </Show>
           <Show when={wordHasNewline(word)}>
