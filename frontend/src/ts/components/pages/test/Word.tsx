@@ -15,7 +15,7 @@ import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
 /** Whether the word is followed by a line break (zen: typed newline). */
-export function wordHasNewline(word: RenderedWord): boolean {
+function wordHasNewline(word: RenderedWord): boolean {
   return (
     wordsRenderState.rendersLettersFromInput ? word.input : word.text
   ).includes("\n");
