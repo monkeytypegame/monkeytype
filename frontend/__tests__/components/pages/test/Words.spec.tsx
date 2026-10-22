@@ -5,6 +5,7 @@ import { getWordElement } from "../../../../src/ts/components/pages/test/word-el
 import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
+import { setWordsHaveNewline } from "../../../../src/ts/states/test";
 import {
   appendRenderedWord,
   resetWordsRender,
@@ -74,6 +75,7 @@ afterEach(() => {
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   setConfigStore("blindMode", defaults.blindMode);
+  setWordsHaveNewline(false);
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -328,6 +330,7 @@ describe("Words", () => {
     });
 
     it("keeps the line breaks of words below the first rendered word index", () => {
+      setWordsHaveNewline(true);
       const container = renderWords();
       appendRenderedWord("a");
       appendRenderedWord("b\n");
@@ -342,6 +345,24 @@ describe("Words", () => {
         "word2",
       ]);
       expect(getWordElement(1)).toBeUndefined();
+    });
+
+    it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {
+      resetWordsRender({ zen: true });
+      const container = renderWords();
+      appendRenderedWord("");
+      appendRenderedWord("");
+      setWordInput(0, "a\n");
+      setWordInput(1, "b");
+      flush();
+      setFirstRenderedWordIndex(1);
+      flush();
+      expect(childClasses(container)).toEqual([
+        "beforeNewline",
+        "newline",
+        "afterNewline",
+        "word1",
+      ]);
     });
   });
 

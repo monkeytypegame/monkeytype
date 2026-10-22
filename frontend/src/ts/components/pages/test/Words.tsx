@@ -1,5 +1,6 @@
 import { createMemo, createSelector, For, JSXElement, Show } from "solid-js";
 
+import { wordsHaveNewline } from "../../../states/test";
 import {
   isWordRendered,
   RenderedWord,
@@ -21,11 +22,17 @@ export function Words(): JSXElement {
   );
   // words that render anything: the word, or only its line break (tape
   // hidden words ending a line keep it, so the lines don't collapse)
-  const wordItems = createMemo(() =>
-    wordsRenderState.words
-      .slice(wordsRenderState.firstRenderedLineBreakIndex)
-      .filter((word) => isWordRendered(word.index) || wordHasNewline(word)),
-  );
+  const wordItems = createMemo(() => {
+    const { words, firstRenderedWordIndex, firstRenderedLineBreakIndex } =
+      wordsRenderState;
+    // no line breaks to keep (zen: typed newlines)
+    if (!wordsHaveNewline() && !wordsRenderState.rendersLettersFromInput) {
+      return words.slice(firstRenderedWordIndex);
+    }
+    return words
+      .slice(firstRenderedLineBreakIndex)
+      .filter((word) => isWordRendered(word.index) || wordHasNewline(word));
+  });
 
   return (
     <For each={wordItems()}>
