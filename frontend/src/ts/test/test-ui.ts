@@ -27,7 +27,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
-import { ElementsWithUtils, ElementWithUtils, qs } from "../utils/dom";
+import { ElementsWithUtils, ElementWithUtils } from "../utils/dom";
 import { getFontPreview } from "../states/font";
 import { getWordElement as getRenderedWordElement } from "../components/pages/test/word-elements";
 import {
@@ -772,18 +772,17 @@ function updateWordLetters({
 // this is needed in tape mode because sometimes we want the newline character to appear above the next line
 // and sometimes we want it to be shifted to the left
 // (for example if the newline is typed incorrectly, or there are any extra letters after it)
-function getNlCharWidth(
-  lastWordInLine?: ElementWithUtils,
-  checkIfIncorrect = true,
-): number {
-  let nlChar: ElementWithUtils | null;
-  if (lastWordInLine) {
-    nlChar = lastWordInLine.qs("letter.nlChar");
-  } else {
-    nlChar = qs("#words > .word > letter.nlChar");
-  }
-  if (!nlChar) return 0;
-  if (checkIfIncorrect && nlChar.hasClass("incorrect")) return 0;
+function getNlCharWidth(lastWordInLine: ElementWithUtils | undefined): number {
+  if (lastWordInLine === undefined) return 0;
+  const word = wordsRenderState.words[getWordIndex(lastWordInLine)];
+  if (word === undefined) return 0;
+  // the line break's own letter, not a typed newline (extra or typo) after it
+  const chars = Strings.splitIntoCharacters(
+    wordsRenderState.rendersLettersFromInput ? word.input : word.text,
+  );
+  if (chars[chars.length - 1] !== "\n") return 0;
+  const nlChar = lastWordInLine.qsa("letter")[chars.length - 1];
+  if (nlChar === undefined || nlChar.hasClass("incorrect")) return 0;
   const letterComputedStyle = window.getComputedStyle(nlChar.native);
   const letterMargin =
     parseFloat(letterComputedStyle.marginLeft) +
