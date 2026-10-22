@@ -22,6 +22,8 @@ export type RenderedWord = {
   composition: string;
   /** typed past (committed) */
   isTyped: boolean;
+  /** followed by a line break (zen: typed newline) */
+  endsLine: boolean;
 };
 
 type WordsRenderState = {
@@ -33,6 +35,8 @@ type WordsRenderState = {
    * scroll hides words only, their line breaks keep the lines in place
    */
   firstRenderedLineBreakIndex: number;
+  /** a word ended a line this test. Stays set after zen backspace */
+  hasLineBreaks: boolean;
   renderedActiveWordIndex: number;
   /**
    * zen test: letters come from the input only. Fixed per test at reset, so a
@@ -50,6 +54,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   words: [],
   firstRenderedWordIndex: 0,
   firstRenderedLineBreakIndex: 0,
+  hasLineBreaks: false,
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
   marksRtlWords: false,
@@ -106,6 +111,8 @@ function newWord(index: number, text: string): RenderedWord {
     input: "",
     composition: "",
     isTyped: false,
+    // zen: from the input
+    endsLine: !store.rendersLettersFromInput && text.includes("\n"),
   };
 }
 
@@ -116,6 +123,7 @@ export function flushWordsRender(): void {
   buffer = emptyBuffer();
 
   batch(() => {
+    let endsLine = false;
     // 1. structure: truncate, then append
     setStore(
       "words",
@@ -124,15 +132,28 @@ export function flushWordsRender(): void {
           words.length = b.truncateTo;
         }
         for (const text of b.appended) {
-          words.push(newWord(words.length, text));
+          const word = newWord(words.length, text);
+          endsLine ||= word.endsLine;
+          words.push(word);
         }
       }),
     );
     // 2. letters
     for (const [index, { input, composition }] of b.inputs) {
       if (store.words[index] === undefined) continue;
-      setStore("words", index, { input, composition });
+      if (store.rendersLettersFromInput) {
+        const inputEndsLine = input.includes("\n");
+        endsLine ||= inputEndsLine;
+        setStore("words", index, {
+          input,
+          composition,
+          endsLine: inputEndsLine,
+        });
+      } else {
+        setStore("words", index, { input, composition });
+      }
     }
+    if (endsLine && !store.hasLineBreaks) setStore("hasLineBreaks", true);
     // 3. active index, typed
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
@@ -236,6 +257,7 @@ export function resetWordsRender(
     words: [],
     firstRenderedWordIndex: 0,
     firstRenderedLineBreakIndex: 0,
+    hasLineBreaks: false,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,

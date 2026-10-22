@@ -5,7 +5,6 @@ import { getWordElement } from "../../../../src/ts/components/pages/test/word-el
 import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
-import { setWordsHaveNewline } from "../../../../src/ts/states/test";
 import {
   appendRenderedWord,
   resetWordsRender,
@@ -16,6 +15,7 @@ import {
   setWordTyped,
   setWordInput,
   truncateWords,
+  wordsRenderState,
 } from "../../../../src/ts/states/words-render";
 
 let frames: Map<number, FrameRequestCallback>;
@@ -75,7 +75,6 @@ afterEach(() => {
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   setConfigStore("blindMode", defaults.blindMode);
-  setWordsHaveNewline(false);
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -330,7 +329,6 @@ describe("Words", () => {
     });
 
     it("keeps the line breaks of words below the first rendered word index", () => {
-      setWordsHaveNewline(true);
       const container = renderWords();
       appendRenderedWord("a");
       appendRenderedWord("b\n");
@@ -345,6 +343,31 @@ describe("Words", () => {
         "word2",
       ]);
       expect(getWordElement(1)).toBeUndefined();
+    });
+
+    it("tracks words ending a line: from the text, in zen from the input", () => {
+      appendRenderedWord("a");
+      flush();
+      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      appendRenderedWord("b\n");
+      flush();
+      expect(wordsRenderState.words.map((w) => w.endsLine)).toEqual([
+        false,
+        true,
+      ]);
+      expect(wordsRenderState.hasLineBreaks).toBe(true);
+
+      resetWordsRender({ zen: true });
+      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      appendRenderedWord("");
+      setWordInput(0, "a");
+      flush();
+      expect(wordsRenderState.words[0]?.endsLine).toBe(false);
+      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      setWordInput(0, "a\n");
+      flush();
+      expect(wordsRenderState.words[0]?.endsLine).toBe(true);
+      expect(wordsRenderState.hasLineBreaks).toBe(true);
     });
 
     it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {

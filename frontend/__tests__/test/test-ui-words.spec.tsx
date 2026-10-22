@@ -40,7 +40,6 @@ import { registerInputElement } from "../../src/ts/input/input-element";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
-  setWordsHaveNewline,
 } from "../../src/ts/states/test";
 import {
   appendRenderedWord,
@@ -161,7 +160,6 @@ describe("test-ui words rendering", () => {
     resetWordsRender();
     TestWords.words.reset();
     resetActiveWordIndex();
-    setWordsHaveNewline(false);
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
     configTesting.replaceConfig({});
@@ -503,7 +501,6 @@ describe("test-ui words rendering", () => {
       it("keeps the line break of a removed word ending a line, still removing overflown words after it", async () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
-        setWordsHaveNewline(true);
         for (let i = 0; i < 20; i++) {
           appendRenderedWord(i === 2 ? "word\n" : "word");
         }
@@ -528,7 +525,6 @@ describe("test-ui words rendering", () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
         // three rows: words 0-2, 3-6, 7-29
-        setWordsHaveNewline(true);
         for (let i = 0; i < 30; i++) {
           appendRenderedWord(i === 2 || i === 6 ? "word\n" : "word");
         }

@@ -1,19 +1,7 @@
 import { createMemo, createSelector, For, JSXElement, Show } from "solid-js";
 
-import { wordsHaveNewline } from "../../../states/test";
-import {
-  isWordRendered,
-  RenderedWord,
-  wordsRenderState,
-} from "../../../states/words-render";
+import { isWordRendered, wordsRenderState } from "../../../states/words-render";
 import { Word } from "./Word";
-
-/** Whether the word is followed by a line break (zen: typed newline). */
-function wordHasNewline(word: RenderedWord): boolean {
-  return (
-    wordsRenderState.rendersLettersFromInput ? word.input : word.text
-  ).includes("\n");
-}
 
 /** Renders the test words. Mounted inside #words. */
 export function Words(): JSXElement {
@@ -23,15 +11,17 @@ export function Words(): JSXElement {
   // words that render anything: the word, or only its line break (tape
   // hidden words ending a line keep it, so the lines don't collapse)
   const wordItems = createMemo(() => {
-    const { words, firstRenderedWordIndex, firstRenderedLineBreakIndex } =
-      wordsRenderState;
-    // no line breaks to keep (zen: typed newlines)
-    if (!wordsHaveNewline() && !wordsRenderState.rendersLettersFromInput) {
-      return words.slice(firstRenderedWordIndex);
-    }
+    const {
+      words,
+      firstRenderedWordIndex,
+      firstRenderedLineBreakIndex,
+      hasLineBreaks,
+    } = wordsRenderState;
+    // no line breaks to keep
+    if (!hasLineBreaks) return words.slice(firstRenderedWordIndex);
     return words
       .slice(firstRenderedLineBreakIndex)
-      .filter((word) => isWordRendered(word.index) || wordHasNewline(word));
+      .filter((word) => isWordRendered(word.index) || word.endsLine);
   });
 
   return (
@@ -41,7 +31,7 @@ export function Words(): JSXElement {
           <Show when={isWordRendered(word.index)}>
             <Word word={word} isActive={isActive} />
           </Show>
-          <Show when={wordHasNewline(word)}>
+          <Show when={word.endsLine}>
             <LineBreak />
           </Show>
         </>
