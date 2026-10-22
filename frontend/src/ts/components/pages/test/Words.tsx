@@ -15,10 +15,10 @@ export function Words(): JSXElement {
       words,
       firstRenderedWordIndex,
       firstRenderedLineBreakIndex,
-      hasLineBreaks,
+      keepsLineBreaks,
     } = wordsRenderState;
     // no line breaks to keep
-    if (!hasLineBreaks) return words.slice(firstRenderedWordIndex);
+    if (!keepsLineBreaks) return words.slice(firstRenderedWordIndex);
     return words
       .slice(firstRenderedLineBreakIndex)
       .filter((word) => isWordRendered(word.index) || word.endsLine);

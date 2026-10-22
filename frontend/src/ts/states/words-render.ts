@@ -35,8 +35,11 @@ type WordsRenderState = {
    * scroll hides words only, their line breaks keep the lines in place
    */
   firstRenderedLineBreakIndex: number;
-  /** a word ended a line this test. Stays set after zen backspace */
-  hasLineBreaks: boolean;
+  /**
+   * hidden words keep their line breaks: set once a word ends a line this test
+   * (zen: typed newline), stays set after zen backspace
+   */
+  keepsLineBreaks: boolean;
   renderedActiveWordIndex: number;
   /**
    * zen test: letters come from the input only. Fixed per test at reset, so a
@@ -54,7 +57,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   words: [],
   firstRenderedWordIndex: 0,
   firstRenderedLineBreakIndex: 0,
-  hasLineBreaks: false,
+  keepsLineBreaks: false,
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
   marksRtlWords: false,
@@ -153,7 +156,7 @@ export function flushWordsRender(): void {
         setStore("words", index, { input, composition });
       }
     }
-    if (endsLine && !store.hasLineBreaks) setStore("hasLineBreaks", true);
+    if (endsLine && !store.keepsLineBreaks) setStore("keepsLineBreaks", true);
     // 3. active index, typed
     if (b.activeWordIndex !== undefined) {
       setStore("renderedActiveWordIndex", b.activeWordIndex);
@@ -257,7 +260,7 @@ export function resetWordsRender(
     words: [],
     firstRenderedWordIndex: 0,
     firstRenderedLineBreakIndex: 0,
-    hasLineBreaks: false,
+    keepsLineBreaks: false,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,

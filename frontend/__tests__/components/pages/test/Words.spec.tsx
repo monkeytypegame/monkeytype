@@ -348,26 +348,26 @@ describe("Words", () => {
     it("tracks words ending a line: from the text, in zen from the input", () => {
       appendRenderedWord("a");
       flush();
-      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       appendRenderedWord("b\n");
       flush();
       expect(wordsRenderState.words.map((w) => w.endsLine)).toEqual([
         false,
         true,
       ]);
-      expect(wordsRenderState.hasLineBreaks).toBe(true);
+      expect(wordsRenderState.keepsLineBreaks).toBe(true);
 
       resetWordsRender({ zen: true });
-      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       appendRenderedWord("");
       setWordInput(0, "a");
       flush();
       expect(wordsRenderState.words[0]?.endsLine).toBe(false);
-      expect(wordsRenderState.hasLineBreaks).toBe(false);
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
       setWordInput(0, "a\n");
       flush();
       expect(wordsRenderState.words[0]?.endsLine).toBe(true);
-      expect(wordsRenderState.hasLineBreaks).toBe(true);
+      expect(wordsRenderState.keepsLineBreaks).toBe(true);
     });
 
     it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {
