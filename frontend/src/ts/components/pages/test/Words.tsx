@@ -1,7 +1,7 @@
 import { createMemo, createSelector, For, JSXElement } from "solid-js";
 
 import { wordsRenderState } from "../../../states/words-render";
-import { Word, wordEndsLine } from "./Word";
+import { Word, wordHasNewline } from "./Word";
 
 /** Renders the test words. Mounted inside #words. */
 export function Words(): JSXElement {
@@ -16,7 +16,7 @@ export function Words(): JSXElement {
     // don't collapse
     const lineEnds = words
       .slice(firstRenderedLineBreakIndex, firstRenderedWordIndex)
-      .filter((word) => wordEndsLine(word));
+      .filter((word) => wordHasNewline(word));
     return lineEnds.length === 0 ? shown : [...lineEnds, ...shown];
   });
 

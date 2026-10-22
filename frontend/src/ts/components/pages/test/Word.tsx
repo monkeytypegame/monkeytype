@@ -15,7 +15,7 @@ import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
 /** Whether the word is followed by a line break (zen: typed newline). */
-export function wordEndsLine(word: RenderedWord): boolean {
+export function wordHasNewline(word: RenderedWord): boolean {
   return (
     wordsRenderState.rendersLettersFromInput ? word.input : word.text
   ).includes("\n");
@@ -34,7 +34,7 @@ export function Word(props: {
       <Show when={!isHidden()}>
         <WordElement word={props.word} isActive={props.isActive} />
       </Show>
-      <Show when={wordEndsLine(props.word)}>
+      <Show when={wordHasNewline(props.word)}>
         <div class="beforeNewline"></div>
         <div class="newline"></div>
         <div class="afterNewline"></div>
