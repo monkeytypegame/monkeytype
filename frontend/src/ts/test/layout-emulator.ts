@@ -215,6 +215,9 @@ export async function getCharFromEvent(
       return null;
     }
   }
+  if (layoutMap[mapIndex]?.length === 0) {
+    event.preventDefault();
+  }
   const charVariant = emulatedLayoutGetVariant(
     event,
     layoutMap[mapIndex] ?? [],
