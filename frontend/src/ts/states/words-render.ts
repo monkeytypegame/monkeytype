@@ -115,7 +115,6 @@ const buffer = createFrameBuffer<Buffer>(
 // would schedule a flush of no words
 let newWords = false;
 let flushedHook: ((flushed: WordsFlush) => void) | undefined;
-let resetHook: (() => void) | undefined;
 
 /**
  * Runs `hook` after every flush, once the DOM reflects the store. Returns the
@@ -128,18 +127,6 @@ export function onWordsFlushed(
   return () => {
     // a remount may have registered a new hook already
     if (flushedHook === hook) flushedHook = undefined;
-  };
-}
-
-/**
- * Runs `hook` on every reset, before the store drops the old words. Returns the
- * unregister.
- */
-export function onWordsReset(hook: () => void): () => void {
-  resetHook = hook;
-  return () => {
-    // a remount may have registered a new hook already
-    if (resetHook === hook) resetHook = undefined;
   };
 }
 
@@ -306,7 +293,6 @@ export function resetWordsRender(
 ): void {
   buffer.clear();
   newWords = true;
-  resetHook?.();
   setStore({
     words: [],
     firstRenderedWordIndex: 0,

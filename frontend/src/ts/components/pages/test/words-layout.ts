@@ -28,7 +28,6 @@ import {
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   onWordsFlushed,
-  onWordsReset,
   type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
@@ -755,18 +754,16 @@ export function createWordsLayout(options: {
    */
   function dropOldWordsLayout(): void {
     invalidateAsyncLayout();
-    // a reset can come before #words mounts
-    const words = options.words();
-    if (words !== undefined) words.style.marginTop = "0";
+    wordsEl().setStyle({ marginTop: "0" });
     currentTestLine = 0;
     laidOutActiveWordIndex = undefined;
   }
-  onCleanup(onWordsReset(dropOldWordsLayout));
   // Words unmounts: drops a line jump still animating
   onCleanup(dropOldWordsLayout);
 
   /** The new words' first flush: lays them out from scratch. */
   function layoutNewWords(): void {
+    dropOldWordsLayout();
     layoutAll();
     void layoutActiveWord("initial");
     // the caret snaps to the new words

@@ -48,6 +48,7 @@ import {
   resetWordsRender,
   setActiveWord,
   setWordInput,
+  wordsRenderState,
 } from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
 import * as TestWords from "../../src/ts/test/test-words";
@@ -357,6 +358,38 @@ describe("test-ui words rendering", () => {
         expect(brokenWords).toEqual(["0"]);
       },
     );
+    it("ignores a line jump completing after the words are freed", async () => {
+      configTesting.replaceConfig({
+        mode: "words",
+        tapeMode: "off",
+        showAllLines: false,
+        smoothLineScroll: true,
+      });
+      const completions: (() => void)[] = [];
+      vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
+        (params) => {
+          completions.push(() => {
+            params.onComplete?.({} as never, {} as never);
+          });
+          return { cancel: vi.fn() } as never;
+        },
+      );
+      const { words } = mount();
+      startTest(20);
+
+      // to the third line: starts the animated jump hiding the first line
+      for (let i = 0; i < 10; i++) await goForward();
+      expect(completions).toHaveLength(1);
+
+      // the result is shown: no flush follows
+      resetWordsRender();
+      for (const complete of completions) complete();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // nothing left to lay out: no lines removed
+      expect(wordsRenderState.firstRenderedWordIndex).toBe(0);
+      expect(words.children).toHaveLength(0);
+    });
   });
 
   describe("overflow guard", () => {
