@@ -43,7 +43,6 @@ export let caret: Caret | undefined;
 export function initElement(
   refs: {
     caret: ElementWithUtils;
-    words: ElementWithUtils;
     wordsWrapper: ElementWithUtils;
   },
   signal: AbortSignal,

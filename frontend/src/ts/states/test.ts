@@ -311,6 +311,16 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
+
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    getConfig.mode === "zen" ||
+    getConfig.mode === "custom" ||
+    getConfig.funbox.includes("polyglot")
+  );
+}
+
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(

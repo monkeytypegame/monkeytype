@@ -99,7 +99,9 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 // peripheral collaborators - none of them feed back into the events we assert
 vi.mock("../../../src/ts/test/test-ui", () => ({
   afterTestTextInput: vi.fn(),
-  // words scrolled off the screen are removed from the dom
+}));
+vi.mock("../../../src/ts/states/words-render", () => ({
+  // words scrolled off the screen are no longer rendered
   isWordRendered: vi.fn(
     (index: number) => !mockState.wordsScrolledOff.has(index),
   ),

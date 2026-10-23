@@ -60,6 +60,7 @@ import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
+import { Words } from "./Words";
 
 function prefixedClass(
   prefix: string,
@@ -110,11 +111,11 @@ export function TestPage(): JSXElement {
     const words = new ElementWithUtils(wordsRef);
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
     Caret.initElement(
-      { caret: new ElementWithUtils(caretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(caretRef), wordsWrapper },
       signal,
     );
     PaceCaret.initElement(
-      { caret: new ElementWithUtils(paceCaretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(paceCaretRef), wordsWrapper },
       signal,
     );
 
@@ -303,7 +304,9 @@ export function TestPage(): JSXElement {
               joiningScript: isJoiningScript(),
             })}
             style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
-          ></div>
+          >
+            <Words />
+          </div>
         </div>
 
         <div>
