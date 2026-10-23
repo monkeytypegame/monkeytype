@@ -1,6 +1,6 @@
 import type { JSAnimation } from "animejs";
 
-import { createEffect, on, onCleanup, untrack } from "solid-js";
+import { createEffect, on, onCleanup } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
@@ -28,6 +28,7 @@ import {
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   onWordsFlushed,
+  onWordsReset,
   type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
@@ -751,41 +752,28 @@ export function createWordsLayout(options: {
   /** The words are replaced: drops async layout started for the old ones. */
   function reset(): void {
     invalidateAsyncLayout();
-    wordsEl().setStyle({ marginTop: "0" });
+    // a reset can come before #words mounts
+    const words = options.words();
+    if (words !== undefined) words.style.marginTop = "0";
     currentTestLine = 0;
     laidOutActiveWordIndex = undefined;
   }
-
+  onCleanup(onWordsReset(reset));
   // drops a line jump still animating
   onCleanup(reset);
 
-  // the words were replaced. Also run by the new words' flush, in case the
-  // effect is deferred past it (reset inside a batch)
-  let resetGeneration = untrack(() => wordsRenderState.generation);
-  const resetIfReplaced = (): void => {
-    const generation = untrack(() => wordsRenderState.generation);
-    if (generation === resetGeneration) return;
-    resetGeneration = generation;
-    reset();
-  };
-  createEffect(
-    on(() => wordsRenderState.generation, resetIfReplaced, { defer: true }),
-  );
+  /** The new words' first flush: lays them out from scratch. */
+  function layOutNewWords(): void {
+    relayout();
+    void layoutActiveWord("initial");
+    // the caret snaps to the new words
+    Caret.updatePosition(true);
+  }
 
-  /**
-   * Lays out what a words flush changed: new words from scratch, else the
-   * active word moving and the words whose input changed.
-   */
-  function updateLayout(flush: WordsFlush): void {
-    if (flush.newWords) {
-      resetIfReplaced();
-      relayout();
-    }
-    const wordChange: WordChange | undefined = flush.newWords
-      ? "initial"
-      : flush.wordChange;
-    if (wordChange !== undefined) {
-      void layoutActiveWord(wordChange);
+  /** The active word moving, and the words whose input changed. */
+  function layOutChange(flush: WordsFlush): void {
+    if (flush.wordChange !== undefined) {
+      void layoutActiveWord(flush.wordChange);
     } else if (flush.updatedWords.length > 0 && Config.tapeMode !== "off") {
       // typing moves the tape
       void scrollTape();
@@ -793,8 +781,13 @@ export function createWordsLayout(options: {
     for (const wordIndex of flush.updatedWords) {
       void lineJumpIfWrapped(wordIndex);
     }
-    // new words: the caret snaps to them
-    Caret.updatePosition(flush.newWords);
+    Caret.updatePosition(false);
+  }
+
+  /** Lays out what a words flush changed. */
+  function updateLayout(flush: WordsFlush): void {
+    if (flush.newWords) layOutNewWords();
+    else layOutChange(flush);
   }
   onCleanup(onWordsFlushed(updateLayout));
 

@@ -335,7 +335,7 @@ describe("test-ui words rendering", () => {
         for (let i = 0; i < 10; i++) await goForward();
         expect(completions).toHaveLength(1);
 
-        // a batch defers Words' reset effect past the restart's flush
+        // a batch defers effects past the restart's flush
         if (inBatch) batch(() => startTest(20));
         else startTest(20);
         expect(cancel).toHaveBeenCalled();
