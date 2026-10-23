@@ -28,6 +28,7 @@ import {
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   onWordsFlushed,
+  type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
 import * as Joining from "../../../test/break-joining";
@@ -731,23 +732,6 @@ export function createWordsLayout(options: {
     return true;
   }
 
-  /** A words flush landed: lays out the word change and the updated words. */
-  function layout(change: {
-    wordChange?: WordChange;
-    updatedWords: number[];
-  }): void {
-    if (change.wordChange !== undefined) {
-      void layoutActiveWord(change.wordChange);
-    } else if (change.updatedWords.length > 0 && Config.tapeMode !== "off") {
-      void scrollTape();
-    }
-    for (const wordIndex of change.updatedWords) {
-      void lineJumpIfWrapped(wordIndex);
-    }
-    // new words: the caret snaps to them
-    Caret.updatePosition(change.wordChange === "initial");
-  }
-
   /**
    * New words or a config change: lays everything out from scratch. Measures
    * #words, so it has to run after the config classes are applied.
@@ -788,16 +772,31 @@ export function createWordsLayout(options: {
     on(() => wordsRenderState.generation, resetIfReplaced, { defer: true }),
   );
 
-  onCleanup(
-    // runs after each words flush, like an event handler
-    onWordsFlushed(({ newWords, wordChange, updatedWords }) => {
-      if (newWords) {
-        resetIfReplaced();
-        relayout();
-      }
-      layout({ wordChange: newWords ? "initial" : wordChange, updatedWords });
-    }),
-  );
+  /**
+   * Lays out what a words flush changed: new words from scratch, else the
+   * active word moving and the words whose input changed.
+   */
+  function layOutFlush(flush: WordsFlush): void {
+    if (flush.newWords) {
+      resetIfReplaced();
+      relayout();
+    }
+    const wordChange: WordChange | undefined = flush.newWords
+      ? "initial"
+      : flush.wordChange;
+    if (wordChange !== undefined) {
+      void layoutActiveWord(wordChange);
+    } else if (flush.updatedWords.length > 0 && Config.tapeMode !== "off") {
+      // typing moves the tape
+      void scrollTape();
+    }
+    for (const wordIndex of flush.updatedWords) {
+      void lineJumpIfWrapped(wordIndex);
+    }
+    // new words: the caret snaps to them
+    Caret.updatePosition(flush.newWords);
+  }
+  onCleanup(onWordsFlushed(layOutFlush));
 
   // effects run after the bindings, so the new config classes are applied
   createEffect(
