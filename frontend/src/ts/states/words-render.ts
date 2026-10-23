@@ -8,7 +8,8 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  *
  * Writers (input path) only touch a plain buffer. One shared animation frame
  * applies the buffer to the reactive store inside a batch, then runs the
- * onWordsFlushed hook against the updated DOM.
+ * onWordsFlushed hook against the updated DOM. replaceWords (restart, not the
+ * input path) renders and runs the hook right away.
  *
  * Exceptions, applied immediately: the first rendered word/line break indices
  * are only raised by layout code (line jump, tape scroll), so it can measure
@@ -55,15 +56,7 @@ type WordsRenderState = {
   marksRtlWords: boolean;
 };
 
-const [store, setStore] = createStore<WordsRenderState>({
-  words: [],
-  firstRenderedWordIndex: 0,
-  firstRenderedLineBreakIndex: 0,
-  keepsLineBreaks: false,
-  renderedActiveWordIndex: 0,
-  rendersLettersFromInput: false,
-  marksRtlWords: false,
-});
+const [store, setStore] = createStore<WordsRenderState>(emptyState());
 
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
@@ -111,14 +104,11 @@ const buffer = createFrameBuffer<Buffer>(
   }),
   applyBuffer,
 );
-// set by a reset, consumed by the next flush. Not written to the buffer: that
-// would schedule a flush of no words
-let newWords = false;
 let flushedHook: ((flushed: WordsFlush) => void) | undefined;
 
 /**
- * Runs `hook` after every flush, once the DOM reflects the store. Returns the
- * unregister.
+ * Runs `hook` after every flush and replaceWords, once the DOM reflects the
+ * store. Returns the unregister.
  */
 export function onWordsFlushed(
   hook: (flushed: WordsFlush) => void,
@@ -130,9 +120,16 @@ export function onWordsFlushed(
   };
 }
 
-/** Applies the buffer now, then runs the onWordsFlushed hook. */
-export function flushWordsRender(): void {
-  buffer.flush();
+function createRenderedWord(index: number, text: string): RenderedWord {
+  return {
+    index,
+    text,
+    input: "",
+    composition: "",
+    isTyped: false,
+    // zen: from the input
+    endsLine: !store.rendersLettersFromInput && text.includes("\n"),
+  };
 }
 
 function applyBuffer(b: Buffer): void {
@@ -146,18 +143,9 @@ function applyBuffer(b: Buffer): void {
           words.length = b.truncateTo;
         }
         for (const text of b.appended) {
-          // zen: from the input
-          const wordEndsLine =
-            !store.rendersLettersFromInput && text.includes("\n");
-          endsLine ||= wordEndsLine;
-          words.push({
-            index: words.length,
-            text,
-            input: "",
-            composition: "",
-            isTyped: false,
-            endsLine: wordEndsLine,
-          });
+          const word = createRenderedWord(words.length, text);
+          endsLine ||= word.endsLine;
+          words.push(word);
         }
       }),
     );
@@ -188,13 +176,11 @@ function applyBuffer(b: Buffer): void {
   });
 
   // 4. imperative layout against the updated DOM
-  const flushed: WordsFlush = {
-    newWords,
+  flushedHook?.({
+    newWords: false,
     wordChange: b.wordChange,
     updatedWords: [...b.inputs.keys()],
-  };
-  newWords = false;
-  flushedHook?.(flushed);
+  });
 }
 
 /** Input written for a word that hasn't been flushed yet. */
@@ -287,13 +273,10 @@ export function truncateWords(length: number): void {
   });
 }
 
-/** Cancels a pending flush, clears the buffer and empties the store. */
-export function resetWordsRender(
+function emptyState(
   options: { zen?: boolean; marksRtlWords?: boolean } = {},
-): void {
-  buffer.clear();
-  newWords = true;
-  setStore({
+): WordsRenderState {
+  return {
     words: [],
     firstRenderedWordIndex: 0,
     firstRenderedLineBreakIndex: 0,
@@ -301,5 +284,40 @@ export function resetWordsRender(
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,
+  };
+}
+
+/**
+ * Replaces the words (restart). Not for the input path: cancels a pending
+ * flush, renders now and runs the onWordsFlushed hook, so the new words can be
+ * measured right after.
+ */
+export function replaceWords(
+  words: string[],
+  options: {
+    activeWordIndex: number;
+    /** letters come from the input */
+    zen?: boolean;
+    marksRtlWords?: boolean;
+  },
+): void {
+  buffer.clear();
+  batch(() => {
+    setStore(emptyState(options));
+    const rendered = words.map((text, index) =>
+      createRenderedWord(index, text),
+    );
+    setStore({
+      words: rendered,
+      keepsLineBreaks: rendered.some((word) => word.endsLine),
+      renderedActiveWordIndex: options.activeWordIndex,
+    });
   });
+  flushedHook?.({ newWords: true, wordChange: undefined, updatedWords: [] });
+}
+
+/** Frees the words (result shown): cancels a pending flush, empties the store. */
+export function resetWordsRender(): void {
+  buffer.clear();
+  setStore(emptyState());
 }

@@ -6,6 +6,7 @@ import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendRenderedWord,
   invalidateTypoHintsLayout,
+  replaceWords,
   resetWordsRender,
   setActiveWord,
   setWordInput,
@@ -152,7 +153,7 @@ describe("TypoHints", () => {
 
   it("shows no hints in zen", () => {
     setConfigStore("indicateTypos", "below");
-    resetWordsRender({ zen: true });
+    replaceWords([], { activeWordIndex: 0, zen: true });
     const container = renderWord("");
     setWordInput(0, "abc");
     flush();

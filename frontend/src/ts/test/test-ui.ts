@@ -26,9 +26,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import { ElementWithUtils } from "../utils/dom";
 import { getWordElement as getRenderedWordElement } from "../states/word-elements";
 import {
-  appendRenderedWord,
-  flushWordsRender,
-  resetWordsRender,
+  replaceWords,
   setActiveWord,
   setWordTyped,
   setWordInput,
@@ -114,27 +112,6 @@ export function keepWordsInputInTheCenter(force = false): void {
   wordsInput.scrollIntoView({
     block: "center",
   });
-}
-
-function showWords(): void {
-  resetWordsRender({
-    zen: Config.mode === "zen",
-    marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
-  });
-
-  if (Config.mode === "zen") {
-    appendRenderedWord("");
-  } else {
-    for (let i = 0; i < TestWords.words.length; i++) {
-      const word = TestWords.words.get(i);
-      if (word === undefined) continue; // won't happen, but ts complains
-      appendRenderedWord(word.display);
-    }
-  }
-  setActiveWord(getActiveWordIndex());
-  // not on the input path: render and lay out now
-  flushWordsRender();
-  PaceCaret.resetCaretPosition();
 }
 
 export function updateWordsInputPosition(): void {
@@ -364,7 +341,17 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
   AdController.destroyResult();
   void SoundController.clearAllSounds();
-  showWords();
+  replaceWords(
+    Config.mode === "zen"
+      ? [""]
+      : TestWords.words.get().map((word) => word.display),
+    {
+      activeWordIndex: getActiveWordIndex(),
+      zen: Config.mode === "zen",
+      marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
+    },
+  );
+  PaceCaret.resetCaretPosition();
 }
 
 export function onTestFinish(): void {

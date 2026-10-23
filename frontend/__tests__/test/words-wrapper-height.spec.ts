@@ -10,10 +10,7 @@ import {
   registerWordElement,
   unregisterWordElement,
 } from "../../src/ts/states/word-elements";
-import {
-  flushWordsRender,
-  resetWordsRender,
-} from "../../src/ts/states/words-render";
+import { replaceWords } from "../../src/ts/states/words-render";
 import { createWordsLayout } from "../../src/ts/components/pages/test/words-layout";
 import { createRoot } from "solid-js";
 
@@ -75,9 +72,9 @@ function renderWords(count: number): HTMLElement {
     });
     return dispose;
   });
-  // new words: laid out from scratch
-  resetWordsRender();
-  flushWordsRender();
+  // new words: laid out from scratch. The store stays empty, the fake words
+  // are registered above
+  replaceWords([], { activeWordIndex: 0 });
   cleanups.push(() => {
     dispose();
     for (const el of words.children) {

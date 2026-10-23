@@ -45,6 +45,7 @@ import {
 import {
   appendRenderedWord,
   isWordRendered,
+  replaceWords,
   resetWordsRender,
   setActiveWord,
   setWordInput,
@@ -242,10 +243,7 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
-    resetWordsRender({ zen: true });
-    appendRenderedWord("");
-    setActiveWord(0);
-    runFrames();
+    replaceWords([""], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
     appendRenderedWord("");
     void TestUI.afterTestWordChange("forward");
@@ -264,11 +262,8 @@ describe("test-ui words rendering", () => {
 
   it("breaks the joining of every word passed within one frame", () => {
     const { words } = mount();
-    // new words: their flush lays out the first active word
-    resetWordsRender();
-    for (let i = 0; i < 5; i++) appendRenderedWord("word");
-    setActiveWord(0);
-    runFrames();
+    // new words: lays out the first active word
+    replaceWords(Array<string>(5).fill("word"), { activeWordIndex: 0 });
     joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {
