@@ -9,12 +9,14 @@ import {
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import { isInputElementFocused } from "../../../input/input-element";
 import {
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
   isReadAheadDisabled,
   isWordsHidden,
+  setTestFocusState,
   showOutOfFocusWarning,
 } from "../../../states/test";
 import {
@@ -24,6 +26,7 @@ import {
 import {
   firstMountedIndex,
   isWordRendered,
+  setLayoutHook,
   wordsRenderState,
 } from "../../../states/words-render";
 import { cn } from "../../../utils/cn";
@@ -73,6 +76,35 @@ export function Words(props: {
   onCleanup(mountWordsLayout(layout));
   // drops a line jump still animating
   onCleanup(() => layout.reset());
+
+  // measures #words, so it has to run after the config classes are applied
+  const relayout = (): void => {
+    // lay out unblurred, the out of focus state is restored below
+    setTestFocusState("focused");
+    layout.relayout();
+    props.onActiveWordLaidOut?.();
+    if (!isInputElementFocused()) setTestFocusState("unfocused");
+  };
+
+  onMount(() => {
+    onCleanup(
+      // runs after each words flush, like an event handler
+      // oxlint-disable-next-line solid/reactivity
+      setLayoutHook(({ newWords, wordChange, updatedWords }) => {
+        if (newWords) {
+          relayout();
+          // the caret snaps to the new words
+          layout.layout({
+            wordChange: "initial",
+            updatedWords,
+            snapCaret: true,
+          });
+        } else {
+          layout.layout({ wordChange, updatedWords, snapCaret: false });
+        }
+      }),
+    );
+  });
 
   const isActive = createSelector(
     () => wordsRenderState.renderedActiveWordIndex,

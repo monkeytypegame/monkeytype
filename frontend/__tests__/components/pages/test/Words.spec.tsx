@@ -158,7 +158,7 @@ describe("Words", () => {
           ],
         );
       });
-      setLayoutHook(hook);
+      const unsetHook = setLayoutHook(hook);
       appendRenderedWord("a");
       appendRenderedWord("b");
       setActiveWord(1);
@@ -168,7 +168,7 @@ describe("Words", () => {
       flush();
       expect(hook).toHaveBeenCalledTimes(1);
       expect(seen).toEqual(["1"]);
-      setLayoutHook(undefined);
+      unsetHook();
     });
   });
 
@@ -668,13 +668,13 @@ describe("Words", () => {
     it("cancels a pending flush", () => {
       const container = renderWords();
       const hook = vi.fn();
-      setLayoutHook(hook);
+      const unsetHook = setLayoutHook(hook);
       appendRenderedWord("a");
       resetWordsRender();
       flush();
       expect(container.children).toHaveLength(0);
       expect(hook).not.toHaveBeenCalled();
-      setLayoutHook(undefined);
+      unsetHook();
     });
 
     it("renders new words from index 0 after reset", () => {

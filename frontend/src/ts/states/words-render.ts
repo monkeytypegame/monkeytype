@@ -86,7 +86,18 @@ type Buffer = {
   appended: string[];
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
+  /** last write wins */
+  wordChange: "forward" | "back" | undefined;
   typed: Map<number, boolean>;
+};
+
+/** What a flush changed, for the layout. */
+export type WordsFlush = {
+  /** the words were replaced: lay them out from scratch */
+  newWords: boolean;
+  wordChange: "forward" | "back" | undefined;
+  /** words whose input changed */
+  updatedWords: number[];
 };
 
 const buffer = createFrameBuffer<Buffer>(
@@ -95,15 +106,26 @@ const buffer = createFrameBuffer<Buffer>(
     appended: [],
     inputs: new Map(),
     activeWordIndex: undefined,
+    wordChange: undefined,
     typed: new Map(),
   }),
   applyBuffer,
 );
-let layoutHook: (() => void) | undefined;
+// set by a reset, consumed by the next flush. Not written to the buffer: that
+// would schedule a flush of no words
+let newWords = false;
+let layoutHook: ((flushed: WordsFlush) => void) | undefined;
 
-/** Runs after every flush, once the DOM reflects the store. */
-export function setLayoutHook(hook: (() => void) | undefined): void {
+/**
+ * Runs `hook` after every flush, once the DOM reflects the store. Returns the
+ * unregister.
+ */
+export function setLayoutHook(hook: (flushed: WordsFlush) => void): () => void {
   layoutHook = hook;
+  return () => {
+    // a remount may have registered a new hook already
+    if (layoutHook === hook) layoutHook = undefined;
+  };
 }
 
 /** Applies the buffer now, then runs the layout hook. */
@@ -164,7 +186,13 @@ function applyBuffer(b: Buffer): void {
   });
 
   // 4. imperative layout against the updated DOM
-  layoutHook?.();
+  const flushed: WordsFlush = {
+    newWords,
+    wordChange: b.wordChange,
+    updatedWords: [...b.inputs.keys()],
+  };
+  newWords = false;
+  layoutHook?.(flushed);
 }
 
 /** Input written for a word that hasn't been flushed yet. */
@@ -184,8 +212,14 @@ export function setWordInput(
   buffer.write((b) => b.inputs.set(index, { input, composition }));
 }
 
-export function setActiveWord(index: number): void {
-  buffer.write((b) => (b.activeWordIndex = index));
+export function setActiveWord(
+  index: number,
+  change?: "forward" | "back",
+): void {
+  buffer.write((b) => {
+    b.activeWordIndex = index;
+    if (change !== undefined) b.wordChange = change;
+  });
 }
 
 export function setWordTyped(index: number, isTyped: boolean): void {
@@ -256,6 +290,7 @@ export function resetWordsRender(
   options: { zen?: boolean; marksRtlWords?: boolean } = {},
 ): void {
   buffer.clear();
+  newWords = true;
   setStore({
     words: [],
     firstRenderedWordIndex: 0,

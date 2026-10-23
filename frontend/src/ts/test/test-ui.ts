@@ -31,7 +31,6 @@ import {
   flushWordsRender,
   resetWordsRender,
   setActiveWord,
-  setLayoutHook,
   setWordTyped,
   setWordInput,
   truncateWords,
@@ -55,10 +54,7 @@ import {
   highlightKeymapKey,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
-import type {
-  WordChange,
-  WordsLayout,
-} from "../components/pages/test/words-layout";
+import type { WordsLayout } from "../components/pages/test/words-layout";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
@@ -137,29 +133,6 @@ function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-// what the next words frame has to lay out. Plain state written on the input
-// path; consumed by layoutWords once the DOM reflects the render store
-let pendingWordChange: WordChange | undefined;
-const pendingUpdatedWords = new Set<number>();
-// restart flush: the caret snaps to the new words instead of animating there
-let snapCaretInNextLayout = false;
-
-function clearPendingLayout(): void {
-  pendingWordChange = undefined;
-  pendingUpdatedWords.clear();
-}
-
-/** Layout step of the shared words frame, runs after the DOM is updated. */
-function layoutWords(): void {
-  const wordChange = pendingWordChange;
-  const updatedWords = [...pendingUpdatedWords];
-  const snapCaret = snapCaretInNextLayout;
-  snapCaretInNextLayout = false;
-  clearPendingLayout();
-  if (!isMounted()) return;
-  wordsLayout().layout({ wordChange, updatedWords, snapCaret });
-}
-
 // measures #words, so it has to run after Words applied the config classes
 function updateLayout(): void {
   // lay out unblurred, the out of focus state is restored below
@@ -179,7 +152,6 @@ function showWords(): void {
     zen: Config.mode === "zen",
     marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
   });
-  clearPendingLayout();
 
   if (Config.mode === "zen") {
     appendRenderedWord("");
@@ -191,16 +163,8 @@ function showWords(): void {
     }
   }
   setActiveWord(getActiveWordIndex());
-  // not on the input path: render now, the layout below measures the words
-  snapCaretInNextLayout = true;
+  // not on the input path: render and lay out now
   flushWordsRender();
-
-  updateLayout();
-  wordsLayout().layout({
-    wordChange: "initial",
-    updatedWords: [],
-    snapCaret: true,
-  });
   PaceCaret.resetCaretPosition();
 }
 
@@ -265,7 +229,6 @@ function updateWordLetters({
   compositionData: string;
 }): void {
   setWordInput(wordIndex, input, compositionData);
-  pendingUpdatedWords.add(wordIndex);
 }
 
 // this means input, delete or composition
@@ -361,8 +324,7 @@ export async function afterTestWordChange(
   const activeWordIndex = getActiveWordIndex();
   if (direction === "forward") setWordTyped(activeWordIndex - 1, true);
   setWordTyped(activeWordIndex, false);
-  setActiveWord(activeWordIndex);
-  pendingWordChange = direction;
+  setActiveWord(activeWordIndex, direction);
 
   if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
     setCurrentLiveStats({ burst: Math.round(lastBurst) });
@@ -455,7 +417,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 export function clearWords(): void {
   wordsLayoutRef?.reset();
   resetWordsRender();
-  clearPendingLayout();
 }
 
 export function onTestFinish(): void {
@@ -488,8 +449,6 @@ export function init(
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
   markTestPageMounted(signal);
-  // stays registered across remounts, layoutWords bails while unmounted
-  setLayoutHook(layoutWords);
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config

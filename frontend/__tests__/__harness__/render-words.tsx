@@ -2,7 +2,13 @@ import { render } from "@solidjs/testing-library";
 
 import { Words } from "../../src/ts/components/pages/test/Words";
 
-/** Renders Words, returns its #words element. */
+/** Renders Words in its wrapper, returns its #words element. */
 export function renderWords(): HTMLElement {
-  return render(() => <Words />).container.firstElementChild as HTMLElement;
+  let wordsWrapper: HTMLDivElement | undefined;
+  const { container } = render(() => (
+    <div ref={(el) => (wordsWrapper = el)}>
+      <Words wordsWrapper={() => wordsWrapper} />
+    </div>
+  ));
+  return container.querySelector("#words") as HTMLElement;
 }
