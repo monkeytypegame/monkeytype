@@ -63,6 +63,18 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
+/** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
+export type WordsInputPosition = {
+  top: number;
+  left: number;
+  width?: number;
+  maxWidth?: number;
+};
+
+// bound to #wordsInput by WordsInput, follows the active word
+export const [wordsInputPosition, setWordsInputPosition] =
+  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+
 // bound to #words / #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);

@@ -64,6 +64,7 @@ import {
   getCompositionData,
   isSlowTimer,
   highlightKeymapKey,
+  setWordsInputPosition,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
 import type { JSAnimation } from "animejs";
@@ -136,9 +137,9 @@ export function focusWords(force = false): void {
   }
 }
 
-function keepWordsInputInTheCenter(force = false): void {
+export function keepWordsInputInTheCenter(force = false): void {
+  if (!isMounted()) return;
   const wordsInput = getInputElement();
-  if (wordsInput === null) return;
 
   const wordsWrapperHeight = wordsWrapperEl().getOffsetHeight();
   const windowHeight = window.innerHeight;
@@ -358,46 +359,32 @@ export function updateWordsInputPosition(): void {
 
   const el = getInputElement();
 
-  if (el === null) return;
-
   const activeWord = getActiveWordElement();
 
   if (!activeWord) {
-    el.style.top = "0px";
-    el.style.left = "0px";
+    setWordsInputPosition((position) => ({ ...position, top: 0, left: 0 }));
     return;
   }
 
   const letterHeight = convertRemToPixels(Config.fontSize);
-  const targetTop =
+  const top =
     activeWord.getOffsetTop() + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
+  const maxWidth =
+    Config.tapeMode !== "off" ? 100 - Config.tapeMargin : undefined;
+  const width = Math.max(activeWord.getOffsetWidth(), letterHeight);
+
+  let left: number;
   if (Config.tapeMode !== "off") {
-    el.style.maxWidth = `${100 - Config.tapeMargin}%`;
+    left = wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100);
+  } else if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
+    left = activeWord.getOffsetLeft() - letterHeight;
   } else {
-    el.style.maxWidth = "";
-  }
-  if (activeWord.getOffsetWidth() < letterHeight) {
-    el.style.width = `${letterHeight}px`;
-  } else {
-    el.style.width = `${activeWord.getOffsetWidth()}px`;
+    left = Math.max(0, activeWord.getOffsetLeft());
   }
 
-  el.style.top = `${targetTop}px`;
-
-  if (Config.tapeMode !== "off") {
-    el.style.left = `${
-      wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100)
-    }px`;
-  } else {
-    if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
-      el.style.left = `${activeWord.getOffsetLeft() - letterHeight}px`;
-    } else {
-      el.style.left = `${Math.max(0, activeWord.getOffsetLeft())}px`;
-    }
-  }
-
-  keepWordsInputInTheCenter();
+  // WordsInput keeps it in the center once applied
+  setWordsInputPosition({ top, left, width, maxWidth });
 }
 
 let centeringActiveLine: Promise<void> = Promise.resolve();
@@ -1076,7 +1063,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   setResultShown(false);
   typingTestEl().setStyle({ opacity: "0" });
   setTypingTestHidden(false);
-  getInputElement().style.left = "0";
+  setWordsInputPosition((position) => ({ ...position, left: 0 }));
   Focus.set(false);
   setCurrentLiveStats({
     wpm: undefined,
