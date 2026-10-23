@@ -65,7 +65,8 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
 
 /** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
 export type WordsInputPosition = {
-  top: number;
+  /** the input is centered vertically on it: the active word's letters */
+  centerY: number;
   left: number;
   width?: number;
   maxWidth?: number;
@@ -73,7 +74,7 @@ export type WordsInputPosition = {
 
 // bound to #wordsInput by WordsInput, follows the active word
 export const [wordsInputPosition, setWordsInputPosition] =
-  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+  createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =
@@ -327,6 +328,13 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
+
+/** Whether the test reads right to left: the language, unless reversed. */
+export function isTestRightToLeft(): boolean {
+  return isDirectionReversed()
+    ? !isLanguageRightToLeft()
+    : isLanguageRightToLeft();
+}
 
 /** zen, custom and polyglot words can mix directions: check per letter */
 export function isRtlCheckedByLetter(): boolean {

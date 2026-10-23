@@ -55,6 +55,28 @@ export function focusInputElement(preventScroll = false): void {
   });
 }
 
+/**
+ * Scrolls the words input to the center of the window, if the words wrapper
+ * doesn't fit on it and the input is below the center (unless forced).
+ */
+export function keepWordsInputInTheCenter(force = false): void {
+  if (el === undefined) return;
+  // the input renders inside #wordsWrapper
+  const wordsWrapperHeight = el.parentElement?.offsetHeight ?? 0;
+  const windowHeight = window.innerHeight;
+
+  // dont do anything if the wrapper can fit on screen
+  if (wordsWrapperHeight < windowHeight) return;
+
+  const wordsInputBelowCenter =
+    el.getBoundingClientRect().top > windowHeight / 2;
+
+  // dont do anything if its above or at the center unless forced
+  if (!wordsInputBelowCenter && !force) return;
+
+  el.scrollIntoView({ block: "center" });
+}
+
 // no-op once unmounted: TestPage's cleanup blurs after WordsInput unregistered
 // its input
 export function blurInputElement(): void {

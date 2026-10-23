@@ -1,7 +1,5 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
-import type { WordsLayout } from "./words-layout";
-
 import { Config, getConfig } from "../../../config/store";
 import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
@@ -66,7 +64,6 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let wordsLayout: WordsLayout | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
 
@@ -79,7 +76,6 @@ export function TestPage(): JSXElement {
     if (
       typingTestRef === undefined ||
       wordsWrapperRef === undefined ||
-      wordsLayout === undefined ||
       caretRef === undefined ||
       paceCaretRef === undefined
     ) {
@@ -98,8 +94,6 @@ export function TestPage(): JSXElement {
 
     TestUI.init(
       {
-        wordsLayout,
-        wordsWrapper,
         typingTest: new ElementWithUtils(typingTestRef),
       },
       signal,
@@ -227,11 +221,7 @@ export function TestPage(): JSXElement {
             class="full-width default"
             style={{ "font-size": fontSize() }}
           ></div>
-          <Words
-            layoutRef={(layout) => (wordsLayout = layout)}
-            wordsWrapperRef={() => wordsWrapperRef}
-            onActiveWordLaidOut={TestUI.updateWordsInputPosition}
-          />
+          <Words wordsWrapperRef={() => wordsWrapperRef} />
         </div>
 
         <div>

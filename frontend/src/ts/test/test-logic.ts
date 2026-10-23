@@ -158,7 +158,7 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
-import { appendRenderedWord } from "../states/words-render";
+import { appendRenderedWord, resetWordsRender } from "../states/words-render";
 
 let failReason = "";
 
@@ -1213,7 +1213,8 @@ async function showResult(
 
   void AdController.renderResult();
   setResultCalculating(false);
-  TestUI.clearWords();
+  // the result is shown: free the test words DOM
+  resetWordsRender();
 }
 
 async function saveResult(

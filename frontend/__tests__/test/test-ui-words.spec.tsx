@@ -1,4 +1,4 @@
-import { createRoot } from "solid-js";
+import { batch, createRoot } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -34,9 +34,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
   updatePosition: caretUpdatePosition,
 }));
 
-import type { WordsLayout } from "../../src/ts/components/pages/test/words-layout";
-
 import { Words } from "../../src/ts/components/pages/test/Words";
+import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import {
@@ -46,9 +45,11 @@ import {
 import {
   appendRenderedWord,
   isWordRendered,
+  replaceWords,
   resetWordsRender,
   setActiveWord,
   setWordInput,
+  wordsRenderState,
 } from "../../src/ts/states/words-render";
 import * as TestUI from "../../src/ts/test/test-ui";
 import * as TestWords from "../../src/ts/test/test-words";
@@ -75,7 +76,6 @@ const cleanups: (() => void)[] = [];
 function mount(): {
   words: HTMLElement;
   input: HTMLTextAreaElement;
-  layout: WordsLayout;
 } {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
@@ -86,27 +86,17 @@ function mount(): {
   const disposeInput = render(() => <WordsInput />, wordsWrapper);
   const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
   if (input === null) throw new Error("WordsInput not mounted");
-  let wordsLayout: WordsLayout | undefined;
   const disposeWords = render(
-    () => (
-      <Words
-        layoutRef={(layout) => (wordsLayout = layout)}
-        wordsWrapperRef={() => wordsWrapper}
-        onActiveWordLaidOut={TestUI.updateWordsInputPosition}
-      />
-    ),
+    () => <Words wordsWrapperRef={() => wordsWrapper} />,
     wordsWrapper,
   );
   const words = wordsWrapper.querySelector<HTMLElement>("#words");
-  if (words === null || wordsLayout === undefined) {
+  if (words === null) {
     throw new Error("Words not mounted");
   }
-  const layout = wordsLayout;
   createRoot((dispose) => {
     TestUI.init(
       {
-        wordsLayout: layout,
-        wordsWrapper: new ElementWithUtils(wordsWrapper),
         typingTest: new ElementWithUtils(typingTest),
       },
       controller.signal,
@@ -119,7 +109,7 @@ function mount(): {
       typingTest.remove();
     });
   });
-  return { words, input, layout };
+  return { words, input };
 }
 
 function childClasses(words: HTMLElement): string[] {
@@ -247,10 +237,7 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
-    resetWordsRender({ zen: true });
-    appendRenderedWord("");
-    setActiveWord(0);
-    runFrames();
+    replaceWords([""], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
     appendRenderedWord("");
     void TestUI.afterTestWordChange("forward");
@@ -268,12 +255,9 @@ describe("test-ui words rendering", () => {
   });
 
   it("breaks the joining of every word passed within one frame", () => {
-    const { words, layout } = mount();
-    for (let i = 0; i < 5; i++) appendRenderedWord("word");
-    setActiveWord(0);
-    runFrames();
-    // a restart lays out the first active word
-    layout.layout({ wordChange: "initial", updatedWords: [], snapCaret: true });
+    const { words } = mount();
+    // new words: lays out the first active word
+    replaceWords(Array<string>(5).fill("word"), { activeWordIndex: 0 });
     joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {
@@ -312,7 +296,58 @@ describe("test-ui words rendering", () => {
       expect(caretUpdatePosition).not.toHaveBeenCalledWith(false);
     });
 
-    it("drops a line jump still animating when the test restarts", async () => {
+    it.each([
+      ["", false],
+      [" inside a batch", true],
+    ])(
+      "drops a line jump still animating when the test restarts%s",
+      async (_, inBatch) => {
+        configTesting.replaceConfig({
+          mode: "words",
+          tapeMode: "off",
+          showAllLines: false,
+          smoothLineScroll: true,
+        });
+        const completions: (() => void)[] = [];
+        const cancel = vi.fn();
+        vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
+          (params) => {
+            completions.push(() => {
+              params.onComplete?.({} as never, {} as never);
+            });
+            return { cancel } as never;
+          },
+        );
+        const { words } = mount();
+        startTest(20);
+
+        // to the third line: starts the animated jump hiding the first line
+        for (let i = 0; i < 10; i++) await goForward();
+        expect(completions).toHaveLength(1);
+
+        // a batch defers effects past the restart's flush
+        if (inBatch) batch(() => startTest(20));
+        else startTest(20);
+        expect(cancel).toHaveBeenCalled();
+        // the stale animation completes anyway
+        for (const complete of completions) complete();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(childClasses(words)[0]).toBe("word0");
+        expect(isWordRendered(0)).toBe(true);
+        expect(activeWordIndex(words)).toBe("0");
+        expect(words.style.marginTop).toBe("0px");
+
+        // the new words are laid out from their first word on
+        joiningSet.mockClear();
+        await goForward();
+        const brokenWords = joiningSet.mock.calls
+          .filter(([, broken]) => broken === true)
+          .map(([el]) => (el as ElementWithUtils).native.dataset["wordindex"]);
+        expect(brokenWords).toEqual(["0"]);
+      },
+    );
+    it("ignores a line jump completing after the words are freed", async () => {
       configTesting.replaceConfig({
         mode: "words",
         tapeMode: "off",
@@ -320,13 +355,12 @@ describe("test-ui words rendering", () => {
         smoothLineScroll: true,
       });
       const completions: (() => void)[] = [];
-      const cancel = vi.fn();
       vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
         (params) => {
           completions.push(() => {
             params.onComplete?.({} as never, {} as never);
           });
-          return { cancel } as never;
+          return { cancel: vi.fn() } as never;
         },
       );
       const { words } = mount();
@@ -336,16 +370,14 @@ describe("test-ui words rendering", () => {
       for (let i = 0; i < 10; i++) await goForward();
       expect(completions).toHaveLength(1);
 
-      startTest(20);
-      expect(cancel).toHaveBeenCalled();
-      // the stale animation completes anyway
+      // the result is shown: no flush follows
+      resetWordsRender();
       for (const complete of completions) complete();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(childClasses(words)[0]).toBe("word0");
-      expect(isWordRendered(0)).toBe(true);
-      expect(activeWordIndex(words)).toBe("0");
-      expect(words.style.marginTop).toBe("0px");
+      // nothing left to lay out: no lines removed
+      expect(wordsRenderState.firstRenderedWordIndex).toBe(0);
+      expect(words.children).toHaveLength(0);
     });
   });
 
@@ -362,13 +394,13 @@ describe("test-ui words rendering", () => {
       mountTwoLetterWords(10);
       // to the last word of the first line, laid out
       for (let i = 0; i < 4; i++) await goForward();
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
 
       // to the first word of the second line, same frame
       increaseActiveWordIndex();
       void TestUI.afterTestWordChange("forward");
 
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
     });
 
     it("blocks the extra letter while the active word isn't rendered yet", () => {
@@ -377,7 +409,7 @@ describe("test-ui words rendering", () => {
       appendRenderedWord("ab");
       void TestUI.afterTestWordChange("forward");
 
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(true);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
     });
   });
 
