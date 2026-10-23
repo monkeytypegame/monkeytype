@@ -1,7 +1,5 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
-import type { WordsLayout } from "./words-layout";
-
 import { Config, getConfig } from "../../../config/store";
 import {
   isInputElementFocused,
@@ -71,7 +69,6 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let wordsLayout: WordsLayout | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
   let inputRef: HTMLTextAreaElement | undefined;
@@ -85,7 +82,6 @@ export function TestPage(): JSXElement {
     if (
       typingTestRef === undefined ||
       wordsWrapperRef === undefined ||
-      wordsLayout === undefined ||
       caretRef === undefined ||
       paceCaretRef === undefined ||
       inputRef === undefined
@@ -109,7 +105,6 @@ export function TestPage(): JSXElement {
     initInputListeners(signal);
     TestUI.init(
       {
-        wordsLayout,
         wordsWrapper,
         typingTest: new ElementWithUtils(typingTestRef),
       },
@@ -271,7 +266,6 @@ export function TestPage(): JSXElement {
             style={{ "font-size": fontSize() }}
           ></div>
           <Words
-            onLayout={(layout) => (wordsLayout = layout)}
             wordsWrapper={() => wordsWrapperRef}
             onActiveWordLaidOut={TestUI.updateWordsInputPosition}
           />

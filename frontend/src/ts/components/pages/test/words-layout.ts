@@ -54,8 +54,8 @@ function isLineBreak(item: LayoutItem): item is LineBreakItem {
 
 /**
  * Layout of the test words (#words): line jump, tape scroll, the words
- * wrapper's height. Created by the Words component, driven by test-ui through
- * intents. Each intent is a future effect inside Words.
+ * wrapper's height. Created and driven by the Words component: words flushes,
+ * config changes, resizes.
  */
 export type WordsLayout = {
   /** A words flush landed: lays out the word change and the updated words. */

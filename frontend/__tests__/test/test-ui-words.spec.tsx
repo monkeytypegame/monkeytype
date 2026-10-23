@@ -35,10 +35,7 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
 }));
 
 import { Words } from "../../src/ts/components/pages/test/Words";
-import {
-  wouldActiveWordOverflow,
-  type WordsLayout,
-} from "../../src/ts/components/pages/test/words-layout";
+import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { registerInputElement } from "../../src/ts/input/input-element";
 import {
@@ -77,7 +74,6 @@ const cleanups: (() => void)[] = [];
 function mount(): {
   words: HTMLElement;
   input: HTMLTextAreaElement;
-  layout: WordsLayout;
 } {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
@@ -87,11 +83,9 @@ function mount(): {
 
   const controller = new AbortController();
   registerInputElement(input, controller.signal);
-  let wordsLayout: WordsLayout | undefined;
   const disposeWords = render(
     () => (
       <Words
-        onLayout={(layout) => (wordsLayout = layout)}
         wordsWrapper={() => wordsWrapper}
         onActiveWordLaidOut={TestUI.updateWordsInputPosition}
       />
@@ -100,14 +94,12 @@ function mount(): {
   );
   wordsWrapper.prepend(input);
   const words = wordsWrapper.querySelector<HTMLElement>("#words");
-  if (words === null || wordsLayout === undefined) {
+  if (words === null) {
     throw new Error("Words not mounted");
   }
-  const layout = wordsLayout;
   createRoot((dispose) => {
     TestUI.init(
       {
-        wordsLayout: layout,
         wordsWrapper: new ElementWithUtils(wordsWrapper),
         typingTest: new ElementWithUtils(typingTest),
       },
@@ -120,7 +112,7 @@ function mount(): {
       typingTest.remove();
     });
   });
-  return { words, input, layout };
+  return { words, input };
 }
 
 function childClasses(words: HTMLElement): string[] {
@@ -269,12 +261,12 @@ describe("test-ui words rendering", () => {
   });
 
   it("breaks the joining of every word passed within one frame", () => {
-    const { words, layout } = mount();
+    const { words } = mount();
+    // new words: their flush lays out the first active word
+    resetWordsRender();
     for (let i = 0; i < 5; i++) appendRenderedWord("word");
     setActiveWord(0);
     runFrames();
-    // a restart lays out the first active word
-    layout.layout({ wordChange: "initial", updatedWords: [], snapCaret: true });
     joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {

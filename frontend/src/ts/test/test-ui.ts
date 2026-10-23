@@ -52,12 +52,10 @@ import {
   highlightKeymapKey,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
-import type { WordsLayout } from "../components/pages/test/words-layout";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 // rendered by TestPage, registered via init() on every mount
-let wordsLayoutRef: WordsLayout | undefined;
 let wordsWrapperRef: ElementWithUtils | undefined;
 let typingTestRef: ElementWithUtils | undefined;
 // rendered by TestResult, registered while it's mounted
@@ -411,18 +409,15 @@ export function onTestFinish(): void {
  */
 export function init(
   refs: {
-    wordsLayout: WordsLayout;
     wordsWrapper: ElementWithUtils;
     typingTest: ElementWithUtils;
   },
   signal: AbortSignal,
 ): void {
-  wordsLayoutRef = refs.wordsLayout;
   wordsWrapperRef = refs.wordsWrapper;
   typingTestRef = refs.typingTest;
   signal.addEventListener("abort", () => {
     // a remount may have registered new elements already
-    if (wordsLayoutRef === refs.wordsLayout) wordsLayoutRef = undefined;
     if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });

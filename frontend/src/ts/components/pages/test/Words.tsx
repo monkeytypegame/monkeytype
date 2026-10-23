@@ -38,11 +38,7 @@ import {
 } from "../../../states/words-render";
 import { cn } from "../../../utils/cn";
 import { Word } from "./Word";
-import {
-  createWordsLayout,
-  mountWordsLayout,
-  WordsLayout,
-} from "./words-layout";
+import { createWordsLayout, mountWordsLayout } from "./words-layout";
 
 function prefixedClass(
   prefix: string,
@@ -65,21 +61,16 @@ export function wordsModeClasses(): Record<string, boolean> {
 
 /** Renders #words with the test words, and lays them out (WordsLayout). */
 export function Words(props: {
-  /** receives the layout, before any onMount runs */
-  onLayout?: (layout: WordsLayout) => void;
   wordsWrapper?: () => HTMLElement | undefined;
   onActiveWordLaidOut?: () => void;
 }): JSXElement {
   let wordsRef: HTMLDivElement | undefined;
-  // reads its elements lazily: handed out now, before any onMount runs
+  // reads its elements lazily, they mount after it
   const layout = createWordsLayout({
     words: () => wordsRef,
     wordsWrapper: () => props.wordsWrapper?.(),
     onActiveWordLaidOut: () => props.onActiveWordLaidOut?.(),
   });
-  // handed out once, like a ref
-  // oxlint-disable-next-line solid/reactivity
-  props.onLayout?.(layout);
   onCleanup(mountWordsLayout(layout));
   // drops a line jump still animating
   onCleanup(() => layout.reset());
