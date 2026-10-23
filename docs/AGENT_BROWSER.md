@@ -67,6 +67,7 @@ The console buffer survives reloads, so hot-reload errors from earlier edits loo
 
 - A test in progress blocks navigation with a "Leave site?" dialog: `__mt.restart()` before navigating away.
 - Switching git branches hot-reloads the page and kills a running `javascript_tool` script; wait for `__mt` again after a checkout.
+- Reload (navigate to the page) after any source change before measuring: edits, checkouts, stash, and commits (the lint-staged hook rewrites files). A hot-reloaded state module (eg. `states/test.ts`) leaves two copies of its signals on the page, faking bugs like invisible words. If something looks like a regression, reproduce it on a fresh load first.
 - `__mt` is dev only. Production builds (`vite preview`) are driven through localStorage and the DOM.
 
 ## Profiling
