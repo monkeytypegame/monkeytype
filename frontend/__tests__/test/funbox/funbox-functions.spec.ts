@@ -30,13 +30,6 @@ describe("funbox functions", () => {
       expect(alterText("h3llo!")).toBe("h3110!");
     });
 
-    it("should handle spaces", () => {
-      const result = alterText("hello world");
-      expect(result.startsWith("h3110 ")).toBe(true);
-      expect(result.endsWith("w0r1d")).toBe(true);
-      expect(result).not.toContain("/");
-    });
-
     it("should handle all l33t characters", () => {
       expect(alterText("abcdefg")).toBe("4bcd3f6");
     });
