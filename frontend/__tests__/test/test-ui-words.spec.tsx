@@ -36,8 +36,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
 
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
+import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { registerInputElement } from "../../src/ts/input/input-element";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
@@ -70,19 +70,20 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts Words (#words), bound to test-ui like TestPage does. */
+/** Mounts WordsInput and Words (#words), bound to test-ui like TestPage does. */
 function mount(): {
   words: HTMLElement;
   input: HTMLTextAreaElement;
 } {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
-  const input = document.createElement("textarea");
   typingTest.append(wordsWrapper);
   document.body.append(typingTest);
 
   const controller = new AbortController();
-  registerInputElement(input, controller.signal);
+  const disposeInput = render(() => <WordsInput />, wordsWrapper);
+  const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
+  if (input === null) throw new Error("WordsInput not mounted");
   const disposeWords = render(
     () => (
       <Words
@@ -92,7 +93,6 @@ function mount(): {
     ),
     wordsWrapper,
   );
-  wordsWrapper.prepend(input);
   const words = wordsWrapper.querySelector<HTMLElement>("#words");
   if (words === null) {
     throw new Error("Words not mounted");
@@ -109,6 +109,7 @@ function mount(): {
       controller.abort();
       dispose();
       disposeWords();
+      disposeInput();
       typingTest.remove();
     });
   });
