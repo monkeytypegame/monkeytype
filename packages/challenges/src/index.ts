@@ -1085,23 +1085,6 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
       },
     },
   },
-  blazeIt: {
-    display: "Blaze It",
-    discordRoleId: "803650889461006346",
-    initialCount: 110,
-    category: "speed",
-    description: "Achieve 420 WPM (can be rounded) by typing weed.",
-    settings: {
-      type: "customText",
-      parameters: {
-        text: "weed",
-        mode: "random",
-        limit: 1,
-        limitMode: "word",
-        isPipeDelimiter: false,
-      },
-    },
-  },
   burstMaster: {
     display: "Burst Master",
     discordRoleId: "757330922726096917",
