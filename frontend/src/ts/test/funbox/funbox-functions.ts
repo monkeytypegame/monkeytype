@@ -181,7 +181,6 @@ export class PolyglotWordset extends Wordset {
 const l33tMap: Record<string, string> = {
   a: "4",
   e: "3",
-
   g: "6",
   i: "1",
   l: "1",
