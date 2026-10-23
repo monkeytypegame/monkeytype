@@ -56,9 +56,8 @@ export function WordsInput(): JSXElement {
     <textarea
       id="wordsInput"
       ref={(el) => (inputRef = el)}
-      // important: #wordsInput's stylesheet rules beat utility classes
       class={cn("full-width", {
-        "mt-[1.5em]! caret-error! opacity-100!": isRealWordsInputShown(),
+        "mt-[1.5em] caret-error opacity-100": isRealWordsInputShown(),
       })}
       autocomplete="off"
       autocapitalize="off"
