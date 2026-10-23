@@ -11,10 +11,15 @@ import {
   setWordsWrapperHidden,
   wordsHaveNewline,
 } from "../../../states/test";
-import { getWordElement as getRenderedWordElement } from "../../../states/word-elements";
 import {
+  getLineBreakElements,
+  getWordElement as getRenderedWordElement,
+} from "../../../states/word-elements";
+import {
+  firstMountedIndex,
   getPendingWordInput,
   invalidateTypoHintsLayout,
+  isWordRendered,
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
   wordsRenderState,
@@ -29,6 +34,23 @@ import * as Misc from "../../../utils/misc";
 import * as Strings from "../../../utils/strings";
 
 export type WordChange = "forward" | "back" | "initial";
+
+/** A rendered word or line break, in #words' order. */
+type LayoutItem =
+  | { kind: "word"; index: number; el: ElementWithUtils }
+  | {
+      kind: "lineBreak";
+      /** of the word ending the line */
+      index: number;
+      before: ElementWithUtils;
+      after: ElementWithUtils;
+    };
+
+type LineBreakItem = Extract<LayoutItem, { kind: "lineBreak" }>;
+
+function isLineBreak(item: LayoutItem): item is LineBreakItem {
+  return item.kind === "lineBreak";
+}
 
 /**
  * Layout of the test words (#words): line jump, tape scroll, the words
@@ -111,12 +133,40 @@ export function createWordsLayout(options: {
     return el === undefined ? null : new ElementWithUtils(el);
   }
 
-  function getWordIndex(el: ElementWithUtils): number {
-    return Number(el.native.dataset["wordindex"]);
-  }
-
   function getActiveWordElement(): ElementWithUtils | null {
     return getWordElement(getActiveWordIndex());
+  }
+
+  /**
+   * The rendered words and line breaks in #words' order, as of the last
+   * flush. Words hidden by tape scroll keep only their line break.
+   */
+  function getLayoutItems(): LayoutItem[] {
+    const items: LayoutItem[] = [];
+    const renderedWords = wordsRenderState.words;
+    for (let i = firstMountedIndex(); i < renderedWords.length; i++) {
+      if (isWordRendered(i)) {
+        const el = getWordElement(i);
+        if (el !== null) items.push({ kind: "word", index: i, el });
+      }
+      if (renderedWords[i]?.endsLine !== true) continue;
+      const lineBreak = getLineBreakElements(i);
+      if (lineBreak === undefined) continue;
+      items.push({
+        kind: "lineBreak",
+        index: i,
+        before: new ElementWithUtils(lineBreak.before),
+        after: new ElementWithUtils(lineBreak.after),
+      });
+    }
+    return items;
+  }
+
+  function getActiveItemIndex(items: LayoutItem[]): number {
+    const activeWordIndex = getActiveWordIndex();
+    return items.findIndex(
+      (item) => item.kind === "word" && item.index === activeWordIndex,
+    );
   }
 
   function isTimedTest(): boolean {
@@ -311,12 +361,9 @@ export function createWordsLayout(options: {
       wordsEl().setStyle({ marginLeft: "0" });
       void scrollTape(true);
     } else {
-      const afterNewlineEls = wordsEl().qsa(".afterNewline");
       wordsEl().setStyle({ marginLeft: "0", marginTop: "0" });
-      for (const afterNewline of afterNewlineEls) {
-        afterNewline.setStyle({
-          marginLeft: "0",
-        });
+      for (const lineBreak of getLayoutItems().filter(isLineBreak)) {
+        lineBreak.after.setStyle({ marginLeft: "0" });
       }
     }
   }
@@ -325,18 +372,18 @@ export function createWordsLayout(options: {
   // and sometimes we want it to be shifted to the left
   // (for example if the newline is typed incorrectly, or there are any extra letters after it)
   function getNlCharWidth(
-    lastWordInLine: ElementWithUtils | undefined,
+    lastWordInLine: { index: number; el: ElementWithUtils } | undefined,
   ): number {
-    // not a word: its line's words are removed
-    if (lastWordInLine?.hasClass("word") !== true) return 0;
-    const word = wordsRenderState.words[getWordIndex(lastWordInLine)];
+    // no word: its line's words are removed
+    if (lastWordInLine === undefined) return 0;
+    const word = wordsRenderState.words[lastWordInLine.index];
     if (word === undefined) return 0;
     // the line break's own letter, not a typed newline (extra or typo) after it
     const chars = Strings.splitIntoCharacters(
       wordsRenderState.rendersLettersFromInput ? word.input : word.text,
     );
     if (chars[chars.length - 1] !== "\n") return 0;
-    const nlChar = lastWordInLine.qsa("letter")[chars.length - 1];
+    const nlChar = lastWordInLine.el.qsa("letter")[chars.length - 1];
     if (nlChar === undefined || nlChar.hasClass("incorrect")) return 0;
     const letterComputedStyle = window.getComputedStyle(nlChar.native);
     const letterMargin =
@@ -355,10 +402,13 @@ export function createWordsLayout(options: {
     const isRtl = isTestRightToLeft();
 
     const wordsWrapperWidth = wordsWrapperEl().getOffsetWidth();
-    const wordsChildrenArr = wordsEl().getChildren();
-    const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) return;
-    const afterNewLineEls = wordsEl().qsa(".afterNewline");
+    const items = getLayoutItems();
+    // index of the active word in items
+    const activeItemIndex = getActiveItemIndex(items);
+    const activeItem = items[activeItemIndex];
+    if (activeItem?.kind !== "word") return;
+    const activeWordEl = activeItem.el;
+    const lineBreaks = items.filter(isLineBreak);
 
     let wordsWidthBeforeActive = 0;
     let fullLineWidths = 0;
@@ -369,27 +419,24 @@ export function createWordsLayout(options: {
     // overflown words are only removed from the start. Their line breaks stay
     // rendered until line jump removes their line
     let removing = true;
-    let lastWordToRemove: ElementWithUtils | undefined;
+    let lastWordToRemove: number | undefined;
 
-    /* get last element to loop over */
-    let lastElementIndex: number;
-    // index of the active word in all #words.children
-    // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-    const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
+    /* get last item to loop over */
+    let lastItemIndex: number;
     // this will between 0 and 2
-    const newLinesBeforeActiveWord = wordsChildrenArr
-      .slice(0, activeWordIndex)
-      .filter((child) => child.hasClass("afterNewline")).length;
-    // the second `.afterNewline` after active word is visible during line jump
-    let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1];
-    if (lastVisibleAfterNewline) {
-      lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
+    const newLinesBeforeActiveWord = items
+      .slice(0, activeItemIndex)
+      .filter(isLineBreak).length;
+    // the second line break after active word is visible during line jump
+    let lastVisibleLineBreak = lineBreaks[newLinesBeforeActiveWord + 1];
+    if (lastVisibleLineBreak) {
+      lastItemIndex = items.indexOf(lastVisibleLineBreak);
     } else {
-      lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord];
-      if (lastVisibleAfterNewline) {
-        lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
+      lastVisibleLineBreak = lineBreaks[newLinesBeforeActiveWord];
+      if (lastVisibleLineBreak) {
+        lastItemIndex = items.indexOf(lastVisibleLineBreak);
       } else {
-        lastElementIndex = activeWordIndex - 1;
+        lastItemIndex = activeItemIndex - 1;
       }
     }
 
@@ -398,9 +445,10 @@ export function createWordsLayout(options: {
     );
 
     /*calculate .afterNewline & #words new margins + determine elements to remove*/
-    for (let i = 0; i <= lastElementIndex; i++) {
-      const child = wordsChildrenArr[i] as ElementWithUtils;
-      if (child.hasClass("word")) {
+    for (let i = 0; i <= lastItemIndex; i++) {
+      const item = items[i] as LayoutItem;
+      if (item.kind === "word") {
+        const child = item.el;
         const wordOuterWidth = child.getOuterWidth();
         const wordLeft = Math.floor(child.getOffsetLeft());
         const wordWidth = Math.floor(child.getOffsetWidth());
@@ -408,22 +456,25 @@ export function createWordsLayout(options: {
           (!isRtl && wordLeft < 0 - wordWidth) ||
           (isRtl && wordLeft > wordsWrapperWidth);
         if (removing) {
-          lastWordToRemove = child;
+          lastWordToRemove = item.index;
           widthRemoved += wordOuterWidth;
           const line = lineWidthRemoved.length - 1;
           lineWidthRemoved[line] =
             (lineWidthRemoved[line] ?? 0) + wordOuterWidth;
         } else {
           fullLineWidths += wordOuterWidth;
-          if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
+          if (i < activeItemIndex) wordsWidthBeforeActive = fullLineWidths;
         }
-      } else if (child.hasClass("afterNewline")) {
+      } else {
         // a line of removed words has no newline glyph (getNlCharWidth: 0).
         // Its offset carries to every later line and #words' margin, so the
         // lines stay in place relative to each other
-        const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
+        const lineEnd = items[i - 1];
+        const nlCharWidth = getNlCharWidth(
+          lineEnd?.kind === "word" ? lineEnd : undefined,
+        );
         fullLineWidths -= nlCharWidth + wordRightMargin;
-        if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
+        if (i < activeItemIndex) wordsWidthBeforeActive = fullLineWidths;
 
         /** words that are wider than limit can cause a barely visible bottom line shifting,
          * increase limit if that ever happens, but keep the limit because browsers hate
@@ -435,8 +486,8 @@ export function createWordsLayout(options: {
           afterNewlinesNewMargins.push(fullLineWidths);
         } else {
           afterNewlinesNewMargins.push(limit);
-          if (i < lastElementIndex) {
-            // for the second .afterNewline after active word
+          if (i < lastItemIndex) {
+            // for the second line break after active word
             afterNewlinesNewMargins.push(limit);
             lineWidthRemoved.push(0);
           }
@@ -447,12 +498,12 @@ export function createWordsLayout(options: {
 
     /* remove overflown elements */
     if (lastWordToRemove !== undefined) {
-      setFirstRenderedWordIndex(getWordIndex(lastWordToRemove) + 1);
+      setFirstRenderedWordIndex(lastWordToRemove + 1);
       // keep every line in place: the first line starts at #words' margin, the
       // others at #words' margin plus their .afterNewline's margin
       const firstLineWidthRemoved = lineWidthRemoved[0] ?? 0;
       for (let i = 0; i < lineWidthRemoved.length - 1; i++) {
-        const afterNewlineEl = afterNewLineEls[i];
+        const afterNewlineEl = lineBreaks[i]?.after;
         if (afterNewlineEl === undefined) break;
         const currentLineIndent =
           parseFloat(afterNewlineEl.getStyle().marginLeft) || 0;
@@ -529,7 +580,7 @@ export function createWordsLayout(options: {
 
       for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
         const newMargin = afterNewlinesNewMargins[i] ?? 0;
-        (afterNewLineEls[i] as ElementWithUtils)?.animate({
+        lineBreaks[i]?.after.animate({
           marginLeft: newMargin,
           duration,
           ease,
@@ -539,41 +590,41 @@ export function createWordsLayout(options: {
       wordsEl().setStyle({ marginLeft: `${newMargin}px` });
       for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
         const newMargin = afterNewlinesNewMargins[i] ?? 0;
-        afterNewLineEls[i]?.setStyle({ marginLeft: `${newMargin}px` });
+        lineBreaks[i]?.after.setStyle({ marginLeft: `${newMargin}px` });
       }
     }
   }
 
   /**
-   * Stops rendering #words' children up to `lastElementIndexToRemove`: the
-   * lines before the first word after it, line breaks included.
+   * Stops rendering the lines up to the word or line break of
+   * `lastRemovedIndex`: everything before the first word after it.
    */
-  function removeTestElements(lastElementIndexToRemove: number): void {
-    const wordsChildren = wordsEl().getChildren();
+  function removeLines(lastRemovedIndex: number): void {
+    const items = getLayoutItems();
     // the removed lines may hold only line breaks (tape removed their words)
-    let firstKeptElementIndex = lastElementIndexToRemove + 1;
-    while (
-      firstKeptElementIndex < wordsChildren.length &&
-      !wordsChildren[firstKeptElementIndex]?.hasClass("word")
-    ) {
-      firstKeptElementIndex++;
-    }
-    const firstKeptWord = wordsChildren[firstKeptElementIndex];
+    const firstKeptItemIndex = items.findIndex(
+      (item) => item.kind === "word" && item.index > lastRemovedIndex,
+    );
+    const firstKeptWord = items[firstKeptItemIndex];
     if (firstKeptWord === undefined) return;
 
     // tape mode indents the line after a newline with its `.afterNewline`
-    const beforeFirstKept = wordsChildren[firstKeptElementIndex - 1];
-    const indent = beforeFirstKept?.hasClass("afterNewline")
-      ? parseFloat(beforeFirstKept.getStyle().marginLeft) || 0
-      : 0;
+    const beforeFirstKept = items[firstKeptItemIndex - 1];
+    const indent =
+      beforeFirstKept?.kind === "lineBreak"
+        ? parseFloat(beforeFirstKept.after.getStyle().marginLeft) || 0
+        : 0;
 
-    setFirstRenderedLine(getWordIndex(firstKeptWord));
+    setFirstRenderedLine(firstKeptWord.index);
 
     if (indent === 0) return;
     // the indent is gone: shift #words by it instead, keeping the lines in place
-    for (const el of wordsEl().qsa(".afterNewline")) {
-      const currentLineIndent = parseFloat(el.getStyle().marginLeft) || 0;
-      el.setStyle({ marginLeft: `${currentLineIndent - indent}px` });
+    for (const lineBreak of getLayoutItems().filter(isLineBreak)) {
+      const currentLineIndent =
+        parseFloat(lineBreak.after.getStyle().marginLeft) || 0;
+      lineBreak.after.setStyle({
+        marginLeft: `${currentLineIndent - indent}px`,
+      });
     }
     const widthRemoved = isTestRightToLeft() ? -indent : indent;
     const currentWordsMargin =
@@ -593,29 +644,22 @@ export function createWordsLayout(options: {
       const activeWordEl = getActiveWordElement();
       if (!activeWordEl) return;
 
-      // index of the active word in all #words.children
-      // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-      const wordsChildren = wordsEl().getChildren();
-      const activeWordElementIndex = wordsChildren.indexOf(activeWordEl);
+      const items = getLayoutItems();
 
-      let lastElementIndexToRemove: number | undefined = undefined;
-      for (let i = activeWordElementIndex - 1; i >= 0; i--) {
-        const child = wordsChildren[i] as ElementWithUtils;
-        if (child.hasClass("hidden")) continue;
-        if (Math.floor(child.getOffsetTop()) < hideBound) {
-          if (child.hasClass("word")) {
-            lastElementIndexToRemove = i;
-            break;
-          } else if (child.hasClass("beforeNewline")) {
-            // set it to .newline but check .beforeNewline.offsetTop
-            // because it's more reliable
-            lastElementIndexToRemove = i + 1;
-            break;
-          }
+      // the word or line break (word index) closest before the active word
+      // that is above the bound
+      let lastRemovedIndex: number | undefined = undefined;
+      for (let i = getActiveItemIndex(items) - 1; i >= 0; i--) {
+        const item = items[i] as LayoutItem;
+        // a line break is measured at .beforeNewline, it's the most reliable
+        const el = item.kind === "word" ? item.el : item.before;
+        if (Math.floor(el.getOffsetTop()) < hideBound) {
+          lastRemovedIndex = item.index;
+          break;
         }
       }
 
-      if (lastElementIndexToRemove === undefined) {
+      if (lastRemovedIndex === undefined) {
         currentTestLine++;
         updateWordsWrapperHeight();
         return;
@@ -650,12 +694,12 @@ export function createWordsLayout(options: {
         currentLinesJumping = 0;
         activeWordTop = activeWordEl.getOffsetTop();
         activeWordHeight = activeWordEl.getOffsetHeight();
-        removeTestElements(lastElementIndexToRemove);
+        removeLines(lastRemovedIndex);
         wordsEl().setStyle({ marginTop: "0" });
         lineTransition = false;
       } else {
         currentLinesJumping = 0;
-        removeTestElements(lastElementIndexToRemove);
+        removeLines(lastRemovedIndex);
       }
     }
     currentTestLine++;

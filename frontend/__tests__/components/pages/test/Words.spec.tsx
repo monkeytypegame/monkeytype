@@ -10,7 +10,10 @@ vi.mock("../../../../src/ts/utils/json-data", async (importOriginal) => ({
 import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
-import { getWordElement } from "../../../../src/ts/states/word-elements";
+import {
+  getLineBreakElements,
+  getWordElement,
+} from "../../../../src/ts/states/word-elements";
 import {
   appendRenderedWord,
   firstMountedIndex,
@@ -318,6 +321,28 @@ describe("Words", () => {
 
       resetWordsRender();
       expect(getWordElement(1)).toBeUndefined();
+    });
+
+    it("registers line break elements by the index of the word ending the line", () => {
+      const container = renderWords();
+      appendRenderedWord("a\n");
+      appendRenderedWord("b\n");
+      appendRenderedWord("c");
+      flush();
+      expect(getLineBreakElements(1)).toEqual({
+        before: container.querySelectorAll(".beforeNewline")[1],
+        after: container.querySelectorAll(".afterNewline")[1],
+      });
+      expect(getLineBreakElements(2)).toBeUndefined();
+
+      setFirstRenderedLine(1);
+      expect(getLineBreakElements(0)).toBeUndefined();
+      expect(getLineBreakElements(1)?.after).toBe(
+        container.querySelector(".afterNewline"),
+      );
+
+      resetWordsRender();
+      expect(getLineBreakElements(1)).toBeUndefined();
     });
 
     it("does not render lines below the first rendered line, line breaks included", () => {

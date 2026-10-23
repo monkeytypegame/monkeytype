@@ -4,6 +4,7 @@ import {
   For,
   JSXElement,
   onCleanup,
+  onMount,
   Show,
 } from "solid-js";
 
@@ -16,6 +17,10 @@ import {
   isWordsHidden,
   showOutOfFocusWarning,
 } from "../../../states/test";
+import {
+  registerLineBreakElements,
+  unregisterLineBreakElements,
+} from "../../../states/word-elements";
 import {
   firstMountedIndex,
   isWordRendered,
@@ -101,7 +106,7 @@ export function Words(props: {
               <Word word={word} isActive={isActive} />
             </Show>
             <Show when={word.endsLine}>
-              <LineBreak />
+              <LineBreak index={word.index} />
             </Show>
           </>
         )}
@@ -110,12 +115,24 @@ export function Words(props: {
   );
 }
 
-function LineBreak(): JSXElement {
+/** The line break after word `index`, registered for the layout. */
+function LineBreak(props: { index: number }): JSXElement {
+  let beforeRef: HTMLDivElement | undefined;
+  let afterRef: HTMLDivElement | undefined;
+
+  onMount(() => {
+    if (beforeRef === undefined || afterRef === undefined) return;
+    const index = props.index;
+    const els = { before: beforeRef, after: afterRef };
+    registerLineBreakElements(index, els);
+    onCleanup(() => unregisterLineBreakElements(index, els));
+  });
+
   return (
     <>
-      <div class="beforeNewline"></div>
+      <div ref={(el) => (beforeRef = el)} class="beforeNewline"></div>
       <div class="newline"></div>
-      <div class="afterNewline"></div>
+      <div ref={(el) => (afterRef = el)} class="afterNewline"></div>
     </>
   );
 }
