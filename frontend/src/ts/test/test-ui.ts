@@ -133,19 +133,6 @@ function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
 
-// measures #words, so it has to run after Words applied the config classes
-function updateLayout(): void {
-  // lay out unblurred, the out of focus state is restored below
-  setTestFocusState("focused");
-
-  wordsLayout().relayout();
-  updateWordsInputPosition();
-
-  if (!isInputElementFocused()) {
-    setTestFocusState("unfocused");
-  }
-}
-
 function showWords(): void {
   resetWordsRender({
     zen: Config.mode === "zen",
@@ -450,26 +437,6 @@ export function init(
 
   // configEvent fires before the config store updates, so DOM reactions live
   // here instead - they run after TestPage's bindings picked up the new config
-  createEffect(
-    on(
-      () => [
-        getConfig.highlightMode,
-        getConfig.typedEffect,
-        getConfig.blindMode,
-        getConfig.indicateTypos,
-        getConfig.tapeMode,
-        getConfig.hideExtraLetters,
-        getConfig.flipTestColors,
-        getConfig.colorfulMode,
-        getConfig.showAllLines,
-        getConfig.fontSize,
-        getConfig.maxLineWidth,
-        getConfig.tapeMargin,
-      ],
-      updateLayout,
-      { defer: true },
-    ),
-  );
   createEffect(
     on(
       () => getConfig.highlightMode,

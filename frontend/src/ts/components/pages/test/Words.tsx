@@ -102,6 +102,28 @@ export function Words(props: {
     if (!isInputElementFocused()) setTestFocusState("unfocused");
   };
 
+  // effects run after the bindings, so the new config classes are applied
+  createEffect(
+    on(
+      () => [
+        getConfig.highlightMode,
+        getConfig.typedEffect,
+        getConfig.blindMode,
+        getConfig.indicateTypos,
+        getConfig.tapeMode,
+        getConfig.hideExtraLetters,
+        getConfig.flipTestColors,
+        getConfig.colorfulMode,
+        getConfig.showAllLines,
+        getConfig.fontSize,
+        getConfig.maxLineWidth,
+        getConfig.tapeMargin,
+      ],
+      relayout,
+      { defer: true },
+    ),
+  );
+
   onMount(() => {
     onCleanup(
       // runs after each words flush, like an event handler
