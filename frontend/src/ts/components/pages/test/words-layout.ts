@@ -737,7 +737,7 @@ export function createWordsLayout(options: {
    * New words or a config change: lays everything out from scratch. Measures
    * #words, so it has to run after the config classes are applied.
    */
-  function layOutAll(): void {
+  function layoutAll(): void {
     // lay out unblurred, the out of focus state is restored below
     setTestFocusState("focused");
     updateWordsWrapperHeight(true);
@@ -766,15 +766,15 @@ export function createWordsLayout(options: {
   onCleanup(dropOldWordsLayout);
 
   /** The new words' first flush: lays them out from scratch. */
-  function layOutNewWords(): void {
-    layOutAll();
+  function layoutNewWords(): void {
+    layoutAll();
     void layoutActiveWord("initial");
     // the caret snaps to the new words
     Caret.updatePosition(true);
   }
 
   /** The active word moving, and the words whose input changed. */
-  function layOutChange(flush: WordsFlush): void {
+  function layoutChange(flush: WordsFlush): void {
     if (flush.wordChange !== undefined) {
       void layoutActiveWord(flush.wordChange);
     } else if (flush.updatedWords.length > 0 && Config.tapeMode !== "off") {
@@ -789,7 +789,7 @@ export function createWordsLayout(options: {
 
   onCleanup(
     onWordsFlushed((flush) =>
-      flush.newWords ? layOutNewWords() : layOutChange(flush),
+      flush.newWords ? layoutNewWords() : layoutChange(flush),
     ),
   );
 
@@ -810,7 +810,7 @@ export function createWordsLayout(options: {
         getConfig.maxLineWidth,
         getConfig.tapeMargin,
       ],
-      layOutAll,
+      layoutAll,
       { defer: true },
     ),
   );
