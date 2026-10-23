@@ -1370,7 +1370,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     discordRoleId: "1546023277426638899",
     initialCount: 4,
     category: "other",
-    description: "Maintain a streak of 760 days of typing.",
+    description: "Maintain a streak of 730 days of typing.",
   },
 };
 
