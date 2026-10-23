@@ -58,6 +58,10 @@ export function focusInputElement(preventScroll = false): void {
 /**
  * Scrolls the words input to the center of the window, if the words wrapper
  * doesn't fit on it and the input is below the center (unless forced).
+ *
+ * Page scrolling, not input handling: here only because WordsInput and
+ * test-ui's focusWords both call it. Moves into WordsInput along with
+ * focusWords.
  */
 export function keepWordsInputInTheCenter(force = false): void {
   if (el === undefined) return;
