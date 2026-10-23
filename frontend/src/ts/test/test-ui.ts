@@ -5,7 +5,6 @@ import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
-import { isRtlCheckedByLetter } from "../elements/caret";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
@@ -48,6 +47,7 @@ import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
+  isRtlCheckedByLetter,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,

@@ -6,6 +6,7 @@ import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
 import { getWordElement } from "../states/word-elements";
+import { isRtlCheckedByLetter } from "../states/test";
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -23,15 +24,6 @@ export function toggleCaretDebug(): void {
       l.classList.add("debugCaret");
     }
   }
-}
-
-/** zen, custom and polyglot words can mix directions: check per letter */
-export function isRtlCheckedByLetter(): boolean {
-  return (
-    Config.mode === "zen" ||
-    Config.mode === "custom" ||
-    Config.funbox.includes("polyglot")
-  );
 }
 
 export class Caret {
