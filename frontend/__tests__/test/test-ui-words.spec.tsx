@@ -35,8 +35,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
 }));
 
 import { Words } from "../../src/ts/components/pages/test/Words";
+import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { registerInputElement } from "../../src/ts/input/input-element";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
@@ -69,18 +69,19 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts #words with Words inside, bound to test-ui like TestPage does. */
+/** Mounts WordsInput and #words with Words inside, bound to test-ui like TestPage does. */
 function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
-  const input = document.createElement("textarea");
-  wordsWrapper.append(input, words);
+  wordsWrapper.append(words);
   typingTest.append(wordsWrapper);
   document.body.append(typingTest);
 
   const controller = new AbortController();
-  registerInputElement(input, controller.signal);
+  const disposeInput = render(() => <WordsInput />, wordsWrapper);
+  const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
+  if (input === null) throw new Error("WordsInput not mounted");
   const disposeWords = render(() => <Words />, words);
   createRoot((dispose) => {
     TestUI.init(
@@ -95,6 +96,7 @@ function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
       controller.abort();
       dispose();
       disposeWords();
+      disposeInput();
       typingTest.remove();
     });
   });
