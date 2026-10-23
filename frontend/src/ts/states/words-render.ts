@@ -92,18 +92,6 @@ export function setLayoutHook(hook: (() => void) | undefined): void {
   layoutHook = hook;
 }
 
-function newWord(index: number, text: string): RenderedWord {
-  return {
-    index,
-    text,
-    input: "",
-    composition: "",
-    isTyped: false,
-    // zen: from the input
-    endsLine: !store.rendersLettersFromInput && text.includes("\n"),
-  };
-}
-
 /** Applies the buffer now, then runs the layout hook. */
 export function flushWordsRender(): void {
   buffer.flush();
@@ -120,9 +108,18 @@ function applyBuffer(b: Buffer): void {
           words.length = b.truncateTo;
         }
         for (const text of b.appended) {
-          const word = newWord(words.length, text);
-          endsLine ||= word.endsLine;
-          words.push(word);
+          // zen: from the input
+          const wordEndsLine =
+            !store.rendersLettersFromInput && text.includes("\n");
+          endsLine ||= wordEndsLine;
+          words.push({
+            index: words.length,
+            text,
+            input: "",
+            composition: "",
+            isTyped: false,
+            endsLine: wordEndsLine,
+          });
         }
       }),
     );
