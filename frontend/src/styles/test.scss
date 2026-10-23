@@ -148,22 +148,6 @@
         opacity: 0.5;
       }
     }
-    & .hints hint {
-      position: absolute;
-      bottom: -1.1em;
-      color: var(--correct-letter-color);
-      animation: var(--correct-letter-animation);
-      line-height: initial;
-      font-size: 0.75em;
-      text-shadow: none;
-      padding: 1px;
-      left: 0;
-      opacity: 0.5;
-      text-align: center;
-      display: grid;
-      justify-content: center;
-      transform: translate(-50%);
-    }
   }
 
   &.tape {
@@ -190,10 +174,6 @@
       overflow-wrap: anywhere;
       padding-bottom: 0.05em; // compensate for letter border
 
-      .hints {
-        overflow-wrap: initial;
-      }
-
       letter {
         display: inline;
       }
@@ -217,10 +197,6 @@
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
       }
-      & .hints hint {
-        display: none;
-      }
-
       &.error {
         border-bottom: 2px solid transparent;
         text-shadow: none;

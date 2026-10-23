@@ -26,7 +26,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
-import { ElementsWithUtils, ElementWithUtils } from "../utils/dom";
+import { ElementWithUtils } from "../utils/dom";
 import { getFontPreview } from "../states/font";
 import { getWordElement as getRenderedWordElement } from "../states/word-elements";
 import {
@@ -42,6 +42,7 @@ import {
   setWordInput,
   truncateWords,
   wordsRenderState,
+  invalidateTypoHintsLayout,
 } from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
 import {
@@ -68,11 +69,6 @@ import { createEffect, on, untrack } from "solid-js";
 import type { JSAnimation } from "animejs";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
-
-export const updateHintsPositionDebounced = Misc.debounceUntilResolved(
-  updateHintsPosition,
-  { rejectSkippedCalls: false },
-);
 
 // rendered by TestPage, registered via init() on every mount
 let wordsRef: ElementWithUtils | undefined;
@@ -183,8 +179,6 @@ const pendingUpdatedWords = new Set<number>();
 let laidOutActiveWordIndex: number | undefined;
 // restart flush: the caret snaps to the new words instead of animating there
 let snapCaretInNextLayout = false;
-// words whose hints container holds hints
-const wordsWithHints = new Set<number>();
 
 function clearPendingLayout(): void {
   pendingWordChange = undefined;
@@ -206,69 +200,9 @@ function layoutWords(): void {
     void scrollTape();
   }
   for (const wordIndex of updatedWords) {
-    void updateWordHints(wordIndex);
     void lineJumpIfWrapped(wordIndex);
   }
   Caret.updatePosition(snapCaret);
-}
-
-function indicatesTyposBelow(): boolean {
-  return Config.indicateTypos === "below" || Config.indicateTypos === "both";
-}
-
-/**
- * Rebuilds the hints of a word inside its component-owned hints container,
- * against the word's freshly rendered letters.
- */
-async function updateWordHints(wordIndex: number): Promise<void> {
-  const word = wordsRenderState.words[wordIndex];
-  if (word === undefined) return;
-
-  const hintIndices: number[][] = [];
-  if (indicatesTyposBelow() && Config.mode !== "zen") {
-    const wordChars = Strings.splitIntoCharacters(word.text);
-    const inputChars = Strings.splitIntoCharacters(word.input);
-    for (let i = 0; i < inputChars.length; i++) {
-      const expected = wordChars[i];
-      // extra letters get no hint
-      if (expected === undefined || expected === inputChars[i]) continue;
-      const lastBlock = hintIndices[hintIndices.length - 1];
-      if (lastBlock?.[lastBlock.length - 1] === i - 1) {
-        lastBlock.push(i);
-      } else {
-        hintIndices.push([i]);
-      }
-    }
-  }
-
-  // nothing to add or clear: skip the DOM
-  if (hintIndices.length === 0 && !wordsWithHints.has(wordIndex)) return;
-
-  const wordElement = getWordElement(wordIndex);
-  const hintsContainer = wordElement?.qs(":scope > .hints");
-  if (!wordElement || !hintsContainer) return;
-
-  if (hintIndices.length === 0) {
-    hintsContainer.setHtml("");
-    wordsWithHints.delete(wordIndex);
-    return;
-  }
-
-  wordsWithHints.add(wordIndex);
-
-  const letterElements = wordElement.qsa("letter");
-  hintsContainer.setHtml(
-    createHintsHtml(
-      hintIndices,
-      letterElements,
-      Config.indicateTypos === "both" ? word.text : word.input,
-    ),
-  );
-  await joinOverlappingHints(
-    hintIndices,
-    letterElements,
-    hintsContainer.native.getElementsByTagName("hint"),
-  );
 }
 
 /** Top of the closest line above `word`, undefined if it's on the first line. */
@@ -368,185 +302,6 @@ async function lineJumpIfWrapped(wordIndex: number): Promise<void> {
   }
 }
 
-function createHintsHtml(
-  incorrectLettersIndices: number[][],
-  activeWordLetters: ElementsWithUtils,
-  input: string | string[],
-): string {
-  // if input is an array, it contains only incorrect letters input.
-  // if input is a string, it contains the whole word input.
-  const isFullWord = typeof input === "string";
-  const inputChars = isFullWord ? Strings.splitIntoCharacters(input) : input;
-
-  let hintsHtml = "";
-  let currentHint = 0;
-
-  for (const adjacentLetters of incorrectLettersIndices) {
-    for (const letterIndex of adjacentLetters) {
-      const letter = activeWordLetters[letterIndex] as ElementWithUtils;
-      const blockIndices = `${letterIndex}`;
-      const blockChars = isFullWord
-        ? inputChars[letterIndex]
-        : inputChars[currentHint++];
-
-      hintsHtml += `<hint data-chars-index=${blockIndices} style="left:${
-        letter.getOffsetLeft() + letter.getOffsetWidth() / 2
-      }px;">${blockChars}</hint>`;
-    }
-  }
-  return hintsHtml;
-}
-
-async function joinOverlappingHints(
-  incorrectLettersIndices: number[][],
-  activeWordLetters: ElementsWithUtils,
-  hintElements: HTMLCollection,
-): Promise<void> {
-  const currentWord = TestWords.words.getCurrent();
-  if (currentWord === undefined) return;
-
-  const [isWordRightToLeft] = Strings.isWordRightToLeft(
-    currentWord.text,
-    isLanguageRightToLeft(),
-    isDirectionReversed(),
-  );
-
-  let previousBlocksAdjacent = false;
-  let currentHintBlock = 0;
-  let HintBlocksCount = hintElements.length;
-  while (currentHintBlock < HintBlocksCount - 1) {
-    const hintBlock1 = hintElements[currentHintBlock] as HTMLElement;
-    const hintBlock2 = hintElements[currentHintBlock + 1] as HTMLElement;
-
-    const block1Indices = hintBlock1.dataset["charsIndex"]?.split(",") ?? [];
-    const block2Indices = hintBlock2.dataset["charsIndex"]?.split(",") ?? [];
-
-    const block1Letter1Indx = parseInt(block1Indices[0] ?? "0");
-    const block2Letter1Indx = parseInt(block2Indices[0] ?? "0");
-
-    const currentBlocksAdjacent = incorrectLettersIndices.some(
-      (adjacentLettersSequence) =>
-        adjacentLettersSequence.includes(block1Letter1Indx) &&
-        adjacentLettersSequence.includes(block2Letter1Indx),
-    );
-
-    if (!currentBlocksAdjacent) {
-      currentHintBlock++;
-      previousBlocksAdjacent = false;
-      continue;
-    }
-
-    const block1Letter1 = activeWordLetters[
-      block1Letter1Indx
-    ] as ElementWithUtils;
-    const block2Letter1 = activeWordLetters[
-      block2Letter1Indx
-    ] as ElementWithUtils;
-
-    const sameTop =
-      block1Letter1.getOffsetTop() === block2Letter1.getOffsetTop();
-
-    const leftBlock = isWordRightToLeft ? hintBlock2 : hintBlock1;
-    const rightBlock = isWordRightToLeft ? hintBlock1 : hintBlock2;
-
-    // block edge is offset half its width because of transform: translate(-50%)
-    const leftBlockEnds = leftBlock.offsetLeft + leftBlock.offsetWidth / 2;
-    const rightBlockStarts = rightBlock.offsetLeft - rightBlock.offsetWidth / 2;
-
-    if (sameTop && leftBlockEnds > rightBlockStarts) {
-      // join hint blocks
-      hintBlock1.dataset["charsIndex"] = [
-        ...block1Indices,
-        ...block2Indices,
-      ].join(",");
-
-      const block1Letter1Pos =
-        block1Letter1.getOffsetLeft() +
-        (isWordRightToLeft ? block1Letter1.getOffsetWidth() : 0);
-      const bothBlocksLettersWidthHalved =
-        hintBlock2.offsetLeft - hintBlock1.offsetLeft;
-      hintBlock1.style.left = `${block1Letter1Pos + bothBlocksLettersWidthHalved}px`;
-
-      hintBlock1.insertAdjacentHTML("beforeend", hintBlock2.innerHTML);
-      hintBlock2.remove();
-
-      // after joining blocks, the sequence is shorter
-      HintBlocksCount--;
-      // check if the newly formed block overlaps with the previous one
-      if (previousBlocksAdjacent && currentHintBlock > 0) currentHintBlock--;
-    } else {
-      currentHintBlock++;
-    }
-    previousBlocksAdjacent = true;
-  }
-}
-
-async function updateHintsPosition(): Promise<void> {
-  if (
-    !isMounted() ||
-    isTestFinished() ||
-    (Config.indicateTypos !== "below" && Config.indicateTypos !== "both")
-  ) {
-    return;
-  }
-
-  let previousHintsContainer: HTMLElement | undefined;
-  let hintIndices: number[][] = [];
-  let hintText: string[] = [];
-
-  const hintElements = document.querySelectorAll<HTMLElement>(".hints > hint");
-
-  for (const hintEl of hintElements) {
-    const hintsContainer = hintEl.parentElement as HTMLElement;
-
-    if (hintsContainer !== previousHintsContainer) {
-      await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
-      previousHintsContainer = hintsContainer;
-      hintIndices = [];
-      hintText = [];
-    }
-
-    const letterIndices = hintEl.dataset["charsIndex"]
-      ?.split(",")
-      .map((index) => parseInt(index));
-
-    if (letterIndices === undefined || letterIndices.length === 0) continue;
-
-    for (const currentLetterIndex of letterIndices) {
-      const lastBlock = hintIndices[hintIndices.length - 1];
-      if (lastBlock?.[lastBlock.length - 1] === currentLetterIndex - 1) {
-        lastBlock.push(currentLetterIndex);
-      } else {
-        hintIndices.push([currentLetterIndex]);
-      }
-    }
-
-    hintText.push(...Strings.splitIntoCharacters(hintEl.innerHTML));
-  }
-  await adjustHintsContainer(previousHintsContainer, hintIndices, hintText);
-
-  async function adjustHintsContainer(
-    hintsContainer: HTMLElement | undefined,
-    hintIndices: number[][],
-    hintText: string[],
-  ): Promise<void> {
-    if (!hintsContainer || hintIndices.length === 0) return;
-
-    const wordElement = new ElementWithUtils(
-      hintsContainer.parentElement as HTMLElement,
-    );
-    const letterElements = wordElement.qsa("letter");
-
-    hintsContainer.innerHTML = createHintsHtml(
-      hintIndices,
-      letterElements,
-      hintText,
-    );
-    const wordHintsElements = wordElement.native.getElementsByTagName("hint");
-    await joinOverlappingHints(hintIndices, letterElements, wordHintsElements);
-  }
-}
-
 // measures #words, so it has to run after TestPage applied the config classes
 function updateLayout(): void {
   // outoffocus applies transition, need to remove it
@@ -558,7 +313,7 @@ function updateLayout(): void {
   }
   updateWordsMargin();
   updateWordsInputPosition();
-  void updateHintsPositionDebounced();
+  invalidateTypoHintsLayout();
   Caret.updatePosition(true);
 
   if (!isInputElementFocused()) {
@@ -574,7 +329,6 @@ function showWords(): void {
     marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
   });
   clearPendingLayout();
-  wordsWithHints.clear();
   laidOutActiveWordIndex = undefined;
 
   if (Config.mode === "zen") {
@@ -1361,7 +1115,6 @@ export function clearWords(): void {
   invalidateAsyncLayout();
   resetWordsRender();
   clearPendingLayout();
-  wordsWithHints.clear();
 }
 
 export function onTestFinish(): void {
@@ -1443,7 +1196,7 @@ export function init(
       () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
         Joining.update("fontSize", wordsEl());
-        void updateHintsPositionDebounced();
+        if (!isTestFinished()) invalidateTypoHintsLayout();
       },
       { defer: true },
     ),
@@ -1458,7 +1211,7 @@ export function init(
       void scrollTape();
     } else {
       void centerActiveLine();
-      void updateHintsPositionDebounced();
+      invalidateTypoHintsLayout();
     }
     setTimeout(() => {
       if (signal.aborted) return;
