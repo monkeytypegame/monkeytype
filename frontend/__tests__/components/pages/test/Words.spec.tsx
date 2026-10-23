@@ -10,6 +10,7 @@ vi.mock("../../../../src/ts/utils/json-data", async (importOriginal) => ({
 import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
+import { setTestFocusState } from "../../../../src/ts/states/test";
 import {
   getLineBreakElements,
   getWordElement,
@@ -87,12 +88,37 @@ afterEach(() => {
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   setConfigStore("blindMode", defaults.blindMode);
+  setConfigStore("showOutOfFocusWarning", defaults.showOutOfFocusWarning);
+  setTestFocusState("focused");
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
 });
 
 describe("Words", () => {
+  describe("out of focus", () => {
+    it("blurs the words, transitioning only opacity and filter", () => {
+      // layout measures font size and margins right after changing them (eg.
+      // font size from the commandline, which unfocuses the test): they must
+      // never transition
+      vi.useFakeTimers();
+      try {
+        setConfigStore("showOutOfFocusWarning", true);
+        const words = renderWords();
+        expect(words.style.transition).toBe("none");
+
+        setTestFocusState("unfocused");
+        // the warning shows after a delay
+        vi.advanceTimersByTime(1000);
+
+        expect(words.classList.contains("blurred")).toBe(true);
+        expect(words.style.transition).toBe("opacity 0.25s, filter 0.25s");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
   it("renders appended words with letters after flush", () => {
     const container = renderWords();
     appendRenderedWord("hello");

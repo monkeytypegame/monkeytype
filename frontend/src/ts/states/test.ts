@@ -35,7 +35,7 @@ export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restart().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// read by TestPage (#words blur), the composition display and OutOfFocusWarning.
+// read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
