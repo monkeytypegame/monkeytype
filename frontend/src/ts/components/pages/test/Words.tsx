@@ -97,7 +97,13 @@ export function Words(props: {
         noErrorBorder: isErrorBorderDisabled(),
         joiningScript: isJoiningScript(),
       })}
-      style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
+      // only what .blurred changes: font size and margins must apply at once,
+      // the layout measures them right away
+      style={{
+        transition: showOutOfFocusWarning()
+          ? "opacity 0.25s, filter 0.25s"
+          : "none",
+      }}
     >
       <For each={wordItems()}>
         {(word) => (
