@@ -223,6 +223,7 @@
 
       &.error {
         border-bottom: 2px solid transparent;
+        text-shadow: none;
       }
     }
     // typed words don't reveal missed letters. :where keeps the specificity
