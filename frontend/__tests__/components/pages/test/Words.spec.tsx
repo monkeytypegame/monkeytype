@@ -15,7 +15,7 @@ import {
   setActiveWord,
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
-  setLayoutHook,
+  onWordsFlushed,
   setWordTyped,
   setWordInput,
   truncateWords,
@@ -148,7 +148,7 @@ describe("Words", () => {
       ]);
     });
 
-    it("runs the layout hook once per flush, after the DOM is updated", () => {
+    it("runs the onWordsFlushed hook once per flush, after the DOM is updated", () => {
       const container = renderWords();
       const seen: (string | undefined)[] = [];
       const hook = vi.fn(() => {
@@ -158,7 +158,7 @@ describe("Words", () => {
           ],
         );
       });
-      const unsetHook = setLayoutHook(hook);
+      const unsetHook = onWordsFlushed(hook);
       appendRenderedWord("a");
       appendRenderedWord("b");
       setActiveWord(1);
@@ -668,7 +668,7 @@ describe("Words", () => {
     it("cancels a pending flush", () => {
       const container = renderWords();
       const hook = vi.fn();
-      const unsetHook = setLayoutHook(hook);
+      const unsetHook = onWordsFlushed(hook);
       appendRenderedWord("a");
       resetWordsRender();
       flush();

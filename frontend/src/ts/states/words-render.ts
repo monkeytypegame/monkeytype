@@ -8,7 +8,7 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  *
  * Writers (input path) only touch a plain buffer. One shared animation frame
  * applies the buffer to the reactive store inside a batch, then runs the
- * registered layout hook against the updated DOM.
+ * onWordsFlushed hook against the updated DOM.
  *
  * Exceptions, applied immediately: the first rendered word/line break indices
  * are only raised by layout code (line jump, tape scroll), so it can measure
@@ -117,21 +117,23 @@ const buffer = createFrameBuffer<Buffer>(
 // set by a reset, consumed by the next flush. Not written to the buffer: that
 // would schedule a flush of no words
 let newWords = false;
-let layoutHook: ((flushed: WordsFlush) => void) | undefined;
+let flushedHook: ((flushed: WordsFlush) => void) | undefined;
 
 /**
  * Runs `hook` after every flush, once the DOM reflects the store. Returns the
  * unregister.
  */
-export function setLayoutHook(hook: (flushed: WordsFlush) => void): () => void {
-  layoutHook = hook;
+export function onWordsFlushed(
+  hook: (flushed: WordsFlush) => void,
+): () => void {
+  flushedHook = hook;
   return () => {
     // a remount may have registered a new hook already
-    if (layoutHook === hook) layoutHook = undefined;
+    if (flushedHook === hook) flushedHook = undefined;
   };
 }
 
-/** Applies the buffer now, then runs the layout hook. */
+/** Applies the buffer now, then runs the onWordsFlushed hook. */
 export function flushWordsRender(): void {
   buffer.flush();
 }
@@ -195,7 +197,7 @@ function applyBuffer(b: Buffer): void {
     updatedWords: [...b.inputs.keys()],
   };
   newWords = false;
-  layoutHook?.(flushed);
+  flushedHook?.(flushed);
 }
 
 /** Input written for a word that hasn't been flushed yet. */

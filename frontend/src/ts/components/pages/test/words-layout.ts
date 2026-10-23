@@ -27,7 +27,7 @@ import {
   isWordRendered,
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
-  setLayoutHook,
+  onWordsFlushed,
   wordsRenderState,
 } from "../../../states/words-render";
 import * as Joining from "../../../test/break-joining";
@@ -790,7 +790,7 @@ export function createWordsLayout(options: {
 
   onCleanup(
     // runs after each words flush, like an event handler
-    setLayoutHook(({ newWords, wordChange, updatedWords }) => {
+    onWordsFlushed(({ newWords, wordChange, updatedWords }) => {
       if (newWords) {
         resetIfReplaced();
         relayout();
