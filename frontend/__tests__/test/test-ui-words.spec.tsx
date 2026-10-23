@@ -1,4 +1,4 @@
-import { createRoot } from "solid-js";
+import { batch, createRoot } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -313,41 +313,57 @@ describe("test-ui words rendering", () => {
       expect(caretUpdatePosition).not.toHaveBeenCalledWith(false);
     });
 
-    it("drops a line jump still animating when the test restarts", async () => {
-      configTesting.replaceConfig({
-        mode: "words",
-        tapeMode: "off",
-        showAllLines: false,
-        smoothLineScroll: true,
-      });
-      const completions: (() => void)[] = [];
-      const cancel = vi.fn();
-      vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
-        (params) => {
-          completions.push(() => {
-            params.onComplete?.({} as never, {} as never);
-          });
-          return { cancel } as never;
-        },
-      );
-      const { words } = mount();
-      startTest(20);
+    it.each([
+      ["", false],
+      [" inside a batch", true],
+    ])(
+      "drops a line jump still animating when the test restarts%s",
+      async (_, inBatch) => {
+        configTesting.replaceConfig({
+          mode: "words",
+          tapeMode: "off",
+          showAllLines: false,
+          smoothLineScroll: true,
+        });
+        const completions: (() => void)[] = [];
+        const cancel = vi.fn();
+        vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
+          (params) => {
+            completions.push(() => {
+              params.onComplete?.({} as never, {} as never);
+            });
+            return { cancel } as never;
+          },
+        );
+        const { words } = mount();
+        startTest(20);
 
-      // to the third line: starts the animated jump hiding the first line
-      for (let i = 0; i < 10; i++) await goForward();
-      expect(completions).toHaveLength(1);
+        // to the third line: starts the animated jump hiding the first line
+        for (let i = 0; i < 10; i++) await goForward();
+        expect(completions).toHaveLength(1);
 
-      startTest(20);
-      expect(cancel).toHaveBeenCalled();
-      // the stale animation completes anyway
-      for (const complete of completions) complete();
-      await new Promise((resolve) => setTimeout(resolve, 0));
+        // a batch defers Words' reset effect past the restart's flush
+        if (inBatch) batch(() => startTest(20));
+        else startTest(20);
+        expect(cancel).toHaveBeenCalled();
+        // the stale animation completes anyway
+        for (const complete of completions) complete();
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(childClasses(words)[0]).toBe("word0");
-      expect(isWordRendered(0)).toBe(true);
-      expect(activeWordIndex(words)).toBe("0");
-      expect(words.style.marginTop).toBe("0px");
-    });
+        expect(childClasses(words)[0]).toBe("word0");
+        expect(isWordRendered(0)).toBe(true);
+        expect(activeWordIndex(words)).toBe("0");
+        expect(words.style.marginTop).toBe("0px");
+
+        // the new words are laid out from their first word on
+        joiningSet.mockClear();
+        await goForward();
+        const brokenWords = joiningSet.mock.calls
+          .filter(([, broken]) => broken === true)
+          .map(([el]) => (el as ElementWithUtils).native.dataset["wordindex"]);
+        expect(brokenWords).toEqual(["0"]);
+      },
+    );
   });
 
   describe("overflow guard", () => {

@@ -1,11 +1,14 @@
 import {
+  createEffect,
   createMemo,
   createSelector,
   For,
   JSXElement,
   onCleanup,
+  on,
   onMount,
   Show,
+  untrack,
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
@@ -76,6 +79,19 @@ export function Words(props: {
   onCleanup(mountWordsLayout(layout));
   // drops a line jump still animating
   onCleanup(() => layout.reset());
+  // the words were replaced: drops async layout started for the old ones.
+  // Also run by the new words' flush, in case the effect is deferred past it
+  // (reset inside a batch)
+  let resetGeneration = untrack(() => wordsRenderState.generation);
+  const resetIfReplaced = (): void => {
+    const generation = untrack(() => wordsRenderState.generation);
+    if (generation === resetGeneration) return;
+    resetGeneration = generation;
+    layout.reset();
+  };
+  createEffect(
+    on(() => wordsRenderState.generation, resetIfReplaced, { defer: true }),
+  );
 
   // measures #words, so it has to run after the config classes are applied
   const relayout = (): void => {
@@ -92,6 +108,7 @@ export function Words(props: {
       // oxlint-disable-next-line solid/reactivity
       setLayoutHook(({ newWords, wordChange, updatedWords }) => {
         if (newWords) {
+          resetIfReplaced();
           relayout();
           // the caret snaps to the new words
           layout.layout({

@@ -147,7 +147,6 @@ function updateLayout(): void {
 }
 
 function showWords(): void {
-  wordsLayout().reset();
   resetWordsRender({
     zen: Config.mode === "zen",
     marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
@@ -415,7 +414,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 /** Frees the test words DOM once the result is shown. */
 export function clearWords(): void {
-  wordsLayoutRef?.reset();
   resetWordsRender();
 }
 

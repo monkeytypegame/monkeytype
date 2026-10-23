@@ -53,6 +53,8 @@ type WordsRenderState = {
    * direction is checked per letter or reversed. Fixed per test at reset
    */
   marksRtlWords: boolean;
+  /** bumped by every reset: the words were replaced */
+  generation: number;
 };
 
 const [store, setStore] = createStore<WordsRenderState>({
@@ -63,6 +65,7 @@ const [store, setStore] = createStore<WordsRenderState>({
   renderedActiveWordIndex: 0,
   rendersLettersFromInput: false,
   marksRtlWords: false,
+  generation: 0,
 });
 
 /** Read-only reactive view for the Words component. */
@@ -299,5 +302,6 @@ export function resetWordsRender(
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
     marksRtlWords: options.marksRtlWords ?? false,
+    generation: store.generation + 1,
   });
 }
