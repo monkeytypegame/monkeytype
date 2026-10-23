@@ -1,5 +1,5 @@
 import { isOnline, showOfflineBanner } from "../states/connection";
-import { Config, getConfig } from "../config/store";
+import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
@@ -9,7 +9,6 @@ import * as ResultWordHighlight from "../components/pages/test/result/result-wor
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
-import { convertRemToPixels } from "../utils/numbers";
 import * as PaceCaret from "./pace-caret";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
@@ -17,14 +16,13 @@ import * as Focus from "../test/focus";
 import {
   blurInputElement,
   focusInputElement,
-  getInputElement,
   isInputElementFocused,
+  keepWordsInputInTheCenter,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementWithUtils } from "../utils/dom";
-import { getWordElement as getRenderedWordElement } from "../states/word-elements";
 import {
   replaceWords,
   setActiveWord,
@@ -36,7 +34,6 @@ import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
   isRtlCheckedByLetter,
-  isTestRightToLeft,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
@@ -50,12 +47,11 @@ import {
   highlightKeymapKey,
   setWordsInputPosition,
 } from "../states/test";
-import { createEffect, on, untrack } from "solid-js";
+import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 // rendered by TestPage, registered via init() on every mount
-let wordsWrapperRef: ElementWithUtils | undefined;
 let typingTestRef: ElementWithUtils | undefined;
 // rendered by TestResult, registered while it's mounted
 let resultRef: ElementWithUtils | undefined;
@@ -67,13 +63,6 @@ export function setResultElement(el: ElementWithUtils | undefined): void {
 /** Whether TestPage is mounted. Not reactive. */
 export function isMounted(): boolean {
   return untrack(isTestPageMounted);
-}
-
-function wordsWrapperEl(): ElementWithUtils {
-  if (wordsWrapperRef === undefined) {
-    throw new Error("#wordsWrapper not mounted");
-  }
-  return wordsWrapperRef;
 }
 
 function typingTestEl(): ElementWithUtils {
@@ -91,62 +80,6 @@ export function focusWords(force = false): void {
   } else {
     Misc.scrollToCenterOrTop(typingTestEl().native);
   }
-}
-
-export function keepWordsInputInTheCenter(force = false): void {
-  if (!isMounted()) return;
-  const wordsInput = getInputElement();
-
-  const wordsWrapperHeight = wordsWrapperEl().getOffsetHeight();
-  const windowHeight = window.innerHeight;
-
-  // dont do anything if the wrapper can fit on screen
-  if (wordsWrapperHeight < windowHeight) return;
-
-  const wordsInputRect = wordsInput.getBoundingClientRect();
-  const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
-
-  // dont do anything if its above or at the center unless forced
-  if (!wordsInputBelowCenter && !force) return;
-
-  wordsInput.scrollIntoView({
-    block: "center",
-  });
-}
-
-export function updateWordsInputPosition(): void {
-  if (!isMounted()) return;
-  const el = getInputElement();
-
-  const activeWordEl = getRenderedWordElement(getActiveWordIndex());
-  if (activeWordEl === undefined) {
-    setWordsInputPosition((position) => ({ ...position, top: 0, left: 0 }));
-    return;
-  }
-  const activeWord = new ElementWithUtils(activeWordEl);
-
-  const letterHeight = convertRemToPixels(Config.fontSize);
-  const top =
-    activeWord.getOffsetTop() + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
-
-  const maxWidth =
-    Config.tapeMode !== "off" ? 100 - Config.tapeMargin : undefined;
-  const width = Math.max(activeWord.getOffsetWidth(), letterHeight);
-
-  let left: number;
-  if (Config.tapeMode !== "off") {
-    left = wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100);
-  } else if (
-    activeWord.getOffsetWidth() < letterHeight &&
-    isTestRightToLeft()
-  ) {
-    left = activeWord.getOffsetLeft() - letterHeight;
-  } else {
-    left = Math.max(0, activeWord.getOffsetLeft());
-  }
-
-  // WordsInput keeps it in the center once applied
-  setWordsInputPosition({ top, left, width, maxWidth });
 }
 
 // buffered, rendered in the next words frame
@@ -368,34 +301,16 @@ export function onTestFinish(): void {
  */
 export function init(
   refs: {
-    wordsWrapper: ElementWithUtils;
     typingTest: ElementWithUtils;
   },
   signal: AbortSignal,
 ): void {
-  wordsWrapperRef = refs.wordsWrapper;
   typingTestRef = refs.typingTest;
   signal.addEventListener("abort", () => {
     // a remount may have registered new elements already
-    if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
   markTestPageMounted(signal);
-
-  // configEvent fires before the config store updates, so DOM reactions live
-  // here instead - they run after TestPage's bindings picked up the new config
-  createEffect(
-    on(
-      () => getConfig.highlightMode,
-      () =>
-        updateWordLetters({
-          input: getCurrentInput(),
-          wordIndex: getActiveWordIndex(),
-          compositionData: getCompositionData(),
-        }),
-      { defer: true },
-    ),
-  );
 
   // autofocus the words when typing anywhere on the page
   document.addEventListener("keydown", autofocusWords, { signal });

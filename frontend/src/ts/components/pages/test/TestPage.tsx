@@ -94,7 +94,6 @@ export function TestPage(): JSXElement {
 
     TestUI.init(
       {
-        wordsWrapper,
         typingTest: new ElementWithUtils(typingTestRef),
       },
       signal,
@@ -222,10 +221,7 @@ export function TestPage(): JSXElement {
             class="full-width default"
             style={{ "font-size": fontSize() }}
           ></div>
-          <Words
-            wordsWrapperRef={() => wordsWrapperRef}
-            onActiveWordLaidOut={TestUI.updateWordsInputPosition}
-          />
+          <Words wordsWrapperRef={() => wordsWrapperRef} />
         </div>
 
         <div>

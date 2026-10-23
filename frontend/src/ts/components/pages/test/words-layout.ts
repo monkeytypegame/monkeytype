@@ -4,7 +4,10 @@ import { createEffect, on, onCleanup } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
-import { isInputElementFocused } from "../../../input/input-element";
+import {
+  findInputElement,
+  isInputElementFocused,
+} from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
@@ -13,6 +16,7 @@ import {
   isTestRightToLeft,
   setOutOfFocusMaxHeight,
   setTestFocusState,
+  setWordsInputPosition,
   setWordsWrapperHidden,
   wordsHaveNewline,
 } from "../../../states/test";
@@ -37,6 +41,7 @@ import * as CustomText from "../../../test/custom-text";
 import { getCurrentInput } from "../../../test/events/data";
 import * as PaceCaret from "../../../test/pace-caret";
 import { ElementWithUtils } from "../../../utils/dom";
+import { convertRemToPixels } from "../../../utils/numbers";
 import * as Strings from "../../../utils/strings";
 
 type WordChange = "forward" | "back" | "initial";
@@ -236,8 +241,6 @@ export function wouldActiveWordOverflow(
 export function createWordsLayout(options: {
   words: () => HTMLElement | undefined;
   wordsWrapper: () => HTMLElement | undefined;
-  /** the active word got its final position (after line jump/tape scroll) */
-  onActiveWordLaidOut: () => void;
 }): void {
   function wordsEl(): ElementWithUtils {
     const el = options.words();
@@ -249,6 +252,44 @@ export function createWordsLayout(options: {
     const el = options.wordsWrapper();
     if (el === undefined) throw new Error("#wordsWrapper not mounted");
     return new ElementWithUtils(el);
+  }
+
+  /**
+   * Moves the words input onto the active word, once it got its final position
+   * (after line jump/tape scroll).
+   */
+  function positionWordsInput(): void {
+    const input = findInputElement();
+    if (input === undefined) return;
+
+    const activeWord = getActiveWordElement();
+    if (activeWord === null) {
+      setWordsInputPosition((position) => ({ ...position, top: 0, left: 0 }));
+      return;
+    }
+
+    const letterHeight = convertRemToPixels(Config.fontSize);
+    const top =
+      activeWord.getOffsetTop() + letterHeight / 2 - input.offsetHeight / 2 + 1; //+1 for half of border
+
+    const maxWidth =
+      Config.tapeMode !== "off" ? 100 - Config.tapeMargin : undefined;
+    const width = Math.max(activeWord.getOffsetWidth(), letterHeight);
+
+    let left: number;
+    if (Config.tapeMode !== "off") {
+      left = wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100);
+    } else if (
+      activeWord.getOffsetWidth() < letterHeight &&
+      isTestRightToLeft()
+    ) {
+      left = activeWord.getOffsetLeft() - letterHeight;
+    } else {
+      left = Math.max(0, activeWord.getOffsetLeft());
+    }
+
+    // WordsInput keeps it in the center once applied
+    setWordsInputPosition({ top, left, width, maxWidth });
   }
 
   let activeWordTop = 0;
@@ -338,7 +379,7 @@ export function createWordsLayout(options: {
       await scrollTape();
     }
 
-    options.onActiveWordLaidOut();
+    positionWordsInput();
   }
 
   async function lineJumpIfWrapped(wordIndex: number): Promise<void> {
@@ -744,7 +785,7 @@ export function createWordsLayout(options: {
     updateWordsMargin();
     invalidateTypoHintsLayout();
     Caret.updatePosition(true);
-    options.onActiveWordLaidOut();
+    positionWordsInput();
     if (!isInputElementFocused()) setTestFocusState("unfocused");
   }
 
@@ -851,7 +892,7 @@ export function createWordsLayout(options: {
       await centering;
     }
     if (generation !== layoutGeneration) return;
-    options.onActiveWordLaidOut();
+    positionWordsInput();
   });
   window.addEventListener("resize", resized);
   onCleanup(() => {

@@ -87,12 +87,7 @@ function mount(): {
   const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
   if (input === null) throw new Error("WordsInput not mounted");
   const disposeWords = render(
-    () => (
-      <Words
-        wordsWrapperRef={() => wordsWrapper}
-        onActiveWordLaidOut={TestUI.updateWordsInputPosition}
-      />
-    ),
+    () => <Words wordsWrapperRef={() => wordsWrapper} />,
     wordsWrapper,
   );
   const words = wordsWrapper.querySelector<HTMLElement>("#words");
@@ -102,7 +97,6 @@ function mount(): {
   createRoot((dispose) => {
     TestUI.init(
       {
-        wordsWrapper: new ElementWithUtils(wordsWrapper),
         typingTest: new ElementWithUtils(typingTest),
       },
       controller.signal,

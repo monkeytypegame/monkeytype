@@ -5,6 +5,7 @@ import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
 import { getConfig } from "../../../config/store";
 import {
   isInputElementFocused,
+  keepWordsInputInTheCenter,
   registerInputElement,
 } from "../../../input/input-element";
 import {
@@ -26,7 +27,6 @@ import {
   wordsInputPosition,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
-import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 
 /**
@@ -44,7 +44,7 @@ export function WordsInput(): JSXElement {
 
   // runs after the style binding: measures the applied position
   createEffect(
-    on(wordsInputPosition, () => TestUI.keepWordsInputInTheCenter(), {
+    on(wordsInputPosition, () => keepWordsInputInTheCenter(), {
       defer: true,
     }),
   );

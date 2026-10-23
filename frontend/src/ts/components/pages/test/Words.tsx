@@ -52,14 +52,12 @@ export function wordsModeClasses(): Record<string, boolean> {
 /** Renders #words with the test words, and lays them out. */
 export function Words(props: {
   wordsWrapperRef?: () => HTMLElement | undefined;
-  onActiveWordLaidOut?: () => void;
 }): JSXElement {
   let wordsRef: HTMLDivElement | undefined;
   // reads its elements lazily, they mount after it
   createWordsLayout({
     words: () => wordsRef,
     wordsWrapper: () => props.wordsWrapperRef?.(),
-    onActiveWordLaidOut: () => props.onActiveWordLaidOut?.(),
   });
 
   const isActive = createSelector(
