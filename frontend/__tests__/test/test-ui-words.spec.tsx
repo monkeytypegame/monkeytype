@@ -34,9 +34,11 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
   updatePosition: caretUpdatePosition,
 }));
 
-import type { WordsLayout } from "../../src/ts/components/pages/test/words-layout";
-
 import { Words } from "../../src/ts/components/pages/test/Words";
+import {
+  wouldActiveWordOverflow,
+  type WordsLayout,
+} from "../../src/ts/components/pages/test/words-layout";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { registerInputElement } from "../../src/ts/input/input-element";
 import {
@@ -361,13 +363,13 @@ describe("test-ui words rendering", () => {
       mountTwoLetterWords(10);
       // to the last word of the first line, laid out
       for (let i = 0; i < 4; i++) await goForward();
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
 
       // to the first word of the second line, same frame
       increaseActiveWordIndex();
       void TestUI.afterTestWordChange("forward");
 
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(false);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
     });
 
     it("blocks the extra letter while the active word isn't rendered yet", () => {
@@ -376,7 +378,7 @@ describe("test-ui words rendering", () => {
       appendRenderedWord("ab");
       void TestUI.afterTestWordChange("forward");
 
-      expect(TestUI.wouldActiveWordOverflow("ab", "c")).toBe(true);
+      expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
     });
   });
 

@@ -80,6 +80,31 @@ export type WordsLayout = {
   wouldActiveWordOverflow(inputValue: string, data: string): boolean;
 };
 
+// the mounted Words' layout, for queries from the input path
+let mountedLayout: WordsLayout | undefined;
+
+/** Makes `layout` the mounted one. Returns the unmount. */
+export function mountWordsLayout(layout: WordsLayout): () => void {
+  mountedLayout = layout;
+  return () => {
+    // a remount may have mounted a new layout already
+    if (mountedLayout === layout) mountedLayout = undefined;
+  };
+}
+
+/**
+ * Whether appending `data` to the active word would push it onto the next line
+ * or wrap its letters. Expensive - causes layout reflows.
+ */
+export function wouldActiveWordOverflow(
+  inputValue: string,
+  data: string,
+): boolean {
+  // not mounted: nothing to type into, block
+  if (mountedLayout === undefined) return true;
+  return mountedLayout.wouldActiveWordOverflow(inputValue, data);
+}
+
 export function createWordsLayout(options: {
   words: () => HTMLElement | undefined;
   wordsWrapper: () => HTMLElement | undefined;

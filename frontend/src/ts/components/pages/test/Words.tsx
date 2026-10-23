@@ -28,7 +28,11 @@ import {
 } from "../../../states/words-render";
 import { cn } from "../../../utils/cn";
 import { Word } from "./Word";
-import { createWordsLayout, WordsLayout } from "./words-layout";
+import {
+  createWordsLayout,
+  mountWordsLayout,
+  WordsLayout,
+} from "./words-layout";
 
 function prefixedClass(
   prefix: string,
@@ -66,6 +70,7 @@ export function Words(props: {
   // handed out once, like a ref
   // oxlint-disable-next-line solid/reactivity
   props.onLayout?.(layout);
+  onCleanup(mountWordsLayout(layout));
   // drops a line jump still animating
   onCleanup(() => layout.reset());
 

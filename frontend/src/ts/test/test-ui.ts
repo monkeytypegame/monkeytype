@@ -268,19 +268,6 @@ function updateWordLetters({
   pendingUpdatedWords.add(wordIndex);
 }
 
-/**
- * Whether appending `data` to the active word would push it onto the next line
- * or wrap its letters. Expensive - causes layout reflows.
- */
-export function wouldActiveWordOverflow(
-  inputValue: string,
-  data: string,
-): boolean {
-  // not mounted: nothing to type into, block
-  if (wordsLayoutRef === undefined) return true;
-  return wordsLayoutRef.wouldActiveWordOverflow(inputValue, data);
-}
-
 // this means input, delete or composition
 function afterAnyTestInput(
   type: "textInput" | "delete" | "compositionUpdate",
