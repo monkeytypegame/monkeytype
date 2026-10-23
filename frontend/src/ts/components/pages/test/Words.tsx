@@ -10,6 +10,7 @@ import {
   Show,
   untrack,
 } from "solid-js";
+import { debounce } from "throttle-debounce";
 
 import { getConfig } from "../../../config/store";
 import { isInputElementFocused } from "../../../input/input-element";
@@ -143,6 +144,16 @@ export function Words(props: {
   );
 
   onMount(() => {
+    const resized = debounce(250, () => {
+      if (isTestFinished()) return;
+      layout.resized();
+    });
+    window.addEventListener("resize", resized);
+    onCleanup(() => {
+      window.removeEventListener("resize", resized);
+      resized.cancel();
+    });
+
     onCleanup(
       // runs after each words flush, like an event handler
       // oxlint-disable-next-line solid/reactivity

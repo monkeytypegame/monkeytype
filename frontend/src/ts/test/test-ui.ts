@@ -72,11 +72,6 @@ export function isMounted(): boolean {
   return untrack(isTestPageMounted);
 }
 
-function wordsLayout(): WordsLayout {
-  if (wordsLayoutRef === undefined) throw new Error("#words not mounted");
-  return wordsLayoutRef;
-}
-
 function wordsWrapperEl(): ElementWithUtils {
   if (wordsWrapperRef === undefined) {
     throw new Error("#wordsWrapper not mounted");
@@ -453,7 +448,7 @@ export function init(
 
   const recenter = debounce(250, () => {
     if (isTestFinished()) return;
-    wordsLayout().resized();
+    // after Words laid out the resize
     setTimeout(() => {
       if (signal.aborted) return;
       updateWordsInputPosition();
