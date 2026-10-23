@@ -328,6 +328,13 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
 
+/** Whether the test reads right to left: the language, unless reversed. */
+export function isTestRightToLeft(): boolean {
+  return isDirectionReversed()
+    ? !isLanguageRightToLeft()
+    : isLanguageRightToLeft();
+}
+
 /** zen, custom and polyglot words can mix directions: check per letter */
 export function isRtlCheckedByLetter(): boolean {
   return (

@@ -1,28 +1,20 @@
 import {
-  createEffect,
   createMemo,
   createSelector,
   For,
   JSXElement,
   onCleanup,
-  on,
   onMount,
   Show,
-  untrack,
 } from "solid-js";
-import { debounce } from "throttle-debounce";
 
 import { getConfig } from "../../../config/store";
-import { isInputElementFocused } from "../../../input/input-element";
-import { getFontPreview } from "../../../states/font";
 import {
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
   isReadAheadDisabled,
-  isTestFinished,
   isWordsHidden,
-  setTestFocusState,
   showOutOfFocusWarning,
 } from "../../../states/test";
 import {
@@ -31,14 +23,12 @@ import {
 } from "../../../states/word-elements";
 import {
   firstMountedIndex,
-  invalidateTypoHintsLayout,
   isWordRendered,
-  setLayoutHook,
   wordsRenderState,
 } from "../../../states/words-render";
 import { cn } from "../../../utils/cn";
 import { Word } from "./Word";
-import { createWordsLayout, mountWordsLayout } from "./words-layout";
+import { createWordsLayout } from "./words-layout";
 
 function prefixedClass(
   prefix: string,
@@ -59,110 +49,17 @@ export function wordsModeClasses(): Record<string, boolean> {
   };
 }
 
-/** Renders #words with the test words, and lays them out (WordsLayout). */
+/** Renders #words with the test words, and lays them out. */
 export function Words(props: {
   wordsWrapperRef?: () => HTMLElement | undefined;
   onActiveWordLaidOut?: () => void;
 }): JSXElement {
   let wordsRef: HTMLDivElement | undefined;
   // reads its elements lazily, they mount after it
-  const layout = createWordsLayout({
+  createWordsLayout({
     words: () => wordsRef,
     wordsWrapper: () => props.wordsWrapperRef?.(),
     onActiveWordLaidOut: () => props.onActiveWordLaidOut?.(),
-  });
-  onCleanup(mountWordsLayout(layout));
-  // drops a line jump still animating
-  onCleanup(() => layout.reset());
-  // the words were replaced: drops async layout started for the old ones.
-  // Also run by the new words' flush, in case the effect is deferred past it
-  // (reset inside a batch)
-  let resetGeneration = untrack(() => wordsRenderState.generation);
-  const resetIfReplaced = (): void => {
-    const generation = untrack(() => wordsRenderState.generation);
-    if (generation === resetGeneration) return;
-    resetGeneration = generation;
-    layout.reset();
-  };
-  createEffect(
-    on(() => wordsRenderState.generation, resetIfReplaced, { defer: true }),
-  );
-
-  // measures #words, so it has to run after the config classes are applied
-  const relayout = (): void => {
-    // lay out unblurred, the out of focus state is restored below
-    setTestFocusState("focused");
-    layout.relayout();
-    props.onActiveWordLaidOut?.();
-    if (!isInputElementFocused()) setTestFocusState("unfocused");
-  };
-
-  // effects run after the bindings, so the new config classes are applied
-  createEffect(
-    on(
-      () => [
-        getConfig.highlightMode,
-        getConfig.typedEffect,
-        getConfig.blindMode,
-        getConfig.indicateTypos,
-        getConfig.tapeMode,
-        getConfig.hideExtraLetters,
-        getConfig.flipTestColors,
-        getConfig.colorfulMode,
-        getConfig.showAllLines,
-        getConfig.fontSize,
-        getConfig.maxLineWidth,
-        getConfig.tapeMargin,
-      ],
-      relayout,
-      { defer: true },
-    ),
-  );
-  createEffect(
-    on(() => getConfig.typedEffect, layout.typedEffectChanged, {
-      defer: true,
-    }),
-  );
-  createEffect(
-    on(
-      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
-      () => {
-        layout.fontChanged();
-        if (!isTestFinished()) invalidateTypoHintsLayout();
-      },
-      { defer: true },
-    ),
-  );
-
-  onMount(() => {
-    const resized = debounce(250, () => {
-      if (isTestFinished()) return;
-      layout.resized();
-    });
-    window.addEventListener("resize", resized);
-    onCleanup(() => {
-      window.removeEventListener("resize", resized);
-      resized.cancel();
-    });
-
-    onCleanup(
-      // runs after each words flush, like an event handler
-      // oxlint-disable-next-line solid/reactivity
-      setLayoutHook(({ newWords, wordChange, updatedWords }) => {
-        if (newWords) {
-          resetIfReplaced();
-          relayout();
-          // the caret snaps to the new words
-          layout.layout({
-            wordChange: "initial",
-            updatedWords,
-            snapCaret: true,
-          });
-        } else {
-          layout.layout({ wordChange, updatedWords, snapCaret: false });
-        }
-      }),
-    );
   });
 
   const isActive = createSelector(

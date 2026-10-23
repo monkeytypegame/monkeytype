@@ -1,13 +1,18 @@
 import type { JSAnimation } from "animejs";
 
-import { Config } from "../../../config/store";
+import { createEffect, on, onCleanup, untrack } from "solid-js";
+import { debounce } from "throttle-debounce";
+
+import { Config, getConfig } from "../../../config/store";
+import { isInputElementFocused } from "../../../input/input-element";
+import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
-  isDirectionReversed,
-  isLanguageRightToLeft,
   isSlowTimer,
   isTestFinished,
+  isTestRightToLeft,
   setOutOfFocusMaxHeight,
+  setTestFocusState,
   setWordsWrapperHidden,
   wordsHaveNewline,
 } from "../../../states/test";
@@ -22,6 +27,7 @@ import {
   isWordRendered,
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
+  setLayoutHook,
   wordsRenderState,
 } from "../../../states/words-render";
 import * as Joining from "../../../test/break-joining";
@@ -30,7 +36,6 @@ import * as CustomText from "../../../test/custom-text";
 import { getCurrentInput } from "../../../test/events/data";
 import * as PaceCaret from "../../../test/pace-caret";
 import { ElementWithUtils } from "../../../utils/dom";
-import * as Misc from "../../../utils/misc";
 import * as Strings from "../../../utils/strings";
 
 export type WordChange = "forward" | "back" | "initial";
@@ -52,45 +57,10 @@ function isLineBreak(item: LayoutItem): item is LineBreakItem {
   return item.kind === "lineBreak";
 }
 
-/**
- * Layout of the test words (#words): line jump, tape scroll, the words
- * wrapper's height. Created and driven by the Words component: words flushes,
- * config changes, resizes.
- */
-export type WordsLayout = {
-  /** A words flush landed: lays out the word change and the updated words. */
-  layout(change: {
-    wordChange?: WordChange;
-    updatedWords: number[];
-    /** restart flush: the caret snaps to the new words */
-    snapCaret: boolean;
-  }): void;
-  /** New words or a config change: lays everything out from scratch. */
-  relayout(): void;
-  /** The window was resized. */
-  resized(): void;
-  fontChanged(): void;
-  typedEffectChanged(): void;
-  /** The words are replaced: drops async layout started for the old ones. */
-  reset(): void;
-  /**
-   * Whether appending `data` to the active word would push it onto the next
-   * line or wrap its letters. Expensive - causes layout reflows.
-   */
-  wouldActiveWordOverflow(inputValue: string, data: string): boolean;
-};
-
-// the mounted Words' layout, for queries from the input path
-let mountedLayout: WordsLayout | undefined;
-
-/** Makes `layout` the mounted one. Returns the unmount. */
-export function mountWordsLayout(layout: WordsLayout): () => void {
-  mountedLayout = layout;
-  return () => {
-    // a remount may have mounted a new layout already
-    if (mountedLayout === layout) mountedLayout = undefined;
-  };
-}
+// the mounted words layout's overflow check, for the input path
+let activeWordOverflowCheck:
+  | ((inputValue: string, data: string) => boolean)
+  | undefined;
 
 /**
  * Whether appending `data` to the active word would push it onto the next line
@@ -101,16 +71,21 @@ export function wouldActiveWordOverflow(
   data: string,
 ): boolean {
   // not mounted: nothing to type into, block
-  if (mountedLayout === undefined) return true;
-  return mountedLayout.wouldActiveWordOverflow(inputValue, data);
+  if (activeWordOverflowCheck === undefined) return true;
+  return activeWordOverflowCheck(inputValue, data);
 }
 
+/**
+ * Lays out the test words (#words): line jump, tape scroll, the words
+ * wrapper's height. Reacts to words flushes, config changes and resizes until
+ * its owner (the Words component) is disposed.
+ */
 export function createWordsLayout(options: {
   words: () => HTMLElement | undefined;
   wordsWrapper: () => HTMLElement | undefined;
   /** the active word got its final position (after line jump/tape scroll) */
   onActiveWordLaidOut: () => void;
-}): WordsLayout {
+}): void {
   function wordsEl(): ElementWithUtils {
     const el = options.words();
     if (el === undefined) throw new Error("#words not mounted");
@@ -145,12 +120,6 @@ export function createWordsLayout(options: {
     lineJumpAnimation = undefined;
     currentLinesJumping = 0;
     lineTransition = false;
-  }
-
-  function isTestRightToLeft(): boolean {
-    return isDirectionReversed()
-      ? !isLanguageRightToLeft()
-      : isLanguageRightToLeft();
   }
 
   function getWordElement(index: number): ElementWithUtils | null {
@@ -302,31 +271,19 @@ export function createWordsLayout(options: {
   }
 
   async function centerActiveLine(): Promise<void> {
-    if (Config.showAllLines) {
-      return;
-    }
+    if (Config.showAllLines) return;
+    centeringActiveLine = jumpToActiveLine();
+    await centeringActiveLine;
+  }
 
-    const { resolve, promise } = Misc.promiseWithResolvers();
-    centeringActiveLine = promise;
-
+  async function jumpToActiveLine(): Promise<void> {
     const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) {
-      resolve();
-      return;
-    }
-    const currentTop = activeWordEl.getOffsetTop();
-
-    let previousLineTop = currentTop;
-    for (let i = getActiveWordIndex() - 1; i >= 0; i--) {
-      previousLineTop = getWordElement(i)?.getOffsetTop() ?? currentTop;
-      if (previousLineTop < currentTop) {
-        await lineJump(previousLineTop, true);
-        resolve();
-        return;
-      }
-    }
-
-    resolve();
+    if (!activeWordEl) return;
+    const lineAboveTop = getLineAboveTop(
+      getActiveWordIndex(),
+      activeWordEl.getOffsetTop(),
+    );
+    if (lineAboveTop !== undefined) await lineJump(lineAboveTop, true);
   }
 
   function updateWordsWrapperHeight(force = false): void {
@@ -767,90 +724,180 @@ export function createWordsLayout(options: {
     return { top, height };
   }
 
-  return {
-    layout({ wordChange, updatedWords, snapCaret }) {
-      if (wordChange !== undefined) {
-        void layoutActiveWord(wordChange);
-      } else if (updatedWords.length > 0 && Config.tapeMode !== "off") {
-        void scrollTape();
-      }
-      for (const wordIndex of updatedWords) {
-        void lineJumpIfWrapped(wordIndex);
-      }
-      Caret.updatePosition(snapCaret);
-    },
+  /** A words flush landed: lays out the word change and the updated words. */
+  function layout(change: {
+    wordChange?: WordChange;
+    updatedWords: number[];
+    /** restart flush: the caret snaps to the new words */
+    snapCaret: boolean;
+  }): void {
+    if (change.wordChange !== undefined) {
+      void layoutActiveWord(change.wordChange);
+    } else if (change.updatedWords.length > 0 && Config.tapeMode !== "off") {
+      void scrollTape();
+    }
+    for (const wordIndex of change.updatedWords) {
+      void lineJumpIfWrapped(wordIndex);
+    }
+    Caret.updatePosition(change.snapCaret);
+  }
 
-    relayout() {
-      updateWordsWrapperHeight(true);
-      if (!Config.showAllLines) {
-        void centerActiveLine();
-      }
-      updateWordsMargin();
-      invalidateTypoHintsLayout();
-      Caret.updatePosition(true);
-    },
+  /**
+   * New words or a config change: lays everything out from scratch. Measures
+   * #words, so it has to run after the config classes are applied.
+   */
+  function relayout(): void {
+    // lay out unblurred, the out of focus state is restored below
+    setTestFocusState("focused");
+    updateWordsWrapperHeight(true);
+    void centerActiveLine();
+    updateWordsMargin();
+    invalidateTypoHintsLayout();
+    Caret.updatePosition(true);
+    options.onActiveWordLaidOut();
+    if (!isInputElementFocused()) setTestFocusState("unfocused");
+  }
 
-    resized() {
-      if (Config.tapeMode !== "off") {
-        void scrollTape();
-      } else {
-        void centerActiveLine();
-        invalidateTypoHintsLayout();
-      }
-    },
+  /** The words are replaced: drops async layout started for the old ones. */
+  function reset(): void {
+    invalidateAsyncLayout();
+    wordsEl().setStyle({ marginTop: "0" });
+    currentTestLine = 0;
+    laidOutActiveWordIndex = undefined;
+  }
 
-    fontChanged() {
-      Joining.update("fontSize", wordsEl());
-      // letter widths changed once the new font is applied (next frame) and
-      // loaded (async)
-      const generation = layoutGeneration;
-      requestAnimationFrame(() => {
-        void document.fonts.ready.then(() => {
-          // words reset (restart, unmount) or the test ended meanwhile
-          if (generation !== layoutGeneration || isTestFinished()) return;
-          Caret.updatePosition(true);
-        });
-      });
-    },
+  function wouldOverflow(inputValue: string, data: string): boolean {
+    const activeWordIndex = getActiveWordIndex();
+    const activeWord = getActiveWordElement();
+    // Active word not rendered yet (word change and append in the same
+    // frame). Rendering here would put a reactive render on the input path,
+    // so assume the worst: this guard only runs for extra letters, blocking
+    // one is cheap, letting it wrap the word is not.
+    if (activeWord === null) return true;
 
-    typedEffectChanged() {
-      Joining.update("typedEffect", wordsEl());
-    },
+    // The words frame hasn't laid out the active word yet,
+    // activeWordTop/Height still belong to the previous one: measure the
+    // word itself instead. Its rendered letters are a lower bound for its
+    // unrendered input, so this can't miss an overflow.
+    const laidOut = laidOutActiveWordIndex === activeWordIndex;
+    const baseTop = laidOut ? activeWordTop : activeWord.getOffsetTop();
+    const baseHeight = laidOut
+      ? activeWordHeight
+      : activeWord.getOffsetHeight();
 
-    reset() {
-      invalidateAsyncLayout();
-      wordsEl().setStyle({ marginTop: "0" });
-      currentTestLine = 0;
-      laidOutActiveWordIndex = undefined;
-    },
+    // pending (not yet rendered) input has to be accounted for
+    const pending = getPendingWordInput(activeWordIndex);
+    const { top, height } = getTopAndHeightWithDifferentData(
+      activeWord,
+      (pending ?? inputValue) + data,
+    );
+    // word jumped to next line, or letters wrapped to next line
+    return top > baseTop || height > baseHeight;
+  }
 
-    wouldActiveWordOverflow(inputValue, data) {
-      const activeWordIndex = getActiveWordIndex();
-      const activeWord = getActiveWordElement();
-      // Active word not rendered yet (word change and append in the same
-      // frame). Rendering here would put a reactive render on the input path,
-      // so assume the worst: this guard only runs for extra letters, blocking
-      // one is cheap, letting it wrap the word is not.
-      if (activeWord === null) return true;
+  activeWordOverflowCheck = wouldOverflow;
+  onCleanup(() => {
+    // a remount may have mounted a new layout already
+    if (activeWordOverflowCheck === wouldOverflow) {
+      activeWordOverflowCheck = undefined;
+    }
+  });
+  // drops a line jump still animating
+  onCleanup(reset);
 
-      // The words frame hasn't laid out the active word yet,
-      // activeWordTop/Height still belong to the previous one: measure the
-      // word itself instead. Its rendered letters are a lower bound for its
-      // unrendered input, so this can't miss an overflow.
-      const laidOut = laidOutActiveWordIndex === activeWordIndex;
-      const baseTop = laidOut ? activeWordTop : activeWord.getOffsetTop();
-      const baseHeight = laidOut
-        ? activeWordHeight
-        : activeWord.getOffsetHeight();
-
-      // pending (not yet rendered) input has to be accounted for
-      const pending = getPendingWordInput(activeWordIndex);
-      const { top, height } = getTopAndHeightWithDifferentData(
-        activeWord,
-        (pending ?? inputValue) + data,
-      );
-      // word jumped to next line, or letters wrapped to next line
-      return top > baseTop || height > baseHeight;
-    },
+  // the words were replaced. Also run by the new words' flush, in case the
+  // effect is deferred past it (reset inside a batch)
+  let resetGeneration = untrack(() => wordsRenderState.generation);
+  const resetIfReplaced = (): void => {
+    const generation = untrack(() => wordsRenderState.generation);
+    if (generation === resetGeneration) return;
+    resetGeneration = generation;
+    reset();
   };
+  createEffect(
+    on(() => wordsRenderState.generation, resetIfReplaced, { defer: true }),
+  );
+
+  onCleanup(
+    // runs after each words flush, like an event handler
+    setLayoutHook(({ newWords, wordChange, updatedWords }) => {
+      if (newWords) {
+        resetIfReplaced();
+        relayout();
+        // the caret snaps to the new words
+        layout({ wordChange: "initial", updatedWords, snapCaret: true });
+      } else {
+        layout({ wordChange, updatedWords, snapCaret: false });
+      }
+    }),
+  );
+
+  // effects run after the bindings, so the new config classes are applied
+  createEffect(
+    on(
+      () => [
+        getConfig.highlightMode,
+        getConfig.typedEffect,
+        getConfig.blindMode,
+        getConfig.indicateTypos,
+        getConfig.tapeMode,
+        getConfig.hideExtraLetters,
+        getConfig.flipTestColors,
+        getConfig.colorfulMode,
+        getConfig.showAllLines,
+        getConfig.fontSize,
+        getConfig.maxLineWidth,
+        getConfig.tapeMargin,
+      ],
+      relayout,
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(
+      () => getConfig.typedEffect,
+      () => Joining.update("typedEffect", wordsEl()),
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(
+      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
+      () => {
+        Joining.update("fontSize", wordsEl());
+        if (isTestFinished()) return;
+        invalidateTypoHintsLayout();
+        // letter widths changed once the new font is applied (next frame) and
+        // loaded (async)
+        const generation = layoutGeneration;
+        requestAnimationFrame(() => {
+          void document.fonts.ready.then(() => {
+            // words reset (restart, unmount) or the test ended meanwhile
+            if (generation !== layoutGeneration || isTestFinished()) return;
+            Caret.updatePosition(true);
+          });
+        });
+      },
+      { defer: true },
+    ),
+  );
+
+  const resized = debounce(250, async () => {
+    if (isTestFinished()) return;
+    const generation = layoutGeneration;
+    if (Config.tapeMode !== "off") {
+      await scrollTape();
+    } else {
+      const centering = centerActiveLine();
+      invalidateTypoHintsLayout();
+      await centering;
+    }
+    if (generation !== layoutGeneration) return;
+    options.onActiveWordLaidOut();
+  });
+  window.addEventListener("resize", resized);
+  onCleanup(() => {
+    window.removeEventListener("resize", resized);
+    resized.cancel();
+  });
 }

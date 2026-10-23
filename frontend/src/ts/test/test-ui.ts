@@ -37,8 +37,8 @@ import {
 import { skipBreakdownEvent } from "../states/header";
 import {
   isDirectionReversed,
-  isLanguageRightToLeft,
   isRtlCheckedByLetter,
+  isTestRightToLeft,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
@@ -116,15 +116,6 @@ export function keepWordsInputInTheCenter(force = false): void {
   });
 }
 
-function getWordElement(index: number): ElementWithUtils | null {
-  const el = getRenderedWordElement(index);
-  return el === undefined ? null : new ElementWithUtils(el);
-}
-
-function getActiveWordElement(): ElementWithUtils | null {
-  return getWordElement(getActiveWordIndex());
-}
-
 function showWords(): void {
   resetWordsRender({
     zen: Config.mode === "zen",
@@ -148,18 +139,14 @@ function showWords(): void {
 
 export function updateWordsInputPosition(): void {
   if (!isMounted()) return;
-  const isTestRightToLeft = isDirectionReversed()
-    ? !isLanguageRightToLeft()
-    : isLanguageRightToLeft();
-
   const el = getInputElement();
 
-  const activeWord = getActiveWordElement();
-
-  if (!activeWord) {
+  const activeWordEl = getRenderedWordElement(getActiveWordIndex());
+  if (activeWordEl === undefined) {
     setWordsInputPosition((position) => ({ ...position, top: 0, left: 0 }));
     return;
   }
+  const activeWord = new ElementWithUtils(activeWordEl);
 
   const letterHeight = convertRemToPixels(Config.fontSize);
   const top =
@@ -172,7 +159,10 @@ export function updateWordsInputPosition(): void {
   let left: number;
   if (Config.tapeMode !== "off") {
     left = wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100);
-  } else if (activeWord.getOffsetWidth() < letterHeight && isTestRightToLeft) {
+  } else if (
+    activeWord.getOffsetWidth() < letterHeight &&
+    isTestRightToLeft()
+  ) {
     left = activeWord.getOffsetLeft() - letterHeight;
   } else {
     left = Math.max(0, activeWord.getOffsetLeft());
@@ -430,10 +420,9 @@ export function init(
 
   const recenter = debounce(250, () => {
     if (isTestFinished()) return;
-    // after Words laid out the resize
+    // after Words laid out the resize, and moved the words input with it
     setTimeout(() => {
       if (signal.aborted) return;
-      updateWordsInputPosition();
       focusWords();
       Caret.show();
     }, 250);
