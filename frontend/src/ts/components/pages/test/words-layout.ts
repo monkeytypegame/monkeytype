@@ -762,7 +762,7 @@ export function createWordsLayout(options: {
     laidOutActiveWordIndex = undefined;
   }
   onCleanup(onWordsReset(dropOldWordsLayout));
-  // drops a line jump still animating
+  // Words unmounts: drops a line jump still animating
   onCleanup(dropOldWordsLayout);
 
   /** The new words' first flush: lays them out from scratch. */
