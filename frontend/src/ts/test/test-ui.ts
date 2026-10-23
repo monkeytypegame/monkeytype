@@ -367,11 +367,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   showWords();
 }
 
-/** Frees the test words DOM once the result is shown. */
-export function clearWords(): void {
-  resetWordsRender();
-}
-
 export function onTestFinish(): void {
   Caret.hide();
   setTestFocusState("focused");
