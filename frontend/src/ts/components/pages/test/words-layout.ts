@@ -57,10 +57,33 @@ function isLineBreak(item: LayoutItem): item is LineBreakItem {
   return item.kind === "lineBreak";
 }
 
-// the mounted words layout's overflow check, for the input path
-let activeWordOverflowCheck:
-  | ((inputValue: string, data: string) => boolean)
-  | undefined;
+function getTopAndHeightWithDifferentData(
+  activeWord: ElementWithUtils,
+  data: string,
+): {
+  top: number;
+  height: number;
+} {
+  const lettersEls = activeWord.qsa("letter");
+  const domLettersCount = lettersEls.length;
+  const nodes = [];
+  for (let i = domLettersCount; i < data.length; i++) {
+    const tempLetter = document.createElement("letter");
+    const displayData = data[i] === " " ? "_" : data[i];
+    tempLetter.textContent = displayData as string;
+    nodes.push(tempLetter);
+  }
+
+  lettersEls[domLettersCount - 1]?.native.after(...nodes);
+
+  const top = activeWord.getOffsetTop();
+  const height = activeWord.getOffsetHeight();
+  for (const node of nodes) {
+    node.remove();
+  }
+
+  return { top, height };
+}
 
 /**
  * Whether appending `data` to the active word would push it onto the next line
@@ -70,9 +93,29 @@ export function wouldActiveWordOverflow(
   inputValue: string,
   data: string,
 ): boolean {
-  // not mounted: nothing to type into, block
-  if (activeWordOverflowCheck === undefined) return true;
-  return activeWordOverflowCheck(inputValue, data);
+  const activeWordIndex = getActiveWordIndex();
+  const activeWordEl = getRenderedWordElement(activeWordIndex);
+  // Active word not rendered yet (word change and append in the same frame),
+  // or no words mounted. Rendering here would put a reactive render on the
+  // input path, so assume the worst: this guard only runs for extra letters,
+  // blocking one is cheap, letting it wrap the word is not.
+  if (activeWordEl === undefined) return true;
+  const activeWord = new ElementWithUtils(activeWordEl);
+
+  // measured now, like the probe below: a line jump may be moving the word.
+  // Its rendered letters are a lower bound for its unrendered input, so this
+  // can't miss an overflow
+  const baseTop = activeWord.getOffsetTop();
+  const baseHeight = activeWord.getOffsetHeight();
+
+  // pending (not yet rendered) input has to be accounted for
+  const pending = getPendingWordInput(activeWordIndex);
+  const { top, height } = getTopAndHeightWithDifferentData(
+    activeWord,
+    (pending ?? inputValue) + data,
+  );
+  // word jumped to next line, or letters wrapped to next line
+  return top > baseTop || height > baseHeight;
 }
 
 /**
@@ -99,7 +142,6 @@ export function createWordsLayout(options: {
   }
 
   let activeWordTop = 0;
-  let activeWordHeight = 0;
   let wordTopBeforeLineJump = 0;
   let lineTransition = false;
 
@@ -217,7 +259,6 @@ export function createWordsLayout(options: {
     Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
-    activeWordHeight = newActiveWord.getOffsetHeight();
 
     if (previousActiveWordTop !== null) {
       if (isTimedTest() || !Config.showAllLines) {
@@ -682,7 +723,6 @@ export function createWordsLayout(options: {
         lineJumpAnimation = undefined;
         currentLinesJumping = 0;
         activeWordTop = activeWordEl.getOffsetTop();
-        activeWordHeight = activeWordEl.getOffsetHeight();
         removeLines(lastRemovedIndex);
         wordsEl().setStyle({ marginTop: "0" });
         lineTransition = false;
@@ -694,34 +734,6 @@ export function createWordsLayout(options: {
     currentTestLine++;
     updateWordsWrapperHeight();
     return;
-  }
-
-  function getTopAndHeightWithDifferentData(
-    activeWord: ElementWithUtils,
-    data: string,
-  ): {
-    top: number;
-    height: number;
-  } {
-    const lettersEls = activeWord.qsa("letter");
-    const domLettersCount = lettersEls.length;
-    const nodes = [];
-    for (let i = domLettersCount; i < data.length; i++) {
-      const tempLetter = document.createElement("letter");
-      const displayData = data[i] === " " ? "_" : data[i];
-      tempLetter.textContent = displayData as string;
-      nodes.push(tempLetter);
-    }
-
-    lettersEls[domLettersCount - 1]?.native.after(...nodes);
-
-    const top = activeWord.getOffsetTop();
-    const height = activeWord.getOffsetHeight();
-    for (const node of nodes) {
-      node.remove();
-    }
-
-    return { top, height };
   }
 
   /** A words flush landed: lays out the word change and the updated words. */
@@ -766,42 +778,6 @@ export function createWordsLayout(options: {
     laidOutActiveWordIndex = undefined;
   }
 
-  function wouldOverflow(inputValue: string, data: string): boolean {
-    const activeWordIndex = getActiveWordIndex();
-    const activeWord = getActiveWordElement();
-    // Active word not rendered yet (word change and append in the same
-    // frame). Rendering here would put a reactive render on the input path,
-    // so assume the worst: this guard only runs for extra letters, blocking
-    // one is cheap, letting it wrap the word is not.
-    if (activeWord === null) return true;
-
-    // The words frame hasn't laid out the active word yet,
-    // activeWordTop/Height still belong to the previous one: measure the
-    // word itself instead. Its rendered letters are a lower bound for its
-    // unrendered input, so this can't miss an overflow.
-    const laidOut = laidOutActiveWordIndex === activeWordIndex;
-    const baseTop = laidOut ? activeWordTop : activeWord.getOffsetTop();
-    const baseHeight = laidOut
-      ? activeWordHeight
-      : activeWord.getOffsetHeight();
-
-    // pending (not yet rendered) input has to be accounted for
-    const pending = getPendingWordInput(activeWordIndex);
-    const { top, height } = getTopAndHeightWithDifferentData(
-      activeWord,
-      (pending ?? inputValue) + data,
-    );
-    // word jumped to next line, or letters wrapped to next line
-    return top > baseTop || height > baseHeight;
-  }
-
-  activeWordOverflowCheck = wouldOverflow;
-  onCleanup(() => {
-    // a remount may have mounted a new layout already
-    if (activeWordOverflowCheck === wouldOverflow) {
-      activeWordOverflowCheck = undefined;
-    }
-  });
   // drops a line jump still animating
   onCleanup(reset);
 
