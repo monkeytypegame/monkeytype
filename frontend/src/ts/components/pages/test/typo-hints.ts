@@ -54,23 +54,22 @@ export type MergedTypoHint = {
 };
 
 /** horizontal padding of a hint on each side, in px (`p-px` in TypoHints) */
-export const TYPO_HINT_PADDING = 1;
+const TYPO_HINT_PADDING = 1;
 
-type Block = {
-  letterIndices: number[];
-  chars: string;
+/** a hint being merged, with its letters' extent */
+type HintSpan = Omit<MergedTypoHint, "left"> & {
   top: number;
-  /** horizontal extent of the block's letters */
+  /** horizontal extent of the span's letters */
   lettersStart: number;
   lettersEnd: number;
   width: number;
 };
 
-function centerOf(block: Block): number {
-  return (block.lettersStart + block.lettersEnd) / 2;
+function centerOf(span: HintSpan): number {
+  return (span.lettersStart + span.lettersEnd) / 2;
 }
 
-function canMerge(a: Block, b: Block): boolean {
+function canMerge(a: HintSpan, b: HintSpan): boolean {
   const aLast = a.letterIndices[a.letterIndices.length - 1] as number;
   const adjacent = b.letterIndices[0] === aLast + 1;
   if (!adjacent || a.top !== b.top) return false;
@@ -79,7 +78,7 @@ function canMerge(a: Block, b: Block): boolean {
   return Math.abs(centerOf(a) - centerOf(b)) < (a.width + b.width) / 2;
 }
 
-function merge(a: Block, b: Block): Block {
+function merge(a: HintSpan, b: HintSpan): HintSpan {
   return {
     letterIndices: [...a.letterIndices, ...b.letterIndices],
     chars: a.chars + b.chars,
@@ -100,10 +99,10 @@ export function mergeTypoHints(
   hints: TypoHint[],
   boxes: TypoHintBox[],
 ): MergedTypoHint[] {
-  const blocks: Block[] = [];
+  const spans: HintSpan[] = [];
   hints.forEach((hint, i) => {
     const box = boxes[i] as TypoHintBox;
-    blocks.push({
+    spans.push({
       letterIndices: [hint.letterIndex],
       chars: hint.char,
       top: box.letterTop,
@@ -111,16 +110,16 @@ export function mergeTypoHints(
       lettersEnd: box.letterLeft + box.letterWidth,
       width: box.hintWidth,
     });
-    while (blocks.length >= 2) {
-      const last = blocks[blocks.length - 1] as Block;
-      const previous = blocks[blocks.length - 2] as Block;
+    while (spans.length >= 2) {
+      const last = spans[spans.length - 1] as HintSpan;
+      const previous = spans[spans.length - 2] as HintSpan;
       if (!canMerge(previous, last)) break;
-      blocks.splice(-2, 2, merge(previous, last));
+      spans.splice(-2, 2, merge(previous, last));
     }
   });
-  return blocks.map((block) => ({
-    letterIndices: block.letterIndices,
-    chars: block.chars,
-    left: centerOf(block),
+  return spans.map((span) => ({
+    letterIndices: span.letterIndices,
+    chars: span.chars,
+    left: centerOf(span),
   }));
 }

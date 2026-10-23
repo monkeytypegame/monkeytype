@@ -32,7 +32,13 @@ declare module "solid-js" {
   }
 }
 
-type MeasureKey = readonly [TypoHint[], string, string, number];
+/** what the current hint positions were measured for */
+type MeasureKey = {
+  hints: TypoHint[];
+  input: string;
+  composition: string;
+  layoutVersion: number;
+};
 
 function sameHints(a: TypoHint[], b: TypoHint[]): boolean {
   return (
@@ -44,7 +50,8 @@ function sameHints(a: TypoHint[], b: TypoHint[]): boolean {
   );
 }
 
-function unmerged(hints: TypoHint[]): MergedTypoHint[] {
+/** single-letter hints, rendered to be measured before merging */
+function toSingleLetterHints(hints: TypoHint[]): MergedTypoHint[] {
   return hints.map((hint) => ({
     letterIndices: [hint.letterIndex],
     chars: hint.char,
@@ -71,31 +78,32 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
     { equals: sameHints },
   );
   // anything that can move the word's letters re-measures
-  const measureKey = createMemo<MeasureKey>(() => [
-    hints(),
-    props.word.input,
-    props.word.composition,
-    typoHintsLayoutVersion(),
-  ]);
+  const measureKey = createMemo<MeasureKey>(() => ({
+    hints: hints(),
+    input: props.word.input,
+    composition: props.word.composition,
+    layoutVersion: typoHintsLayoutVersion(),
+  }));
   const [measured, setMeasured] = createSignal<{
     key: MeasureKey;
     hints: MergedTypoHint[];
   }>();
   // single-letter hints until the current key is measured
-  const shown = createMemo(() => {
+  const displayedHints = createMemo(() => {
     const current = measured();
     if (current?.key === measureKey()) return current.hints;
-    return unmerged(hints());
+    return toSingleLetterHints(hints());
   });
 
   let containerRef: HTMLDivElement | undefined;
 
-  // effect, not onMount: re-measures on every key change. Runs after the
-  // single-letter hints of the new key are in the DOM
+  // effect, not onMount (exception to the refs standard): re-measures on
+  // every key change. Runs after the single-letter hints of the new key are in
+  // the DOM
   createEffect(
     on(measureKey, (key) => {
       const container = containerRef;
-      const [singleHints] = key;
+      const singleHints = key.hints;
       if (container === undefined || singleHints.length === 0) return;
       const letters =
         container.parentElement?.querySelectorAll<HTMLElement>(
@@ -121,7 +129,7 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
       ref={(el) => (containerRef = el)}
       class="hints [.joiningScript_&]:wrap-normal"
     >
-      <Index each={shown()}>
+      <Index each={displayedHints()}>
         {(hint) => (
           <hint
             class="absolute bottom-[-1.1em] grid -translate-x-1/2 animate-(--correct-letter-animation) justify-center p-px text-center text-[0.75em] leading-[initial] text-(--correct-letter-color) opacity-50 text-shadow-none [.blind_&]:hidden"

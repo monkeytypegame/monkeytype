@@ -10,9 +10,10 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  * applies the buffer to the reactive store inside a batch, then runs the
  * registered layout hook against the updated DOM.
  *
- * Exception: the first rendered word/line break indices are only raised by
- * layout code (line jump, tape scroll) and apply immediately, so it can
- * measure the result.
+ * Exceptions, applied immediately: the first rendered word/line break indices
+ * are only raised by layout code (line jump, tape scroll), so it can measure
+ * the result. The typo hints layout version is only bumped outside the input
+ * path (font, resize, layout).
  */
 
 export type RenderedWord = {
