@@ -57,7 +57,8 @@ export function WordsInput(): JSXElement {
       id="wordsInput"
       ref={(el) => (inputRef = el)}
       class={cn("full-width", {
-        "mt-[1.5em] caret-error opacity-100": isRealWordsInputShown(),
+        // "mt-[1em]": isRealWordsInputShown(),
+        "caret-error opacity-100": isRealWordsInputShown(),
       })}
       autocomplete="off"
       autocapitalize="off"
