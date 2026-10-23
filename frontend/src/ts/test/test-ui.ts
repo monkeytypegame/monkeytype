@@ -29,7 +29,7 @@ import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementsWithUtils, ElementWithUtils } from "../utils/dom";
 import { getFontPreview } from "../states/font";
-import { getWordElement as getRenderedWordElement } from "../components/pages/test/word-elements";
+import { getWordElement as getRenderedWordElement } from "../states/word-elements";
 import {
   appendRenderedWord,
   flushWordsRender,

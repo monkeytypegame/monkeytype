@@ -1,10 +1,13 @@
 import { createMemo, Index, JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import {
+  registerWordElement,
+  unregisterWordElement,
+} from "../../../states/word-elements";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
 import { isWordRightToLeft } from "../../../utils/strings";
 import { createLetters, createZenLetters } from "./letters";
-import { registerWordElement, unregisterWordElement } from "./word-elements";
 import { WordLetter } from "./WordLetter";
 
 /** A rendered word: its letters and hints container. */

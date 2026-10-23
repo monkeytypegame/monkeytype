@@ -1,10 +1,10 @@
 import { render } from "@solidjs/testing-library";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getWordElement } from "../../../../src/ts/components/pages/test/word-elements";
 import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
+import { getWordElement } from "../../../../src/ts/states/word-elements";
 import {
   appendRenderedWord,
   firstMountedIndex,
