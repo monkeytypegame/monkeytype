@@ -56,10 +56,17 @@ export function WordsInput(): JSXElement {
     <textarea
       id="wordsInput"
       ref={(el) => (inputRef = el)}
-      class={cn("full-width", {
-        // "mt-[1em]": isRealWordsInputShown(),
-        "caret-error opacity-100": isRealWordsInputShown(),
-      })}
+      class={cn(
+        "full-width pointer-events-none absolute -z-1 mx-auto my-0 block h-[1em] w-0 cursor-default resize-none overflow-hidden rounded-none border-none p-0 caret-transparent opacity-0 contain-strict outline-none",
+        // if the text wraps, ctrl backspace will not work on firefox >:|
+        // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
+        // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
+        "[text-wrap-mode:nowrap]",
+        {
+          // "mt-[1em]": isRealWordsInputShown(),
+          "caret-error opacity-100": isRealWordsInputShown(),
+        },
+      )}
       autocomplete="off"
       autocapitalize="off"
       autocorrect="off"
