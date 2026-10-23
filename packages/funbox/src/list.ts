@@ -475,6 +475,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  l33t: {
+    description: "1337 5p34k. C0nv3r7 7h3 73x7 70 1337.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: [],
+    frontendFunctions: ["alterText"],
+    name: "l33t",
+  },
 };
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {
