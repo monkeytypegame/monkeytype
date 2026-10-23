@@ -10,11 +10,6 @@ export function registerInputElement(element: HTMLTextAreaElement): () => void {
   };
 }
 
-/** undefined while WordsInput isn't mounted */
-export function findInputElement(): HTMLTextAreaElement | undefined {
-  return el;
-}
-
 export function getInputElement(): HTMLTextAreaElement {
   if (el === undefined) {
     throw new Error("Words input element not mounted");

@@ -62,6 +62,8 @@ export function WordsInput(): JSXElement {
         // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
         // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
         "[text-wrap-mode:nowrap]",
+        // centered on wordsInputPosition's centerY
+        "-translate-y-1/2",
         {
           // "mt-[1em]": isRealWordsInputShown(),
           "caret-error opacity-100": isRealWordsInputShown(),
@@ -80,7 +82,7 @@ export function WordsInput(): JSXElement {
       spellcheck={false}
       style={{
         "font-size": `${getConfig.fontSize}rem`,
-        top: px(wordsInputPosition().top),
+        top: px(wordsInputPosition().centerY),
         left: px(wordsInputPosition().left),
         width: px(wordsInputPosition().width),
         "max-width":

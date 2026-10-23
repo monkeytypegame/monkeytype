@@ -4,10 +4,7 @@ import { createEffect, on, onCleanup } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
-import {
-  findInputElement,
-  isInputElementFocused,
-} from "../../../input/input-element";
+import { isInputElementFocused } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
@@ -259,18 +256,19 @@ export function createWordsLayout(options: {
    * (after line jump/tape scroll).
    */
   function positionWordsInput(): void {
-    const input = findInputElement();
-    if (input === undefined) return;
-
     const activeWord = getActiveWordElement();
     if (activeWord === null) {
-      setWordsInputPosition((position) => ({ ...position, top: 0, left: 0 }));
+      setWordsInputPosition((position) => ({
+        ...position,
+        centerY: 0,
+        left: 0,
+      }));
       return;
     }
 
     const letterHeight = convertRemToPixels(Config.fontSize);
-    const top =
-      activeWord.getOffsetTop() + letterHeight / 2 - input.offsetHeight / 2 + 1; //+1 for half of border
+    // the middle of the letters, +1 for half of border
+    const centerY = activeWord.getOffsetTop() + letterHeight / 2 + 1;
 
     const maxWidth =
       Config.tapeMode !== "off" ? 100 - Config.tapeMargin : undefined;
@@ -289,7 +287,7 @@ export function createWordsLayout(options: {
     }
 
     // WordsInput keeps it in the center once applied
-    setWordsInputPosition({ top, left, width, maxWidth });
+    setWordsInputPosition({ centerY, left, width, maxWidth });
   }
 
   let activeWordTop = 0;
