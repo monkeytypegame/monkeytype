@@ -769,6 +769,11 @@ export function createWordsLayout(options: {
 
     fontChanged() {
       Joining.update("fontSize", wordsEl());
+      // letter widths changed once the new font is applied (next frame) and
+      // loaded (async)
+      requestAnimationFrame(() => {
+        void document.fonts.ready.then(() => Caret.updatePosition(true));
+      });
     },
 
     typedEffectChanged() {
