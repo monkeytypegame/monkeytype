@@ -63,6 +63,22 @@ export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
+/** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
+export type WordsInputPosition = {
+  top: number;
+  left: number;
+  width?: number;
+  maxWidth?: number;
+};
+
+// bound to #wordsInput by WordsInput, follows the active word
+export const [wordsInputPosition, setWordsInputPosition] =
+  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+
+// dev options: shows #wordsInput below the words
+export const [isRealWordsInputShown, setRealWordsInputShown] =
+  createSignal(false);
+
 // bound to #words / #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);
@@ -311,6 +327,16 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
+
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    getConfig.mode === "zen" ||
+    getConfig.mode === "custom" ||
+    getConfig.funbox.includes("polyglot")
+  );
+}
+
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(

@@ -1,4 +1,4 @@
-FROM node:24.11.0-alpine3.22 AS builder
+FROM node:24.22.1-alpine3.23 AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN pnpm deploy --legacy --filter backend --prod /prod/backend
 #---------------------------------
 
 ## target image
-FROM node:24.11.0-alpine3.22
+FROM node:24.22.1-alpine3.23
 
 ## get server_version from build-arg, default to UNKNOWN
 ARG server_version=UNKNOWN

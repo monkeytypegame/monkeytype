@@ -8,7 +8,6 @@ import { signIn } from "../../auth";
 import { refetchInboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { toggleCaretDebug } from "../../elements/caret";
-import { getInputElement } from "../../input/input-element";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal, showModal } from "../../states/modals";
 import {
@@ -17,6 +16,10 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { showSimpleModal } from "../../states/simple-modal";
+import {
+  isRealWordsInputShown,
+  setRealWordsInputShown,
+} from "../../states/test";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
@@ -79,12 +82,10 @@ export function DevOptionsModal(): JSXElement {
     },
     {
       icon: "fa-eye",
-      label: () => "Show Real Words Input",
+      label: () =>
+        `${isRealWordsInputShown() ? "Hide" : "Show"} Real Words Input`,
       onClick: () => {
-        const el = getInputElement();
-        el.style.opacity = "1";
-        el.style.marginTop = "1.5em";
-        el.style.caretColor = "red";
+        setRealWordsInputShown((shown) => !shown);
         hideModal("DevOptions");
       },
     },
