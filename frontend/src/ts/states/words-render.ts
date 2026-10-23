@@ -1,5 +1,6 @@
 import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
+import { createWordsRenderBuffer } from "./words-render-buffer";
 
 /**
  * Display state of the test words (#words). A view cache: the event log stays
@@ -66,25 +67,7 @@ const [store, setStore] = createStore<WordsRenderState>({
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
 
-type Buffer = {
-  truncateTo: number | undefined;
-  appended: string[];
-  inputs: Map<number, { input: string; composition: string }>;
-  activeWordIndex: number | undefined;
-  typed: Map<number, boolean>;
-};
-
-function emptyBuffer(): Buffer {
-  return {
-    truncateTo: undefined,
-    appended: [],
-    inputs: new Map(),
-    activeWordIndex: undefined,
-    typed: new Map(),
-  };
-}
-
-let buffer = emptyBuffer();
+const buffer = createWordsRenderBuffer();
 let pendingFrame: number | undefined;
 let layoutHook: (() => void) | undefined;
 
@@ -122,8 +105,7 @@ function newWord(index: number, text: string): RenderedWord {
 /** Applies the buffer now, then runs the layout hook. */
 export function flushWordsRender(): void {
   cancelPendingFlush();
-  const b = buffer;
-  buffer = emptyBuffer();
+  const b = buffer.take();
 
   batch(() => {
     let endsLine = false;
@@ -171,17 +153,13 @@ export function flushWordsRender(): void {
   layoutHook?.();
 }
 
-function wordCount(): number {
-  return (buffer.truncateTo ?? store.words.length) + buffer.appended.length;
-}
-
 /** Input written for a word that hasn't been flushed yet. */
 export function getPendingWordInput(index: number): string | undefined {
-  return buffer.inputs.get(index)?.input;
+  return buffer.getPendingInput(index);
 }
 
 export function appendRenderedWord(text: string): void {
-  buffer.appended.push(text);
+  buffer.append(text);
   scheduleFlush();
 }
 
@@ -190,17 +168,17 @@ export function setWordInput(
   input: string,
   composition = "",
 ): void {
-  buffer.inputs.set(index, { input, composition });
+  buffer.setInput(index, input, composition);
   scheduleFlush();
 }
 
 export function setActiveWord(index: number): void {
-  buffer.activeWordIndex = index;
+  buffer.setActiveWord(index);
   scheduleFlush();
 }
 
 export function setWordTyped(index: number, isTyped: boolean): void {
-  buffer.typed.set(index, isTyped);
+  buffer.setTyped(index, isTyped);
   scheduleFlush();
 }
 
@@ -244,20 +222,7 @@ export function firstMountedIndex(): number {
 
 /** Drops all words from `length` on (zen backspace). */
 export function truncateWords(length: number): void {
-  if (length >= wordCount()) return;
-  const committed = buffer.truncateTo ?? store.words.length;
-  if (length < committed) {
-    buffer.truncateTo = length;
-    buffer.appended = [];
-  } else {
-    buffer.appended.length = length - committed;
-  }
-  for (const index of [...buffer.inputs.keys()]) {
-    if (index >= length) buffer.inputs.delete(index);
-  }
-  for (const index of [...buffer.typed.keys()]) {
-    if (index >= length) buffer.typed.delete(index);
-  }
+  if (!buffer.truncate(length, store.words.length)) return;
   scheduleFlush();
 }
 
@@ -266,7 +231,7 @@ export function resetWordsRender(
   options: { zen?: boolean; marksRtlWords?: boolean } = {},
 ): void {
   cancelPendingFlush();
-  buffer = emptyBuffer();
+  buffer.clear();
   setStore({
     words: [],
     firstRenderedWordIndex: 0,
