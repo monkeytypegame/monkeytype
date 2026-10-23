@@ -177,17 +177,21 @@ export function createWordsLayout(options: {
     );
   }
 
-  /** Top of the closest line above `word`, undefined if it's on the first line. */
+  /**
+   * Top of the closest line above word `wordIndex`, undefined if it's on the
+   * first rendered line.
+   */
   function getLineAboveTop(
-    word: ElementWithUtils,
+    wordIndex: number,
     wordTop: number,
   ): number | undefined {
-    let sibling = word.native.previousElementSibling as HTMLElement | null;
-    while (sibling !== null) {
-      if (sibling.classList.contains("word") && sibling.offsetTop < wordTop) {
-        return sibling.offsetTop;
-      }
-      sibling = sibling.previousElementSibling as HTMLElement | null;
+    for (
+      let i = wordIndex - 1;
+      i >= wordsRenderState.firstRenderedWordIndex;
+      i--
+    ) {
+      const top = getRenderedWordElement(i)?.offsetTop;
+      if (top !== undefined && top < wordTop) return top;
     }
     return undefined;
   }
@@ -228,7 +232,10 @@ export function createWordsLayout(options: {
           // several word changes in one frame can cross more than one line:
           // jump to the line right above the active word, hiding all lines
           // before it
-          const lineAboveTop = getLineAboveTop(newActiveWord, newActiveWordTop);
+          const lineAboveTop = getLineAboveTop(
+            newActiveWordIndex,
+            newActiveWordTop,
+          );
           const crossedLines =
             lineAboveTop !== undefined && lineAboveTop > previousActiveWordTop;
           await lineJump(
@@ -771,8 +778,13 @@ export function createWordsLayout(options: {
       Joining.update("fontSize", wordsEl());
       // letter widths changed once the new font is applied (next frame) and
       // loaded (async)
+      const generation = layoutGeneration;
       requestAnimationFrame(() => {
-        void document.fonts.ready.then(() => Caret.updatePosition(true));
+        void document.fonts.ready.then(() => {
+          // words reset (restart, unmount) or the test ended meanwhile
+          if (generation !== layoutGeneration || isTestFinished()) return;
+          Caret.updatePosition(true);
+        });
       });
     },
 

@@ -160,9 +160,9 @@ function layoutWords(): void {
   wordsLayout().layout({ wordChange, updatedWords, snapCaret });
 }
 
-// measures #words, so it has to run after TestPage applied the config classes
+// measures #words, so it has to run after Words applied the config classes
 function updateLayout(): void {
-  // outoffocus applies transition, need to remove it
+  // lay out unblurred, the out of focus state is restored below
   setTestFocusState("focused");
 
   wordsLayout().relayout();

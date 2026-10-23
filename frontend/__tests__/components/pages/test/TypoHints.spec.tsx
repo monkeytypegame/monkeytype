@@ -1,13 +1,6 @@
-import { render } from "@solidjs/testing-library";
+import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// test state (via Words) fetches keyboard layouts on load
-vi.mock("../../../../src/ts/utils/json-data", async (importOriginal) => ({
-  ...(await importOriginal()),
-  getLayout: vi.fn(async () => new Promise(() => undefined)),
-}));
-
-import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
@@ -17,6 +10,7 @@ import {
   setActiveWord,
   setWordInput,
 } from "../../../../src/ts/states/words-render";
+import { renderWords } from "../../../__harness__/render-words";
 
 let frames: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
@@ -49,9 +43,7 @@ function fakeLayout(): void {
 }
 
 function renderWord(text: string): HTMLElement {
-  // #words
-  const container = render(() => <Words />).container
-    .firstElementChild as HTMLElement;
+  const container = renderWords();
   appendRenderedWord(text);
   setActiveWord(0);
   flush();

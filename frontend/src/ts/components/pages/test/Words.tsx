@@ -51,8 +51,8 @@ export function wordsModeClasses(): Record<string, boolean> {
 
 /** Renders #words with the test words, and lays them out (WordsLayout). */
 export function Words(props: {
-  /** receives the layout once mounted */
-  ref?: (layout: WordsLayout) => void;
+  /** receives the layout, before any onMount runs */
+  onLayout?: (layout: WordsLayout) => void;
   wordsWrapper?: () => HTMLElement | undefined;
   onActiveWordLaidOut?: () => void;
 }): JSXElement {
@@ -65,7 +65,7 @@ export function Words(props: {
   });
   // handed out once, like a ref
   // oxlint-disable-next-line solid/reactivity
-  props.ref?.(layout);
+  props.onLayout?.(layout);
   // drops a line jump still animating
   onCleanup(() => layout.reset());
 
