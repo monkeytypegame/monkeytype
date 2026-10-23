@@ -13,11 +13,13 @@ import {
 
 import { getConfig } from "../../../config/store";
 import { isInputElementFocused } from "../../../input/input-element";
+import { getFontPreview } from "../../../states/font";
 import {
   isErrorBorderDisabled,
   isJoiningScript,
   isLanguageRightToLeft,
   isReadAheadDisabled,
+  isTestFinished,
   isWordsHidden,
   setTestFocusState,
   showOutOfFocusWarning,
@@ -28,6 +30,7 @@ import {
 } from "../../../states/word-elements";
 import {
   firstMountedIndex,
+  invalidateTypoHintsLayout,
   isWordRendered,
   setLayoutHook,
   wordsRenderState,
@@ -120,6 +123,21 @@ export function Words(props: {
         getConfig.tapeMargin,
       ],
       relayout,
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(() => getConfig.typedEffect, layout.typedEffectChanged, {
+      defer: true,
+    }),
+  );
+  createEffect(
+    on(
+      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
+      () => {
+        layout.fontChanged();
+        if (!isTestFinished()) invalidateTypoHintsLayout();
+      },
       { defer: true },
     ),
   );

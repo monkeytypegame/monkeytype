@@ -24,7 +24,6 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementWithUtils } from "../utils/dom";
-import { getFontPreview } from "../states/font";
 import { getWordElement as getRenderedWordElement } from "../states/word-elements";
 import {
   appendRenderedWord,
@@ -34,7 +33,6 @@ import {
   setWordTyped,
   setWordInput,
   truncateWords,
-  invalidateTypoHintsLayout,
 } from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
 import {
@@ -446,23 +444,6 @@ export function init(
           wordIndex: getActiveWordIndex(),
           compositionData: getCompositionData(),
         }),
-      { defer: true },
-    ),
-  );
-  createEffect(
-    on(
-      () => getConfig.typedEffect,
-      () => wordsLayout().typedEffectChanged(),
-      { defer: true },
-    ),
-  );
-  createEffect(
-    on(
-      () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
-      () => {
-        wordsLayout().fontChanged();
-        if (!isTestFinished()) invalidateTypoHintsLayout();
-      },
       { defer: true },
     ),
   );
