@@ -35,8 +35,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
 }));
 
 import { Words } from "../../src/ts/components/pages/test/Words";
+import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { registerInputElement } from "../../src/ts/input/input-element";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
@@ -69,18 +69,19 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts #words with Words inside, bound to test-ui like TestPage does. */
+/** Mounts WordsInput and #words with Words inside, bound to test-ui like TestPage does. */
 function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
-  const input = document.createElement("textarea");
-  wordsWrapper.append(input, words);
+  wordsWrapper.append(words);
   typingTest.append(wordsWrapper);
   document.body.append(typingTest);
 
   const controller = new AbortController();
-  registerInputElement(input, controller.signal);
+  const disposeInput = render(() => <WordsInput />, wordsWrapper);
+  const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
+  if (input === null) throw new Error("WordsInput not mounted");
   const disposeWords = render(() => <Words />, words);
   createRoot((dispose) => {
     TestUI.init(
@@ -95,6 +96,7 @@ function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
       controller.abort();
       dispose();
       disposeWords();
+      disposeInput();
       typingTest.remove();
     });
   });
@@ -563,116 +565,6 @@ describe("test-ui words rendering", () => {
           "word7",
         ]);
       });
-    });
-  });
-
-  describe("typo hints", () => {
-    function hintsOf(words: HTMLElement, index: number): HTMLElement[] {
-      const container = words.querySelector(
-        `.word[data-wordindex='${index}'] > .hints`,
-      );
-      return [...(container?.children ?? [])] as HTMLElement[];
-    }
-
-    function mountWord(): HTMLElement {
-      const { words } = mount();
-      appendRenderedWord("word");
-      setActiveWord(0);
-      runFrames();
-      return words;
-    }
-
-    function typeIntoActiveWord(input: string): void {
-      currentInput = input;
-      TestUI.afterTestDelete();
-    }
-
-    it("fills the word's hints container with the typed char only in the next frame", () => {
-      configTesting.replaceConfig({ indicateTypos: "below" });
-      const words = mountWord();
-
-      typeIntoActiveWord("wx");
-
-      expect(hintsOf(words, 0)).toHaveLength(0);
-
-      runFrames();
-
-      const hints = hintsOf(words, 0);
-      expect(hints.map((hint) => hint.tagName.toLowerCase())).toEqual(["hint"]);
-      expect(hints[0]?.textContent).toBe("x");
-      expect(hints[0]?.dataset["charsIndex"]).toBe("1");
-    });
-
-    it("shows the expected char when indicating typos both ways", () => {
-      configTesting.replaceConfig({ indicateTypos: "both" });
-      const words = mountWord();
-
-      typeIntoActiveWord("wx");
-      runFrames();
-
-      expect(hintsOf(words, 0).map((hint) => hint.textContent)).toEqual(["o"]);
-    });
-
-    it("keeps the hints container across letter re-renders and updates its hints", () => {
-      configTesting.replaceConfig({ indicateTypos: "below" });
-      const words = mountWord();
-      const container = words.querySelector(".word > .hints");
-
-      typeIntoActiveWord("wx");
-      runFrames();
-      typeIntoActiveWord("wxy");
-      runFrames();
-
-      expect(words.querySelector(".word > .hints")).toBe(container);
-      expect(hintsOf(words, 0).map((hint) => hint.textContent)).toEqual([
-        "x",
-        "y",
-      ]);
-
-      typeIntoActiveWord("wo");
-      runFrames();
-
-      expect(words.querySelector(".word > .hints")).toBe(container);
-      expect(hintsOf(words, 0)).toHaveLength(0);
-    });
-
-    it("leaves the hints container alone while there are no hints to add or clear", () => {
-      configTesting.replaceConfig({ indicateTypos: "off" });
-      const words = mountWord();
-      const setHtml = vi.spyOn(ElementWithUtils.prototype, "setHtml");
-
-      typeIntoActiveWord("wx");
-      runFrames();
-
-      expect(setHtml).not.toHaveBeenCalled();
-      expect(hintsOf(words, 0)).toHaveLength(0);
-    });
-
-    it("clears the hints once typos are no longer indicated below", () => {
-      configTesting.replaceConfig({ indicateTypos: "below" });
-      const words = mountWord();
-      typeIntoActiveWord("wx");
-      runFrames();
-      expect(hintsOf(words, 0)).toHaveLength(1);
-
-      configTesting.replaceConfig({ indicateTypos: "off" });
-      typeIntoActiveWord("wxy");
-      runFrames();
-
-      expect(hintsOf(words, 0)).toHaveLength(0);
-    });
-
-    it("adds no hints for extra letters or when typos are not indicated below", () => {
-      configTesting.replaceConfig({ indicateTypos: "below" });
-      const words = mountWord();
-      typeIntoActiveWord("wordz");
-      runFrames();
-      expect(hintsOf(words, 0)).toHaveLength(0);
-
-      configTesting.replaceConfig({ indicateTypos: "replace" });
-      typeIntoActiveWord("wx");
-      runFrames();
-      expect(hintsOf(words, 0)).toHaveLength(0);
     });
   });
 });

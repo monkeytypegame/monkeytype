@@ -8,6 +8,7 @@ import {
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
 import { isWordRightToLeft } from "../../../utils/strings";
 import { createLetters, createZenLetters } from "./letters";
+import { TypoHints } from "./TypoHints";
 import { WordLetter } from "./WordLetter";
 
 /** A rendered word: its letters and hints container. */
@@ -66,7 +67,7 @@ export function Word(props: {
       <Index each={letters()}>
         {(letter) => <WordLetter letter={letter()} />}
       </Index>
-      <div class="hints"></div>
+      <TypoHints word={props.word} />
     </div>
   );
 }

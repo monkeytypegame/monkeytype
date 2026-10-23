@@ -1,4 +1,4 @@
-import { batch } from "solid-js";
+import { batch, createSignal } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createFrameBuffer } from "../utils/frame-buffer";
 
@@ -10,9 +10,10 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  * applies the buffer to the reactive store inside a batch, then runs the
  * registered layout hook against the updated DOM.
  *
- * Exception: the first rendered word/line break indices are only raised by
- * layout code (line jump, tape scroll) and apply immediately, so it can
- * measure the result.
+ * Exceptions, applied immediately: the first rendered word/line break indices
+ * are only raised by layout code (line jump, tape scroll), so it can measure
+ * the result. The typo hints layout version is only bumped outside the input
+ * path (font, resize, layout).
  */
 
 export type RenderedWord = {
@@ -66,6 +67,19 @@ const [store, setStore] = createStore<WordsRenderState>({
 
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
+
+const [typoHintsLayoutVersion, setTypoHintsLayoutVersion] = createSignal(0);
+
+/** Changes whenever typo hints have to re-measure their letters. */
+export { typoHintsLayoutVersion };
+
+/**
+ * Letter widths may have changed (font, resize): typo hints re-measure. Not
+ * part of the input path, applies immediately.
+ */
+export function invalidateTypoHintsLayout(): void {
+  setTypoHintsLayoutVersion((version) => version + 1);
+}
 
 type Buffer = {
   truncateTo: number | undefined;
