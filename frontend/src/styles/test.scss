@@ -512,31 +512,6 @@
   border-bottom: 2px solid var(--colorful-error-color);
 }
 
-#wordsInput {
-  width: 0;
-  font-size: 1em;
-  height: 1em;
-  opacity: 0;
-  padding: 0;
-  margin: 0 auto;
-  border: none;
-  outline: none;
-  display: block;
-  resize: none;
-  position: absolute;
-  z-index: -1;
-  cursor: default;
-  pointer-events: none;
-  border-radius: 0;
-  caret-color: transparent;
-  overflow: hidden;
-  // if the text wraps, ctrl backspace will not work on firefox >:|
-  // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
-  // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
-  text-wrap-mode: nowrap;
-  contain: strict;
-}
-
 .pageTest {
   height: 100%;
   display: grid;

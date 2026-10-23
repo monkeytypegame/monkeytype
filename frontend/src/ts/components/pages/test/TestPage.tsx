@@ -3,11 +3,6 @@ import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 import type { WordsLayout } from "./words-layout";
 
 import { Config, getConfig } from "../../../config/store";
-import {
-  isInputElementFocused,
-  registerInputElement,
-} from "../../../input/input-element";
-import { initInputListeners } from "../../../input/listeners";
 import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
@@ -15,7 +10,6 @@ import { isResultShown } from "../../../states/result";
 import {
   getFocus,
   getLayoutfluidTimerText,
-  isTestFinished,
   isLayoutfluidTimerVisible,
   isResultLoading,
   isTestActive,
@@ -57,6 +51,7 @@ import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
 import { Words, wordsModeClasses } from "./Words";
+import { WordsInput } from "./WordsInput";
 
 /**
  * The test page. Internals are still vanilla - this owns the markup and hands
@@ -74,7 +69,6 @@ export function TestPage(): JSXElement {
   let wordsLayout: WordsLayout | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
-  let inputRef: HTMLTextAreaElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -87,14 +81,10 @@ export function TestPage(): JSXElement {
       wordsWrapperRef === undefined ||
       wordsLayout === undefined ||
       caretRef === undefined ||
-      paceCaretRef === undefined ||
-      inputRef === undefined
+      paceCaretRef === undefined
     ) {
       throw new Error("TestPage refs not set");
     }
-
-    // input first - the listeners and test-ui read it via getInputElement()
-    registerInputElement(inputRef, signal);
 
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
     Caret.initElement(
@@ -106,7 +96,6 @@ export function TestPage(): JSXElement {
       signal,
     );
 
-    initInputListeners(signal);
     TestUI.init(
       {
         wordsLayout,
@@ -222,39 +211,7 @@ export function TestPage(): JSXElement {
             TestUI.focusWords();
           }}
         >
-          <textarea
-            id="wordsInput"
-            ref={(el) => (inputRef = el)}
-            class="full-width"
-            autocomplete="off"
-            // oxlint-disable-next-line react/no-unknown-property
-            autocapitalize="off"
-            // oxlint-disable-next-line react/no-unknown-property
-            autocorrect="off"
-            data-gramm="false"
-            data-gramm_editor="false"
-            data-enable-grammarly="false"
-            data-bwignore=""
-            data-1p-ignore=""
-            data-lpignore="true"
-            data-form-type="other"
-            // oxlint-disable-next-line react/no-unknown-property
-            spellcheck={false}
-            style={{ "font-size": fontSize() }}
-            onFocus={() => {
-              if (!isInputElementFocused()) return;
-              if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
-                setTestFocusState("focused");
-              }
-              Caret.show(true);
-            }}
-            onBlur={() => {
-              if (!isInputElementFocused()) {
-                setTestFocusState("unfocused");
-              }
-              Caret.hide();
-            }}
-          ></textarea>
+          <WordsInput />
           <div class="contents">
             <OutOfFocusWarning />
           </div>
