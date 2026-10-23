@@ -86,7 +86,7 @@ function mount(): {
   const disposeWords = render(
     () => (
       <Words
-        wordsWrapper={() => wordsWrapper}
+        wordsWrapperRef={() => wordsWrapper}
         onActiveWordLaidOut={TestUI.updateWordsInputPosition}
       />
     ),

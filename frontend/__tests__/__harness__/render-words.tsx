@@ -7,7 +7,7 @@ export function renderWords(): HTMLElement {
   let wordsWrapper: HTMLDivElement | undefined;
   const { container } = render(() => (
     <div ref={(el) => (wordsWrapper = el)}>
-      <Words wordsWrapper={() => wordsWrapper} />
+      <Words wordsWrapperRef={() => wordsWrapper} />
     </div>
   ));
   return container.querySelector("#words") as HTMLElement;

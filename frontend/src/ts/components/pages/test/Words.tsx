@@ -61,14 +61,14 @@ export function wordsModeClasses(): Record<string, boolean> {
 
 /** Renders #words with the test words, and lays them out (WordsLayout). */
 export function Words(props: {
-  wordsWrapper?: () => HTMLElement | undefined;
+  wordsWrapperRef?: () => HTMLElement | undefined;
   onActiveWordLaidOut?: () => void;
 }): JSXElement {
   let wordsRef: HTMLDivElement | undefined;
   // reads its elements lazily, they mount after it
   const layout = createWordsLayout({
     words: () => wordsRef,
-    wordsWrapper: () => props.wordsWrapper?.(),
+    wordsWrapper: () => props.wordsWrapperRef?.(),
     onActiveWordLaidOut: () => props.onActiveWordLaidOut?.(),
   });
   onCleanup(mountWordsLayout(layout));
