@@ -12,9 +12,10 @@ const CustomTextObjectSchema = z.record(
   z.object({
     text: z.string(),
     progress: z.number().optional(),
+    isPipeDelimiter: z.boolean().optional().default(false),
   }),
 );
-type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
+type CustomTextObject = z.input<typeof CustomTextObjectSchema>;
 
 function migrateCustomText(
   value: Record<string, unknown> | unknown[],
@@ -25,12 +26,16 @@ function migrateCustomText(
   const migrated: CustomTextObject = {};
   for (const [name, entry] of Object.entries(value)) {
     if (typeof entry === "string") {
-      migrated[name] = { text: entry };
+      migrated[name] = { text: entry, isPipeDelimiter: false };
     } else if (isObject(entry) && typeof entry["text"] === "string") {
-      migrated[name] =
-        typeof entry["progress"] === "number"
-          ? { text: entry["text"], progress: entry["progress"] }
-          : { text: entry["text"] };
+      const item: CustomTextObject[string] = {
+        text: entry["text"],
+        isPipeDelimiter: entry["isPipeDelimiter"] === true,
+      };
+      if (typeof entry["progress"] === "number") {
+        item.progress = entry["progress"];
+      }
+      migrated[name] = item;
     }
   }
   return migrated;
@@ -158,21 +163,34 @@ export function getCustomText(name: string, long = false): string[] {
   if (customText === undefined) {
     throw new Error(`Custom text ${name} not found`);
   }
-  return customText.text.split(/ +/);
+  return customText.text.split(customText.isPipeDelimiter ? "|" : / +/);
+}
+
+export function getCustomTextIsPipeDelimiter(
+  name: string,
+  long = false,
+): boolean {
+  const customText = (long ? getLocalStorageLong() : getLocalStorage())[name];
+  if (customText === undefined) {
+    throw new Error(`Custom text ${name} not found`);
+  }
+  return customText.isPipeDelimiter ?? false;
 }
 
 export function setCustomText(
   name: string,
   text: string | string[],
   long = false,
+  isPipeDelimiter = false,
 ): boolean {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  const textString = typeof text === "string" ? text : text.join(" ");
+  const textString =
+    typeof text === "string" ? text : text.join(isPipeDelimiter ? "|" : " ");
 
   customText[name] = long
-    ? { text: textString, progress: 0 }
-    : { text: textString };
+    ? { text: textString, progress: 0, isPipeDelimiter }
+    : { text: textString, isPipeDelimiter };
 
   return long ? setLocalStorageLong(customText) : setLocalStorage(customText);
 }

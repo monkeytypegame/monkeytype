@@ -27,7 +27,9 @@ describe("test/custom-text.ts", () => {
       CustomText.setCustomText("foo", "hello world");
       expect(
         JSON.parse(localStorage.getItem("customText") ?? "null"),
-      ).toStrictEqual({ foo: { text: "hello world" } });
+      ).toStrictEqual({
+        foo: { text: "hello world", isPipeDelimiter: false },
+      });
     });
 
     it("should store long custom text with initial progress 0", () => {
@@ -38,7 +40,9 @@ describe("test/custom-text.ts", () => {
       ]);
       expect(
         JSON.parse(localStorage.getItem("customTextLong") ?? "null"),
-      ).toStrictEqual({ bar: { text: "long text", progress: 0 } });
+      ).toStrictEqual({
+        bar: { text: "long text", progress: 0, isPipeDelimiter: false },
+      });
     });
 
     it("should store short and long custom texts separately", () => {
@@ -76,7 +80,9 @@ describe("test/custom-text.ts", () => {
       expect(CustomText.getCustomTextLongProgress("bar")).toBe(2);
       expect(
         JSON.parse(localStorage.getItem("customTextLong") ?? "null"),
-      ).toStrictEqual({ bar: { text: "a b c d", progress: 2 } });
+      ).toStrictEqual({
+        bar: { text: "a b c d", progress: 2, isPipeDelimiter: false },
+      });
     });
 
     it("should read progress back from localStorage", async () => {
@@ -129,6 +135,80 @@ describe("test/custom-text.ts", () => {
     });
   });
 
+  describe("pipe delimiter", () => {
+    it("should keep pipes in stored text and read it back as sections", () => {
+      expect(CustomText.setCustomText("t", "a|b c d|e", false, true)).toBe(
+        true,
+      );
+
+      expect(
+        JSON.parse(localStorage.getItem("customText") ?? "null"),
+      ).toStrictEqual({ t: { text: "a|b c d|e", isPipeDelimiter: true } });
+
+      expect(CustomText.getCustomText("t")).toStrictEqual(["a", "b c d", "e"]);
+      expect(CustomText.getCustomTextIsPipeDelimiter("t")).toBe(true);
+    });
+
+    it("should join word arrays with pipes when saving with the flag", () => {
+      expect(
+        CustomText.setCustomText("t", ["a", "b c d", "e"], false, true),
+      ).toBe(true);
+
+      expect(CustomText.getCustomText("t")).toStrictEqual(["a", "b c d", "e"]);
+      expect(CustomText.getCustomTextIsPipeDelimiter("t")).toBe(true);
+    });
+
+    it("should keep pipes in stored long text and track progress per section", () => {
+      CustomText.setCustomText("t", "a|b c d|e", true, true);
+      expect(CustomText.getCustomText("t", true)).toStrictEqual([
+        "a",
+        "b c d",
+        "e",
+      ]);
+
+      CustomText.setCustomTextLongProgress("t", 1);
+      const text = CustomText.getCustomText("t", true).slice(
+        CustomText.getCustomTextLongProgress("t"),
+      );
+      expect(text).toStrictEqual(["b c d", "e"]);
+      expect(CustomText.getCustomTextIsPipeDelimiter("t", true)).toBe(true);
+    });
+
+    it("should default isPipeDelimiter to false for legacy entries", async () => {
+      localStorage.setItem(
+        "customText",
+        JSON.stringify({ t: { text: "a|b c d|e" } }),
+      );
+      vi.resetModules();
+      CustomText = await import("../../src/ts/test/custom-text");
+
+      expect(CustomText.getCustomTextIsPipeDelimiter("t")).toBe(false);
+      // without the flag, pipes are just characters inside words
+      expect(CustomText.getCustomText("t")).toStrictEqual(["a|b", "c", "d|e"]);
+    });
+
+    it("should keep the flag when migrating mixed legacy entries", async () => {
+      localStorage.setItem(
+        "customText",
+        JSON.stringify({
+          legacy: "old text",
+          pipe: { text: "a|b c d|e", isPipeDelimiter: true },
+        }),
+      );
+      vi.resetModules();
+      CustomText = await import("../../src/ts/test/custom-text");
+
+      expect(CustomText.getCustomText("legacy")).toStrictEqual(["old", "text"]);
+      expect(CustomText.getCustomTextIsPipeDelimiter("legacy")).toBe(false);
+      expect(CustomText.getCustomText("pipe")).toStrictEqual([
+        "a",
+        "b c d",
+        "e",
+      ]);
+      expect(CustomText.getCustomTextIsPipeDelimiter("pipe")).toBe(true);
+    });
+  });
+
   describe("migration to the unified schema", () => {
     it("should migrate old short custom text (string values) to objects", () => {
       localStorage.setItem(
@@ -146,7 +226,10 @@ describe("test/custom-text.ts", () => {
       // migrated value written back to localStorage
       expect(
         JSON.parse(localStorage.getItem("customText") ?? "null"),
-      ).toStrictEqual({ old: { text: "old text" }, other: { text: "x y z" } });
+      ).toStrictEqual({
+        old: { text: "old text", isPipeDelimiter: false },
+        other: { text: "x y z", isPipeDelimiter: false },
+      });
     });
 
     it("should keep progress when migrating old long custom text", () => {
