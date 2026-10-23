@@ -75,6 +75,10 @@ export type WordsInputPosition = {
 export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ top: 0, left: 0 });
 
+// dev options: shows #wordsInput below the words
+export const [isRealWordsInputShown, setRealWordsInputShown] =
+  createSignal(false);
+
 // bound to #words / #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);

@@ -20,12 +20,14 @@ import {
   preventDefault,
 } from "../../../input/listeners/misc";
 import {
+  isRealWordsInputShown,
   isTestFinished,
   setTestFocusState,
   wordsInputPosition,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
 import * as TestUI from "../../../test/test-ui";
+import { cn } from "../../../utils/cn";
 
 /**
  * The hidden textarea the typing test reads input from (#wordsInput). Follows
@@ -54,7 +56,10 @@ export function WordsInput(): JSXElement {
     <textarea
       id="wordsInput"
       ref={(el) => (inputRef = el)}
-      class="full-width"
+      // important: #wordsInput's stylesheet rules beat utility classes
+      class={cn("full-width", {
+        "mt-[1.5em]! caret-error! opacity-100!": isRealWordsInputShown(),
+      })}
       autocomplete="off"
       autocapitalize="off"
       autocorrect="off"
