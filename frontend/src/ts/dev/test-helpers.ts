@@ -1,6 +1,5 @@
 // Typing test helpers for `window.__mt` (browser QA and profiling).
-import { commands } from "../commandline/lists";
-import { Command } from "../commandline/types";
+import type { Command } from "../commandline/types";
 import { setConfig } from "../config/setters";
 import { Config } from "../config/store";
 import { getInputElement } from "../input/input-element";
@@ -217,6 +216,8 @@ function findCommand(id: string, list: Command[]): Command | undefined {
  * `set<ConfigKey>Custom` inputs (eg. setFontSizeCustom).
  */
 export async function runCommand(id: string, input?: string): Promise<void> {
+  // lazy: the lists open indexedDB on import, expose loads in jsdom tests
+  const { commands } = await import("../commandline/lists");
   const command = findCommand(id, commands.list);
   if (command?.exec === undefined) {
     throw new Error(`No executable commandline command "${id}"`);
