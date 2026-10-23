@@ -34,6 +34,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
   updatePosition: caretUpdatePosition,
 }));
 
+import type { WordsLayout } from "../../src/ts/components/pages/test/words-layout";
+
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { __testing as configTesting } from "../../src/ts/config/testing";
@@ -69,12 +71,14 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts WordsInput and #words with Words inside, bound to test-ui like TestPage does. */
-function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
+/** Mounts WordsInput and Words (#words), bound to test-ui like TestPage does. */
+function mount(): {
+  words: HTMLElement;
+  input: HTMLTextAreaElement;
+  layout: WordsLayout;
+} {
   const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
-  const words = document.createElement("div");
-  wordsWrapper.append(words);
   typingTest.append(wordsWrapper);
   document.body.append(typingTest);
 
@@ -82,11 +86,26 @@ function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
   const disposeInput = render(() => <WordsInput />, wordsWrapper);
   const input = wordsWrapper.querySelector<HTMLTextAreaElement>("#wordsInput");
   if (input === null) throw new Error("WordsInput not mounted");
-  const disposeWords = render(() => <Words />, words);
+  let wordsLayout: WordsLayout | undefined;
+  const disposeWords = render(
+    () => (
+      <Words
+        layoutRef={(layout) => (wordsLayout = layout)}
+        wordsWrapperRef={() => wordsWrapper}
+        onActiveWordLaidOut={TestUI.updateWordsInputPosition}
+      />
+    ),
+    wordsWrapper,
+  );
+  const words = wordsWrapper.querySelector<HTMLElement>("#words");
+  if (words === null || wordsLayout === undefined) {
+    throw new Error("Words not mounted");
+  }
+  const layout = wordsLayout;
   createRoot((dispose) => {
     TestUI.init(
       {
-        words: new ElementWithUtils(words),
+        wordsLayout: layout,
         wordsWrapper: new ElementWithUtils(wordsWrapper),
         typingTest: new ElementWithUtils(typingTest),
       },
@@ -100,7 +119,7 @@ function mount(): { words: HTMLElement; input: HTMLTextAreaElement } {
       typingTest.remove();
     });
   });
-  return { words, input };
+  return { words, input, layout };
 }
 
 function childClasses(words: HTMLElement): string[] {
@@ -249,10 +268,12 @@ describe("test-ui words rendering", () => {
   });
 
   it("breaks the joining of every word passed within one frame", () => {
-    const { words } = mount();
+    const { words, layout } = mount();
     for (let i = 0; i < 5; i++) appendRenderedWord("word");
     setActiveWord(0);
     runFrames();
+    // a restart lays out the first active word
+    layout.layout({ wordChange: "initial", updatedWords: [], snapCaret: true });
     joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {

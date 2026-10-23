@@ -22,3 +22,37 @@ export function unregisterWordElement(index: number, el: HTMLElement): void {
 export function getWordElement(index: number): HTMLElement | undefined {
   return wordElements.get(index);
 }
+
+/** The elements of a word's line break (.beforeNewline/.newline/.afterNewline). */
+export type LineBreakElements = {
+  before: HTMLElement;
+  after: HTMLElement;
+};
+
+/**
+ * Rendered line break elements by the index of the word ending the line,
+ * registered by the Words component while mounted.
+ */
+const lineBreakElements = new Map<number, LineBreakElements>();
+
+export function registerLineBreakElements(
+  index: number,
+  els: LineBreakElements,
+): void {
+  lineBreakElements.set(index, els);
+}
+
+export function unregisterLineBreakElements(
+  index: number,
+  els: LineBreakElements,
+): void {
+  // a remount may have registered new elements already
+  if (lineBreakElements.get(index) === els) lineBreakElements.delete(index);
+}
+
+/** The line break ending the word's line, as of the last words flush. */
+export function getLineBreakElements(
+  index: number,
+): LineBreakElements | undefined {
+  return lineBreakElements.get(index);
+}
