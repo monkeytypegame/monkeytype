@@ -271,8 +271,8 @@ export function TestPage(): JSXElement {
             style={{ "font-size": fontSize() }}
           ></div>
           <Words
-            onLayout={(layout) => (wordsLayout = layout)}
-            wordsWrapper={() => wordsWrapperRef}
+            layoutRef={(layout) => (wordsLayout = layout)}
+            wordsWrapperRef={() => wordsWrapperRef}
             onActiveWordLaidOut={TestUI.updateWordsInputPosition}
           />
         </div>

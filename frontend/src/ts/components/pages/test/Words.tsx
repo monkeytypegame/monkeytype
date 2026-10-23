@@ -52,20 +52,20 @@ export function wordsModeClasses(): Record<string, boolean> {
 /** Renders #words with the test words, and lays them out (WordsLayout). */
 export function Words(props: {
   /** receives the layout, before any onMount runs */
-  onLayout?: (layout: WordsLayout) => void;
-  wordsWrapper?: () => HTMLElement | undefined;
+  layoutRef?: (layout: WordsLayout) => void;
+  wordsWrapperRef?: () => HTMLElement | undefined;
   onActiveWordLaidOut?: () => void;
 }): JSXElement {
   let wordsRef: HTMLDivElement | undefined;
   // reads its elements lazily: handed out now, before any onMount runs
   const layout = createWordsLayout({
     words: () => wordsRef,
-    wordsWrapper: () => props.wordsWrapper?.(),
+    wordsWrapper: () => props.wordsWrapperRef?.(),
     onActiveWordLaidOut: () => props.onActiveWordLaidOut?.(),
   });
   // handed out once, like a ref
   // oxlint-disable-next-line solid/reactivity
-  props.onLayout?.(layout);
+  props.layoutRef?.(layout);
   // drops a line jump still animating
   onCleanup(() => layout.reset());
 
