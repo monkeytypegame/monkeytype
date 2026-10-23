@@ -1,6 +1,6 @@
 import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
-import { createWordsRenderBuffer } from "./words-render-buffer";
+import { createFrameBuffer } from "../utils/frame-buffer";
 
 /**
  * Display state of the test words (#words). A view cache: the event log stays
@@ -67,27 +67,29 @@ const [store, setStore] = createStore<WordsRenderState>({
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
 
-const buffer = createWordsRenderBuffer();
-let pendingFrame: number | undefined;
+type Buffer = {
+  truncateTo: number | undefined;
+  appended: string[];
+  inputs: Map<number, { input: string; composition: string }>;
+  activeWordIndex: number | undefined;
+  typed: Map<number, boolean>;
+};
+
+const buffer = createFrameBuffer<Buffer>(
+  () => ({
+    truncateTo: undefined,
+    appended: [],
+    inputs: new Map(),
+    activeWordIndex: undefined,
+    typed: new Map(),
+  }),
+  applyBuffer,
+);
 let layoutHook: (() => void) | undefined;
 
 /** Runs after every flush, once the DOM reflects the store. */
 export function setLayoutHook(hook: (() => void) | undefined): void {
   layoutHook = hook;
-}
-
-function scheduleFlush(): void {
-  if (pendingFrame !== undefined) return;
-  pendingFrame = requestAnimationFrame(() => {
-    pendingFrame = undefined;
-    flushWordsRender();
-  });
-}
-
-function cancelPendingFlush(): void {
-  if (pendingFrame === undefined) return;
-  cancelAnimationFrame(pendingFrame);
-  pendingFrame = undefined;
 }
 
 function newWord(index: number, text: string): RenderedWord {
@@ -104,9 +106,10 @@ function newWord(index: number, text: string): RenderedWord {
 
 /** Applies the buffer now, then runs the layout hook. */
 export function flushWordsRender(): void {
-  cancelPendingFlush();
-  const b = buffer.take();
+  buffer.flush();
+}
 
+function applyBuffer(b: Buffer): void {
   batch(() => {
     let endsLine = false;
     // 1. structure: truncate, then append
@@ -155,12 +158,11 @@ export function flushWordsRender(): void {
 
 /** Input written for a word that hasn't been flushed yet. */
 export function getPendingWordInput(index: number): string | undefined {
-  return buffer.getPendingInput(index);
+  return buffer.peek().inputs.get(index)?.input;
 }
 
 export function appendRenderedWord(text: string): void {
-  buffer.append(text);
-  scheduleFlush();
+  buffer.write((b) => b.appended.push(text));
 }
 
 export function setWordInput(
@@ -168,18 +170,15 @@ export function setWordInput(
   input: string,
   composition = "",
 ): void {
-  buffer.setInput(index, input, composition);
-  scheduleFlush();
+  buffer.write((b) => b.inputs.set(index, { input, composition }));
 }
 
 export function setActiveWord(index: number): void {
-  buffer.setActiveWord(index);
-  scheduleFlush();
+  buffer.write((b) => (b.activeWordIndex = index));
 }
 
 export function setWordTyped(index: number, isTyped: boolean): void {
-  buffer.setTyped(index, isTyped);
-  scheduleFlush();
+  buffer.write((b) => b.typed.set(index, isTyped));
 }
 
 /**
@@ -222,15 +221,29 @@ export function firstMountedIndex(): number {
 
 /** Drops all words from `length` on (zen backspace). */
 export function truncateWords(length: number): void {
-  if (!buffer.truncate(length, store.words.length)) return;
-  scheduleFlush();
+  const pending = buffer.peek();
+  const committed = pending.truncateTo ?? store.words.length;
+  if (length >= committed + pending.appended.length) return;
+  buffer.write((b) => {
+    if (length < committed) {
+      b.truncateTo = length;
+      b.appended = [];
+    } else {
+      b.appended.length = length - committed;
+    }
+    for (const index of [...b.inputs.keys()]) {
+      if (index >= length) b.inputs.delete(index);
+    }
+    for (const index of [...b.typed.keys()]) {
+      if (index >= length) b.typed.delete(index);
+    }
+  });
 }
 
 /** Cancels a pending flush, clears the buffer and empties the store. */
 export function resetWordsRender(
   options: { zen?: boolean; marksRtlWords?: boolean } = {},
 ): void {
-  cancelPendingFlush();
   buffer.clear();
   setStore({
     words: [],
