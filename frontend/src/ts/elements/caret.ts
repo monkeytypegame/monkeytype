@@ -2,10 +2,11 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
 import { isWordRightToLeft } from "../utils/strings";
-import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
+import { getWordElement } from "../states/word-elements";
+import { isRtlCheckedByLetter } from "../states/test";
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -28,7 +29,6 @@ export function toggleCaretDebug(): void {
 export class Caret {
   private id: string;
   private element: ElementWithUtils;
-  private wordsEl: ElementWithUtils;
   private wordsWrapperEl: ElementWithUtils;
   private style: CaretStyle = "default";
   private readyToResetMarginTop: boolean = false;
@@ -43,11 +43,10 @@ export class Caret {
   constructor(
     element: ElementWithUtils,
     style: CaretStyle,
-    refs: { words: ElementWithUtils; wordsWrapper: ElementWithUtils },
+    refs: { wordsWrapper: ElementWithUtils },
   ) {
     this.id = element.native.id;
     this.element = element;
-    this.wordsEl = refs.words;
     this.wordsWrapperEl = refs.wordsWrapper;
     this.setStyle(style);
     if (this.id === "caret") {
@@ -288,107 +287,102 @@ export class Caret {
     };
   }): void {
     if (this.style === "off") return;
-    requestDebouncedAnimationFrame(`caret.${this.id}.goTo`, () => {
-      const word = this.wordsEl.qs(
-        `.word[data-wordindex="${options.wordIndex}"]`,
-      );
-      const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
-      const wordLength = Array.from(wordText).length;
+    const wordEl = getWordElement(options.wordIndex);
+    const word = wordEl === undefined ? null : new ElementWithUtils(wordEl);
+    const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
+    const wordLength = Array.from(wordText).length;
 
-      // caret can be either on the left side of the target letter or the right
-      // we stick to the left side unless we are on the last letter or beyond
-      // then we switch to the right side
+    // caret can be either on the left side of the target letter or the right
+    // we stick to the left side unless we are on the last letter or beyond
+    // then we switch to the right side
 
-      // we also clamp the letterIndex to be within the range of actual letters
-      // anything beyond just goes to the edge of the word
-      let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-      if (Config.mode === "zen") {
-        if (options.letterIndex > 0) {
-          side = "afterLetter";
+    // we also clamp the letterIndex to be within the range of actual letters
+    // anything beyond just goes to the edge of the word
+    let side: "beforeLetter" | "afterLetter" = "beforeLetter";
+    if (Config.mode === "zen") {
+      if (options.letterIndex > 0) {
+        side = "afterLetter";
+        options.letterIndex -= 1;
+      }
+    } else {
+      if (options.letterIndex >= wordLength) {
+        side = "afterLetter";
+
+        if (Config.blindMode || Config.hideExtraLetters) {
+          options.letterIndex = wordLength - 1;
+        } else {
           options.letterIndex -= 1;
         }
-      } else {
-        if (options.letterIndex >= wordLength) {
-          side = "afterLetter";
-
-          if (Config.blindMode || Config.hideExtraLetters) {
-            options.letterIndex = wordLength - 1;
-          } else {
-            options.letterIndex -= 1;
-          }
-        }
       }
+    }
 
-      if (options.letterIndex < 0) {
-        options.letterIndex = 0;
-      }
+    if (options.letterIndex < 0) {
+      options.letterIndex = 0;
+    }
 
-      if (word === null) return;
+    if (word === null) return;
 
-      const { left, top, width } = this.getTargetPositionAndWidth({
-        word,
-        letterIndex: options.letterIndex,
-        wordText,
-        side,
-        isLanguageRightToLeft: options.isLanguageRightToLeft,
-        isDirectionReversed: options.isDirectionReversed,
-      });
-
-      // animation uses inline styles, so its fine to read inline here instead
-      // of computed styles which would be much slower
-
-      // if the margin animation finished, we reset it here by removing the margin
-      // and offsetting the top by the same amount
-      let currentMarginTop = parseFloat(
-        this.element.getStyle().marginTop || "0",
-      );
-      if (this.readyToResetMarginTop) {
-        this.readyToResetMarginTop = false;
-        const currentTop = parseFloat(this.element.getStyle().top || "0");
-
-        this.element.setStyle({
-          marginTop: "0px",
-          top: `${currentTop + currentMarginTop}px`,
-        });
-        currentMarginTop = 0;
-      }
-
-      // same for marginLeft
-      let currentMarginLeft = parseFloat(
-        this.element.getStyle().marginLeft || "0",
-      );
-      if (this.readyToResetMarginLeft) {
-        this.readyToResetMarginLeft = false;
-        const currentLeft = parseFloat(this.element.getStyle().left || "0");
-
-        this.element.setStyle({
-          marginLeft: "0px",
-          left: `${currentLeft + currentMarginLeft}px`,
-        });
-        this.cumulativeTapeMarginCorrection += currentMarginLeft;
-        currentMarginLeft = 0;
-      }
-
-      /**
-       * we subtract the margin from the target position in order to arrive at the intended location
-       * if my margin is +20 and I wanna go to +50, then if I set my inline style left/top to +50
-       * I will arrive to +70. However if I set it to (50 - 20), my left/top will be +30 and my margin
-       * will be +20 and I will end up at (30 + 20) = 50
-       */
-
-      const animateOrPositionOptions = {
-        left: left - currentMarginLeft,
-        top: top - currentMarginTop,
-        ...(this.isFullWidth() && { width }),
-        ...(options.animate && options.animationOptions),
-      };
-
-      if (options.animate) {
-        this.animatePosition(animateOrPositionOptions);
-      } else {
-        this.setPosition(animateOrPositionOptions);
-      }
+    const { left, top, width } = this.getTargetPositionAndWidth({
+      word,
+      letterIndex: options.letterIndex,
+      wordText,
+      side,
+      isLanguageRightToLeft: options.isLanguageRightToLeft,
+      isDirectionReversed: options.isDirectionReversed,
     });
+
+    // animation uses inline styles, so its fine to read inline here instead
+    // of computed styles which would be much slower
+
+    // if the margin animation finished, we reset it here by removing the margin
+    // and offsetting the top by the same amount
+    let currentMarginTop = parseFloat(this.element.getStyle().marginTop || "0");
+    if (this.readyToResetMarginTop) {
+      this.readyToResetMarginTop = false;
+      const currentTop = parseFloat(this.element.getStyle().top || "0");
+
+      this.element.setStyle({
+        marginTop: "0px",
+        top: `${currentTop + currentMarginTop}px`,
+      });
+      currentMarginTop = 0;
+    }
+
+    // same for marginLeft
+    let currentMarginLeft = parseFloat(
+      this.element.getStyle().marginLeft || "0",
+    );
+    if (this.readyToResetMarginLeft) {
+      this.readyToResetMarginLeft = false;
+      const currentLeft = parseFloat(this.element.getStyle().left || "0");
+
+      this.element.setStyle({
+        marginLeft: "0px",
+        left: `${currentLeft + currentMarginLeft}px`,
+      });
+      this.cumulativeTapeMarginCorrection += currentMarginLeft;
+      currentMarginLeft = 0;
+    }
+
+    /**
+     * we subtract the margin from the target position in order to arrive at the intended location
+     * if my margin is +20 and I wanna go to +50, then if I set my inline style left/top to +50
+     * I will arrive to +70. However if I set it to (50 - 20), my left/top will be +30 and my margin
+     * will be +20 and I will end up at (30 + 20) = 50
+     */
+
+    const animateOrPositionOptions = {
+      left: left - currentMarginLeft,
+      top: top - currentMarginTop,
+      ...(this.isFullWidth() && { width }),
+      ...(options.animate && options.animationOptions),
+    };
+
+    if (options.animate) {
+      this.animatePosition(animateOrPositionOptions);
+    } else {
+      this.setPosition(animateOrPositionOptions);
+    }
   }
 
   private getTargetPositionAndWidth(options: {
@@ -429,12 +423,8 @@ export class Caret {
       this.element.removeClass("debug");
     }
 
-    // in zen, custom or polyglot mode we need to check per-letter
-    const checkRtlByLetter =
-      Config.mode === "zen" ||
-      Config.mode === "custom" ||
-      Config.funbox.includes("polyglot");
-    const [isWordRTL, isFullMatch] = isWordRightToLeft(
+    const checkRtlByLetter = isRtlCheckedByLetter();
+    const [isWordRTL] = isWordRightToLeft(
       checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
       options.isLanguageRightToLeft,
       options.isDirectionReversed,
@@ -471,7 +461,6 @@ export class Caret {
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (isWordRTL) {
-      if (!checkRtlByLetter && isFullMatch) options.word.addClass("wordRtl");
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {

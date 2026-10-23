@@ -7,6 +7,10 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 }));
 
 import { __testing as configTesting } from "../../src/ts/config/testing";
+import {
+  registerWordElement,
+  unregisterWordElement,
+} from "../../src/ts/states/word-elements";
 import * as TestUI from "../../src/ts/test/test-ui";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
@@ -56,6 +60,7 @@ function renderWords(count: number): HTMLElement {
       "beforeend",
       `<div class="word" data-wordindex="${i}"><letter>a</letter></div>`,
     );
+    registerWordElement(i, words.lastElementChild as HTMLElement);
   }
   wordsWrapper.append(words);
   typingTest.append(wordsWrapper);
@@ -74,6 +79,12 @@ function renderWords(count: number): HTMLElement {
     cleanups.push(() => {
       controller.abort();
       dispose();
+      for (const el of words.children) {
+        unregisterWordElement(
+          Number((el as HTMLElement).dataset["wordindex"]),
+          el as HTMLElement,
+        );
+      }
       typingTest.remove();
     });
   });
