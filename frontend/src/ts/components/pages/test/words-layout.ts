@@ -737,7 +737,7 @@ export function createWordsLayout(options: {
    * New words or a config change: lays everything out from scratch. Measures
    * #words, so it has to run after the config classes are applied.
    */
-  function relayout(): void {
+  function layOutAll(): void {
     // lay out unblurred, the out of focus state is restored below
     setTestFocusState("focused");
     updateWordsWrapperHeight(true);
@@ -749,8 +749,11 @@ export function createWordsLayout(options: {
     if (!isInputElementFocused()) setTestFocusState("unfocused");
   }
 
-  /** The words are replaced: drops async layout started for the old ones. */
-  function reset(): void {
+  /**
+   * The words are replaced: drops async layout started for the old ones and
+   * their layout state. Measures nothing.
+   */
+  function dropOldWordsLayout(): void {
     invalidateAsyncLayout();
     // a reset can come before #words mounts
     const words = options.words();
@@ -758,13 +761,13 @@ export function createWordsLayout(options: {
     currentTestLine = 0;
     laidOutActiveWordIndex = undefined;
   }
-  onCleanup(onWordsReset(reset));
+  onCleanup(onWordsReset(dropOldWordsLayout));
   // drops a line jump still animating
-  onCleanup(reset);
+  onCleanup(dropOldWordsLayout);
 
   /** The new words' first flush: lays them out from scratch. */
   function layOutNewWords(): void {
-    relayout();
+    layOutAll();
     void layoutActiveWord("initial");
     // the caret snaps to the new words
     Caret.updatePosition(true);
@@ -784,12 +787,11 @@ export function createWordsLayout(options: {
     Caret.updatePosition(false);
   }
 
-  /** Lays out what a words flush changed. */
-  function updateLayout(flush: WordsFlush): void {
-    if (flush.newWords) layOutNewWords();
-    else layOutChange(flush);
-  }
-  onCleanup(onWordsFlushed(updateLayout));
+  onCleanup(
+    onWordsFlushed((flush) =>
+      flush.newWords ? layOutNewWords() : layOutChange(flush),
+    ),
+  );
 
   // effects run after the bindings, so the new config classes are applied
   createEffect(
@@ -808,7 +810,7 @@ export function createWordsLayout(options: {
         getConfig.maxLineWidth,
         getConfig.tapeMargin,
       ],
-      relayout,
+      layOutAll,
       { defer: true },
     ),
   );
