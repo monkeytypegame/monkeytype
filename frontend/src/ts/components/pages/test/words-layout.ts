@@ -776,7 +776,7 @@ export function createWordsLayout(options: {
    * Lays out what a words flush changed: new words from scratch, else the
    * active word moving and the words whose input changed.
    */
-  function layOutFlush(flush: WordsFlush): void {
+  function updateLayout(flush: WordsFlush): void {
     if (flush.newWords) {
       resetIfReplaced();
       relayout();
@@ -796,7 +796,7 @@ export function createWordsLayout(options: {
     // new words: the caret snaps to them
     Caret.updatePosition(flush.newWords);
   }
-  onCleanup(onWordsFlushed(layOutFlush));
+  onCleanup(onWordsFlushed(updateLayout));
 
   // effects run after the bindings, so the new config classes are applied
   createEffect(
