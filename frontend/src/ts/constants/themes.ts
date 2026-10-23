@@ -1024,6 +1024,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#e32b2b",
     colorfulErrorExtra: "#a62626",
   },
+  klein_blue: {
+    bg: "#002fa7",
+    caret: "#d9dce1",
+    main: "#d9dce1",
+    sub: "#ffffff",
+    subAlt: "#132186",
+    text: "#d9dce1",
+    error: "#c34811",
+    errorExtra: "#89330b",
+    colorfulError: "#c34811",
+    colorfulErrorExtra: "#89330b",
+  },
   laser: {
     bg: "#221b44",
     caret: "#009eaf",
