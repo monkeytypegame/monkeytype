@@ -78,8 +78,7 @@ export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
 // WordsInput scrolls #wordsInput to the window center on each request
-export const [wordsInputCenterTrigger, requestWordsInputCenter] =
-  createTrigger();
+export const [trackWordsInputCenter, triggerWordsInputCenter] = createTrigger();
 
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =

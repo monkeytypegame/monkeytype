@@ -43,7 +43,7 @@ import {
   getCompositionData,
   highlightKeymapKey,
   setWordsInputPosition,
-  requestWordsInputCenter,
+  triggerWordsInputCenter,
 } from "../states/test";
 import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
@@ -74,7 +74,7 @@ export function focusWords(force = false): void {
   }
   focusInputElement(true);
   if (isTestActive()) {
-    requestWordsInputCenter();
+    triggerWordsInputCenter();
   } else {
     Misc.scrollToCenterOrTop(typingTestEl().native);
   }

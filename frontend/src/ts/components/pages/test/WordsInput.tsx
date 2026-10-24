@@ -23,7 +23,7 @@ import {
   isRealWordsInputShown,
   isTestFinished,
   setTestFocusState,
-  wordsInputCenterTrigger,
+  trackWordsInputCenter,
   wordsInputPosition,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
@@ -69,7 +69,7 @@ export function WordsInput(): JSXElement {
     on(wordsInputPosition, () => keepInTheCenter(false), { defer: true }),
   );
   createEffect(
-    on(wordsInputCenterTrigger, () => keepInTheCenter(true), { defer: true }),
+    on(trackWordsInputCenter, () => keepInTheCenter(true), { defer: true }),
   );
 
   const px = (value: number | undefined): string | undefined =>

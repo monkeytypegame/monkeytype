@@ -15,7 +15,7 @@ import {
   isTestActive,
   isTestFinished,
   isTestRightToLeft,
-  requestWordsInputCenter,
+  triggerWordsInputCenter,
   setOutOfFocusMaxHeight,
   setTestFocusState,
   setWordsInputPosition,
@@ -898,7 +898,7 @@ export function createWordsLayout(options: {
     if (generation !== layoutGeneration) return;
     positionWordsInput();
     focusInputElement(true);
-    if (isTestActive()) requestWordsInputCenter();
+    if (isTestActive()) triggerWordsInputCenter();
     Caret.show();
   });
   // the caret is hidden while resizing, shown once the words are laid out
