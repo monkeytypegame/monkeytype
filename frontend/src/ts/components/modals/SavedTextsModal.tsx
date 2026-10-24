@@ -14,7 +14,11 @@ import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 
 type CustomTextIncomingData =
-  | ({ set?: boolean; long?: boolean } & (
+  | ({
+      set?: boolean;
+      long?: boolean;
+      pipeDelimiter?: boolean;
+    } & (
       | { text: string; splitText?: never }
       | { text?: never; splitText: string[] }
     ))
@@ -25,7 +29,9 @@ function getSavedText(name: string, long: boolean): string {
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  return text.join(" ");
+  return text.join(
+    CustomText.getCustomTextIsPipeDelimiter(name, long) ? "|" : " ",
+  );
 }
 
 export function SavedTextsModal(props: {
@@ -47,7 +53,11 @@ export function SavedTextsModal(props: {
   const handleNameClick = (name: string, long: boolean) => {
     setCustomTextIndicator({ name, isLong: long });
     const text = getSavedText(name, long);
-    props.setChainedData({ text, long });
+    props.setChainedData({
+      text,
+      long,
+      pipeDelimiter: CustomText.getCustomTextIsPipeDelimiter(name, long),
+    });
     hideModal("SavedTexts");
   };
 
@@ -76,6 +86,9 @@ export function SavedTextsModal(props: {
       execFn: async () => {
         CustomText.setCustomTextLongProgress(name, 0);
         const text = CustomText.getCustomText(name, true);
+        CustomText.setPipeDelimiter(
+          CustomText.getCustomTextIsPipeDelimiter(name, true),
+        );
         CustomText.setText(text);
         refresh();
         return {
@@ -90,7 +103,14 @@ export function SavedTextsModal(props: {
     const text = CustomText.getCustomText(name, long);
 
     try {
-      const data = new Blob([text.join(" ")], { type: "text/plain" });
+      const data = new Blob(
+        [
+          text.join(
+            CustomText.getCustomTextIsPipeDelimiter(name, long) ? "|" : " ",
+          ),
+        ],
+        { type: "text/plain" },
+      );
       download({ filename: `${name}.txt`, data });
       showSuccessNotification("custom text downloaded");
     } catch (e) {

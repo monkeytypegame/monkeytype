@@ -124,7 +124,7 @@ export function getInputFromDom(events: TestEventNoMs[]): string {
   let lastInputEvent: InputEventNoMs | undefined;
   for (let i = events.length - 1; i >= 0; i--) {
     const e = events[i];
-    if (e !== undefined && e.type === "input") {
+    if (e?.type === "input") {
       lastInputEvent = e;
       break;
     }

@@ -1,11 +1,7 @@
 import * as Caret from "./caret";
-import * as LiveSpeed from "./live-speed";
-import * as LiveBurst from "./live-burst";
-import * as LiveAcc from "./live-acc";
-import * as TimerProgress from "./timer-progress";
-import * as PageTransition from "../legacy-states/page-transition";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { getFocus, setFocus } from "../states/test";
+import { isInitialLoad } from "../states/router";
 import { qsa, ElementsWithUtils } from "../utils/dom";
 
 const unfocusPx = 3;
@@ -19,27 +15,25 @@ let cache: {
 function initializeCache(): void {
   if (cacheReady) return;
 
-  const elementsSelector = [
-    "app",
-    "footer",
-    "main",
-    "#bannerCenter",
-    "#ad-vertical-right-wrapper",
-    "#ad-vertical-left-wrapper",
-    "#ad-footer-wrapper",
-    "#ad-footer-small-wrapper",
-  ].join(",");
+  const elementsSelector = ["app", "footer", "main", "#bannerCenter"].join(",");
 
   cache.focus = qsa(elementsSelector);
 
   cacheReady = true;
 }
 
+// value of a set() call still waiting for its animation frame
+let pendingValue: boolean | undefined;
+
 // with cursor is a special case that is only used on the initial page load
 // to avoid the cursor being invisible and confusing the user
 export function set(value: boolean, withCursor = false): void {
-  if (value === getFocus()) return;
+  // compare against the pending value too, otherwise set(false) right after
+  // set(true) is ignored and the pending set(true) still applies
+  if (value === (pendingValue ?? getFocus())) return;
+  pendingValue = value;
   requestDebouncedAnimationFrame("focus.set", () => {
+    pendingValue = undefined;
     initializeCache();
     cache.cursor = qsa("body, button, a");
 
@@ -55,10 +49,6 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.stopAnimation();
-      LiveSpeed.show();
-      LiveBurst.show();
-      LiveAcc.show();
-      TimerProgress.show();
     } else if (!value && getFocus()) {
       setFocus(false);
 
@@ -70,17 +60,13 @@ export function set(value: boolean, withCursor = false): void {
       }
 
       Caret.startAnimation();
-      LiveSpeed.hide();
-      LiveBurst.hide();
-      LiveAcc.hide();
-      TimerProgress.hide();
     }
   });
 }
 
 document.addEventListener("mousemove", function (event) {
-  if (PageTransition.get()) return;
   if (!getFocus()) return;
+  if (isInitialLoad()) return;
   if (
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
     event.movementX > unfocusPx ||

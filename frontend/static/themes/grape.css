@@ -47,7 +47,7 @@
 
 [data-ui-element="logoSubtext"],
 [data-ui-element="logo"]:hover h1,
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {
@@ -75,6 +75,7 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 }
 
 #words .word.typed letter.correct,
+#words.blind .word.typed letter,
 #words.highlight-word .word.typed letter,
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,

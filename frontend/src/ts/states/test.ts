@@ -1,19 +1,22 @@
-import { createEffect, createMemo, createSignal } from "solid-js";
+import { createEffect, createMemo, createSignal, on } from "solid-js";
+import { z } from "zod";
 import { getConfig } from "../config/store";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { EventLog } from "../test/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
-import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { getData as getCustomTextData } from "../test/custom-text";
+import * as CustomText from "../test/custom-text";
+import { isTestPageMounted } from "../test/test-page-state";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getActivePage, getCustomTextIndicator } from "./core";
+import { getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
@@ -23,12 +26,18 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from TestLogic.finish() (before the result is built) until restart()
+// fades the result out. Whether the result is on screen: isResultShown()
+export const [isTestFinished, setTestFinished] = createSignal(false);
+// True from the first line of TestLogic.finish() until the result is built, so
+// it covers the words fade-out that isTestFinished() is still false during.
+export const [isResultCalculating, setResultCalculating] = createSignal(false);
+// Set when the user bails out of a test early; reset by TestLogic.restart().
+export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// #words is still vanilla so it's blurred imperatively (see test/test-ui);
-// the Solid-owned composition display + OutOfFocusWarning read this signal.
+// read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
-export type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
+type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
   createSignalWithSetters<TestFocusState>("focused")({
     setTestFocusState: (set, val: TestFocusState) => {
@@ -49,19 +58,97 @@ export const showOutOfFocusWarning = createMemo(
   () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
 );
 
-// max-height of the warning, kept in sync with the words wrapper by test-ui.
+// max-height of the warning, kept in sync with the words wrapper by the words layout.
 export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
+/** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
+export type WordsInputPosition = {
+  top: number;
+  left: number;
+  width?: number;
+  maxWidth?: number;
+};
+
+// bound to #wordsInput by WordsInput, follows the active word
+export const [wordsInputPosition, setWordsInputPosition] =
+  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+
+// dev options: shows #wordsInput below the words
+export const [isRealWordsInputShown, setRealWordsInputShown] =
+  createSignal(false);
+
+// bound to #words by Words, #wordsWrapper by TestPage.
+// Other modules write here instead of touching the DOM directly.
+export const [isWordsHidden, setWordsHidden] = createSignal(false);
+export const [isWordsWrapperHidden, setWordsWrapperHidden] =
+  createSignal(false);
+export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
+export const [isErrorBorderDisabled, setErrorBorderDisabled] =
+  createSignal(false);
+// hidden between the words fading out and the next restart
+export const [isTypingTestHidden, setTypingTestHidden] = createSignal(false);
+// script with no spaces between words (or custom/zen) - words may wrap mid-word
+export const [isJoiningScript, setJoiningScript] = createSignal(false);
+
+// memory funbox countdown in seconds, null when off. MemoryFunboxTimer runs it.
+// equals: false so restarting with the same duration restarts the countdown.
+export const [getMemoryTimerDuration, setMemoryTimerDuration] = createSignal<
+  number | null
+>(null, { equals: false });
+// layoutfluid banner above the words, driven by test-timer/funbox-functions.
+// visibility is separate from text so the text stays during the exit animation.
+export const [isLayoutfluidTimerVisible, setLayoutfluidTimerVisible] =
+  createSignal(false);
+export const [getLayoutfluidTimerText, setLayoutfluidTimerText] =
+  createSignal("");
+
+// set by TestLogic.init() after repeated init failures; cleared on restart.
+export const [isTestInitFailed, setTestInitFailed] = createSignal(false);
+export const [getTestInitError, setTestInitError] = createSignal<string | null>(
+  null,
+);
+
+// shown between the words fading out and the result appearing.
+export const [isResultLoading, setResultLoading] = createSignal(false);
+
+// IME composition in progress and its data so far, pushed from the
+// composition events. Read by the input handlers, the caret and the
+// composition display.
+export const [isComposing, setComposing] = createSignal(false);
+export const [getCompositionData, setCompositionData] = createSignal("");
+
+// the timer drifted too far: animations stay off until it's cleared on restart.
+const [isSlowTimer, setIsSlowTimer] = createSignal(false);
+export { isSlowTimer };
+
+export function setSlowTimer(): void {
+  if (isSlowTimer()) return;
+  setIsSlowTimer(true);
+  console.error("Slow timer, disabling animations");
+}
+
+export function clearSlowTimer(): void {
+  setIsSlowTimer(false);
+}
+
+createEffect(
+  on(
+    () => getConfig.showOutOfFocusWarning,
+    (show) => {
+      if (!show) setTestFocusState("focused");
+    },
+    { defer: true },
+  ),
+);
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
-export const [getLastResult, setLastResult] = createSignal<Omit<
-  CompletedEvent,
-  "hash" | "uid"
-> | null>(null);
+// a finished test's result, before the server adds hash and uid
+export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
+
+export const [getLastResult, setLastResult] =
+  createSignal<CompletedResult | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
@@ -86,22 +173,43 @@ export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
 
 export const [isTestActive, setTestActive] = createSignal(false);
+
+export const [
+  getActiveWordIndex,
+  {
+    increase: increaseActiveWordIndex,
+    decrease: decreaseActiveWordIndex,
+    reset: resetActiveWordIndex,
+  },
+] = createSignalWithSetters<number>(0)({
+  increase: (set) => set((n) => n + 1),
+  decrease: (set) => set((n) => n - 1),
+  reset: (set) => set(0),
+});
+
+/**
+ * Live test stats, rendered by the Solid live stat displays (the mini and text
+ * variants and the progress bar). The test engine is still vanilla, so it pushes
+ * plain numbers in here as it goes; everything shown on screen is derived below.
+ * `undefined` means "no data yet" and is what the displays fall back to defaults on.
+ */
 export const [currentLiveStats, setCurrentLiveStats] = createStore<{
   wpm?: number;
   acc?: number;
   raw?: number;
+  burst?: number;
+  seconds?: number;
 }>({});
-export const resetCurrentLiveStats = (): void =>
-  setCurrentLiveStats({ wpm: undefined, acc: undefined, raw: undefined });
 
 createEffect(() => {
-  getActivePage(); // depend on active page
+  // custom text settings aren't reactive - re-read them when the test page mounts
+  isTestPageMounted();
   setIsLongTest(
     !canQuickRestart(
       getConfig.mode,
       getConfig.words,
       getConfig.time,
-      getCustomTextData(),
+      CustomText.getData(),
       getCustomTextIndicator()?.isLong ?? false,
     ),
   );
@@ -136,18 +244,23 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-keymapEvent.useListener(({ mode, key, correct }) => {
-  const mappedKey = key === "" ? " " : key;
-  setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+/** Highlights the next key to press on the keymap. */
+export function highlightKeymapKey(key: string): void {
+  setKeymapHighlightKey(key === "" ? " " : key);
+}
 
-  if (mode === "flash" && getConfig.keymapMode === "react") {
-    const existing = getKeymapFlashState[mappedKey];
-    setKeymapFlashState(mappedKey, {
-      tick: existing ? existing.tick + 1 : 1,
-      correct: correct ?? true,
-    });
-  }
-});
+/** Flashes the pressed key on the keymap, clearing the highlight. */
+export function flashKeymapKey(key: string, correct?: boolean): void {
+  setKeymapHighlightKey(undefined);
+  if (getConfig.keymapMode !== "react") return;
+
+  const mappedKey = key === "" ? " " : key;
+  const existing = getKeymapFlashState[mappedKey];
+  setKeymapFlashState(mappedKey, {
+    tick: existing ? existing.tick + 1 : 1,
+    correct: correct ?? true,
+  });
+}
 
 const getInputLayout = createMemo<{
   layout: string;
@@ -203,3 +316,29 @@ export const __nonReactive = {
     return result;
   },
 };
+
+export const [getSelectedQuoteId, setSelectedQuoteId] = useLocalStorage({
+  key: "selectedQuoteId",
+  schema: z.number().int().min(1),
+  fallback: 1,
+});
+
+export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
+  createSignal(false);
+export const [isDirectionReversed, setIsDirectionReversed] =
+  createSignal(false);
+
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    getConfig.mode === "zen" ||
+    getConfig.mode === "custom" ||
+    getConfig.funbox.includes("polyglot")
+  );
+}
+
+export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
+export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
+export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
+  null,
+);

@@ -76,5 +76,10 @@ export function shouldGoToNextWord(options: {
     return false;
   }
 
+  //delete on error
+  if (Config.deleteOnError !== "off" && !correct) {
+    return false;
+  }
+
   return true;
 }

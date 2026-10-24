@@ -1,5 +1,5 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { createSignal, For, JSXElement } from "solid-js";
+import { createEffect, createSignal, For, JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 import { z } from "zod";
 
@@ -8,7 +8,6 @@ import { signIn } from "../../auth";
 import { refetchInboxCollection } from "../../collections/inbox";
 import { addXp } from "../../db";
 import { toggleCaretDebug } from "../../elements/caret";
-import { getInputElement } from "../../input/input-element";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal, showModal } from "../../states/modals";
 import {
@@ -17,16 +16,19 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { showSimpleModal } from "../../states/simple-modal";
-import { toggleUserFakeChartData } from "../../test/result";
+import {
+  isRealWordsInputShown,
+  setRealWordsInputShown,
+} from "../../states/test";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
-import { setMediaQueryDebugLevel } from "../../ui";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
-const [mediaQueryDebugLevel, setLocalMediaQueryDebugLevel] = createSignal(0);
+const [mediaQueryDebugLevel, setMediaQueryDebugLevel] = createSignal(0);
 
 type DevButton = {
   icon: FaSolidIcon;
@@ -35,6 +37,16 @@ type DevButton = {
 };
 
 export function DevOptionsModal(): JSXElement {
+  createEffect(() => {
+    const current = mediaQueryDebugLevel();
+    for (const level of [1, 2]) {
+      document.body.classList.toggle(
+        `mediaQueryDebugLevel${level}`,
+        level === current,
+      );
+    }
+  });
+
   const buttons: DevButton[] = [
     {
       icon: "fa-database",
@@ -64,19 +76,16 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         const next =
           mediaQueryDebugLevel() >= 2 ? 0 : mediaQueryDebugLevel() + 1;
-        setLocalMediaQueryDebugLevel(next);
-        showNoticeNotification(`Setting media query debug level to ${next}`);
         setMediaQueryDebugLevel(next);
+        showNoticeNotification(`Setting media query debug level to ${next}`);
       },
     },
     {
       icon: "fa-eye",
-      label: () => "Show Real Words Input",
+      label: () =>
+        `${isRealWordsInputShown() ? "Hide" : "Show"} Real Words Input`,
       onClick: () => {
-        const el = getInputElement();
-        el.style.opacity = "1";
-        el.style.marginTop = "1.5em";
-        el.style.caretColor = "red";
+        setRealWordsInputShown((shown) => !shown);
         hideModal("DevOptions");
       },
     },
@@ -155,7 +164,7 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-chart-bar",
       label: () => "Toggle Fake Chart Data",
-      onClick: toggleUserFakeChartData,
+      onClick: toggleFakeChartData,
     },
     {
       icon: "fa-i-cursor",

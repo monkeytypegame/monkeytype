@@ -1,12 +1,13 @@
 import { render, screen, fireEvent } from "@solidjs/testing-library";
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
+import { z } from "zod";
 
 import { InputField } from "../../../../src/ts/components/ui/form/InputField";
 
 function makeField(
   name: string,
-  value?: string | number | boolean,
+  value?: string | number | boolean | Date,
 ): AnyFieldApi {
   let current = value;
   const meta = {
@@ -172,5 +173,144 @@ describe("InputField", () => {
     // Set to 6
     fireEvent.input(input, { target: { value: "6" } });
     expect(field.handleChange).toHaveBeenCalledWith(6);
+  });
+
+  it("renders password toggle button when type is password", () => {
+    const field = makeField("password");
+    render(() => <InputField field={() => field} type="password" />);
+
+    expect(screen.getByRole("button")).toBeInTheDocument();
+  });
+
+  it("password field starts with type=password (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(container.querySelector("input")).toHaveAttribute(
+      "type",
+      "password",
+    );
+  });
+
+  it("toggling password button switches input type to text", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const input = container.querySelector("input");
+    expect(input).toHaveAttribute("type", "password");
+
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
+  });
+
+  it("toggling password button a second time switches back to password", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const input = container.querySelector("input");
+
+    // First toggle: show
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
+
+    // Second toggle: hide
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "password");
+  });
+
+  it("does not render password toggle when type is not password", () => {
+    const field = makeField("name");
+    render(() => <InputField field={() => field} type="text" />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("shows eye icon when password is hidden (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(container.querySelector(".fa-eye")).toBeInTheDocument();
+  });
+
+  it("shows eye-slash icon when password is visible", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    fireEvent.click(screen.getByRole("button"));
+
+    expect(container.querySelector(".fa-eye-slash")).toBeInTheDocument();
+  });
+
+  it("keeps empty string for string values", async () => {
+    const field = makeField("age", "test");
+    render(() => <InputField field={() => field} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(field.handleChange).toHaveBeenCalledWith("");
+  });
+
+  it("handles empty string for numeric fields", async () => {
+    const field = makeField("age", 5);
+    render(() => <InputField field={() => field} type="number" />);
+    const input = screen.getByRole("spinbutton");
+
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(field.handleChange).toHaveBeenCalledWith(undefined);
+  });
+
+  it("applies number schema constraints", async () => {
+    const field = makeField("value", 10);
+    const schema = z.number().min(1).max(100).int();
+    render(() => (
+      <InputField field={() => field} type="number" schema={schema} />
+    ));
+
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("min", "1");
+    expect(input).toHaveAttribute("max", "100");
+    expect(input).toHaveAttribute("step", "1");
+  });
+
+  it("applies float number schema constraints", async () => {
+    const field = makeField("value", 1.5);
+    const schema = z.number().min(0.5).max(10.5);
+    render(() => (
+      <InputField field={() => field} type="number" schema={schema} />
+    ));
+
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveAttribute("min", "0.5");
+    expect(input).toHaveAttribute("max", "10.5");
+    expect(input).toHaveAttribute("step", "any");
+  });
+
+  it("applies date schema constraints", async () => {
+    const field = makeField("date", new Date("2024-01-15"));
+    const schema = z
+      .date()
+      .min(new Date("2024-01-01"))
+      .max(new Date("2024-12-31"));
+    const { container } = render(() => (
+      <InputField field={() => field} type="date" schema={schema} />
+    ));
+
+    const input = container.querySelector("input") as HTMLInputElement;
+    expect(input).toHaveAttribute("min", "2024-01-01");
+    expect(input).toHaveAttribute("max", "2024-12-31");
   });
 });
