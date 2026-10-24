@@ -1,14 +1,19 @@
 import type { JSAnimation } from "animejs";
 
 import { createEffect, on, onCleanup } from "solid-js";
-import { debounce } from "throttle-debounce";
+import { debounce, throttle } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
-import { isInputElementFocused } from "../../../input/input-element";
+import {
+  focusInputElement,
+  isInputElementFocused,
+  keepWordsInputInTheCenter,
+} from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
   isSlowTimer,
+  isTestActive,
   isTestFinished,
   isTestRightToLeft,
   setOutOfFocusMaxHeight,
@@ -805,8 +810,9 @@ export function createWordsLayout(options: {
     dropOldWordsLayout();
     layoutAll();
     void layoutActiveWord("initial");
-    // the caret snaps to the new words
+    // the carets snap to the new words
     Caret.updatePosition(true);
+    PaceCaret.resetCaretPosition();
   }
 
   /** The active word moving, and the words whose input changed. */
@@ -891,10 +897,20 @@ export function createWordsLayout(options: {
     }
     if (generation !== layoutGeneration) return;
     positionWordsInput();
+    focusInputElement(true);
+    if (isTestActive()) keepWordsInputInTheCenter(true);
+    Caret.show();
   });
-  window.addEventListener("resize", resized);
+  // the caret is hidden while resizing, shown once the words are laid out
+  const hideCaret = throttle(250, () => Caret.hide());
+  function onResize(): void {
+    hideCaret();
+    resized();
+  }
+  window.addEventListener("resize", onResize);
   onCleanup(() => {
-    window.removeEventListener("resize", resized);
+    window.removeEventListener("resize", onResize);
+    hideCaret.cancel();
     resized.cancel();
   });
 }

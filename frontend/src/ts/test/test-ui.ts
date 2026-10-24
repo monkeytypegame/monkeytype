@@ -6,10 +6,8 @@ import { getLiveCachedAccuracy } from "./events/live-cache";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
-import * as PaceCaret from "./pace-caret";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Focus from "../test/focus";
@@ -284,7 +282,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
       marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
     },
   );
-  PaceCaret.resetCaretPosition();
 }
 
 export function onTestFinish(): void {
@@ -314,29 +311,6 @@ export function init(
 
   // autofocus the words when typing anywhere on the page
   document.addEventListener("keydown", autofocusWords, { signal });
-
-  const recenter = debounce(250, () => {
-    if (isTestFinished()) return;
-    // after Words laid out the resize, and moved the words input with it
-    setTimeout(() => {
-      if (signal.aborted) return;
-      focusWords();
-      Caret.show();
-    }, 250);
-  });
-  const hideCaret = throttle(250, () => Caret.hide());
-  window.addEventListener(
-    "resize",
-    () => {
-      hideCaret();
-      recenter();
-    },
-    { signal },
-  );
-  signal.addEventListener("abort", () => {
-    hideCaret.cancel();
-    recenter.cancel();
-  });
 }
 
 function autofocusWords(e: KeyboardEvent): void {
