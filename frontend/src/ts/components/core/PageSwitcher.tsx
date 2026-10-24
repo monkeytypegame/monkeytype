@@ -20,7 +20,7 @@ const fadeDuration = 125;
  * loading page element for both, so a slow navigation running into a loading
  * step doesn't fade between two.
  */
-function isLoadingShown(): boolean {
+export function isLoadingShown(): boolean {
   return isPendingShown() || isLoadingBarShown();
 }
 
