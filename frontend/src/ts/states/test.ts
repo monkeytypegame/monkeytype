@@ -8,6 +8,7 @@ import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
+import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { isTestPageMounted } from "../test/test-page-state";
@@ -77,14 +78,8 @@ export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
 // WordsInput scrolls #wordsInput to the window center on each request
-const [wordsInputCenterRequest, setWordsInputCenterRequest] = createSignal(
-  undefined,
-  { equals: false },
-);
-export { wordsInputCenterRequest };
-export function requestWordsInputCenter(): void {
-  setWordsInputCenterRequest(undefined);
-}
+export const [wordsInputCenterTrigger, requestWordsInputCenter] =
+  createTrigger();
 
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =
