@@ -127,10 +127,7 @@ async function waitForUserData(
   planLoadingBar((userData === undefined ? 0 : 1) + routeSteps);
   if (userData === undefined) return;
 
-  await runLoadingStep(userDataStep, async () => {
-    await userData;
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-  });
+  await runLoadingStep(userDataStep, async () => userData);
 }
 
 /** The parts of a loader's context running its route's loading step needs. */
