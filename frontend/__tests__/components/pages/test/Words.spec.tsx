@@ -1,4 +1,5 @@
 import "../../../__harness__/mock-static";
+import { batch } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setConfigStore } from "../../../../src/ts/config/store";
@@ -708,6 +709,20 @@ describe("Words", () => {
         updatedWords: [],
       });
       expect(wordEls(container)[1]?.classList.contains("active")).toBe(true);
+      unsetHook();
+    });
+
+    it("runs the onWordsFlushed hook after an outer batch updated the DOM", () => {
+      const container = renderWords();
+      const seen: number[] = [];
+      const unsetHook = onWordsFlushed(() => {
+        seen.push(wordEls(container).length);
+      });
+      batch(() => {
+        replaceWords(["a", "b"], { activeWordIndex: 0 });
+        expect(seen).toEqual([]);
+      });
+      expect(seen).toEqual([2]);
       unsetHook();
     });
 

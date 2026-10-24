@@ -1,4 +1,10 @@
-import { batch, createSignal } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createRoot,
+  createSignal,
+  untrack,
+} from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createFrameBuffer } from "../utils/frame-buffer";
 
@@ -120,6 +126,20 @@ export function onWordsFlushed(
   };
 }
 
+/**
+ * Runs the onWordsFlushed hook once the DOM reflects the store: now, or, inside
+ * an outer batch or effect, once it ends (Solid holds DOM updates until then).
+ */
+function runFlushedHook(flushed: WordsFlush): void {
+  createRoot((dispose) => {
+    // a user effect runs after the render effects that update the DOM
+    createEffect(() => {
+      dispose();
+      untrack(() => flushedHook?.(flushed));
+    });
+  });
+}
+
 function createRenderedWord(index: number, text: string): RenderedWord {
   return {
     index,
@@ -176,7 +196,7 @@ function applyBuffer(b: Buffer): void {
   });
 
   // 4. imperative layout against the updated DOM
-  flushedHook?.({
+  runFlushedHook({
     newWords: false,
     wordChange: b.wordChange,
     updatedWords: [...b.inputs.keys()],
@@ -313,7 +333,7 @@ export function replaceWords(
       renderedActiveWordIndex: options.activeWordIndex,
     });
   });
-  flushedHook?.({ newWords: true, wordChange: undefined, updatedWords: [] });
+  runFlushedHook({ newWords: true, wordChange: undefined, updatedWords: [] });
 }
 
 /** Frees the words (result shown): cancels a pending flush, empties the store. */
