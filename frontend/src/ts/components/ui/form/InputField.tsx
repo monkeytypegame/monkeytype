@@ -5,6 +5,7 @@ import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
 import { getZodType, unwrapSchema } from "../../../utils/zod";
+import { Button } from "../../common/Button";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -31,6 +32,9 @@ export function InputField(props: {
   ref?: (el: HTMLInputElement) => void;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
+  const [showPassword, setShowPassword] = createSignal(false);
+  const isPasswordType = () => props.type === "password";
+  const hasValidators = () => !!props.field().options.validators;
 
   const shakeItIfYouWantIt = () => {
     if (
@@ -50,9 +54,23 @@ export function InputField(props: {
           props.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
         );
 
+  const inputRightPadding = () => {
+    // password button only shown while focused
+    if (isPasswordType() && hasValidators()) {
+      return "pr-[2em] group-focus-within:pr-[3.75em]";
+    }
+    if (isPasswordType()) {
+      return "group-focus-within:pr-[2em]";
+    }
+    if (hasValidators()) {
+      return "pr-[2em]";
+    }
+    return "";
+  };
+
   return (
     <div
-      class="grid w-full"
+      class="group grid w-full"
       style={
         shake() ? { animation: "shake 0.1s ease-in-out infinite" } : undefined
       }
@@ -64,10 +82,16 @@ export function InputField(props: {
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
           "autofill-fix",
-          props.field().options.validators ? "pr-[1.85em]" : "",
+          inputRightPadding(),
           props.class,
         )}
-        type={props.type ?? "text"}
+        type={
+          isPasswordType()
+            ? showPassword()
+              ? "text"
+              : "password"
+            : (props.type ?? "text")
+        }
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
@@ -116,6 +140,25 @@ export function InputField(props: {
         <FieldIndicator
           field={props.field()}
           alwaysShow={props.alwaysShowFieldIndicator}
+        />
+      </Show>
+      <Show when={isPasswordType()}>
+        <Button
+          tabIndex={-1}
+          variant="text"
+          balloon={{ text: showPassword() ? "hide password" : "show password" }}
+          fa={{
+            icon: showPassword() ? "fa-eye-slash" : "fa-eye",
+            fixedWidth: true,
+          }}
+          class={cn(
+            "text-sub hover:text-text",
+            "col-start-1 row-start-1 self-center justify-self-end",
+            "pointer-events-none opacity-0 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
+            // "cursor-pointer self-center justify-self-end text-em-base hover:text-text text-sub focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
+            hasValidators() ? "mr-[1.5em]" : "mr-[0.4em]",
+          )}
+          onClick={() => setShowPassword((v) => !v)}
         />
       </Show>
     </div>

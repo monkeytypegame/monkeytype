@@ -124,7 +124,6 @@ import {
 } from "../states/result";
 import { blurInputElement, setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
@@ -159,6 +158,7 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
+import { appendRenderedWord } from "../states/words-render";
 
 let failReason = "";
 
@@ -625,7 +625,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
+    appendRenderedWord("");
     return;
   }
 
@@ -676,7 +676,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        TestUI.addWord(newWord.display);
+        appendRenderedWord(newWord.display);
       }
     }
   }
@@ -693,7 +693,7 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    TestUI.addWord(newWord.display);
+    appendRenderedWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -1210,9 +1210,6 @@ async function showResult(
 
   setResultLoading(false);
   setResultShown(true);
-
-  const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
-  resultPrefocusTarget?.focus({ preventScroll: true });
 
   void AdController.renderResult();
   setResultCalculating(false);
