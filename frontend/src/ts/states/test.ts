@@ -76,6 +76,16 @@ export type WordsInputPosition = {
 export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
+// WordsInput scrolls #wordsInput to the window center on each request
+const [wordsInputCenterRequest, setWordsInputCenterRequest] = createSignal(
+  undefined,
+  { equals: false },
+);
+export { wordsInputCenterRequest };
+export function requestWordsInputCenter(): void {
+  setWordsInputCenterRequest(undefined);
+}
+
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =
   createSignal(false);

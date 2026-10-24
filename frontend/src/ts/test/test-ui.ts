@@ -15,7 +15,6 @@ import {
   blurInputElement,
   focusInputElement,
   isInputElementFocused,
-  keepWordsInputInTheCenter,
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
@@ -44,6 +43,7 @@ import {
   getCompositionData,
   highlightKeymapKey,
   setWordsInputPosition,
+  requestWordsInputCenter,
 } from "../states/test";
 import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
@@ -74,7 +74,7 @@ export function focusWords(force = false): void {
   }
   focusInputElement(true);
   if (isTestActive()) {
-    keepWordsInputInTheCenter(true);
+    requestWordsInputCenter();
   } else {
     Misc.scrollToCenterOrTop(typingTestEl().native);
   }

@@ -7,7 +7,6 @@ import { Config, getConfig } from "../../../config/store";
 import {
   focusInputElement,
   isInputElementFocused,
-  keepWordsInputInTheCenter,
 } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
@@ -16,6 +15,7 @@ import {
   isTestActive,
   isTestFinished,
   isTestRightToLeft,
+  requestWordsInputCenter,
   setOutOfFocusMaxHeight,
   setTestFocusState,
   setWordsInputPosition,
@@ -898,7 +898,7 @@ export function createWordsLayout(options: {
     if (generation !== layoutGeneration) return;
     positionWordsInput();
     focusInputElement(true);
-    if (isTestActive()) keepWordsInputInTheCenter(true);
+    if (isTestActive()) requestWordsInputCenter();
     Caret.show();
   });
   // the caret is hidden while resizing, shown once the words are laid out
