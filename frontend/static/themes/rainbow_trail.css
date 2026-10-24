@@ -86,7 +86,7 @@ footer button:hover > .relative > i,
   animation: rainbow 7.5s ease-in-out forwards;
 }
 
-#words .word.error {
+#words:not(.blind) .word.error {
   animation: rainbow-error 7.5s ease-in-out forwards;
 }
 
