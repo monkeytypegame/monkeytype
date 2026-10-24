@@ -139,7 +139,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
   - **Reads**: one `getUser()`, backed by a module-level reactive mirror of the row: reactive inside components and effects, a plain synchronous read elsewhere (engine at finish, plain modules). No separate hook, no `__nonReactive`, no direct collection access outside the module.
   - **Writes**: named functions only; the raw update stays private. Mirrors of what the server already did (xp, streak, typing stats, PBs, leaderboard memory, badges, inbox count) are direct writes with no API call or refetch. User-initiated changes (name, Discord unlink, streak offset, quote ratings, favourite quotes) are optimistic actions that call the API and roll back on failure, as custom themes and connections do. Server-owned flags (banned, verified, leaderboard opt-out) have no setters.
   - The auth bus's snapshot-updated event goes away; consumers read `getUser()`.
-- **Auth**: auth state is a signal (unknown, signed in, signed out), which the router's auth context and UI read. The auth bus is deleted.
+- **Auth**: auth state is a signal (unknown, signed in, signed out), which the router's auth context and UI read. The user-data load sits next to it as state (loading, loaded, failed with an error) plus a `reloadUserData()` command; the router's auth context reads it for the blocking user-data step (user row, tags, presets) and its retry, instead of receiving a promise through an event. The auth bus (both its auth-state-changed and snapshot-updated events) is deleted.
 - **Server data**: Query for read-only server data, DB collections for user-owned lists (results, tags, presets, connections, ape keys, inbox, custom themes, filter presets) and the single-row user collection above.
   - Small collections (tags, presets, custom themes) use the same read pattern as the user: each module exports plain getters (eg. `getTags()`, `getActiveTags()`) backed by a module-level reactive mirror, reactive in components and synchronous elsewhere. They replace both `__nonReactive` and the separate live-query hooks for these collections, are documented as "returns only what's loaded, never fetches", and keep `gcTime: Infinity`.
   - `__nonReactive` exists only for old-style code. It is not replaced one-for-one: each caller is rewritten as Solid code (or moved into the engine) as part of its own step, and `__nonReactive` is deleted once the last caller is gone. Reading a getter outside a tracking scope, as the engine does at finish, is ordinary Solid usage, not an escape hatch. Sign-in already waits for tags and presets inside the blocking user-data step, so they're loaded before any test can start; no extra blocking data is added.
@@ -284,6 +284,7 @@ Recorded per track as conversion PRs land. Already accepted from the Words rewri
 | Q26 | Quote ratings stay in the user row as an optimistic action; #7717 closed |
 | Q27 | One `getUser()` read: reactive in components, synchronous elsewhere |
 | Q28 | Same one-getter pattern for tags, presets and custom themes (replaces their live-query hooks); results stay async. `__nonReactive` goes by rewriting its old-style callers, then deleting it |
+| Q29 | Auth bus deleted entirely; the user-data load is state (loading/loaded/failed) plus `reloadUserData()` beside the auth signal, read by the router |
 
 ## Further Notes
 
