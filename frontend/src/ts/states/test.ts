@@ -35,7 +35,7 @@ export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restart().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// read by TestPage (#words blur), the composition display and OutOfFocusWarning.
+// read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
@@ -58,7 +58,7 @@ export const showOutOfFocusWarning = createMemo(
   () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
 );
 
-// max-height of the warning, kept in sync with the words wrapper by test-ui.
+// max-height of the warning, kept in sync with the words wrapper by the words layout.
 export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
@@ -79,7 +79,7 @@ export const [wordsInputPosition, setWordsInputPosition] =
 export const [isRealWordsInputShown, setRealWordsInputShown] =
   createSignal(false);
 
-// bound to #words / #wordsWrapper by TestPage.
+// bound to #words by Words, #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);
 export const [isWordsWrapperHidden, setWordsWrapperHidden] =

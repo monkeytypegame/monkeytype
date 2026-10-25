@@ -1,5 +1,7 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
+import type { WordsLayout } from "./words-layout";
+
 import { Config, getConfig } from "../../../config/store";
 import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
@@ -8,20 +10,14 @@ import { isResultShown } from "../../../states/result";
 import {
   getFocus,
   getLayoutfluidTimerText,
-  isErrorBorderDisabled,
-  isJoiningScript,
-  isLanguageRightToLeft,
   isLayoutfluidTimerVisible,
-  isReadAheadDisabled,
   isResultLoading,
   isTestActive,
   isTestInitFailed,
   isTypingTestHidden,
-  isWordsHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
   setTestFocusState,
-  showOutOfFocusWarning,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
@@ -54,16 +50,8 @@ import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
-import { Words } from "./Words";
+import { Words, wordsModeClasses } from "./Words";
 import { WordsInput } from "./WordsInput";
-
-function prefixedClass(
-  prefix: string,
-  value: string | null,
-): Record<string, boolean> {
-  if (value === null) return {};
-  return { [`${prefix}-${value.replaceAll("_", "-")}`]: true };
-}
 
 /**
  * The test page. Internals are still vanilla - this owns the markup and hands
@@ -78,7 +66,7 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let wordsRef: HTMLDivElement | undefined;
+  let wordsLayout: WordsLayout | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
 
@@ -91,14 +79,13 @@ export function TestPage(): JSXElement {
     if (
       typingTestRef === undefined ||
       wordsWrapperRef === undefined ||
-      wordsRef === undefined ||
+      wordsLayout === undefined ||
       caretRef === undefined ||
       paceCaretRef === undefined
     ) {
       throw new Error("TestPage refs not set");
     }
 
-    const words = new ElementWithUtils(wordsRef);
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
     Caret.initElement(
       { caret: new ElementWithUtils(caretRef), wordsWrapper },
@@ -110,7 +97,11 @@ export function TestPage(): JSXElement {
     );
 
     TestUI.init(
-      { words, wordsWrapper, typingTest: new ElementWithUtils(typingTestRef) },
+      {
+        wordsLayout,
+        wordsWrapper,
+        typingTest: new ElementWithUtils(typingTestRef),
+      },
       signal,
     );
     listenForModifierKeys(signal);
@@ -170,14 +161,6 @@ export function TestPage(): JSXElement {
   const isFullWidth = (): boolean =>
     getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
   const fontSize = (): string => `${getConfig.fontSize}rem`;
-  // classes shared by #words and #wordsWrapper
-  const modeClasses = (): Record<string, boolean> => ({
-    tape: getConfig.tapeMode !== "off",
-    blind: getConfig.blindMode,
-    indicateTyposBelow:
-      getConfig.indicateTypos === "below" || getConfig.indicateTypos === "both",
-    hideExtraLetters: getConfig.hideExtraLetters,
-  });
 
   return (
     <>
@@ -220,7 +203,7 @@ export function TestPage(): JSXElement {
         <div
           id="wordsWrapper"
           ref={(el) => (wordsWrapperRef = el)}
-          class={cn("content-grid full-width", modeClasses(), {
+          class={cn("content-grid full-width", wordsModeClasses(), {
             hidden: isWordsWrapperHidden(),
           })}
           translate="no"
@@ -244,26 +227,11 @@ export function TestPage(): JSXElement {
             class="full-width default"
             style={{ "font-size": fontSize() }}
           ></div>
-          <div
-            id="words"
-            ref={(el) => (wordsRef = el)}
-            class={cn("full-width", {
-              ...modeClasses(),
-              flipped: getConfig.flipTestColors,
-              colorfulMode: getConfig.colorfulMode,
-              rightToLeftTest: isLanguageRightToLeft(),
-              ...prefixedClass("highlight", getConfig.highlightMode),
-              ...prefixedClass("typed-effect", getConfig.typedEffect),
-              blurred: showOutOfFocusWarning(),
-              hidden: isWordsHidden(),
-              read_ahead_disabled: isReadAheadDisabled(),
-              noErrorBorder: isErrorBorderDisabled(),
-              joiningScript: isJoiningScript(),
-            })}
-            style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
-          >
-            <Words />
-          </div>
+          <Words
+            layoutRef={(layout) => (wordsLayout = layout)}
+            wordsWrapperRef={() => wordsWrapperRef}
+            onActiveWordLaidOut={TestUI.updateWordsInputPosition}
+          />
         </div>
 
         <div>

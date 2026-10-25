@@ -14,6 +14,7 @@ import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as DB from "../../db";
+import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -218,7 +219,7 @@ export function QuoteSearchModal(): JSXElement {
     matchedTerms: string[];
   }>({ quotes: [], matchedTerms: [] });
   const [isRtl, setIsRtl] = createSignal(false);
-  const [favVersion, setFavVersion] = createSignal(0);
+  const [trackFavorites, refreshFavorites] = createTrigger();
 
   const [searchText, setSearchText] = createSignal("");
   createDebouncedEffectOn(
@@ -301,7 +302,7 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const filteredQuotes = (): Quote[] => {
-    favVersion();
+    trackFavorites();
 
     let result = searchResults().quotes;
 
@@ -417,7 +418,7 @@ export function QuoteSearchModal(): JSXElement {
       showLoaderBar();
       await QuotesController.setQuoteFavorite(quote, !alreadyFavorited);
       hideLoaderBar();
-      setFavVersion((v) => v + 1);
+      refreshFavorites();
       return true;
     } catch (e) {
       hideLoaderBar();

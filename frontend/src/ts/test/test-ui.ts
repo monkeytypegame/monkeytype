@@ -3,10 +3,8 @@ import { Config, getConfig } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { debounce, throttle } from "throttle-debounce";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -24,7 +22,6 @@ import {
 } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
-import * as Joining from "./break-joining";
 import * as ThemeController from "../controllers/theme-controller";
 import { ElementWithUtils } from "../utils/dom";
 import { getFontPreview } from "../states/font";
@@ -32,16 +29,12 @@ import { getWordElement as getRenderedWordElement } from "../states/word-element
 import {
   appendRenderedWord,
   flushWordsRender,
-  getPendingWordInput,
   resetWordsRender,
   setActiveWord,
-  setFirstRenderedLine,
-  setFirstRenderedWordIndex,
   setLayoutHook,
   setWordTyped,
   setWordInput,
   truncateWords,
-  wordsRenderState,
   invalidateTypoHintsLayout,
 } from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
@@ -52,27 +45,26 @@ import {
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
-  setOutOfFocusMaxHeight,
-  wordsHaveNewline,
   setTestFocusState,
   isTestFinished,
-  setWordsWrapperHidden,
   setLayoutfluidTimerVisible,
   setTestInitError,
   setTestInitFailed,
   setTypingTestHidden,
   getCompositionData,
-  isSlowTimer,
   highlightKeymapKey,
   setWordsInputPosition,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
-import type { JSAnimation } from "animejs";
+import type {
+  WordChange,
+  WordsLayout,
+} from "../components/pages/test/words-layout";
 import { setResultShown } from "../states/result";
 import { isTestPageMounted, markTestPageMounted } from "./test-page-state";
 
 // rendered by TestPage, registered via init() on every mount
-let wordsRef: ElementWithUtils | undefined;
+let wordsLayoutRef: WordsLayout | undefined;
 let wordsWrapperRef: ElementWithUtils | undefined;
 let typingTestRef: ElementWithUtils | undefined;
 // rendered by TestResult, registered while it's mounted
@@ -87,9 +79,9 @@ export function isMounted(): boolean {
   return untrack(isTestPageMounted);
 }
 
-function wordsEl(): ElementWithUtils {
-  if (wordsRef === undefined) throw new Error("#words not mounted");
-  return wordsRef;
+function wordsLayout(): WordsLayout {
+  if (wordsLayoutRef === undefined) throw new Error("#words not mounted");
+  return wordsLayoutRef;
 }
 
 function wordsWrapperEl(): ElementWithUtils {
@@ -102,27 +94,6 @@ function wordsWrapperEl(): ElementWithUtils {
 function typingTestEl(): ElementWithUtils {
   if (typingTestRef === undefined) throw new Error("#typingTest not mounted");
   return typingTestRef;
-}
-
-let activeWordTop = 0;
-let activeWordHeight = 0;
-let wordTopBeforeLineJump = 0;
-let lineTransition = false;
-
-let currentTestLine = 0;
-let currentLinesJumping = 0;
-
-// bumped when the words are reset: async layout (line jump animation, tape
-// scroll) started for the previous words must not touch the new ones
-let layoutGeneration = 0;
-let lineJumpAnimation: JSAnimation | undefined;
-
-function invalidateAsyncLayout(): void {
-  layoutGeneration++;
-  lineJumpAnimation?.cancel();
-  lineJumpAnimation = undefined;
-  currentLinesJumping = 0;
-  lineTransition = false;
 }
 
 export function focusWords(force = false): void {
@@ -163,21 +134,14 @@ function getWordElement(index: number): ElementWithUtils | null {
   return el === undefined ? null : new ElementWithUtils(el);
 }
 
-function getWordIndex(el: ElementWithUtils): number {
-  return Number(el.native.dataset["wordindex"]);
-}
-
 function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
 }
-
-type WordChange = "forward" | "back" | "initial";
 
 // what the next words frame has to lay out. Plain state written on the input
 // path; consumed by layoutWords once the DOM reflects the render store
 let pendingWordChange: WordChange | undefined;
 const pendingUpdatedWords = new Set<number>();
-let laidOutActiveWordIndex: number | undefined;
 // restart flush: the caret snaps to the new words instead of animating there
 let snapCaretInNextLayout = false;
 
@@ -194,128 +158,16 @@ function layoutWords(): void {
   snapCaretInNextLayout = false;
   clearPendingLayout();
   if (!isMounted()) return;
-
-  if (wordChange !== undefined) {
-    void layoutActiveWord(wordChange);
-  } else if (updatedWords.length > 0 && Config.tapeMode !== "off") {
-    void scrollTape();
-  }
-  for (const wordIndex of updatedWords) {
-    void lineJumpIfWrapped(wordIndex);
-  }
-  Caret.updatePosition(snapCaret);
+  wordsLayout().layout({ wordChange, updatedWords, snapCaret });
 }
 
-/** Top of the closest line above `word`, undefined if it's on the first line. */
-function getLineAboveTop(
-  word: ElementWithUtils,
-  wordTop: number,
-): number | undefined {
-  let sibling = word.native.previousElementSibling as HTMLElement | null;
-  while (sibling !== null) {
-    if (sibling.classList.contains("word") && sibling.offsetTop < wordTop) {
-      return sibling.offsetTop;
-    }
-    sibling = sibling.previousElementSibling as HTMLElement | null;
-  }
-  return undefined;
-}
-
-async function layoutActiveWord(wordChange: WordChange): Promise<void> {
-  const generation = layoutGeneration;
-  const newActiveWordIndex = getActiveWordIndex();
-  let previousActiveWordTop: number | null = null;
-  if (wordChange !== "initial" && laidOutActiveWordIndex !== undefined) {
-    // in zen mode, going back removes the previous word, so check for null
-    previousActiveWordTop =
-      getWordElement(laidOutActiveWordIndex)?.getOffsetTop() ?? null;
-    // several word changes can land in one frame: every word passed is typed,
-    // every word gone back over is not
-    for (let i = laidOutActiveWordIndex; i < newActiveWordIndex; i++) {
-      const passedWord = getWordElement(i);
-      if (passedWord !== null) Joining.set(passedWord, true);
-    }
-    for (let i = newActiveWordIndex + 1; i < laidOutActiveWordIndex; i++) {
-      const untypedWord = getWordElement(i);
-      if (untypedWord !== null) Joining.set(untypedWord, false);
-    }
-  }
-
-  const newActiveWord = getActiveWordElement();
-  laidOutActiveWordIndex = newActiveWordIndex;
-  if (newActiveWord === null) return;
-
-  Joining.set(newActiveWord, false);
-
-  activeWordTop = newActiveWord.getOffsetTop();
-  activeWordHeight = newActiveWord.getOffsetHeight();
-
-  if (previousActiveWordTop !== null) {
-    const isTimedTest =
-      Config.mode === "time" ||
-      (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-      (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-    if (isTimedTest || !Config.showAllLines) {
-      const newActiveWordTop = newActiveWord.getOffsetTop();
-      if (newActiveWordTop > previousActiveWordTop) {
-        // several word changes in one frame can cross more than one line:
-        // jump to the line right above the active word, hiding all lines
-        // before it
-        const lineAboveTop = getLineAboveTop(newActiveWord, newActiveWordTop);
-        const crossedLines =
-          lineAboveTop !== undefined && lineAboveTop > previousActiveWordTop;
-        await lineJump(
-          crossedLines ? lineAboveTop : previousActiveWordTop,
-          crossedLines,
-        );
-        if (generation !== layoutGeneration) return;
-      }
-    }
-  }
-
-  if (wordChange !== "initial" && Config.tapeMode !== "off") {
-    await scrollTape();
-  }
-
-  updateWordsInputPosition();
-}
-
-async function lineJumpIfWrapped(wordIndex: number): Promise<void> {
-  // because we block word jumps in before-insert-text
-  // this check only needs to happen in zen mode
-  // unless slow timer is on, then it needs to happen
-  // because the word jump check is disabled
-  if (Config.mode !== "zen" && !isSlowTimer()) return;
-  if (Config.showAllLines) return;
-  const wordAtIndex = getWordElement(wordIndex);
-  if (wordAtIndex === null) return;
-  const wordTopAfterUpdate = wordAtIndex.getOffsetTop();
-  if (wordTopAfterUpdate > activeWordTop) {
-    let jump = false;
-    if (!lineTransition) {
-      wordTopBeforeLineJump = wordTopAfterUpdate;
-      jump = true;
-    } else if (wordTopAfterUpdate > wordTopBeforeLineJump) {
-      jump = true;
-    }
-    if (jump) await lineJump(activeWordTop);
-  }
-}
-
-// measures #words, so it has to run after TestPage applied the config classes
+// measures #words, so it has to run after Words applied the config classes
 function updateLayout(): void {
-  // outoffocus applies transition, need to remove it
+  // lay out unblurred, the out of focus state is restored below
   setTestFocusState("focused");
 
-  updateWordsWrapperHeight(true);
-  if (!Config.showAllLines) {
-    void centerActiveLine();
-  }
-  updateWordsMargin();
+  wordsLayout().relayout();
   updateWordsInputPosition();
-  invalidateTypoHintsLayout();
-  Caret.updatePosition(true);
 
   if (!isInputElementFocused()) {
     setTestFocusState("unfocused");
@@ -323,14 +175,12 @@ function updateLayout(): void {
 }
 
 function showWords(): void {
-  invalidateAsyncLayout();
-  wordsEl().setStyle({ marginTop: "0" });
+  wordsLayout().reset();
   resetWordsRender({
     zen: Config.mode === "zen",
     marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
   });
   clearPendingLayout();
-  laidOutActiveWordIndex = undefined;
 
   if (Config.mode === "zen") {
     appendRenderedWord("");
@@ -347,7 +197,11 @@ function showWords(): void {
   flushWordsRender();
 
   updateLayout();
-  void layoutActiveWord("initial");
+  wordsLayout().layout({
+    wordChange: "initial",
+    updatedWords: [],
+    snapCaret: true,
+  });
   PaceCaret.resetCaretPosition();
 }
 
@@ -387,115 +241,6 @@ export function updateWordsInputPosition(): void {
   setWordsInputPosition({ top, left, width, maxWidth });
 }
 
-let centeringActiveLine: Promise<void> = Promise.resolve();
-
-export async function centerActiveLine(): Promise<void> {
-  if (Config.showAllLines) {
-    return;
-  }
-
-  const { resolve, promise } = Misc.promiseWithResolvers();
-  centeringActiveLine = promise;
-
-  const activeWordEl = getActiveWordElement();
-  if (!activeWordEl) {
-    resolve();
-    return;
-  }
-  const currentTop = activeWordEl.getOffsetTop();
-
-  let previousLineTop = currentTop;
-  for (let i = getActiveWordIndex() - 1; i >= 0; i--) {
-    previousLineTop = getWordElement(i)?.getOffsetTop() ?? currentTop;
-    if (previousLineTop < currentTop) {
-      await lineJump(previousLineTop, true);
-      resolve();
-      return;
-    }
-  }
-
-  resolve();
-}
-
-function updateWordsWrapperHeight(force = false): void {
-  if (!isMounted() || isTestFinished()) return;
-  if (!force && Config.mode !== "custom") return;
-  const activeWordEl = getActiveWordElement();
-  if (!activeWordEl) return;
-
-  setWordsWrapperHidden(false);
-
-  const wordComputedStyle = window.getComputedStyle(activeWordEl.native);
-  const wordMargin =
-    parseInt(wordComputedStyle.marginTop) +
-    parseInt(wordComputedStyle.marginBottom);
-  const wordHeight = activeWordEl.getOffsetHeight() + wordMargin;
-
-  const timedTest =
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0);
-
-  const showAllLines = Config.showAllLines && !timedTest;
-
-  if (showAllLines) {
-    //allow the wrapper to grow and shink with the words
-    wordsWrapperEl().setStyle({ height: "" });
-  } else if (Config.mode === "zen") {
-    //zen mode, showAllLines off
-    wordsWrapperEl().setStyle({ height: `${wordHeight * 2}px` });
-  } else {
-    if (Config.tapeMode === "off") {
-      //tape off, showAllLines off, non-zen mode
-      let lines = 0;
-      let lastTop = 0;
-      let wordIndex = wordsRenderState.firstRenderedWordIndex;
-      let wrapperHeight = 0;
-
-      while (lines < 3) {
-        const word = getWordElement(wordIndex);
-        if (word === null) break;
-        const top = word.getOffsetTop();
-        if (top > lastTop) {
-          lines++;
-          wrapperHeight += word.getOffsetHeight() + wordMargin;
-          lastTop = top;
-        }
-        wordIndex++;
-      }
-      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-      //limit to 3 lines
-      wordsWrapperEl().setStyle({ height: `${wrapperHeight}px` });
-    } else {
-      //show 3 lines if tape mode is on and has newlines, otherwise use words height (because of indicate typos: below)
-      if (wordsHaveNewline()) {
-        wordsWrapperEl().setStyle({ height: `${wordHeight * 3}px` });
-      } else {
-        const wordsHeight = wordsEl().getOffsetHeight() ?? wordHeight;
-        wordsWrapperEl().setStyle({ height: `${wordsHeight}px` });
-      }
-    }
-  }
-
-  setOutOfFocusMaxHeight(wordHeight * 3);
-}
-
-function updateWordsMargin(): void {
-  if (Config.tapeMode !== "off") {
-    wordsEl().setStyle({ marginLeft: "0" });
-    void scrollTape(true);
-  } else {
-    const afterNewlineEls = wordsEl().qsa(".afterNewline");
-    wordsEl().setStyle({ marginLeft: "0", marginTop: "0" });
-    for (const afterNewline of afterNewlineEls) {
-      afterNewline.setStyle({
-        marginLeft: "0",
-      });
-    }
-  }
-}
-
 // buffered, rendered in the next words frame
 function updateWordLetters({
   wordIndex,
@@ -510,347 +255,6 @@ function updateWordLetters({
   pendingUpdatedWords.add(wordIndex);
 }
 
-// this is needed in tape mode because sometimes we want the newline character to appear above the next line
-// and sometimes we want it to be shifted to the left
-// (for example if the newline is typed incorrectly, or there are any extra letters after it)
-function getNlCharWidth(lastWordInLine: ElementWithUtils | undefined): number {
-  // not a word: its line's words are removed
-  if (lastWordInLine?.hasClass("word") !== true) return 0;
-  const word = wordsRenderState.words[getWordIndex(lastWordInLine)];
-  if (word === undefined) return 0;
-  // the line break's own letter, not a typed newline (extra or typo) after it
-  const chars = Strings.splitIntoCharacters(
-    wordsRenderState.rendersLettersFromInput ? word.input : word.text,
-  );
-  if (chars[chars.length - 1] !== "\n") return 0;
-  const nlChar = lastWordInLine.qsa("letter")[chars.length - 1];
-  if (nlChar === undefined || nlChar.hasClass("incorrect")) return 0;
-  const letterComputedStyle = window.getComputedStyle(nlChar.native);
-  const letterMargin =
-    parseFloat(letterComputedStyle.marginLeft) +
-    parseFloat(letterComputedStyle.marginRight);
-  return nlChar.getOffsetWidth() + letterMargin;
-}
-
-export async function scrollTape(noAnimation = false): Promise<void> {
-  if (!isMounted() || isTestFinished()) return;
-
-  const generation = layoutGeneration;
-  await centeringActiveLine;
-  if (generation !== layoutGeneration) return;
-
-  const isTestRightToLeft = isDirectionReversed()
-    ? !isLanguageRightToLeft()
-    : isLanguageRightToLeft();
-
-  const wordsWrapperWidth = wordsWrapperEl().getOffsetWidth();
-  const wordsChildrenArr = wordsEl().getChildren();
-  const activeWordEl = getActiveWordElement();
-  if (!activeWordEl) return;
-  const afterNewLineEls = wordsEl().qsa(".afterNewline");
-
-  let wordsWidthBeforeActive = 0;
-  let fullLineWidths = 0;
-  let widthRemoved = 0;
-  // removed width per line, the first line of #words first
-  const lineWidthRemoved: number[] = [0];
-  const afterNewlinesNewMargins: number[] = [];
-  // overflown words are only removed from the start. Their line breaks stay
-  // rendered until line jump removes their line
-  let removing = true;
-  let lastWordToRemove: ElementWithUtils | undefined;
-
-  /* get last element to loop over */
-  let lastElementIndex: number;
-  // index of the active word in all #words.children
-  // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-  const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
-  // this will between 0 and 2
-  const newLinesBeforeActiveWord = wordsChildrenArr
-    .slice(0, activeWordIndex)
-    .filter((child) => child.hasClass("afterNewline")).length;
-  // the second `.afterNewline` after active word is visible during line jump
-  let lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord + 1];
-  if (lastVisibleAfterNewline) {
-    lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
-  } else {
-    lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord];
-    if (lastVisibleAfterNewline) {
-      lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
-    } else {
-      lastElementIndex = activeWordIndex - 1;
-    }
-  }
-
-  const wordRightMargin = parseFloat(
-    window.getComputedStyle(activeWordEl.native).marginRight,
-  );
-
-  /*calculate .afterNewline & #words new margins + determine elements to remove*/
-  for (let i = 0; i <= lastElementIndex; i++) {
-    const child = wordsChildrenArr[i] as ElementWithUtils;
-    if (child.hasClass("word")) {
-      const wordOuterWidth = child.getOuterWidth();
-      const wordLeft = Math.floor(child.getOffsetLeft());
-      const wordWidth = Math.floor(child.getOffsetWidth());
-      removing &&=
-        (!isTestRightToLeft && wordLeft < 0 - wordWidth) ||
-        (isTestRightToLeft && wordLeft > wordsWrapperWidth);
-      if (removing) {
-        lastWordToRemove = child;
-        widthRemoved += wordOuterWidth;
-        const line = lineWidthRemoved.length - 1;
-        lineWidthRemoved[line] = (lineWidthRemoved[line] ?? 0) + wordOuterWidth;
-      } else {
-        fullLineWidths += wordOuterWidth;
-        if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
-      }
-    } else if (child.hasClass("afterNewline")) {
-      // a line of removed words has no newline glyph (getNlCharWidth: 0).
-      // Its offset carries to every later line and #words' margin, so the
-      // lines stay in place relative to each other
-      const nlCharWidth = getNlCharWidth(wordsChildrenArr[i - 3]);
-      fullLineWidths -= nlCharWidth + wordRightMargin;
-      if (i < activeWordIndex) wordsWidthBeforeActive = fullLineWidths;
-
-      /** words that are wider than limit can cause a barely visible bottom line shifting,
-       * increase limit if that ever happens, but keep the limit because browsers hate
-       * ridiculously wide margins which may cause the words to not be displayed
-       */
-      const limit = 3 * wordsEl().getOffsetWidth();
-      lineWidthRemoved.push(0);
-      if (fullLineWidths < limit) {
-        afterNewlinesNewMargins.push(fullLineWidths);
-      } else {
-        afterNewlinesNewMargins.push(limit);
-        if (i < lastElementIndex) {
-          // for the second .afterNewline after active word
-          afterNewlinesNewMargins.push(limit);
-          lineWidthRemoved.push(0);
-        }
-        break;
-      }
-    }
-  }
-
-  /* remove overflown elements */
-  if (lastWordToRemove !== undefined) {
-    setFirstRenderedWordIndex(getWordIndex(lastWordToRemove) + 1);
-    // keep every line in place: the first line starts at #words' margin, the
-    // others at #words' margin plus their .afterNewline's margin
-    const firstLineWidthRemoved = lineWidthRemoved[0] ?? 0;
-    for (let i = 0; i < lineWidthRemoved.length - 1; i++) {
-      const afterNewlineEl = afterNewLineEls[i];
-      if (afterNewlineEl === undefined) break;
-      const currentLineIndent =
-        parseFloat(afterNewlineEl.getStyle().marginLeft) || 0;
-      const lineIndentChange =
-        (lineWidthRemoved[i + 1] ?? 0) - firstLineWidthRemoved;
-      afterNewlineEl.setStyle({
-        marginLeft: `${currentLineIndent + lineIndentChange}px`,
-      });
-    }
-    const wordsMarginChange = isTestRightToLeft
-      ? -firstLineWidthRemoved
-      : firstLineWidthRemoved;
-    if (isTestRightToLeft) widthRemoved *= -1;
-    const currentWordsMargin =
-      parseFloat(wordsEl().native.style.marginLeft) || 0;
-    wordsEl().setStyle({
-      marginLeft: `${currentWordsMargin + wordsMarginChange}px`,
-    });
-    Caret.caret?.handleTapeWordsRemoved(widthRemoved);
-    PaceCaret.caret?.handleTapeWordsRemoved(widthRemoved);
-  }
-
-  /* calculate current word width to add to #words margin */
-  let currentWordWidth = 0;
-  const inputLength = getCurrentInput().length;
-  if (Config.tapeMode === "letter" && inputLength > 0) {
-    const letters = activeWordEl.qsa("letter");
-    let lastPositiveLetterWidth = 0;
-    for (let i = 0; i < inputLength; i++) {
-      const letter = letters[i];
-      if (
-        (Config.blindMode || Config.hideExtraLetters) &&
-        letter?.hasClass("extra")
-      ) {
-        continue;
-      }
-      const letterOuterWidth = letter?.getOffsetWidth() ?? 0;
-      currentWordWidth += letterOuterWidth;
-      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
-    }
-    // if current letter has zero width move the tape to previous positive width letter
-    if (letters[inputLength]?.getOffsetWidth() === 0) {
-      currentWordWidth -= lastPositiveLetterWidth;
-    }
-  }
-
-  /* change to new #words & .afterNewline margins */
-  const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
-  let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
-  let newMargin = tapeMarginPx - newMarginOffset;
-  if (isTestRightToLeft) {
-    newMarginOffset *= -1;
-    newMargin = wordRightMargin - newMargin;
-  }
-
-  const duration = noAnimation ? 0 : 125;
-  const ease = "inOut(1.25)";
-
-  const caretScrollOptions = {
-    newValue: newMarginOffset * -1,
-    duration: Config.smoothLineScroll ? duration : 0,
-    ease,
-  };
-
-  Caret.caret?.handleTapeScroll(caretScrollOptions);
-  PaceCaret.caret?.handleTapeScroll(caretScrollOptions);
-
-  if (Config.smoothLineScroll) {
-    wordsEl().animate({
-      marginLeft: newMargin,
-      duration,
-      ease,
-    });
-
-    for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
-      const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      (afterNewLineEls[i] as ElementWithUtils)?.animate({
-        marginLeft: newMargin,
-        duration,
-        ease,
-      });
-    }
-  } else {
-    wordsEl().setStyle({ marginLeft: `${newMargin}px` });
-    for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
-      const newMargin = afterNewlinesNewMargins[i] ?? 0;
-      afterNewLineEls[i]?.setStyle({ marginLeft: `${newMargin}px` });
-    }
-  }
-}
-
-/**
- * Stops rendering #words' children up to `lastElementIndexToRemove`: the lines
- * before the first word after it, line breaks included.
- */
-function removeTestElements(lastElementIndexToRemove: number): void {
-  const wordsChildren = wordsEl().getChildren();
-  // the removed lines may hold only line breaks (tape removed their words)
-  let firstKeptElementIndex = lastElementIndexToRemove + 1;
-  while (
-    firstKeptElementIndex < wordsChildren.length &&
-    !wordsChildren[firstKeptElementIndex]?.hasClass("word")
-  ) {
-    firstKeptElementIndex++;
-  }
-  const firstKeptWord = wordsChildren[firstKeptElementIndex];
-  if (firstKeptWord === undefined) return;
-
-  // tape mode indents the line after a newline with its `.afterNewline`
-  const beforeFirstKept = wordsChildren[firstKeptElementIndex - 1];
-  const indent = beforeFirstKept?.hasClass("afterNewline")
-    ? parseFloat(beforeFirstKept.getStyle().marginLeft) || 0
-    : 0;
-
-  setFirstRenderedLine(getWordIndex(firstKeptWord));
-
-  if (indent === 0) return;
-  // the indent is gone: shift #words by it instead, keeping the lines in place
-  const isTestRightToLeft = isDirectionReversed()
-    ? !isLanguageRightToLeft()
-    : isLanguageRightToLeft();
-  for (const el of wordsEl().qsa(".afterNewline")) {
-    const currentLineIndent = parseFloat(el.getStyle().marginLeft) || 0;
-    el.setStyle({ marginLeft: `${currentLineIndent - indent}px` });
-  }
-  const widthRemoved = isTestRightToLeft ? -indent : indent;
-  const currentWordsMargin = parseFloat(wordsEl().native.style.marginLeft) || 0;
-  wordsEl().setStyle({ marginLeft: `${currentWordsMargin + widthRemoved}px` });
-  Caret.caret?.handleTapeWordsRemoved(widthRemoved);
-  PaceCaret.caret?.handleTapeWordsRemoved(widthRemoved);
-}
-
-async function lineJump(currentTop: number, force = false): Promise<void> {
-  //last word of the line
-  if (currentTestLine > 0 || force) {
-    const hideBound = currentTop;
-
-    const activeWordEl = getActiveWordElement();
-    if (!activeWordEl) return;
-
-    // index of the active word in all #words.children
-    // (which contains .word/.newline/.beforeNewline/.afterNewline elements)
-    const wordsChildren = wordsEl().getChildren();
-    const activeWordElementIndex = wordsChildren.indexOf(activeWordEl);
-
-    let lastElementIndexToRemove: number | undefined = undefined;
-    for (let i = activeWordElementIndex - 1; i >= 0; i--) {
-      const child = wordsChildren[i] as ElementWithUtils;
-      if (child.hasClass("hidden")) continue;
-      if (Math.floor(child.getOffsetTop()) < hideBound) {
-        if (child.hasClass("word")) {
-          lastElementIndexToRemove = i;
-          break;
-        } else if (child.hasClass("beforeNewline")) {
-          // set it to .newline but check .beforeNewline.offsetTop
-          // because it's more reliable
-          lastElementIndexToRemove = i + 1;
-          break;
-        }
-      }
-    }
-
-    if (lastElementIndexToRemove === undefined) {
-      currentTestLine++;
-      updateWordsWrapperHeight();
-      return;
-    }
-
-    currentLinesJumping++;
-
-    const wordHeight = activeWordEl.getOuterHeight();
-    const newMarginTop = -1 * wordHeight * currentLinesJumping;
-    const duration = 125;
-
-    const caretLineJumpOptions = {
-      newMarginTop,
-      duration: Config.smoothLineScroll ? duration : 0,
-    };
-    Caret.caret?.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret?.handleLineJump(caretLineJumpOptions);
-
-    if (Config.smoothLineScroll) {
-      lineTransition = true;
-      const generation = layoutGeneration;
-      await new Promise<void>((resolve) => {
-        lineJumpAnimation = wordsEl().animate({
-          marginTop: newMarginTop,
-          duration,
-          onComplete: () => resolve(),
-        });
-      });
-      // words were reset meanwhile, everything measured above is stale
-      if (generation !== layoutGeneration) return;
-      lineJumpAnimation = undefined;
-      currentLinesJumping = 0;
-      activeWordTop = activeWordEl.getOffsetTop();
-      activeWordHeight = activeWordEl.getOffsetHeight();
-      removeTestElements(lastElementIndexToRemove);
-      wordsEl().setStyle({ marginTop: "0" });
-      lineTransition = false;
-    } else {
-      currentLinesJumping = 0;
-      removeTestElements(lastElementIndexToRemove);
-    }
-  }
-  currentTestLine++;
-  updateWordsWrapperHeight();
-  return;
-}
-
 /**
  * Whether appending `data` to the active word would push it onto the next line
  * or wrap its letters. Expensive - causes layout reflows.
@@ -859,58 +263,9 @@ export function wouldActiveWordOverflow(
   inputValue: string,
   data: string,
 ): boolean {
-  const activeWordIndex = getActiveWordIndex();
-  const activeWord = getActiveWordElement();
-  // Active word not rendered yet (word change and append in the same frame).
-  // Rendering here would put a reactive render on the input path, so assume
-  // the worst: this guard only runs for extra letters, blocking one is cheap,
-  // letting it wrap the word is not.
-  if (activeWord === null) return true;
-
-  // The words frame hasn't laid out the active word yet, activeWordTop/Height
-  // still belong to the previous one: measure the word itself instead. Its
-  // rendered letters are a lower bound for its unrendered input, so this
-  // can't miss an overflow.
-  const laidOut = laidOutActiveWordIndex === activeWordIndex;
-  const baseTop = laidOut ? activeWordTop : activeWord.getOffsetTop();
-  const baseHeight = laidOut ? activeWordHeight : activeWord.getOffsetHeight();
-
-  // pending (not yet rendered) input has to be accounted for
-  const pending = getPendingWordInput(activeWordIndex);
-  const { top, height } = getTopAndHeightWithDifferentData(
-    activeWord,
-    (pending ?? inputValue) + data,
-  );
-  // word jumped to next line, or letters wrapped to next line
-  return top > baseTop || height > baseHeight;
-}
-
-function getTopAndHeightWithDifferentData(
-  activeWord: ElementWithUtils,
-  data: string,
-): {
-  top: number;
-  height: number;
-} {
-  const lettersEls = activeWord.qsa("letter");
-  const domLettersCount = lettersEls.length;
-  const nodes = [];
-  for (let i = domLettersCount; i < data.length; i++) {
-    const tempLetter = document.createElement("letter");
-    const displayData = data[i] === " " ? "_" : data[i];
-    tempLetter.textContent = displayData as string;
-    nodes.push(tempLetter);
-  }
-
-  lettersEls[domLettersCount - 1]?.native.after(...nodes);
-
-  const top = activeWord.getOffsetTop();
-  const height = activeWord.getOffsetHeight();
-  for (const node of nodes) {
-    node.remove();
-  }
-
-  return { top, height };
+  // not mounted: nothing to type into, block
+  if (wordsLayoutRef === undefined) return true;
+  return wordsLayoutRef.wouldActiveWordOverflow(inputValue, data);
 }
 
 // this means input, delete or composition
@@ -1091,7 +446,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
     skipBreakdownEvent.dispatch();
   }
 
-  currentTestLine = 0;
   AdController.destroyResult();
   void SoundController.clearAllSounds();
   showWords();
@@ -1099,7 +453,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 
 /** Frees the test words DOM once the result is shown. */
 export function clearWords(): void {
-  invalidateAsyncLayout();
+  wordsLayoutRef?.reset();
   resetWordsRender();
   clearPendingLayout();
 }
@@ -1118,18 +472,18 @@ export function onTestFinish(): void {
  */
 export function init(
   refs: {
-    words: ElementWithUtils;
+    wordsLayout: WordsLayout;
     wordsWrapper: ElementWithUtils;
     typingTest: ElementWithUtils;
   },
   signal: AbortSignal,
 ): void {
-  wordsRef = refs.words;
+  wordsLayoutRef = refs.wordsLayout;
   wordsWrapperRef = refs.wordsWrapper;
   typingTestRef = refs.typingTest;
   signal.addEventListener("abort", () => {
     // a remount may have registered new elements already
-    if (wordsRef === refs.words) wordsRef = undefined;
+    if (wordsLayoutRef === refs.wordsLayout) wordsLayoutRef = undefined;
     if (wordsWrapperRef === refs.wordsWrapper) wordsWrapperRef = undefined;
     if (typingTestRef === refs.typingTest) typingTestRef = undefined;
   });
@@ -1174,7 +528,7 @@ export function init(
   createEffect(
     on(
       () => getConfig.typedEffect,
-      () => Joining.update("typedEffect", wordsEl()),
+      () => wordsLayout().typedEffectChanged(),
       { defer: true },
     ),
   );
@@ -1182,7 +536,7 @@ export function init(
     on(
       () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
-        Joining.update("fontSize", wordsEl());
+        wordsLayout().fontChanged();
         if (!isTestFinished()) invalidateTypoHintsLayout();
       },
       { defer: true },
@@ -1194,12 +548,7 @@ export function init(
 
   const recenter = debounce(250, () => {
     if (isTestFinished()) return;
-    if (Config.tapeMode !== "off") {
-      void scrollTape();
-    } else {
-      void centerActiveLine();
-      invalidateTypoHintsLayout();
-    }
+    wordsLayout().resized();
     setTimeout(() => {
       if (signal.aborted) return;
       updateWordsInputPosition();
@@ -1250,7 +599,3 @@ function autofocusWords(e: KeyboardEvent): void {
     e.preventDefault();
   }
 }
-
-export const __testing = {
-  updateWordsWrapperHeight,
-};

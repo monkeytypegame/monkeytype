@@ -1,4 +1,3 @@
-import { createRoot } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
@@ -11,8 +10,10 @@ import {
   registerWordElement,
   unregisterWordElement,
 } from "../../src/ts/states/word-elements";
-import * as TestUI from "../../src/ts/test/test-ui";
-import { ElementWithUtils } from "../../src/ts/utils/dom";
+import {
+  createWordsLayout,
+  WordsLayout,
+} from "../../src/ts/components/pages/test/words-layout";
 
 // jsdom has no layout: words get a fake one, 5 per line
 const wordsPerLine = 5;
@@ -50,9 +51,11 @@ function fakeLayout(): void {
   });
 }
 
-/** Renders #typingTest > #wordsWrapper > #words with `count` words. */
-function renderWords(count: number): HTMLElement {
-  const typingTest = document.createElement("div");
+/** Renders #wordsWrapper > #words with `count` words, and their layout. */
+function renderWords(count: number): {
+  wordsWrapper: HTMLElement;
+  layout: WordsLayout;
+} {
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
   for (let i = 0; i < count; i++) {
@@ -63,32 +66,24 @@ function renderWords(count: number): HTMLElement {
     registerWordElement(i, words.lastElementChild as HTMLElement);
   }
   wordsWrapper.append(words);
-  typingTest.append(wordsWrapper);
-  document.body.append(typingTest);
+  document.body.append(wordsWrapper);
 
-  const controller = new AbortController();
-  createRoot((dispose) => {
-    TestUI.init(
-      {
-        words: new ElementWithUtils(words),
-        wordsWrapper: new ElementWithUtils(wordsWrapper),
-        typingTest: new ElementWithUtils(typingTest),
-      },
-      controller.signal,
-    );
-    cleanups.push(() => {
-      controller.abort();
-      dispose();
-      for (const el of words.children) {
-        unregisterWordElement(
-          Number((el as HTMLElement).dataset["wordindex"]),
-          el as HTMLElement,
-        );
-      }
-      typingTest.remove();
-    });
+  const layout = createWordsLayout({
+    words: () => words,
+    wordsWrapper: () => wordsWrapper,
+    onActiveWordLaidOut: () => undefined,
   });
-  return wordsWrapper;
+  cleanups.push(() => {
+    layout.reset();
+    for (const el of words.children) {
+      unregisterWordElement(
+        Number((el as HTMLElement).dataset["wordindex"]),
+        el as HTMLElement,
+      );
+    }
+    wordsWrapper.remove();
+  });
+  return { wordsWrapper, layout };
 }
 
 const cleanups: Array<() => void> = [];
@@ -107,9 +102,9 @@ describe("words wrapper height", () => {
   it("shows three lines in a timed test", () => {
     configTesting.replaceConfig({ mode: "time", tapeMode: "off" });
     // 10 lines of words
-    const wordsWrapper = renderWords(wordsPerLine * 10);
+    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
 
-    TestUI.__testing.updateWordsWrapperHeight(true);
+    layout.relayout();
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -120,9 +115,9 @@ describe("words wrapper height", () => {
       tapeMode: "off",
       showAllLines: true,
     });
-    const wordsWrapper = renderWords(wordsPerLine * 10);
+    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
 
-    TestUI.__testing.updateWordsWrapperHeight(true);
+    layout.relayout();
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -130,9 +125,9 @@ describe("words wrapper height", () => {
   it("keeps three lines' height when the words fill fewer lines", () => {
     configTesting.replaceConfig({ mode: "words", tapeMode: "off" });
     // one line of words
-    const wordsWrapper = renderWords(wordsPerLine);
+    const { wordsWrapper, layout } = renderWords(wordsPerLine);
 
-    TestUI.__testing.updateWordsWrapperHeight(true);
+    layout.relayout();
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });

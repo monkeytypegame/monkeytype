@@ -1,5 +1,6 @@
-import { batch, createSignal } from "solid-js";
+import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
+import { createTrigger } from "../hooks/createTrigger";
 import { createFrameBuffer } from "../utils/frame-buffer";
 
 /**
@@ -12,7 +13,7 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  *
  * Exceptions, applied immediately: the first rendered word/line break indices
  * are only raised by layout code (line jump, tape scroll), so it can measure
- * the result. The typo hints layout version is only bumped outside the input
+ * the result. The typo hints layout is only invalidated outside the input
  * path (font, resize, layout).
  */
 
@@ -68,17 +69,17 @@ const [store, setStore] = createStore<WordsRenderState>({
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
 
-const [typoHintsLayoutVersion, setTypoHintsLayoutVersion] = createSignal(0);
+const [trackTypoHintsLayout, triggerTypoHintsLayout] = createTrigger();
 
-/** Changes whenever typo hints have to re-measure their letters. */
-export { typoHintsLayoutVersion };
+/** Re-runs the caller whenever typo hints have to re-measure their letters. */
+export { trackTypoHintsLayout };
 
 /**
  * Letter widths may have changed (font, resize): typo hints re-measure. Not
  * part of the input path, applies immediately.
  */
 export function invalidateTypoHintsLayout(): void {
-  setTypoHintsLayoutVersion((version) => version + 1);
+  triggerTypoHintsLayout();
 }
 
 type Buffer = {

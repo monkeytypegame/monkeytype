@@ -1,10 +1,13 @@
-import { render } from "@solidjs/testing-library";
+import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Words } from "../../../../src/ts/components/pages/test/Words";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
-import { getWordElement } from "../../../../src/ts/states/word-elements";
+import { setTestFocusState } from "../../../../src/ts/states/test";
+import {
+  getLineBreakElements,
+  getWordElement,
+} from "../../../../src/ts/states/word-elements";
 import {
   appendRenderedWord,
   firstMountedIndex,
@@ -18,6 +21,7 @@ import {
   truncateWords,
   wordsRenderState,
 } from "../../../../src/ts/states/words-render";
+import { renderWords } from "../../../__harness__/render-words";
 
 let frames: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
@@ -26,11 +30,6 @@ function flush(): void {
   const pending = [...frames.values()];
   frames.clear();
   for (const cb of pending) cb(0);
-}
-
-function renderWords(): HTMLElement {
-  const { container } = render(() => <Words />);
-  return container;
 }
 
 function wordEls(container: HTMLElement): HTMLElement[] {
@@ -76,12 +75,37 @@ afterEach(() => {
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   setConfigStore("blindMode", defaults.blindMode);
+  setConfigStore("showOutOfFocusWarning", defaults.showOutOfFocusWarning);
+  setTestFocusState("focused");
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
 });
 
 describe("Words", () => {
+  describe("out of focus", () => {
+    it("blurs the words, transitioning only opacity and filter", () => {
+      // layout measures font size and margins right after changing them (eg.
+      // font size from the commandline, which unfocuses the test): they must
+      // never transition
+      vi.useFakeTimers();
+      try {
+        setConfigStore("showOutOfFocusWarning", true);
+        const words = renderWords();
+        expect(words.style.transition).toBe("none");
+
+        setTestFocusState("unfocused");
+        // the warning shows after a delay
+        vi.advanceTimersByTime(1000);
+
+        expect(words.classList.contains("blurred")).toBe(true);
+        expect(words.style.transition).toBe("opacity 0.25s, filter 0.25s");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
   it("renders appended words with letters after flush", () => {
     const container = renderWords();
     appendRenderedWord("hello");
@@ -310,6 +334,28 @@ describe("Words", () => {
 
       resetWordsRender();
       expect(getWordElement(1)).toBeUndefined();
+    });
+
+    it("registers line break elements by the index of the word ending the line", () => {
+      const container = renderWords();
+      appendRenderedWord("a\n");
+      appendRenderedWord("b\n");
+      appendRenderedWord("c");
+      flush();
+      expect(getLineBreakElements(1)).toEqual({
+        before: container.querySelectorAll(".beforeNewline")[1],
+        after: container.querySelectorAll(".afterNewline")[1],
+      });
+      expect(getLineBreakElements(2)).toBeUndefined();
+
+      setFirstRenderedLine(1);
+      expect(getLineBreakElements(0)).toBeUndefined();
+      expect(getLineBreakElements(1)?.after).toBe(
+        container.querySelector(".afterNewline"),
+      );
+
+      resetWordsRender();
+      expect(getLineBreakElements(1)).toBeUndefined();
     });
 
     it("does not render lines below the first rendered line, line breaks included", () => {

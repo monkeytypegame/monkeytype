@@ -4,7 +4,6 @@ import { Link } from "@tanstack/solid-router";
 import {
   createMemo,
   createResource,
-  createSignal,
   For,
   JSXElement,
   Show,
@@ -18,6 +17,7 @@ import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
 import * as DB from "../../../../db";
+import { createTrigger } from "../../../../hooks/createTrigger";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -282,10 +282,10 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the non-reactive DB snapshot, bumped after each toggle
-  const [favoritesVersion, setFavoritesVersion] = createSignal(0);
+  // favorites live in the non-reactive DB snapshot, refreshed after each toggle
+  const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
-    favoritesVersion();
+    trackFavorites();
     return QuotesController.isQuoteFavorite(props.quote);
   };
   // fills quoteStats() in states/quote-rate, which the rate modal also updates
@@ -335,7 +335,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
       dbSnapshot.favoriteQuotes[language] ??= [];
       dbSnapshot.favoriteQuotes[language]?.push(quoteId);
     }
-    setFavoritesVersion((v) => v + 1);
+    refreshFavorites();
   };
 
   return (
