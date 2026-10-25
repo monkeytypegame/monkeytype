@@ -13,7 +13,6 @@ import { convertRemToPixels } from "../utils/numbers";
 import * as PaceCaret from "./pace-caret";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Focus from "../test/focus";
 import {
   blurInputElement,
   focusInputElement,
@@ -54,6 +53,7 @@ import {
   getCompositionData,
   highlightKeymapKey,
   setWordsInputPosition,
+  setFocusMode,
 } from "../states/test";
 import { createEffect, on, untrack } from "solid-js";
 import type {
@@ -300,7 +300,7 @@ function afterAnyTestInput(
     }
   }
 
-  Focus.set(true);
+  setFocusMode(true);
   Caret.stopAnimation();
 }
 
@@ -382,7 +382,7 @@ export async function afterTestWordChange(
 }
 
 export function onTestStart(): void {
-  Focus.set(true);
+  setFocusMode(true);
   setCurrentLiveStats({
     wpm: 0,
     acc: 100,
@@ -419,7 +419,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   typingTestEl().setStyle({ opacity: "0" });
   setTypingTestHidden(false);
   setWordsInputPosition((position) => ({ ...position, left: 0 }));
-  Focus.set(false);
+  setFocusMode(false);
   setCurrentLiveStats({
     wpm: undefined,
     acc: undefined,

@@ -10,7 +10,7 @@ import {
   getActiveWordIndex,
   getBailedOut,
   getCurrentQuote,
-  getFocus,
+  isFocusMode,
   isResultCalculating,
   isTestActive,
 } from "./test";
@@ -88,7 +88,7 @@ export function getBarTarget(): {
   };
 }
 
-export const showLiveStats = createMemo(() => isTestActive() && getFocus());
+export const showLiveStats = createMemo(() => isTestActive() && isFocusMode());
 export const getLiveSpeedText = createMemo(() =>
   Format.typingSpeed(
     (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0,

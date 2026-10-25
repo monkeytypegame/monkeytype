@@ -8,11 +8,13 @@ import { JSXElement } from "solid-js";
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
 import { getGlobalOffsetTop, isAppReady } from "../../states/core";
+import { isFocusMode } from "../../states/test";
 import { cn } from "../../utils/cn";
 import { convertRemToPixels } from "../../utils/numbers";
 import { Advertisement } from "../common/Advertisement";
 import { Anime } from "../common/anime";
 import { DevTools } from "../dev/DevTools";
+import { FocusModeExit } from "../layout/FocusModeExit";
 import { Footer } from "../layout/footer/Footer";
 import { Header } from "../layout/header/Header";
 import { Overlays } from "../layout/overlays/Overlays";
@@ -26,6 +28,7 @@ export function App(): JSXElement {
   return (
     <Providers>
       <Overlays />
+      <FocusModeExit />
       <CustomBackground />
       <Theme />
       <Font />
@@ -35,7 +38,8 @@ export function App(): JSXElement {
       </div>
       <Anime
         id="app"
-        class={cn("content-grid focus", { hidden: !isAppReady() })}
+        class={cn("content-grid", { hidden: !isAppReady() })}
+        data-focused={isFocusMode() ? "" : undefined}
         initial={{ opacity: 0 }}
         animate={{ opacity: isAppReady() ? 1 : 0, duration: 250 }}
         style={{

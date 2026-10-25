@@ -36,7 +36,6 @@ import {
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
 import * as AdController from "../controllers/ad-controller";
-import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
@@ -85,6 +84,7 @@ import {
   setComposing,
   setCompositionData,
   highlightKeymapKey,
+  setFocusMode,
 } from "../states/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -1191,7 +1191,7 @@ async function showResult(
     });
   }
 
-  Focus.set(false);
+  setFocusMode(false);
 
   const canQuickRestartTest = canQuickRestart(
     Config.mode,

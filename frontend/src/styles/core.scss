@@ -165,6 +165,13 @@ a {
   }
 }
 
+// focus mode hides the cursor. !important: inside custom-styles it would
+// otherwise lose to cursor utilities on buttons and links
+body:has(#app[data-focused]),
+body:has(#app[data-focused]) * {
+  cursor: none !important;
+}
+
 body {
   margin: 0;
   padding: 0;

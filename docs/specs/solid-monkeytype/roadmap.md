@@ -45,7 +45,7 @@ Every track can start now. These are the only steps that wait on another track:
 |---|---|---|
 | **TH1** test-page harness | T0 (H1 first if it extends the app-shell harness) | Builds on Words owning its layout |
 | **T2** break joining | TH1 | The harness is the safety net from here on |
-| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event, focus and funbox; they need new homes first |
+| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event and funbox; they need new homes first (focus mode is already a plain `setFocusMode` call) |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
 | **C4** delete `Config` + `configEvent` | T6, L2 | test-logic, pace caret and funbox are the last subscribers |
@@ -127,7 +127,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by |
 |---|---|---|---|---|
-| [ ] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit | none (before T5) |
+| [x] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit. Done: `isFocusMode`/`setFocusMode` (rAF-deferred) in states/test; `data-focused` on app, header, footer, banners; `FocusModeExit`; caret blink follows the signal; `test/focus.ts` deleted | none (before T5) |
 | [ ] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks; display tweaks via `data-ui-*` / funbox CSS | none (before T5) |
 | [ ] | L3 | M · PR | Monkey power as a component owning its canvas, positioned from the caret | T3 |
 | [ ] | L4 | M · PR | Result word highlight becomes part of words history, driven by a highlighted-range signal from the chart | none |

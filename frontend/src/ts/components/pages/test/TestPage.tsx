@@ -8,7 +8,7 @@ import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
 import { isResultShown } from "../../../states/result";
 import {
-  getFocus,
+  isFocusMode,
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
   isResultLoading,
@@ -252,7 +252,7 @@ export function TestPage(): JSXElement {
             "focus:opacity-100 focus:transition-none",
             getConfig.quickRestart !== "off" && "hidden",
             "pointer-coarse:block", //always show the button if using a pointer-coarse device
-            getFocus() && "opacity-0", //always hide if we are focused
+            isFocusMode() && "opacity-0", //always hide if we are focused
           )}
           balloon={{
             text: "Restart Test",
