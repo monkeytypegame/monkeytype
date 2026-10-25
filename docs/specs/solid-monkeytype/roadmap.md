@@ -96,10 +96,10 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Step | Blocked by | Notes |
 |---|---|---|---|---|
-| [ ] | C1 | Config setter writes the store **before** dispatching the config event (and before full-config-change finished) | none | Tiny; removes the stale-store hazard. Do first |
+| [x] | C1 | Config setter writes the store **before** dispatching the config event (and before full-config-change finished) | none | Done: `setConfig`/`toggleFunbox` write store → persist → event; whole-config apply resets the store with `Config`, writes per key inside one `batch` (effects run once), all before finished. Leftover for C3: funbox `activate()` writes `Config.funbox` without the store |
 | [ ] | C2 | Replace config-bus subscribers outside the test with effects on store keys: theme controller, sound controller, quotes controller, challenge controller, commandline theme list | C1 | One PR each, all parallel |
 | [ ] | C3 | Move mutable `Config.x` reads to the store, by area: format singleton; commandline lists; controllers; input; test modules | C1 | Parallel by area; the test-module part follows T3/T6 where they overlap |
-| [ ] | C4 | Delete the mutable config object, the config event bus and the full-config-change events; whole-config apply becomes one batched reconcile; convert remaining test subscribers (pace caret, tts, practise words, funbox, test-logic) to effects | C2, C3, T6, L2 | Last step of C |
+| [ ] | C4 | Delete the mutable config object, the config event bus and the full-config-change events; whole-config apply becomes one batched reconcile (the `batch` already exists since C1); convert remaining test subscribers (pace caret, tts, practise words, funbox, test-logic) to effects | C2, C3, T6, L2 | Last step of C |
 | [ ] | C5 | Merge commandline metadata into config metadata; command icons become icon-component types | none | Can be L-track work |
 
 ## Track U: user data (parallel with T and C)
