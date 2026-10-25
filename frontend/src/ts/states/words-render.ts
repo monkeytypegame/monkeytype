@@ -1,4 +1,4 @@
-import { batch, createEffect, createRoot, untrack } from "solid-js";
+import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createFrameBuffer } from "../utils/frame-buffer";
@@ -121,20 +121,6 @@ export function onWordsFlushed(
   };
 }
 
-/**
- * Runs the onWordsFlushed hook once the DOM reflects the store: now, or, inside
- * an outer batch or effect, once it ends (Solid holds DOM updates until then).
- */
-function runFlushedHook(flushed: WordsFlush): void {
-  createRoot((dispose) => {
-    // a user effect runs after the render effects that update the DOM
-    createEffect(() => {
-      dispose();
-      untrack(() => flushedHook?.(flushed));
-    });
-  });
-}
-
 function createRenderedWord(index: number, text: string): RenderedWord {
   return {
     index,
@@ -191,7 +177,7 @@ function applyBuffer(b: Buffer): void {
   });
 
   // 4. imperative layout against the updated DOM
-  runFlushedHook({
+  flushedHook?.({
     newWords: false,
     wordChange: b.wordChange,
     updatedWords: [...b.inputs.keys()],
@@ -305,7 +291,8 @@ function emptyState(
 /**
  * Replaces the words (restart). Not for the input path: cancels a pending
  * flush, renders now and runs the onWordsFlushed hook, so the new words can be
- * measured right after.
+ * measured right after. Call it outside a batch or effect: Solid holds the DOM
+ * updates until those end, and the hook would measure the old words.
  */
 export function replaceWords(
   words: string[],
@@ -328,7 +315,7 @@ export function replaceWords(
       renderedActiveWordIndex: options.activeWordIndex,
     });
   });
-  runFlushedHook({ newWords: true, wordChange: undefined, updatedWords: [] });
+  flushedHook?.({ newWords: true, wordChange: undefined, updatedWords: [] });
 }
 
 /** Frees the words (result shown): cancels a pending flush, empties the store. */
