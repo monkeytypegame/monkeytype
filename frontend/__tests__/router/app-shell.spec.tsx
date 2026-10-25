@@ -72,6 +72,8 @@ describe("app shell routing", () => {
   });
   afterEach(() => {
     cleanupApp();
+    // timers left behind fire in the test that left them, not silently dropped
+    vi.runOnlyPendingTimers();
     vi.unstubAllGlobals();
     vi.useRealTimers();
   });
@@ -580,11 +582,19 @@ describe("app shell routing", () => {
       await app.settle({ waitForRouter: false });
       expect(app.loadingIndicator()).toBe("bar");
 
+      const popped: string[] = [];
+      const listening = new AbortController();
+      window.addEventListener(
+        "popstate",
+        () => popped.push(window.location.pathname),
+        { signal: listening.signal },
+      );
       app.router.history.back();
-      // popstate fires asynchronously, the blocker then restores the entry
+      // popstate fires on a timer, the blocker then restores the entry
       await vi.advanceTimersByTimeAsync(50);
-      await vi.waitFor(() => expect(window.location.pathname).toBe("/account"));
-      await vi.advanceTimersByTimeAsync(50);
+      listening.abort();
+      // went back, then forward again
+      expect(popped).toEqual(["/", "/account"]);
       await app.settle({ waitForRouter: false });
 
       expect(window.location.pathname).toBe("/account");
