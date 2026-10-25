@@ -44,9 +44,10 @@
  * - Tests can run on fake timers (app-shell.spec.tsx does, for all tests):
  *   `vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date",
  *   "requestAnimationFrame", "cancelAnimationFrame"] })`. `flush()`, `hover()`
- *   and `settle()` work with real or fake timers. Waits that would sleep in
- *   real time (eg. the bar's 125ms "Done" fill) must advance the clock
- *   instead (`vi.advanceTimersByTimeAsync`).
+ *   and `settle()` work with real or fake timers. On fake timers `settle()`
+ *   moves the clock itself until the router is idle and the bar is gone (eg.
+ *   the pending min, the bar's 125ms "Done" fill); other waits advance it
+ *   with `vi.advanceTimersByTimeAsync`.
  * - Pages are stubs rendering their name, except the real loading page (its
  *   text, bar, error and Retry button); `shownPage()` returns the name of the
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
@@ -623,14 +624,26 @@ export function renderApp(options: RenderAppOptions = {}): App {
   }
 
   async function settle({ waitForRouter = true } = {}): Promise<void> {
-    if (waitForRouter) {
+    const busy = (): string | undefined => {
+      if (router.state.status !== "idle" || router.state.isLoading) {
+        return "router busy";
+      }
+      // the loading bar filling up to "Done"
+      if (isLoadingBarShown()) return "loading bar finishing";
+      return undefined;
+    };
+    if (waitForRouter && vi.isFakeTimers()) {
+      // moves the clock without sleeping: waits like the pending min or the
+      // "Done" fill cost no real time
+      for (let ms = 0; busy() !== undefined; ms += 5) {
+        if (ms >= 5000) throw new Error(`settle timed out: ${busy()}`);
+        await vi.advanceTimersByTimeAsync(5);
+      }
+    } else if (waitForRouter) {
       await vi.waitFor(
         () => {
-          if (router.state.status !== "idle" || router.state.isLoading) {
-            throw new Error("router busy");
-          }
-          // the loading bar filling up to "Done"
-          if (isLoadingBarShown()) throw new Error("loading bar finishing");
+          const reason = busy();
+          if (reason !== undefined) throw new Error(reason);
         },
         { interval: 5 },
       );

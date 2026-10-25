@@ -47,11 +47,6 @@ function retryButton(app: App): HTMLButtonElement {
 
 // the loading bar fills up from its last step to "Done" (125ms) before the
 // loading page leaves
-async function waitForDone(): Promise<void> {
-  await vi.advanceTimersByTimeAsync(150);
-  await flush();
-}
-
 // a response that never arrives, recording that the fetch started
 function slowResponse(key: QueryKey): {
   response: [QueryKey, () => Promise<unknown>];
@@ -188,7 +183,6 @@ describe("app shell routing", () => {
       expect(app.shownPage()).toBe("loading");
 
       userData.resolve();
-      await waitForDone();
       await app.settle();
 
       expect(app.shownPage()).toBe("settings");
@@ -235,8 +229,6 @@ describe("app shell routing", () => {
       app.blockingData.loadResults();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -255,8 +247,6 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("test");
     });
@@ -281,8 +271,6 @@ describe("app shell routing", () => {
       app.blockingData.loadResults();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -299,8 +287,6 @@ describe("app shell routing", () => {
       // the bar takes 125ms to fill up from the last step
       await flush();
       expect(app.shownPage()).toBe("loading");
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -322,8 +308,6 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -412,7 +396,6 @@ describe("app shell routing", () => {
       expect(app.shownPage()).toBe("loading");
 
       app.blockingData.loadResults();
-      await waitForDone();
       await app.settle();
 
       expect(app.shownPage()).toBe("account");
@@ -433,7 +416,6 @@ describe("app shell routing", () => {
       expect(app.shownPage()).toBe("loading");
 
       app.blockingData.loadFriends();
-      await waitForDone();
       await app.settle();
 
       expect(app.shownPage()).toBe("friends");
@@ -619,11 +601,8 @@ describe("app shell routing", () => {
       app.blockingData.loadResults();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("account");
-
-      await waitForDone();
       await app.settle();
       expect(app.url()).toBe("/account");
       expect(app.shownPage()).toBe("account");
@@ -645,7 +624,6 @@ describe("app shell routing", () => {
       const app = await accountLoading();
 
       app.auth.signOut();
-      await waitForDone();
       await app.settle();
 
       expect(app.url()).toBe("/login");
@@ -662,7 +640,6 @@ describe("app shell routing", () => {
       expect(app.loadingIndicator()).toBe("bar");
       userData.resolve();
       app.blockingData.loadResults();
-      await waitForDone();
       await app.settle();
 
       expect(app.url()).toBe("/account");
@@ -769,7 +746,6 @@ describe("app shell routing", () => {
       });
 
       retried.resolve();
-      await waitForDone();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["settings"]);
     });
@@ -816,7 +792,6 @@ describe("app shell routing", () => {
       });
 
       app.blockingData.loadResults();
-      await waitForDone();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["account"]);
     });
@@ -840,7 +815,6 @@ describe("app shell routing", () => {
       });
 
       app.blockingData.loadResults();
-      await waitForDone();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["account"]);
     });
@@ -869,7 +843,6 @@ describe("app shell routing", () => {
       });
 
       app.blockingData.loadFriends();
-      await waitForDone();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["friends"]);
     });
@@ -1248,7 +1221,6 @@ describe("app shell routing", () => {
         app.blockingData[load]();
         await flush();
         expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-        await waitForDone();
         await app.settle();
         expect(app.shownPage()).toBe(page);
       },
@@ -1270,8 +1242,6 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
-      await waitForDone();
       await app.settle();
       expect(app.shownPage()).toBe("test");
     });
