@@ -32,7 +32,7 @@ export const [isTestFinished, setTestFinished] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
 // it covers the words fade-out that isTestFinished() is still false during.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
-// Set when the user bails out of a test early; reset by TestLogic.restart().
+// Set when the user bails out of a test early; reset by TestLogic.restartTest().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
 // read by Words (#words blur), the composition display and OutOfFocusWarning.

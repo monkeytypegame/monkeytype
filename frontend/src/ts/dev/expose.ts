@@ -7,7 +7,7 @@ import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
 import { showModal } from "../states/modals";
-import { restart } from "../test/test-logic";
+import { restartTest } from "../test/test-logic";
 import { quickLogin } from "./quick-login";
 import { trackedSignals } from "./signal-tracker";
 import {
@@ -54,7 +54,7 @@ const mt = {
   getConfig,
   setConfig,
   showModal,
-  restart,
+  restartTest,
   typeText,
   wordsSnapshot,
   caretOffset,

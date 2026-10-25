@@ -15,7 +15,7 @@ import * as Presets from "../../src/ts/collections/presets";
 describe("PresetController", () => {
   describe("apply", () => {
     vi.mock("../../src/ts/test/test-logic", () => ({
-      restart: vi.fn(),
+      restartTest: vi.fn(),
     }));
     vi.mock("../../src/ts/test/pace-caret", () => ({
       //
@@ -35,7 +35,7 @@ describe("PresetController", () => {
       Notifications,
       "showSuccessNotification",
     );
-    const testRestartMock = vi.spyOn(TestLogic, "restart");
+    const testRestartMock = vi.spyOn(TestLogic, "restartTest");
     const tagsClearMock = vi.spyOn(Tags, "clearActiveTags");
     const tagsSetMock = vi.spyOn(Tags, "setTagActive");
     const tagsSaveActiveMock = vi.spyOn(Tags, "saveActiveToLocalStorage");

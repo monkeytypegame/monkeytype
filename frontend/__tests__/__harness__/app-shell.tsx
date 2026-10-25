@@ -310,7 +310,7 @@ vi.mock("../../src/ts/test/test-logic", async () => {
   return {
     leaveTestPage: () => setTestActive(false),
     // the debug handle exposes it
-    restart: () => undefined,
+    restartTest: () => undefined,
   };
 });
 

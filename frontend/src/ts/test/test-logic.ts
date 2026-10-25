@@ -86,7 +86,6 @@ import {
   setCompositionData,
   highlightKeymapKey,
 } from "../states/test";
-import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import { canStartTest } from "./test-page-state";
@@ -246,7 +245,9 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
-export async function restart(options = {} as RestartOptions): Promise<void> {
+export async function restartTest(
+  options = {} as RestartOptions,
+): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
     practiseMissed: false,
@@ -659,7 +660,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
         );
         toggleFunbox(sectionFunbox.name);
-        void restart();
+        void restartTest();
         return;
       }
 
@@ -1369,11 +1370,11 @@ export function onRestartButtonClick(): void {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    void restart({
+    void restartTest({
       withSameWordset: true,
     });
   } else {
-    void restart();
+    void restartTest();
   }
 }
 
@@ -1382,7 +1383,7 @@ export function repeatTest(): void {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  void restart({
+  void restartTest({
     withSameWordset: true,
   });
 }
@@ -1397,13 +1398,11 @@ export function restartIfNotStarted(): void {
     !isTestFinished() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    void restart({
+    void restartTest({
       noAnim: true,
     });
   }
 }
-
-restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
@@ -1419,11 +1418,11 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      void restart();
+      void restartTest();
     }
-    if (key === "difficulty" && !nosave) void restart();
+    if (key === "difficulty" && !nosave) void restartTest();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      void restart();
+      void restartTest();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {

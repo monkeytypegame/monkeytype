@@ -6,7 +6,7 @@ import { getInputElement } from "../input/input-element";
 import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/events/data";
 import { hideModal, showModal } from "../states/modals";
-import { restart } from "../test/test-logic";
+import { restartTest } from "../test/test-logic";
 
 /** "\n" types a line break, "\b" deletes the previous character. */
 function typeChar(char: string): void {
@@ -114,7 +114,7 @@ export async function setCustomText(text: string): Promise<void> {
   CustomText.setLimitMode("word");
   CustomText.setLimitValue(words.length);
   setConfig("mode", "custom");
-  await restart();
+  await restartTest();
 }
 
 /**

@@ -45,7 +45,7 @@ Every track can start now. These are the only steps that wait on another track:
 |---|---|---|
 | **TH1** test-page harness | T0 (H1 first if it extends the app-shell harness) | Builds on Words owning its layout |
 | **T2** break joining | TH1 | The harness is the safety net from here on |
-| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the restart and timer events, focus and funbox; they need new homes first |
+| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event, focus and funbox; they need new homes first |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
 | **C4** delete `Config` + `configEvent` | T6, L2 | test-logic, pace caret and funbox are the last subscribers |
@@ -119,7 +119,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
-| [ ] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5 |
+| [x] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5. Done: callers import `restartTest` (renamed from `restart`) from test-logic; `events/test.ts` deleted |
 | [ ] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5 |
 | [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787 | T1 | Coordinate with T3 |
 

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { restartMock } = vi.hoisted(() => ({ restartMock: vi.fn() }));
 vi.mock("../../../../../src/ts/test/test-logic", () => ({
-  restart: restartMock,
+  restartTest: restartMock,
   repeatTest: vi.fn(),
 }));
 vi.mock("../../../../../src/ts/states/router", () => ({
@@ -15,7 +15,6 @@ vi.mock("../../../../../src/ts/states/router", () => ({
 
 import { ResultButtons } from "../../../../../src/ts/components/pages/test/result/ResultButtons";
 import { setConfigStore } from "../../../../../src/ts/config/store";
-import { restartTestEvent } from "../../../../../src/ts/events/test";
 import "../../../../../src/ts/input/hotkeys";
 import {
   setIsLongTest,
@@ -34,18 +33,12 @@ describe("ResultButtons", () => {
   });
 
   describe("tab with quick restart off", () => {
-    const restartEventListener = vi.fn();
-    let unsubscribe: () => void;
-
     beforeEach(() => {
       setConfigStore("quickRestart", "off");
       restartMock.mockClear();
-      restartEventListener.mockClear();
-      unsubscribe = restartTestEvent.subscribe(restartEventListener);
     });
 
     afterEach(() => {
-      unsubscribe();
       setIsLongTest(false);
       setWordsHaveTab(false);
       setWordsHaveNewline(false);
@@ -65,8 +58,26 @@ describe("ResultButtons", () => {
       expect(document.activeElement).toBe(
         container.querySelector('[data-ui-element="restartTestButton"]'),
       );
-      expect(restartEventListener).not.toHaveBeenCalled();
       expect(restartMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("tab with quick restart on tab", () => {
+    beforeEach(() => {
+      setConfigStore("quickRestart", "tab");
+      restartMock.mockClear();
+    });
+
+    afterEach(() => {
+      setConfigStore("quickRestart", "off");
+    });
+
+    it("restarts the test", async () => {
+      render(() => <ResultButtons glarses={false} />);
+
+      await userEvent.tab();
+
+      expect(restartMock).toHaveBeenCalledWith({ isQuickRestart: true });
     });
   });
 });
