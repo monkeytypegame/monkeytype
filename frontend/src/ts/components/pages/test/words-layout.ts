@@ -15,11 +15,11 @@ import {
   isTestActive,
   isTestFinished,
   isTestRightToLeft,
-  triggerWordsInputCenter,
   setOutOfFocusMaxHeight,
   setTestFocusState,
   setWordsInputPosition,
   setWordsWrapperHidden,
+  trackScrollWindowToActiveWord,
   wordsHaveNewline,
 } from "../../../states/test";
 import {
@@ -291,8 +291,32 @@ export function createWordsLayout(options: {
       left = Math.max(0, activeWord.getOffsetLeft());
     }
 
-    // WordsInput keeps it in the center once applied
     setWordsInputPosition({ centerY, left, width, maxWidth });
+    scrollWindowToActiveWord(false);
+  }
+
+  /**
+   * Scrolls the window so the active word is in its center, if the words
+   * wrapper doesn't fit on it and the word is below the center (unless
+   * allowed to scroll up). Only during a test: before it, TestPage keeps the
+   * test in view.
+   */
+  function scrollWindowToActiveWord(allowScrollUp: boolean): void {
+    if (!isTestActive()) return;
+    const activeWord = getActiveWordElement();
+    if (activeWord === null) return;
+    const windowHeight = window.innerHeight;
+
+    // dont do anything if the wrapper can fit on screen
+    if (wordsWrapperEl().getOffsetHeight() < windowHeight) return;
+
+    const activeWordBelowCenter =
+      activeWord.native.getBoundingClientRect().top > windowHeight / 2;
+
+    // only scroll down unless allowed to scroll up
+    if (!activeWordBelowCenter && !allowScrollUp) return;
+
+    activeWord.native.scrollIntoView({ block: "center" });
   }
 
   let activeWordTop = 0;
@@ -835,6 +859,12 @@ export function createWordsLayout(options: {
     ),
   );
 
+  createEffect(
+    on(trackScrollWindowToActiveWord, () => scrollWindowToActiveWord(true), {
+      defer: true,
+    }),
+  );
+
   // effects run after the bindings, so the new config classes are applied
   createEffect(
     on(
@@ -898,7 +928,7 @@ export function createWordsLayout(options: {
     if (generation !== layoutGeneration) return;
     positionWordsInput();
     focusInputElement(true);
-    if (isTestActive()) triggerWordsInputCenter();
+    scrollWindowToActiveWord(true);
     Caret.show();
   });
   // the caret is hidden while resizing, shown once the words are laid out

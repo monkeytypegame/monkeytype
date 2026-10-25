@@ -1,6 +1,6 @@
 // the react rule doesn't know Solid's on: (native listener) bindings
 /* oxlint-disable react/no-unknown-property */
-import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
+import { JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import {
@@ -23,7 +23,6 @@ import {
   isRealWordsInputShown,
   isTestFinished,
   setTestFocusState,
-  trackWordsInputCenter,
   wordsInputPosition,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
@@ -41,36 +40,6 @@ export function WordsInput(): JSXElement {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
     onCleanup(registerInputElement(inputRef));
   });
-
-  /**
-   * Scrolls the input to the center of the window, if the words wrapper
-   * doesn't fit on it and the input is below the center (unless forced).
-   */
-  const keepInTheCenter = (force: boolean): void => {
-    if (inputRef === undefined) return;
-    // the input renders inside #wordsWrapper
-    const wordsWrapperHeight = inputRef.parentElement?.offsetHeight ?? 0;
-    const windowHeight = window.innerHeight;
-
-    // dont do anything if the wrapper can fit on screen
-    if (wordsWrapperHeight < windowHeight) return;
-
-    const wordsInputBelowCenter =
-      inputRef.getBoundingClientRect().top > windowHeight / 2;
-
-    // dont do anything if its above or at the center unless forced
-    if (!wordsInputBelowCenter && !force) return;
-
-    inputRef.scrollIntoView({ block: "center" });
-  };
-
-  // runs after the style binding: measures the applied position
-  createEffect(
-    on(wordsInputPosition, () => keepInTheCenter(false), { defer: true }),
-  );
-  createEffect(
-    on(trackWordsInputCenter, () => keepInTheCenter(true), { defer: true }),
-  );
 
   const px = (value: number | undefined): string | undefined =>
     value === undefined ? undefined : `${value}px`;

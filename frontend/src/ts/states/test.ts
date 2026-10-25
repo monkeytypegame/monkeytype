@@ -77,8 +77,9 @@ export type WordsInputPosition = {
 export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
-// WordsInput scrolls #wordsInput to the window center on each request
-export const [trackWordsInputCenter, triggerWordsInputCenter] = createTrigger();
+// Words scrolls the window to the active word on each request (during a test)
+export const [trackScrollWindowToActiveWord, triggerScrollWindowToActiveWord] =
+  createTrigger();
 
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =
