@@ -199,6 +199,8 @@ export function checkLayout(): string[] {
 function findCommand(id: string, list: Command[]): Command | undefined {
   for (const command of list) {
     if (command.id === id) return command;
+    // dynamic lists (presets, tags, custom themes) fill in on open
+    command.subgroup?.beforeList?.();
     const found =
       command.subgroup !== undefined
         ? findCommand(id, command.subgroup.list)

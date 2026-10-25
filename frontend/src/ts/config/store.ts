@@ -9,6 +9,7 @@ export const Config: ConfigSchema = {
 const [getConfigStore, setConfigStoreRaw] =
   createStore<ConfigSchema>(getDefaultConfig());
 
+// the store object itself, not a getter function: read `getConfig.fontSize`
 export const getConfig = getConfigStore;
 
 export function setFullConfigStore(newConfig: ConfigSchema): void {
