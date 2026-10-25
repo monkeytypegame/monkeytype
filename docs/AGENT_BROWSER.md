@@ -42,7 +42,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `getConfig.<key>` | read config: `getConfig` is the config store object, not a function (`getConfig.fontSize`) |
 | `setConfig(key, value)` | write config. Doesn't restart the test (callers restart until T6b): use `runCommand` when the restart matters |
 | `showModal(id)` | open a modal by `ModalId` |
-| `restart()` | restart the typing test |
+| `restartTest()` | restart the typing test |
 | `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
 | `wordsSnapshot()` | rendered `#words` children: words (index, classes, letters with text/icon/classes) and newline siblings |
 | `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |

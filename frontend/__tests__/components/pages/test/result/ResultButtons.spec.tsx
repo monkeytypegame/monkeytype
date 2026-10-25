@@ -68,10 +68,6 @@ describe("ResultButtons", () => {
       restartMock.mockClear();
     });
 
-    afterEach(() => {
-      setConfigStore("quickRestart", "off");
-    });
-
     it("restarts the test", async () => {
       render(() => <ResultButtons glarses={false} />);
 
