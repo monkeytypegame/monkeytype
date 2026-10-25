@@ -21,6 +21,13 @@ import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
 import { cn } from "../../utils/cn";
+import {
+  ExtractionProgress,
+  extractTextFromFile,
+  getFileKind,
+  supportedFileTypes,
+  TextExtractionError,
+} from "../../utils/file-text-extractor";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -58,9 +65,25 @@ const delimiterOptions = [
   { value: "false", label: "space" },
 ];
 
+function formatExtractionProgress(progress: ExtractionProgress): string {
+  if (progress.stage === "reading") {
+    return `Reading page ${progress.page} of ${progress.pages}`;
+  }
+  if (progress.stage === "recognizing") {
+    const percent = Math.round(progress.progress * 100);
+    return progress.pages > 1
+      ? `Recognizing text on page ${progress.page} of ${progress.pages} (${percent}%)`
+      : `Recognizing text (${percent}%)`;
+  }
+  return "Loading";
+}
+
 export function CustomTextModal(): JSXElement {
   const [longTextWarning, setLongTextWarning] = createSignal(false);
   const [challengeWarning, setChallengeWarning] = createSignal(false);
+  /** progress of the file which is currently being imported, if any */
+  const [fileImport, setFileImport] = createSignal<string | null>(null);
+  let fileImportAbort: AbortController | undefined;
 
   const [incomingChainedData, setIncomingChainedData] =
     createSignal<CustomTextIncomingData>(null);
@@ -175,11 +198,17 @@ export function CustomTextModal(): JSXElement {
 
   const formValues = form.useStore((s) => s.values);
 
-  const isDisabled = () => longTextWarning() || challengeWarning();
+  const isDisabled = () =>
+    longTextWarning() || challengeWarning() || fileImport() !== null;
   const isLimitDisabled = () => formValues().mode === "simple" || isDisabled();
 
   const showWordLimit = () => !formValues().pipeDelimiter;
   const showSectionLimit = () => formValues().pipeDelimiter;
+
+  const wordCount = () =>
+    (formValues().text ?? "")
+      .split(formValues().pipeDelimiter ? "|" : /\s+/)
+      .filter((word) => word.trim() !== "").length;
 
   const cleanUpText = (): string[] => {
     let text = form.getFieldValue("text");
@@ -200,6 +229,52 @@ export function CustomTextModal(): JSXElement {
       "text",
       form.getFieldValue("text").replace(/[\u200B-\u200D\u2060\uFEFF]/g, ""),
     );
+  };
+
+  const applyLowercase = () => {
+    form.setFieldValue("text", form.getFieldValue("text").toLowerCase());
+  };
+
+  const applyTrimToSelection = () => {
+    const area = textareaRef;
+    if (area === undefined) return;
+    const { selectionStart, selectionEnd } = area;
+    if (selectionStart === selectionEnd) {
+      showNoticeNotification(
+        "Select the part of the text you want to keep first",
+        { durationMs: 5000 },
+      );
+      return;
+    }
+    const selected = area.value.slice(selectionStart, selectionEnd).trim();
+    if (selected === "") {
+      showNoticeNotification("Selection is empty", { durationMs: 5000 });
+      return;
+    }
+    form.setFieldValue("text", selected);
+  };
+
+  const applyRemoveSelection = () => {
+    const area = textareaRef;
+    if (area === undefined) return;
+    const { selectionStart, selectionEnd, value, scrollTop } = area;
+    if (selectionStart === selectionEnd) {
+      showNoticeNotification("Select the text you want to remove first", {
+        durationMs: 5000,
+      });
+      return;
+    }
+    form.setFieldValue(
+      "text",
+      value.slice(0, selectionStart) + value.slice(selectionEnd),
+    );
+    //after the new value is written to the DOM, put the caret where the removed
+    //text was and keep the scroll position instead of jumping to the end
+    requestAnimationFrame(() => {
+      area.focus({ preventScroll: true });
+      area.setSelectionRange(selectionStart, selectionStart);
+      area.scrollTop = scrollTop;
+    });
   };
 
   const applyRemoveFancyTypography = () => {
@@ -347,25 +422,60 @@ export function CustomTextModal(): JSXElement {
     });
   };
 
-  const handleFileOpen = () => {
+  const cancelFileImport = () => {
+    fileImportAbort?.abort();
+    fileImportAbort = undefined;
+    setFileImport(null);
+  };
+
+  const handleFileOpen = async () => {
     const file = fileInputRef?.files?.[0];
     if (!file) return;
+    //allow the same file to be selected again
+    fileInputRef.value = "";
 
-    if (file.type !== "text/plain") {
-      showErrorNotification("File is not a text file", { durationMs: 5000 });
+    if (getFileKind(file) === undefined) {
+      showErrorNotification("File type is not supported", { durationMs: 5000 });
       return;
     }
 
-    const reader = new FileReader();
-    reader.readAsText(file, "UTF-8");
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
+    cancelFileImport();
+    const abortController = new AbortController();
+    fileImportAbort = abortController;
+
+    try {
+      const content = await extractTextFromFile(file, {
+        signal: abortController.signal,
+        onProgress: (progress) => {
+          if (!abortController.signal.aborted) {
+            setFileImport(formatExtractionProgress(progress));
+          }
+        },
+      });
+      if (abortController.signal.aborted) return;
+
+      if (content.trim() === "") {
+        showNoticeNotification("No text found in file", { durationMs: 5000 });
+        return;
+      }
       form.setFieldValue("text", content);
-      fileInputRef.value = "";
-    };
-    reader.onerror = () => {
-      showErrorNotification("Failed to read file", { durationMs: 5000 });
-    };
+    } catch (e) {
+      if (abortController.signal.aborted) return;
+
+      if (e instanceof TextExtractionError) {
+        showErrorNotification(e.message, { durationMs: 5000 });
+      } else {
+        showErrorNotification("Failed to read file", {
+          durationMs: 5000,
+          error: e,
+        });
+      }
+    } finally {
+      if (fileImportAbort === abortController) {
+        fileImportAbort = undefined;
+        setFileImport(null);
+      }
+    }
   };
 
   const handleTextareaKeydown = (e: KeyboardEvent) => {
@@ -439,6 +549,7 @@ export function CustomTextModal(): JSXElement {
         modalClass="max-w-[1200px] lg:grid-cols-[auto_20rem] grid-cols-1 h-min"
         beforeShow={beforeShow}
         afterShow={afterShow}
+        beforeHide={cancelFileImport}
       >
         <form
           class="contents"
@@ -509,6 +620,24 @@ export function CustomTextModal(): JSXElement {
                   </div>
                 </div>
               </Show>
+              <Show when={fileImport() !== null}>
+                <div
+                  class="absolute inset-0 z-10 grid cursor-pointer place-items-center rounded bg-sub-alt text-center"
+                  onClick={cancelFileImport}
+                >
+                  <div>
+                    <p class="text-em-xl">
+                      <Fa icon="fa-circle-notch" fixedWidth spin />{" "}
+                      {fileImport()}
+                    </p>
+                    <p class="mt-4 text-em-xs text-sub">
+                      The file is processed on your device and is not uploaded.
+                      <br />
+                      Click anywhere to cancel.
+                    </p>
+                  </div>
+                </div>
+              </Show>
               <form.Field name="text">
                 {(field) => (
                   <TextareaField
@@ -521,6 +650,11 @@ export function CustomTextModal(): JSXElement {
                   />
                 )}
               </form.Field>
+              <div class="mt-1 text-sub lowercase">
+                {wordCount()} words · import a file or paste text, then
+                highlight a part and use the tools (keep / remove selection,
+                lowercase…) to edit it
+              </div>
             </div>
             <SubmitButton
               form={form}
@@ -649,8 +783,8 @@ export function CustomTextModal(): JSXElement {
                 ref={fileInputRef}
                 type="file"
                 class="hidden"
-                accept=".txt"
-                onChange={handleFileOpen}
+                accept={supportedFileTypes}
+                onChange={() => void handleFileOpen()}
               />
               <Button
                 variant="button"
@@ -673,6 +807,27 @@ export function CustomTextModal(): JSXElement {
             </div>
             {/* <Separator /> */}
             <SettingsGroup
+              title="Trim to selection"
+              icon="fa-crop"
+              sub="Highlight the part you want to keep, then apply to remove the rest. To keep several parts, remove the ones you do not want instead."
+            >
+              <div class="flex w-full gap-2">
+                <Button
+                  variant="button"
+                  text="keep selection"
+                  class="flex-1"
+                  onClick={applyTrimToSelection}
+                />
+                <Button
+                  variant="button"
+                  text="remove selection"
+                  class="flex-1"
+                  onClick={applyRemoveSelection}
+                />
+              </div>
+            </SettingsGroup>
+
+            <SettingsGroup
               title="Remove zero-width characters"
               icon="fa-text-width"
               sub="Fully remove zero-width characters."
@@ -682,6 +837,19 @@ export function CustomTextModal(): JSXElement {
                 text="apply"
                 class="w-full"
                 onClick={applyRemoveZeroWidth}
+              />
+            </SettingsGroup>
+
+            <SettingsGroup
+              title="Convert to lowercase"
+              icon="fa-font"
+              sub="Convert all text to lowercase."
+            >
+              <Button
+                variant="button"
+                text="apply"
+                class="w-full"
+                onClick={applyLowercase}
               />
             </SettingsGroup>
 
