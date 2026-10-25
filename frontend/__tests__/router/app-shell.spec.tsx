@@ -45,8 +45,6 @@ function retryButton(app: App): HTMLButtonElement {
   return button;
 }
 
-// the loading bar fills up from its last step to "Done" (125ms) before the
-// loading page leaves
 // a response that never arrives, recording that the fetch started
 function slowResponse(key: QueryKey): {
   response: [QueryKey, () => Promise<unknown>];
@@ -285,9 +283,10 @@ describe("app shell routing", () => {
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
       // the bar takes 125ms to fill up from the last step
-      await flush();
+      await vi.advanceTimersByTimeAsync(100);
       expect(app.shownPage()).toBe("loading");
-      await app.settle();
+      await vi.advanceTimersByTimeAsync(25);
+      await flush();
       expect(app.shownPage()).toBe("account");
     });
 
