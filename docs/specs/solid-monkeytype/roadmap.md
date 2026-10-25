@@ -127,7 +127,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by |
 |---|---|---|---|---|
-| [x] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit. Done: `isFocusMode`/`setFocusMode` (rAF-deferred) in states/test; `data-focused` on app, header, footer, banners; `FocusModeExit`; caret blink follows the signal; `test/focus.ts` deleted | none (before T5) |
+| [x] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit. Done in [#8519](https://github.com/monkeytypegame/monkeytype/pull/8519): `isFocusMode`/`setFocusMode` (rAF-deferred) in states/test; `data-focused` on app, header, footer, banners; `FocusModeExit`; caret blink follows the signal; `test/focus.ts` deleted | none (before T5) |
 | [ ] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks; display tweaks via `data-ui-*` / funbox CSS | none (before T5) |
 | [ ] | L3 | M · PR | Monkey power as a component owning its canvas, positioned from the caret | T3 |
 | [ ] | L4 | M · PR | Result word highlight becomes part of words history, driven by a highlighted-range signal from the chart | none |
