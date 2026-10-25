@@ -37,7 +37,7 @@ function convertTests(
         root,
         name: updatedName,
       },
-    } as UserWorkspaceConfig;
+    };
   });
 }
 
