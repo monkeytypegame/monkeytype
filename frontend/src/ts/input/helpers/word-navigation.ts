@@ -39,7 +39,7 @@ export async function goToNextWord({
     lastBurst: null,
   };
 
-  TestUI.beforeTestWordChange("forward", correctInsert);
+  TestUI.beforeTestWordChange("forward");
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace();
@@ -89,7 +89,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back", null);
+  TestUI.beforeTestWordChange("back");
 
   decreaseActiveWordIndex();
 

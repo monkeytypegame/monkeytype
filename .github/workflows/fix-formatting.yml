@@ -6,7 +6,7 @@ name: Fix formatting
 # config are taken from the base branch; the PR is only treated as data.
 
 env:
-  NODE_VERSION: "24.11.0"
+  NODE_VERSION: "24.22.1"
 
 permissions:
   contents: write

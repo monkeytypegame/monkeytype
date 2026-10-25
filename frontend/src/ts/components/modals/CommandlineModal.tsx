@@ -25,7 +25,7 @@ import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
 } from "../../states/commandline";
-import { getActivePage } from "../../states/core";
+import { setFontPreview } from "../../states/font";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   clearModalStack,
@@ -35,11 +35,11 @@ import {
   hideModalAndClearChain as storeClearChain,
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
+import { getRoutePage } from "../../states/router";
 import { setTestFocusState } from "../../states/test";
 import * as Focus from "../../test/focus";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
-import { clearFontPreview } from "../../ui";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -412,7 +412,7 @@ export function CommandlineModal(): JSXElement {
   };
 
   const clearPreviewsAndLock = (): void => {
-    clearFontPreview();
+    setFontPreview(null);
     void ThemeController.clearPreview();
     isAnimating = true;
   };
@@ -691,7 +691,7 @@ export function CommandlineModal(): JSXElement {
     setWarning(null);
     hideCheckingIcon();
     addCommandlineBackground();
-    if (getActivePage() !== "test") {
+    if (getRoutePage() !== "test") {
       (document.activeElement as HTMLElement | undefined)?.blur();
     }
     isAnimating = false;
@@ -707,7 +707,7 @@ export function CommandlineModal(): JSXElement {
     const command = activeCommand();
     if (isAnimating) return;
 
-    clearFontPreview();
+    setFontPreview(null);
 
     if (
       command !== undefined &&

@@ -25,6 +25,11 @@ import {
 } from "../../../../src/ts/components/common/anime/AnimeGroup";
 import { AnimePresence } from "../../../../src/ts/components/common/anime/AnimePresence";
 
+// Anime starts its enter animation on the next frame
+async function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 describe("Anime", () => {
   afterEach(() => {
     cleanup();
@@ -65,24 +70,26 @@ describe("Anime", () => {
     expect(el).toBeTruthy();
   });
 
-  it("calls animejsAnimate on mount with animation prop", () => {
+  it("calls animejsAnimate on mount with animation prop", async () => {
     render(() => (
       <Anime animation={{ opacity: 1, duration: 300 }}>
         <div />
       </Anime>
     ));
+    await nextFrame();
     expect(mockAnimate).toHaveBeenCalledWith(
       expect.any(HTMLElement),
       expect.objectContaining({ opacity: 1, duration: 300 }),
     );
   });
 
-  it("applies initial state with duration:0 then animates to animate prop", () => {
+  it("applies initial state with duration:0 then animates to animate prop", async () => {
     render(() => (
       <Anime initial={{ opacity: 0 }} animate={{ opacity: 1, duration: 300 }}>
         <div />
       </Anime>
     ));
+    await nextFrame();
 
     // First call: initial state (duration: 0)
     expect(mockAnimate).toHaveBeenCalledWith(
@@ -96,7 +103,38 @@ describe("Anime", () => {
     );
   });
 
-  it("re-runs animation when reactive signal changes", () => {
+  it("applies the initial state at once and starts the animation a frame later", async () => {
+    render(() => (
+      <Anime initial={{ opacity: 0 }} animate={{ opacity: 1, duration: 300 }}>
+        <div />
+      </Anime>
+    ));
+    expect(mockAnimate).toHaveBeenCalledTimes(1);
+    expect(mockAnimate).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ opacity: 0, duration: 0 }),
+    );
+
+    await nextFrame();
+    expect(mockAnimate).toHaveBeenCalledTimes(2);
+    expect(mockAnimate).toHaveBeenLastCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ opacity: 1, duration: 300 }),
+    );
+  });
+
+  it("doesn't start the animation if unmounted before the frame", async () => {
+    const { unmount } = render(() => (
+      <Anime animate={{ opacity: 1, duration: 300 }}>
+        <div />
+      </Anime>
+    ));
+    unmount();
+    await nextFrame();
+    expect(mockAnimate).not.toHaveBeenCalled();
+  });
+
+  it("re-runs animation when reactive signal changes", async () => {
     const [opacity, setOpacity] = createSignal(1);
 
     render(() => (
@@ -104,6 +142,7 @@ describe("Anime", () => {
         <div />
       </Anime>
     ));
+    await nextFrame();
 
     const callsBefore = mockAnimate.mock.calls.length;
     setOpacity(0);

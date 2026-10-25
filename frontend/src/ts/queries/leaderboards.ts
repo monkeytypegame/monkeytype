@@ -5,7 +5,7 @@ import {
 import { queryOptions } from "@tanstack/solid-query";
 import Ape from "../ape";
 import { queryClient } from ".";
-import { pageSize, Selection, setPage } from "../states/leaderboard-selection";
+import { pageSize, Selection } from "../states/leaderboard-selection";
 
 const queryKeys = {
   root: (options: Selection & { userSpecific?: true }) => [
@@ -136,15 +136,6 @@ export const getLeaderboardQueryOptions = (
         );
       }
 
-      if (response.body.data.entries.length === 0 && options.page !== 0) {
-        const page = Math.max(
-          0,
-          Math.ceil(response.body.data.count / pageSize) - 1,
-        );
-        if (page !== options.page) {
-          setPage(page);
-        }
-      }
       return response.body.data;
     },
     //5 minutes for alltime, one minute for others

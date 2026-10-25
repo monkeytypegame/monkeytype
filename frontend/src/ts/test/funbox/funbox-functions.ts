@@ -7,7 +7,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { ttsEvent } from "../../events/tts";
+import * as TTS from "../tts";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -15,7 +15,6 @@ import {
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
 import { getCurrentInput, getInputForWord } from "../events/data";
-import { highlight } from "../../events/keymap";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
@@ -29,6 +28,7 @@ import {
   setLayoutfluidTimerText,
   setLayoutfluidTimerVisible,
   setMemoryTimerDuration,
+  highlightKeymapKey,
 } from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
@@ -52,7 +52,6 @@ export type FunboxFunctions = {
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
@@ -247,7 +246,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
+      if (params[0] !== undefined) void TTS.speak(params[0]);
     },
   },
   arrows: {
@@ -272,30 +271,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    getWordHtml(char: string, letterTag?: boolean): string {
-      let retval = "";
-      if (char === "↑") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-up"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "↓") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-down"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "←") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-left"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "→") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-right"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      return retval;
     },
   },
   rAnDoMcAsE: {
@@ -430,7 +405,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           setLayoutfluidTimerVisible(false);
         }
         setTimeout(() => {
-          highlight(
+          highlightKeymapKey(
             TestWords.words
               .getCurrent()
               ?.text.charAt(getCurrentInput().length) ?? "",

@@ -33,7 +33,7 @@ import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
   getSmoothedBurst,
-  getShowResult,
+  isResultShown,
   resultState,
 } from "../../../../states/result";
 import { CompletedResult, getLastEventLog } from "../../../../states/test";
@@ -577,7 +577,8 @@ export function ResultChart(props: {
 
     // only build while visible - the result outlives the result screen, and
     // showResult() shows it after the details and tags are set, so this runs once per result
-    if (!getShowResult()) {
+    // (plus once more if tags load after the result shows)
+    if (!isResultShown()) {
       return (
         prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
       );
@@ -585,12 +586,14 @@ export function ResultChart(props: {
 
     const result = props.result;
     const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
-    const tagNames = new Map((tags() ?? []).map((t) => [t._id, t.name]));
-    const tagPbs = resultState.tags.flatMap((tag) =>
-      tag.chartPb !== undefined
-        ? [{ name: tagNames.get(tag.id) ?? "", pb: tag.chartPb }]
-        : [],
-    );
+    // state, not tags(): reading tags() suspends until the collection is ready.
+    // draw the chart now, tag pb lines show up once their tag has loaded
+    const tagPbs = resultState.tags.flatMap((tag) => {
+      const name = tags.state.get(tag.id)?.name;
+      return tag.chartPb !== undefined && name !== undefined
+        ? [{ name, pb: tag.chartPb }]
+        : [];
+    });
 
     const data = buildChartData(
       result,
@@ -620,7 +623,7 @@ export function ResultChart(props: {
 
   // the canvas has no size while the result is hidden
   createEffectOn(
-    getShowResult,
+    isResultShown,
     (shown) => {
       if (shown) chart?.resize();
     },

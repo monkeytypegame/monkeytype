@@ -8,7 +8,6 @@ import { Challenge } from "@monkeytype/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
-import { keymapEvent } from "../events/keymap";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { isTestPageMounted } from "../test/test-page-state";
@@ -27,14 +26,16 @@ export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-export const [getResultVisible, setResultVisible] = createSignal(false);
+// True from TestLogic.finish() (before the result is built) until restart()
+// fades the result out. Whether the result is on screen: isResultShown()
+export const [isTestFinished, setTestFinished] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
-// it covers the words fade-out that getResultVisible() is still false during.
+// it covers the words fade-out that isTestFinished() is still false during.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restart().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// read by TestPage (#words blur), the composition display and OutOfFocusWarning.
+// read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
@@ -57,12 +58,28 @@ export const showOutOfFocusWarning = createMemo(
   () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
 );
 
-// max-height of the warning, kept in sync with the words wrapper by test-ui.
+// max-height of the warning, kept in sync with the words wrapper by the words layout.
 export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// bound to #words / #wordsWrapper by TestPage.
+/** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
+export type WordsInputPosition = {
+  top: number;
+  left: number;
+  width?: number;
+  maxWidth?: number;
+};
+
+// bound to #wordsInput by WordsInput, follows the active word
+export const [wordsInputPosition, setWordsInputPosition] =
+  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+
+// dev options: shows #wordsInput below the words
+export const [isRealWordsInputShown, setRealWordsInputShown] =
+  createSignal(false);
+
+// bound to #words by Words, #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);
 export const [isWordsWrapperHidden, setWordsWrapperHidden] =
@@ -96,23 +113,31 @@ export const [getTestInitError, setTestInitError] = createSignal<string | null>(
 // shown between the words fading out and the result appearing.
 export const [isResultLoading, setResultLoading] = createSignal(false);
 
-// live IME composition text, pushed from the compositionupdate/end events.
-export const [getCompositionText, setCompositionText] = createSignal("");
+// IME composition in progress and its data so far, pushed from the
+// composition events. Read by the input handlers, the caret and the
+// composition display.
+export const [isComposing, setComposing] = createSignal(false);
+export const [getCompositionData, setCompositionData] = createSignal("");
+
+// the timer drifted too far: animations stay off until it's cleared on restart.
+const [isSlowTimer, setIsSlowTimer] = createSignal(false);
+export { isSlowTimer };
+
+export function setSlowTimer(): void {
+  if (isSlowTimer()) return;
+  setIsSlowTimer(true);
+  console.error("Slow timer, disabling animations");
+}
+
+export function clearSlowTimer(): void {
+  setIsSlowTimer(false);
+}
 
 createEffect(
   on(
     () => getConfig.showOutOfFocusWarning,
     (show) => {
       if (!show) setTestFocusState("focused");
-    },
-    { defer: true },
-  ),
-);
-createEffect(
-  on(
-    () => getConfig.compositionDisplay,
-    (display) => {
-      if (display === "below") setCompositionText(" ");
     },
     { defer: true },
   ),
@@ -219,18 +244,23 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
 
 export { getKeymapFlashState, setKeymapFlashState };
 
-keymapEvent.useListener(({ mode, key, correct }) => {
-  const mappedKey = key === "" ? " " : key;
-  setKeymapHighlightKey(mode === "highlight" ? mappedKey : undefined);
+/** Highlights the next key to press on the keymap. */
+export function highlightKeymapKey(key: string): void {
+  setKeymapHighlightKey(key === "" ? " " : key);
+}
 
-  if (mode === "flash" && getConfig.keymapMode === "react") {
-    const existing = getKeymapFlashState[mappedKey];
-    setKeymapFlashState(mappedKey, {
-      tick: existing ? existing.tick + 1 : 1,
-      correct: correct ?? true,
-    });
-  }
-});
+/** Flashes the pressed key on the keymap, clearing the highlight. */
+export function flashKeymapKey(key: string, correct?: boolean): void {
+  setKeymapHighlightKey(undefined);
+  if (getConfig.keymapMode !== "react") return;
+
+  const mappedKey = key === "" ? " " : key;
+  const existing = getKeymapFlashState[mappedKey];
+  setKeymapFlashState(mappedKey, {
+    tick: existing ? existing.tick + 1 : 1,
+    correct: correct ?? true,
+  });
+}
 
 const getInputLayout = createMemo<{
   layout: string;
@@ -297,6 +327,16 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
+
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    getConfig.mode === "zen" ||
+    getConfig.mode === "custom" ||
+    getConfig.funbox.includes("polyglot")
+  );
+}
+
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(

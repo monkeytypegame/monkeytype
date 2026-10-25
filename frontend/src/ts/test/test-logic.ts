@@ -1,3 +1,10 @@
+import {
+  getRememberLazyMode,
+  setRememberLazyMode,
+  getPrefersArabicLazyMode,
+  setPrefersArabicLazyMode,
+} from "../states/lazy-mode";
+import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
 import { batch } from "solid-js";
 import * as TestUI from "./test-ui";
@@ -29,7 +36,6 @@ import {
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
 import * as AdController from "../controllers/ad-controller";
-import * as ConnectionState from "../legacy-states/connection";
 import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
@@ -64,30 +70,31 @@ import {
   setBailedOut,
   setLastSignedOutResult,
   setResultCalculating,
-  setResultVisible,
+  setTestFinished,
   setTestActive,
   setWordsHaveNewline,
   setWordsHaveNumbers,
   setWordsHaveTab,
-  getResultVisible,
+  isTestFinished,
   CompletedResult,
   setResultLoading,
   setTestInitError,
   setTestInitFailed,
   setJoiningScript,
   setTypingTestHidden,
+  setComposing,
+  setCompositionData,
+  highlightKeymapKey,
 } from "../states/test";
 import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import { canStartTest, markTestPageLeaving } from "./test-page-state";
+import { canStartTest } from "./test-page-state";
 import { configEvent } from "../events/config";
 import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
-import { highlight } from "../events/keymap";
-import * as LazyModeState from "../legacy-states/remember-lazy-mode";
 import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,
@@ -102,7 +109,6 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import * as CompositionState from "../legacy-states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
@@ -111,14 +117,13 @@ import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { canQuickRestart } from "../utils/quick-restart";
 import {
   ResultDetails,
-  setShowResult,
+  setResultShown,
   resultState,
   setResultState,
   setCrownType,
 } from "../states/result";
 import { blurInputElement, setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
-import { qs } from "../utils/dom";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { refreshNextDailyPaceCaretWpm } from "../queries/leaderboards";
@@ -154,13 +159,12 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
+import { appendRenderedWord } from "../states/words-render";
 
 let failReason = "";
 
 export function startTest(now: number): boolean {
-  if (!canStartTest()) {
-    return false;
-  }
+  if (!canStartTest()) return false;
 
   if (isAuthenticated()) {
     void AnalyticsController.log("testStarted");
@@ -210,8 +214,8 @@ function resetTestState(): void {
   PaceCaret.reset();
   setKoreanStatus(false);
   clearQuoteStats();
-  CompositionState.setComposing(false);
-  CompositionState.setData("");
+  setComposing(false);
+  setCompositionData("");
   Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
@@ -230,7 +234,6 @@ export function stop(): void {
 
 /** Ends the test when leaving the test page. Keystrokes after this don't reach the test. */
 export function leaveTestPage(): void {
-  markTestPageLeaving();
   stop();
   blurInputElement();
 }
@@ -364,7 +367,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   // restart
 
-  const source: "testPage" | "resultPage" = getResultVisible()
+  const source: "testPage" | "resultPage" = isTestFinished()
     ? "resultPage"
     : "testPage";
   const noAnim = options.noAnim ?? false;
@@ -373,7 +376,7 @@ export async function restart(options = {} as RestartOptions): Promise<void> {
 
   await TestUI.fadeOutTest(source, noAnim);
 
-  setResultVisible(false);
+  setTestFinished(false);
   setInputElementValue("");
 
   await Funbox.rememberSettings();
@@ -464,7 +467,7 @@ async function init(): Promise<boolean> {
       .some((lang) => !lang.noLazyMode);
 
     if (Config.lazyMode && !anySupportsLazyMode) {
-      LazyModeState.setRemember(true);
+      setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification(
           "None of the selected polyglot languages support lazy mode.",
@@ -475,15 +478,15 @@ async function init(): Promise<boolean> {
         showedLazyModeNotification = true;
       }
       setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && anySupportsLazyMode) {
+    } else if (getRememberLazyMode() && anySupportsLazyMode) {
       setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
+      setRememberLazyMode(false);
       showedLazyModeNotification = false;
     }
   } else {
     // normal mode
     if (Config.lazyMode && !allowLazyMode) {
-      LazyModeState.setRemember(true);
+      setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification("This language does not support lazy mode.", {
           important: true,
@@ -491,15 +494,15 @@ async function init(): Promise<boolean> {
         showedLazyModeNotification = true;
       }
       setConfig("lazyMode", false);
-    } else if (LazyModeState.getRemember() && allowLazyMode) {
+    } else if (getRememberLazyMode() && allowLazyMode) {
       setConfig("lazyMode", true);
-      LazyModeState.setRemember(false);
+      setRememberLazyMode(false);
       showedLazyModeNotification = false;
     }
   }
 
   if (!Config.lazyMode && !language.noLazyMode) {
-    LazyModeState.setRemember(false);
+    setRememberLazyMode(false);
   }
 
   if (Config.mode === "custom") {
@@ -591,7 +594,7 @@ async function init(): Promise<boolean> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    highlight(
+    highlightKeymapKey(
       nthElementFromArray(
         // ignoring for now but this might need a different approach
         // oxlint-disable-next-line no-misused-spread
@@ -623,7 +626,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
+    appendRenderedWord("");
     return;
   }
 
@@ -674,7 +677,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        TestUI.addWord(newWord.display);
+        appendRenderedWord(newWord.display);
       }
     }
   }
@@ -691,7 +694,7 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    TestUI.addWord(newWord.display);
+    appendRenderedWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -872,7 +875,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   forceReleaseAllKeys();
 
-  setResultVisible(true);
+  setTestFinished(true);
   setTestActive(false);
 
   cleanupData();
@@ -1150,8 +1153,8 @@ async function showResult(
   Replay.resetReplay();
   blurInputElement();
 
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
+  if (!isOnline()) {
+    showOfflineBanner();
   }
 
   const pbEligibility = getPbEligibility(result, dontSave);
@@ -1204,14 +1207,10 @@ async function showResult(
   ) {
     toggleResultWords(true);
   }
-  AdController.updateFooterAndVerticalAds(true);
   void Funbox.clear();
 
   setResultLoading(false);
-  setShowResult(true);
-
-  const resultPrefocusTarget = qs("#resultButtonsPrefocusTarget");
-  resultPrefocusTarget?.focus({ preventScroll: true });
+  setResultShown(true);
 
   void AdController.renderResult();
   setResultCalculating(false);
@@ -1278,7 +1277,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (getResultVisible()) {
+    if (isTestFinished()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }
@@ -1399,7 +1398,7 @@ export function repeatTest(): void {
 export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
-    !getResultVisible() &&
+    !isTestFinished() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     void restart({
@@ -1418,7 +1417,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
       //automatically enable lazy mode for arabic
       if (
         (newValue as string)?.startsWith("arabic") &&
-        LazyModeState.getArabicPref()
+        getPrefersArabicLazyMode()
       ) {
         setConfig("lazyMode", true, {
           nosave: true,
@@ -1433,7 +1432,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
       setTimeout(() => {
-        highlight(
+        highlightKeymapKey(
           nthElementFromArray(
             // ignoring for now but this might need a different approach
             // oxlint-disable-next-line no-misused-spread
@@ -1452,7 +1451,7 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
   }
   if (key === "lazyMode" && !nosave) {
     if (Config.language.startsWith("arabic")) {
-      LazyModeState.setArabicPref(newValue);
+      setPrefersArabicLazyMode(newValue);
     }
   }
 });
