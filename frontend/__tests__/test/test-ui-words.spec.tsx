@@ -37,6 +37,8 @@ vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
+import { applyConfig } from "../../src/ts/config/lifecycle";
+import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import {
   increaseActiveWordIndex,
@@ -378,6 +380,56 @@ describe("test-ui words rendering", () => {
       // nothing left to lay out: no lines removed
       expect(wordsRenderState.firstRenderedWordIndex).toBe(0);
       expect(words.children).toHaveLength(0);
+    });
+  });
+
+  describe("config changes", () => {
+    // each full layout snaps the caret once
+    const layoutsAll = (): number =>
+      caretUpdatePosition.mock.calls.filter(([snap]) => snap === true).length;
+
+    // Words only: with test-ui mounted, applyConfig's language event also
+    // restarts the test (async, outliving the test). That restart's layout of
+    // the new words isn't the config effect's
+    function mountWithWords(): void {
+      const wordsWrapper = document.createElement("div");
+      document.body.append(wordsWrapper);
+      const dispose = render(
+        () => <Words wordsWrapperRef={() => wordsWrapper} />,
+        wordsWrapper,
+      );
+      cleanups.push(() => {
+        dispose();
+        wordsWrapper.remove();
+      });
+      replaceWords(["a", "b", "c"], { activeWordIndex: 0 });
+      caretUpdatePosition.mockClear();
+    }
+
+    it("lays out once per changed layout key set on its own", () => {
+      mountWithWords();
+
+      setConfig("blindMode", true);
+      setConfig("colorfulMode", true);
+      setConfig("showAllLines", false);
+
+      expect(layoutsAll()).toBe(3);
+    });
+
+    it("lays out once when a config with several changed layout keys is applied", async () => {
+      mountWithWords();
+
+      await applyConfig({
+        blindMode: true,
+        colorfulMode: true,
+        showAllLines: false,
+        highlightMode: "word",
+        indicateTypos: "replace",
+        fontSize: 2,
+        tapeMode: "letter",
+      });
+
+      expect(layoutsAll()).toBe(1);
     });
   });
 
