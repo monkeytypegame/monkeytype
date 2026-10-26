@@ -7,7 +7,12 @@ import { AnimeShow } from "../../../common/anime";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import { jumpToLetter, replayState, togglePlayback } from "./replay";
-import { letterClass, wordClass, wordsClass } from "./result-words";
+import {
+  letterAttributes,
+  letterClass,
+  wordClass,
+  wordsClass,
+} from "./result-words";
 
 const playButtonText = {
   start: "Start replay",
@@ -47,14 +52,19 @@ export function ResultReplay(): JSXElement {
             <div
               id="replayWords"
               class={cn(wordsClass(), "cursor-pointer select-none")}
+              data-ui-element="words"
             >
               <For each={replayState.words}>
                 {(word, wordIndex) => (
-                  <div class={cn(wordClass, { error: word.error })}>
+                  <div
+                    class={cn(wordClass, { error: word.error })}
+                    data-ui-element="word"
+                  >
                     <For each={word.letters}>
                       {(letter, letterIndex) => (
                         <Dynamic
                           component="letter"
+                          {...letterAttributes(letter)}
                           class={letterClass(letter)}
                           onClick={() =>
                             jumpToLetter(wordIndex(), letterIndex())
