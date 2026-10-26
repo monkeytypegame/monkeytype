@@ -4,6 +4,8 @@
 
 Assume the frontend dev server is already running at `http://localhost:3000`. Never start it (a second instance grabs port 3001) and never probe it (`lsof`, `ps`, `curl` — sandboxed curl can't reach localhost anyway).
 
+Workspace packages (`packages/*`) resolve to source in the frontend's dev server, build and tests (`frontend/vite-plugins/workspace-packages.ts`); their `dist` only serves the backend, so package edits need no rebuild.
+
 If a page load fails (`ERR_CONNECTION_REFUSED`, "This site can't be reached"), stop immediately and ask the user to start the server.
 
 ## Tabs
@@ -44,7 +46,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `showModal(id)` | open a modal by `ModalId` |
 | `restartTest()` | restart the typing test |
 | `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
-| `wordsSnapshot()` | rendered `#words` children: words (index, classes, letters with text/icon/classes) and newline siblings |
+| `wordsSnapshot()` | rendered `#words` children as a flat array: word entries `{ index, classes, letters: [{ text, icon?, classes }] }` mixed with sibling entries `{ sibling: className }` (newlines) |
 | `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
 | `checkLayout()` | test page layout problems, `[]` when right: active word inside the words wrapper, caret and words input on it, 3 full lines (unless all lines show), tape anchor at the tape margin. Run it after any change to the test UI |
 | `runCommand(id, input?)` | run a commandline command through the commandline: opens it, waits for the out of focus blur, executes, closes. `setConfig` skips that blur, so reproduce commandline bugs with this. Ids: `set<ConfigKey>Custom` inputs (`setFontSizeCustom`), `set<ConfigKey><Value>` (booleans `True`/`False`: `setPunctuationFalse`), `applyPreset<presetId>` |
