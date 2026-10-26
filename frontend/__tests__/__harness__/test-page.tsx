@@ -3,9 +3,9 @@
  * through the words input like a browser does. The main seam for test page
  * behaviour: render, type, advance frames, check what's on screen.
  *
- * Specs using it run in the `test-page` vitest project (see
- * vitest.config.ts), which has no global DOM query mocks: the engine's
- * vanilla modules query the real DOM.
+ * Name specs using it `*.page-spec.tsx`: they run in the `test-page` vitest
+ * project, which has no global DOM query mocks (the engine's vanilla modules
+ * query the real DOM). Loaded in another project, it throws.
  *
  * ```tsx
  * afterEach(async () => cleanupTestPage());
@@ -75,6 +75,12 @@ import * as CustomText from "../../src/ts/test/custom-text";
 // fake timers, then jsdom gaps: matchMedia (ad controller, on import; no
 // query matches) and scrolling (the test keeps itself in view)
 vi.hoisted(() => {
+  // mock-dom's querySelector returns a detached div
+  if (document.querySelector("body") !== document.body) {
+    throw new Error(
+      "The test-page harness needs the real DOM: name the spec *.page-spec.tsx",
+    );
+  }
   // before any import: animejs keeps the Date.now and requestAnimationFrame
   // it finds on import. Kept for the whole spec file, so it never loses them
   vi.useFakeTimers({

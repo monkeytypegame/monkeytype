@@ -74,7 +74,7 @@ Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, 
 
 | Done | ID | Size | Step | Blocked by | Unblocks |
 |---|---|---|---|---|---|
-| [x] | TH1 | L · PR | **Test-page harness** (`__tests__/__harness__/test-page.tsx`, own `test-page` vitest project): mounts the real TestPage and engine in jsdom on fake timers, types through WordsInput (input/beforeinput/keydown/composition, the driver `__mt` uses), advances frames, and reads word/letter states (semantic names, not classes), engine phase and live stats. Starter suite in `TestPage.spec.tsx`. Grows with the engine: restart flow after T6b, finish → result/spinner after T6c | T0 | T2 onward: every later test-page step keeps it green |
+| [x] | TH1 | L · PR | **Test-page harness** (`__tests__/__harness__/test-page.tsx`, own `test-page` vitest project): mounts the real TestPage and engine in jsdom on fake timers, types through WordsInput (input/beforeinput/keydown/composition, the driver `__mt` uses), advances frames, and reads word/letter states (semantic names, not classes), engine phase and live stats. Starter suite in `TestPage.page-spec.tsx`; specs on it are named `*.page-spec.tsx`. Grows with the engine: restart flow after T6b, finish → result/spinner after T6c | T0 | T2 onward: every later test-page step keeps it green |
 
 ## Track T: test page (critical path)
 
