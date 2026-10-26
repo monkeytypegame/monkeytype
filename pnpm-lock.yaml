@@ -325,11 +325,11 @@ importers:
         specifier: 0.2.2
         version: 0.2.2
       '@tanstack/query-db-collection':
-        specifier: 1.0.40
-        version: 1.0.40(@tanstack/query-core@5.101.0)(typescript@7.0.2)
+        specifier: 1.4.8
+        version: 1.4.8(@tanstack/query-core@5.104.5)(typescript@7.0.2)
       '@tanstack/solid-db':
-        specifier: 0.2.22
-        version: 0.2.22(solid-js@1.9.13)(typescript@7.0.2)
+        specifier: 0.3.12
+        version: 0.3.12(solid-js@1.9.13)(typescript@7.0.2)
       '@tanstack/solid-form':
         specifier: 1.33.0
         version: 1.33.0(solid-js@1.9.13)
@@ -337,8 +337,8 @@ importers:
         specifier: 0.10.0
         version: 0.10.0(solid-js@1.9.13)
       '@tanstack/solid-query':
-        specifier: 5.101.0
-        version: 5.101.0(solid-js@1.9.13)
+        specifier: 5.104.5
+        version: 5.104.5(solid-js@1.9.13)
       '@tanstack/solid-router':
         specifier: 1.170.38
         version: 1.170.38(solid-js@1.9.13)
@@ -453,7 +453,7 @@ importers:
         version: 0.7.0(@tanstack/hotkeys@0.8.0)(@types/react@19.2.14)(csstype@3.2.3)(react@18.3.1)(solid-js@1.9.13)
       '@tanstack/solid-query-devtools':
         specifier: 5.101.0
-        version: 5.101.0(@tanstack/solid-query@5.101.0(solid-js@1.9.13))(solid-js@1.9.13)
+        version: 5.101.0(@tanstack/solid-query@5.104.5(solid-js@1.9.13))(solid-js@1.9.13)
       '@testing-library/dom':
         specifier: 10.4.1
         version: 10.4.1
@@ -2696,12 +2696,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@napi-rs/wasm-runtime@1.1.2':
-    resolution: {integrity: sha512-sNXv5oLJ7ob93xkZ1XnxisYhGYXfaG9f65/ZgYuAu3qt7b3NadcOEhLvx28hv31PgX8SZJRYrAIPQilQmFpLVw==}
-    peerDependencies:
-      '@emnapi/core': ^1.7.1
-      '@emnapi/runtime': ^1.7.1
-
   '@napi-rs/wasm-runtime@1.2.5':
     resolution: {integrity: sha512-HshSvXzmBxNzqejd3k/KemgQ3hdREUYFRRrgxOZ+gPljDIsO2SDZrVZMd4Z/HsxudQbE62OVyVFE8z9BCurfjA==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=23.5.0}
@@ -2865,12 +2859,14 @@ packages:
   '@opentelemetry/sdk-trace-base@2.0.1':
     resolution: {integrity: sha512-xYLlvk/xdScGx1aEqvxLwf6sXQLXCjk3/1SQT9X9AoN5rXRhkdvIFShuNNmtTEPRBqcsMbS4p/gJLNI2wXaDuQ==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
   '@opentelemetry/sdk-trace-node@2.0.1':
     resolution: {integrity: sha512-UhdbPF19pMpBtCWYP5lHbTogLWx9N0EBxtdagvkn5YtsAnCBZzL7SjktG+ZmupRgifsHMjwUaCCaVmqGfSADmA==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
@@ -4528,13 +4524,13 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/db-ivm@0.1.18':
-    resolution: {integrity: sha512-+pZJiRKdoKRM5Epq9T7otD9ZJl82pRFauo7LKuJGrarjVKQ7r+QQlPe3kGdN9LEKSnuNGIWjX9OOY4M8kH4eLw==}
+  '@tanstack/db-ivm@0.2.0':
+    resolution: {integrity: sha512-AuMuGzVdWR5qzJPRYajmrUp95vMo0duvMZ0zBjMOvaI9rkh2GHZWCsJ/p7s81UN4Lep6HHJjahnYUF+XVL0+AQ==}
     peerDependencies:
       typescript: '>=4.7'
 
-  '@tanstack/db@0.6.8':
-    resolution: {integrity: sha512-1dzwxYH7jizvpOzVsVmxZ8dGwMPDaA+YcinEmAszoUYF7mgSL0RiIiGHFBAc0WyVvHES7vSHg6x0WslX8C+TTQ==}
+  '@tanstack/db@0.15.2':
+    resolution: {integrity: sha512-s7CR8kOgkF1oPEGyKWItWHsg7U3hhQQu+k9CPjjAWwS6wzWVvjCbHbu/xnJvO1aPe7v3SBwo1tf6CMyKjNPNxg==}
     peerDependencies:
       typescript: '>=4.7'
 
@@ -4620,13 +4616,13 @@ packages:
     resolution: {integrity: sha512-eQ1MyLKCHyXiH7NbdmB80W77OhiMgGBUb+qDx/8WMGbwg5Lf/NlfD0TfNYAqY77i8V3AxoDoYdICrQE5ADw4Yw==}
     engines: {node: '>=18'}
 
-  '@tanstack/query-core@5.101.0':
-    resolution: {integrity: sha512-cQetA74EB+seWySv1TTKr828TnP0u39m6LykwDXIo84SNortpDkp30TMEjkqtYCNP9c40uT/iwl6MLiufEt0Ow==}
+  '@tanstack/query-core@5.104.5':
+    resolution: {integrity: sha512-Q94gI8Opd+CbdVNOdj8ZCyV8WqLYitrDq1t96Xc8WZT6lY0r5iRnJLXYDxMex7EEf2v+mXvn4FcjaBKSxXZQ9A==}
 
-  '@tanstack/query-db-collection@1.0.40':
-    resolution: {integrity: sha512-93iWTBvNwLmhH4L7BL66Khr/pan2pXbdXa0uRtjThW5KRvwBCH13E5CM0PVd1QO9EcrSM+HcNg3MLUPR0EJGPg==}
+  '@tanstack/query-db-collection@1.4.8':
+    resolution: {integrity: sha512-ysoX+BSYt6fbp0dPb/+vIe7wLlhPVXP0GKUP1sJ9FnbP2FkgxOzPzk2JDQsqlJweFl7P3z4kNViAyREJfbfc4w==}
     peerDependencies:
-      '@tanstack/query-core': ^5.0.0
+      '@tanstack/query-core': ^5.90.15
       typescript: '>=4.7'
 
   '@tanstack/query-devtools@5.101.0':
@@ -4636,8 +4632,8 @@ packages:
     resolution: {integrity: sha512-X+19pGuuLVPvvAvPYw9v/+ktRk5cCll8AtfpBpOhDRmVgUMrfqze0467xtq8YRVVs/mmo5rVtWn/7Tp32RDBKw==}
     engines: {node: '>=20.19'}
 
-  '@tanstack/solid-db@0.2.22':
-    resolution: {integrity: sha512-q+Q8eFgPR7aREdJ9tjoHVN95gHhJwiw9eRWwlMOSsCWhYSN6Jm+yTSgWWbHq0rJOPOy1t1NQE7hMuXjH5WLbsA==}
+  '@tanstack/solid-db@0.3.12':
+    resolution: {integrity: sha512-Ln+3dLGJiATU0c5IvcRc69NU13paEUKanGoF/IQcZCv3KraIL3vPNRhBl/0vbHYNySrIkxcPjpUwi/HYXk6FqQ==}
     peerDependencies:
       solid-js: '>=1.9.0'
 
@@ -4670,8 +4666,8 @@ packages:
       '@tanstack/solid-query': ^5.101.0
       solid-js: ^1.6.0
 
-  '@tanstack/solid-query@5.101.0':
-    resolution: {integrity: sha512-XoPWynbaWquvSisMvUirakfD9OmLas1cOwt1gBDUTn8HC2CVkZm+O/jBgEa5SL5LrY6vxmWjzzskhXkywLfymw==}
+  '@tanstack/solid-query@5.104.5':
+    resolution: {integrity: sha512-O0YK8SSV5rxE7Q6sZcOo8bFCpQwf/vY7QKsGHKlQYibXS3sVYavj+xwpZK+BGCBw9Mi8OivaFQcV6/QDA/ovCw==}
     peerDependencies:
       solid-js: ^1.6.0
 
@@ -4802,9 +4798,6 @@ packages:
     resolution: {integrity: sha512-fVdCsnmYoKICsycbWuuGp6Jvi51/3G/UluFWuAUCvR8PIW5IJkAk5BM9UF8PSm0Q2IphWHFZjYEgjHsh3B9y/g==}
     cpu: [arm64]
     os: [win32]
-
-  '@tybys/wasm-util@0.10.1':
-    resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
@@ -10676,9 +10669,6 @@ packages:
   sort-any@2.0.0:
     resolution: {integrity: sha512-T9JoiDewQEmWcnmPn/s9h/PH9t3d/LSWi0RgVmXSuDYeZXTZOZ1/wrK2PHaptuR1VXe3clLLt0pD6sgVOwjNEA==}
 
-  sorted-btree@1.8.1:
-    resolution: {integrity: sha512-395+XIP+wqNn3USkFSrNz7G3Ss/MXlZEqesxvzCRFwL14h6e8LukDHdLBePn5pwbm5OQ9vGu8mDyz2lLDIqamQ==}
-
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -14301,13 +14291,6 @@ snapshots:
   '@msgpackr-extract/msgpackr-extract-win32-x64@3.0.3':
     optional: true
 
-  '@napi-rs/wasm-runtime@1.1.2(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)':
-    dependencies:
-      '@emnapi/core': 1.11.0
-      '@emnapi/runtime': 1.11.0
-      '@tybys/wasm-util': 0.10.1
-    optional: true
-
   '@napi-rs/wasm-runtime@1.2.5(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)':
     dependencies:
       '@emnapi/core': 1.11.0
@@ -15013,7 +14996,7 @@ snapshots:
 
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.12(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.2(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)
+      '@napi-rs/wasm-runtime': 1.2.5(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -15760,16 +15743,15 @@ snapshots:
       tailwindcss: 4.3.2
       vite: 8.0.5(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(@types/node@24.9.1)(esbuild@0.27.7)(jiti@2.7.0)(sass@1.70.0)(terser@5.49.1)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@tanstack/db-ivm@0.1.18(typescript@7.0.2)':
+  '@tanstack/db-ivm@0.2.0(typescript@7.0.2)':
     dependencies:
       fractional-indexing: 3.2.0
-      sorted-btree: 1.8.1
       typescript: 7.0.2
 
-  '@tanstack/db@0.6.8(typescript@7.0.2)':
+  '@tanstack/db@0.15.2(typescript@7.0.2)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.18(typescript@7.0.2)
+      '@tanstack/db-ivm': 0.2.0(typescript@7.0.2)
       '@tanstack/pacer-lite': 0.2.2
       typescript: 7.0.2
 
@@ -15858,13 +15840,13 @@ snapshots:
 
   '@tanstack/pacer-lite@0.2.2': {}
 
-  '@tanstack/query-core@5.101.0': {}
+  '@tanstack/query-core@5.104.5': {}
 
-  '@tanstack/query-db-collection@1.0.40(@tanstack/query-core@5.101.0)(typescript@7.0.2)':
+  '@tanstack/query-db-collection@1.4.8(@tanstack/query-core@5.104.5)(typescript@7.0.2)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.6.8(typescript@7.0.2)
-      '@tanstack/query-core': 5.101.0
+      '@tanstack/db': 0.15.2(typescript@7.0.2)
+      '@tanstack/query-core': 5.104.5
       typescript: 7.0.2
 
   '@tanstack/query-devtools@5.101.0': {}
@@ -15876,10 +15858,10 @@ snapshots:
       seroval: 1.6.8
       seroval-plugins: 1.6.8(seroval@1.6.8)
 
-  '@tanstack/solid-db@0.2.22(solid-js@1.9.13)(typescript@7.0.2)':
+  '@tanstack/solid-db@0.3.12(solid-js@1.9.13)(typescript@7.0.2)':
     dependencies:
       '@solid-primitives/map': 0.7.3(solid-js@1.9.13)
-      '@tanstack/db': 0.6.8(typescript@7.0.2)
+      '@tanstack/db': 0.15.2(typescript@7.0.2)
       solid-js: 1.9.13
     transitivePeerDependencies:
       - typescript
@@ -15918,15 +15900,15 @@ snapshots:
       '@tanstack/solid-store': 0.11.0(solid-js@1.9.13)
       solid-js: 1.9.13
 
-  '@tanstack/solid-query-devtools@5.101.0(@tanstack/solid-query@5.101.0(solid-js@1.9.13))(solid-js@1.9.13)':
+  '@tanstack/solid-query-devtools@5.101.0(@tanstack/solid-query@5.104.5(solid-js@1.9.13))(solid-js@1.9.13)':
     dependencies:
       '@tanstack/query-devtools': 5.101.0
-      '@tanstack/solid-query': 5.101.0(solid-js@1.9.13)
+      '@tanstack/solid-query': 5.104.5(solid-js@1.9.13)
       solid-js: 1.9.13
 
-  '@tanstack/solid-query@5.101.0(solid-js@1.9.13)':
+  '@tanstack/solid-query@5.104.5(solid-js@1.9.13)':
     dependencies:
-      '@tanstack/query-core': 5.101.0
+      '@tanstack/query-core': 5.104.5
       solid-js: 1.9.13
 
   '@tanstack/solid-router@1.170.38(solid-js@1.9.13)':
@@ -16041,11 +16023,6 @@ snapshots:
     optional: true
 
   '@turbo/windows-arm64@2.9.14':
-    optional: true
-
-  '@tybys/wasm-util@0.10.1':
-    dependencies:
-      tslib: 2.8.1
     optional: true
 
   '@tybys/wasm-util@0.10.4':
@@ -22998,8 +22975,6 @@ snapshots:
   sort-any@2.0.0:
     dependencies:
       lodash: 4.17.21
-
-  sorted-btree@1.8.1: {}
 
   source-map-js@1.2.1: {}
 

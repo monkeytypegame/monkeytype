@@ -90,7 +90,7 @@ const actions = {
         name,
       };
 
-      resultFilterPresetsCollection.utils.writeInsert(newPreset);
+      await resultFilterPresetsCollection.utils.writeInsert(newPreset);
     },
   }),
   deleteResultFilterPreset: createOptimisticAction<
@@ -110,7 +110,7 @@ const actions = {
         );
       }
 
-      resultFilterPresetsCollection.utils.writeDelete(presetId);
+      await resultFilterPresetsCollection.utils.writeDelete(presetId);
     },
   }),
 };
@@ -119,12 +119,12 @@ export async function insertResultFilterPreset(
   params: ActionType["insertResultFilterPreset"],
 ): Promise<void> {
   const transaction = actions.insertResultFilterPreset(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function deleteResultFilterPreset(
   params: ActionType["deleteResultFilterPreset"],
 ): Promise<void> {
   const transaction = actions.deleteResultFilterPreset(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
