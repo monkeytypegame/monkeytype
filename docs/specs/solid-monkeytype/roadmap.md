@@ -11,7 +11,7 @@ Companion to `spec.md`. Every step is one small change, behaviour-preserving apa
 Each step can start once the previous step's **bold** items are done. Everything listed on one step can run in parallel.
 
 - [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, EP4, L4–L11.
-- [ ] 2. **TH1** test-page harness, then **T1** letter → span + `data-ui-*`. Alongside: U2, U3, U4 (after U1), C2, C3.
+- [ ] 2. **TH1** test-page harness, then **T1** `data-ui-*` on words and letters. Alongside: U2, U3, U4 (after U1), C2, C3.
 - [ ] 3. **T2** break joining. Alongside: EP3.
 - [ ] 4. **T3** caret boundary. Then L3 and L12 can start.
 - [ ] 5. **T4** word registry private.
@@ -25,7 +25,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 
 ```
  T: test page (CRITICAL PATH, serial)
-   T0 #8507 ─► T1 letter→span + data-ui-* ─► T2 break-joining ─► T3 caret boundary ─► T4 registry private ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
+   T0 #8507 ─► T1 words/letters data-ui-* ─► T2 break-joining ─► T3 caret boundary ─► T4 registry private ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
    TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
@@ -83,7 +83,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | Done | ID | Size | Step | Blocked by | Removes / unblocks |
 |---|---|---|---|---|---|
 | [ ] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects) | none | test-ui's layout calls |
-| [ ] | T1 | L · PR | **`<letter>` → `<span data-ui-element="letter" data-ui-state>`**, plus `data-ui-element` on words/word/typo hints; move the bundled theme and funbox CSS to the new selectors; old selectors keep working. `data-ui-state` values are the harness's state names; switch its word/letter helpers to `data-ui-*`, specs unchanged. Benchmark letter rendering with the profiling harness | T0, TH1 | The made-up element; proves the theme attribute approach before the caret measures letters |
+| [x] | T1 | L · PR | **Theme attributes on the test and result words**: words (`data-ui-variant` lists its modes), word (`WordStatus`, `data-ui-active`), letter (`LetterStatus`, tab/newline variant), typo hint; result `wordsHistory`/`replayWords`, word, letter (`ResultLetterStatus`, `data-ui-corrections`). `<letter>`/`<hint>` keep their tags and classes so old selectors keep working (spans in CL3); code finds letters by `LETTER_SELECTOR`. Bundled theme and funbox CSS moved over (computed styles unchanged across highlight/blind/flipped/colorful). Harness reads `data-ui-*` (`state` + `isActive`). Keystroke benchmark: no change | T0, TH1 | The made-up element; proves the theme attribute approach before the caret measures letters |
 | [ ] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes | T1, TH1 | The only outside writes into Word elements |
 | [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Caret and words layout read the typed input from the render store (input writes it alongside the EventLog), not the engine's `getCurrentInput()`. Decide the caret internals here (reactive, imperative handle, or a mix) | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
 | [ ] | T4 | S · commit | **Word registry private** to Words; only the synchronous overflow check stays exported | T3 | The public word-elements bridge |
@@ -147,7 +147,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 |---|---|---|---|---|
 | [ ] | CL1 | M · PR | Delete the DOM-wrapper utility library, the ref-with-utils hook and `onDOMReady` | T7, all L, U2 |
 | [ ] | CL2 | M · PR | DOM-query / `innerHTML` lint ban, with the server-HTML allowlist (notifications, simple modal, version history, quote-search highlight) | CL1 |
-| [ ] | CL3 | M · PR | **Announced removal of legacy theme selectors** (old ids, classes, `letter`): the single break for user custom CSS; delete remaining SCSS | T1, L11, L12 |
+| [ ] | CL3 | M · PR | **Announced removal of legacy theme selectors** (old ids, classes, `letter`): the single break for user custom CSS; `<letter>`/`<hint>` become `<span>`s (live test, words history, replay) and drop their state classes; delete remaining SCSS | T1, L11, L12 |
 | [ ] | CL4 | S · commit | Update coding standards and agent docs to describe only the final patterns | CL1 |
 
 ## Track TR: tribe (last)
