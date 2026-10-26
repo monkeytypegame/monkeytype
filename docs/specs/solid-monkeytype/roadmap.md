@@ -10,7 +10,7 @@ Companion to `spec.md`. Every step is one small change, behaviour-preserving apa
 
 Each step can start once the previous step's **bold** items are done. Everything listed on one step can run in parallel.
 
-- [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, L4–L11.
+- [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, EP4, L4–L11.
 - [ ] 2. **TH1** test-page harness and **T1** letter → span + `data-ui-*`. Alongside: U2, U3, U4 (after U1), C2, C3.
 - [ ] 3. **T2** break joining. Alongside: EP3.
 - [ ] 4. **T3** caret boundary. Then L3 and L12 can start.
@@ -30,7 +30,7 @@ Each step can start once the previous step's **bold** items are done. Everything
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
  U: user data         U1 ─► U2, U3, U4 (parallel);  U5 anytime ─────────────────► U6 delete __nonReactive (needs T6a, T6c)
- EP: engine prep      EP1, EP2 (parallel, before T5);  EP3 after T1
+ EP: engine prep      EP1, EP2 (parallel, before T5);  EP3 after T1;  EP4 anytime
  L: leaves            L1 L2 before T5;  L3 after T3;  L12 after T1+T3;  L4–L11 anytime
  CL: final cleanup (needs everything)  ─►  TR: tribe (after CL)
 ```
@@ -58,7 +58,7 @@ Every track can start now. These are the only steps that wait on another track:
 | **CL3** remove legacy theme selectors | T1, L11, L12 | Bundled themes must be moved over first |
 | **TR1** tribe | CL | Lands after everything else |
 
-Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, L1, L2, L4–L10.
+Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
 
 ## Track H: housekeeping (now, minutes)
 
@@ -85,13 +85,13 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects) | none | test-ui's layout calls |
 | [ ] | T1 | L · PR | **`<letter>` → `<span data-ui-element="letter" data-ui-state>`**, plus `data-ui-element` on words/word/typo hints; move the bundled theme and funbox CSS to the new selectors; old selectors keep working. Benchmark letter rendering with the profiling harness | T0 | The made-up element; proves the theme attribute approach before the caret measures letters |
 | [ ] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes | T1, TH1 | The only outside writes into Word elements |
-| [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Decide the caret internals here (reactive, imperative handle, or a mix) | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
+| [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Caret and words layout read the typed input from the render store (input writes it alongside the EventLog), not the engine's `getCurrentInput()`. Decide the caret internals here (reactive, imperative handle, or a mix) | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
 | [ ] | T4 | S · commit | **Word registry private** to Words; only the synchronous overflow check stays exported | T3 | The public word-elements bridge |
 | [ ] | T5 | L · PR | **Delete test-ui**: sound/keymap/monkey-power triggers become effects or input-layer calls; autofocus moves to WordsInput; fades move to TestPage, as does the pre-test scroll to the test block (the focus flow keeps requesting Words' active-line recenter during a test). Add the **input-layer lint rule** (no component/UI imports) | T4, EP1, EP2, L1, L2 | The glue module test-logic and input call |
 | [ ] | T6 | split | **Engine split**, in three PRs: | T5 | test-logic ↔ UI coupling |
-| [ ] | T6a | L · PR | Engine owns its state module (phase, active word index, words, timer, live stats); commands start/restart/finish/fail; the general test state keeps only UI state; drop its `__nonReactive` (layout emulator and keydown read engine/UI state directly). Add the **engine lint rule** (no UI/input/DOM; data layer allowed) | T5 | |
-| [ ] | T6b | L · PR | **Restarts via `changeRequiresRestart`**: the engine requests one merged restart on flagged config changes; test settings retaken while faded out; render reads the test settings; callers stop restarting; tags stay live | T6a, C1 | Lost settings mid-restart, flashes, double restarts |
-| [ ] | T6c | L · PR | **Finish split**: synchronous `finish()`/`fail()`, result computed after a paint (current active tags read via the tags getter, replacing test-logic's `__nonReactive` read), save-status signal with retry; PB check and today tracker move to the result screen (getters / async `*Once`), dropping their `__nonReactive` reads; TestPage shows the result when the fade-out ends, or a spinner until it's ready. Profile a worst-case long test | T6a | |
+| [ ] | T6a | L · PR | Engine owns its state module (phase, active word index, words, timer, live stats); commands start/restart/finish/fail; the general test state keeps only UI state; drop its `__nonReactive` (layout emulator and keydown read engine/UI state directly). The engine owns the EventLog: event arrays, pressed keys, `logTestEvent` as a command; derived signals for current input, live stats and the frozen log (replaces `lastEventLog` in the test state module); key-code helpers (`getTestEventCode`, `keysToTrack`) move to input. Add the **engine lint rule** (no UI/input/DOM; data layer allowed) | T5 | |
+| [ ] | T6b | L · PR | **Restarts via `changeRequiresRestart`**: the engine requests one merged restart on flagged config changes; test settings retaken while faded out; render reads the test settings; callers stop restarting; tags stay live. The EventLog context reads the test settings, not live config. The restart calls `replaceWords` outside effects and batches: it measures the new words synchronously, inside one it would measure the old words | T6a, C1 | Lost settings mid-restart, flashes, double restarts |
+| [ ] | T6c | L · PR | **Finish split**: synchronous `finish()`/`fail()` (force-release keys, then freeze the EventLog; later events dropped), result computed after a paint (current active tags read via the tags getter, replacing test-logic's `__nonReactive` read), save-status signal with retry; PB check and today tracker move to the result screen (getters / async `*Once`), dropping their `__nonReactive` reads; TestPage shows the result when the fade-out ends, or a spinner until it's ready. Profile a worst-case long test | T6a | |
 | [ ] | T7 | S · PR | Remove the page wrapper's **"mount only once attached" workaround**; check nothing measures before attach | T6, L3, L4, L5 | |
 
 ## Track C: config (parallel with T)
@@ -120,23 +120,24 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
 | [x] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5. Done: callers import `restartTest` (renamed from `restart`) from test-logic; `events/test.ts` deleted |
-| [ ] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5 |
-| [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787 | T1 | Coordinate with T3 |
+| [x] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5. Done: test-logic passes `onFinish`/`onFail` to `TestTimer.start` (a direct import would be circular); word-generation error calls `fail` directly; `events/timer.ts` deleted |
+| [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787. EventLog context keeps Korean status as one test-level boolean derived from the words, unless stats need it per word (then per word plus a version bump) | T1 | Coordinate with T3 |
+| [ ] | EP4 | S · commit | Parity tests for the live-cache tallies: for typed event sequences, each tally equals its pure stat function on the built log | none | Guards the replay constraint; every later tally gets one too |
 
 ## Track L: leaves
 
 | Done | ID | Size | Step | Blocked by |
 |---|---|---|---|---|
 | [ ] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit | none (before T5) |
-| [ ] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks; display tweaks via `data-ui-*` / funbox CSS | none (before T5) |
+| [ ] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks, getting input as arguments instead of importing the EventLog; display tweaks via `data-ui-*` / funbox CSS | none (before T5) |
 | [ ] | L3 | M · PR | Monkey power as a component owning its canvas, positioned from the caret | T3 |
 | [ ] | L4 | M · PR | Result word highlight becomes part of words history, driven by a highlighted-range signal from the chart | none |
 | [ ] | L5 | M · PR | Screenshot-mode signal; elements hide through state; capture uses the result ref | none |
 | [ ] | L6 | M · PR | Boot cleanup: the ready module goes into App lifecycle / a boot module; PSA, merch banner and no-CSS detection become state plus components | none |
-| [ ] | L7 | S · commit | Remove stray DOM queries: account page, leaderboard table, captcha, challenge controller header, ad/analytics controllers | none |
+| [ ] | L7 | S · commit | Remove stray DOM queries: account page, leaderboard table, captcha, challenge controller header, ad/analytics controllers. Done except the leaderboard table: #8524 rewrites its scroll-to-user and should switch to DataTable's `rowSelection.scrollToActiveRow` | none |
 | [ ] | L8 | S · commit | Delete dead modules: result batches, character counter, discord avatar util, input indicator, unused input-validation exports, tag builder plus its spec | none |
 | [ ] | L9 | M · PR | Replace the sorted-table utility with DataTable | none |
-| [ ] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
+| [x] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
 | [ ] | L11 | L · PR per area | SCSS → Tailwind outside the test; add `data-ui-element` to other themeable components as they're touched, moving bundled themes over | none (test-activity styles: U2) |
 | [ ] | L12 | L · PR | Test/caret SCSS rewritten against `data-ui-*` (Tailwind or a small base-styles layer) | T1, T3 |
 
@@ -159,7 +160,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 - **Person 1 (critical path):** T0 → TH1 → T1 → T2 → T3 → T4 → T5 → T6a → T6b → T6c → T7.
 - **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → C3 areas → U4 → U5 → then C4, U6 once T6 lands.
-- **Person 3 / agents (leaves):** EP1, EP2, L1, L2 first (they gate T5), then L8, L7, L9, L10, L4, L5, L6, C5, L11; L3 and L12 once T3 lands; EP3 after T1.
+- **Person 3 / agents (leaves):** EP1, EP2, L1, L2 first (they gate T5), then L8, L7, L9, L10, L4, L5, L6, C5, L11, EP4; L3 and L12 once T3 lands; EP3 after T1.
 - **Converge:** C4, U6, then CL, then TR1.
 
 ## Per-step checklist

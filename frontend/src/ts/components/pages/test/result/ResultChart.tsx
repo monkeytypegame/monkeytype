@@ -19,6 +19,7 @@ import {
   JSXElement,
   Show,
   untrack,
+  createRoot,
 } from "solid-js";
 import { z } from "zod";
 
@@ -342,7 +343,7 @@ type ChartDataVisibility = {
   tagPbLine: boolean;
 };
 
-const [getChartDataVisibility, setChartDataVisibility] =
+const [getChartDataVisibility, setChartDataVisibility] = createRoot(() =>
   useLocalStorage<ChartDataVisibility>({
     key: "resultChartDataVisibility",
     schema: z
@@ -361,7 +362,8 @@ const [getChartDataVisibility, setChartDataVisibility] =
       pbLine: true,
       tagPbLine: true,
     },
-  });
+  }),
+);
 
 const [isFakeChartData, setFakeChartData] = createSignal(false);
 

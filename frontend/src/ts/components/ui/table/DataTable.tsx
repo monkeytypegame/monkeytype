@@ -16,12 +16,14 @@ import {
   For,
   JSXElement,
   Match,
+  onCleanup,
   Show,
   splitProps,
   Switch,
 } from "solid-js";
 import { z } from "zod";
 
+import { createEffectOn } from "../../../hooks/effects";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
@@ -57,6 +59,8 @@ export type DataTableProps<TData, TValue> = {
     getRowId: (row: TData) => string;
     class: string;
     activeRow: Accessor<string | null>;
+    /** Tracked: each change scrolls the active row into view (after a frame) */
+    scrollToActiveRow?: Accessor<unknown>;
   };
   class?: string;
   headerCellClass?: string;
@@ -102,6 +106,19 @@ export function DataTable<TData extends Object, TValue = any>(
       setRowSelection(activeId !== null ? { [activeId]: true } : {});
     }
   });
+
+  const rowElements = new Map<string, HTMLTableRowElement>();
+  createEffectOn(
+    () => props.rowSelection?.scrollToActiveRow?.(),
+    () => {
+      requestAnimationFrame(() => {
+        const activeId = props.rowSelection?.activeRow();
+        if (activeId === null || activeId === undefined) return;
+        rowElements.get(activeId)?.scrollIntoView({ block: "center" });
+      });
+    },
+    { defer: true },
+  );
 
   // Ensure reactivity: always produce a fresh array reference
   const data = createMemo(() => props.data.map((it) => ({ ...it })));
@@ -311,57 +328,71 @@ export function DataTable<TData extends Object, TValue = any>(
         </Show>
         <TableBody>
           <For each={table().getRowModel().rows}>
-            {(row) => (
-              <TableRow
-                {...{
-                  "data-state": row.getIsSelected() ? "selected" : undefined,
-                }}
-                class={
-                  row.getIsSelected() && props.rowSelection
-                    ? props.rowSelection.class
-                    : ""
+            {(row) => {
+              let rowElement: HTMLTableRowElement | undefined;
+              // a recreated table recreates rows with the same id: keep the newest
+              onCleanup(() => {
+                if (rowElements.get(row.id) === rowElement) {
+                  rowElements.delete(row.id);
                 }
-              >
-                <For each={row.getVisibleCells()}>
-                  {(cell) => {
-                    const [cellClass, cellMeta] = splitProps(
-                      typeof cell.column.columnDef.meta?.cellMeta === "function"
-                        ? cell.column.columnDef.meta.cellMeta({
-                            value: cell.getValue(),
-                            row: cell.row.original,
-                          })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {}),
-                      ["class"],
-                    );
-                    return (
-                      <TableCell
-                        {...cellMeta}
-                        class={cn(
-                          "",
-                          {
-                            "text-left":
-                              (cell.column.columnDef.meta?.align ?? "left") ===
-                              "left",
-                            "text-center":
-                              cell.column.columnDef.meta?.align === "center",
-                            "text-right":
-                              cell.column.columnDef.meta?.align === "right",
-                          },
-                          columnVisibility()[cell.column.id],
-                          props.bodyCellClass,
-                          cellClass.class,
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    );
+              });
+              return (
+                <TableRow
+                  ref={(el) => {
+                    rowElement = el;
+                    rowElements.set(row.id, el);
                   }}
-                </For>
-              </TableRow>
-            )}
+                  {...{
+                    "data-state": row.getIsSelected() ? "selected" : undefined,
+                  }}
+                  class={
+                    row.getIsSelected() && props.rowSelection
+                      ? props.rowSelection.class
+                      : ""
+                  }
+                >
+                  <For each={row.getVisibleCells()}>
+                    {(cell) => {
+                      const [cellClass, cellMeta] = splitProps(
+                        typeof cell.column.columnDef.meta?.cellMeta ===
+                          "function"
+                          ? cell.column.columnDef.meta.cellMeta({
+                              value: cell.getValue(),
+                              row: cell.row.original,
+                            })
+                          : (cell.column.columnDef.meta?.cellMeta ?? {}),
+                        ["class"],
+                      );
+                      return (
+                        <TableCell
+                          {...cellMeta}
+                          class={cn(
+                            "",
+                            {
+                              "text-left":
+                                (cell.column.columnDef.meta?.align ??
+                                  "left") === "left",
+                              "text-center":
+                                cell.column.columnDef.meta?.align === "center",
+                              "text-right":
+                                cell.column.columnDef.meta?.align === "right",
+                            },
+                            columnVisibility()[cell.column.id],
+                            props.bodyCellClass,
+                            cellClass.class,
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    }}
+                  </For>
+                </TableRow>
+              );
+            }}
           </For>
           <Show
             when={

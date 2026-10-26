@@ -11,11 +11,12 @@ import {
 import {
   appendRenderedWord,
   firstMountedIndex,
+  replaceWords,
   resetWordsRender,
   setActiveWord,
   setFirstRenderedLine,
   setFirstRenderedWordIndex,
-  setLayoutHook,
+  onWordsFlushed,
   setWordTyped,
   setWordInput,
   truncateWords,
@@ -148,7 +149,7 @@ describe("Words", () => {
       ]);
     });
 
-    it("runs the layout hook once per flush, after the DOM is updated", () => {
+    it("runs the onWordsFlushed hook once per flush, after the DOM is updated", () => {
       const container = renderWords();
       const seen: (string | undefined)[] = [];
       const hook = vi.fn(() => {
@@ -158,7 +159,7 @@ describe("Words", () => {
           ],
         );
       });
-      setLayoutHook(hook);
+      const unsetHook = onWordsFlushed(hook);
       appendRenderedWord("a");
       appendRenderedWord("b");
       setActiveWord(1);
@@ -168,7 +169,7 @@ describe("Words", () => {
       flush();
       expect(hook).toHaveBeenCalledTimes(1);
       expect(seen).toEqual(["1"]);
-      setLayoutHook(undefined);
+      unsetHook();
     });
   });
 
@@ -401,7 +402,7 @@ describe("Words", () => {
         true,
       ]);
 
-      resetWordsRender({ zen: true });
+      replaceWords([], { activeWordIndex: 0, zen: true });
       appendRenderedWord("");
       setWordInput(0, "a");
       flush();
@@ -434,7 +435,7 @@ describe("Words", () => {
     });
 
     it("keeps the line breaks of typed newlines below the first rendered word index in zen", () => {
-      resetWordsRender({ zen: true });
+      replaceWords([], { activeWordIndex: 0, zen: true });
       const container = renderWords();
       appendRenderedWord("");
       appendRenderedWord("");
@@ -504,7 +505,7 @@ describe("Words", () => {
     });
 
     it("does not mark error words in zen", () => {
-      resetWordsRender({ zen: true });
+      replaceWords([], { activeWordIndex: 0, zen: true });
       const container = renderWords();
       appendRenderedWord("");
       setWordInput(0, "ax");
@@ -528,7 +529,7 @@ describe("Words", () => {
     });
 
     it("marks fully right-to-left words when enabled", () => {
-      resetWordsRender({ marksRtlWords: true });
+      replaceWords([], { activeWordIndex: 0, marksRtlWords: true });
       const container = renderWords();
       appendRenderedWord("שלום");
       appendRenderedWord("שלוםabc");
@@ -540,7 +541,7 @@ describe("Words", () => {
     });
 
     it("does not mark right-to-left words when disabled", () => {
-      resetWordsRender({ marksRtlWords: false });
+      replaceWords([], { activeWordIndex: 0, marksRtlWords: false });
       const container = renderWords();
       appendRenderedWord("שלום");
       flush();
@@ -570,7 +571,7 @@ describe("Words", () => {
 
   describe("zen", () => {
     beforeEach(() => {
-      resetWordsRender({ zen: true });
+      replaceWords([], { activeWordIndex: 0, zen: true });
     });
 
     it("keeps zen letters when the mode changes before the restart", () => {
@@ -668,30 +669,65 @@ describe("Words", () => {
     it("cancels a pending flush", () => {
       const container = renderWords();
       const hook = vi.fn();
-      setLayoutHook(hook);
+      const unsetHook = onWordsFlushed(hook);
       appendRenderedWord("a");
       resetWordsRender();
       flush();
       expect(container.children).toHaveLength(0);
       expect(hook).not.toHaveBeenCalled();
-      setLayoutHook(undefined);
+      unsetHook();
     });
 
-    it("renders new words from index 0 after reset", () => {
+    it("renders new words from index 0 after replacing them", () => {
       const container = renderWords();
       appendRenderedWord("a");
       appendRenderedWord("b");
       setFirstRenderedWordIndex(1);
       setActiveWord(1);
       flush();
-      resetWordsRender();
-      appendRenderedWord("c");
-      flush();
+      replaceWords(["c"], { activeWordIndex: 0 });
       const words = wordEls(container);
       expect(words).toHaveLength(1);
       expect(words[0]?.dataset["wordindex"]).toBe("0");
       expect(words[0]?.classList.contains("active")).toBe(true);
       expect(letterTexts(words[0])).toEqual(["c"]);
+    });
+  });
+
+  describe("replaceWords", () => {
+    it("renders now and runs the onWordsFlushed hook for new words", () => {
+      const container = renderWords();
+      const hook = vi.fn(() => {
+        expect(wordEls(container)).toHaveLength(2);
+      });
+      const unsetHook = onWordsFlushed(hook);
+      replaceWords(["a", "b"], { activeWordIndex: 1 });
+      expect(hook).toHaveBeenCalledExactlyOnceWith({
+        newWords: true,
+        wordChange: undefined,
+        updatedWords: [],
+      });
+      expect(wordEls(container)[1]?.classList.contains("active")).toBe(true);
+      unsetHook();
+    });
+
+    it("drops a pending flush of the old words", () => {
+      const container = renderWords();
+      appendRenderedWord("a");
+      setWordInput(0, "x");
+      replaceWords(["b"], { activeWordIndex: 0 });
+      flush();
+      const words = wordEls(container);
+      expect(words).toHaveLength(1);
+      expect(letterTexts(words[0])).toEqual(["b"]);
+      expect(wordsRenderState.words[0]?.input).toBe("");
+    });
+
+    it("keeps line breaks when a word ends a line", () => {
+      replaceWords(["a\n", "b"], { activeWordIndex: 0 });
+      expect(wordsRenderState.keepsLineBreaks).toBe(true);
+      replaceWords(["a\n"], { activeWordIndex: 0, zen: true });
+      expect(wordsRenderState.keepsLineBreaks).toBe(false);
     });
   });
 });
