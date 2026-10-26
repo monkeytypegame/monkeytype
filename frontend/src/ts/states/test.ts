@@ -5,6 +5,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { EventLog } from "../test/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
@@ -91,6 +92,12 @@ export const [isErrorBorderDisabled, setErrorBorderDisabled] =
 export const [isTypingTestHidden, setTypingTestHidden] = createSignal(false);
 // script with no spaces between words (or custom/zen) - words may wrap mid-word
 export const [isJoiningScript, setJoiningScript] = createSignal(false);
+
+// funboxes that passed activation, cleared when the result shows or the test
+// page unmounts. Funbox component derives the test-only funbox document state.
+export const [getAppliedFunboxes, setAppliedFunboxes] = createSignal<
+  FunboxName[]
+>([]);
 
 // memory funbox countdown in seconds, null when off. MemoryFunboxTimer runs it.
 // equals: false so restarting with the same duration restarts the countdown.

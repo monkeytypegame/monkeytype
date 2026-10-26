@@ -33,7 +33,6 @@ import {
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { qs } from "../../utils/dom";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -41,8 +40,6 @@ export type FunboxFunctions = {
   withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
-  applyGlobalCSS?: () => void;
-  clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
@@ -592,42 +589,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
       return `${word}_`;
-    },
-  },
-  crt: {
-    applyGlobalCSS(): void {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(
-        navigator.userAgent,
-      );
-      if (isSafari) {
-        //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
-          navigator.userAgent,
-        );
-        const mainVersion =
-          versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
-        const minorVersion =
-          versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
-        if (mainVersion <= 16 && minorVersion <= 5) {
-          showNoticeNotification(
-            "CRT is not available on Safari 16.5 or earlier.",
-            {
-              durationMs: 5000,
-            },
-          );
-          toggleFunbox("crt");
-          return;
-        }
-      }
-      qs("#scanline")?.remove();
-      qs("body")?.appendHtml('<div id="scanline" />');
-      qs("body")?.addClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
-    },
-    clearGlobal(): void {
-      qs("#scanline")?.remove();
-      qs("body")?.removeClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
     },
   },
   ALL_CAPS: {
