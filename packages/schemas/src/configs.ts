@@ -309,6 +309,7 @@ export const FunboxNameSchema = z.enum([
   "sPoNgEcAsE",
   "capitals",
   "layout_mirror",
+  "upside_down_layout",
   "layoutfluid",
   "earthquake",
   "space_balls",
