@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@solidjs/testing-library";
-import { createSignal, JSXElement, Show } from "solid-js";
+import { createSignal, JSXElement, onMount, Show } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 type Running = { el: HTMLElement; opacity: number; finish: () => void };
@@ -7,8 +7,9 @@ type Running = { el: HTMLElement; opacity: number; finish: () => void };
 // animations run until the test finishes them (zero duration ones, eg.
 // initial states, finish at once). Like anime, a new animation on an element
 // replaces its running one, which then never completes
-const { running } = vi.hoisted(() => ({
+const { running, log } = vi.hoisted(() => ({
   running: [] as Running[],
+  log: [] as string[],
 }));
 
 vi.mock("animejs", () => ({
@@ -25,6 +26,7 @@ vi.mock("animejs", () => ({
     if (params.duration === 0) {
       done();
     } else {
+      log.push(`animate ${el.dataset["name"]} to ${params.opacity}`);
       const animation: Running = {
         el,
         opacity: params.opacity,
@@ -54,6 +56,7 @@ vi.mock("../../../../src/ts/utils/misc", () => ({
 
 import { Anime } from "../../../../src/ts/components/common/anime/Anime";
 import { AnimePresence } from "../../../../src/ts/components/common/anime/AnimePresence";
+import { createNonRouterPage } from "../../../../src/ts/components/core/Page";
 
 async function nextFrame(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -111,6 +114,7 @@ describe("AnimePresence (exitBeforeEnter)", () => {
   afterEach(() => {
     cleanup();
     running.length = 0;
+    log.length = 0;
   });
 
   it("fades the old child out before the new one is in the DOM", async () => {
@@ -186,5 +190,32 @@ describe("AnimePresence (exitBeforeEnter)", () => {
 
     expect(childrenInDom()).toEqual(["c"]);
     expect(screen.getByTestId("child").style.opacity).toBe("1");
+  });
+
+  it("starts a page's fade in once its content mounted", async () => {
+    const Content = (): JSXElement => {
+      onMount(() => log.push("content mounted"));
+      return <span>content</span>;
+    };
+    const SettingsPage = createNonRouterPage("settings", Content);
+    const show = renderSwitcher("a", (key) =>
+      key === "b" ? <SettingsPage /> : key,
+    );
+    await settle();
+    log.length = 0;
+
+    show("b");
+    await nextFrame();
+    // the old child is gone, the page's wrapper inserted
+    finish();
+    await settle();
+
+    // a slow page render blocks the main thread: a fade started before it
+    // would be over before the page is painted
+    expect(log).toEqual([
+      "animate a to 0",
+      "content mounted",
+      "animate b to 1",
+    ]);
   });
 });

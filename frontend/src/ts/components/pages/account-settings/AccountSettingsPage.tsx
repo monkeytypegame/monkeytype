@@ -1,12 +1,8 @@
 import { For, JSXElement } from "solid-js";
 
-import { createEffectOn } from "../../../hooks/effects";
 import {
   AccountSettingsTab,
   accountSettingsTabs,
-  getCurrentTab,
-  setCurrentTab,
-  updateAccountSettingsGetParameters,
 } from "../../../states/account-settings";
 import { Button } from "../../common/Button";
 import { AccountTab } from "./AccountTab";
@@ -14,6 +10,7 @@ import { ApeKeysTab } from "./ApeKeysTab";
 import { AuthenticationTab } from "./AuthenticationTab";
 import { BlockedUsersTab } from "./BlockedUsersTab";
 import { DangerZoneTab } from "./DangerZoneTab";
+import { useAccountSettingsTab } from "./useAccountSettingsTab";
 
 const tabContent: Record<AccountSettingsTab, () => JSXElement> = {
   account: () => <AccountTab />,
@@ -24,24 +21,19 @@ const tabContent: Record<AccountSettingsTab, () => JSXElement> = {
 };
 
 export function AccountSettingsPage() {
-  //keep the url in sync with the tab while on this page
-  createEffectOn(getCurrentTab, updateAccountSettingsGetParameters, {
-    defer: true,
-  });
-
+  const { tab } = useAccountSettingsTab();
   return (
     <div class="content-grid flex flex-col gap-8 md:flex-row">
       <div class="w-full shrink-0 md:w-60">
         <Sidebar />
       </div>
-      <div class="flex w-full flex-1 flex-col gap-8">
-        {tabContent[getCurrentTab()]()}
-      </div>
+      <div class="flex w-full flex-1 flex-col gap-8">{tabContent[tab()]()}</div>
     </div>
   );
 }
 
 function Sidebar() {
+  const { tab: currentTab, setTab } = useAccountSettingsTab();
   return (
     <div class="flex flex-col gap-4 rounded-double bg-sub-alt p-4 md:items-start">
       <For each={Object.entries(accountSettingsTabs)}>
@@ -50,9 +42,9 @@ function Sidebar() {
             text={tab.text}
             variant="text"
             fa={{ icon: tab.icon }}
-            active={getCurrentTab() === key}
+            active={currentTab() === key}
             class="[--themable-button-active:var(--themable-button-text)]"
-            onClick={() => setCurrentTab(key as AccountSettingsTab)}
+            onClick={() => setTab(key as AccountSettingsTab)}
           />
         )}
       </For>

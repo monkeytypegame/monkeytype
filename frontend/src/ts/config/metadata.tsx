@@ -38,7 +38,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   displayString?: string;
   /**
-   * Should the config change trigger a resize event? handled in ui.ts:108
+   * Should the config change trigger a resize event? handled in config/setters.ts
    */
   triggerResize?: true;
 

@@ -1,15 +1,11 @@
-import type { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
-import type { CustomTextSettings } from "@monkeytype/schemas/results";
-import type { Mode, Mode2 } from "@monkeytype/schemas/shared";
-
 import { createForm } from "@tanstack/solid-form";
-import { compressToURI } from "lz-ts";
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
 import { getCurrentQuote } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
+import { buildTestSettingsLink } from "../../url-actions/actions/test-settings";
 import { cn } from "../../utils/cn";
 import { getMode2 } from "../../utils/misc";
 import { capitalizeFirstLetter } from "../../utils/strings";
@@ -17,17 +13,6 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 import { Checkbox } from "../ui/form/Checkbox";
-
-type SharedTestSettings = [
-  Mode | null,
-  Mode2<Mode> | null,
-  CustomTextSettings | null,
-  boolean | null,
-  boolean | null,
-  string | null,
-  Difficulty | null,
-  FunboxName[] | null,
-];
 
 export function ShareTestSettings(): JSXElement {
   const form = createForm(() => ({
@@ -46,34 +31,17 @@ export function ShareTestSettings(): JSXElement {
   const formValues = form.useStore((s) => s.values);
 
   const url = () => {
-    const baseUrl = `${location.origin}?testSettings=`;
-    const settings: SharedTestSettings = new Array(8).fill(
-      null,
-    ) as SharedTestSettings;
     const values = formValues();
-
-    const settingsMap = [
-      { enabled: values.mode, getValue: () => getConfig.mode },
-      {
-        enabled: values.mode2,
-        getValue: () => getMode2(getConfig, getCurrentQuote()),
-      },
-      { enabled: values.customText, getValue: () => CustomText.getData() },
-      { enabled: values.punctuation, getValue: () => getConfig.punctuation },
-      { enabled: values.numbers, getValue: () => getConfig.numbers },
-      { enabled: values.language, getValue: () => getConfig.language },
-      { enabled: values.difficulty, getValue: () => getConfig.difficulty },
-      { enabled: values.funbox, getValue: () => getConfig.funbox },
-    ];
-
-    for (const [index, { enabled, getValue }] of settingsMap.entries()) {
-      if (enabled) {
-        settings[index] = getValue();
-      }
-    }
-
-    const compressed = compressToURI(JSON.stringify(settings));
-    return baseUrl + compressed;
+    return buildTestSettingsLink({
+      mode: values.mode ? getConfig.mode : undefined,
+      mode2: values.mode2 ? getMode2(getConfig, getCurrentQuote()) : undefined,
+      customText: values.customText ? CustomText.getData() : undefined,
+      punctuation: values.punctuation ? getConfig.punctuation : undefined,
+      numbers: values.numbers ? getConfig.numbers : undefined,
+      language: values.language ? getConfig.language : undefined,
+      difficulty: values.difficulty ? getConfig.difficulty : undefined,
+      funbox: values.funbox ? getConfig.funbox : undefined,
+    });
   };
 
   const mode2subtext = () => {
@@ -97,7 +65,17 @@ export function ShareTestSettings(): JSXElement {
 
   return (
     <AnimatedModal id="ShareTestSettings" title="Share test settings">
-      <form.Field name="mode">
+      <form.Field
+        name="mode"
+        listeners={{
+          onChange: ({ value }) => {
+            if (!value) {
+              form.setFieldValue("mode2", false);
+              form.setFieldValue("customText", false);
+            }
+          },
+        }}
+      >
         {(field) => (
           <Checkbox
             field={() => field()}

@@ -21,7 +21,7 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo } from "solid-js";
+import { Accessor, createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
@@ -36,6 +36,11 @@ import {
   saveLocalTagPB,
   useActiveTagsLiveQuery,
 } from "./tags";
+import {
+  blockingDownloadOptions,
+  isDownloaded,
+  waitForDownload,
+} from "./utils/blocking-download";
 import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
@@ -218,6 +223,7 @@ function normalizeResult(
 
 const resultsCollection = createCollection(
   queryCollectionOptions({
+    ...blockingDownloadOptions,
     staleTime: Infinity,
     gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
@@ -695,22 +701,26 @@ function buildSettingsResultsQuery(
   return query;
 }
 
+/** Whether the results downloaded (a failed download isn't ready). */
 export function isResultsReady(): boolean {
-  return resultsCollection.isReady();
+  return isDownloaded(resultsCollection);
 }
 
+/** Waits for the results download, throws if it failed (retries a failed one). */
 export async function waitForResultsReady(): Promise<void> {
-  await resultsCollection.stateWhenReady();
+  await waitForDownload(resultsCollection);
 }
 
 /**
  *
  */
-createEffectOn(isAuthenticated, (hasUser) => {
-  if (hasUser) {
-    void resultsCollection.utils.refetch();
-  }
-});
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (hasUser) {
+      void resultsCollection.utils.refetch();
+    }
+  }),
+);
 
 function getResults(): SnapshotResult<Mode>[] {
   return [...resultsCollection.values()];

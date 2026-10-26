@@ -1,4 +1,4 @@
-import type { JSX, ParentProps } from "solid-js";
+import type { JSX, JSXElement, ParentProps } from "solid-js";
 
 import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
@@ -39,7 +39,7 @@ export function buildBalloonHtmlProperties(
   };
 }
 
-export function Balloon(props: Props) {
+export function Balloon(props: Props): JSXElement {
   const [local, rest] = splitProps(props, [
     "text",
     "position",

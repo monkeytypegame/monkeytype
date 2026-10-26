@@ -3,6 +3,7 @@ import { JSXElement } from "solid-js";
 import { getIsScreenshotting } from "../../../states/core";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
+import { isLoadingShown } from "../../core/PageSwitcher";
 import { Logo } from "./Logo";
 import { Nav } from "./Nav";
 
@@ -14,6 +15,7 @@ export function Header(): JSXElement {
       })}
       data-ui-element="header"
       data-focused={getFocus() ? "" : undefined}
+      inert={isLoadingShown()}
     >
       <Logo />
       <Nav />
