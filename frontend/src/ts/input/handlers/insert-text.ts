@@ -35,6 +35,7 @@ import {
   flashKeymapKey,
 } from "../../states/test";
 import { DeleteInputType } from "../helpers/input-type";
+import { isWordRendered } from "../../states/words-render";
 
 const charOverrides = new Map<string, string>([
   ["…", "..."],
@@ -112,13 +113,13 @@ function handleDeleteOnError(now: number): void {
   }
 
   //mistake on the first character of the word - the hard modes send you back
-  //but only if the previous word is still in the dom (it might have scrolled
+  //but only if the previous word is still rendered (it might have scrolled
   //off), same check as the one a normal backspace does in onBeforeDelete
   if (
     goBackAWord &&
     inputLength <= 1 &&
     getActiveWordIndex() > 0 &&
-    TestUI.isWordRendered(getActiveWordIndex() - 1)
+    isWordRendered(getActiveWordIndex() - 1)
   ) {
     //pretend its a normal backspace, not insertText
     const inputType: DeleteInputType = deleteWholeWord

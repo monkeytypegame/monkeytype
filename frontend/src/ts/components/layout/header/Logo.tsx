@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
-import { restartTestEvent } from "../../../events/test";
 import { getRoutePage } from "../../../states/router";
 import { getFocus } from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
@@ -19,7 +19,7 @@ export function Logo(): JSXElement {
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getRoutePage() === "test") restartTestEvent.dispatch();
+        if (getRoutePage() === "test") void restartTest();
       }}
     >
       <svg

@@ -1,7 +1,7 @@
 import { isAnyPopupVisible } from "../../utils/misc";
 
 import { navigate } from "../../router/navigate";
-import { restartTestEvent } from "../../events/test";
+import { restartTest } from "../../test/test-logic";
 import { getRoutePage } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
@@ -16,13 +16,13 @@ function quickRestart(e: KeyboardEvent): void {
   e.preventDefault();
 
   if (getRoutePage() === "test") {
-    restartTestEvent.dispatch({ isQuickRestart: !e.shiftKey });
+    void restartTest({ isQuickRestart: !e.shiftKey });
   } else {
     void navigate({ to: "/" });
   }
 }
 
-// Disable restart when we're in long test and quick restart key is enter, because `shift + enter, shift +
+// Disable restartTest when we're in long test and quick restartTest key is enter, because `shift + enter, shift +
 // enter` is already reserved for bail out keybind.
 createHotkey(
   () => hotkeys.quickRestart,
@@ -30,10 +30,10 @@ createHotkey(
   () => ({ enabled: !isLongTest() || getConfig.quickRestart !== "enter" }),
 );
 
-// We also want to have a hotkey for quick restart key without shift, so when the
+// We also want to have a hotkey for quick restartTest key without shift, so when the
 // test is considered long (which means that we can't quick restart), we show a
-// notification when the user tries to press the quick restart key without shift,
-// and we'll restart when it's pressed with shift.
+// notification when the user tries to press the quick restartTest key without shift,
+// and we'll restartTest when it's pressed with shift.
 createHotkey(
   () => quickRestartHotkeyMap[getConfig.quickRestart],
   quickRestart,

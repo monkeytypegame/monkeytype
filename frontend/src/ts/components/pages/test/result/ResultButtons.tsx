@@ -9,7 +9,7 @@ import {
   captureAndCopyToClipboard,
   captureAndDownload,
 } from "../../../../test/screenshot";
-import { repeatTest, restart } from "../../../../test/test-logic";
+import { repeatTest, restartTest } from "../../../../test/test-logic";
 import { toggleResultWords } from "../../../../test/words-history";
 import { FaObject } from "../../../../types/font-awesome";
 import { cn } from "../../../../utils/cn";
@@ -41,7 +41,7 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
           class="max-sm:col-span-2"
           text="Next test"
           fa={{ icon: "fa-chevron-right" }}
-          onClick={() => void restart()}
+          onClick={() => void restartTest()}
         />
         <ResultButton
           data-ui-element="restartTestButtonWithSameWordset"

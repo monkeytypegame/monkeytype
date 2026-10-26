@@ -8,9 +8,9 @@ import { For, JSXElement, Show } from "solid-js";
 
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import { isAuthenticated } from "../../states/core";
 import { showModal } from "../../states/modals";
+import { restartTest } from "../../test/test-logic";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -58,7 +58,7 @@ export function MobileTestConfigModal(): JSXElement {
   const handleModeClick = (mode: Mode) => {
     if (mode === getConfig.mode) return;
     setConfig("mode", mode);
-    restartTestEvent.dispatch();
+    void restartTest();
   };
 
   const handleTimeClick = (time: number | "custom") => {
@@ -66,7 +66,7 @@ export function MobileTestConfigModal(): JSXElement {
       showModal("TestDuration");
     } else {
       setConfig("time", time);
-      restartTestEvent.dispatch();
+      void restartTest();
     }
   };
 
@@ -75,14 +75,14 @@ export function MobileTestConfigModal(): JSXElement {
       showModal("CustomWordAmount");
     } else {
       setConfig("words", words);
-      restartTestEvent.dispatch();
+      void restartTest();
     }
   };
 
   const handleQuoteLengthClick = (value: string, e: MouseEvent) => {
     if (value === "all") {
       if (setQuoteLengthAll()) {
-        restartTestEvent.dispatch();
+        void restartTest();
       }
     } else if (value === "-2") {
       showModal("QuoteSearch");
@@ -97,7 +97,7 @@ export function MobileTestConfigModal(): JSXElement {
       }
 
       if (setConfig("quoteLength", arr)) {
-        restartTestEvent.dispatch();
+        void restartTest();
       }
     }
   };
@@ -124,7 +124,7 @@ export function MobileTestConfigModal(): JSXElement {
           disabled={isPunctuationDisabled()}
           onClick={() => {
             setConfig("punctuation", !getConfig.punctuation);
-            restartTestEvent.dispatch();
+            void restartTest();
           }}
         />
         <MCButton
@@ -133,7 +133,7 @@ export function MobileTestConfigModal(): JSXElement {
           disabled={isPunctuationDisabled()}
           onClick={() => {
             setConfig("numbers", !getConfig.numbers);
-            restartTestEvent.dispatch();
+            void restartTest();
           }}
         />
       </div>

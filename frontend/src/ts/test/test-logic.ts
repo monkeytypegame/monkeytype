@@ -86,7 +86,6 @@ import {
   setCompositionData,
   highlightKeymapKey,
 } from "../states/test";
-import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import { canStartTest } from "./test-page-state";
@@ -158,6 +157,7 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
+import { appendRenderedWord } from "../states/words-render";
 
 let failReason = "";
 
@@ -245,7 +245,9 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
-export async function restart(options = {} as RestartOptions): Promise<void> {
+export async function restartTest(
+  options = {} as RestartOptions,
+): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
     practiseMissed: false,
@@ -624,7 +626,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
+    appendRenderedWord("");
     return;
   }
 
@@ -658,7 +660,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
         );
         toggleFunbox(sectionFunbox.name);
-        void restart();
+        void restartTest();
         return;
       }
 
@@ -675,7 +677,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        TestUI.addWord(newWord.display);
+        appendRenderedWord(newWord.display);
       }
     }
   }
@@ -692,7 +694,7 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    TestUI.addWord(newWord.display);
+    appendRenderedWord(newWord.display);
   } catch (e) {
     timerEvent.dispatch({ key: "fail", value: "word generation error" });
     showErrorNotification(
@@ -1368,11 +1370,11 @@ export function onRestartButtonClick(): void {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    void restart({
+    void restartTest({
       withSameWordset: true,
     });
   } else {
-    void restart();
+    void restartTest();
   }
 }
 
@@ -1381,7 +1383,7 @@ export function repeatTest(): void {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  void restart({
+  void restartTest({
     withSameWordset: true,
   });
 }
@@ -1396,13 +1398,11 @@ export function restartIfNotStarted(): void {
     !isTestFinished() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    void restart({
+    void restartTest({
       noAnim: true,
     });
   }
 }
-
-restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
@@ -1418,11 +1418,11 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      void restart();
+      void restartTest();
     }
-    if (key === "difficulty" && !nosave) void restart();
+    if (key === "difficulty" && !nosave) void restartTest();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      void restart();
+      void restartTest();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {

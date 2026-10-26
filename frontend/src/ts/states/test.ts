@@ -32,10 +32,10 @@ export const [isTestFinished, setTestFinished] = createSignal(false);
 // True from the first line of TestLogic.finish() until the result is built, so
 // it covers the words fade-out that isTestFinished() is still false during.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
-// Set when the user bails out of a test early; reset by TestLogic.restart().
+// Set when the user bails out of a test early; reset by TestLogic.restartTest().
 export const [getBailedOut, setBailedOut] = createSignal(false);
 export const [getFocus, setFocus] = createSignal(false);
-// read by TestPage (#words blur), the composition display and OutOfFocusWarning.
+// read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
 export const [testFocusState, { setTestFocusState }] =
@@ -58,12 +58,28 @@ export const showOutOfFocusWarning = createMemo(
   () => getConfig.showOutOfFocusWarning && testFocusState() !== "focused",
 );
 
-// max-height of the warning, kept in sync with the words wrapper by test-ui.
+// max-height of the warning, kept in sync with the words wrapper by the words layout.
 export const [outOfFocusMaxHeight, setOutOfFocusMaxHeight] = createSignal<
   number | undefined
 >(undefined);
 
-// bound to #words / #wordsWrapper by TestPage.
+/** px, maxWidth in % of the words wrapper. undefined: the stylesheet's */
+export type WordsInputPosition = {
+  top: number;
+  left: number;
+  width?: number;
+  maxWidth?: number;
+};
+
+// bound to #wordsInput by WordsInput, follows the active word
+export const [wordsInputPosition, setWordsInputPosition] =
+  createSignal<WordsInputPosition>({ top: 0, left: 0 });
+
+// dev options: shows #wordsInput below the words
+export const [isRealWordsInputShown, setRealWordsInputShown] =
+  createSignal(false);
+
+// bound to #words by Words, #wordsWrapper by TestPage.
 // Other modules write here instead of touching the DOM directly.
 export const [isWordsHidden, setWordsHidden] = createSignal(false);
 export const [isWordsWrapperHidden, setWordsWrapperHidden] =
@@ -311,6 +327,16 @@ export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);
 export const [isDirectionReversed, setIsDirectionReversed] =
   createSignal(false);
+
+/** zen, custom and polyglot words can mix directions: check per letter */
+export function isRtlCheckedByLetter(): boolean {
+  return (
+    getConfig.mode === "zen" ||
+    getConfig.mode === "custom" ||
+    getConfig.funbox.includes("polyglot")
+  );
+}
+
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
 export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
