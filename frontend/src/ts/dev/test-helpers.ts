@@ -8,56 +8,6 @@ import { getCurrentInput } from "../test/events/data";
 import { hideModal, showModal } from "../states/modals";
 import { restartTest } from "../test/test-logic";
 
-/** "\n" types a line break, "\b" deletes the previous character. */
-function typeChar(char: string): void {
-  const input = getInputElement();
-  if (document.activeElement !== input) input.focus();
-  const key = char === "\n" ? "Enter" : char === "\b" ? "Backspace" : char;
-  input.dispatchEvent(
-    new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }),
-  );
-
-  const inputType =
-    char === "\n"
-      ? "insertLineBreak"
-      : char === "\b"
-        ? "deleteContentBackward"
-        : "insertText";
-  const data = inputType === "insertText" ? char : null;
-  const beforeInput = new InputEvent("beforeinput", {
-    inputType,
-    data,
-    bubbles: true,
-    cancelable: true,
-  });
-  input.dispatchEvent(beforeInput);
-  if (!beforeInput.defaultPrevented) {
-    if (inputType === "deleteContentBackward") {
-      input.value = input.value.slice(0, -1);
-    } else {
-      input.setRangeText(char, input.selectionStart, input.selectionEnd, "end");
-    }
-    input.dispatchEvent(
-      new InputEvent("input", { inputType, data, bubbles: true }),
-    );
-  }
-
-  input.dispatchEvent(new KeyboardEvent("keyup", { key, bubbles: true }));
-}
-
-/**
- * Types `text` through the real input handlers, one character every
- * `msPerChar` (0: all in one task). "\n" is a line break, "\b" a backspace.
- */
-export async function typeText(text: string, msPerChar = 0): Promise<void> {
-  for (const char of text) {
-    typeChar(char);
-    if (msPerChar > 0) {
-      await new Promise((resolve) => setTimeout(resolve, msPerChar));
-    }
-  }
-}
-
 type LetterSnapshot = { text: string; icon?: string; classes: string };
 type ChildSnapshot =
   | { index: number; classes: string; letters: LetterSnapshot[] }

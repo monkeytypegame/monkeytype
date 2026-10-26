@@ -39,6 +39,9 @@ const worktree =
         },
       };
 
+// specs on the test-page harness (__tests__/__harness__/test-page.tsx)
+const TEST_PAGE_SPECS = "__tests__/components/pages/test/TestPage.spec.tsx";
+
 const tanstackSolidNoExternal: (string | RegExp)[] = [
   "@solidjs/meta",
   /@tanstack\/solid-.*/,
@@ -87,6 +90,8 @@ export const projects: UserWorkspaceConfig[] = [
     test: {
       name: { label: "jsx", color: "green" },
       include: ["__tests__/**/*.spec.tsx"],
+      // the test-page project's: they need the real DOM queries
+      exclude: [TEST_PAGE_SPECS],
       environment: "jsdom",
       globalSetup: "__tests__/global-setup.ts",
       setupFiles: [
@@ -94,6 +99,23 @@ export const projects: UserWorkspaceConfig[] = [
         "__tests__/__harness__/mock-dom.ts",
         "__tests__/__harness__/mock-firebase.ts",
       ],
+      globals: true,
+    },
+    plugins,
+    resolve,
+    ...worktree,
+  },
+  {
+    ssr: {
+      noExternal: tanstackSolidNoExternal,
+    },
+    test: {
+      name: { label: "test-page", color: "magenta" },
+      include: [TEST_PAGE_SPECS],
+      environment: "jsdom",
+      globalSetup: "__tests__/global-setup.ts",
+      // no mock-dom: the test page's modules query the real DOM
+      setupFiles: ["__tests__/__harness__/setup-jsx.ts"],
       globals: true,
     },
     plugins,

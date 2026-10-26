@@ -15,9 +15,9 @@ import {
   checkLayout,
   runCommand,
   setCustomText,
-  typeText,
   wordsSnapshot,
 } from "./test-helpers";
+import { compose, typeText } from "./typing-driver";
 
 // Modules hot-updated since the page loaded. Kept on window: it survives this
 // module's own hot update, and the listener registers once per page.
@@ -56,6 +56,7 @@ const mt = {
   showModal,
   restartTest,
   typeText,
+  compose,
   wordsSnapshot,
   caretOffset,
   checkLayout,
