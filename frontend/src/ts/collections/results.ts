@@ -21,7 +21,7 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo } from "solid-js";
+import { Accessor, createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
@@ -714,11 +714,13 @@ export async function waitForResultsReady(): Promise<void> {
 /**
  *
  */
-createEffectOn(isAuthenticated, (hasUser) => {
-  if (hasUser) {
-    void resultsCollection.utils.refetch();
-  }
-});
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (hasUser) {
+      void resultsCollection.utils.refetch();
+    }
+  }),
+);
 
 function getResults(): SnapshotResult<Mode>[] {
   return [...resultsCollection.values()];

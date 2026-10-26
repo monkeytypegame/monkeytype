@@ -26,7 +26,7 @@ import {
   scrollToCenterOrTop,
 } from "../../../../utils/misc";
 import { AdIcon } from "../../../common/AdIcon";
-import { adSlotClass } from "../../../common/Advertisement";
+import { adSlotClass, adSlotRef } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
@@ -178,6 +178,7 @@ function ResultAds(): JSXElement {
     >
       <div
         id="ad-result-wrapper"
+        ref={adSlotRef("ad-result-wrapper")}
         class={cn(adSlotClass("h"), "full-width mx-auto")}
       >
         <div class="grid grid-cols-[auto_1fr] items-center justify-center gap-4 justify-self-center">
@@ -209,6 +210,7 @@ function ResultAds(): JSXElement {
       </div>
       <div
         id="ad-result-small-wrapper"
+        ref={adSlotRef("ad-result-small-wrapper")}
         class={cn(adSlotClass("hs"), "mx-auto")}
       >
         <AdIcon small />
