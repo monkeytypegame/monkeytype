@@ -1,5 +1,6 @@
 import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
+import { createTrigger } from "../../hooks/createTrigger";
 import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
 import {
@@ -42,12 +43,12 @@ export function SavedTextsModal(props: {
 
   // because the progress is stored in local storage,
   // we need to trigger a refresh when it changes to update the reset button state
-  const [version, setVersion] = createSignal(0);
+  const [trackProgress, refreshProgress] = createTrigger();
 
   const refresh = () => {
     setNames(CustomText.getCustomTextNames(false));
     setLongNames(CustomText.getCustomTextNames(true));
-    setVersion((v) => v + 1);
+    refreshProgress();
   };
 
   const handleNameClick = (name: string, long: boolean) => {
@@ -169,7 +170,7 @@ export function SavedTextsModal(props: {
           <Index each={longNames()}>
             {(name) => {
               const hasProgress = () => {
-                version();
+                trackProgress();
                 return CustomText.getCustomTextLongProgress(name()) > 0;
               };
               return (

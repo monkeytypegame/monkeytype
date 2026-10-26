@@ -10,7 +10,7 @@ import {
 import { getConfig } from "../../../config/store";
 import {
   RenderedWord,
-  typoHintsLayoutVersion,
+  trackTypoHintsLayout,
   wordsRenderState,
 } from "../../../states/words-render";
 import {
@@ -37,7 +37,6 @@ type MeasureKey = {
   hints: TypoHint[];
   input: string;
   composition: string;
-  layoutVersion: number;
 };
 
 function sameHints(a: TypoHint[], b: TypoHint[]): boolean {
@@ -78,12 +77,14 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
     { equals: sameHints },
   );
   // anything that can move the word's letters re-measures
-  const measureKey = createMemo<MeasureKey>(() => ({
-    hints: hints(),
-    input: props.word.input,
-    composition: props.word.composition,
-    layoutVersion: typoHintsLayoutVersion(),
-  }));
+  const measureKey = createMemo<MeasureKey>(() => {
+    trackTypoHintsLayout();
+    return {
+      hints: hints(),
+      input: props.word.input,
+      composition: props.word.composition,
+    };
+  });
   const [measured, setMeasured] = createSignal<{
     key: MeasureKey;
     hints: MergedTypoHint[];

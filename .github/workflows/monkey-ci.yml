@@ -50,6 +50,7 @@ jobs:
             fe-src:
               - 'frontend/**/*.{ts,tsx,js,scss,html}'
               - 'frontend/**/package.json'
+              - 'docs/AGENT_BROWSER.md'
             pkg-src:
               - 'packages/**/*'
             anti-cheat:
@@ -248,6 +249,7 @@ jobs:
           sparse-checkout: |
             frontend
             packages
+            docs
 
       - name: Set up Node.js
         uses: actions/setup-node@v6

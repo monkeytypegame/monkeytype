@@ -21,7 +21,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   value: ConfigSchemas.Config[T],
   options?: {
     nosave?: boolean;
-    partOfFullConfigChange?: boolean;
   },
 ): boolean {
   const metadata = configMetadata[key];
@@ -122,6 +121,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   }
 
   Config[key] = value;
+  setConfigStore(key, value);
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out
@@ -131,10 +131,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     nosave: options?.nosave ?? false,
     previousValue: previousValue,
   });
-
-  if (!options?.partOfFullConfigChange) {
-    setConfigStore(key, value);
-  }
 
   if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
@@ -194,6 +190,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   }
 
   Config.funbox = newConfig;
+  setConfigStore("funbox", newConfig);
   saveToLocalStorage("funbox", nosave);
   configEvent.dispatch({
     key: "funbox",
@@ -201,8 +198,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     nosave,
     previousValue,
   });
-
-  setConfigStore("funbox", newConfig);
 
   return true;
 }
