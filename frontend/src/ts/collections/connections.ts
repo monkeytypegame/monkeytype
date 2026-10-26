@@ -1,3 +1,4 @@
+import { createRoot } from "solid-js";
 import {
   and,
   createCollection,
@@ -52,10 +53,12 @@ const connectionsCollection = createCollection(
   }),
 );
 
-const connectionsQuery = useLiveQuery((q) =>
-  isAuthenticated()
-    ? q.from({ connections: connectionsCollection })
-    : undefined,
+const connectionsQuery = createRoot(() =>
+  useLiveQuery((q) =>
+    isAuthenticated()
+      ? q.from({ connections: connectionsCollection })
+      : undefined,
+  ),
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type

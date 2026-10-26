@@ -31,7 +31,7 @@ function renderInput(): HTMLTextAreaElement {
 
 describe("WordsInput", () => {
   afterEach(() => {
-    setWordsInputPosition({ top: 0, left: 0 });
+    setWordsInputPosition({ centerY: 0, left: 0 });
     onKeyDown.mockClear();
   });
 
@@ -61,14 +61,14 @@ describe("WordsInput", () => {
   it("follows the words input position", () => {
     const input = renderInput();
 
-    setWordsInputPosition({ top: 12, left: 34, width: 56, maxWidth: 90 });
+    setWordsInputPosition({ centerY: 12, left: 34, width: 56, maxWidth: 90 });
 
     expect(input.style.top).toBe("12px");
     expect(input.style.left).toBe("34px");
     expect(input.style.width).toBe("56px");
     expect(input.style.maxWidth).toBe("90%");
 
-    setWordsInputPosition({ top: 0, left: 0 });
+    setWordsInputPosition({ centerY: 0, left: 0 });
 
     expect(input.style.width).toBe("");
     expect(input.style.maxWidth).toBe("");

@@ -11,7 +11,6 @@ import {
   removeNotification,
 } from "../states/notifications";
 import * as Caret from "./caret";
-import { timerEvent } from "../events/timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -38,6 +37,15 @@ import {
   highlightKeymapKey,
 } from "../states/test";
 import { capitalizeFirstLetter } from "../utils/strings";
+
+export type TimerHandlers = {
+  onFinish: () => void;
+  onFail: (reason: string) => void;
+};
+
+// set by start(): test-logic passes its finish/fail (importing them here would be circular)
+let onFinish: TimerHandlers["onFinish"] = () => undefined;
+let onFail: TimerHandlers["onFail"] = () => undefined;
 
 let emittedTicks = 0;
 let stopped = true;
@@ -206,14 +214,14 @@ function checkIfFailed(
     if (timer !== null) clearTimeout(timer);
     clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min speed" });
+    onFail("min speed");
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min accuracy" });
+    onFail("min accuracy");
     return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -236,7 +244,7 @@ function checkIfTimeIsUp(testTime: number): void {
     Caret.hide();
     clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "finish" });
+    onFinish();
     return;
   }
 
@@ -348,12 +356,16 @@ function checkIfTimerIsSlow(drift: number): void {
         ),
       );
 
-      timerEvent.dispatch({ key: "fail", value: "slow timer" });
+      onFail("slow timer");
     }
   }
 }
 
-export async function start(now: number): Promise<void> {
+export async function start(
+  now: number,
+  handlers: TimerHandlers,
+): Promise<void> {
+  ({ onFinish, onFail } = handlers);
   clearSlowTimer();
   slowTimerCount = 0;
   emittedTicks = 0;
