@@ -24,6 +24,7 @@ import { z } from "zod";
 
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
+import { qs } from "../../../utils/dom";
 import { Fa } from "../../common/Fa";
 import {
   Table,
@@ -58,6 +59,7 @@ export type DataTableProps<TData, TValue> = {
     class: string;
     activeRow: Accessor<string | null>;
   };
+  scrollToSelectedRow?: Accessor<boolean>;
   class?: string;
   headerCellClass?: string;
   bodyCellClass?: string;
@@ -95,11 +97,19 @@ export function DataTable<TData extends Object, TValue = any>(
 
   const [rowSelection, setRowSelection] = createSignal({});
   createEffect(() => {
+    const scrollToSelectedRow = props.scrollToSelectedRow?.();
     if (props.rowSelection?.activeRow === undefined) {
       setRowSelection({});
     } else {
       const activeId = props.rowSelection.activeRow();
       setRowSelection(activeId !== null ? { [activeId]: true } : {});
+      if (scrollToSelectedRow) {
+        requestAnimationFrame(() => {
+          qs(`#${props.id} tr[data-state="selected"]`)?.scrollIntoView({
+            block: "center",
+          });
+        });
+      }
     }
   });
 
