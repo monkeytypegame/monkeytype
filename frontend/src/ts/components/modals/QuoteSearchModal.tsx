@@ -407,7 +407,7 @@ export function QuoteSearchModal(): JSXElement {
     }
     setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    void TestLogic.restart();
+    void TestLogic.restartTest();
     hideModalAndClearChain("QuoteSearch");
   };
 

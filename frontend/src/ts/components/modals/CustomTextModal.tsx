@@ -7,7 +7,6 @@ import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import {
   getCustomTextIndicator,
   setCustomTextIndicator,
@@ -20,6 +19,7 @@ import {
 import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
+import { restartTest } from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -168,7 +168,7 @@ export function CustomTextModal(): JSXElement {
         setConfig("mode", "custom");
       }
       PractiseWords.resetBefore();
-      restartTestEvent.dispatch();
+      void restartTest();
       hideModalAndClearChain("CustomText");
     },
   }));

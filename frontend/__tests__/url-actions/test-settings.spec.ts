@@ -28,7 +28,7 @@ const linkValue = (link: string): string => link.slice(link.indexOf("=") + 1);
 
 //mock modules to avoid dependencies
 vi.mock("../../src/ts/test/test-logic", () => ({
-  restart: vi.fn(),
+  restartTest: vi.fn(),
 }));
 
 describe("buildTestSettingsLink", () => {
@@ -149,7 +149,7 @@ describe("testSettingsAction", () => {
 
   const setConfigMock = vi.spyOn(UpdateConfig, "setConfig");
   const setSelectedQuoteIdMock = vi.spyOn(TestState, "setSelectedQuoteId");
-  const restartTestMock = vi.spyOn(TestLogic, "restart");
+  const restartTestMock = vi.spyOn(TestLogic, "restartTest");
   const notifySuccessMock = vi.spyOn(Notifications, "showSuccessNotification");
   const setTextMock = vi.spyOn(CustomText, "setText");
   const setModeMock = vi.spyOn(CustomText, "setMode");

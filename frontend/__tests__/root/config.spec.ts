@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  afterAll,
+  vi,
+} from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
 import * as ConfigUtils from "../../src/ts/config/utils";
@@ -16,6 +24,9 @@ import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestState from "../../src/ts/states/test";
+import { getConfig as getConfigStore } from "../../src/ts/config/store";
+import { unwrap } from "solid-js/store";
+import { createEffect, createRoot } from "solid-js";
 
 const { replaceConfig, getConfig } = __testing;
 
@@ -467,6 +478,78 @@ describe("Config", () => {
       const config = getConfig();
       expect(config.keymapLayout).toEqual("qwerty");
       expect(config.keymapMode).toEqual("off");
+    });
+  });
+  describe("store is updated before the config event fires", () => {
+    let seen: Partial<Record<string, unknown>>;
+    let unsubscribe: () => void;
+    beforeEach(() => {
+      seen = {};
+      unsubscribe = configEvent.subscribe(({ key }) => {
+        if (key === "fullConfigChange") return;
+        if (key === "fullConfigChangeFinished") {
+          seen[key] = {
+            funbox: [...getConfigStore.funbox],
+            mode: getConfigStore.mode,
+          };
+          return;
+        }
+        seen[key] = structuredClone(unwrap(getConfigStore[key]));
+      });
+    });
+    afterEach(() => unsubscribe());
+
+    it("setConfig, including keys set by overrideConfig", () => {
+      replaceConfig({ monkey: false, liveSpeedStyle: "text" });
+
+      expect(Config.setConfig("monkey", true)).toBe(true);
+
+      expect(seen).toMatchObject({ monkey: true, liveSpeedStyle: "mini" });
+    });
+
+    it("toggleFunbox", () => {
+      replaceConfig({ funbox: [] });
+
+      expect(Config.toggleFunbox("mirror")).toBe(true);
+
+      expect(seen).toMatchObject({ funbox: ["mirror"] });
+    });
+
+    it("applyConfig, including keys reset after a failed set", async () => {
+      replaceConfig({ funbox: ["mirror"], mode: "time" });
+
+      await Lifecycle.applyConfig({ mode: "quote", funbox: ["58008"] });
+
+      expect(seen).toMatchObject({
+        mode: "quote",
+        fullConfigChangeFinished: { funbox: [], mode: "quote" },
+      });
+      expect(getConfigStore.funbox).toEqual([]);
+    });
+
+    it("applyConfig runs store effects once", async () => {
+      replaceConfig({ mode: "time", punctuation: false, numbers: false });
+      const runs: unknown[] = [];
+      const dispose = createRoot((dispose) => {
+        createEffect(() =>
+          runs.push([
+            getConfigStore.mode,
+            getConfigStore.punctuation,
+            getConfigStore.numbers,
+          ]),
+        );
+        return dispose;
+      });
+      runs.length = 0;
+
+      await Lifecycle.applyConfig({
+        mode: "words",
+        punctuation: true,
+        numbers: true,
+      });
+
+      expect(runs).toEqual([["words", true, true]]);
+      dispose();
     });
   });
 });
