@@ -1,4 +1,5 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
+import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
 import { getCustomTextIndicator } from "../../../states/core";
@@ -11,6 +12,7 @@ import {
   isLayoutfluidTimerVisible,
   isResultLoading,
   isTestActive,
+  isTestFinished,
   isTestInitFailed,
   isTypingTestHidden,
   isWordsWrapperHidden,
@@ -30,6 +32,7 @@ import {
 import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
@@ -138,6 +141,14 @@ export function TestPage(): JSXElement {
       },
       { signal },
     );
+    // before the test, keeps it in view. During one, Words keeps the active
+    // line in view
+    const keepTestInView = debounce(250, () => {
+      if (isTestActive() || isTestFinished()) return;
+      Misc.scrollToCenterOrTop(typingTestRef ?? null);
+    });
+    window.addEventListener("resize", keepTestInView, { signal });
+    signal.addEventListener("abort", () => keepTestInView.cancel());
     // little roadblock for basic cheating
     document.addEventListener(
       "visibilitychange",
