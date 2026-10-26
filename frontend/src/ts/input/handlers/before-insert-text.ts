@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
+import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
@@ -108,7 +108,7 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    if (TestUI.wouldActiveWordOverflow(inputValue, data)) {
+    if (wouldActiveWordOverflow(inputValue, data)) {
       return true;
     }
   }
