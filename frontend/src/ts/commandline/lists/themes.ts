@@ -1,11 +1,12 @@
-import { Config } from "../../config/store";
+import { createRoot } from "solid-js";
+import { Config, getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 import { ThemesList, ThemeWithName } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
-import { configEvent } from "../../events/config";
+import { createEffectOn } from "../../hooks/effects";
 import * as getErrorMessage from "../../utils/error";
 
 const isFavorite = (theme: ThemeWithName): boolean =>
@@ -33,6 +34,7 @@ const createThemeCommand = (theme: ThemeWithName): Command => {
       ThemeController.preview(theme.name);
     },
     exec: (): void => {
+      void ThemeController.clearRandom();
       setConfig("theme", theme.name);
     },
   };
@@ -75,21 +77,25 @@ export function update(themes: ThemeWithName[]): void {
   );
 }
 
-// subscribe to theme-related config events to update the theme command list
-configEvent.subscribe(({ key }) => {
-  if (key === "favThemes") {
-    // update themes list when favorites change
-    try {
-      update(ThemesList);
-    } catch (e: unknown) {
-      console.error(
-        getErrorMessage.createErrorMessage(
-          e,
-          "Failed to update themes commands",
-        ),
-      );
-    }
-  }
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  // rebuild with the new favorites first
+  createEffectOn(
+    () => [...getConfig.favThemes],
+    () => {
+      try {
+        update(ThemesList);
+      } catch (e: unknown) {
+        console.error(
+          getErrorMessage.createErrorMessage(
+            e,
+            "Failed to update themes commands",
+          ),
+        );
+      }
+    },
+    { defer: true },
+  );
 });
 
 export default commands;

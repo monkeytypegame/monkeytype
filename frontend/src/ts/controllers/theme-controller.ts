@@ -1,9 +1,10 @@
+import { createMemo, createRoot } from "solid-js";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
 
-import { Config } from "../config/store";
+import { Config, getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
 import * as CustomThemes from "../collections/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
@@ -135,11 +136,6 @@ async function set(
     isAutoSwitch,
   });
   await apply(themeIdentifier, undefined, isAutoSwitch);
-
-  if (!isAutoSwitch && Config.autoSwitchTheme) {
-    setConfig("autoSwitchTheme", false);
-    showNoticeNotification("Auto switch theme disabled");
-  }
 }
 
 export async function clearPreview(applyTheme = true): Promise<void> {
@@ -188,6 +184,11 @@ export async function randomizeTheme(): Promise<void> {
     if (themesList.length === 0) return;
   }
 
+  // before picking: the configured theme effect clears the random theme
+  setConfig("customTheme", false, {
+    nosave: true,
+  });
+
   let filter = (_: string): boolean => true;
   if (Config.randomTheme === "auto") {
     filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
@@ -212,9 +213,6 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  setConfig("customTheme", false, {
-    nosave: true,
-  });
   await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
@@ -228,7 +226,9 @@ export async function randomizeTheme(): Promise<void> {
   }
 }
 
-async function clearRandom(): Promise<void> {
+// theme pickers call this: re-picking the configured theme changes no config
+// value, so the configured theme effect does not run to clear it
+export async function clearRandom(): Promise<void> {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
@@ -249,90 +249,49 @@ window
     }
   });
 
-let ignoreConfigEvent = false;
-
-configEvent.subscribe(async ({ key, newValue, nosave }) => {
-  if (key === "fullConfigChange") {
-    ignoreConfigEvent = true;
-  }
-  if (key === "fullConfigChangeFinished") {
-    ignoreConfigEvent = false;
-
-    await clearRandom();
-    await clearPreview(false);
-
-    if (Config.autoSwitchTheme) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (Config.customTheme) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
+// a root so the effects are owned, they live as long as the page
+createRoot(() => {
+  const getConfiguredTheme = createMemo((): ThemeIdentifier => {
+    if (getConfig.autoSwitchTheme) {
+      return prefersColorSchemeDark()
+        ? getConfig.themeDark
+        : getConfig.themeLight;
     }
-  }
+    return getConfig.customTheme ? "custom" : getConfig.theme;
+  });
 
-  // this is here to prevent calling set / preview multiple times during a full config loading
-  // once the full config is loaded, we can apply everything once
-  if (ignoreConfigEvent) return;
+  createEffectOn(
+    [getConfiguredTheme, () => [...getConfig.customThemeColors]] as const,
+    ([theme]) => {
+      // not awaited: they apply synchronously, so randomizeTheme applying
+      // right after its customTheme write is not overwritten a tick later
+      void clearRandom();
+      void clearPreview(false);
+      void set(theme, getConfig.autoSwitchTheme);
+    },
+    { defer: true },
+  );
 
-  if (key === "randomTheme") {
-    void changeThemeList();
-  }
-  if (key === "customTheme") {
-    newValue ? await set("custom") : await set(Config.theme);
-  }
-  if (key === "customThemeColors") {
-    nosave ? preview("custom") : await set("custom");
-  }
-  if (key === "theme") {
-    await clearRandom();
-    await clearPreview(false);
-    await set(newValue);
-  }
-  if (key === "randomTheme" && newValue === "off") await clearRandom();
-  if (key === "autoSwitchTheme") {
-    if (newValue) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      await set(Config.theme);
-    }
-  }
-  if (
-    key === "themeLight" &&
-    Config.autoSwitchTheme &&
-    !prefersColorSchemeDark() &&
-    !nosave
-  ) {
-    await set(Config.themeLight, true);
-  }
-  if (
-    key === "themeDark" &&
-    Config.autoSwitchTheme &&
-    window.matchMedia?.("(prefers-color-scheme: dark)")?.matches &&
-    !nosave
-  ) {
-    await set(Config.themeDark, true);
-  }
-  if (
+  createEffectOn(
+    () => getConfig.randomTheme,
+    (value) => {
+      void changeThemeList();
+      if (value === "off") void clearRandom();
+    },
+    { defer: true },
+  );
+
+  createEffectOn(
     [
-      "theme",
-      "customTheme",
-      "customThemeColors",
-      "randomTheme",
-      "favThemes",
-    ].includes(key)
-  ) {
-    updateThemeIndicator();
-  }
+      () => getConfig.theme,
+      () => getConfig.customTheme,
+      () => [...getConfig.customThemeColors],
+      () => getConfig.randomTheme,
+      () => [...getConfig.favThemes],
+    ],
+    () => updateThemeIndicator(),
+    { defer: true },
+  );
 });
 
 function prefersColorSchemeDark(): boolean {

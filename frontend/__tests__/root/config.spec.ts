@@ -527,6 +527,15 @@ describe("Config", () => {
       expect(getConfigStore.funbox).toEqual([]);
     });
 
+    it("applyConfig keeps auto switch theme next to a theme", async () => {
+      await Lifecycle.applyConfig({
+        theme: "8008",
+        customTheme: true,
+        autoSwitchTheme: true,
+      });
+      expect(getConfig().autoSwitchTheme).toBe(true);
+    });
+
     it("applyConfig runs store effects once", async () => {
       replaceConfig({ mode: "time", punctuation: false, numbers: false });
       const runs: unknown[] = [];

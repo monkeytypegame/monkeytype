@@ -310,6 +310,36 @@ describe("ConfigMeta", () => {
           given: { customTheme: true },
           expected: { customTheme: false },
         },
+        {
+          value: "8008",
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+      ],
+      customTheme: [
+        {
+          value: true,
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+      ],
+      customThemeColors: [
+        {
+          value: [
+            "#000",
+            "#111",
+            "#222",
+            "#333",
+            "#444",
+            "#555",
+            "#666",
+            "#777",
+            "#888",
+            "#999",
+          ],
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
       ],
       keymapLayout: [
         {
