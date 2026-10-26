@@ -834,8 +834,6 @@ export function createWordsLayout(options: {
     dropOldWordsLayout();
     layoutAll();
     void layoutActiveWord("initial");
-    // the carets snap to the new words
-    Caret.updatePosition(true);
     PaceCaret.resetCaretPosition();
   }
 
