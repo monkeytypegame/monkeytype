@@ -8,7 +8,7 @@ import {
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -43,7 +43,7 @@ const customThemesCollection = createCollection(
           `Error fetching custom themes: ${response.body.message}`,
         );
       }
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
   }),
 );

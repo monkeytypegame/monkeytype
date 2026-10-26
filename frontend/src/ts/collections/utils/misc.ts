@@ -7,12 +7,3 @@ export function tempId(): string {
 export function isTempId(id: string): boolean {
   return id.startsWith(tempIdPrefix);
 }
-
-/**
- * temp. workaround for  https://github.com/TanStack/db/issues/1524
- */
-export function applyIdWorkaround<T extends { _id: string }>(item: T): T {
-  //@ts-expect-error this is fine
-  item.id = item._id;
-  return item;
-}

@@ -9,7 +9,7 @@ import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
@@ -44,12 +44,10 @@ const presetsCollection = createCollection(
         throw new Error(`Error fetching presets:${response.body.message}`);
       }
 
-      return response.body.data
-        .map((it) => ({
-          ...it,
-          name: replaceUnderscoresWithSpaces(it.name),
-        }))
-        .map(applyIdWorkaround);
+      return response.body.data.map((it) => ({
+        ...it,
+        name: replaceUnderscoresWithSpaces(it.name),
+      }));
     },
   }),
 );

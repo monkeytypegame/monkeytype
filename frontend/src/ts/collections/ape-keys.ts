@@ -12,7 +12,7 @@ import {
   setApeKeysDenied,
   setLastGeneratedApeKey,
 } from "../states/account-settings";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { showSuccessNotification } from "../states/notifications";
 import {
@@ -58,16 +58,14 @@ const apeKeysCollection = createCollection(
         throw new Error(`Error fetching ape keys: ${response.body.message}`);
       }
 
-      const dataArray = typedEntries(response.body.data)
-        .map(
-          ([_id, data]) =>
-            ({
-              ...data,
-              _id,
-              name: replaceUnderscoresWithSpaces(data.name),
-            }) satisfies ApeKeyEntry,
-        )
-        .map(applyIdWorkaround);
+      const dataArray = typedEntries(response.body.data).map(
+        ([_id, data]) =>
+          ({
+            ...data,
+            _id,
+            name: replaceUnderscoresWithSpaces(data.name),
+          }) satisfies ApeKeyEntry,
+      );
 
       return dataArray;
     },

@@ -41,7 +41,6 @@ import {
   isDownloaded,
   waitForDownload,
 } from "./utils/blocking-download";
-import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { getCurrentQuote } from "../states/test";
@@ -241,9 +240,9 @@ const resultsCollection = createCollection(
         throw new Error(`Error fetching results:${response.body.message}`);
       }
 
-      const results = response.body.data
-        .map((result) => normalizeResult(result, knownTagIds))
-        .map(applyIdWorkaround);
+      const results = response.body.data.map((result) =>
+        normalizeResult(result, knownTagIds),
+      );
 
       if (getLastResult() === undefined && results.length > 0) {
         const lastResult = results.reduce((acc, cur) =>

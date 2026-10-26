@@ -10,7 +10,7 @@ import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
 import {
@@ -47,7 +47,7 @@ const connectionsCollection = createCollection(
         throw new Error(`Error fetching connections:${response.body.message}`);
       }
 
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
   }),
 );

@@ -22,7 +22,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { applyIdWorkaround, isTempId, tempId } from "./utils/misc";
+import { isTempId, tempId } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
 import { isAuthenticated } from "../states/core";
@@ -47,13 +47,11 @@ const tagsCollection = createCollection(
 
       if (userData === undefined) return [];
 
-      const results = (userData.tags ?? [])
-        .map((tag) => ({
-          ...tag,
-          name: tag.name.replace(/_/g, " "),
-          active: activeIds.includes(tag._id),
-        }))
-        .map(applyIdWorkaround);
+      const results = (userData.tags ?? []).map((tag) => ({
+        ...tag,
+        name: tag.name.replace(/_/g, " "),
+        active: activeIds.includes(tag._id),
+      }));
 
       updateTagsInFilterStorage(results.map((it) => it._id) ?? []);
       return results;
