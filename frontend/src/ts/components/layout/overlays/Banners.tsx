@@ -1,6 +1,7 @@
 import { For, JSXElement, onCleanup, onMount, Show } from "solid-js";
 import { debounce } from "throttle-debounce";
 
+import { getUser } from "../../../collections/user";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import {
@@ -10,7 +11,6 @@ import {
   removeBanner,
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
-import { getSnapshot } from "../../../states/snapshot";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
@@ -77,7 +77,7 @@ export function Banners(): JSXElement {
 
   let nameChangeAdded = false;
   createEffectOn(
-    () => getSnapshot()?.needsToChangeName,
+    () => getUser()?.needsToChangeName,
     (needsToChange) => {
       if (needsToChange && !nameChangeAdded) {
         nameChangeAdded = true;

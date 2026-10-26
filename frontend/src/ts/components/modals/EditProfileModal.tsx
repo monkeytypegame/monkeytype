@@ -7,8 +7,8 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
-import Ape from "../../ape";
-import { getSnapshot, setSnapshot } from "../../db";
+import { updateProfile } from "../../collections/user";
+import { getSnapshot } from "../../db";
 import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
@@ -54,31 +54,18 @@ export function EditProfile() {
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
-      const response = await Ape.users.updateProfile({
-        body: {
-          ...updates,
+      try {
+        await updateProfile({
+          details: updates,
           selectedBadgeId: value.badgeId,
-        },
-      });
-
-      if (response.status !== 200) {
-        showErrorNotification("Failed to update profile", { response });
+        });
+      } catch (error) {
+        showErrorNotification("Failed to update profile", { error });
         return;
       }
 
-      const newBadges =
-        snapshot.inventory?.badges?.map((it) => ({
-          ...it,
-          selected: it.id === value.badgeId,
-        })) ?? [];
-
       form.reset(value);
       hideModal("EditProfile");
-      setSnapshot({
-        ...snapshot,
-        details: response.body.data ?? updates,
-        inventory: { ...snapshot.inventory, badges: newBadges },
-      });
       void invalidateMyProfile();
       showSuccessNotification("Profile updated");
     },

@@ -133,11 +133,11 @@ Users should see no behaviour change, except where a bug at today's seams disapp
   - Interim rule until the event bus is gone: the store must be updated *before* the event fires, so listeners never see stale values.
 - **Config metadata** is the single source for settings UI, commandline generation, validation and restart behaviour (`changeRequiresRestart`). The separate commandline-metadata module is merged into it. Commandline icons use the icon component's types, not strings.
 - **User**: a single-row TanStack DB collection keyed by uid replaces both the mutable user snapshot and its reactive mirror (and the planned snapshot store).
-  - It's a query collection on the existing cached user response (as tags already are); the mapping from the API shape lives in its `queryFn`. `enabled` while signed in, `staleTime`/`gcTime: Infinity`.
+  - It's a local-only collection: the auth flow loads the row (the mapping from the API shape lives in the user module) and sign-out deletes it. Not a query collection: a refetch resolves before the row lands in the collection, and a disabled query doesn't clear the row on sign-out.
   - The row holds what the snapshot holds today. Test activity is plain data (days and last day); the calendar class and per-year cache live in the calendar component. Tags, presets etc. stay in their own collections; the last-result signal stays a signal.
   - Signed out means no row; consumers handle "no user". No default user stands in. A failed user fetch shows the error and leaves no row (today it silently falls back to defaults). Sign-in waits for the row inside the blocking user-data step, as it does for tags and presets.
   - **Reads**: one `getUser()`, backed by a module-level reactive mirror of the row: reactive inside components and effects, a plain synchronous read elsewhere (engine at finish, plain modules). No separate hook, no `__nonReactive`, no direct collection access outside the module.
-  - **Writes**: named functions only; the raw update stays private. Mirrors of what the server already did (xp, streak, typing stats, PBs, leaderboard memory, badges, inbox count) are direct writes with no API call or refetch. User-initiated changes (name, Discord unlink, streak offset, quote ratings, favourite quotes) are optimistic actions that call the API and roll back on failure, as custom themes and connections do. Server-owned flags (banned, verified, leaderboard opt-out) have no setters.
+  - **Writes**: named functions only; the raw update stays private. Mirrors of what the server already did (xp, streak, typing stats, PBs and PB reset, leaderboard memory, badges, inbox count, Discord link) are direct writes with no API call or refetch. User-initiated changes (name, Discord unlink, streak offset, quote ratings, favourite quotes, profile) are optimistic actions that call the API and roll back on failure, as custom themes and connections do. On success an action keeps the current row with its change applied, not the row as it was when the action started, so direct writes made meanwhile survive. Server-owned flags (banned, verified, leaderboard opt-out) have no setters.
   - The auth bus's snapshot-updated event goes away; consumers read `getUser()`.
 - **Auth**: auth state is a signal (unknown, signed in, signed out), which the router's auth context and UI read. The user-data load sits next to it as state (loading, loaded, failed with an error) plus a `reloadUserData()` command; the router's auth context reads it for the blocking user-data step (user row, tags, presets) and its retry, instead of receiving a promise through an event. The auth bus (both its auth-state-changed and snapshot-updated events) is deleted.
 - **Server data**: Query for read-only server data, DB collections for user-owned lists (results, tags, presets, connections, ape keys, inbox, custom themes, filter presets) and the single-row user collection above.
@@ -258,6 +258,12 @@ From config (C1):
 - Config event listeners read the new value from the store, not the stale one.
 - A key that fails to apply during a whole-config apply holds its default in the store (it used to hold the rejected value).
 - A single setting change runs store effects before config event listeners. A whole-config apply runs them once, before failed keys are re-saved and before full-config-change finished (they used to run after it).
+
+From user data (U1):
+
+- Resetting PBs updates the PBs shown straight away (the reactive copy used to keep the old ones).
+- User changes (name, Discord unlink, streak offset, quote rating, favourite quote, profile) show at once and roll back if the request fails; they used to show only after the request.
+- The account page's activity calendar updates after a test without a reload.
 
 ## Settled decisions (grilling, 2026-10-24)
 
