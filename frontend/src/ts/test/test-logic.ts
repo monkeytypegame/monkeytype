@@ -90,7 +90,6 @@ import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import { canStartTest } from "./test-page-state";
 import { configEvent } from "../events/config";
-import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
@@ -183,7 +182,10 @@ export function startTest(now: number): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  void TestTimer.start(now);
+  void TestTimer.start(now, {
+    onFinish: () => void finish(),
+    onFail: fail,
+  });
   TestUI.onTestStart();
   return true;
 }
@@ -696,7 +698,7 @@ export async function addWord(): Promise<void> {
     );
     appendRenderedWord(newWord.display);
   } catch (e) {
-    timerEvent.dispatch({ key: "fail", value: "word generation error" });
+    fail("word generation error");
     showErrorNotification(
       "Error while getting next word. Please try again later",
       {
@@ -1449,9 +1451,4 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
       setPrefersArabicLazyMode(newValue);
     }
   }
-});
-
-timerEvent.subscribe(({ key: eventKey, value: eventValue }) => {
-  if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
-  if (eventKey === "finish") void finish();
 });

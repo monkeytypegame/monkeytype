@@ -120,7 +120,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
 | [x] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5. Done: callers import `restartTest` (renamed from `restart`) from test-logic; `events/test.ts` deleted |
-| [ ] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5 |
+| [x] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5. Done: test-logic passes `onFinish`/`onFail` to `TestTimer.start` (a direct import would be circular); word-generation error calls `fail` directly; `events/timer.ts` deleted |
 | [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787 | T1 | Coordinate with T3 |
 
 ## Track L: leaves
