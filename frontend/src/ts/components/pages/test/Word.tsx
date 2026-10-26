@@ -11,6 +11,8 @@ import { createLetters, createZenLetters } from "./letters";
 import { TypoHints } from "./TypoHints";
 import { WordLetter } from "./WordLetter";
 
+export type WordStatus = "untyped" | "typed" | "typedIncorrectly";
+
 /** A rendered word: its letters and hints container. */
 export function Word(props: {
   word: RenderedWord;
@@ -39,6 +41,10 @@ export function Word(props: {
     props.word.isTyped &&
     !wordsRenderState.rendersLettersFromInput &&
     props.word.input !== props.word.text;
+  const status = (): WordStatus => {
+    if (isIncorrect()) return "typedIncorrectly";
+    return props.word.isTyped ? "typed" : "untyped";
+  };
   let wordRef: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -54,6 +60,9 @@ export function Word(props: {
       ref={(el) => (wordRef = el)}
       class="word"
       data-wordindex={props.word.index}
+      data-ui-element="word"
+      data-ui-state={status()}
+      data-ui-active={props.isActive(props.word.index) ? "" : undefined}
       // per-class toggles: classes and styles added imperatively
       // (break-joining, caret) must survive re-renders
       // oxlint-disable-next-line monkeytype-rules/no-classlist
