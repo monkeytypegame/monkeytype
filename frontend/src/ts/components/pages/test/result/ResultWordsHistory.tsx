@@ -186,7 +186,7 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
             )}
           </Show>
         </div>
-        <div class={wordsClass()} data-ui-element="words">
+        <div class={wordsClass()} data-ui-element="wordsHistory">
           <For each={words()}>
             {(word) => <Word word={word} heatmap={heatmap()} />}
           </For>

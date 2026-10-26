@@ -52,7 +52,7 @@ export function ResultReplay(): JSXElement {
             <div
               id="replayWords"
               class={cn(wordsClass(), "cursor-pointer select-none")}
-              data-ui-element="words"
+              data-ui-element="replayWords"
             >
               <For each={replayState.words}>
                 {(word, wordIndex) => (
