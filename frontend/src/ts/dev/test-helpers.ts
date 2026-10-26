@@ -82,8 +82,9 @@ export function wordsSnapshot(): ChildSnapshot[] {
 }
 
 /**
- * Px offset of the caret from where it should be: the left edge of the next
- * letter to type, or the right edge of the last letter. Within a few px is on.
+ * Px offset of the caret from where it should be: the start edge of the next
+ * letter to type, or the end edge of the last letter (left/right, mirrored for
+ * right to left words). Within a few px is on.
  */
 export function caretOffset(): { dx: number; dy: number } | undefined {
   const caret = document.querySelector("#caret");
@@ -93,8 +94,9 @@ export function caretOffset(): { dx: number; dy: number } | undefined {
   const target = (letters[index] ?? letters[letters.length - 1]) as Element;
   const targetRect = target.getBoundingClientRect();
   const caretRect = caret.getBoundingClientRect();
-  const targetX =
-    letters[index] === undefined ? targetRect.right : targetRect.left;
+  const isRtl = getComputedStyle(target).direction === "rtl";
+  const atStart = letters[index] !== undefined;
+  const targetX = atStart !== isRtl ? targetRect.left : targetRect.right;
   return {
     dx: Math.round(caretRect.left - targetX),
     dy: Math.round(caretRect.top - targetRect.top),
