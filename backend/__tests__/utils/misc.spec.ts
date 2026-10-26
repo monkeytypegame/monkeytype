@@ -42,6 +42,10 @@ describe("Misc Utils", () => {
         });
       },
     );
+
+    it("returns false for an invalid pattern", () => {
+      expect(Misc.matchesAPattern("english", "[")).toBe(false);
+    });
   });
 
   describe("kogascore", () => {

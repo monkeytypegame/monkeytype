@@ -62,8 +62,11 @@ export function padNumbers(
 }
 
 export function matchesAPattern(text: string, pattern: string): boolean {
-  const regex = new RegExp(`^${pattern}$`);
-  return regex.test(text);
+  try {
+    return new RegExp(`^${pattern}$`).test(text);
+  } catch {
+    return false;
+  }
 }
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {

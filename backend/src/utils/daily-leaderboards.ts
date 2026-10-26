@@ -18,6 +18,7 @@ import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
+const nextWpmPageSize = 100;
 
 export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
@@ -238,6 +239,46 @@ export class DailyLeaderboard {
         }`,
       );
     }
+  }
+
+  public async getNextWpm(
+    uid: string,
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
+  ): Promise<number | null> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return null;
+    }
+
+    const currentEntry = await this.getRank(uid, dailyLeaderboardsConfig);
+    if (currentEntry === null || currentEntry.rank <= 1) {
+      return null;
+    }
+
+    const pageSize = Math.min(nextWpmPageSize, currentEntry.rank - 1);
+    const lastPage = Math.floor((currentEntry.rank - 2) / pageSize);
+
+    // scores are ordered by wpm first (see kogascore), so walking upwards from
+    // the current rank, the first entry with a higher wpm holds the next
+    // distinct wpm
+    for (let page = lastPage; page >= 0; page--) {
+      const results = await this.getResults(
+        page,
+        pageSize,
+        dailyLeaderboardsConfig,
+        true,
+      );
+
+      const nextEntry = [...(results?.entries ?? [])]
+        .reverse()
+        .find(
+          (entry) =>
+            entry.rank < currentEntry.rank && entry.wpm > currentEntry.wpm,
+        );
+      if (nextEntry !== undefined) return nextEntry.wpm;
+    }
+
+    return null;
   }
 }
 

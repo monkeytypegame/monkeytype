@@ -720,11 +720,15 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description:
-      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
+      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours. 'next' targets the next distinct all-time leaderboard WPM, while 'daily next' targets today's daily leaderboard.",
     optionsMetadata: {
       tagPb: {
         displayString: "tag pb",
       },
+      nextDaily: {
+        displayString: "daily next",
+      },
+      next: {},
       average: {},
       custom: {},
       daily: {},
@@ -734,6 +738,12 @@ export const configMetadata: ConfigMetadataObject = {
     },
     isBlocked: ({ value }) => {
       if (document.readyState === "complete") {
+        if ((value === "next" || value === "nextDaily") && !isAuthenticated()) {
+          showNoticeNotification(
+            `Pace caret "next" and "daily next" are unavailable without an account`,
+          );
+          return true;
+        }
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           showNoticeNotification(
             `Pace caret "pb" and "tag pb" are unavailable without an account`,
