@@ -18,7 +18,7 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { restart, retrySavingResult } from "../../../../test/test-logic";
+import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
 import {
@@ -48,7 +48,7 @@ export function TestResult(): JSXElement {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restart
+    // test-ui fades it out on restartTest
     setResultElement(el);
     onCleanup(() => setResultElement(undefined));
 
@@ -75,7 +75,7 @@ export function TestResult(): JSXElement {
               class="mx-auto mt-4 w-max px-4 py-2"
               text="Restart"
               fa={{ icon: "fa-chevron-right" }}
-              onClick={() => void restart()}
+              onClick={() => void restartTest()}
             />
           </>
         }

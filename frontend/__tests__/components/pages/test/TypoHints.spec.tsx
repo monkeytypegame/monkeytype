@@ -2,7 +2,6 @@ import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setConfigStore } from "../../../../src/ts/config/store";
-import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendRenderedWord,
   invalidateTypoHintsLayout,
@@ -70,8 +69,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  const defaults = getDefaultConfig();
-  setConfigStore("indicateTypos", defaults.indicateTypos);
   resetWordsRender();
   frames.clear();
   vi.restoreAllMocks();

@@ -253,6 +253,12 @@ Recorded per track as conversion PRs land. Already accepted from the Words rewri
 - Typo hints persist across flushes, so the theme's animation plays only on new or changed hints; merge direction comes from the hint's own word.
 - A replaced typo on a tab/newline isn't faded; a typed tab/newline is.
 
+From config (C1):
+
+- Config event listeners read the new value from the store, not the stale one.
+- A key that fails to apply during a whole-config apply holds its default in the store (it used to hold the rejected value).
+- A single setting change runs store effects before config event listeners. A whole-config apply runs them once, before failed keys are re-saved and before full-config-change finished (they used to run after it).
+
 ## Settled decisions (grilling, 2026-10-24)
 
 | # | Decision |

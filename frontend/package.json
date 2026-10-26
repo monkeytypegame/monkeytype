@@ -134,7 +134,8 @@
       "oxfmt --no-error-on-unmatched-pattern -c ../.oxfmtrc.json"
     ],
     "*.{ts,js,tsx}": [
-      "oxlint --type-aware --type-check"
+      "oxlint --type-aware --type-check",
+      "vitest related --run --passWithNoTests"
     ]
   },
   "browserslist": [

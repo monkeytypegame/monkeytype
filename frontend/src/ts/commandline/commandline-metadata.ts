@@ -102,7 +102,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -110,7 +110,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -119,14 +119,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [10, 25, 50, 100],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
       inputValueConvert: Number,
 
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -134,13 +134,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [15, 30, 60, 120],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
       inputValueConvert: Number,
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -148,7 +148,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -179,7 +179,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         return map[value[0] as number] as string;
       },
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -265,7 +265,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -288,7 +288,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
       afterExec: () => {
         if (getRoutePage() === "test") {
-          void TestLogic.restart();
+          void TestLogic.restartTest();
         }
       },
     },
@@ -348,7 +348,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   lazyMode: {
     subgroup: {
       options: "fromSchema",
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   layout: {
@@ -356,7 +356,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
       display: (layout) =>
         layout === "default" ? "off" : layout.replace(/_/g, " "),
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   codeUnindentOnBackspace: {
@@ -493,7 +493,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: ["off", "pb", "tagPb", "last", "average", "daily"],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
@@ -505,7 +505,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         return newVal;
       },
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -675,7 +675,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       alias: (val) => (val === "overrideSync" ? "default" : ""),
       display: (layout) =>
         layout === "overrideSync" ? "emulator sync" : layout.replace(/_/g, " "),
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   keymapKeys: {

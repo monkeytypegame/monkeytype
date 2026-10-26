@@ -45,13 +45,6 @@ function retryButton(app: App): HTMLButtonElement {
   return button;
 }
 
-// the loading bar fills up from its last step to "Done" (125ms) before the
-// loading page leaves
-async function waitForDone(): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 150));
-  await flush();
-}
-
 // a response that never arrives, recording that the fetch started
 function slowResponse(key: QueryKey): {
   response: [QueryKey, () => Promise<unknown>];
@@ -66,9 +59,23 @@ function slowResponse(key: QueryKey): {
 }
 
 describe("app shell routing", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: [
+        "setTimeout",
+        "clearTimeout",
+        "Date",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+  });
   afterEach(() => {
     cleanupApp();
+    // timers left behind fire in the test that left them, not silently dropped
+    vi.runOnlyPendingTimers();
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   describe("guards", () => {
@@ -222,7 +229,6 @@ describe("app shell routing", () => {
       app.blockingData.loadResults();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -241,7 +247,6 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
       await app.settle();
       expect(app.shownPage()).toBe("test");
     });
@@ -266,7 +271,6 @@ describe("app shell routing", () => {
       app.blockingData.loadResults();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -281,11 +285,10 @@ describe("app shell routing", () => {
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
       // the bar takes 125ms to fill up from the last step
-      await flush();
+      await vi.advanceTimersByTimeAsync(100);
       expect(app.shownPage()).toBe("loading");
-
-      await waitForDone();
-      await app.settle();
+      await vi.advanceTimersByTimeAsync(25);
+      await flush();
       expect(app.shownPage()).toBe("account");
     });
 
@@ -306,7 +309,6 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
       await app.settle();
       expect(app.shownPage()).toBe("account");
     });
@@ -422,21 +424,6 @@ describe("app shell routing", () => {
   });
 
   describe("pending spinner", () => {
-    beforeEach(() => {
-      vi.useFakeTimers({
-        toFake: [
-          "setTimeout",
-          "clearTimeout",
-          "Date",
-          "requestAnimationFrame",
-          "cancelAnimationFrame",
-        ],
-      });
-    });
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
     // friends are downloaded, but their refetch on every visit hangs
     async function slowFriendsNavigation(): Promise<App> {
       const app = renderApp({
@@ -595,10 +582,19 @@ describe("app shell routing", () => {
       await app.settle({ waitForRouter: false });
       expect(app.loadingIndicator()).toBe("bar");
 
+      const popped: string[] = [];
+      const listening = new AbortController();
+      window.addEventListener(
+        "popstate",
+        () => popped.push(window.location.pathname),
+        { signal: listening.signal },
+      );
       app.router.history.back();
-      // popstate fires asynchronously, the blocker then restores the entry
-      await vi.waitFor(() => expect(window.location.pathname).toBe("/account"));
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      // popstate fires on a timer, the blocker then restores the entry
+      await vi.advanceTimersByTimeAsync(50);
+      listening.abort();
+      // went back, then forward again
+      expect(popped).toEqual(["/", "/account"]);
       await app.settle({ waitForRouter: false });
 
       expect(window.location.pathname).toBe("/account");
@@ -616,8 +612,6 @@ describe("app shell routing", () => {
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
       await app.settle();
       expect(app.shownPage()).toBe("account");
-
-      await waitForDone();
       await app.settle();
       expect(app.url()).toBe("/account");
       expect(app.shownPage()).toBe("account");
@@ -1236,7 +1230,6 @@ describe("app shell routing", () => {
         app.blockingData[load]();
         await flush();
         expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-        await waitForDone();
         await app.settle();
         expect(app.shownPage()).toBe(page);
       },
@@ -1258,21 +1251,11 @@ describe("app shell routing", () => {
       userData.resolve();
       await flush();
       expect(app.loadingBar()).toEqual({ width: "100%", text: "Done" });
-
       await app.settle();
       expect(app.shownPage()).toBe("test");
     });
 
     it("shows no spinner when hovering a link to a slow page", async () => {
-      vi.useFakeTimers({
-        toFake: [
-          "setTimeout",
-          "clearTimeout",
-          "Date",
-          "requestAnimationFrame",
-          "cancelAnimationFrame",
-        ],
-      });
       // friends are downloaded, but their refetch on every visit hangs
       const app = renderApp({
         url: "/",
@@ -1288,7 +1271,6 @@ describe("app shell routing", () => {
 
       expect(app.pagesInDom()).toEqual(["test"]);
       expect(app.loadingIndicator()).toBeUndefined();
-      vi.useRealTimers();
     });
 
     it("keeps showing the profile when hovering a link to another profile", async () => {

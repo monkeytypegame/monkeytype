@@ -26,7 +26,7 @@ import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
   onRestartButtonClick,
-  restart,
+  restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
 import * as TestUI from "../../../test/test-ui";
@@ -107,7 +107,7 @@ export function TestPage(): JSXElement {
     listenForModifierKeys(signal);
     listenForMonkeyKeys(signal);
     // any previously rendered words are gone, start a fresh test
-    void restart({ noAnim: true });
+    void restartTest({ noAnim: true });
 
     resetIncompleteTests();
     // registered last so it runs after the modules above have unbound
