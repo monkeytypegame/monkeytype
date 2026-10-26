@@ -33,12 +33,56 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }
 
-#typingTest .word letter.correct,
-#typingTest #words.blind:where(:not(.highlight-off)) .word.typed letter,
-#typingTest #words.highlight-word .word.typed letter.correct,
-#typingTest #words.highlight-next-word .word.typed letter.correct,
-#typingTest #words.highlight-next-two-words .word.typed letter.correct,
-#typingTest #words.highlight-next-three-words .word.typed letter.correct {
+[data-ui-element="words"]
+  [data-ui-element="word"]
+  [data-ui-element="letter"]:is(
+    [data-ui-state="correct"],
+    [data-ui-state="deadCorrect"]
+  ),
+[data-ui-element="words"][data-ui-variant~="blind"]:where(
+    :not([data-ui-variant~="highlight-off"])
+  )
+  [data-ui-element="word"]:is(
+    [data-ui-state="typed"],
+    [data-ui-state="typedIncorrectly"]
+  )
+  [data-ui-element="letter"],
+[data-ui-element="words"][data-ui-variant~="highlight-word"]
+  [data-ui-element="word"]:is(
+    [data-ui-state="typed"],
+    [data-ui-state="typedIncorrectly"]
+  )
+  [data-ui-element="letter"]:is(
+    [data-ui-state="correct"],
+    [data-ui-state="deadCorrect"]
+  ),
+[data-ui-element="words"][data-ui-variant~="highlight-next-word"]
+  [data-ui-element="word"]:is(
+    [data-ui-state="typed"],
+    [data-ui-state="typedIncorrectly"]
+  )
+  [data-ui-element="letter"]:is(
+    [data-ui-state="correct"],
+    [data-ui-state="deadCorrect"]
+  ),
+[data-ui-element="words"][data-ui-variant~="highlight-next-two-words"]
+  [data-ui-element="word"]:is(
+    [data-ui-state="typed"],
+    [data-ui-state="typedIncorrectly"]
+  )
+  [data-ui-element="letter"]:is(
+    [data-ui-state="correct"],
+    [data-ui-state="deadCorrect"]
+  ),
+[data-ui-element="words"][data-ui-variant~="highlight-next-three-words"]
+  [data-ui-element="word"]:is(
+    [data-ui-state="typed"],
+    [data-ui-state="typedIncorrectly"]
+  )
+  [data-ui-element="letter"]:is(
+    [data-ui-state="correct"],
+    [data-ui-state="deadCorrect"]
+  ) {
   color: var(--correct-letter-color);
   animation: shadow 5s linear 1 forwards;
 }
