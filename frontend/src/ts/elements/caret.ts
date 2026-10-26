@@ -5,7 +5,7 @@ import { isWordRightToLeft } from "../utils/strings";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
-import { getWordElement } from "../states/word-elements";
+import { getWordElement, LETTER_SELECTOR } from "../states/word-elements";
 import { isRtlCheckedByLetter } from "../states/test";
 
 let lockedMainCaretInTape = true;
@@ -14,13 +14,13 @@ let caretDebug = false;
 export function toggleCaretDebug(): void {
   caretDebug = !caretDebug;
   if (!caretDebug) {
-    for (const l of document.querySelectorAll(".word letter")) {
+    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
       l.classList.remove("debugCaret");
       l.classList.remove("debugCaretTarget");
       l.classList.remove("debugCaretTarget2");
     }
   } else {
-    for (const l of document.querySelectorAll(".word letter")) {
+    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
       l.classList.add("debugCaret");
     }
   }
@@ -393,7 +393,7 @@ export class Caret {
     isLanguageRightToLeft: boolean;
     isDirectionReversed: boolean;
   }): { left: number; top: number; width: number } {
-    const letters = options.word?.qsa("letter");
+    const letters = options.word?.qsa(LETTER_SELECTOR);
 
     if (letters.length === 0) {
       throw new Error(
@@ -411,7 +411,7 @@ export class Caret {
 
     if (caretDebug) {
       if (this.id === "paceCaret") {
-        for (const l of document.querySelectorAll(".word letter")) {
+        for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
           l.classList.remove("debugCaretTarget");
           l.classList.remove("debugCaretTarget2");
           l.classList.add("debugCaret");

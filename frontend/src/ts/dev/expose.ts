@@ -8,6 +8,7 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
+import { LETTER_SELECTOR } from "../states/word-elements";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/events/data";
@@ -42,11 +43,13 @@ function wordsSnapshot(): ChildSnapshot[] {
     return {
       index: Number((child as HTMLElement).dataset["wordindex"]),
       classes: child.className,
-      letters: [...child.querySelectorAll(":scope > letter")].map((letter) => ({
-        text: letter.textContent ?? "",
-        icon: letter.querySelector("i")?.className,
-        classes: letter.className,
-      })),
+      letters: [...child.querySelectorAll(`:scope > ${LETTER_SELECTOR}`)].map(
+        (letter) => ({
+          text: letter.textContent ?? "",
+          icon: letter.querySelector("i")?.className,
+          classes: letter.className,
+        }),
+      ),
     };
   });
 }
@@ -58,7 +61,9 @@ function wordsSnapshot(): ChildSnapshot[] {
  */
 function caretOffset(): { dx: number; dy: number } | undefined {
   const caret = document.querySelector("#caret");
-  const letters = document.querySelectorAll("#words .word.active letter");
+  const letters = document.querySelectorAll(
+    `#words .word.active ${LETTER_SELECTOR}`,
+  );
   if (caret === null || letters.length === 0) return undefined;
   const index = getCurrentInput().length;
   const target = (letters[index] ?? letters[letters.length - 1]) as Element;
@@ -130,7 +135,7 @@ function checkLayout(): string[] {
 
   if (Config.tapeMode !== "off") {
     const margin = wr.left + (wr.width * Config.tapeMargin) / 100;
-    const letters = active.querySelectorAll("letter");
+    const letters = active.querySelectorAll(LETTER_SELECTOR);
     const anchor =
       Config.tapeMode === "letter"
         ? letters[getCurrentInput().length]?.getBoundingClientRect().left

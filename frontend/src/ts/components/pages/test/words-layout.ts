@@ -25,6 +25,7 @@ import {
 import {
   getLineBreakElements,
   getWordElement as getRenderedWordElement,
+  LETTER_SELECTOR,
 } from "../../../states/word-elements";
 import {
   firstMountedIndex,
@@ -148,8 +149,15 @@ function getNlCharWidth(
     wordsRenderState.rendersLettersFromInput ? word.input : word.text,
   );
   if (chars[chars.length - 1] !== "\n") return 0;
-  const nlChar = lastWordInLine.el.qsa("letter")[chars.length - 1];
-  if (nlChar === undefined || nlChar.hasClass("incorrect")) return 0;
+  const nlChar = lastWordInLine.el.qsa(LETTER_SELECTOR)[chars.length - 1];
+  const nlStatus = nlChar?.getAttribute("data-ui-state");
+  if (
+    nlChar === undefined ||
+    nlStatus === "incorrect" ||
+    nlStatus === "extra"
+  ) {
+    return 0;
+  }
   const letterComputedStyle = window.getComputedStyle(nlChar.native);
   const letterMargin =
     parseFloat(letterComputedStyle.marginLeft) +
@@ -183,11 +191,12 @@ function getTopAndHeightWithDifferentData(
   top: number;
   height: number;
 } {
-  const lettersEls = activeWord.qsa("letter");
+  const lettersEls = activeWord.qsa(LETTER_SELECTOR);
   const domLettersCount = lettersEls.length;
   const nodes = [];
   for (let i = domLettersCount; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
+    tempLetter.dataset["uiElement"] = "letter";
     const displayData = data[i] === " " ? "_" : data[i];
     tempLetter.textContent = displayData as string;
     nodes.push(tempLetter);
@@ -645,13 +654,13 @@ export function createWordsLayout(options: {
     let currentWordWidth = 0;
     const inputLength = getCurrentInput().length;
     if (Config.tapeMode === "letter" && inputLength > 0) {
-      const letters = activeWordEl.qsa("letter");
+      const letters = activeWordEl.qsa(LETTER_SELECTOR);
       let lastPositiveLetterWidth = 0;
       for (let i = 0; i < inputLength; i++) {
         const letter = letters[i];
         if (
           (Config.blindMode || Config.hideExtraLetters) &&
-          letter?.hasClass("extra")
+          letter?.getAttribute("data-ui-state") === "extra"
         ) {
           continue;
         }
