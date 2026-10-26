@@ -136,7 +136,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | L7 | S · commit | Remove stray DOM queries: account page, leaderboard table, captcha, challenge controller header, ad/analytics controllers | none |
 | [ ] | L8 | S · commit | Delete dead modules: result batches, character counter, discord avatar util, input indicator, unused input-validation exports, tag builder plus its spec | none |
 | [ ] | L9 | M · PR | Replace the sorted-table utility with DataTable | none |
-| [ ] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
+| [x] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
 | [ ] | L11 | L · PR per area | SCSS → Tailwind outside the test; add `data-ui-element` to other themeable components as they're touched, moving bundled themes over | none (test-activity styles: U2) |
 | [ ] | L12 | L · PR | Test/caret SCSS rewritten against `data-ui-*` (Tailwind or a small base-styles layer) | T1, T3 |
 
