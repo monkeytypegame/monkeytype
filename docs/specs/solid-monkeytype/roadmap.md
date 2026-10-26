@@ -133,7 +133,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | L4 | M · PR | Result word highlight becomes part of words history, driven by a highlighted-range signal from the chart | none |
 | [ ] | L5 | M · PR | Screenshot-mode signal; elements hide through state; capture uses the result ref | none |
 | [ ] | L6 | M · PR | Boot cleanup: the ready module goes into App lifecycle / a boot module; PSA, merch banner and no-CSS detection become state plus components | none |
-| [ ] | L7 | S · commit | Remove stray DOM queries: account page, leaderboard table, captcha, challenge controller header, ad/analytics controllers | none |
+| [ ] | L7 | S · commit | Remove stray DOM queries: account page, leaderboard table, captcha, challenge controller header, ad/analytics controllers. Done except the leaderboard table: #8524 rewrites its scroll-to-user and should switch to DataTable's `rowSelection.scrollToActiveRow` | none |
 | [ ] | L8 | S · commit | Delete dead modules: result batches, character counter, discord avatar util, input indicator, unused input-validation exports, tag builder plus its spec | none |
 | [ ] | L9 | M · PR | Replace the sorted-table utility with DataTable | none |
 | [x] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
