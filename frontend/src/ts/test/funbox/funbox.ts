@@ -127,7 +127,7 @@ export async function activate(
         nosave: true,
       });
       await clear();
-      return;
+      return undefined;
     }
   }
 
@@ -181,7 +181,7 @@ export async function activate(
       nosave: true,
     });
     await clear();
-    return;
+    return undefined;
   }
 
   for (const fb of getActiveFunboxesWithFunction("applyConfig")) {

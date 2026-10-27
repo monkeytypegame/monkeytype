@@ -76,7 +76,7 @@ export type DataTableProps<TData, TValue> = {
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export function DataTable<TData extends Object, TValue = any>(
+export function DataTable<TData extends object, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({

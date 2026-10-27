@@ -80,6 +80,7 @@ const newTimer = createTimer({
     // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
     // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
     const ticksDue = Math.floor((now - timerStartMs) / 1000);
+    // oxlint-disable-next-line no-unmodified-loop-condition
     while (!stopped && emittedTicks + 1 < ticksDue) {
       console.debug(
         "Catching up timer, missed tick at",
