@@ -1,4 +1,4 @@
-import { createMemo } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 
 import { getConfig } from "../config/store";
 import Format from "../singletons/format";
@@ -88,44 +88,58 @@ export function getBarTarget(): {
   };
 }
 
-export const showLiveStats = createMemo(() => isTestActive() && isFocusMode());
-export const getLiveSpeedText = createMemo(() =>
-  Format.typingSpeed(
-    (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0,
-    { showDecimalPlaces: false },
+export const showLiveStats = createRoot(() =>
+  createMemo(() => isTestActive() && isFocusMode()),
+);
+export const getLiveSpeedText = createRoot(() =>
+  createMemo(() =>
+    Format.typingSpeed(
+      (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0,
+      { showDecimalPlaces: false },
+    ),
   ),
 );
-export const getLiveAccText = createMemo(
-  () =>
-    `${getConfig.blindMode ? 100 : Math.floor(currentLiveStats.acc ?? 100)}%`,
+export const getLiveAccText = createRoot(() =>
+  createMemo(
+    () =>
+      `${getConfig.blindMode ? 100 : Math.floor(currentLiveStats.acc ?? 100)}%`,
+  ),
 );
-export const getLiveBurstText = createMemo(() =>
-  Format.typingSpeed(currentLiveStats.burst ?? 0, { showDecimalPlaces: false }),
+export const getLiveBurstText = createRoot(() =>
+  createMemo(() =>
+    Format.typingSpeed(currentLiveStats.burst ?? 0, {
+      showDecimalPlaces: false,
+    }),
+  ),
 );
 
 /** Countdown / word counter shown by the timer displays. */
-export const getTimerText = createMemo(() => {
-  if (isTimeLimitedTest()) {
-    const limit = getTestTimeLimit();
-    const seconds = currentLiveStats.seconds ?? 0;
-    return secondsToString(limit === 0 ? seconds : limit - seconds);
-  }
-  // read the signal first so the memo subscribes to it on every branch below
-  const wordCount = getCurrentWordCount();
-  const wordsTotal = getWordsTotal();
-  if (getConfig.mode === "zen" || wordsTotal === 0) {
-    return `${getActiveWordIndex()}`;
-  }
-  return `${wordCount}/${wordsTotal}`;
-});
+export const getTimerText = createRoot(() =>
+  createMemo(() => {
+    if (isTimeLimitedTest()) {
+      const limit = getTestTimeLimit();
+      const seconds = currentLiveStats.seconds ?? 0;
+      return secondsToString(limit === 0 ? seconds : limit - seconds);
+    }
+    // read the signal first so the memo subscribes to it on every branch below
+    const wordCount = getCurrentWordCount();
+    const wordsTotal = getWordsTotal();
+    if (getConfig.mode === "zen" || wordsTotal === 0) {
+      return `${getActiveWordIndex()}`;
+    }
+    return `${wordCount}/${wordsTotal}`;
+  }),
+);
 /**
  * The flash timer styles only reveal the time every 15 seconds. Only the flash
  * styles hide, and only on time limited tests — a word counter is always shown.
  */
-export const isTimerFlashHidden = createMemo(() => {
-  const isFlashStyle =
-    getConfig.timerStyle === "flash_mini" ||
-    getConfig.timerStyle === "flash_text";
-  if (!isFlashStyle || !isTimeLimitedTest()) return false;
-  return (getTestTimeLimit() - (currentLiveStats.seconds ?? 0)) % 15 !== 0;
-});
+export const isTimerFlashHidden = createRoot(() =>
+  createMemo(() => {
+    const isFlashStyle =
+      getConfig.timerStyle === "flash_mini" ||
+      getConfig.timerStyle === "flash_text";
+    if (!isFlashStyle || !isTimeLimitedTest()) return false;
+    return (getTestTimeLimit() - (currentLiveStats.seconds ?? 0)) % 15 !== 0;
+  }),
+);

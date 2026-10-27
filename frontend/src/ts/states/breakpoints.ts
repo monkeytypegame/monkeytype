@@ -1,4 +1,4 @@
-import { Accessor, createSignal, onCleanup } from "solid-js";
+import { Accessor, createSignal, onCleanup, createRoot } from "solid-js";
 import { debounce } from "throttle-debounce";
 
 export type BreakpointKey = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs";
@@ -15,7 +15,7 @@ const tw: Record<BreakpointKey, number> = {
   xxl: parseInt(styles.getPropertyValue("--breakpoint-2xl")),
 };
 
-export const bp = createBreakpoints(tw);
+export const bp = createRoot(() => createBreakpoints(tw));
 
 function createBreakpoints(
   breakpoints: Record<BreakpointKey, number>,

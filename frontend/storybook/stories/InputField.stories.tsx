@@ -24,7 +24,7 @@ function createFieldMock(options: {
     isValid: true,
     isValidating: false,
     errors: [],
-    ...(options.meta ?? {}),
+    ...options.meta,
   };
   return {
     name: options.name ?? "test",

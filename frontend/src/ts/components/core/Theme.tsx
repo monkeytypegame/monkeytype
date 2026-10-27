@@ -3,6 +3,7 @@ import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
@@ -74,9 +75,7 @@ export function Theme(): JSXElement {
   });
 
   // tailwind's dark: variant
-  createEffect(() => {
-    document.body.classList.toggle("darkMode", isColorDark(getTheme().bg));
-  });
+  useBodyClasses(() => ({ darkMode: isColorDark(getTheme().bg) }));
 
   return (
     <MetaProvider>

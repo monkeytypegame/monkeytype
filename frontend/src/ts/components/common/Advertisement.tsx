@@ -1,5 +1,5 @@
 import { Ads } from "@monkeytype/schemas/configs";
-import { JSXElement, Show } from "solid-js";
+import { JSXElement, onCleanup, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { isResultShown } from "../../states/result";
@@ -16,6 +16,23 @@ export const adSlotMediaQueries = [
   "(width < 721px)",
   "(width >= 1876px)",
 ];
+
+const adSlotWrappers = new Map<string, HTMLElement>();
+
+/** Callback ref for an ad slot's wrapper, so the ad controllers can find it */
+export function adSlotRef(id: string): (el: HTMLElement) => void {
+  return (el) => {
+    adSlotWrappers.set(id, el);
+    onCleanup(() => {
+      if (adSlotWrappers.get(id) === el) adSlotWrappers.delete(id);
+    });
+  };
+}
+
+/** The mounted wrapper of an ad slot (eg. `ad-result-wrapper`) */
+export function getAdSlotWrapper(id: string): HTMLElement | undefined {
+  return adSlotWrappers.get(id);
+}
 
 /**
  * An ad slot's wrapper: the ad scripts fill it, stacked over the placeholder
@@ -67,6 +84,7 @@ export function Advertisement(props: {
     <>
       <div
         id={`${props.id}-wrapper`}
+        ref={adSlotRef(`${props.id}-wrapper`)}
         class={cn(slotClass("h"), "full-width mx-auto place-self-center")}
       >
         <AdIcon />
@@ -74,6 +92,7 @@ export function Advertisement(props: {
       </div>
       <div
         id={`${props.id}-small-wrapper`}
+        ref={adSlotRef(`${props.id}-small-wrapper`)}
         class={cn(slotClass("hs"), "full-width mx-auto place-self-center")}
       >
         <AdIcon small />
@@ -83,7 +102,11 @@ export function Advertisement(props: {
   );
 
   const vertical = () => (
-    <div id={`${props.id}-wrapper`} class={slotClass("v")}>
+    <div
+      id={`${props.id}-wrapper`}
+      ref={adSlotRef(`${props.id}-wrapper`)}
+      class={slotClass("v")}
+    >
       <AdIcon />
       <div id={props.id}></div>
     </div>

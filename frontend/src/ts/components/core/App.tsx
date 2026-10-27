@@ -22,6 +22,7 @@ import { Modals } from "../modals/Modals";
 import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
 import { CustomBackground } from "./CustomBackground";
 import { Font } from "./Font";
+import { Funbox } from "./Funbox";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
@@ -32,6 +33,7 @@ export function App(): JSXElement {
       <CustomBackground />
       <Theme />
       <Font />
+      <Funbox />
       <BarTimerProgress />
       <div id="solidmodals">
         <Modals />

@@ -15,6 +15,7 @@ import { ZodSchema, ZodFirstPartySchemaTypes } from "zod";
 import { getOptions } from "../utils/zod";
 
 export function buildCommandForConfigKey<
+  // oxlint-disable-next-line no-unnecessary-type-parameters -- keeps key and its metadata types correlated
   K extends keyof CommandlineConfigMetadataObject,
 >(key: K): Command {
   const configMeta = configMetadata[key];

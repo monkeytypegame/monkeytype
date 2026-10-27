@@ -50,7 +50,7 @@ import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
   return (
-    <div class="grid gap-8">
+    <div class="grid content-start gap-8">
       {/* while filtering, only the matching settings stay visible; everything
             else is hidden with css so nothing unmounts while typing */}
       <QuickNav class={cn(isSettingsSearchActive() && "hidden")} />

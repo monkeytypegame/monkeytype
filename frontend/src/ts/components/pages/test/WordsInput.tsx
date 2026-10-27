@@ -1,6 +1,6 @@
 // the react rule doesn't know Solid's on: (native listener) bindings
 /* oxlint-disable react/no-unknown-property */
-import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
+import { JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
 import {
@@ -26,7 +26,6 @@ import {
   wordsInputPosition,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
-import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 
 /**
@@ -42,13 +41,6 @@ export function WordsInput(): JSXElement {
     onCleanup(registerInputElement(inputRef));
   });
 
-  // runs after the style binding: measures the applied position
-  createEffect(
-    on(wordsInputPosition, () => TestUI.keepWordsInputInTheCenter(), {
-      defer: true,
-    }),
-  );
-
   const px = (value: number | undefined): string | undefined =>
     value === undefined ? undefined : `${value}px`;
 
@@ -62,6 +54,8 @@ export function WordsInput(): JSXElement {
         // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
         // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
         "[text-wrap-mode:nowrap]",
+        // centered on wordsInputPosition's centerY
+        "-translate-y-1/2",
         {
           // "mt-[1em]": isRealWordsInputShown(),
           "caret-error opacity-100": isRealWordsInputShown(),
@@ -80,7 +74,7 @@ export function WordsInput(): JSXElement {
       spellcheck={false}
       style={{
         "font-size": `${getConfig.fontSize}rem`,
-        top: px(wordsInputPosition().top),
+        top: px(wordsInputPosition().centerY),
         left: px(wordsInputPosition().left),
         width: px(wordsInputPosition().width),
         "max-width":

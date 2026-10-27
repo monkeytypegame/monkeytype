@@ -20,7 +20,11 @@ import { Keycode } from "../../constants/keys";
 import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
 import { getCustomTextIndicator } from "../../states/core";
-import { logTestEvent } from "../../test/events/data";
+import {
+  getCurrentInput,
+  getInputForWord,
+  logTestEvent,
+} from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
@@ -101,7 +105,10 @@ async function handleFunboxes(
   now: number,
 ): Promise<boolean> {
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
+    void fb.functions.handleKeydown(event, {
+      current: getCurrentInput,
+      forWord: getInputForWord,
+    });
   }
 
   for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
