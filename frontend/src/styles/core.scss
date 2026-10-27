@@ -180,6 +180,9 @@ body {
   color: var(--text-color);
   overflow-x: hidden;
   background: var(--bg-color);
+  transition:
+    background 0.25s,
+    transform 0.05s;
 }
 
 kbd {

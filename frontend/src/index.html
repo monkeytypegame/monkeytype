@@ -44,6 +44,19 @@
         --nav-focus-opacity: 0;
       }
     </style>
+    <!-- last configured theme colors (theme controller), applied before the
+    first paint to avoid an initial flash of the default theme (and the body
+    background fading from it) -->
+    <script>
+      try {
+        var cachedTheme = localStorage.getItem("firstPaintThemeCss");
+        if (cachedTheme) {
+          var style = document.createElement("style");
+          style.textContent = cachedTheme;
+          document.head.appendChild(style);
+        }
+      } catch (e) {}
+    </script>
     <link
       rel="icon"
       type="image/x-icon"
