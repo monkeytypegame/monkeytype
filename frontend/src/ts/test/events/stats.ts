@@ -432,6 +432,7 @@ function countCharsForWordIndex(
   // IME commit chars (e.g. the full-width ideographic space U+3000) differ from
   // the regular space the target word uses as a separator. Normalize them so
   // the comparison matches the live input path, which treats them via isSpace.
+  // oxlint-disable-next-line no-misused-spread -- split into code points on purpose
   simulatedInput = [...simulatedInput]
     .map((c) => (isSpace(c) ? " " : c))
     .join("");

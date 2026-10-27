@@ -11,7 +11,7 @@ import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
 import {
@@ -48,7 +48,7 @@ const connectionsCollection = createCollection(
         throw new Error(`Error fetching connections:${response.body.message}`);
       }
 
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
   }),
 );
@@ -125,7 +125,7 @@ const actions = {
           `Failed to accept connection: ${response.body.message}`,
         );
       }
-      connectionsCollection.utils.writeUpdate({
+      await connectionsCollection.utils.writeUpdate({
         _id: id,
         status: "accepted",
       });
@@ -145,7 +145,7 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to block connection: ${response.body.message}`);
       }
-      connectionsCollection.utils.writeUpdate({
+      await connectionsCollection.utils.writeUpdate({
         _id: id,
         status: "blocked",
       });
@@ -162,7 +162,7 @@ const actions = {
           `Failed to reject connection: ${response.body.message}`,
         );
       }
-      connectionsCollection.utils.writeDelete(id);
+      await connectionsCollection.utils.writeDelete(id);
 
       await invalidateFriendsList();
     },
@@ -183,7 +183,7 @@ const actions = {
       const response = await Ape.connections.create({ body: { receiverName } });
 
       if (response.status === 200) {
-        connectionsCollection.utils.writeInsert(response.body.data);
+        await connectionsCollection.utils.writeInsert(response.body.data);
         showNoticeNotification(`Request sent to ${receiverName}`);
       } else {
         throw new Error(`Failed to add connection: ${response.body.message}`);
@@ -207,28 +207,28 @@ export async function acceptConnection(
   params: ActionType["acceptConnection"],
 ): Promise<void> {
   const transaction = actions.acceptConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function rejectConnection(
   params: ActionType["rejectConnection"],
 ): Promise<void> {
   const transaction = actions.rejectConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function blockConnection(
   params: ActionType["blockConnection"],
 ): Promise<void> {
   const transaction = actions.blockConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function addConnection(
   params: ActionType["addConnection"],
 ): Promise<void> {
   const transaction = actions.addConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export function hasConnection(

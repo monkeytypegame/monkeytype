@@ -232,6 +232,7 @@ const mt = {
   getConfig,
   setConfig,
   showModal,
+  hideModal,
   restartTest,
   typeText,
   compose,
