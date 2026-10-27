@@ -211,6 +211,7 @@ function convertValueToString(input: unknown | undefined): string {
   return input as string;
 }
 
+// oxlint-disable-next-line no-unnecessary-type-parameters -- caller picks the field's value type
 function convertStringToValue<T extends unknown | undefined>(
   field: AnyFieldApi,
   newValue: string,

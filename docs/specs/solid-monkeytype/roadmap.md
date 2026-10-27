@@ -11,7 +11,7 @@ Companion to `spec.md`. Every step is one small change, behaviour-preserving apa
 Each step can start once the previous step's **bold** items are done. Everything listed on one step can run in parallel.
 
 - [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, EP4, L4–L11.
-- [ ] 2. **TH1** test-page harness and **T1** letter → span + `data-ui-*`. Alongside: U2, U3, U4 (after U1), C2, C3.
+- [ ] 2. **TH1** test-page harness, then **T1** letter → span + `data-ui-*`. Alongside: U2, U3, U4 (after U1), C2, C3.
 - [ ] 3. **T2** break joining. Alongside: EP3.
 - [ ] 4. **T3** caret boundary. Then L3 and L12 can start.
 - [ ] 5. **T4** word registry private.
@@ -26,7 +26,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 ```
  T: test page (CRITICAL PATH, serial)
    T0 #8507 ─► T1 letter→span + data-ui-* ─► T2 break-joining ─► T3 caret boundary ─► T4 registry private ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
-   TH1 test-page harness (with T0/T1, before T2)          ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
+   TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
  U: user data         U1 ─► U2, U3, U4 (parallel);  U5 anytime ─────────────────► U6 delete __nonReactive (needs T6a, T6c)
@@ -43,7 +43,7 @@ Every track can start now. These are the only steps that wait on another track:
 
 | Step | Waits on | Why |
 |---|---|---|
-| **TH1** test-page harness | T0 (H1 first if it extends the app-shell harness) | Builds on Words owning its layout |
+| **TH1** test-page harness | T0 | Builds on Words owning its layout |
 | **T2** break joining | TH1 | The harness is the safety net from here on |
 | **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event, focus and funbox; they need new homes first |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
@@ -74,7 +74,7 @@ Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, 
 
 | Done | ID | Size | Step | Blocked by | Unblocks |
 |---|---|---|---|---|---|
-| [ ] | TH1 | L · PR | **Test-page harness**: mount the real TestPage and engine in jsdom, type through WordsInput (input/beforeinput/keydown/composition), advance frames, and assert rendered words/letters via `data-ui-*`, engine phase, live stats and the result. Extends the existing render-words or app-shell harness. Grows with the engine: restart flow after T6b, finish → result/spinner after T6c | T0 (can pair with T1) | T2 onward: every later test-page step keeps it green |
+| [x] | TH1 | L · PR | **Test-page harness** (`__tests__/__harness__/test-page.tsx`, own `test-page` vitest project): mounts the real TestPage and engine in jsdom on fake timers, types through WordsInput (input/beforeinput/keydown/composition, the driver `__mt` uses), advances frames, and reads word/letter states (semantic names, not classes), engine phase and live stats. Starter suite in `TestPage.page-spec.tsx`; specs on it are named `*.page-spec.tsx`. Grows with the engine: restart flow after T6b, finish → result/spinner after T6c | T0 | T2 onward: every later test-page step keeps it green |
 
 ## Track T: test page (critical path)
 
@@ -83,7 +83,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | Done | ID | Size | Step | Blocked by | Removes / unblocks |
 |---|---|---|---|---|---|
 | [ ] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects) | none | test-ui's layout calls |
-| [ ] | T1 | L · PR | **`<letter>` → `<span data-ui-element="letter" data-ui-state>`**, plus `data-ui-element` on words/word/typo hints; move the bundled theme and funbox CSS to the new selectors; old selectors keep working. Benchmark letter rendering with the profiling harness | T0 | The made-up element; proves the theme attribute approach before the caret measures letters |
+| [ ] | T1 | L · PR | **`<letter>` → `<span data-ui-element="letter" data-ui-state>`**, plus `data-ui-element` on words/word/typo hints; move the bundled theme and funbox CSS to the new selectors; old selectors keep working. `data-ui-state` values are the harness's state names; switch its word/letter helpers to `data-ui-*`, specs unchanged. Benchmark letter rendering with the profiling harness | T0, TH1 | The made-up element; proves the theme attribute approach before the caret measures letters |
 | [ ] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes | T1, TH1 | The only outside writes into Word elements |
 | [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Caret and words layout read the typed input from the render store (input writes it alongside the EventLog), not the engine's `getCurrentInput()`. Decide the caret internals here (reactive, imperative handle, or a mix) | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
 | [ ] | T4 | S · commit | **Word registry private** to Words; only the synchronous overflow check stays exported | T3 | The public word-elements bridge |

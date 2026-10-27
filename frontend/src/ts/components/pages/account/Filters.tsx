@@ -96,14 +96,11 @@ export function Filters(props: {
     );
   };
 
-  const Dropdown = <
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
+  const Dropdown = <T extends ResultFiltersKeys>(options: {
     icon: FaSolidIcon;
     text: string;
     group: T;
-    format?: (value: K) => string;
+    format?: (value: keyof ResultFilters[T]) => string;
     class?: string;
   }): JSXElement => {
     // Isolate this group's data to prevent unnecessary updates
@@ -112,7 +109,7 @@ export function Filters(props: {
     const dropdownOptions = createMemo(() =>
       Object.keys(groupData()).map((k) => ({
         value: k,
-        text: options.format?.(k as K) ?? k,
+        text: options.format?.(k as keyof ResultFilters[T]) ?? k,
       })),
     );
 
@@ -154,22 +151,21 @@ export function Filters(props: {
     );
   };
 
-  const ButtonGroup = <
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
+  const ButtonGroup = <T extends ResultFiltersKeys>(options: {
     icon?: FaSolidIcon;
     text?: string;
     group: T;
-    format?: (value: K) => string;
+    format?: (value: keyof ResultFilters[T]) => string;
     classOverride?: string;
     singleSelect?: true;
   }): JSXElement => {
-    const items = (): { id: K; text: string }[] =>
+    const items = (): { id: keyof ResultFilters[T]; text: string }[] =>
       Object.keys(props.filters[options.group]).map((id) => ({
         id,
-        text: options.format?.(id as K) ?? new String(id).toString(),
-      })) as { id: K; text: string }[];
+        text:
+          options.format?.(id as keyof ResultFilters[T]) ??
+          new String(id).toString(),
+      })) as { id: keyof ResultFilters[T]; text: string }[];
 
     return (
       <div>
