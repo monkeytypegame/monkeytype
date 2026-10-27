@@ -270,7 +270,6 @@ export function LeaderboardPage(): JSXElement {
                   entries={entriesQueryData()?.entries ?? []}
                   friendsOnly={getSelection().friendsOnly}
                   scrollToUser={scrollToUser}
-                  onScrolledToUser={() => setScrollToUser(false)}
                 />
               </div>
 
