@@ -54,9 +54,6 @@ function getCallerInfo(): { isUserCode: boolean; source: string } {
     );
     const source =
       urlMatch !== null ? `${urlMatch[1]}${urlMatch[2]}` : frame.trim();
-    if (source.includes("AnimePresence")) {
-      console.log(source, frames);
-    }
     return { isUserCode, source };
   }
   return { isUserCode: false, source: "" };

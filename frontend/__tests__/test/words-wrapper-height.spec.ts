@@ -10,10 +10,9 @@ import {
   registerWordElement,
   unregisterWordElement,
 } from "../../src/ts/states/word-elements";
-import {
-  createWordsLayout,
-  WordsLayout,
-} from "../../src/ts/components/pages/test/words-layout";
+import { replaceWords } from "../../src/ts/states/words-render";
+import { createWordsLayout } from "../../src/ts/components/pages/test/words-layout";
+import { createRoot } from "solid-js";
 
 // jsdom has no layout: words get a fake one, 5 per line
 const wordsPerLine = 5;
@@ -51,11 +50,8 @@ function fakeLayout(): void {
   });
 }
 
-/** Renders #wordsWrapper > #words with `count` words, and their layout. */
-function renderWords(count: number): {
-  wordsWrapper: HTMLElement;
-  layout: WordsLayout;
-} {
+/** Renders #wordsWrapper > #words with `count` words, and lays them out. */
+function renderWords(count: number): HTMLElement {
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
   for (let i = 0; i < count; i++) {
@@ -68,13 +64,18 @@ function renderWords(count: number): {
   wordsWrapper.append(words);
   document.body.append(wordsWrapper);
 
-  const layout = createWordsLayout({
-    words: () => words,
-    wordsWrapper: () => wordsWrapper,
-    onActiveWordLaidOut: () => undefined,
+  const dispose = createRoot((dispose) => {
+    createWordsLayout({
+      words: () => words,
+      wordsWrapper: () => wordsWrapper,
+    });
+    return dispose;
   });
+  // new words: laid out from scratch. The store stays empty, the fake words
+  // are registered above
+  replaceWords([], { activeWordIndex: 0 });
   cleanups.push(() => {
-    layout.reset();
+    dispose();
     for (const el of words.children) {
       unregisterWordElement(
         Number((el as HTMLElement).dataset["wordindex"]),
@@ -83,7 +84,7 @@ function renderWords(count: number): {
     }
     wordsWrapper.remove();
   });
-  return { wordsWrapper, layout };
+  return wordsWrapper;
 }
 
 const cleanups: Array<() => void> = [];
@@ -102,9 +103,7 @@ describe("words wrapper height", () => {
   it("shows three lines in a timed test", () => {
     configTesting.replaceConfig({ mode: "time", tapeMode: "off" });
     // 10 lines of words
-    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine * 10);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -115,9 +114,7 @@ describe("words wrapper height", () => {
       tapeMode: "off",
       showAllLines: true,
     });
-    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine * 10);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -125,9 +122,7 @@ describe("words wrapper height", () => {
   it("keeps three lines' height when the words fill fewer lines", () => {
     configTesting.replaceConfig({ mode: "words", tapeMode: "off" });
     // one line of words
-    const { wordsWrapper, layout } = renderWords(wordsPerLine);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
