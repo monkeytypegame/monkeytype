@@ -20,10 +20,10 @@ export function PendingRequests() {
   const columns = createMemo(() => getColumns());
   const pendingQuery = usePendingConnectionsQuery();
   return (
-    <div>
-      <AsyncContent collections={{ pendingQuery }}>
-        {({ pendingQueryData }) => (
-          <Show when={pendingQueryData().length > 0}>
+    <AsyncContent collections={{ pendingQuery }}>
+      {({ pendingQueryData }) => (
+        <Show when={pendingQueryData().length > 0}>
+          <div>
             <H2
               text="Incoming Requests"
               fa={{ icon: "fa-user-plus", fixedWidth: true }}
@@ -33,10 +33,10 @@ export function PendingRequests() {
               columns={columns()}
               data={pendingQueryData()}
             />
-          </Show>
-        )}
-      </AsyncContent>
-    </div>
+          </div>
+        </Show>
+      )}
+    </AsyncContent>
   );
 }
 
