@@ -147,6 +147,7 @@ export function DataTable<TData extends RowData, TValue = any>(
   );
 
   // Ensure reactivity: always produce a fresh array reference
+  // oxlint-disable-next-line typescript/no-misused-spread
   const data = createMemo(() => props.data.map((it) => ({ ...it })));
 
   // A single persistent table instance; data and columns are passed as
