@@ -2,7 +2,10 @@
 import "../../../../__harness__/mock-static";
 import { describe, expect, it } from "vitest";
 
-import { letterAttributes } from "../../../../../src/ts/components/pages/test/result/result-words";
+import {
+  letterAttributes,
+  wordAttributes,
+} from "../../../../../src/ts/components/pages/test/result/result-words";
 
 describe("letterAttributes", () => {
   it.each([
@@ -34,5 +37,20 @@ describe("letterAttributes", () => {
         "data-ui-corrections"
       ],
     ).toBe("extraCorrected");
+  });
+});
+
+describe("wordAttributes", () => {
+  it.each([
+    [{ typed: false, error: false }, "untyped"],
+    [{ typed: true, error: false }, "typed"],
+    [{ typed: true, error: true }, "typedIncorrectly"],
+    // last word of a timed test: not committed, still an error
+    [{ typed: false, error: true }, "typedIncorrectly"],
+  ])("maps %o to state %s", (word, state) => {
+    expect(wordAttributes(word)).toEqual({
+      "data-ui-element": "word",
+      "data-ui-state": state,
+    });
   });
 });

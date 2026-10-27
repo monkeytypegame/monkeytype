@@ -37,6 +37,7 @@ import * as ResultWordHighlight from "./result-word-highlight";
 import {
   letterAttributes,
   letterClass,
+  wordAttributes,
   wordClass,
   wordsClass,
 } from "./result-words";
@@ -265,7 +266,7 @@ function Word(props: {
         error: props.word.error,
       })}
       style={{ color: color() }}
-      data-ui-element="word"
+      {...wordAttributes(props.word)}
       // read by result-word-highlight
       data-input={props.word.input}
       onMouseEnter={() => setHovered(true)}

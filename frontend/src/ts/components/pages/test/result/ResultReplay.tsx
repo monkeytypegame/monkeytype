@@ -10,6 +10,7 @@ import { jumpToLetter, replayState, togglePlayback } from "./replay";
 import {
   letterAttributes,
   letterClass,
+  wordAttributes,
   wordClass,
   wordsClass,
 } from "./result-words";
@@ -58,7 +59,7 @@ export function ResultReplay(): JSXElement {
                 {(word, wordIndex) => (
                   <div
                     class={cn(wordClass, { error: word.error })}
-                    data-ui-element="word"
+                    {...wordAttributes(word)}
                   >
                     <For each={word.letters}>
                       {(letter, letterIndex) => (

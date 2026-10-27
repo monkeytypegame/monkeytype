@@ -3,6 +3,7 @@ import {
   isLanguageRightToLeft,
 } from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
+import type { WordStatus } from "../Word";
 
 // shared by the words history and the replay
 
@@ -52,6 +53,23 @@ export function letterAttributes(letter: ResultLetter): {
     "data-ui-state": letterStatus(letter),
     "data-ui-corrections": letterCorrections(letter),
   };
+}
+
+type ResultWord = {
+  // committed with space or newline
+  typed: boolean;
+  error: boolean;
+};
+
+/** The theme-facing data-ui-* attributes of a result word, as the test's. */
+export function wordAttributes(word: ResultWord): {
+  "data-ui-element": "word";
+  "data-ui-state": WordStatus;
+} {
+  let status: WordStatus = "untyped";
+  if (word.error) status = "typedIncorrectly";
+  else if (word.typed) status = "typed";
+  return { "data-ui-element": "word", "data-ui-state": status };
 }
 
 export function letterClass(letter: ResultLetter): string {
