@@ -41,7 +41,6 @@ import {
   isDownloaded,
   waitForDownload,
 } from "./utils/blocking-download";
-import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { getCurrentQuote } from "../states/test";
@@ -241,9 +240,9 @@ const resultsCollection = createCollection(
         throw new Error(`Error fetching results:${response.body.message}`);
       }
 
-      const results = response.body.data
-        .map((result) => normalizeResult(result, knownTagIds))
-        .map(applyIdWorkaround);
+      const results = response.body.data.map((result) =>
+        normalizeResult(result, knownTagIds),
+      );
 
       if (getLastResult() === undefined && results.length > 0) {
         const lastResult = results.reduce((acc, cur) =>
@@ -319,7 +318,7 @@ const actions = {
         );
       });
 
-      resultsCollection.utils.writeUpdate({
+      await resultsCollection.utils.writeUpdate({
         _id: resultId,
         tags: newTagIds,
       });
@@ -329,7 +328,7 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.utils.writeInsert(normalizeResult(result));
+      void resultsCollection.utils.writeInsert(normalizeResult(result));
     },
     mutationFn: async () => {
       //we don't sync the changes back to the backend here, it is done already
@@ -341,7 +340,7 @@ const actions = {
       for (const result of [...resultsCollection.values()].filter((it) =>
         it.tags.includes(tagId),
       )) {
-        resultsCollection.utils.writeUpdate({
+        void resultsCollection.utils.writeUpdate({
           ...result,
           tags: result.tags.filter((it) => it !== tagId),
         });
@@ -401,7 +400,7 @@ export async function updateTags(
   }
 
   const transaction = actions.updateTags(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function insertLocalResult(
@@ -412,7 +411,7 @@ export async function insertLocalResult(
     return;
   }
   const transaction = actions.insertLocalResult(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function deleteLocalTag(
@@ -423,7 +422,7 @@ export async function deleteLocalTag(
     return;
   }
   const transaction = actions.deleteLocalTag(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
@@ -612,7 +611,7 @@ export function useUserAverage10LiveQuery(options: {
 
   const activeTagsQuery = useActiveTagsLiveQuery();
 
-  return useLiveQuery((q) => {
+  const average = useLiveQuery((q) => {
     //disable query
     if (!isAuthenticated()) return undefined;
     if (!options.isEnabled()) return undefined;
@@ -628,6 +627,13 @@ export function useUserAverage10LiveQuery(options: {
       })
       .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
       .findOne();
+  });
+
+  //a single-result live query represents its empty state as an empty array
+  return createMemo(() => {
+    const row = average();
+    if (row === undefined || Array.isArray(row)) return undefined;
+    return row;
   });
 }
 
