@@ -47,6 +47,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `hideModal(id)` | hide a modal by `ModalId` |
 | `restartTest()` | restart the typing test |
 | `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
+| `compose(updates)` | IME composition through the real input handlers: each update is the composition so far (eg. `["k", "か"]`), the last one commits |
 | `wordsSnapshot()` | rendered `#words` children as a flat array: word entries `{ index, classes, letters: [{ text, icon?, classes }] }` mixed with sibling entries `{ sibling: className }` (newlines) |
 | `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
 | `checkLayout()` | test page layout problems, `[]` when right: active word inside the words wrapper, caret and words input on it, 3 full lines (unless all lines show), tape anchor at the tape margin. Run it after any change to the test UI |
