@@ -21,7 +21,6 @@ import {
   setLoadedChallenge,
 } from "../states/test";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import { qs } from "../utils/dom";
 
 let challengeLoading = false;
 
@@ -213,9 +212,6 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   try {
     if (challenge === undefined || settings === undefined) {
       showNoticeNotification("Challenge not found or missing settings");
-      setTimeout(() => {
-        qs("header .config")?.show();
-      }, 250);
       return false;
     }
     if (settings.type === "customTime") {
@@ -348,7 +344,6 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
       }
     }
     notitext = settings.message;
-    qs("header .config")?.show();
 
     if (notitext === undefined) {
       showSuccessNotification(`Challenge '${challenge.display}' loaded.`);

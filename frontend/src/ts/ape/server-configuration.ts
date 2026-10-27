@@ -19,7 +19,7 @@ export function get(): Configuration | undefined {
 
 export async function sync(): Promise<void> {
   try {
-    await queryClient.fetchQuery(getServerConfigurationQueryOptions());
+    await queryClient.query(getServerConfigurationQueryOptions());
     resolve(true);
   } catch (e) {
     reject(e);
