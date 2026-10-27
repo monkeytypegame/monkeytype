@@ -1,13 +1,18 @@
-import * as MonkeyPower from "./elements/monkey-power";
-import * as MerchBanner from "./elements/merch-banner";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { configLoadPromise } from "./config/lifecycle";
+import * as MerchBanner from "./elements/merch-banner";
+import * as Psa from "./elements/psa";
 import { authPromise } from "./firebase";
-import { onDOMReady } from "./utils/dom";
-import { isDevEnvironment } from "./utils/env";
+import { initConnection } from "./states/connection";
 import { setAppReady } from "./states/core";
+import { isDevEnvironment } from "./utils/env";
 
-onDOMReady(async () => {
+/** App startup work that doesn't touch the DOM. Call once, right after render. */
+export async function boot(): Promise<void> {
+  // before awaiting: PSAs show on the first auth state change
+  initConnection();
+  Psa.init();
+
   await configLoadPromise;
   await authPromise;
 
@@ -17,8 +22,10 @@ onDOMReady(async () => {
 
   void ServerConfiguration.sync();
 
-  MonkeyPower.init();
+  registerServiceWorker();
+}
 
+function registerServiceWorker(): void {
   if (isDevEnvironment()) {
     void navigator.serviceWorker
       .getRegistrations()
@@ -44,4 +51,4 @@ onDOMReady(async () => {
       });
     }
   }
-});
+}

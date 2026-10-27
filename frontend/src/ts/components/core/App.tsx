@@ -3,8 +3,9 @@ import {
   RouterContextProvider,
   RouterProvider as RouteRenderer,
 } from "@tanstack/solid-router";
-import { JSXElement } from "solid-js";
+import { createEffect, JSXElement, onMount } from "solid-js";
 
+import * as MonkeyPower from "../../elements/monkey-power";
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
 import { getGlobalOffsetTop, isAppReady } from "../../states/core";
@@ -23,9 +24,20 @@ import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
 import { CustomBackground } from "./CustomBackground";
 import { Font } from "./Font";
 import { Funbox } from "./Funbox";
+import { NoCssDetails } from "./NoCssDetails";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
+  // set once ready, so the initial theme doesn't animate the background color
+  createEffect(() => {
+    if (isAppReady()) {
+      document.body.style.transition = "background .25s, transform .05s";
+    }
+  });
+
+  // until monkey power owns its canvas (L3)
+  onMount(() => MonkeyPower.init());
+
   return (
     <Providers>
       <Overlays />
@@ -66,6 +78,7 @@ export function App(): JSXElement {
         <Advertisement id="ad-footer" visible={"sellout"} />
       </Anime>
       <DevTools />
+      <NoCssDetails />
     </Providers>
   );
 }
