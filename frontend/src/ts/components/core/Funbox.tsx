@@ -1,15 +1,9 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { Link, MetaProvider } from "@solidjs/meta";
-import {
-  createEffect,
-  createMemo,
-  For,
-  JSXElement,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { createMemo, For, JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { getIsScreenshotting } from "../../states/core";
 import { getAppliedFunboxes } from "../../states/test";
 
@@ -22,18 +16,15 @@ export function Funbox(): JSXElement {
   const isCrt = (): boolean =>
     getConfig.funbox.includes("crt") && !getIsScreenshotting();
 
-  createEffect(() => {
-    const classes = applied().map((fb) => `fb-${fb.name.replaceAll("_", "-")}`);
-    if (
-      applied().some((fb) => fb.properties?.includes("ignoreReducedMotion"))
-    ) {
-      classes.push("ignore-reduced-motion");
-    }
-    if (isCrt()) classes.push("crtmode");
-
-    document.body.classList.add(...classes);
-    onCleanup(() => document.body.classList.remove(...classes));
-  });
+  useBodyClasses(() => ({
+    ...Object.fromEntries(
+      applied().map((fb) => [`fb-${fb.name.replaceAll("_", "-")}`, true]),
+    ),
+    "ignore-reduced-motion": applied().some((fb) =>
+      fb.properties?.includes("ignoreReducedMotion"),
+    ),
+    crtmode: isCrt(),
+  }));
 
   return (
     <MetaProvider>
