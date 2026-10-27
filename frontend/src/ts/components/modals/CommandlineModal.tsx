@@ -36,8 +36,7 @@ import {
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { getRoutePage } from "../../states/router";
-import { setTestFocusState } from "../../states/test";
-import * as Focus from "../../test/focus";
+import { setFocusMode, setTestFocusState } from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -665,7 +664,7 @@ export function CommandlineModal(): JSXElement {
       setUsingSingleList(Config.singleListCommandLine === "on");
     }
 
-    Focus.set(false);
+    setFocusMode(false);
     CommandlineLists.setStackToDefault();
     applyInputValue("");
     await refresh();

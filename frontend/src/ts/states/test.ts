@@ -18,6 +18,7 @@ import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
+import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { isTestPageMounted } from "../test/test-page-state";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
@@ -42,7 +43,28 @@ export const [isTestFinished, setTestFinished] = createSignal(false);
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // Set when the user bails out of a test early; reset by TestLogic.restartTest().
 export const [getBailedOut, setBailedOut] = createSignal(false);
-export const [getFocus, setFocus] = createSignal(false);
+// focus mode: everything but the test hidden while typing, until the mouse
+// moves (FocusModeExit). Not the same as testFocusState (out of focus).
+const [isFocusMode, setFocusModeNow] = createSignal(false);
+export { isFocusMode };
+
+// value of a setFocusMode() call still waiting for its animation frame
+let pendingFocusMode: boolean | undefined;
+
+/**
+ * Applied on the next animation frame so input handlers never render
+ * synchronously. The last call before the frame wins.
+ */
+export function setFocusMode(value: boolean): void {
+  // compare against the pending value too, otherwise set(false) right after
+  // set(true) is ignored and the pending set(true) still applies
+  if (value === (pendingFocusMode ?? isFocusMode())) return;
+  pendingFocusMode = value;
+  requestDebouncedAnimationFrame("focusMode", () => {
+    pendingFocusMode = undefined;
+    setFocusModeNow(value);
+  });
+}
 // read by Words (#words blur), the composition display and OutOfFocusWarning.
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 type TestFocusState = "focused" | "unfocused" | "unfocusedWindow";
