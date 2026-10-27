@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/solid-query";
+import { noop, useQuery } from "@tanstack/solid-query";
 import {
   createEffect,
   createSignal,
@@ -52,12 +52,14 @@ export function LeaderboardPage(): JSXElement {
 
   //prefetch next page
   createEffect(() => {
-    void queryClient.prefetchQuery(
-      getLeaderboardQueryOptions({
-        ...getSelection(),
-        page: getPage() + 1,
-      }),
-    );
+    void queryClient
+      .query({
+        ...getLeaderboardQueryOptions({
+          ...getSelection(),
+          page: getPage() + 1,
+        }),
+      })
+      .catch(noop);
   });
 
   //go to the last page if the current page is past it
@@ -269,7 +271,6 @@ export function LeaderboardPage(): JSXElement {
                   entries={entriesQueryData()?.entries ?? []}
                   friendsOnly={getSelection().friendsOnly}
                   scrollToUser={scrollToUser}
-                  onScrolledToUser={() => setScrollToUser(false)}
                 />
               </div>
 

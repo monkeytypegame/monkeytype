@@ -15,7 +15,6 @@ import {
 } from "@monkeytype/schemas/users";
 import {
   createCollection,
-  createOptimisticAction,
   localOnlyCollectionOptions,
 } from "@tanstack/solid-db";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
@@ -273,34 +272,42 @@ export async function updateLbMemory<M extends Mode>(
 
 /**
  * An action that applies `recipe` at once and sends `request`, which resolves
- * to the values to keep (the server may change them). On success the recipe
- * is applied to the current row and that row is kept: the action's own
- * mutation holds the row as it was when the action started, which would drop
- * direct writes made while the request was pending. So the recipe must be
- * idempotent.
+ * to the values to keep (the server may change them); the recipe is applied
+ * again with those. On failure the fields the recipe changed are rolled back,
+ * except those changed again since (by a direct write or another action),
+ * which keep the newer value. Both are direct writes, not a TanStack
+ * optimistic action: while one of those is pending, direct writes (eg.
+ * `addXp`) are held back and hidden from it, so it would drop them when
+ * keeping its row. The recipe must be idempotent.
  */
 function optimisticAction<T>(
   recipe: (user: Snapshot, vars: T) => void,
   request: (vars: T) => Promise<T>,
 ): (vars: T) => Promise<void> {
-  const action = createOptimisticAction<T>({
-    onMutate: (vars) => {
-      const uid = userCollection.toArray[0]?.uid;
-      if (uid === undefined) throw new Error("Not signed in");
-      userCollection.update(uid, (user) => recipe(user, vars));
-    },
-    mutationFn: async (vars, { transaction }) => {
-      const kept = await request(vars);
-      const modified = copyRow();
-      if (modified === undefined) return;
-      recipe(modified, kept);
-      userCollection.utils.acceptMutations({
-        mutations: transaction.mutations.map((it) => ({ ...it, modified })),
-      });
-    },
-  });
   return async (vars) => {
-    await action(vars).isPersisted.promise;
+    const before = copyRow();
+    if (before === undefined) throw new Error("Not signed in");
+    write((user) => recipe(user, vars));
+    const written = copyRow() ?? before;
+    const same = (a: unknown, b: unknown): boolean =>
+      JSON.stringify(a) === JSON.stringify(b);
+    const changed = (
+      Object.keys({ ...before, ...written }) as (keyof Snapshot)[]
+    ).filter((key) => !same(before[key], written[key]));
+
+    let kept: T;
+    try {
+      kept = await request(vars);
+    } catch (e) {
+      write((user) => {
+        for (const key of changed) {
+          if (!same(user[key], written[key])) continue;
+          (user as Record<string, unknown>)[key] = before[key];
+        }
+      });
+      throw e;
+    }
+    write((user) => recipe(user, kept));
   };
 }
 

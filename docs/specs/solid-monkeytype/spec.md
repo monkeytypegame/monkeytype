@@ -162,10 +162,17 @@ Users should see no behaviour change, except where a bug at today's seams disapp
   - Saving is a separate async process the engine starts but doesn't await, exposed as a save-status signal (saving, saved with PB/XP response, failed) with retry as a command.
   - PB comparison and the today tracker run after finish (result screen or async), not inside engine finish.
   - Profile a worst-case (very long) test before considering anything heavier, like a worker.
-- **Stats** stay pure functions of an EventLog. Live hot paths may add running tallies next to them, never replace them (the replay constraint).
+- **Stats** stay pure functions of an EventLog. Live hot paths may add running tallies next to them, never replace them (the replay constraint). Each tally has a parity test: for a typed event sequence, tally equals the pure function on the built log.
+- **EventLog**: engine state like the rest.
+  - The engine owns the event arrays and pressed keys; `logTestEvent` is an engine command input calls. Translating browser events into event codes (key code mapping, which keys are tracked) is input-layer code.
+  - The raw arrays stay plain, not reactive (a write per keypress). The engine exposes derived signals: current input, live stats, and the frozen log, which is the result's input and replaces the test state module's last-event-log signal.
+  - The log is the engine's truth for typed input. The render layer never reads it; it gets typed input from the render store, which input writes alongside the log.
+  - Context: setting-derived fields (mode, mode2, custom text limit, nospace funbox) come from the test settings, never live config; target words and Korean status from the engine's words (Korean status stays one test-level boolean derived from the words, unless stats turn out to need it per word); bailed out is read at freeze.
+  - Lifetime: on finish/fail, pressed keys are force-released (estimated keyups), then the log freezes and later events are dropped. A restart resets the live log at once; the frozen log stays until the next finish.
+  - Bump the EventLog version only when its shape changes, not when a field's source moves.
 - **Per-word facts** fixed for a test (direction, has numbers/newlines/tabs, Korean status) are computed once at generation and carried on the word; this redoes the idea of open PR #7787 on top of the render store.
 - **Pace-caret timing** (where the pace caret should be at time t, as a word/letter target) lives in the engine, DOM-free.
-- **Funboxes are engine plugins**: pure hooks for word generation and transforms, timing and input rules, with no DOM access. Document-wide effects belong to the Funbox component; display tweaks are `data-ui-*` state or the funbox's CSS.
+- **Funboxes are engine plugins**: pure hooks for word generation and transforms, timing and input rules, with no DOM access. Hooks get the input they need (current input, input for a word) as arguments; they never import the EventLog. Document-wide effects belong to the Funbox component; display tweaks are `data-ui-*` state or the funbox's CSS.
 
 ### Typing test: input layer
 
@@ -175,7 +182,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 
 ### Typing test: render layer
 
-- The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints.
+- The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints, including the typed input that layout and the caret position from.
 - **Words owns all layout**: after each flush it runs one layout pass: break joining, line jump, tape scroll, input positioning and caret updates. Break-joining state becomes a reactive class/style on Word. The word-element registry becomes private to Words; only the overflow check is exported.
 - **Words keeps the active line in view** as part of that layout pass: during a test, when the words wrapper is taller than the window, it scrolls the window to the active word (down only while typing, both ways when recentering after a re-layout or on request). The focus flow asks for a recenter through a request signal. Before the test, TestPage keeps the test block in view.
 - **Carets: boundary fixed, internals decided during the caret rewrite.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Whether a caret animates through fully reactive props, imperative calls on a private handle, or a mix is decided during that step, based on what gets the movement looking right. Tribe carets follow whatever is chosen.
@@ -226,7 +233,7 @@ Good tests check behaviour through the highest available seam: render, act like 
 Seams, highest first:
 
 1. **App-shell harness** (existing): renders the real route tree with fake auth, a test query client and controllable data. Used for routing, guards, loading steps and page lifecycle. Prior art: the app-shell routing spec and the loading-page timing spec.
-2. **Test-page harness** (new, the main seam for the test): mounts the *real* TestPage with the real engine, types through WordsInput (input/beforeinput/keydown/composition), advances frames, and checks rendered words/letters (via `data-ui-*`), engine phase, live stats, the finish → result/spinner flow and the restart flow. Built early on the critical path, before the risky steps; every later test-page step keeps it green. Prior art: the render-words harness and the Words, WordsInput and TypoHints specs.
+2. **Test-page harness** (`frontend/__tests__/__harness__/test-page.tsx`, usage in its header; the main seam for the test): mounts the *real* TestPage with the real engine, types through WordsInput (input/beforeinput/keydown/composition), advances frames, and checks rendered words/letters (via `data-ui-*`), engine phase, live stats, the finish → result/spinner flow and the restart flow. Built early on the critical path, before the risky steps; every later test-page step keeps it green. Prior art: the render-words harness and the Words, WordsInput and TypoHints specs.
 3. **Engine, headless**: commands in, signals out: restart merging and test settings, finish/fail transitions, calculating → result, save status, tags read at finish. No DOM.
 4. **Pure modules** (existing pattern): letters/display rules, typo-hint merging, keymap converter, stats as functions of an EventLog, word generation, config setter validation, config metadata. Prior art: the letters/typo-hints specs, the config and config-metadata specs, the stats specs.
 5. **Store/state modules**: user collection mutations and `getUser()`, config store apply/reconcile, words-render buffer flush. Assert through their public getters.
@@ -298,6 +305,21 @@ From user data (U1):
 | Q27 | One `getUser()` read: reactive in components, synchronous elsewhere |
 | Q28 | Same one-getter pattern for tags, presets and custom themes (replaces their live-query hooks); results stay async. `__nonReactive` goes by rewriting its old-style callers, then deleting it |
 | Q29 | Auth bus deleted entirely; the user-data load is state (loading/loaded/failed) plus `reloadUserData()` beside the auth signal, read by the router |
+
+EventLog (grilling, 2026-10-26):
+
+| # | Decision |
+|---|---|
+| E1 | Engine owns the log, pressed keys and `logTestEvent` (a command); key-code helpers move to input |
+| E2 | Raw event arrays stay plain; engine exposes derived signals (current input, live stats, frozen log); frozen log replaces `lastEventLog` in the test state module |
+| E3 | Log is the engine's input truth; input also writes typed input to the render buffer; render reads only the render store |
+| E4 | Context: setting-derived fields from test settings, words/Korean status from engine words, bailed out at freeze |
+| E5 | Every live tally gets a parity test against its pure function; hot paths move to tallies only if profiling demands |
+| E6 | Funbox hooks receive input as arguments |
+| E7 | Freeze after force-releasing keys, later events dropped; restart resets the live log, frozen log lives until the next finish |
+| E8 | Version bump only on shape change |
+| E9 | Roadmap: T6a ownership, T6b context, T6c freeze, T3 render reads input from render store, L2 funbox hook args, EP4 parity tests |
+| E10 | Korean status stays a test-level boolean in the context after EP3, unless stats need it per word (then per word plus a version bump) |
 
 ## Further Notes
 

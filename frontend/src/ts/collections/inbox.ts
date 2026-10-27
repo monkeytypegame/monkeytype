@@ -163,12 +163,12 @@ async function flushPendingChanges({
     throw new Error(`Error updating user inbox: ${response.body.message}`);
   }
 
-  inboxCollection.utils.writeBatch(() => {
-    updatedStatus.deleted?.forEach((deleted) =>
-      inboxCollection.utils.writeDelete(deleted.id),
+  await inboxCollection.utils.writeBatch(() => {
+    updatedStatus.deleted?.forEach(
+      (deleted) => void inboxCollection.utils.writeDelete(deleted.id),
     );
     updatedStatus.read?.forEach((read) => {
-      inboxCollection.utils.writeUpdate(read);
+      void inboxCollection.utils.writeUpdate(read);
     });
   });
 

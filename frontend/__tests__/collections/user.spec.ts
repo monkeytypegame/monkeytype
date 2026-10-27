@@ -1,3 +1,4 @@
+import { createEffect, createRoot } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import Ape from "../../src/ts/ape";
@@ -278,6 +279,76 @@ describe("optimistic actions", () => {
     await done;
 
     expect(getUser()).toMatchObject({ name: "carl", xp: 5 });
+  });
+
+  it("keeps a direct write made while a failing action was pending", async () => {
+    let respond = (_: unknown): void => undefined;
+    vi.spyOn(Ape.users, "updateName").mockReturnValue(
+      new Promise((resolve) => (respond = resolve)) as never,
+    );
+
+    const done = updateName("carl");
+    addXp(5);
+    respond(fail("taken"));
+    await expect(done).rejects.toThrow("taken");
+
+    expect(getUser()).toMatchObject({ name: "bob", xp: 5 });
+  });
+
+  it("never shows the old value again on success", async () => {
+    vi.spyOn(Ape.users, "updateName").mockResolvedValue(ok());
+    const names: (string | undefined)[] = [];
+    const dispose = createRoot((dispose) => {
+      createEffect(() => names.push(getUser()?.name));
+      return dispose;
+    });
+
+    await updateName("carl");
+    dispose();
+
+    expect(names).toEqual(["bob", "carl"]);
+  });
+
+  it("keeps a newer action's change when an older one fails", async () => {
+    const responses: ((_: unknown) => void)[] = [];
+    vi.spyOn(Ape.users, "updateName").mockImplementation(
+      () => new Promise((resolve) => responses.push(resolve)) as never,
+    );
+
+    const first = updateName("carl");
+    const second = updateName("dave");
+    responses[0]?.(fail("taken"));
+    await expect(first).rejects.toThrow("taken");
+    expect(getUser()?.name).toBe("dave");
+
+    responses[1]?.(ok());
+    await second;
+    expect(getUser()?.name).toBe("dave");
+  });
+
+  it("keeps a newer favourite when an older one fails", async () => {
+    const responses: ((_: unknown) => void)[] = [];
+    vi.spyOn(Ape.users, "addQuoteToFavorites").mockImplementation(
+      () => new Promise((resolve) => responses.push(resolve)) as never,
+    );
+
+    const first = setQuoteFavorite({
+      language: "english",
+      quoteId: "5",
+      favorite: true,
+    });
+    const second = setQuoteFavorite({
+      language: "english",
+      quoteId: "6",
+      favorite: true,
+    });
+    responses[0]?.(fail("nope"));
+    await expect(first).rejects.toThrow("nope");
+    responses[1]?.(ok());
+    await second;
+
+    // the failed one stays too: the list changed since, so it isn't rolled back
+    expect(getUser()?.favoriteQuotes?.["english"]).toEqual(["5", "6"]);
   });
 
   it("adds and removes a favourite quote", async () => {

@@ -78,6 +78,7 @@ export type CommandlineConfigMetadata<
   alias?: string;
   display?: string;
   isVisible?: boolean;
+  // oxlint-disable-next-line no-generated-empty-object-type -- {} means "no input"
   input?: InputProps<T> | SecondaryInputProps<T2> | Record<never, never>;
   subgroup?: SubgroupProps<T>;
 };

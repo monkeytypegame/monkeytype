@@ -681,8 +681,10 @@ export function renderApp(options: RenderAppOptions = {}): App {
       const page = container.querySelector("#pageLoading");
       const fill = page?.querySelector<HTMLElement>(".bg-main");
       const bar = fill?.parentElement;
-      if (page === null || fill === null || fill === undefined) return;
-      if (bar === null || bar === undefined) return;
+      if (page === null || fill === null || fill === undefined) {
+        return undefined;
+      }
+      if (bar === null || bar === undefined) return undefined;
       if (bar.classList.contains("hidden")) return undefined;
       return {
         width: fill.style.width,
