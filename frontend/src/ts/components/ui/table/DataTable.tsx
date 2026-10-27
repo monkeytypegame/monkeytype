@@ -2,11 +2,15 @@ import {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
   ColumnDef,
-  createSolidTable,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
+  columnVisibilityFeature,
+  createSortedRowModel,
+  createTable,
+  FlexRender,
+  rowSelectionFeature,
+  rowSortingFeature,
+  tableFeatures,
+  type RowData,
+  type SortingState,
 } from "@tanstack/solid-table";
 import {
   Accessor,
@@ -44,13 +48,25 @@ const SortingStateSchema = z.array(
   }),
 );
 
-// oxlint-disable-next-line typescript/no-explicit-any
-export type DataTableColumnDef<TData, TValue = any> =
-  | ColumnDef<TData, TValue>
-  | AccessorFnColumnDef<TData, TValue>
-  | AccessorKeyColumnDef<TData, TValue>;
+// Features used by every DataTable; keep the definition static (outside any
+// component) so all tables share one features type and one row model factory.
+const dataTableFeatures = tableFeatures({
+  rowSortingFeature,
+  rowSelectionFeature,
+  // getVisibleCells() is feature-gated in v9; v8 always provided it
+  columnVisibilityFeature,
+  sortedRowModel: createSortedRowModel(),
+});
 
-export type DataTableProps<TData, TValue> = {
+export type DataTableFeatures = typeof dataTableFeatures;
+
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData extends RowData, TValue = any> =
+  | ColumnDef<DataTableFeatures, TData, TValue>
+  | AccessorFnColumnDef<DataTableFeatures, TData, TValue>
+  | AccessorKeyColumnDef<DataTableFeatures, TData, TValue>;
+
+export type DataTableProps<TData extends RowData, TValue> = {
   id: string;
   columns: DataTableColumnDef<TData, TValue>[];
   data: TData[];
@@ -76,7 +92,7 @@ export type DataTableProps<TData, TValue> = {
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export function DataTable<TData extends Object, TValue = any>(
+export function DataTable<TData extends RowData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -133,97 +149,95 @@ export function DataTable<TData extends Object, TValue = any>(
   // Ensure reactivity: always produce a fresh array reference
   const data = createMemo(() => props.data.map((it) => ({ ...it })));
 
-  // Recreate the table instance whenever data or columns change
-  const table = createMemo(() =>
-    createSolidTable<TData>({
-      data: data(),
-      get columns() {
-        return props.columns;
-      },
-      getCoreRowModel: getCoreRowModel(),
-      onSortingChange: (it) => {
-        setSorting(it);
-        props.onSortingChange?.(sorting());
-      },
+  // A single persistent table instance; data and columns are passed as
+  // getters so v9's options store stays reactive.
+  const table = createTable<DataTableFeatures, TData>({
+    features: dataTableFeatures,
+    get data() {
+      return data();
+    },
+    // oxlint-disable-next-line typescript/no-explicit-any
+    get columns(): ColumnDef<DataTableFeatures, TData, any>[] {
+      return props.columns;
+    },
+    onSortingChange: (it) => {
+      setSorting(it);
+      props.onSortingChange?.(sorting());
+    },
 
-      //oxlint-disable-next-line solid/reactivity
-      ...(props.onSortingChange
-        ? { manualSorting: true }
-        : { getSortedRowModel: getSortedRowModel() }),
-      enableRowSelection: () => props.rowSelection !== undefined,
-      getRowId: (row, index) =>
-        props.rowSelection !== undefined
-          ? props.rowSelection.getRowId(row)
-          : typeof (row as Record<string, unknown>)["_id"] === "string"
-            ? ((row as Record<string, unknown>)["_id"] as string)
-            : index.toString(),
-      onRowSelectionChange: setRowSelection,
+    //oxlint-disable-next-line solid/reactivity
+    ...(props.onSortingChange ? { manualSorting: true } : {}),
+    enableRowSelection: () => props.rowSelection !== undefined,
+    getRowId: (row, index) =>
+      props.rowSelection !== undefined
+        ? props.rowSelection.getRowId(row)
+        : typeof (row as Record<string, unknown>)["_id"] === "string"
+          ? ((row as Record<string, unknown>)["_id"] as string)
+          : index.toString(),
+    onRowSelectionChange: setRowSelection,
 
-      state: {
-        get sorting() {
-          return sorting();
-        },
-        get rowSelection() {
-          return rowSelection();
-        },
+    state: {
+      get sorting() {
+        return sorting();
       },
-    }),
-  );
+      get rowSelection() {
+        return rowSelection();
+      },
+    },
+  });
 
   //create column visibility classes once, make them accessible via the column.id
   const columnVisibility = createMemo(() => {
     return Object.fromEntries(
-      table()
-        .getAllColumns()
-        .map((it) => {
-          const breakpoint =
-            it.columnDef.meta?.breakpoint === "xxl"
-              ? "2xl"
-              : it.columnDef.meta?.breakpoint;
-          const maxBreakpoint =
-            it.columnDef.meta?.maxBreakpoint === "xxl"
-              ? "2xl"
-              : it.columnDef.meta?.maxBreakpoint;
+      table.getAllColumns().map((it) => {
+        const breakpoint =
+          it.columnDef.meta?.breakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.breakpoint;
+        const maxBreakpoint =
+          it.columnDef.meta?.maxBreakpoint === "xxl"
+            ? "2xl"
+            : it.columnDef.meta?.maxBreakpoint;
 
-          // 🚨 Tailwind does not generate CSS for dynamically constructed class names.
-          const classes = {
-            hidden: false,
-            "xxs:table-cell": false,
-            "xs:table-cell": false,
-            "sm:table-cell": false,
-            "md:table-cell": false,
-            "lg:table-cell": false,
-            "xl:table-cell": false,
-            "2xl:table-cell": false,
-            "xxs:hidden": false,
-            "xs:hidden": false,
-            "sm:hidden": false,
-            "md:hidden": false,
-            "lg:hidden": false,
-            "xl:hidden": false,
-            "2xl:hidden": false,
-          };
-          if (breakpoint !== undefined) {
-            classes.hidden = true;
-            classes[`${breakpoint}:table-cell`] = true;
-          }
-          if (maxBreakpoint !== undefined) {
-            classes[`${maxBreakpoint}:hidden`] = true;
-          }
-          return [it.id, classes];
-        }),
+        // 🚨 Tailwind does not generate CSS for dynamically constructed class names.
+        const classes = {
+          hidden: false,
+          "xxs:table-cell": false,
+          "xs:table-cell": false,
+          "sm:table-cell": false,
+          "md:table-cell": false,
+          "lg:table-cell": false,
+          "xl:table-cell": false,
+          "2xl:table-cell": false,
+          "xxs:hidden": false,
+          "xs:hidden": false,
+          "sm:hidden": false,
+          "md:hidden": false,
+          "lg:hidden": false,
+          "xl:hidden": false,
+          "2xl:hidden": false,
+        };
+        if (breakpoint !== undefined) {
+          classes.hidden = true;
+          classes[`${breakpoint}:table-cell`] = true;
+        }
+        if (maxBreakpoint !== undefined) {
+          classes[`${maxBreakpoint}:hidden`] = true;
+        }
+        return [it.id, classes];
+      }),
     );
   });
 
   return (
     <Show
-      when={table().getRowModel().rows?.length || props.noDataRow !== undefined}
+      when={table.getRowModel().rows?.length || props.noDataRow !== undefined}
       fallback={props.fallback}
     >
       <Table id={props.id} class={props.class}>
         <Show when={!props.hideHeader}>
           <TableHeader>
-            <For each={table().getHeaderGroups()}>
+            <For each={table.getHeaderGroups()}>
               {(headerGroup) => (
                 <TableRow>
                   <For each={headerGroup.headers}>
@@ -252,10 +266,7 @@ export function DataTable<TData extends Object, TValue = any>(
                               {})}
                           >
                             <Show when={!header.isPlaceholder}>
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              <FlexRender header={header} />
                             </Show>
                           </TableHead>
                         }
@@ -300,10 +311,7 @@ export function DataTable<TData extends Object, TValue = any>(
                               {})}
                           >
                             <Show when={!header.isPlaceholder}>
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              <FlexRender header={header} />
                             </Show>
 
                             <Switch fallback={<i class="fa-fw"></i>}>
@@ -337,7 +345,7 @@ export function DataTable<TData extends Object, TValue = any>(
           </TableHeader>
         </Show>
         <TableBody>
-          <For each={table().getRowModel().rows}>
+          <For each={table.getRowModel().rows}>
             {(row) => {
               let rowElement: HTMLTableRowElement | undefined;
               // a recreated table recreates rows with the same id: keep the newest
@@ -392,10 +400,7 @@ export function DataTable<TData extends Object, TValue = any>(
                             cellClass.class,
                           )}
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
+                          <FlexRender cell={cell} />
                         </TableCell>
                       );
                     }}
@@ -406,13 +411,12 @@ export function DataTable<TData extends Object, TValue = any>(
           </For>
           <Show
             when={
-              !table().getRowModel().rows?.length &&
-              props.noDataRow !== undefined
+              !table.getRowModel().rows?.length && props.noDataRow !== undefined
             }
           >
             <TableRow>
               <TableCell
-                colSpan={table().getAllColumns().length}
+                colSpan={table.getAllColumns().length}
                 class="text-center text-sub"
               >
                 {props.noDataRow !== undefined &&
