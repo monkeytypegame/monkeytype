@@ -5,6 +5,7 @@ import { showModal } from "../../../states/modals";
 import { getFocus } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
+import { isLoadingShown } from "../../core/PageSwitcher";
 import { Keytips } from "./Keytips";
 import { ThemeIndicator } from "./ThemeIndicator";
 import { VersionButton } from "./VersionButton";
@@ -15,6 +16,7 @@ export function Footer(): JSXElement {
       class={cn("relative text-xs text-sub", {
         "opacity-0": getIsScreenshotting(),
       })}
+      inert={isLoadingShown()}
     >
       <Keytips />
 

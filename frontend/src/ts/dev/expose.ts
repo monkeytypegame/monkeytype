@@ -6,15 +6,30 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { showModal } from "../states/modals";
-import { restart } from "../test/test-logic";
+import { hideModal, showModal } from "../states/modals";
+import { restartTest } from "../test/test-logic";
+import { quickLogin } from "./quick-login";
 import { trackedSignals } from "./signal-tracker";
 import {
   caretOffset,
+  checkLayout,
+  runCommand,
   setCustomText,
   typeText,
   wordsSnapshot,
 } from "./test-helpers";
+
+// Modules hot-updated since the page loaded. Kept on window: it survives this
+// module's own hot update, and the listener registers once per page.
+if (window.__mtHotUpdates === undefined) {
+  window.__mtHotUpdates = [];
+  import.meta.hot?.on("vite:afterUpdate", (payload) => {
+    // css updates leave no stale state
+    for (const update of payload.updates) {
+      if (update.type === "js-update") window.__mtHotUpdates?.push(update.path);
+    }
+  });
+}
 
 function findSignal(name: string): (typeof trackedSignals)[number] {
   const matches = trackedSignals.filter((s) => s.name === name);
@@ -39,11 +54,21 @@ const mt = {
   getConfig,
   setConfig,
   showModal,
-  restart,
+  hideModal,
+  restartTest,
   typeText,
   wordsSnapshot,
   caretOffset,
+  checkLayout,
+  runCommand,
   setCustomText,
+  /** Signs in with the QUICK_LOGIN_* account from the frontend .env. */
+  quickLogin,
+  /**
+   * Modules hot-updated since the page loaded. Not empty: the page may hold
+   * stale module state, reload before measuring.
+   */
+  hotUpdates: (): string[] => [...(window.__mtHotUpdates ?? [])],
   /** List tracked signals, optionally filtered by substring of name or source. */
   signals: (filter = "") =>
     trackedSignals
@@ -57,6 +82,7 @@ declare global {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- interface merging
   interface Window {
     __mt: typeof mt;
+    __mtHotUpdates?: string[];
   }
 }
 

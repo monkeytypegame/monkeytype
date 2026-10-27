@@ -1,4 +1,3 @@
-import { createRoot } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
@@ -7,8 +6,13 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 }));
 
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import * as TestUI from "../../src/ts/test/test-ui";
-import { ElementWithUtils } from "../../src/ts/utils/dom";
+import {
+  registerWordElement,
+  unregisterWordElement,
+} from "../../src/ts/states/word-elements";
+import { replaceWords } from "../../src/ts/states/words-render";
+import { createWordsLayout } from "../../src/ts/components/pages/test/words-layout";
+import { createRoot } from "solid-js";
 
 // jsdom has no layout: words get a fake one, 5 per line
 const wordsPerLine = 5;
@@ -46,9 +50,8 @@ function fakeLayout(): void {
   });
 }
 
-/** Renders #typingTest > #wordsWrapper > #words with `count` words. */
+/** Renders #wordsWrapper > #words with `count` words, and lays them out. */
 function renderWords(count: number): HTMLElement {
-  const typingTest = document.createElement("div");
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
   for (let i = 0; i < count; i++) {
@@ -56,26 +59,30 @@ function renderWords(count: number): HTMLElement {
       "beforeend",
       `<div class="word" data-wordindex="${i}"><letter>a</letter></div>`,
     );
+    registerWordElement(i, words.lastElementChild as HTMLElement);
   }
   wordsWrapper.append(words);
-  typingTest.append(wordsWrapper);
-  document.body.append(typingTest);
+  document.body.append(wordsWrapper);
 
-  const controller = new AbortController();
-  createRoot((dispose) => {
-    TestUI.init(
-      {
-        words: new ElementWithUtils(words),
-        wordsWrapper: new ElementWithUtils(wordsWrapper),
-        typingTest: new ElementWithUtils(typingTest),
-      },
-      controller.signal,
-    );
-    cleanups.push(() => {
-      controller.abort();
-      dispose();
-      typingTest.remove();
+  const dispose = createRoot((dispose) => {
+    createWordsLayout({
+      words: () => words,
+      wordsWrapper: () => wordsWrapper,
     });
+    return dispose;
+  });
+  // new words: laid out from scratch. The store stays empty, the fake words
+  // are registered above
+  replaceWords([], { activeWordIndex: 0 });
+  cleanups.push(() => {
+    dispose();
+    for (const el of words.children) {
+      unregisterWordElement(
+        Number((el as HTMLElement).dataset["wordindex"]),
+        el as HTMLElement,
+      );
+    }
+    wordsWrapper.remove();
   });
   return wordsWrapper;
 }
@@ -98,8 +105,6 @@ describe("words wrapper height", () => {
     // 10 lines of words
     const wordsWrapper = renderWords(wordsPerLine * 10);
 
-    TestUI.__testing.updateWordsWrapperHeight(true);
-
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
 
@@ -111,8 +116,6 @@ describe("words wrapper height", () => {
     });
     const wordsWrapper = renderWords(wordsPerLine * 10);
 
-    TestUI.__testing.updateWordsWrapperHeight(true);
-
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
 
@@ -120,8 +123,6 @@ describe("words wrapper height", () => {
     configTesting.replaceConfig({ mode: "words", tapeMode: "off" });
     // one line of words
     const wordsWrapper = renderWords(wordsPerLine);
-
-    TestUI.__testing.updateWordsWrapperHeight(true);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });

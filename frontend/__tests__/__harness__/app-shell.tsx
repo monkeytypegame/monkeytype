@@ -40,9 +40,14 @@
  *   `requests(download)` counts the requests sent.
  * - Slow navigations (pending spinner): `friendsRefresh: "pending"` hangs the
  *   friends page's refetch (not a loading step) until
- *   `app.blockingData.refreshFriends()`. Use fake timers (setTimeout,
- *   clearTimeout, Date, requestAnimationFrame, cancelAnimationFrame);
- *   `flush()` then moves the clock by one frame.
+ *   `app.blockingData.refreshFriends()`.
+ * - Tests can run on fake timers (app-shell.spec.tsx does, for all tests):
+ *   `vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date",
+ *   "requestAnimationFrame", "cancelAnimationFrame"] })`. `flush()`, `hover()`
+ *   and `settle()` work with real or fake timers. On fake timers `settle()`
+ *   moves the clock itself until the router is idle and the bar is gone (eg.
+ *   the pending min, the bar's 125ms "Done" fill); other waits advance it
+ *   with `vi.advanceTimersByTimeAsync`.
  * - Pages are stubs rendering their name, except the real loading page (its
  *   text, bar, error and Retry button); `shownPage()` returns the name of the
  *   page on screen (eg. "loading", "login", "404"), `pagesInDom()` all of
@@ -305,7 +310,7 @@ vi.mock("../../src/ts/test/test-logic", async () => {
   return {
     leaveTestPage: () => setTestActive(false),
     // the debug handle exposes it
-    restart: () => undefined,
+    restartTest: () => undefined,
   };
 });
 
@@ -609,21 +614,39 @@ export function renderApp(options: RenderAppOptions = {}): App {
     const el = renderLink(link as HarnessLink);
     fireEvent.mouseEnter(el);
     // intent preloads start after the preload delay
-    await new Promise((resolve) =>
-      setTimeout(resolve, (router.options.defaultPreloadDelay ?? 0) + 1),
-    );
+    const delay = (router.options.defaultPreloadDelay ?? 0) + 1;
+    if (vi.isFakeTimers()) {
+      await vi.advanceTimersByTimeAsync(delay);
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
     await flush();
   }
 
   async function settle({ waitForRouter = true } = {}): Promise<void> {
-    if (waitForRouter) {
-      await vi.waitFor(() => {
-        if (router.state.status !== "idle" || router.state.isLoading) {
-          throw new Error("router busy");
-        }
-        // the loading bar filling up to "Done"
-        if (isLoadingBarShown()) throw new Error("loading bar finishing");
-      });
+    const busy = (): string | undefined => {
+      if (router.state.status !== "idle" || router.state.isLoading) {
+        return "router busy";
+      }
+      // the loading bar filling up to "Done"
+      if (isLoadingBarShown()) return "loading bar finishing";
+      return undefined;
+    };
+    if (waitForRouter && vi.isFakeTimers()) {
+      // moves the clock without sleeping: waits like the pending min or the
+      // "Done" fill cost no real time
+      for (let ms = 0; busy() !== undefined; ms += 5) {
+        if (ms >= 5000) throw new Error(`settle timed out: ${busy()}`);
+        await vi.advanceTimersByTimeAsync(5);
+      }
+    } else if (waitForRouter) {
+      await vi.waitFor(
+        () => {
+          const reason = busy();
+          if (reason !== undefined) throw new Error(reason);
+        },
+        { interval: 5 },
+      );
     }
     // the page swap: the old page leaves, the new one is attached and its
     // content mounts on the next frame, its fade in starts on a frame

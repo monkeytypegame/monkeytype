@@ -8,7 +8,6 @@ import {
 } from "solid-js";
 
 import { usePendingConnectionsQuery } from "../../../collections/connections";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
@@ -21,6 +20,7 @@ import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
 import { getFocus } from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { Anime } from "../../common/anime";
@@ -89,7 +89,7 @@ export function Nav(): JSXElement {
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getRoutePage() === "test") restartTestEvent.dispatch();
+          if (getRoutePage() === "test") void restartTest();
         }}
       />
       <Button

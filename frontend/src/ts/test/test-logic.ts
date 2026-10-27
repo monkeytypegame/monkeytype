@@ -86,12 +86,10 @@ import {
   setCompositionData,
   highlightKeymapKey,
 } from "../states/test";
-import { restartTestEvent } from "../events/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import { canStartTest } from "./test-page-state";
 import { configEvent } from "../events/config";
-import { timerEvent } from "../events/timer";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
@@ -158,6 +156,7 @@ import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
+import { appendRenderedWord, resetWordsRender } from "../states/words-render";
 
 let failReason = "";
 
@@ -183,7 +182,10 @@ export function startTest(now: number): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  void TestTimer.start(now);
+  void TestTimer.start(now, {
+    onFinish: () => void finish(),
+    onFail: fail,
+  });
   TestUI.onTestStart();
   return true;
 }
@@ -245,7 +247,9 @@ type RestartOptions = {
   isQuickRestart?: boolean;
 };
 
-export async function restart(options = {} as RestartOptions): Promise<void> {
+export async function restartTest(
+  options = {} as RestartOptions,
+): Promise<void> {
   const defaultOptions = {
     withSameWordset: false,
     practiseMissed: false,
@@ -624,7 +628,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    TestUI.appendEmptyWordElement(getActiveWordIndex() + 1);
+    appendRenderedWord("");
     return;
   }
 
@@ -658,7 +662,7 @@ export async function addWord(): Promise<void> {
           "Error while getting section. Please try again later",
         );
         toggleFunbox(sectionFunbox.name);
-        void restart();
+        void restartTest();
         return;
       }
 
@@ -675,7 +679,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        TestUI.addWord(newWord.display);
+        appendRenderedWord(newWord.display);
       }
     }
   }
@@ -692,9 +696,9 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    TestUI.addWord(newWord.display);
+    appendRenderedWord(newWord.display);
   } catch (e) {
-    timerEvent.dispatch({ key: "fail", value: "word generation error" });
+    fail("word generation error");
     showErrorNotification(
       "Error while getting next word. Please try again later",
       {
@@ -1212,7 +1216,8 @@ async function showResult(
 
   void AdController.renderResult();
   setResultCalculating(false);
-  TestUI.clearWords();
+  // the result is shown: free the test words DOM
+  resetWordsRender();
 }
 
 async function saveResult(
@@ -1368,11 +1373,11 @@ export function onRestartButtonClick(): void {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    void restart({
+    void restartTest({
       withSameWordset: true,
     });
   } else {
-    void restart();
+    void restartTest();
   }
 }
 
@@ -1381,7 +1386,7 @@ export function repeatTest(): void {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
-  void restart({
+  void restartTest({
     withSameWordset: true,
   });
 }
@@ -1396,13 +1401,11 @@ export function restartIfNotStarted(): void {
     !isTestFinished() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
-    void restart({
+    void restartTest({
       noAnim: true,
     });
   }
 }
-
-restartTestEvent.subscribe((event) => void restart(event));
 
 // ===============================
 
@@ -1418,11 +1421,11 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      void restart();
+      void restartTest();
     }
-    if (key === "difficulty" && !nosave) void restart();
+    if (key === "difficulty" && !nosave) void restartTest();
     if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      void restart();
+      void restartTest();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
@@ -1449,9 +1452,4 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
       setPrefersArabicLazyMode(newValue);
     }
   }
-});
-
-timerEvent.subscribe(({ key: eventKey, value: eventValue }) => {
-  if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
-  if (eventKey === "finish") void finish();
 });

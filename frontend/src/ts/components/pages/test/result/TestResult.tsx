@@ -18,7 +18,7 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { restart, retrySavingResult } from "../../../../test/test-logic";
+import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
 import {
@@ -26,7 +26,7 @@ import {
   scrollToCenterOrTop,
 } from "../../../../utils/misc";
 import { AdIcon } from "../../../common/AdIcon";
-import { adSlotClass } from "../../../common/Advertisement";
+import { adSlotClass, adSlotRef } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
@@ -48,7 +48,7 @@ export function TestResult(): JSXElement {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restart
+    // test-ui fades it out on restartTest
     setResultElement(el);
     onCleanup(() => setResultElement(undefined));
 
@@ -75,7 +75,7 @@ export function TestResult(): JSXElement {
               class="mx-auto mt-4 w-max px-4 py-2"
               text="Restart"
               fa={{ icon: "fa-chevron-right" }}
-              onClick={() => void restart()}
+              onClick={() => void restartTest()}
             />
           </>
         }
@@ -178,6 +178,7 @@ function ResultAds(): JSXElement {
     >
       <div
         id="ad-result-wrapper"
+        ref={adSlotRef("ad-result-wrapper")}
         class={cn(adSlotClass("h"), "full-width mx-auto")}
       >
         <div class="grid grid-cols-[auto_1fr] items-center justify-center gap-4 justify-self-center">
@@ -209,6 +210,7 @@ function ResultAds(): JSXElement {
       </div>
       <div
         id="ad-result-small-wrapper"
+        ref={adSlotRef("ad-result-small-wrapper")}
         class={cn(adSlotClass("hs"), "mx-auto")}
       >
         <AdIcon small />

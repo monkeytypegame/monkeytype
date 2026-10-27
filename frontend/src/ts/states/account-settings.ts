@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, createRoot } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
 import { FaSolidIcon } from "../types/font-awesome";
@@ -32,11 +32,13 @@ export const [isApeKeysDenied, setApeKeysDenied] = createSignal<
   boolean | undefined
 >(undefined);
 
-createEffectOn(isAuthenticated, (hasUser) => {
-  if (!hasUser) {
-    setApeKeysDenied(undefined);
-  }
-});
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (!hasUser) {
+      setApeKeysDenied(undefined);
+    }
+  }),
+);
 
 /** The account settings url search params, taking strings in. */
 export const AccountSettingsSearchSchema = z.object({
