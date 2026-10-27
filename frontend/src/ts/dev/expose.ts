@@ -6,7 +6,7 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { showModal } from "../states/modals";
+import { hideModal, showModal } from "../states/modals";
 import { restartTest } from "../test/test-logic";
 import { quickLogin } from "./quick-login";
 import { trackedSignals } from "./signal-tracker";
@@ -54,6 +54,7 @@ const mt = {
   getConfig,
   setConfig,
   showModal,
+  hideModal,
   restartTest,
   typeText,
   wordsSnapshot,

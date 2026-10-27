@@ -4,6 +4,10 @@
 # branch checkouts only, not file checkouts
 [ "$3" = "1" ] || exit 0
 
+# new worktree: no previous HEAD (null SHA) to diff against, it links deps
+# with scripts/setup-worktree.sh instead
+git rev-parse -q --verify "$1^{commit}" >/dev/null || exit 0
+
 # skip if the lockfile and .nvmrc didn't change
 git diff --quiet "$1" "$2" -- pnpm-lock.yaml .nvmrc && exit 0
 
