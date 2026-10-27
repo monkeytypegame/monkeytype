@@ -6,7 +6,6 @@ import {
 import { JSXElement, onMount } from "solid-js";
 
 import * as MonkeyPower from "../../elements/monkey-power";
-import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
 import { getGlobalOffsetTop, isAppReady } from "../../states/core";
@@ -29,11 +28,6 @@ import { NoCssDetails } from "./NoCssDetails";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
-  // set once ready, so the initial theme doesn't animate the background color
-  useBodyClasses(() => ({
-    "[transition:background_.25s,transform_.05s]": isAppReady(),
-  }));
-
   // until monkey power owns its canvas (L3)
   onMount(() => MonkeyPower.init());
 
