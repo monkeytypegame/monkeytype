@@ -44,8 +44,10 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `getConfig.<key>` | read config: `getConfig` is the config store object, not a function (`getConfig.fontSize`) |
 | `setConfig(key, value)` | write config. Doesn't restart the test (callers restart until T6b): use `runCommand` when the restart matters |
 | `showModal(id)` | open a modal by `ModalId` |
+| `hideModal(id)` | hide a modal by `ModalId` |
 | `restartTest()` | restart the typing test |
 | `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
+| `compose(updates)` | IME composition through the real input handlers: each update is the composition so far (eg. `["k", "か"]`), the last one commits |
 | `wordsSnapshot()` | rendered `#words` children as a flat array: word entries `{ index, classes, letters: [{ text, icon?, classes }] }` mixed with sibling entries `{ sibling: className }` (newlines) |
 | `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
 | `checkLayout()` | test page layout problems, `[]` when right: active word inside the words wrapper, caret and words input on it, 3 full lines (unless all lines show), tape anchor at the tape margin. Run it after any change to the test UI |
@@ -74,6 +76,7 @@ The console buffer survives reloads, so hot-reload errors from earlier edits loo
 - A test in progress blocks navigation with a "Leave site?" dialog: `__mt.restartTest()` before navigating away.
 - Switching git branches hot-reloads the page and kills a running `javascript_tool` script; wait for `__mt` again after a checkout.
 - A hot-updated module can leave stale state behind (two copies of a state module's signals), faking bugs like invisible words. Edits, checkouts, stash and commits (lint-staged rewrites files) all hot-update: when `__mt.hotUpdates()` isn't empty, navigate to reload before measuring. If something looks like a regression, reproduce it on a fresh load first.
+- `resize_window` does nothing to a maximized or fullscreen window: check `innerHeight` after resizing. To get a words wrapper taller than the window, raise `fontSize` with `__mt.setConfig` instead (and restore it after).
 - `__mt` is dev only. Production builds (`vite preview`) are driven through localStorage and the DOM.
 
 ## Profiling

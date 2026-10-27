@@ -1374,6 +1374,7 @@ export function getOptionLabel<K extends keyof ConfigSchemas.Config>(
 }
 
 // all of a setting's visible option labels joined, so search can match on them
+// oxlint-disable-next-line no-unnecessary-type-parameters -- keeps key and its metadata types correlated
 export function getOptionSearchKeywords<K extends keyof ConfigSchemas.Config>(
   key: K,
 ): string {

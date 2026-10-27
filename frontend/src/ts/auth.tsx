@@ -17,7 +17,7 @@ import {
   User,
   User as UserType,
 } from "firebase/auth";
-import { createMemo } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
@@ -122,30 +122,34 @@ const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
   });
 export { getAuthenticatedUser };
 
-createEffectOn(getUserId, () => {
-  updateAuthenticatedUser();
-});
-
-const authenticationMemos = Object.fromEntries(
-  typedKeys(authMethods).map((authMethod) => {
-    const memo = createMemo(() => {
-      const providerId = getProviderId(authMethod);
-
-      const user = getAuthenticatedUserReactive();
-      if (user === null) return undefined;
-      const provider = user.providerData.find(
-        (p) => p.providerId === providerId,
-      );
-      const result = {
-        isInUse: provider !== undefined,
-        email: provider?.email ?? undefined,
-        hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
-      };
-
-      return result;
-    });
-    return [authMethod, memo];
+createRoot(() =>
+  createEffectOn(getUserId, () => {
+    updateAuthenticatedUser();
   }),
+);
+
+const authenticationMemos = createRoot(() =>
+  Object.fromEntries(
+    typedKeys(authMethods).map((authMethod) => {
+      const memo = createMemo(() => {
+        const providerId = getProviderId(authMethod);
+
+        const user = getAuthenticatedUserReactive();
+        if (user === null) return undefined;
+        const provider = user.providerData.find(
+          (p) => p.providerId === providerId,
+        );
+        const result = {
+          isInUse: provider !== undefined,
+          email: provider?.email ?? undefined,
+          hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
+        };
+
+        return result;
+      });
+      return [authMethod, memo];
+    }),
+  ),
 );
 
 export async function sendVerificationEmail(): Promise<void> {

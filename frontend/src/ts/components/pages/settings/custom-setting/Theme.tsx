@@ -366,6 +366,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               },
               updateColors: {
                 type: "checkbox",
+                initVal: false,
                 label: "Update custom theme to current colors",
               },
             },
