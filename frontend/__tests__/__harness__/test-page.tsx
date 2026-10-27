@@ -61,7 +61,7 @@ import { vi } from "vitest";
 
 import { TestPage } from "../../src/ts/components/pages/test/TestPage";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { compose, typeText } from "../../src/ts/dev/typing-driver";
+import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
 import {
   currentLiveStats,
@@ -145,6 +145,8 @@ export type RenderTestPageOptions = {
 export type TestPageHarness = {
   /** Types `text`; "\b" is backspace, "\n" Enter. Ends with a frame. */
   type: (text: string, options?: { flush?: boolean }) => Promise<void>;
+  /** Ctrl/Alt+Backspace. Ends with a frame. */
+  deleteWord: (options?: { flush?: boolean }) => Promise<void>;
   /** IME composition: each update is the composition so far, the last commits. */
   compose: (updates: string[], options?: { flush?: boolean }) => Promise<void>;
   /** Runs one animation frame. */
@@ -236,6 +238,10 @@ export async function renderTestPage(
   return {
     async type(text, { flush = true } = {}) {
       await typeText(text);
+      if (flush) await frame();
+    },
+    async deleteWord({ flush = true } = {}) {
+      deleteWord();
       if (flush) await frame();
     },
     async compose(updates, { flush = true } = {}) {

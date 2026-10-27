@@ -127,6 +127,27 @@ describe("TestPage", () => {
     });
   });
 
+  describe("word delete", () => {
+    it("clears the word it leaves when it also deletes a strict space", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox", "ran"],
+        config: { strictSpace: true },
+      });
+
+      await page.type("th  ");
+      expect(page.word(1).letters()[0]?.state).toBe("incorrect");
+
+      await page.deleteWord();
+
+      expect(page.word(0).state).toBe("active");
+      expect(page.word(1).letters()).toEqual([
+        { char: "f", state: "untyped" },
+        { char: "o", state: "untyped" },
+        { char: "x", state: "untyped" },
+      ]);
+    });
+  });
+
   it("stops on a wrong letter with stop on error", async () => {
     const page = await renderTestPage({
       words: ["the", "fox"],
