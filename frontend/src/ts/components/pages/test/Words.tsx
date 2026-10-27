@@ -58,6 +58,7 @@ function wordsVariant(): string {
   if (getConfig.flipTestColors) variants.push("flipped");
   if (getConfig.colorfulMode) variants.push("colorful");
   if (isJoiningScript()) variants.push("joiningScript");
+  if (isLanguageRightToLeft()) variants.push("rtl");
   return variants.join(" ");
 }
 

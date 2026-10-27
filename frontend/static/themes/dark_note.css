@@ -6,7 +6,7 @@
   --current-color: var(--text-color);
 }
 
-.colorfulMode {
+[data-ui-element="words"][data-ui-variant~="colorful"] {
   --current-color: var(--main-color);
 }
 

@@ -3,7 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
-import { setTestFocusState } from "../../../../src/ts/states/test";
+import {
+  setIsLanguageRightToLeft,
+  setJoiningScript,
+  setTestFocusState,
+} from "../../../../src/ts/states/test";
 import {
   getLineBreakElements,
   getWordElement,
@@ -82,6 +86,8 @@ afterEach(() => {
   setConfigStore("colorfulMode", defaults.colorfulMode);
   setConfigStore("showOutOfFocusWarning", defaults.showOutOfFocusWarning);
   setTestFocusState("focused");
+  setJoiningScript(false);
+  setIsLanguageRightToLeft(false);
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -359,11 +365,14 @@ describe("Words", () => {
       setConfigStore("blindMode", true);
       setConfigStore("flipTestColors", true);
       setConfigStore("colorfulMode", true);
+      setJoiningScript(true);
+      setIsLanguageRightToLeft(true);
       const container = renderWords();
 
       expect(attrs(container)).toEqual({
         "data-ui-element": "words",
-        "data-ui-variant": "highlight-next-two-words blind flipped colorful",
+        "data-ui-variant":
+          "highlight-next-two-words blind flipped colorful joiningScript rtl",
       });
     });
   });
