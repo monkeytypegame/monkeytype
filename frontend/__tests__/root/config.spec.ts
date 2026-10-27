@@ -332,6 +332,35 @@ describe("Config", () => {
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
     });
+
+    it("notifies once when a theme pick turns off custom theme and auto switch", () => {
+      //GIVEN
+      replaceConfig({ customTheme: true, autoSwitchTheme: true });
+
+      //WHEN
+      Config.setConfig("theme", "8008");
+
+      //THEN
+      expect(getConfig()).toMatchObject({
+        customTheme: false,
+        autoSwitchTheme: false,
+      });
+      expect(notificationAddMock).toHaveBeenCalledExactlyOnceWith(
+        "Auto switch theme disabled",
+      );
+    });
+
+    it("keeps auto switch on when an internal write leaves custom theme off", () => {
+      //GIVEN
+      replaceConfig({ customTheme: false, autoSwitchTheme: true });
+
+      //WHEN (randomizeTheme)
+      Config.setConfig("customTheme", false, { nosave: true });
+
+      //THEN
+      expect(getConfig().autoSwitchTheme).toBe(true);
+      expect(notificationAddMock).not.toHaveBeenCalled();
+    });
   });
 
   describe("apply", () => {

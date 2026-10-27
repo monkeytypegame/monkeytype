@@ -1174,10 +1174,10 @@ export const configMetadata: ConfigMetadataObject = {
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
     overrideConfig: ({ currentConfig }) => {
-      return {
-        customTheme: false,
-        ...disableAutoSwitchTheme(currentConfig),
-      };
+      // turning the custom theme off disables auto switch itself, so the
+      // notice isn't shown twice
+      if (currentConfig.customTheme) return { customTheme: false };
+      return disableAutoSwitchTheme(currentConfig);
     },
   },
   customTheme: {
@@ -1186,8 +1186,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom theme",
     changeRequiresRestart: false,
     group: "theme",
-    overrideConfig: ({ currentConfig }) =>
-      disableAutoSwitchTheme(currentConfig),
+    // only a change: randomizeTheme rewrites the current value (nosave)
+    overrideConfig: ({ value, currentConfig }) =>
+      value === currentConfig.customTheme
+        ? {}
+        : disableAutoSwitchTheme(currentConfig),
   },
   customThemeColors: {
     key: "customThemeColors",

@@ -315,12 +315,27 @@ describe("ConfigMeta", () => {
           given: { autoSwitchTheme: true },
           expected: { autoSwitchTheme: false },
         },
+        {
+          value: "8008",
+          given: { customTheme: true, autoSwitchTheme: true },
+          expected: { customTheme: false, autoSwitchTheme: false },
+        },
       ],
       customTheme: [
         {
           value: true,
           given: { autoSwitchTheme: true },
           expected: { autoSwitchTheme: false },
+        },
+        {
+          value: false,
+          given: { customTheme: true, autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+        {
+          value: false,
+          given: { customTheme: false, autoSwitchTheme: true },
+          expected: { autoSwitchTheme: true },
         },
       ],
       customThemeColors: [
