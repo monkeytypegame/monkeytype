@@ -14,7 +14,6 @@ import {
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import { getCurrentInput, getInputForWord } from "../events/data";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
@@ -34,6 +33,12 @@ import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
 
+/** Typed input, passed in so funboxes never read the EventLog. */
+export type FunboxInput = {
+  current: () => string;
+  forWord: (wordIndex: number) => string;
+};
+
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
@@ -43,17 +48,20 @@ export type FunboxFunctions = {
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
-  handleSpace?: () => void;
+  handleSpace?: (input: FunboxInput) => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  handleKeydown?: (event: KeyboardEvent) => Promise<void>;
+  handleKeydown?: (event: KeyboardEvent, input: FunboxInput) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
-async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const currentInput = getCurrentInput();
+async function readAheadHandleKeydown(
+  event: KeyboardEvent,
+  input: FunboxInput,
+): Promise<void> {
+  const currentInput = input.current();
   const currentWord = TestWords.words.getCurrent();
 
   if (!currentWord) {
@@ -71,7 +79,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Backspace" &&
     !isCorrect &&
     (currentInput !== "" ||
-      getInputForWord(getActiveWordIndex() - 1) !==
+      input.forWord(getActiveWordIndex() - 1) !==
         TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
@@ -368,7 +376,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save("layout", Config.layout);
       save("keymapLayout", Config.keymapLayout);
     },
-    handleSpace(): void {
+    handleSpace(input): void {
       if (Config.mode !== "time") {
         const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
@@ -403,9 +411,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         }
         setTimeout(() => {
           highlightKeymapKey(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
+            TestWords.words.getCurrent()?.text.charAt(input.current().length) ??
+              "",
           );
         }, 1);
       }
@@ -433,24 +440,24 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead_hard: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   memory: {

@@ -148,6 +148,38 @@ describe("TestPage", () => {
     });
   });
 
+  describe("read ahead funbox", () => {
+    it("shows the words again after a backspace over a wrong letter", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox"],
+        config: { funbox: ["read_ahead"] },
+      });
+      const words = document.querySelector("#words");
+
+      await page.type("tx");
+      expect(words?.classList).not.toContain("read_ahead_disabled");
+
+      await page.type("\b");
+      expect(words?.classList).toContain("read_ahead_disabled");
+
+      await page.type("h ");
+      expect(words?.classList).not.toContain("read_ahead_disabled");
+    });
+
+    it("keeps the words hidden on a backspace in an empty word after a correct one", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox"],
+        config: { funbox: ["read_ahead"] },
+      });
+
+      await page.type("the \b");
+
+      expect(document.querySelector("#words")?.classList).not.toContain(
+        "read_ahead_disabled",
+      );
+    });
+  });
+
   it("stops on a wrong letter with stop on error", async () => {
     const page = await renderTestPage({
       words: ["the", "fox"],
