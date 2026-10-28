@@ -26,6 +26,7 @@ import { z } from "zod";
 import { createEffectOn } from "../../../hooks/effects";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
+import { qs } from "../../../utils/dom";
 import { Fa } from "../../common/Fa";
 import {
   Table,
@@ -62,6 +63,7 @@ export type DataTableProps<TData, TValue> = {
     /** Tracked: each change scrolls the active row into view (after a frame) */
     scrollToActiveRow?: Accessor<unknown>;
   };
+  scrollToSelectedRow?: Accessor<boolean>;
   class?: string;
   headerCellClass?: string;
   bodyCellClass?: string;
@@ -74,7 +76,7 @@ export type DataTableProps<TData, TValue> = {
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export function DataTable<TData extends Object, TValue = any>(
+export function DataTable<TData extends object, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -99,11 +101,19 @@ export function DataTable<TData extends Object, TValue = any>(
 
   const [rowSelection, setRowSelection] = createSignal({});
   createEffect(() => {
+    const scrollToSelectedRow = props.scrollToSelectedRow?.();
     if (props.rowSelection?.activeRow === undefined) {
       setRowSelection({});
     } else {
       const activeId = props.rowSelection.activeRow();
       setRowSelection(activeId !== null ? { [activeId]: true } : {});
+      if (scrollToSelectedRow) {
+        requestAnimationFrame(() => {
+          qs(`#${props.id} tr[data-state="selected"]`)?.scrollIntoView({
+            block: "center",
+          });
+        });
+      }
     }
   });
 

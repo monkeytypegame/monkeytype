@@ -78,20 +78,17 @@ function FilterSummary(props: {
   filters: ResultFilters;
   tags: TagItem[];
 }): JSXElement {
-  const Item = <
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
+  const Item = <T extends ResultFiltersKeys>(options: {
     group: T;
     icon: FaSolidIcon;
-    format?: (val: K) => string;
+    format?: (val: keyof ResultFilters[T]) => string;
   }): JSXElement => {
     const values = createMemo(() =>
       isAllSet(props.filters[options.group])
         ? "all"
         : Object.entries(props.filters[options.group])
             .filter(([_, v]) => v)
-            .map(([it]) => options.format?.(it as K) ?? it)
+            .map(([it]) => options.format?.(it as keyof ResultFilters[T]) ?? it)
             .join(", "),
     );
 

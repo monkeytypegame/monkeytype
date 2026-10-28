@@ -10,7 +10,12 @@ import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import { setThemeIndicator } from "../states/core";
-import { setTheme, ThemeIdentifier } from "../states/theme";
+import {
+  cacheThemeColors,
+  getTheme,
+  setTheme,
+  ThemeIdentifier,
+} from "../states/theme";
 
 export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;
@@ -135,6 +140,7 @@ async function set(
     isAutoSwitch,
   });
   await apply(themeIdentifier, undefined, isAutoSwitch);
+  cacheThemeColors(getTheme());
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setConfig("autoSwitchTheme", false);

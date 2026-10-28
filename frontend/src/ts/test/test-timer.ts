@@ -80,6 +80,7 @@ const newTimer = createTimer({
     // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
     // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
     const ticksDue = Math.floor((now - timerStartMs) / 1000);
+    // oxlint-disable-next-line no-unmodified-loop-condition
     while (!stopped && emittedTicks + 1 < ticksDue) {
       console.debug(
         "Catching up timer, missed tick at",
@@ -203,7 +204,7 @@ function layoutfluid(time: number): void {
 
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
-  acc: number,
+  acc: number | null,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   if (
@@ -217,7 +218,7 @@ function checkIfFailed(
     onFail("min speed");
     return true;
   }
-  if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
+  if (Config.minAcc === "custom" && acc !== null && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     clearSlowTimer();
     slowTimerCount = 0;
@@ -313,7 +314,7 @@ function timerStep(now: number, catchingUp: boolean): void {
 
     setCurrentLiveStats({
       wpm: wpmAndRaw.wpm,
-      acc,
+      acc: acc ?? 100,
       raw: wpmAndRaw.raw,
       seconds: getLiveCachedTestSeconds(now),
     });

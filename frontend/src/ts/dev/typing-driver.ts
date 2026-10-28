@@ -40,6 +40,38 @@ export function typeChar(char: string): void {
 }
 
 /**
+ * Deletes the previous word like Ctrl/Alt+Backspace: the trailing word and
+ * the whitespace after it, or only whitespace when nothing else trails.
+ */
+export function deleteWord(): void {
+  const input = getInputElement();
+  if (document.activeElement !== input) input.focus();
+  const key = "Backspace";
+  const inputType = "deleteWordBackward";
+  input.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key,
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  const beforeInput = new InputEvent("beforeinput", {
+    inputType,
+    bubbles: true,
+    cancelable: true,
+  });
+  input.dispatchEvent(beforeInput);
+  if (!beforeInput.defaultPrevented) {
+    input.value = input.value.replace(/(?:\S+\s*|\s+)$/, "");
+    input.dispatchEvent(new InputEvent("input", { inputType, bubbles: true }));
+  }
+  input.dispatchEvent(
+    new KeyboardEvent("keyup", { key, ctrlKey: true, bubbles: true }),
+  );
+}
+
+/**
  * Types `text` through the real input handlers, one character every
  * `msPerChar` (0: all in one task). "\n" is a line break, "\b" a backspace.
  */

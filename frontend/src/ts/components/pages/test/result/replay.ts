@@ -155,6 +155,7 @@ function initializeReplayPrompt(): void {
     loaded.words.slice(0, wordCount + 1).map((word) => ({
       typed: false,
       error: false,
+      // oxlint-disable-next-line no-misused-spread -- split into code points on purpose
       letters: [...word].map((char) => ({ char, state: "", extra: false })),
     })),
   );
