@@ -45,7 +45,7 @@ import {
   toSelection,
 } from "../states/leaderboard-selection";
 import { SettingsSearchSchema } from "../states/settings-highlight";
-import { getSnapshot } from "../states/snapshot";
+import { getUser } from "../collections/user";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth } from "./create-router-auth";
 import {
@@ -312,7 +312,7 @@ const account = createRoute({
       return;
     }
     await runRouteLoadingStep(loader, async () => {
-      if (getSnapshot() === null || getSnapshot() === undefined) {
+      if (getUser() === undefined) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
         );

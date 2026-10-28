@@ -3,7 +3,7 @@ import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
 import { configEvent } from "../events/config";
 import * as DB from "../db";
-import Ape from "../ape";
+import { setQuoteFavorite } from "../collections/user";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import { QuoteData } from "@monkeytype/schemas/quotes";
@@ -204,45 +204,11 @@ class QuotesController {
   }
 
   async setQuoteFavorite(quote: Quote, isFavorite: boolean): Promise<void> {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) {
-      throw new Error("Snapshot is not available");
-    }
-
-    if (!isFavorite) {
-      // Remove from favorites
-      const response = await Ape.users.removeQuoteFromFavorites({
-        body: {
-          language: quote.language,
-          quoteId: `${quote.id}`,
-        },
-      });
-
-      if (response.status === 200) {
-        const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
-          `${quote.id}`,
-        ) as number;
-        snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
-      } else {
-        throw new Error(response.body.message);
-      }
-    } else {
-      // Remove from favorites
-      const response = await Ape.users.addQuoteToFavorites({
-        body: {
-          language: quote.language,
-          quoteId: `${quote.id}`,
-        },
-      });
-
-      if (response.status === 200) {
-        snapshot.favoriteQuotes ??= {};
-        snapshot.favoriteQuotes[quote.language] ??= [];
-        snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
-      } else {
-        throw new Error(response.body.message);
-      }
-    }
+    await setQuoteFavorite({
+      language: quote.language,
+      quoteId: `${quote.id}`,
+      favorite: isFavorite,
+    });
   }
 }
 

@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
-import { addXp } from "../../db";
+import { addXp } from "../../collections/user";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";

@@ -23,8 +23,8 @@ import { z, ZodString } from "zod";
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
+import { clearUser, loadUserData } from "./collections/user";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
-import * as DB from "./db";
 import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
@@ -172,18 +172,12 @@ export async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    const snapshot = await DB.initSnapshot();
+    const user = await loadUserData();
     //TODO: preload collections for now, remove when __nonReactive is removed from collections
     await waitForPresetsReady();
     await waitForTagsReady();
 
-    if (snapshot === false) {
-      throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
-      );
-    }
-
-    void Sentry.setUser(snapshot.uid, snapshot.name);
+    void Sentry.setUser(user.uid, user.name);
 
     await updateConfigFromServer();
     return true;
@@ -236,7 +230,7 @@ export async function onAuthStateChanged(
       userPromise = loadUser(user);
     } else {
       setUserId(null);
-      DB.setSnapshot(undefined);
+      clearUser();
     }
   }
 

@@ -26,27 +26,20 @@ export function ActivityCalendar(props: {
 
   createEffect(() =>
     (() => {
-      if (
-        (!props.isAccountPage && props.testActivity === undefined) ||
-        (props.isAccountPage && getSnapshot()?.testActivity === undefined) ||
-        element() === undefined
-      ) {
+      const testActivity = props.isAccountPage
+        ? getSnapshot()?.testActivity
+        : props.testActivity;
+      if (testActivity === undefined || element() === undefined) {
         calendar = undefined;
         clearTestActivity(element()?.native);
         return;
       }
 
-      if (props.isAccountPage) {
-        //signals cannot store classes, use the testActivity from the snapshot for now
-        calendar = getSnapshot()?.testActivity;
-      } else {
-        const testActivity = props.testActivity as TestActivity;
-        calendar = new TestActivityCalendar(
-          testActivity.testsByDays,
-          new Date(testActivity.lastDay),
-          firstDayOfTheWeek,
-        );
-      }
+      calendar = new TestActivityCalendar(
+        [...testActivity.testsByDays],
+        new Date(testActivity.lastDay),
+        firstDayOfTheWeek,
+      );
 
       initTestActivity(
         // oxlint-disable-next-line typescript/no-non-null-assertion
