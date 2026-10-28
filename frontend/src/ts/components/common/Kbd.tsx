@@ -8,7 +8,7 @@ type Props =
 export function Kbd(props: Props): JSXElement {
   return (
     <kbd>
-      {props.hotkey
+      {props.hotkey !== undefined
         ? formatForDisplay(props.hotkey, { useSymbols: false })
             .toLowerCase()
             .replace(/\+/g, " + ")
