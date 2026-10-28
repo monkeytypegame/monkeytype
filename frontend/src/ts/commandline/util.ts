@@ -7,6 +7,8 @@ import {
   CommandlineSubgroupMetadata,
   ConfigMetadata,
   configMetadata,
+  OptionMetadata,
+  optionLabel,
 } from "../config/metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
@@ -118,7 +120,15 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     );
   }
   const list = values.map((value) =>
-    buildSubgroupCommand<K>(key, value, subgroupProps, subgroupActions),
+    buildSubgroupCommand<K>(
+      key,
+      value,
+      subgroupProps,
+      subgroupActions,
+      (
+        configMeta.optionsMetadata as Record<string, OptionMetadata> | undefined
+      )?.[String(value)],
+    ),
   );
 
   list.sort((a, b) => {
@@ -152,20 +162,13 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
     customData: commandCustomData,
   }: CommandlineSubgroupMetadata<K>,
   { afterExec, hover }: CommandlineConfigActions<K>["subgroup"] = {},
+  optionMeta?: OptionMetadata,
 ): Command {
   const val = value;
 
-  let displayString = commandDisplay?.(value);
-
-  if (displayString === undefined) {
-    if (value === true) {
-      displayString = "on";
-    } else if (value === false) {
-      displayString = "off";
-    } else {
-      displayString = value.toString();
-    }
-  }
+  // same label as the settings page unless the commandline overrides it
+  const displayString =
+    commandDisplay?.(value) ?? optionLabel(optionMeta, value);
 
   return {
     id: `set${capitalizeFirstLetter(key)}${capitalizeFirstLetter(

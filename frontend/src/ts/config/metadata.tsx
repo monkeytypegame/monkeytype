@@ -15,11 +15,7 @@ import { Validation } from "../types/validation";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
-import {
-  capitalizeFirstLetter,
-  getLanguageDisplayString,
-  replaceUnderscoresWithSpaces,
-} from "../utils/strings";
+import { capitalizeFirstLetter } from "../utils/strings";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getOptions } from "../utils/zod";
 import {
@@ -79,7 +75,6 @@ export type CommandlineSubgroupMetadata<K extends keyof ConfigSchemas.Config> =
   };
 
 // side effects (afterExec, hover) live in commandline/config-actions
-//TODO: the display strings duplicate optionsMetadata and displayString in places, unify them
 export type CommandlineMetadata<
   K extends keyof ConfigSchemas.Config,
   K2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config,
@@ -391,9 +386,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: (value) => {
-          return getLanguageDisplayString(value);
-        },
       },
     },
   },
@@ -483,6 +475,8 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
+        // settings shows " " for "on" (button height), keep a readable label here
+        display: (value) => (value ? "on" : "off"),
       },
     },
   },
@@ -523,14 +517,12 @@ const configMetadataEntries = {
     description:
       "Automatically fails a test if your speed falls below a threshold.",
     commandline: {
-      display: "Minimum speed...",
-      alias: "wpm",
+      alias: "wpm minimum",
       subgroup: {
         options: ["off"],
       },
       input: {
         configValue: "custom",
-        display: "custom...",
         secondKey: "minWpmCustomSpeed",
         inputValueConvert: (value) => {
           let newVal = Number(value);
@@ -566,13 +558,12 @@ const configMetadataEntries = {
     description:
       "Automatically fails a test if your accuracy falls below a threshold.",
     commandline: {
-      display: "Minimum accuracy...",
+      alias: "minimum",
       subgroup: {
         options: ["off"],
       },
       input: {
         configValue: "custom",
-        display: "custom...",
         secondKey: "minAccCustom",
         inputValueConvert: (value) => {
           return Number(value);
@@ -807,7 +798,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: (deleteOnError) => deleteOnError.replace(/_/g, " "),
       },
     },
   },
@@ -916,8 +906,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: (layout) =>
-          layout === "default" ? "off" : layout.replace(/_/g, " "),
       },
     },
   },
@@ -997,42 +985,8 @@ const configMetadataEntries = {
     description: "Plays a short sound when you press a key.",
     commandline: {
       alias: "play",
-      display: "Sound on click...",
       subgroup: {
         options: "fromSchema",
-        display: (value) => {
-          const map: Record<ConfigSchemas.Config["playSoundOnClick"], string> =
-            {
-              off: "off",
-              "1": "click",
-              "2": "beep",
-              "3": "pop",
-              "4": "nk creams",
-              "5": "typewriter",
-              "6": "osu",
-              "7": "hitmarker",
-              "8": "sine",
-              "9": "sawtooth",
-              "10": "square",
-              "11": "triangle",
-              "12": "pentatonic",
-              "13": "wholetone",
-              "14": "fist fight",
-              "15": "rubber keys",
-              "16": "fart",
-              "17": "akko lavenders",
-              "18": "cherrymx black abs",
-              "19": "cherrymx black pbt",
-              "20": "cherrymx blue abs",
-              "21": "cherrymx blue pbt",
-              "22": "cherrymx brown pbt",
-              "23": "kalih box white",
-              "24": "razer green",
-              "25": "tealios v2",
-              "26": "trust gxt",
-            };
-          return map[value];
-        },
       },
     },
   },
@@ -1053,20 +1007,8 @@ const configMetadataEntries = {
       "Plays a short sound if you press an incorrect key or press space too early.",
     commandline: {
       alias: "play",
-      display: "Sound on error...",
       subgroup: {
         options: "fromSchema",
-        display: (value) => {
-          const map: Record<ConfigSchemas.Config["playSoundOnError"], string> =
-            {
-              off: "off",
-              "1": "damage",
-              "2": "triangle",
-              "3": "square",
-              "4": "punch miss",
-            };
-          return map[value];
-        },
       },
     },
   },
@@ -1089,12 +1031,6 @@ const configMetadataEntries = {
       alias: "sound",
       subgroup: {
         options: "fromSchema",
-        display: (value) => {
-          if (value === "off") {
-            return "off";
-          }
-          return `${value} second${value !== "1" ? "s" : ""}`;
-        },
       },
     },
   },
@@ -1159,7 +1095,6 @@ const configMetadataEntries = {
       return false;
     },
     commandline: {
-      display: "Pace caret mode...",
       subgroup: {
         options: ["off", "pb", "tagPb", "last", "average", "daily"],
       },
@@ -1233,7 +1168,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: replaceUnderscoresWithSpaces,
       },
       alias: "timer",
     },
@@ -1308,8 +1242,7 @@ const configMetadataEntries = {
     description:
       "Change the color of the progress, live speed, accuracy and burst text.",
     commandline: {
-      display: "Live progress color...",
-      alias: "timer speed wpm burst acc",
+      alias: "timer speed wpm burst acc progress",
       subgroup: {
         options: "fromSchema",
         alias: () => "timer",
@@ -1325,8 +1258,7 @@ const configMetadataEntries = {
     description:
       "Change the opacity of the progress, live speed, burst and accuracy text.",
     commandline: {
-      display: "Live progress opacity...",
-      alias: "timer speed wpm burst acc",
+      alias: "timer speed wpm burst acc progress",
       subgroup: {
         options: "fromSchema",
         alias: () => "timer",
@@ -1343,7 +1275,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: replaceUnderscoresWithSpaces,
       },
     },
   },
@@ -1588,7 +1519,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: replaceUnderscoresWithSpaces,
       },
       alias: "keyboard",
     },
@@ -1619,7 +1549,6 @@ const configMetadataEntries = {
     commandline: {
       subgroup: {
         options: "fromSchema",
-        display: replaceUnderscoresWithSpaces,
       },
       alias: "keyboard",
     },
@@ -1858,7 +1787,6 @@ const configMetadataEntries = {
       subgroup: {
         options: "fromSchema",
       },
-      display: "Key tips...",
     },
   },
   showOutOfFocusWarning: {
@@ -1877,7 +1805,6 @@ const configMetadataEntries = {
       subgroup: {
         options: "fromSchema",
       },
-      display: "Out of focus warning...",
     },
   },
   capsLockWarning: {
@@ -1975,6 +1902,13 @@ const configMetadataEntries = {
     key: "monkeyPowerLevel",
     fa: { icon: "fa-egg" },
     displayString: "monkey power level",
+    optionsMetadata: {
+      off: {},
+      "1": { displayString: "mellow" },
+      "2": { displayString: "high" },
+      "3": { displayString: "ultra" },
+      "4": { displayString: "over 9000" },
+    },
     changeRequiresRestart: false,
     group: "hidden",
     commandline: {
@@ -1982,17 +1916,6 @@ const configMetadataEntries = {
       isVisible: false,
       subgroup: {
         options: "fromSchema",
-        display: (value) => {
-          const map: Record<ConfigSchemas.Config["monkeyPowerLevel"], string> =
-            {
-              off: "off",
-              "1": "mellow",
-              "2": "high",
-              "3": "ultra",
-              "4": "over 9000",
-            };
-          return map[value];
-        },
       },
     },
   },
@@ -2070,7 +1993,14 @@ export function getOptionLabel<K extends keyof ConfigSchemas.Config>(
   key: K,
   option: ConfigSchemas.Config[K],
 ): string {
-  const optionMeta = getOptionMetadata(key, option);
+  return optionLabel(getOptionMetadata(key, option), option);
+}
+
+// the label for an option given its metadata (settings and the commandline share it)
+export function optionLabel(
+  optionMeta: OptionMetadata | undefined,
+  option: unknown,
+): string {
   if (optionMeta?.displayString !== undefined) return optionMeta.displayString;
   if (option === true) return "on";
   if (option === false) return "off";

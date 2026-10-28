@@ -15,7 +15,10 @@ import { Command } from "../../src/ts/commandline/types";
 const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
 
 describe("CommandlineUtils", () => {
-  vi.mock("../../src/ts/config/metadata", () => ({ configMetadata: [] }));
+  vi.mock("../../src/ts/config/metadata", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("../../src/ts/config/metadata")>()),
+    configMetadata: [],
+  }));
   vi.mock("../../src/ts/commandline/config-actions", () => ({
     commandlineConfigActions: {},
   }));
@@ -135,6 +138,52 @@ describe("CommandlineUtils", () => {
         //THEN
         expect(cmd.subgroup?.list[0]?.available).toBeUndefined();
         expect(cmd.subgroup?.list[1]?.available?.()).toBe(true);
+      });
+
+      it("uses the settings option labels", () => {
+        //GIVEN
+        const schema = z.enum(["off", "tag_pb", "fav"]);
+
+        //WHEN
+        const cmd = buildCommand({
+          cmdMeta: { subgroup: { options: "fromSchema" } },
+          configMeta: {
+            optionsMetadata: { fav: { displayString: "favorite" } } as any,
+          },
+          schema,
+        });
+
+        //THEN
+        expect(cmd.subgroup?.list.map((it) => it.display)).toEqual([
+          "off",
+          "tag pb",
+          "favorite",
+        ]);
+      });
+
+      it("prefers the commandline display over the settings label", () => {
+        //GIVEN
+        const schema = z.boolean();
+
+        //WHEN
+        const cmd = buildCommand({
+          cmdMeta: {
+            subgroup: {
+              options: "fromSchema",
+              display: (value) => (value === true ? "yes" : "no"),
+            },
+          },
+          configMeta: {
+            optionsMetadata: { true: { displayString: " " } } as any,
+          },
+          schema,
+        });
+
+        //THEN
+        expect(cmd.subgroup?.list.map((it) => it.display)).toEqual([
+          "no",
+          "yes",
+        ]);
       });
     });
 
