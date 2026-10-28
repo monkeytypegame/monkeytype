@@ -69,88 +69,73 @@ footer button:hover > .relative > i,
     ease-in-out infinite;
   --extra-letter-animation: rainbow-error-infinite-loop 1s alternate ease-in-out
     infinite;
+
+  &[data-ui-variant~="highlight-off"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"],
+  &[data-ui-variant~="highlight-off"]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: rainbow-infinite-loop 5s linear infinite;
+  }
+
+  &
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"]:is(
+      [data-ui-state="correct"],
+      [data-ui-state="deadCorrect"]
+    ),
+  &:is(
+      [data-ui-variant~="blind"],
+      [data-ui-variant~="highlight-word"],
+      [data-ui-variant~="highlight-next-word"],
+      [data-ui-variant~="highlight-next-two-words"],
+      [data-ui-variant~="highlight-next-three-words"]
+    )
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: rainbow 7.5s ease-in-out forwards;
+  }
+
+  &:not([data-ui-variant~="blind"])
+    [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
+    animation: rainbow-error 7.5s ease-in-out forwards;
+  }
+
+  &[data-ui-variant~="highlight-word"]
+    [data-ui-element="word"][data-ui-active]
+    [data-ui-element="letter"] {
+    animation: var(--correct-letter-animation);
+  }
+
+  &[data-ui-variant~="flipped"] {
+    --correct-letter-animation: none;
+    --untyped-letter-animation: rainbow-infinite-loop 5s linear infinite;
+  }
+
+  &[data-ui-variant~="flipped"]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: none;
+  }
 }
 
-[data-ui-element="words"][data-ui-variant~="highlight-off"]
-  [data-ui-element="word"]
-  [data-ui-element="letter"],
-[data-ui-element="words"][data-ui-variant~="highlight-off"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"] {
-  animation: rainbow-infinite-loop 5s linear infinite;
-}
-
-[data-ui-element="words"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"]:is(
-    [data-ui-state="correct"],
-    [data-ui-state="deadCorrect"]
-  ),
-[data-ui-element="words"][data-ui-variant~="blind"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"],
-[data-ui-element="words"][data-ui-variant~="highlight-word"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"],
-[data-ui-element="words"][data-ui-variant~="highlight-next-word"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"],
-[data-ui-element="words"][data-ui-variant~="highlight-next-two-words"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"],
-[data-ui-element="words"][data-ui-variant~="highlight-next-three-words"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"],
 [data-ui-element="replayWords"]
   [data-ui-element="word"]
   [data-ui-element="letter"][data-ui-state="correct"] {
   animation: rainbow 7.5s ease-in-out forwards;
-}
-
-[data-ui-element="words"]:not([data-ui-variant~="blind"])
-  [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
-  animation: rainbow-error 7.5s ease-in-out forwards;
-}
-
-[data-ui-element="words"][data-ui-variant~="highlight-word"]
-  [data-ui-element="word"][data-ui-active]
-  [data-ui-element="letter"] {
-  animation: var(--correct-letter-animation);
-}
-
-[data-ui-element="words"][data-ui-variant~="flipped"] {
-  --correct-letter-animation: none;
-  --untyped-letter-animation: rainbow-infinite-loop 5s linear infinite;
-}
-
-[data-ui-element="words"][data-ui-variant~="flipped"]
-  [data-ui-element="word"]:is(
-    [data-ui-state="typed"],
-    [data-ui-state="typedIncorrectly"]
-  )
-  [data-ui-element="letter"] {
-  animation: none;
 }
 
 footer button:hover {

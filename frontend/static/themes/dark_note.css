@@ -6,10 +6,6 @@
   --current-color: var(--text-color);
 }
 
-[data-ui-element="words"][data-ui-variant~="colorful"] {
-  --current-color: var(--main-color);
-}
-
 button:not(.accountButtonAndMenu *),
 .button:not(.accountButtonAndMenu *),
 [data-ui-element="testConfig"] {
@@ -54,48 +50,49 @@ body::before {
   --roundness: 0; /* making command line sharp */
 }
 
-/* restyling error displays to be strike-through instead of underlined */
-[data-ui-element="words"]
-  [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
-  border-bottom: none;
-  text-shadow: none;
-}
+[data-ui-element="words"] {
+  &[data-ui-variant~="colorful"] {
+    --current-color: var(--main-color);
+  }
 
-[data-ui-element="words"]:not([data-ui-variant~="blind"])
-  [data-ui-element="word"]
-  [data-ui-element="letter"]:is(
-    [data-ui-state="incorrect"],
-    [data-ui-state="extra"]
-  ),
-[data-ui-element="words"]:not(
-    [data-ui-variant~="blind"]
-  )[data-ui-variant~="colorful"]
-  [data-ui-element="word"]
-  [data-ui-element="letter"]:is(
-    [data-ui-state="incorrect"],
-    [data-ui-state="extra"]
-  ) {
-  text-decoration: line-through;
-  text-decoration-color: var(--error-color);
-  text-decoration-thickness: 2px;
-}
+  /* restyling error displays to be strike-through instead of underlined */
+  & [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
+    border-bottom: none;
+    text-shadow: none;
+  }
 
-[data-ui-element="words"]:not([data-ui-variant~="blind"])
-  [data-ui-element="word"]
-  [data-ui-element="letter"][data-ui-state="incorrect"],
-[data-ui-element="words"]:not(
-    [data-ui-variant~="blind"]
-  )[data-ui-variant~="colorful"]
-  [data-ui-element="word"]
-  [data-ui-element="letter"][data-ui-state="incorrect"] {
-  color: var(--current-color);
-}
+  &:not([data-ui-variant~="blind"])
+    [data-ui-element="word"]
+    [data-ui-element="letter"]:is(
+      [data-ui-state="incorrect"],
+      [data-ui-state="extra"]
+    ),
+  &:not([data-ui-variant~="blind"])[data-ui-variant~="colorful"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"]:is(
+      [data-ui-state="incorrect"],
+      [data-ui-state="extra"]
+    ) {
+    text-decoration: line-through;
+    text-decoration-color: var(--error-color);
+    text-decoration-thickness: 2px;
+  }
 
-[data-ui-element="words"]:not([data-ui-variant~="blind"])
-  [data-ui-element="word"][data-ui-state="typedIncorrectly"]
-  [data-ui-element="letter"]:is(
-    [data-ui-state="untyped"],
-    [data-ui-state="dead"]
-  )::after {
-  background: var(--sub-color);
+  &:not([data-ui-variant~="blind"])
+    [data-ui-element="word"]
+    [data-ui-element="letter"][data-ui-state="incorrect"],
+  &:not([data-ui-variant~="blind"])[data-ui-variant~="colorful"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"][data-ui-state="incorrect"] {
+    color: var(--current-color);
+  }
+
+  &:not([data-ui-variant~="blind"])
+    [data-ui-element="word"][data-ui-state="typedIncorrectly"]
+    [data-ui-element="letter"]:is(
+      [data-ui-state="untyped"],
+      [data-ui-state="dead"]
+    )::after {
+    background: var(--sub-color);
+  }
 }
