@@ -141,3 +141,6 @@ frontend/.env.sentry-build-plugin
 keylogs
 frontend/scripts/keylog-report.ts
 .scratch/
+
+# pi coding agent working directory
+.pi
