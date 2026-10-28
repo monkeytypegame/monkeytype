@@ -3,6 +3,9 @@ import { TestEvent } from "./types";
 
 // Running tallies maintained as events arrive, so live readers don't rescan
 // the event log. For replay, derive from the event log directly.
+// Every tally needs a pure stat function on the event log and a parity case
+// in __tests__/test/events/live-cache.spec.ts. Exception: timerStartMs is a
+// wall-clock anchor; the event log only keeps times relative to it.
 const cache = {
   correctInputs: 0,
   totalInputs: 0,

@@ -604,6 +604,19 @@ export function getKeypressSpacing(eventLog: EventLog): number[] {
   return spacings;
 }
 
+// Gap between the last two input events, null with fewer than two.
+export function getMsSinceLastInputEvent(eventLog: EventLog): number | null {
+  let last: number | undefined;
+  let previous: number | undefined;
+  for (const event of eventLog.events) {
+    if (event.type !== "input") continue;
+    previous = last;
+    last = event.testMs;
+  }
+  if (last === undefined || previous === undefined) return null;
+  return roundTo2(last - previous);
+}
+
 export function getKeypressOverlap(eventLog: EventLog): number {
   const { events } = eventLog;
 

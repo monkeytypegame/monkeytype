@@ -122,7 +122,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5. Done: callers import `restartTest` (renamed from `restart`) from test-logic; `events/test.ts` deleted |
 | [x] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5. Done: test-logic passes `onFinish`/`onFail` to `TestTimer.start` (a direct import would be circular); word-generation error calls `fail` directly; `events/timer.ts` deleted |
 | [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787. EventLog context keeps Korean status as one test-level boolean derived from the words, unless stats need it per word (then per word plus a version bump) | T1 | Coordinate with T3 |
-| [ ] | EP4 | S · commit | Parity tests for the live-cache tallies: for typed event sequences, each tally equals its pure stat function on the built log | none | Guards the replay constraint; every later tally gets one too |
+| [x] | EP4 | S · commit | Parity tests for the live-cache tallies: for typed event sequences, each tally equals its pure stat function on the built log | none | Guards the replay constraint; every later tally gets one too. Done: `live-cache.spec.ts` checks accuracy against `getAccuracy` and ms since last input against the new `getMsSinceLastInputEvent`; timer start has no pure counterpart (wall-clock anchor). Prior commit: accuracy is `null` with no counted inputs on both sides (callers keep 100 live, 0 in the result, min-acc skipped) |
 
 ## Track L: leaves
 

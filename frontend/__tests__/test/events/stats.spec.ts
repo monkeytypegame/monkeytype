@@ -84,6 +84,7 @@ import {
   getCorrectedWordsHistory,
   getKeypressSpacing,
   getMissedWords,
+  getMsSinceLastInputEvent,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -1027,6 +1028,23 @@ describe("stats.ts", () => {
       expect(Math.abs(getTestDurationMs(buildEventLog()) - total)).toBeLessThan(
         100,
       );
+    });
+  });
+
+  describe("getMsSinceLastInputEvent", () => {
+    it("returns the gap between the last two inputs", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1000, input());
+      logTestEvent("input", 1100, input({ charIndex: 1 }));
+      logTestEvent("input", 1350.25, input({ charIndex: 2 }));
+
+      expect(getMsSinceLastInputEvent(buildEventLog())).toBe(250.25);
+    });
+
+    it("returns null with fewer than two inputs", () => {
+      logTestEvent("input", 1000, input());
+
+      expect(getMsSinceLastInputEvent(buildEventLog())).toBeNull();
     });
   });
 
