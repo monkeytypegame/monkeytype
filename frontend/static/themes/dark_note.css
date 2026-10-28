@@ -58,10 +58,6 @@ body::before {
 [data-ui-element="words"]
   [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
   border-bottom: none;
-}
-
-[data-ui-element="words"]
-  [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
   text-shadow: none;
 }
 
