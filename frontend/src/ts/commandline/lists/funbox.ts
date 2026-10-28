@@ -50,7 +50,7 @@ const commands: Command[] = [
     id: "changeFunbox",
     display: "Funbox...",
     alias: "fun box",
-    icon: "fa-gamepad",
+    fa: { icon: "fa-gamepad" },
     subgroup,
   },
 ];
