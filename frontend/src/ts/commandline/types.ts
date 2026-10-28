@@ -1,5 +1,6 @@
 import { Config, ConfigKey } from "@monkeytype/schemas/configs";
 import { Validation } from "../types/validation";
+import { FaObject } from "../types/font-awesome";
 
 // this file is needed becauase otherwise it would produce a circular dependency
 
@@ -15,8 +16,7 @@ export type Command = {
   singleListDisplayNoIcon?: string;
   subgroup?: CommandsSubgroup;
   found?: boolean;
-  icon?: string;
-  iconType?: "regular" | "solid";
+  fa?: FaObject;
   sticky?: boolean;
   alias?: string;
   input?: boolean;
