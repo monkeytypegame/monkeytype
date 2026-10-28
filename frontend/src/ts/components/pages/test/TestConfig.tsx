@@ -367,6 +367,12 @@ function Mode2Custom(props: ComponentProps<"div">): JSXElement {
           showModal("CustomText");
         }}
       />
+      <TCButton
+        fa={{ icon: "fa-music" }}
+        onClick={() => {
+          showModal("LyricsSearch");
+        }}
+      />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { EditResultTagsModal } from "./EditResultTagsModal";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
 import { GoogleSignupModal } from "./GoogleSignUpModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
+import { LyricsSearchModal } from "./LyricsSearchModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { PbTablesModal } from "./PbTablesModal";
 import { PractiseWordsModal } from "./PractiseWordsModal";
@@ -43,6 +44,7 @@ export function Modals(): JSXElement {
       <QuoteRateModal />
       <QuoteReportModal />
       <QuoteSearchModal />
+      <LyricsSearchModal />
       <CustomTestDurationModal />
       <CustomWordAmountModal />
       <PbTablesModal />
