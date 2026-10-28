@@ -112,7 +112,7 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy() ?? 100);
   if (!isNaN(acc)) {
     setCurrentLiveStats({ acc });
   }
