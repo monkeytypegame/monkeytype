@@ -18,6 +18,7 @@ import {
   ThemeWithName,
 } from "../../../../constants/themes";
 import {
+  clearRandom,
   convertCustomColorsToTheme,
   convertThemeToCustomColors,
 } from "../../../../controllers/theme-controller";
@@ -258,12 +259,18 @@ export function Theme(): JSXElement {
       inputs={
         <div class="grid w-full grid-cols-2 gap-2">
           <Button
-            onClick={() => setConfig("customTheme", false)}
+            onClick={() => {
+              void clearRandom();
+              setConfig("customTheme", false);
+            }}
             active={!getConfig.customTheme}
             text="preset"
           />
           <Button
-            onClick={() => setConfig("customTheme", true)}
+            onClick={() => {
+              void clearRandom();
+              setConfig("customTheme", true);
+            }}
             active={getConfig.customTheme}
             text="custom"
           />
@@ -327,6 +334,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         "transition-[opacity,color,background,box-shadow] duration-125",
       )}
       onClick={() => {
+        void clearRandom();
         setConfig("customThemeColors", props.theme.colors);
       }}
       data-theme-id={props.theme._id}

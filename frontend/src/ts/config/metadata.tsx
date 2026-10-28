@@ -139,6 +139,16 @@ const caretOptionsMetadata = {
   outline: {},
   underline: {},
 };
+// picking a theme by hand turns auto switch off. whole-config applies set
+// autoSwitchTheme last, so it is still the default (off) when this runs there
+function disableAutoSwitchTheme(
+  currentConfig: Readonly<ConfigSchemas.Config>,
+): Partial<ConfigSchemas.Config> {
+  if (!currentConfig.autoSwitchTheme) return {};
+  showNoticeNotification("Auto switch theme disabled");
+  return { autoSwitchTheme: false };
+}
+
 export const configMetadata: ConfigMetadataObject = {
   // test
   punctuation: {
@@ -1174,10 +1184,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
-    overrideConfig: () => {
-      return {
-        customTheme: false,
-      };
+    overrideConfig: ({ currentConfig }) => {
+      // turning the custom theme off disables auto switch itself, so the
+      // notice isn't shown twice
+      if (currentConfig.customTheme) return { customTheme: false };
+      return disableAutoSwitchTheme(currentConfig);
     },
   },
   customTheme: {
@@ -1186,6 +1197,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom theme",
     changeRequiresRestart: false,
     group: "theme",
+    // only a change: randomizeTheme rewrites the current value (nosave)
+    overrideConfig: ({ value, currentConfig }) =>
+      value === currentConfig.customTheme
+        ? {}
+        : disableAutoSwitchTheme(currentConfig),
   },
   customThemeColors: {
     key: "customThemeColors",
@@ -1193,6 +1209,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom theme colors",
     changeRequiresRestart: false,
     group: "theme",
+    overrideConfig: ({ currentConfig }) =>
+      disableAutoSwitchTheme(currentConfig),
     overrideValue: ({ value }) => {
       const allColorsThesame = value.every((color) => color === value[0]);
       if (allColorsThesame) {

@@ -40,6 +40,7 @@ export function update(): void {
         ThemeController.preview("custom", theme.colors);
       },
       exec: (): void => {
+        void ThemeController.clearRandom();
         setConfig("customTheme", true);
         setConfig("customThemeColors", theme.colors);
       },
