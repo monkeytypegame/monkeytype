@@ -9,3 +9,4 @@ Before any browser testing, read `docs/AGENT_BROWSER.md` (dev server, `window.__
 Roadmap steps (C1, EP1…): `docs/specs/solid-monkeytype/roadmap.md`. Done = tests, lint and a browser check; behaviour changes outside the agreed plan: ask first. Tick the row as "Done in [commit or PR link]: <summary>" (PR: add the link in a follow-up commit once it's open), then update rows that cite it.
 In a git worktree, run `scripts/setup-worktree.sh` before building or testing; there, pnpm tries to reinstall unless `pnpm_config_verify_deps_before_run=false` is set, else run tools via `node_modules/.bin/`.
 In plan mode, before writing up a plan, ask clarifying questions if needed. At the end of plan mode, give me a list of unresolved questions to answer, if any. Make them concise.
+Before creating a PR, read `docs/CONTRIBUTING.md` and follow the naming conventions
