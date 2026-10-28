@@ -11,7 +11,11 @@ import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
-import { DataTable, DataTableColumnDef } from "../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../ui/table/DataTable";
 
 type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
@@ -52,7 +56,7 @@ function getColumns(options: {
   format: Formatting;
   mode: Mode;
 }): DataTableColumnDef<PBRow>[] {
-  const defineColumn = createColumnHelper<PBRow>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, PBRow>().accessor;
   const { format: f, mode: m } = options;
 
   const columns = [

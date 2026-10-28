@@ -20,7 +20,11 @@ import { replaceSpacesWithUnderscores } from "../../../utils/strings";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 import { Section } from "./utils";
 
 export function ApeKeysTab() {
@@ -71,7 +75,8 @@ export function ApeKeysTab() {
 }
 
 function getColumns(): DataTableColumnDef<ApeKeyEntry>[] {
-  const defineColumn = createColumnHelper<ApeKeyEntry>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, ApeKeyEntry>()
+    .accessor;
 
   const columns = [
     defineColumn("_id", {
