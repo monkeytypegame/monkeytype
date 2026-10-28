@@ -554,7 +554,7 @@ export function getAccuracy(
 ): {
   correct: number;
   incorrect: number;
-  percentage: number;
+  percentage: number | null;
 } {
   const { events } = eventLog;
 
@@ -575,7 +575,7 @@ export function getAccuracy(
     }
   }
   const total = correct + incorrect;
-  const percentage = total === 0 ? 0 : (correct / total) * 100;
+  const percentage = total === 0 ? null : (correct / total) * 100;
 
   return {
     correct: correct,

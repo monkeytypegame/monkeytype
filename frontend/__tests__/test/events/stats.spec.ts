@@ -910,9 +910,9 @@ describe("stats.ts", () => {
       expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
-    it("returns 0% for no events", () => {
+    it("returns null percentage for no events", () => {
       const acc = getAccuracy(buildEventLog());
-      expect(acc.percentage).toBe(0);
+      expect(acc.percentage).toBeNull();
     });
 
     it("ignores delete events", () => {

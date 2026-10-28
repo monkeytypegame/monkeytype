@@ -38,9 +38,9 @@ export function recordEventForCache(event: TestEvent): void {
   }
 }
 
-export function getLiveCachedAccuracy(): number {
+export function getLiveCachedAccuracy(): number | null {
   return cache.totalInputs === 0
-    ? 100
+    ? null
     : (cache.correctInputs / cache.totalInputs) * 100;
 }
 
