@@ -45,10 +45,10 @@ Every track can start now. These are the only steps that wait on another track:
 |---|---|---|
 | **TH1** test-page harness | T0 | Builds on Words owning its layout |
 | **T2** break joining | TH1 | The harness is the safety net from here on |
-| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event, focus and funbox; they need new homes first |
+| **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event and funbox; they need new homes first (focus mode is already a plain `setFocusMode` call) |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
-| **C4** delete `Config` + `configEvent` | T6, L2 | test-logic, pace caret and funbox are the last subscribers |
+| **C4** delete `Config` + `configEvent` | T6, L2 | test-logic and pace caret are the last subscribers (L2 removed funbox's) |
 | **U6** delete `__nonReactive` | T6a, T6c | Its last callers (layout emulator, keydown, test-logic, result PB, today tracker) are rewritten there |
 | **EP3** per-word facts | T1 | Builds on the new letter/word rendering |
 | **L3** monkey power | T3 | Needs the caret boundary for the caret position |
@@ -101,7 +101,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | C1 | S · commit | Config setter writes the store **before** dispatching the config event (and before full-config-change finished) | none | Done in [bd2cae5](https://github.com/monkeytypegame/monkeytype/commit/bd2cae518): `setConfig`/`toggleFunbox` write store → persist → event; whole-config apply resets the store with `Config`, writes per key inside one `batch` (effects run once), all before finished. Leftover for C3: funbox `activate()` writes `Config.funbox` without the store |
 | [ ] | C2 | S · commit each | Replace config-bus subscribers outside the test with effects on store keys: theme controller, sound controller, quotes controller, challenge controller, commandline theme list | C1 | One PR each, all parallel |
 | [ ] | C3 | M · commit per area; PR for test modules | Move mutable `Config.x` reads to the store, by area: format singleton; commandline lists; controllers; input; test modules | C1 | Parallel by area; the test-module part follows T3/T6 where they overlap |
-| [ ] | C4 | L · PR | Delete the mutable config object, the config event bus and the full-config-change events; whole-config apply becomes one batched reconcile (the `batch` already exists since C1); convert remaining test subscribers (pace caret, tts, practise words, funbox, test-logic) to effects | C2, C3, T6, L2 | Last step of C |
+| [ ] | C4 | L · PR | Delete the mutable config object, the config event bus and the full-config-change events; whole-config apply becomes one batched reconcile (the `batch` already exists since C1); convert remaining test subscribers (pace caret, tts, practise words, test-logic) to effects | C2, C3, T6, L2 | Last step of C |
 | [ ] | C5 | M · PR | Merge commandline metadata into config metadata; command icons become icon-component types | none | Can be L-track work |
 
 ## Track U: user data (parallel with T and C)
@@ -122,14 +122,14 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | EP1 | S · commit | Restart-test bus becomes a direct engine command (logo, nav, test config, modals, quick-restart hotkey) | none | Before T5. Done: callers import `restartTest` (renamed from `restart`) from test-logic; `events/test.ts` deleted |
 | [x] | EP2 | S · commit | Timer bus becomes engine-internal | none | Before T5. Done: test-logic passes `onFinish`/`onFail` to `TestTimer.start` (a direct import would be circular); word-generation error calls `fail` directly; `events/timer.ts` deleted |
 | [ ] | EP3 | M · PR | Per-word facts (direction, has numbers/newlines/tabs, Korean status) computed once at generation and carried on the word/render store; redoes #7787. EventLog context keeps Korean status as one test-level boolean derived from the words, unless stats need it per word (then per word plus a version bump) | T1 | Coordinate with T3 |
-| [ ] | EP4 | S · commit | Parity tests for the live-cache tallies: for typed event sequences, each tally equals its pure stat function on the built log | none | Guards the replay constraint; every later tally gets one too |
+| [x] | EP4 | S · commit | Parity tests for the live-cache tallies: for typed event sequences, each tally equals its pure stat function on the built log | none | Guards the replay constraint; every later tally gets one too. Done in [0bca3be](https://github.com/monkeytypegame/monkeytype/commit/0bca3beba): `live-cache.spec.ts` checks accuracy against `getAccuracy` and ms since last input against the new `getMsSinceLastInputEvent`; timer start has no pure counterpart (wall-clock anchor). Prior commit [ae5b277](https://github.com/monkeytypegame/monkeytype/commit/ae5b277ba): accuracy is `null` with no counted inputs on both sides (callers keep 100 live, 0 in the result, min-acc skipped) |
 
 ## Track L: leaves
 
 | Done | ID | Size | Step | Blocked by |
 |---|---|---|---|---|
-| [ ] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit | none (before T5) |
-| [ ] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks, getting input as arguments instead of importing the EventLog; display tweaks via `data-ui-*` / funbox CSS | none (before T5) |
+| [x] | L1 | M · PR | Focus mode becomes a signal; layout binds focus state; cursor hiding goes to CSS; one component owns the mouse-move exit. Done in [#8519](https://github.com/monkeytypegame/monkeytype/pull/8519): `isFocusMode`/`setFocusMode` (rAF-deferred) in states/test; `data-focused` on app, header, footer, banners; `FocusModeExit`; caret blink follows the signal; `test/focus.ts` deleted | none (before T5) |
+| [x] | L2 | L · PR | Funbox component owns funbox document state (body state, stylesheet link, CRT scanline); funbox functions stop touching the DOM and become engine plugin hooks, getting input as arguments instead of importing the EventLog; display tweaks via `data-ui-*` / funbox CSS. Done in [#8522](https://github.com/monkeytypegame/monkeytype/pull/8522): `components/core/Funbox.tsx` in App derives `fb-*`/`ignore-reduced-motion` and per-funbox links from `getAppliedFunboxes()` (set by `activate()` after validation, cleared by `clear()`), crt (`crtmode`, `#scanline`, global link) from `config.funbox` unless screenshotting; selectors unchanged; body classes via the `useBodyClasses` hook (Theme's `darkMode` and DevOptionsModal's debug classes moved too). `applyGlobalCSS`/`clearGlobal` and funbox's config-event subscriber deleted; crt loses `hasCssFile` (was loaded twice). Safari ≤16.5 crt check → `getFunboxUnsupportedReason` (metadata `isBlocked`, `toggleFunbox` setter, `activate()`). `handleKeydown`/`handleSpace` get a `FunboxInput` (`current()`, `forWord(i)`) from input instead of importing `events/data`. Hook shape left for T6a | none (before T5) |
 | [ ] | L3 | M · PR | Monkey power as a component owning its canvas, positioned from the caret | T3 |
 | [ ] | L4 | M · PR | Result word highlight becomes part of words history, driven by a highlighted-range signal from the chart | none |
 | [ ] | L5 | M · PR | Screenshot-mode signal; elements hide through state; capture uses the result ref | none |

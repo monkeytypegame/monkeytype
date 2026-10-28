@@ -21,7 +21,6 @@ import "./elements/no-css";
 import "./states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
-import * as Focus from "./test/focus";
 import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
@@ -73,7 +72,6 @@ void fetchLatestVersion().then((data) => {
   setVersion(data);
 });
 
-Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   showModal("Cookies");

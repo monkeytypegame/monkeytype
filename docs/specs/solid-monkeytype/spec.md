@@ -26,7 +26,7 @@ One architecture, described below as the final state:
   1. a DOM-free **test engine** (lifecycle phases, words, timer, EventLog, stats, funbox plugins) that owns its state and exposes commands and read-only signals,
   2. an **input layer** (the WordsInput component plus handlers) that turns browser input into engine commands and render-store writes, never rendering synchronously,
   3. a **render layer** (TestPage, Words and the components around them) that owns every element it draws, including layout (line jump, tape scroll, break joining), drives both carets, and runs every fade.
-- **Imperative DOM work survives only inside the component that owns the element** (measuring, animating, canvas, focus), started from that component's lifecycle. Document-level effects (body classes, head links) each belong to one dedicated component, like Theme and Font do today.
+- **Imperative DOM work survives only inside the component that owns the element** (measuring, animating, canvas, focus), started from that component's lifecycle. Document-level effects (body classes, head links) each belong to one dedicated component, like Theme and Font do today. Body classes go through the `useBodyClasses` hook (a `classList`-style record, removed on cleanup), never hand-rolled `document.body.classList` calls; each class has one owner.
 - **Theming targets a stable attribute API**, `data-ui-element` / `data-ui-state` / `data-ui-variant`, which navigation already uses. Ids and classes become internal.
 
 Users should see no behaviour change, except where a bug at today's seams disappears and except intended deviations listed per PR.
