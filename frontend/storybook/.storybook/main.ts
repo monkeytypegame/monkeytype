@@ -9,6 +9,7 @@ function stubVirtualEnvConfig(): Plugin {
     name: "stub-virtual-env-config",
     resolveId(source) {
       if (source === id) return resolved;
+      return undefined;
     },
     load(loadId) {
       if (loadId === resolved) {
@@ -21,6 +22,7 @@ function stubVirtualEnvConfig(): Plugin {
           quickLoginPassword: undefined,
         })};`;
       }
+      return undefined;
     },
   };
 }
@@ -30,7 +32,7 @@ function patchQsrToNotThrow(): Plugin {
     name: "patch-qsr-not-throw",
     enforce: "pre",
     transform(code, id) {
-      if (!id.includes("utils/dom")) return;
+      if (!id.includes("utils/dom")) return undefined;
       // Replace the throw in qsr with creating a dummy element
       return code.replaceAll(
         `throw new Error(\`Required element not found: \${selector}\`);`,
@@ -46,7 +48,7 @@ function patchAnimatedModalToNotThrow(): Plugin {
     name: "patch-animated-modal-not-throw",
     enforce: "pre",
     transform(code, id) {
-      if (!id.includes("utils/animated-modal")) return;
+      if (!id.includes("utils/animated-modal")) return undefined;
       return code
         .replaceAll(
           `throw new Error(
@@ -95,10 +97,12 @@ function stubChartController(): Plugin {
       ) {
         return stubId;
       }
+      return undefined;
     },
     load(id) {
       if (id === stubId) return stubCode;
       if (id.includes("controllers/chart-controller")) return stubCode;
+      return undefined;
     },
   };
 }
@@ -110,11 +114,13 @@ function stubVirtualLanguageHashes(): Plugin {
     name: "stub-virtual-language-hashes",
     resolveId(source) {
       if (source === id) return resolved;
+      return undefined;
     },
     load(loadId) {
       if (loadId === resolved) {
         return `export const languageHashes = {};`;
       }
+      return undefined;
     },
   };
 }

@@ -9,10 +9,11 @@ import {
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { Config } from "../config/store";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { getActivePage, isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../states/core";
+import { getRoutePage } from "../states/router";
 import { Fonts } from "../constants/fonts";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
-import * as UI from "../ui";
+import { setFontPreview } from "../states/font";
 import { Validation } from "../types/validation";
 import { typedKeys } from "@monkeytype/util/objects";
 
@@ -38,12 +39,14 @@ type SkippedConfigKeys =
   | "theme" //themes are sorted by color and also affected by config.favThemes
   | "funbox"; //is using a special non schema command at the top to clear funboxes
 
+type CommandlineConfigKey = keyof Omit<
+  ConfigSchemas.Config,
+  ConfigKeysWithoutCommands | SkippedConfigKeys
+>;
+
 export type CommandlineConfigMetadataObject = {
-  [K in keyof Omit<
-    ConfigSchemas.Config,
-    ConfigKeysWithoutCommands | SkippedConfigKeys
-    // oxlint-disable-next-line no-explicit-any
-  >]: CommandlineConfigMetadata<K, any>;
+  // oxlint-disable-next-line no-explicit-any
+  [K in CommandlineConfigKey]: CommandlineConfigMetadata<K, any>;
 };
 
 export type InputProps<T extends keyof ConfigSchemas.Config> = {
@@ -75,6 +78,7 @@ export type CommandlineConfigMetadata<
   alias?: string;
   display?: string;
   isVisible?: boolean;
+  // oxlint-disable-next-line no-generated-empty-object-type -- {} means "no input"
   input?: InputProps<T> | SecondaryInputProps<T2> | Record<never, never>;
   subgroup?: SubgroupProps<T>;
 };
@@ -99,7 +103,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -107,7 +111,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -116,14 +120,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [10, 25, 50, 100],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
       inputValueConvert: Number,
 
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -131,13 +135,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: [15, 30, 60, 120],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
       inputValueConvert: Number,
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -145,7 +149,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -176,7 +180,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         return map[value[0] as number] as string;
       },
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -262,7 +266,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -284,8 +288,8 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       inputValueConvert: (val) =>
         val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
       afterExec: () => {
-        if (getActivePage() === "test") {
-          void TestLogic.restart();
+        if (getRoutePage() === "test") {
+          void TestLogic.restartTest();
         }
       },
     },
@@ -345,7 +349,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   lazyMode: {
     subgroup: {
       options: "fromSchema",
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   layout: {
@@ -353,7 +357,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       options: "fromSchema",
       display: (layout) =>
         layout === "default" ? "off" : layout.replace(/_/g, " "),
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   codeUnindentOnBackspace: {
@@ -490,7 +494,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: ["off", "pb", "tagPb", "last", "average", "daily"],
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
     input: {
@@ -502,7 +506,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
         return newVal;
       },
       afterExec: () => {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       },
     },
   },
@@ -636,7 +640,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
           display: fontConfig.display,
         } as Record<string, string | boolean>;
       },
-      hover: (name) => UI.previewFontFamily(name),
+      hover: (name) => setFontPreview(name),
     },
   },
   keymapMode: {
@@ -672,7 +676,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
       alias: (val) => (val === "overrideSync" ? "default" : ""),
       display: (layout) =>
         layout === "overrideSync" ? "emulator sync" : layout.replace(/_/g, " "),
-      afterExec: () => void TestLogic.restart(),
+      afterExec: () => void TestLogic.restartTest(),
     },
   },
   keymapKeys: {

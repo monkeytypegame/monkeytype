@@ -12,7 +12,10 @@ import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getOptions } from "../utils/zod";
-import { canSetFunboxWithConfig } from "./funbox-validation";
+import {
+  canSetFunboxWithConfig,
+  getFunboxUnsupportedReason,
+} from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -38,7 +41,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   displayString?: string;
   /**
-   * Should the config change trigger a resize event? handled in ui.ts:108
+   * Should the config change trigger a resize event? handled in config/setters.ts
    */
   triggerResize?: true;
 
@@ -422,6 +425,14 @@ export const configMetadata: ConfigMetadataObject = {
           )} is an invalid combination of funboxes`,
         );
         return true;
+      }
+
+      for (const funbox of value) {
+        const unsupportedReason = getFunboxUnsupportedReason(funbox);
+        if (unsupportedReason !== undefined) {
+          showNoticeNotification(unsupportedReason, { durationMs: 5000 });
+          return true;
+        }
       }
 
       for (const funbox of value) {
@@ -1359,6 +1370,7 @@ export function getOptionLabel<K extends keyof ConfigSchemas.Config>(
 }
 
 // all of a setting's visible option labels joined, so search can match on them
+// oxlint-disable-next-line no-unnecessary-type-parameters -- keeps key and its metadata types correlated
 export function getOptionSearchKeywords<K extends keyof ConfigSchemas.Config>(
   key: K,
 ): string {

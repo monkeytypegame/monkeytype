@@ -11,10 +11,6 @@ import {
   removeNotification,
 } from "../states/notifications";
 import * as Caret from "./caret";
-import * as SlowTimer from "../legacy-states/slow-timer";
-import { timerEvent } from "../events/timer";
-import { highlight } from "../events/keymap";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -33,7 +29,23 @@ import {
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
+  setLayoutfluidTimerText,
+  setLayoutfluidTimerVisible,
+  isSlowTimer,
+  setSlowTimer,
+  clearSlowTimer,
+  highlightKeymapKey,
 } from "../states/test";
+import { capitalizeFirstLetter } from "../utils/strings";
+
+export type TimerHandlers = {
+  onFinish: () => void;
+  onFail: (reason: string) => void;
+};
+
+// set by start(): test-logic passes its finish/fail (importing them here would be circular)
+let onFinish: TimerHandlers["onFinish"] = () => undefined;
+let onFail: TimerHandlers["onFail"] = () => undefined;
 
 let emittedTicks = 0;
 let stopped = true;
@@ -68,6 +80,7 @@ const newTimer = createTimer({
     // doesn't pay N times for buildEventLog/WPM/UI. Each missed tick still
     // gets a step event + per-tick side effects (playTimeWarning, layoutfluid).
     const ticksDue = Math.floor((now - timerStartMs) / 1000);
+    // oxlint-disable-next-line no-unmodified-loop-condition
     while (!stopped && emittedTicks + 1 < ticksDue) {
       console.debug(
         "Catching up timer, missed tick at",
@@ -78,7 +91,7 @@ const newTimer = createTimer({
       logTestEvent("timer", now, {
         event: "step",
         timer: emittedTicks,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
         catchup: true,
       });
     }
@@ -90,7 +103,7 @@ const newTimer = createTimer({
       logTestEvent("timer", now, {
         event: "step",
         timer: emittedTicks,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
         drift,
       });
     }
@@ -151,23 +164,23 @@ function layoutfluid(time: number): void {
     const switchTime = Config.time / layouts.length;
     const index = Math.floor(time / switchTime);
     const layout = layouts[index];
-    const flooredSwitchTimes = [];
+    const flooredSwitchTimes: number[] = [];
 
     for (let i = 1; i < layouts.length; i++) {
       flooredSwitchTimes.push(Math.floor(switchTime * i));
     }
 
-    if (flooredSwitchTimes.includes(time + 3)) {
-      LayoutfluidFunboxTimer.show();
-      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 2)) {
-      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1] as string);
-    } else if (flooredSwitchTimes.includes(time + 1)) {
-      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1] as string);
+    const secondsUntilSwitch = [3, 2, 1].find((sec) =>
+      flooredSwitchTimes.includes(time + sec),
+    );
+    if (secondsUntilSwitch !== undefined) {
+      const nextLayout = capitalizeFirstLetter(layouts[index + 1] as string);
+      setLayoutfluidTimerText(`${nextLayout} in: ${secondsUntilSwitch}s`);
+      setLayoutfluidTimerVisible(true);
     }
 
     if (Config.layout !== layout && layout !== undefined) {
-      LayoutfluidFunboxTimer.hide();
+      setLayoutfluidTimerVisible(false);
       setConfig("layout", layout as Layout, {
         nosave: true,
       });
@@ -177,7 +190,7 @@ function layoutfluid(time: number): void {
 
       if (Config.keymapMode === "next") {
         setTimeout(() => {
-          highlight(
+          highlightKeymapKey(
             TestWords.words
               .getCurrent()
               ?.text.charAt(getCurrentInput().length) ?? "",
@@ -200,16 +213,16 @@ function checkIfFailed(
     getActiveWordIndex() > 3
   ) {
     if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min speed" });
+    onFail("min speed");
     return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "fail", value: "min accuracy" });
+    onFail("min accuracy");
     return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -230,9 +243,9 @@ function checkIfTimeIsUp(testTime: number): void {
     //times up
     if (timer !== null) clearTimeout(timer);
     Caret.hide();
-    SlowTimer.clear();
+    clearSlowTimer();
     slowTimerCount = 0;
-    timerEvent.dispatch({ key: "finish" });
+    onFinish();
     return;
   }
 
@@ -324,7 +337,7 @@ function checkIfTimerIsSlow(drift: number): void {
   ) {
     if (drift > 125) {
       //slow timer
-      SlowTimer.set();
+      setSlowTimer();
       setLowFpsMode();
     }
     if (drift > 250) {
@@ -344,13 +357,17 @@ function checkIfTimerIsSlow(drift: number): void {
         ),
       );
 
-      timerEvent.dispatch({ key: "fail", value: "slow timer" });
+      onFail("slow timer");
     }
   }
 }
 
-export async function start(now: number): Promise<void> {
-  SlowTimer.clear();
+export async function start(
+  now: number,
+  handlers: TimerHandlers,
+): Promise<void> {
+  ({ onFinish, onFail } = handlers);
+  clearSlowTimer();
   slowTimerCount = 0;
   emittedTicks = 0;
   for (const id of slowTimerNotifIds) {
@@ -393,7 +410,7 @@ async function _startOld(now: number): Promise<void> {
     timer = setTimeout(function () {
       if (!isTestActive()) {
         if (timer !== null) clearTimeout(timer);
-        SlowTimer.clear();
+        clearSlowTimer();
         slowTimerCount = 0;
         return;
       }
@@ -404,7 +421,7 @@ async function _startOld(now: number): Promise<void> {
         event: "step",
         timer: getLiveCachedTestSeconds(now),
         drift: drift,
-        slowTimer: SlowTimer.get() ? true : undefined,
+        slowTimer: isSlowTimer() ? true : undefined,
       });
 
       timerStep(now, false);

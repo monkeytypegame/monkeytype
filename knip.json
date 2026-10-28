@@ -5,7 +5,7 @@
       "project": "src/**/*.ts"
     },
     "frontend": {
-      "entry": "src/ts/index.ts",
+      "entry": "src/ts/index.tsx",
       "project": "src/ts/**/*.ts"
     },
     "packages/*": {

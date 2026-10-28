@@ -1,10 +1,7 @@
-import { getInputElement } from "../input-element";
 import { onKeyup } from "../handlers/keyup";
 import { onKeydown } from "../handlers/keydown";
 
-const inputEl = getInputElement();
-
-inputEl.addEventListener("keyup", async (event) => {
+export async function onKeyUp(event: KeyboardEvent): Promise<void> {
   console.debug("wordsInput event keyup", {
     event,
     key: event.key,
@@ -12,9 +9,9 @@ inputEl.addEventListener("keyup", async (event) => {
   });
 
   await onKeyup(event);
-});
+}
 
-inputEl.addEventListener("keydown", async (event) => {
+export async function onKeyDown(event: KeyboardEvent): Promise<void> {
   console.debug("wordsInput event keydown", {
     event,
     key: event.key,
@@ -22,4 +19,4 @@ inputEl.addEventListener("keydown", async (event) => {
   });
 
   await onKeydown(event);
-});
+}

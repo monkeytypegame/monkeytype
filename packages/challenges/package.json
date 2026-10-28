@@ -15,7 +15,6 @@
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint .",
     "george-mapping": "tsx ./scripts/challenge-roles"
   },
   "dependencies": {
@@ -26,8 +25,8 @@
     "@monkeytype/typescript-config": "workspace:*",
     "@types/node": "24.9.1",
     "madge": "8.0.0",
-    "oxlint": "1.77.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
     "tsup": "8.4.0",
     "typescript": "7.0.2",
     "vitest": "4.1.0"

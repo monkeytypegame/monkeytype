@@ -1,6 +1,7 @@
 {
   "ignorePatterns": ["node_modules", "dist", "coverage", ".firebase", ".turbo"],
   "extends": [
+    ".oxlintrc.core.json",
     "../packages/oxlint-config/index.jsonc",
     "../packages/oxlint-config/plugin.jsonc"
     // "@monkeytype/oxlint-config"
@@ -11,18 +12,9 @@
   },
   "overrides": [
     {
-      "files": ["**/*.ts"],
+      "files": ["src/**/*.ts", "src/**/*.tsx"],
       "rules": {
-        //
-      }
-    },
-    {
-      "files": ["storybook/**/*.tsx"],
-      "rules": {
-        "explicit-function-return-type": "off",
-        "no-explicit-any": "off",
-        "no-unsafe-assignment": "off",
-        "no-empty-function": "off"
+        "monkeytype-rules/no-module-scope-dom-query": "error"
       }
     },
     {
@@ -42,7 +34,6 @@
         "solid/no-react-deps": "error",
         "solid/no-react-specific-props": "error",
         "solid/no-unknown-namespaces": "error",
-        "solid/prefer-classlist": "error",
         "solid/prefer-for": "error",
         "solid/prefer-show": "error",
         "solid/reactivity": "error",

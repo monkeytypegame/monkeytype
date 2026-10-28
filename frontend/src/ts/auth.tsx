@@ -17,7 +17,7 @@ import {
   User,
   User as UserType,
 } from "firebase/auth";
-import { createMemo } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
@@ -122,26 +122,34 @@ const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
   });
 export { getAuthenticatedUser };
 
-createEffectOn(getUserId, () => {
-  updateAuthenticatedUser();
-});
-
-const authenticationMemos = Object.fromEntries(
-  typedKeys(authMethods).map((authMethod) => {
-    const memo = createMemo(() => {
-      const providerId = getProviderId(authMethod);
-
-      const user = getAuthenticatedUserReactive();
-      if (user === null) return undefined;
-      const result = {
-        isInUse: user.providerData.some((p) => p.providerId === providerId),
-        hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
-      };
-
-      return result;
-    });
-    return [authMethod, memo];
+createRoot(() =>
+  createEffectOn(getUserId, () => {
+    updateAuthenticatedUser();
   }),
+);
+
+const authenticationMemos = createRoot(() =>
+  Object.fromEntries(
+    typedKeys(authMethods).map((authMethod) => {
+      const memo = createMemo(() => {
+        const providerId = getProviderId(authMethod);
+
+        const user = getAuthenticatedUserReactive();
+        if (user === null) return undefined;
+        const provider = user.providerData.find(
+          (p) => p.providerId === providerId,
+        );
+        const result = {
+          isInUse: provider !== undefined,
+          email: provider?.email ?? undefined,
+          hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
+        };
+
+        return result;
+      });
+      return [authMethod, memo];
+    }),
+  ),
 );
 
 export async function sendVerificationEmail(): Promise<void> {
@@ -236,9 +244,26 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
+  dispatchAuthStateChanged(user, userPromise);
+}
+
+/**
+ * Announces a new auth state: `user` signed in (null: signed out), with
+ * `loadPromise` downloading their user data.
+ */
+export function dispatchAuthStateChanged(
+  user: UserType | null,
+  loadPromise: Promise<void>,
+): void {
   authEvent.dispatch({
     type: "authStateChanged",
-    data: { isUserSignedIn: user !== null, loadPromise: userPromise },
+    data: {
+      isUserSignedIn: user !== null,
+      loadPromise,
+      reloadUserData: async () => {
+        if (user !== null) await loadUser(user);
+      },
+    },
   });
 }
 
@@ -366,7 +391,6 @@ async function addPopupProvider(
   }
 
   await linkWithPopup(user, provider);
-  authEvent.dispatch({ type: "authConfigUpdated" });
 }
 
 export async function removeAuthProvider(
@@ -601,6 +625,12 @@ export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
   return typedKeys(authMethods).some(
     (it) => it !== authMethod && isUsingAuthentication(it),
   );
+}
+
+export function getAuthMethodEmailReactive(
+  authMethod: AuthMethod,
+): string | undefined {
+  return authenticationMemos[authMethod]?.()?.email;
 }
 
 export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {
