@@ -1236,7 +1236,7 @@ const configMetadataEntries = {
   timerColor: {
     key: "timerColor",
     fa: { icon: "fa-chart-pie" },
-    displayString: "timer color",
+    displayString: "live progress color",
     changeRequiresRestart: false,
     group: "appearance",
     description:
@@ -1252,7 +1252,7 @@ const configMetadataEntries = {
   timerOpacity: {
     key: "timerOpacity",
     fa: { icon: "fa-chart-pie" },
-    displayString: "timer opacity",
+    displayString: "live progress opacity",
     changeRequiresRestart: false,
     group: "appearance",
     description:

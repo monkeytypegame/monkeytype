@@ -4,7 +4,7 @@ import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 import { Command, CommandsSubgroup } from "../types";
 
 const subgroup: CommandsSubgroup = {
-  title: "Minimum word burst...",
+  title: "Min word burst...",
   configKey: "minBurst",
   list: [
     {
@@ -49,7 +49,7 @@ const subgroup: CommandsSubgroup = {
 const commands: Command[] = [
   {
     id: "changeMinBurst",
-    display: "Minimum word burst...",
+    display: "Min word burst...",
     alias: "minimum",
     fa: { icon: "fa-bomb" },
     subgroup,
