@@ -11,6 +11,7 @@ import {
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
 import { getSnapshot } from "../../../states/snapshot";
+import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
@@ -129,7 +130,11 @@ export function Banners(): JSXElement {
   createEffectOn(() => getBanners().length, setGlobalOffsetSignal);
 
   return (
-    <div ref={ref} class="fixed top-0 left-0 z-1000 w-full">
+    <div
+      ref={ref}
+      class="fixed top-0 left-0 z-1000 w-full"
+      data-focused={isFocusMode() ? "" : undefined}
+    >
       <For each={getBanners()}>{(banner) => <Banner {...banner} />}</For>
     </div>
   );

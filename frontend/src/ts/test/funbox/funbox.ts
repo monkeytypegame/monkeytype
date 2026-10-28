@@ -14,20 +14,18 @@ import { HighlightMode, FunboxName } from "@monkeytype/schemas/configs";
 import { Mode } from "@monkeytype/schemas/shared";
 import { checkCompatibility, checkForcedConfig } from "@monkeytype/funbox";
 import {
-  getAllFunboxes,
   getActiveFunboxes,
   getActiveFunboxNames,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
-  getActiveFunboxesWithProperty,
 } from "./list";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { qs, qsa } from "../../utils/dom";
 import {
+  setAppliedFunboxes,
   setMemoryTimerDuration,
   setWordsWrapperHidden,
 } from "../../states/test";
-import { configEvent } from "../../events/config";
+import { getFunboxUnsupportedReason } from "../../config/funbox-validation";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -60,17 +58,7 @@ export function toggleFunbox(funbox: FunboxName): void {
 }
 
 export async function clear(): Promise<boolean> {
-  qs("body")?.setAttribute(
-    "class",
-    qs("body")
-      ?.getAttribute("class")
-      ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-"))
-      ?.join(" ") ?? "",
-  );
-
-  qsa(".funBoxTheme").remove();
-
+  setAppliedFunboxes([]);
   setWordsWrapperHidden(false);
   setMemoryTimerDuration(null);
   return true;
@@ -100,9 +88,23 @@ export async function activate(
     return false;
   }
 
+  const unsupported = Config.funbox.filter(
+    (it) => getFunboxUnsupportedReason(it) !== undefined,
+  );
+  for (const fb of unsupported) {
+    showNoticeNotification(getFunboxUnsupportedReason(fb) as string, {
+      durationMs: 5000,
+    });
+  }
+  if (unsupported.length > 0) {
+    setConfig(
+      "funbox",
+      Config.funbox.filter((it) => !unsupported.includes(it)),
+    );
+  }
+
   setMemoryTimerDuration(null);
-  await setFunboxBodyClasses();
-  await applyFunboxCSS();
+  setAppliedFunboxes(getActiveFunboxNames());
 
   setWordsWrapperHidden(false);
 
@@ -195,53 +197,3 @@ export async function rememberSettings(): Promise<void> {
     fb.functions.rememberSettings();
   }
 }
-
-async function setFunboxBodyClasses(): Promise<boolean> {
-  const body = qs("body");
-
-  const activeFbClasses = getActiveFunboxNames().map(
-    (name) => `fb-${name.replaceAll("_", "-")}`,
-  );
-
-  const currentClasses =
-    body
-      ?.getAttribute("class")
-      ?.split(/\s+/)
-      .filter((it) => !it.startsWith("fb-")) ?? [];
-
-  if (isFunboxActiveWithProperty("ignoreReducedMotion")) {
-    currentClasses.push("ignore-reduced-motion");
-  }
-
-  body?.setAttribute(
-    "class",
-    [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" "),
-  );
-
-  return true;
-}
-
-async function applyFunboxCSS(): Promise<boolean> {
-  qsa(".funBoxTheme").remove();
-  for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
-    const css = document.createElement("link");
-    css.classList.add("funBoxTheme");
-    css.rel = "stylesheet";
-    css.href = `funbox/${funbox.name}.css`;
-    document.head.appendChild(css);
-  }
-  return true;
-}
-
-configEvent.subscribe(async ({ key }) => {
-  if (key === "funbox") {
-    const active = getActiveFunboxNames();
-    getAllFunboxes()
-      .filter((it) => !active.includes(it.name))
-      .forEach((it) => it.functions?.clearGlobal?.());
-
-    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-      fb.functions.applyGlobalCSS();
-    }
-  }
-});
