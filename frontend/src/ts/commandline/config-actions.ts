@@ -71,7 +71,9 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
   //sound
   soundVolume: {
     subgroup: {
-      afterExec: () => SoundController.playClick,
+      afterExec: () => {
+        void SoundController.playClick();
+      },
     },
   },
   playSoundOnClick: {
