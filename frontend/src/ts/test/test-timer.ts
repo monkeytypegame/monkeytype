@@ -204,7 +204,7 @@ function layoutfluid(time: number): void {
 
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
-  acc: number,
+  acc: number | null,
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   if (
@@ -218,7 +218,7 @@ function checkIfFailed(
     onFail("min speed");
     return true;
   }
-  if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
+  if (Config.minAcc === "custom" && acc !== null && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     clearSlowTimer();
     slowTimerCount = 0;
@@ -314,7 +314,7 @@ function timerStep(now: number, catchingUp: boolean): void {
 
     setCurrentLiveStats({
       wpm: wpmAndRaw.wpm,
-      acc,
+      acc: acc ?? 100,
       raw: wpmAndRaw.raw,
       seconds: getLiveCachedTestSeconds(now),
     });
