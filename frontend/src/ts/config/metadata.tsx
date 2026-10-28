@@ -1,21 +1,32 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
+import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
 
 import * as CustomThemes from "../collections/custom-themes";
 import { getDefaultConfig } from "../constants/default-config";
+import { Fonts } from "../constants/fonts";
 import { isAuthenticated } from "../states/core";
 import { showNoticeNotification } from "../states/notifications";
 import { FaObject } from "../types/font-awesome";
+import { Validation } from "../types/validation";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
-import { capitalizeFirstLetter } from "../utils/strings";
+import {
+  capitalizeFirstLetter,
+  getLanguageDisplayString,
+  replaceUnderscoresWithSpaces,
+} from "../utils/strings";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getOptions } from "../utils/zod";
 import {
   canSetFunboxWithConfig,
   getFunboxUnsupportedReason,
 } from "./funbox-validation";
+import { Config } from "./store";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -28,6 +39,60 @@ export type OptionMetadata = {
   displayString?: string;
   fa?: FaObject;
   visible?: boolean;
+};
+
+export type CommandlineInputMetadata<K extends keyof ConfigSchemas.Config> = {
+  alias?: string;
+  display?: string;
+  defaultValue?: () => string;
+  /**
+   * default value for missing validation is `{schema:true}`
+   */
+  validation?: Omit<Validation<ConfigSchemas.Config[K]>, "schema"> & {
+    schema?: true;
+  };
+  configValue?: ConfigSchemas.Config[K];
+  inputValueConvert: ConfigSchemas.Config[K] extends string
+    ? ((val: string) => string) | undefined
+    : (val: string) => ConfigSchemas.Config[K];
+};
+
+export type CommandlineSecondaryInputMetadata<
+  K extends keyof ConfigSchemas.Config,
+> = {
+  secondKey: K;
+} & CommandlineInputMetadata<K>;
+
+export type CommandlineSubgroupMetadata<K extends keyof ConfigSchemas.Config> =
+  {
+    alias?: (value: ConfigSchemas.Config[K]) => string;
+    display?: (value: ConfigSchemas.Config[K]) => string;
+    configValueMode?: (value: ConfigSchemas.Config[K]) => "include" | undefined;
+    isVisible?: (value: ConfigSchemas.Config[K]) => boolean;
+    isAvailable?: (
+      value: ConfigSchemas.Config[K],
+    ) => (() => boolean) | undefined;
+    customData?: (
+      value: ConfigSchemas.Config[K],
+    ) => Record<string, string | boolean>;
+    options: "fromSchema" | ConfigSchemas.Config[K][];
+  };
+
+// side effects (afterExec, hover) live in commandline/config-actions
+//TODO: the display strings duplicate optionsMetadata and displayString in places, unify them
+export type CommandlineMetadata<
+  K extends keyof ConfigSchemas.Config,
+  K2 extends keyof ConfigSchemas.Config = keyof ConfigSchemas.Config,
+> = {
+  alias?: string;
+  display?: string;
+  isVisible?: boolean;
+  input?:
+    | CommandlineInputMetadata<K>
+    | CommandlineSecondaryInputMetadata<K2>
+    // oxlint-disable-next-line no-generated-empty-object-type -- {} means "no input"
+    | Record<never, never>;
+  subgroup?: CommandlineSubgroupMetadata<K>;
 };
 
 export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
@@ -114,6 +179,11 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
     nosave: boolean;
     currentConfig: Readonly<ConfigSchemas.Config>;
   }) => void;
+  /**
+   * Commandline command generated for this config key. `null` when the key has no generated command (set elsewhere, or a hand-built list).
+   */
+  // oxlint-disable-next-line no-explicit-any -- any secondKey, each typed by its own value
+  commandline: CommandlineMetadata<K, any> | null;
 };
 
 export type ConfigMetadataObject = {
@@ -139,7 +209,7 @@ const caretOptionsMetadata = {
   outline: {},
   underline: {},
 };
-export const configMetadata: ConfigMetadataObject = {
+const configMetadataEntries = {
   // test
   punctuation: {
     key: "punctuation",
@@ -154,6 +224,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return value;
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   numbers: {
     key: "numbers",
@@ -167,6 +242,11 @@ export const configMetadata: ConfigMetadataObject = {
         return false;
       }
       return value;
+    },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
     },
   },
   words: {
@@ -183,6 +263,15 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      alias: "words",
+      subgroup: {
+        options: [10, 25, 50, 100],
+      },
+      input: {
+        inputValueConvert: Number,
+      },
+    },
   },
   time: {
     key: "time",
@@ -197,6 +286,14 @@ export const configMetadata: ConfigMetadataObject = {
         };
       }
       return {};
+    },
+    commandline: {
+      subgroup: {
+        options: [15, 30, 60, 120],
+      },
+      input: {
+        inputValueConvert: Number,
+      },
     },
   },
   mode: {
@@ -235,6 +332,11 @@ export const configMetadata: ConfigMetadataObject = {
         showNoticeNotification(`Pace caret will not work with zen mode.`);
       }
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   quoteLength: {
     key: "quoteLength",
@@ -250,6 +352,34 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      alias: "quotes",
+      subgroup: {
+        options: [[0, 1, 2, 3], [0], [1], [2], [3], [-3]],
+        configValueMode: () => "include",
+        isAvailable: (value) => {
+          if (value[0] === -3) {
+            return isAuthenticated;
+          }
+          return undefined;
+        },
+        display: (value) => {
+          if (areUnsortedArraysEqual(value, [0, 1, 2, 3])) {
+            return "all";
+          }
+
+          const map: Record<number, string> = {
+            0: "short",
+            1: "medium",
+            2: "long",
+            3: "thicc",
+            "-3": "favorite",
+          };
+
+          return map[value[0] as number] as string;
+        },
+      },
+    },
   },
   language: {
     key: "language",
@@ -258,6 +388,14 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: true,
     group: "test",
     description: "Change in which language you want to type.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: (value) => {
+          return getLanguageDisplayString(value);
+        },
+      },
+    },
   },
   burstHeatmap: {
     key: "burstHeatmap",
@@ -265,6 +403,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "word burst heatmap",
     changeRequiresRestart: false,
     group: "test",
+    // set on the result screen
+    commandline: null,
   },
 
   // behavior
@@ -275,6 +415,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "Normal is the classic typing test experience. Expert fails the test if you submit (press space) an incorrect word. Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   quickRestart: {
     key: "quickRestart",
@@ -284,6 +429,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       'Press tab, esc or enter to quickly restart the test, or to quickly jump to the test page. These options disable tab navigation on most parts of the website. Using the "esc" option will move opening the commandline to the tab key.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   repeatQuotes: {
     key: "repeatQuotes",
@@ -293,6 +443,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "This setting changes the restarting behavior when typing in quote mode. Changing it to 'typing' will repeat the quote if you restart while typing.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   resultSaving: {
     key: "resultSaving",
@@ -302,6 +457,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       'Set this setting to "off" in case you want to practice without saving new results to your account and affecting your statistics.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        alias: (val) => (val ? "enabled" : "disabled"),
+      },
+      alias: "results practice incognito",
+    },
   },
   blindMode: {
     key: "blindMode",
@@ -318,6 +480,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   alwaysShowWordsHistory: {
     key: "alwaysShowWordsHistory",
@@ -327,6 +494,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "This option will automatically show the words history at the end of the test. Can cause slight lag with a lot of words.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   singleListCommandLine: {
     key: "singleListCommandLine",
@@ -336,6 +508,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "When enabled, it will show the command line with all commands in a single list instead of submenu arrangements. Selecting 'manual' will expose all commands only after typing >.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   minWpm: {
     key: "minWpm",
@@ -345,6 +522,23 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "Automatically fails a test if your speed falls below a threshold.",
+    commandline: {
+      display: "Minimum speed...",
+      alias: "wpm",
+      subgroup: {
+        options: ["off"],
+      },
+      input: {
+        configValue: "custom",
+        display: "custom...",
+        secondKey: "minWpmCustomSpeed",
+        inputValueConvert: (value) => {
+          let newVal = Number(value);
+          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          return newVal;
+        },
+      },
+    },
   },
   minWpmCustomSpeed: {
     key: "minWpmCustomSpeed",
@@ -360,6 +554,8 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    // set through the minWpm command's custom input
+    commandline: null,
   },
   minAcc: {
     key: "minAcc",
@@ -369,6 +565,20 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "Automatically fails a test if your accuracy falls below a threshold.",
+    commandline: {
+      display: "Minimum accuracy...",
+      subgroup: {
+        options: ["off"],
+      },
+      input: {
+        configValue: "custom",
+        display: "custom...",
+        secondKey: "minAccCustom",
+        inputValueConvert: (value) => {
+          return Number(value);
+        },
+      },
+    },
   },
   minAccCustom: {
     key: "minAccCustom",
@@ -384,6 +594,8 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    // set through the minAcc command's custom input
+    commandline: null,
   },
   minBurst: {
     key: "minBurst",
@@ -393,6 +605,8 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "Automatically fails a test if your raw for a single word falls below this threshold. Selecting 'flex' allows for this threshold to automatically decrease for longer words.",
+    // hand-built list (min-burst): it has 2 nested inputs
+    commandline: null,
   },
   minBurstCustomSpeed: {
     key: "minBurstCustomSpeed",
@@ -400,6 +614,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "min word burst custom speed",
     changeRequiresRestart: true,
     group: "behavior",
+    // set through the min burst list's custom inputs
+    commandline: null,
   },
   britishEnglish: {
     key: "britishEnglish",
@@ -409,6 +625,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "behavior",
     description:
       "When enabled, the website will use the British spelling instead of American. Note that this might not replace all words correctly. If you find any issues, please let us know.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   funbox: {
     key: "funbox",
@@ -447,6 +668,8 @@ export const configMetadata: ConfigMetadataObject = {
 
       return false;
     },
+    // hand-built list (funbox): a special non schema command at the top clears funboxes
+    commandline: null,
   },
   customLayoutfluid: {
     key: "customLayoutfluid",
@@ -459,6 +682,15 @@ export const configMetadata: ConfigMetadataObject = {
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
     },
+    commandline: {
+      input: {
+        defaultValue: () => {
+          return Config.customLayoutfluid.join(" ");
+        },
+        inputValueConvert: (val) =>
+          val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
+      },
+    },
   },
   customPolyglot: {
     key: "customPolyglot",
@@ -469,6 +701,15 @@ export const configMetadata: ConfigMetadataObject = {
     description: "Select which languages you want the polyglot funbox to use.",
     overrideValue: ({ value }) => {
       return Array.from(new Set(value));
+    },
+    commandline: {
+      input: {
+        defaultValue: () => {
+          return Config.customPolyglot.join(" ");
+        },
+        inputValueConvert: (val) =>
+          val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
+      },
     },
   },
 
@@ -489,6 +730,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   strictSpace: {
     key: "strictSpace",
@@ -498,6 +744,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   oppositeShiftMode: {
     key: "oppositeShiftMode",
@@ -507,6 +758,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "keymap layout" setting.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   stopOnError: {
     key: "stopOnError",
@@ -525,6 +781,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   deleteOnError: {
     key: "deleteOnError",
@@ -542,6 +803,12 @@ export const configMetadata: ConfigMetadataObject = {
         };
       }
       return {};
+    },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: (deleteOnError) => deleteOnError.replace(/_/g, " "),
+      },
     },
   },
   confidenceMode: {
@@ -562,6 +829,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   quickEnd: {
     key: "quickEnd",
@@ -571,6 +843,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "This only applies to the words mode - when enabled, the test will end as soon as the last word has been typed, even if it's incorrect. When disabled, you need to manually confirm the last incorrect entry with a space.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   indicateTypos: {
     key: "indicateTypos",
@@ -580,6 +857,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       'Shows typos that you\'ve made. "Below" shows what you typed below the letters, "replace" will replace the letters with the ones you typed and "both" will do the same as replace and below, but it will show the correct letters below your mistakes.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   compositionDisplay: {
     key: "compositionDisplay",
@@ -589,6 +871,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       'Change how composition is displayed. "off" will just underline the letter if composition is active. "below" will show the composed character below the test. "replace" will replace the letter in the test with the composed character.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   hideExtraLetters: {
     key: "hideExtraLetters",
@@ -598,6 +885,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Hides extra letters. This will completely avoid words jumping lines (due to changing width), but might feel a bit confusing when you press a key and nothing happens.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   lazyMode: {
     key: "lazyMode",
@@ -607,6 +899,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Replaces accents / diacritics / special characters with their normal letter equivalents.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   layout: {
     key: "layout",
@@ -616,6 +913,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: (layout) =>
+          layout === "default" ? "off" : layout.replace(/_/g, " "),
+      },
+    },
   },
   codeUnindentOnBackspace: {
     key: "codeUnindentOnBackspace",
@@ -625,6 +929,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "input",
     description:
       "Automatically go back to the previous line when deleting line leading tab characters. Only works in code languages.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
 
   // sound
@@ -635,6 +944,20 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "sound",
     description: "Change the volume of the sound effects.",
+    commandline: {
+      subgroup: {
+        options: [0.1, 0.5, 1],
+        display: (val) =>
+          new Map([
+            [0.1, "quiet"],
+            [0.5, "medium"],
+            [1.0, "loud"],
+          ]).get(val) ?? "custom...",
+      },
+      input: {
+        inputValueConvert: Number,
+      },
+    },
   },
   playSoundOnClick: {
     key: "playSoundOnClick",
@@ -672,6 +995,46 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "sound",
     description: "Plays a short sound when you press a key.",
+    commandline: {
+      alias: "play",
+      display: "Sound on click...",
+      subgroup: {
+        options: "fromSchema",
+        display: (value) => {
+          const map: Record<ConfigSchemas.Config["playSoundOnClick"], string> =
+            {
+              off: "off",
+              "1": "click",
+              "2": "beep",
+              "3": "pop",
+              "4": "nk creams",
+              "5": "typewriter",
+              "6": "osu",
+              "7": "hitmarker",
+              "8": "sine",
+              "9": "sawtooth",
+              "10": "square",
+              "11": "triangle",
+              "12": "pentatonic",
+              "13": "wholetone",
+              "14": "fist fight",
+              "15": "rubber keys",
+              "16": "fart",
+              "17": "akko lavenders",
+              "18": "cherrymx black abs",
+              "19": "cherrymx black pbt",
+              "20": "cherrymx blue abs",
+              "21": "cherrymx blue pbt",
+              "22": "cherrymx brown pbt",
+              "23": "kalih box white",
+              "24": "razer green",
+              "25": "tealios v2",
+              "26": "trust gxt",
+            };
+          return map[value];
+        },
+      },
+    },
   },
   playSoundOnError: {
     key: "playSoundOnError",
@@ -688,6 +1051,24 @@ export const configMetadata: ConfigMetadataObject = {
     group: "sound",
     description:
       "Plays a short sound if you press an incorrect key or press space too early.",
+    commandline: {
+      alias: "play",
+      display: "Sound on error...",
+      subgroup: {
+        options: "fromSchema",
+        display: (value) => {
+          const map: Record<ConfigSchemas.Config["playSoundOnError"], string> =
+            {
+              off: "off",
+              "1": "damage",
+              "2": "triangle",
+              "3": "square",
+              "4": "punch miss",
+            };
+          return map[value];
+        },
+      },
+    },
   },
   playTimeWarning: {
     key: "playTimeWarning",
@@ -704,6 +1085,18 @@ export const configMetadata: ConfigMetadataObject = {
     group: "sound",
     description:
       "Play a short warning sound if you are close to the end of a timed test.",
+    commandline: {
+      alias: "sound",
+      subgroup: {
+        options: "fromSchema",
+        display: (value) => {
+          if (value === "off") {
+            return "off";
+          }
+          return `${value} second${value !== "1" ? "s" : ""}`;
+        },
+      },
+    },
   },
 
   // caret
@@ -714,6 +1107,11 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description: "The caret will move smoothly between letters and words.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   caretStyle: {
     key: "caretStyle",
@@ -723,6 +1121,12 @@ export const configMetadata: ConfigMetadataObject = {
     group: "caret",
     description: "Change the style of the caret during the test.",
     optionsMetadata: caretOptionsMetadata,
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        isVisible: (value) => !["banana", "carrot", "monkey"].includes(value),
+      },
+    },
   },
   paceCaret: {
     key: "paceCaret",
@@ -754,6 +1158,21 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return false;
     },
+    commandline: {
+      display: "Pace caret mode...",
+      subgroup: {
+        options: ["off", "pb", "tagPb", "last", "average", "daily"],
+      },
+      input: {
+        secondKey: "paceCaretCustomSpeed",
+        configValue: "custom",
+        inputValueConvert: (value) => {
+          let newVal = Number(value);
+          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          return newVal;
+        },
+      },
+    },
   },
   paceCaretCustomSpeed: {
     key: "paceCaretCustomSpeed",
@@ -769,6 +1188,8 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    // set through the paceCaret command's custom input
+    commandline: null,
   },
   paceCaretStyle: {
     key: "paceCaretStyle",
@@ -778,6 +1199,12 @@ export const configMetadata: ConfigMetadataObject = {
     group: "caret",
     description: "Change the style of the pace caret during the test.",
     optionsMetadata: caretOptionsMetadata,
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        isVisible: (value) => !["banana", "carrot", "monkey"].includes(value),
+      },
+    },
   },
   repeatedPace: {
     key: "repeatedPace",
@@ -787,6 +1214,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "caret",
     description:
       "When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
 
   // appearance
@@ -798,6 +1230,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       'Change the style of the timer/word count during a test. "Flash" styles will briefly show the timer in timed modes every 15 seconds.',
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: replaceUnderscoresWithSpaces,
+      },
+      alias: "timer",
+    },
   },
   liveSpeedStyle: {
     key: "liveSpeedStyle",
@@ -814,6 +1253,12 @@ export const configMetadata: ConfigMetadataObject = {
         };
       }
       return {};
+    },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      alias: "wpm",
     },
   },
   liveAccStyle: {
@@ -832,6 +1277,12 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      alias: "wpm",
+    },
   },
   liveBurstStyle: {
     key: "liveBurstStyle",
@@ -841,6 +1292,12 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the style of the live burst speed displayed during the test.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      alias: "wpm",
+    },
   },
   timerColor: {
     key: "timerColor",
@@ -850,6 +1307,14 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the color of the progress, live speed, accuracy and burst text.",
+    commandline: {
+      display: "Live progress color...",
+      alias: "timer speed wpm burst acc",
+      subgroup: {
+        options: "fromSchema",
+        alias: () => "timer",
+      },
+    },
   },
   timerOpacity: {
     key: "timerOpacity",
@@ -859,6 +1324,14 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the opacity of the progress, live speed, burst and accuracy text.",
+    commandline: {
+      display: "Live progress opacity...",
+      alias: "timer speed wpm burst acc",
+      subgroup: {
+        options: "fromSchema",
+        alias: () => "timer",
+      },
+    },
   },
   highlightMode: {
     key: "highlightMode",
@@ -867,6 +1340,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description: "Change what is highlighted during the test.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: replaceUnderscoresWithSpaces,
+      },
+    },
   },
   typedEffect: {
     key: "typedEffect",
@@ -875,6 +1354,11 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description: "Change how typed words are shown.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   tapeMode: {
     key: "tapeMode",
@@ -893,6 +1377,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   tapeMargin: {
     key: "tapeMargin",
@@ -903,6 +1392,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "When in tape mode, set the carets position from the left edge of the typing test as a percentage (for example, 50% centers it).",
+    commandline: {
+      input: {
+        inputValueConvert: Number,
+      },
+    },
   },
   smoothLineScroll: {
     key: "smoothLineScroll",
@@ -911,6 +1405,11 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description: "When enabled, the line transition will be animated.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   showAllLines: {
     key: "showAllLines",
@@ -927,6 +1426,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return false;
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   alwaysShowDecimalPlaces: {
     key: "alwaysShowDecimalPlaces",
@@ -938,6 +1442,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Always shows decimal places for values on the result page, without the need to hover over the stats.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   typingSpeedUnit: {
     key: "typingSpeedUnit",
@@ -946,6 +1455,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description: "Display typing speed in the specified unit.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        isVisible: (val) => val !== "wph",
+      },
+    },
   },
   startGraphsAtZero: {
     key: "startGraphsAtZero",
@@ -955,6 +1470,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Force graph axis to always start at zero, no matter what the data is. Turning this off may exaggerate the value changes.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   maxLineWidth: {
     key: "maxLineWidth",
@@ -965,6 +1485,12 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Change the maximum width of the typing test, measured in characters. Setting this to 0 will align the words to the edges of the content area.",
+    commandline: {
+      input: {
+        alias: "page",
+        inputValueConvert: Number,
+      },
+    },
   },
   fontSize: {
     key: "fontSize",
@@ -974,6 +1500,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "font size",
     group: "appearance",
     description: "Change the font size of the test words.",
+    commandline: {
+      input: {
+        inputValueConvert: Number,
+      },
+    },
   },
   fontFamily: {
     key: "fontFamily",
@@ -988,6 +1519,26 @@ export const configMetadata: ConfigMetadataObject = {
         displayString: "Helvetica",
       },
     },
+    commandline: {
+      subgroup: {
+        options: typedKeys(Fonts).sort((a, b) =>
+          (Fonts[a]?.display ?? a.replace(/_/g, " ")).localeCompare(
+            Fonts[b]?.display ?? b.replace(/_/g, " "),
+          ),
+        ),
+        display: (name) =>
+          Fonts[name as KnownFontName]?.display ?? name.replaceAll(/_/g, " "),
+        customData: (name) => {
+          const fontConfig = Fonts[name as KnownFontName];
+          if (fontConfig === undefined) return {};
+          return {
+            name: name.replaceAll(/_/g, " "),
+            isSystem: fontConfig.systemFont === true,
+            display: fontConfig.display,
+          } as Record<string, string | boolean>;
+        },
+      },
+    },
   },
   keymapMode: {
     key: "keymapMode",
@@ -997,6 +1548,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     description:
       "Displays your current layout while taking a test. React shows what you pressed and Next shows what you need to press next.",
+    commandline: {
+      alias: "keyboard",
+      subgroup: {
+        options: "fromSchema",
+        alias: (val) => (val === "react" ? "flash" : ""),
+      },
+    },
   },
   keymapLayout: {
     key: "keymapLayout",
@@ -1007,6 +1565,17 @@ export const configMetadata: ConfigMetadataObject = {
     description: "Controls which layout is displayed on the keymap.",
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      alias: "keyboard",
+      subgroup: {
+        options: "fromSchema",
+        alias: (val) => (val === "overrideSync" ? "default" : ""),
+        display: (layout) =>
+          layout === "overrideSync"
+            ? "emulator sync"
+            : layout.replace(/_/g, " "),
+      },
+    },
   },
   keymapStyle: {
     key: "keymapStyle",
@@ -1016,6 +1585,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: replaceUnderscoresWithSpaces,
+      },
+      alias: "keyboard",
+    },
   },
   keymapLegendStyle: {
     key: "keymapLegendStyle",
@@ -1025,6 +1601,12 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      alias: "keyboard",
+    },
   },
   keymapKeys: {
     key: "keymapKeys",
@@ -1034,6 +1616,13 @@ export const configMetadata: ConfigMetadataObject = {
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        display: replaceUnderscoresWithSpaces,
+      },
+      alias: "keyboard",
+    },
   },
   keymapSize: {
     key: "keymapSize",
@@ -1050,6 +1639,12 @@ export const configMetadata: ConfigMetadataObject = {
     },
     overrideConfig: ({ currentConfig }) =>
       currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      input: {
+        alias: "keyboard",
+        inputValueConvert: Number,
+      },
+    },
   },
 
   // theme
@@ -1061,6 +1656,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "By default, typed text is brighter than the future text. When enabled, the colors will be flipped and the future text will be brighter than the already typed text.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   colorfulMode: {
     key: "colorfulMode",
@@ -1070,6 +1670,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "When enabled, the test words will use the main color, instead of the text color, making the website more colorful.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   customBackground: {
     key: "customBackground",
@@ -1082,6 +1687,9 @@ export const configMetadata: ConfigMetadataObject = {
     },
     description:
       "Set an image url or local image to be a custom background image. Local image always take priority over the image url. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
+    commandline: {
+      input: {},
+    },
   },
   customBackgroundSize: {
     key: "customBackgroundSize",
@@ -1091,6 +1699,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "Set an image url or local image to be a custom background image. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   customBackgroundFilter: {
     key: "customBackgroundFilter",
@@ -1099,6 +1712,8 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "theme",
     description: "Apply various effects to the custom background.",
+    // hand-built list (background-filter): it has 4 nested inputs
+    commandline: null,
   },
   autoSwitchTheme: {
     key: "autoSwitchTheme",
@@ -1108,6 +1723,8 @@ export const configMetadata: ConfigMetadataObject = {
     group: "theme",
     description:
       "Enabling this will automatically switch the theme between light and dark depending on the system theme.",
+    // set on the settings page
+    commandline: null,
   },
   themeLight: {
     key: "themeLight",
@@ -1115,6 +1732,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "theme light",
     changeRequiresRestart: false,
     group: "theme",
+    // set on the settings page
+    commandline: null,
   },
   themeDark: {
     key: "themeDark",
@@ -1122,6 +1741,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "theme dark",
     changeRequiresRestart: false,
     group: "theme",
+    // set on the settings page
+    commandline: null,
   },
   randomTheme: {
     key: "randomTheme",
@@ -1159,6 +1780,13 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return false;
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+        isAvailable: (value) =>
+          value === "custom" ? isAuthenticated : undefined,
+      },
+    },
   },
   favThemes: {
     key: "favThemes",
@@ -1166,6 +1794,8 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "favorite themes",
     changeRequiresRestart: false,
     group: "theme",
+    // set through the add/remove favorite theme commands
+    commandline: null,
   },
   theme: {
     key: "theme",
@@ -1179,6 +1809,8 @@ export const configMetadata: ConfigMetadataObject = {
         customTheme: false,
       };
     },
+    // hand-built list (themes): sorted by color and affected by config.favThemes
+    commandline: null,
   },
   customTheme: {
     key: "customTheme",
@@ -1186,6 +1818,11 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "custom theme",
     changeRequiresRestart: false,
     group: "theme",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   customThemeColors: {
     key: "customThemeColors",
@@ -1201,6 +1838,8 @@ export const configMetadata: ConfigMetadataObject = {
         return value;
       }
     },
+    // set through the custom themes list and theme settings
+    commandline: null,
   },
 
   // hide elements
@@ -1215,6 +1854,12 @@ export const configMetadata: ConfigMetadataObject = {
       true: { displayString: "show" },
       false: { displayString: "hide" },
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      display: "Key tips...",
+    },
   },
   showOutOfFocusWarning: {
     key: "showOutOfFocusWarning",
@@ -1228,6 +1873,12 @@ export const configMetadata: ConfigMetadataObject = {
       true: { displayString: "show" },
       false: { displayString: "hide" },
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      display: "Out of focus warning...",
+    },
   },
   capsLockWarning: {
     key: "capsLockWarning",
@@ -1240,6 +1891,11 @@ export const configMetadata: ConfigMetadataObject = {
       true: { displayString: "show" },
       false: { displayString: "hide" },
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   showAverage: {
     key: "showAverage",
@@ -1249,6 +1905,11 @@ export const configMetadata: ConfigMetadataObject = {
     group: "hideElements",
     description:
       "Displays your average speed and/or accuracy over the last 10 tests.",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   showPb: {
     key: "showPb",
@@ -1256,6 +1917,12 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "show personal best",
     changeRequiresRestart: false,
     group: "hideElements",
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+      alias: "pb",
+    },
   },
 
   // other (hidden)
@@ -1274,6 +1941,8 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return value;
     },
+    // set on the account page
+    commandline: null,
   },
   monkey: {
     key: "monkey",
@@ -1296,6 +1965,11 @@ export const configMetadata: ConfigMetadataObject = {
       }
       return {};
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
   monkeyPowerLevel: {
     key: "monkeyPowerLevel",
@@ -1303,6 +1977,24 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "monkey power level",
     changeRequiresRestart: false,
     group: "hidden",
+    commandline: {
+      alias: "powermode",
+      isVisible: false,
+      subgroup: {
+        options: "fromSchema",
+        display: (value) => {
+          const map: Record<ConfigSchemas.Config["monkeyPowerLevel"], string> =
+            {
+              off: "off",
+              "1": "mellow",
+              "2": "high",
+              "3": "ultra",
+              "4": "over 9000",
+            };
+          return map[value];
+        },
+      },
+    },
   },
 
   // ads
@@ -1331,8 +2023,24 @@ export const configMetadata: ConfigMetadataObject = {
         showNoticeNotification("Ad settings changed. Refreshing...");
       }
     },
+    commandline: {
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
   },
-};
+} satisfies ConfigMetadataObject;
+
+export const configMetadata: ConfigMetadataObject = configMetadataEntries;
+
+/**
+ * Config keys that have a generated commandline command
+ */
+export type CommandlineConfigKey = {
+  [
+    K in keyof typeof configMetadataEntries
+  ]: (typeof configMetadataEntries)[K]["commandline"] extends null ? never : K;
+}[keyof typeof configMetadataEntries];
 
 // typed accessor for a single option's metadata, avoiding per-callsite casts
 export function getOptionMetadata<K extends keyof ConfigSchemas.Config>(

@@ -3,9 +3,12 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
 import * as Util from "../../src/ts/commandline/util";
 
-import type { CommandlineConfigMetadata } from "../../src/ts/commandline/commandline-metadata";
+import type { CommandlineConfigActions } from "../../src/ts/commandline/config-actions";
 import type { ConfigKey } from "@monkeytype/schemas/configs";
-import type { ConfigMetadata } from "../../src/ts/config/metadata";
+import type {
+  CommandlineMetadata,
+  ConfigMetadata,
+} from "../../src/ts/config/metadata";
 import { z, ZodSchema } from "zod";
 import { Command } from "../../src/ts/commandline/types";
 
@@ -13,8 +16,8 @@ const buildCommandForConfigKey = Util.__testing._buildCommandForConfigKey;
 
 describe("CommandlineUtils", () => {
   vi.mock("../../src/ts/config/metadata", () => ({ configMetadata: [] }));
-  vi.mock("../../src/ts/commandline/commandline-metadata", () => ({
-    commandlineConfigMetadata: [],
+  vi.mock("../../src/ts/commandline/config-actions", () => ({
+    commandlineConfigActions: {},
   }));
 
   afterAll(() => {
@@ -151,10 +154,10 @@ describe("CommandlineUtils", () => {
             input: {
               display: "custom test...",
               inputValueConvert: Number,
-              afterExec,
               alias: "alias",
             },
           },
+          actions: { input: { afterExec } },
           configMeta: {
             fa: {
               icon: "fa-keyboard",
@@ -178,7 +181,7 @@ describe("CommandlineUtils", () => {
           defaultValue: expect.anything(),
           alias: "alias",
           input: true,
-          icon: "fa-keyboard",
+          fa: { icon: "fa-keyboard" },
           exec: expect.anything(),
           hover: undefined,
           configValue: undefined,
@@ -200,10 +203,10 @@ describe("CommandlineUtils", () => {
         cmdMeta: {
           input: {
             display: "custom test...",
-            afterExec,
             alias: "alias",
           },
         },
+        actions: { input: { afterExec } },
         configMeta: {
           fa: {
             icon: "fa-keyboard",
@@ -219,7 +222,7 @@ describe("CommandlineUtils", () => {
           display: "custom test...",
           alias: "alias",
           input: true,
-          icon: "fa-keyboard",
+          fa: { icon: "fa-keyboard" },
         }),
       );
     });
@@ -409,18 +412,20 @@ describe("CommandlineUtils", () => {
 function buildCommand<K extends ConfigKey>({
   cmdMeta,
   configMeta,
+  actions,
   schema,
   key,
 }: {
-  cmdMeta: Partial<CommandlineConfigMetadata<any, any>>;
+  cmdMeta: Partial<CommandlineMetadata<any>>;
   configMeta?: Partial<ConfigMetadata<K>>;
+  actions?: CommandlineConfigActions<K>;
   schema?: ZodSchema;
   key?: K;
 }): Command {
   return buildCommandForConfigKey(
     key ?? ("" as any),
-    configMeta ?? ({} as any),
-    cmdMeta as any,
+    { ...configMeta, commandline: cmdMeta } as any,
+    actions,
     schema ?? z.string(),
   );
 }

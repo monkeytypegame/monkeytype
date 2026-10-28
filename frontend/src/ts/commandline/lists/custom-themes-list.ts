@@ -15,7 +15,7 @@ const commands: Command[] = [
   {
     id: "setCustomThemeId",
     display: "Custom themes...",
-    icon: "fa-palette",
+    fa: { icon: "fa-palette" },
     subgroup,
     available: (): boolean => {
       return isAuthenticated();

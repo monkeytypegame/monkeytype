@@ -51,7 +51,7 @@ const commands: Command[] = [
     id: "changeMinBurst",
     display: "Minimum word burst...",
     alias: "minimum",
-    icon: "fa-bomb",
+    fa: { icon: "fa-bomb" },
     subgroup,
   },
 ];
