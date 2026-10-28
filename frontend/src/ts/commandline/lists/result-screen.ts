@@ -65,7 +65,7 @@ const commands: Command[] = [
     id: "nextTest",
     display: "Next test",
     alias: "restart start begin type test typing",
-    icon: "fa-chevron-right",
+    fa: { icon: "fa-chevron-right" },
     available: (): boolean => {
       return isTestFinished();
     },
@@ -76,7 +76,7 @@ const commands: Command[] = [
   {
     id: "repeatTest",
     display: "Repeat test",
-    icon: "fa-sync-alt",
+    fa: { icon: "fa-sync-alt" },
     exec: (): void => {
       void TestLogic.restartTest({
         withSameWordset: true,
@@ -89,7 +89,7 @@ const commands: Command[] = [
   {
     id: "practiseWords",
     display: "Practice words...",
-    icon: "fa-exclamation-triangle",
+    fa: { icon: "fa-exclamation-triangle" },
     subgroup: practiceSubgroup,
     available: (): boolean => {
       return isTestFinished();
@@ -98,7 +98,7 @@ const commands: Command[] = [
   {
     id: "toggleWordHistory",
     display: "Toggle word history",
-    icon: "fa-align-left",
+    fa: { icon: "fa-align-left" },
     exec: (): void => {
       toggleResultWords();
     },
@@ -109,7 +109,7 @@ const commands: Command[] = [
   {
     id: "copyScreenshot",
     display: "Copy screenshot to clipboard",
-    icon: "fa-copy",
+    fa: { icon: "fa-copy" },
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
@@ -123,7 +123,7 @@ const commands: Command[] = [
   {
     id: "downloadScreenshot",
     display: "Download screenshot",
-    icon: "fa-download",
+    fa: { icon: "fa-download" },
     alias: "save image download file",
     exec: (): void => {
       setTimeout(async () => {
@@ -137,7 +137,7 @@ const commands: Command[] = [
   {
     id: "copyWordsToClipboard",
     display: "Copy words to clipboard",
-    icon: "fa-copy",
+    fa: { icon: "fa-copy" },
     exec: (): void => {
       const eventLog = getLastEventLog();
       if (eventLog === null) {
