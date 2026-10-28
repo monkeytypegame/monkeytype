@@ -3,10 +3,11 @@ import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
-import { getTheme } from "../../states/theme";
+import { getTheme, getThemeColorsCss } from "../../states/theme";
 import { isColorDark } from "../../utils/colors";
 import { FavIcon } from "./FavIcon";
 
@@ -38,19 +39,7 @@ export function Theme(): JSXElement {
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {
-    styleEl()?.setHtml(`
-:root {
-    --bg-color: ${colors.bg};
-    --main-color: ${colors.main};
-    --caret-color: ${colors.caret};
-    --sub-color: ${colors.sub};
-    --sub-alt-color: ${colors.subAlt};
-    --text-color: ${colors.text};
-    --error-color: ${colors.error};
-    --error-extra-color: ${colors.errorExtra};
-    --colorful-error-color: ${colors.colorfulError};
-    --colorful-error-extra-color: ${colors.colorfulErrorExtra};
-}`);
+    styleEl()?.setHtml(getThemeColorsCss(colors));
   });
 
   const isThemeWithCss = () => {
@@ -74,9 +63,7 @@ export function Theme(): JSXElement {
   });
 
   // tailwind's dark: variant
-  createEffect(() => {
-    document.body.classList.toggle("darkMode", isColorDark(getTheme().bg));
-  });
+  useBodyClasses(() => ({ darkMode: isColorDark(getTheme().bg) }));
 
   return (
     <MetaProvider>

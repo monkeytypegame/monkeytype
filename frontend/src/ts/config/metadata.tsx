@@ -12,7 +12,10 @@ import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getOptions } from "../utils/zod";
-import { canSetFunboxWithConfig } from "./funbox-validation";
+import {
+  canSetFunboxWithConfig,
+  getFunboxUnsupportedReason,
+} from "./funbox-validation";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -432,6 +435,14 @@ export const configMetadata: ConfigMetadataObject = {
           )} is an invalid combination of funboxes`,
         );
         return true;
+      }
+
+      for (const funbox of value) {
+        const unsupportedReason = getFunboxUnsupportedReason(funbox);
+        if (unsupportedReason !== undefined) {
+          showNoticeNotification(unsupportedReason, { durationMs: 5000 });
+          return true;
+        }
       }
 
       for (const funbox of value) {

@@ -4,7 +4,6 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import { getActiveFunboxesWithFunction } from "./funbox/list";
 import * as Replay from "../components/pages/test/result/replay";
 import { qs, qsa } from "../utils/dom";
 import { download as downloadFile } from "../utils/misc";
@@ -22,15 +21,11 @@ function prepare(): void {
     Replay.pauseReplay();
   }
 
-  // the result components hide the buttons, replay, login tip and ads and show the watermark
+  // the result components and Funbox (crt) hide the buttons, replay, login tip and ads and show the watermark
   setIsScreenshotting(true);
   qs("noscript")?.hide();
   qs("#nocss")?.hide();
   qsa(".highlightContainer")?.hide();
-
-  for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
-    fb.functions.clearGlobal();
-  }
 }
 
 function revert(): void {
@@ -40,9 +35,6 @@ function revert(): void {
   qs("#nocss")?.show();
   qsa(".highlightContainer")?.show();
   qs("html")?.setStyle({ scrollBehavior: "smooth" });
-  for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
-    fb.functions.applyGlobalCSS();
-  }
 }
 
 async function captureResult(): Promise<Blob | null> {
