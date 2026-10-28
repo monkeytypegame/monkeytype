@@ -3,10 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
-import { setTestFocusState } from "../../../../src/ts/states/test";
+import {
+  setIsLanguageRightToLeft,
+  setJoiningScript,
+  setTestFocusState,
+} from "../../../../src/ts/states/test";
 import {
   getLineBreakElements,
   getWordElement,
+  LETTER_SELECTOR,
 } from "../../../../src/ts/states/word-elements";
 import {
   appendRenderedWord,
@@ -39,20 +44,20 @@ function wordEls(container: HTMLElement): HTMLElement[] {
 
 /** sorted class names per letter */
 function letterClasses(word: HTMLElement | undefined): string[] {
-  return [...(word?.querySelectorAll("letter") ?? [])].map((l) =>
+  return [...(word?.querySelectorAll(LETTER_SELECTOR) ?? [])].map((l) =>
     [...l.classList].sort().join(" "),
   );
 }
 
 /** sorted icon classes per letter, "" for letters without an icon */
 function letterIcons(word: HTMLElement | undefined): string[] {
-  return [...(word?.querySelectorAll("letter") ?? [])].map((l) =>
+  return [...(word?.querySelectorAll(LETTER_SELECTOR) ?? [])].map((l) =>
     [...(l.querySelector("i")?.classList ?? [])].sort().join(" "),
   );
 }
 
 function letterTexts(word: HTMLElement | undefined): string[] {
-  return [...(word?.querySelectorAll("letter") ?? [])].map(
+  return [...(word?.querySelectorAll(LETTER_SELECTOR) ?? [])].map(
     (l) => l.textContent ?? "",
   );
 }
@@ -76,8 +81,13 @@ afterEach(() => {
   setConfigStore("indicateTypos", defaults.indicateTypos);
   setConfigStore("compositionDisplay", defaults.compositionDisplay);
   setConfigStore("blindMode", defaults.blindMode);
+  setConfigStore("highlightMode", defaults.highlightMode);
+  setConfigStore("flipTestColors", defaults.flipTestColors);
+  setConfigStore("colorfulMode", defaults.colorfulMode);
   setConfigStore("showOutOfFocusWarning", defaults.showOutOfFocusWarning);
   setTestFocusState("focused");
+  setJoiningScript(false);
+  setIsLanguageRightToLeft(false);
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -278,15 +288,92 @@ describe("Words", () => {
       appendRenderedWord("abc");
       flush();
       const before = [
-        ...(wordEls(container)[0]?.querySelectorAll("letter") ?? []),
+        ...(wordEls(container)[0]?.querySelectorAll(LETTER_SELECTOR) ?? []),
       ];
       setWordInput(0, "ab");
       flush();
       const after = [
-        ...(wordEls(container)[0]?.querySelectorAll("letter") ?? []),
+        ...(wordEls(container)[0]?.querySelectorAll(LETTER_SELECTOR) ?? []),
       ];
       expect(after).toEqual(before);
       expect(after.every((l, i) => l === before[i])).toBe(true);
+    });
+  });
+
+  describe("theme attributes", () => {
+    function attrs(el: Element | null | undefined): Record<string, string> {
+      return Object.fromEntries(
+        [...(el?.attributes ?? [])]
+          .filter((attr) => attr.name.startsWith("data-ui-"))
+          .map((attr) => [attr.name, attr.value]),
+      );
+    }
+
+    it("marks words with their status and the active one", () => {
+      const container = renderWords();
+      appendRenderedWord("ab");
+      appendRenderedWord("cd");
+      appendRenderedWord("ef");
+      appendRenderedWord("gh");
+      setWordInput(0, "ab");
+      setWordTyped(0, true);
+      setWordInput(1, "cx");
+      setWordTyped(1, true);
+      setActiveWord(2);
+      flush();
+
+      expect(wordEls(container).map(attrs)).toEqual([
+        { "data-ui-element": "word", "data-ui-state": "typed" },
+        { "data-ui-element": "word", "data-ui-state": "typedIncorrectly" },
+        {
+          "data-ui-element": "word",
+          "data-ui-state": "untyped",
+          "data-ui-active": "",
+        },
+        { "data-ui-element": "word", "data-ui-state": "untyped" },
+      ]);
+    });
+
+    it("marks letters with their status and tab/newline variant", () => {
+      const container = renderWords();
+      appendRenderedWord("a\tb\n");
+      setWordInput(0, "x");
+      flush();
+
+      expect(
+        [
+          ...(wordEls(container)[0]?.querySelectorAll(LETTER_SELECTOR) ?? []),
+        ].map(attrs),
+      ).toEqual([
+        { "data-ui-element": "letter", "data-ui-state": "incorrect" },
+        {
+          "data-ui-element": "letter",
+          "data-ui-state": "untyped",
+          "data-ui-variant": "tab",
+        },
+        { "data-ui-element": "letter", "data-ui-state": "untyped" },
+        {
+          "data-ui-element": "letter",
+          "data-ui-state": "untyped",
+          "data-ui-variant": "newline",
+        },
+      ]);
+    });
+
+    it("lists the words modes in data-ui-variant", () => {
+      setConfigStore("highlightMode", "next_two_words");
+      setConfigStore("blindMode", true);
+      setConfigStore("flipTestColors", true);
+      setConfigStore("colorfulMode", true);
+      setJoiningScript(true);
+      setIsLanguageRightToLeft(true);
+      const container = renderWords();
+
+      expect(attrs(container)).toEqual({
+        "data-ui-element": "words",
+        "data-ui-variant":
+          "highlight-next-two-words blind flipped colorful joiningScript rtl",
+      });
     });
   });
 

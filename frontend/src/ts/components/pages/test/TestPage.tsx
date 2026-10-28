@@ -207,6 +207,7 @@ export function TestPage(): JSXElement {
         </div>
         <div
           id="wordsWrapper"
+          data-ui-element="wordsWrapper"
           ref={(el) => (wordsWrapperRef = el)}
           class={cn("content-grid full-width", wordsModeClasses(), {
             hidden: isWordsWrapperHidden(),

@@ -47,30 +47,57 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: trance 5s linear infinite;
 }
 
-#words {
+[data-ui-element="words"] {
   --correct-letter-animation: trance 5s linear infinite;
-}
 
-#words.flipped {
-  --untyped-letter-color: var(--sub-color);
-  --correct-letter-animation: none;
-  --untyped-letter-animation: trance 5s linear infinite;
-}
+  &[data-ui-variant~="flipped"] {
+    --untyped-letter-color: var(--sub-color);
+    --correct-letter-animation: none;
+    --untyped-letter-animation: trance 5s linear infinite;
+  }
 
-#words.highlight-off .word letter,
-#words.highlight-off .word.typed letter {
-  animation: trance 5s linear infinite;
-}
+  &[data-ui-variant~="highlight-off"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"],
+  &[data-ui-variant~="highlight-off"]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: trance 5s linear infinite;
+  }
 
-#words .word.typed letter.correct,
-#words.blind .word.typed letter,
-#words.highlight-word .word.typed letter,
-#words.highlight-next-word .word.typed letter,
-#words.highlight-next-two-words .word.typed letter,
-#words.highlight-next-three-words .word.typed letter {
-  animation: trance 5s linear infinite;
-}
+  &
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"]:is(
+      [data-ui-state="correct"],
+      [data-ui-state="deadCorrect"]
+    ),
+  &:is(
+      [data-ui-variant~="blind"],
+      [data-ui-variant~="highlight-word"],
+      [data-ui-variant~="highlight-next-word"],
+      [data-ui-variant~="highlight-next-two-words"],
+      [data-ui-variant~="highlight-next-three-words"]
+    )
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: trance 5s linear infinite;
+  }
 
-#words.flipped .word.typed letter {
-  animation: none;
+  &[data-ui-variant~="flipped"]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: none;
+  }
 }

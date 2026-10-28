@@ -57,7 +57,7 @@ function renderWords(count: number): HTMLElement {
   for (let i = 0; i < count; i++) {
     words.insertAdjacentHTML(
       "beforeend",
-      `<div class="word" data-wordindex="${i}"><letter>a</letter></div>`,
+      `<div class="word" data-wordindex="${i}"><letter data-ui-element="letter">a</letter></div>`,
     );
     registerWordElement(i, words.lastElementChild as HTMLElement);
   }

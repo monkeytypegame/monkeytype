@@ -75,7 +75,6 @@
 [data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
-#words.flipped .word,
 footer a:hover {
   animation: rgb 5s linear infinite;
 }
@@ -106,11 +105,15 @@ header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
   animation: rgb-fill 5s linear infinite;
 }
 
-#words {
+[data-ui-element="words"] {
   --correct-letter-animation: rgb 5s linear infinite;
-}
 
-#words.flipped {
-  --correct-letter-animation: none;
-  --untyped-letter-animation: rgb 5s linear infinite;
+  &[data-ui-variant~="flipped"] {
+    --correct-letter-animation: none;
+    --untyped-letter-animation: rgb 5s linear infinite;
+
+    & [data-ui-element="word"] {
+      animation: rgb 5s linear infinite;
+    }
+  }
 }

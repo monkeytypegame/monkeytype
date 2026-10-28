@@ -12,8 +12,9 @@ describe("TestPage", () => {
     const page = await renderTestPage({ words: ["the", "fox"] });
 
     expect(page.phase()).toBe("ready");
-    expect(page.word(0).state).toBe("active");
-    expect(page.word(1).state).toBe("upcoming");
+    expect(page.word(0).isActive).toBe(true);
+    expect(page.word(1).isActive).toBe(false);
+    expect(page.word(1).state).toBe("untyped");
     expect(page.word(1).letters()).toEqual([
       { char: "f", state: "untyped" },
       { char: "o", state: "untyped" },
@@ -71,7 +72,7 @@ describe("TestPage", () => {
       await page.type("the ");
 
       expect(page.word(0).state).toBe("typed");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(1).isActive).toBe(true);
     });
 
     it("marks a mistyped word as an error", async () => {
@@ -79,8 +80,8 @@ describe("TestPage", () => {
 
       await page.type("th ");
 
-      expect(page.word(0).state).toBe("error");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(0).state).toBe("typedIncorrectly");
+      expect(page.word(1).isActive).toBe(true);
     });
   });
 
@@ -102,8 +103,9 @@ describe("TestPage", () => {
 
       await page.type("th \b");
 
-      expect(page.word(0).state).toBe("active");
-      expect(page.word(1).state).toBe("upcoming");
+      expect(page.word(0).isActive).toBe(true);
+      expect(page.word(1).isActive).toBe(false);
+      expect(page.word(1).state).toBe("untyped");
     });
 
     it("doesn't go back into a correct word", async () => {
@@ -112,7 +114,7 @@ describe("TestPage", () => {
       await page.type("the \b");
 
       expect(page.word(0).state).toBe("typed");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(1).isActive).toBe(true);
     });
 
     it("goes back into a correct word in freedom mode", async () => {
@@ -123,7 +125,7 @@ describe("TestPage", () => {
 
       await page.type("the \b");
 
-      expect(page.word(0).state).toBe("active");
+      expect(page.word(0).isActive).toBe(true);
     });
   });
 
@@ -139,7 +141,7 @@ describe("TestPage", () => {
 
       await page.deleteWord();
 
-      expect(page.word(0).state).toBe("active");
+      expect(page.word(0).isActive).toBe(true);
       expect(page.word(1).letters()).toEqual([
         { char: "f", state: "untyped" },
         { char: "o", state: "untyped" },

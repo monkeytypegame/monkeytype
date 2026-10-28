@@ -19,6 +19,8 @@ type ReplayLetter = {
 
 type ReplayWord = {
   letters: ReplayLetter[];
+  // committed with space or newline
+  typed: boolean;
   error: boolean;
 };
 
@@ -151,6 +153,7 @@ function initializeReplayPrompt(): void {
   setReplayState(
     "words",
     loaded.words.slice(0, wordCount + 1).map((word) => ({
+      typed: false,
       error: false,
       // oxlint-disable-next-line no-misused-spread -- split into code points on purpose
       letters: [...word].map((char) => ({ char, state: "", extra: false })),
@@ -230,11 +233,15 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     });
   } else if (item.action === "submitCorrectWord") {
     if (!nosound) playSound();
+    updateReplayWord(wordPos, (word) => {
+      word.typed = true;
+    });
     wordPos++;
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
     if (!nosound) playSound(true);
     updateReplayWord(wordPos, (word) => {
+      word.typed = true;
       word.error = true;
     });
     wordPos++;
@@ -247,6 +254,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = letters.length;
     while (curPos > 0 && letters[curPos - 1]?.state === "") curPos--;
     updateReplayWord(wordPos, (word) => {
+      word.typed = false;
       word.error = false;
     });
   }

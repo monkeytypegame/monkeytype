@@ -12,12 +12,14 @@
   }
 }
 
-#words {
+[data-ui-element="words"] {
   --correct-letter-animation: choochoo 2s infinite linear;
   --untyped-letter-animation: choochoo 2s infinite linear;
 }
 
-#words letter,
-#words.joiningScript .word letter {
+[data-ui-element="words"] [data-ui-element="letter"],
+[data-ui-element="words"][data-ui-variant~="joiningScript"]
+  [data-ui-element="word"]
+  [data-ui-element="letter"] {
   display: inline-block;
 }

@@ -34,14 +34,16 @@
   }
 }
 
-#words {
+[data-ui-element="words"] {
   --correct-letter-animation: shake_dat_ass 0.25s infinite linear;
   --untyped-letter-animation: shake_dat_ass 0.25s infinite linear;
   --incorrect-letter-animation: shake_dat_ass 0.25s infinite linear;
   --extra-letter-animation: shake_dat_ass 0.25s infinite linear;
 }
 
-#words letter,
-#words.joiningScript .word letter {
+[data-ui-element="words"] [data-ui-element="letter"],
+[data-ui-element="words"][data-ui-variant~="joiningScript"]
+  [data-ui-element="word"]
+  [data-ui-element="letter"] {
   display: inline-block;
 }
