@@ -76,7 +76,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "viewLyricsSearchPopup",
       display: "Search for lyrics",
-      icon: "fa-music",
+      fa: { icon: "fa-music" },
       exec: (): void => {
         showModal("LyricsSearch");
       },
