@@ -26,6 +26,7 @@ import * as DB from "../db";
 import * as Replay from "../components/pages/test/result/replay";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
+import * as DailyQuote from "./daily-quote";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
 import {
@@ -170,6 +171,7 @@ export function startTest(now: number): boolean {
   }
 
   setTestActive(true);
+  DailyQuote.onTestStart();
   TestTimer.clear();
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
@@ -375,6 +377,9 @@ export async function restartTest(
   const noAnim = options.noAnim ?? false;
 
   setIsTestRestarting(true);
+
+  // after the restarting flag: restoring the language would restart again
+  DailyQuote.onRestart();
 
   await TestUI.fadeOutTest(source, noAnim);
 
@@ -923,6 +928,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setLastEventLog(eventLog);
     setLastResult(structuredClone(completedEvent));
   });
+
+  DailyQuote.onTestFinish(completedEvent);
 
   ///////// completed event ready
 

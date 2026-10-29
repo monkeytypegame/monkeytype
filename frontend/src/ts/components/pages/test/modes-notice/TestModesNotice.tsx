@@ -14,6 +14,7 @@ import {
   wordsHaveNewline,
   wordsHaveTab,
 } from "../../../../states/test";
+import { getDailyNumber, isDailyActive } from "../../../../test/daily-quote";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
 import {
@@ -40,6 +41,7 @@ export function TestModesNotice() {
       <QuickRestart />
       <LongText />
       <LoadedChallenge />
+      <DailyQuote />
       <ZenMode />
       <Language />
       <Difficulty />
@@ -131,6 +133,17 @@ function LoadedChallenge() {
       icon="fa-award"
       openCommandline="loadChallenge"
       text={getLoadedChallenge()?.display}
+    />
+  );
+}
+
+function DailyQuote() {
+  return (
+    <Notice
+      when={isDailyActive()}
+      icon="fa-calendar-day"
+      class="text-main"
+      text={`daily quote #${getDailyNumber()} (one attempt)`}
     />
   );
 }

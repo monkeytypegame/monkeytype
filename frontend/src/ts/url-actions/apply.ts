@@ -5,6 +5,7 @@ import { createErrorMessage } from "../utils/error";
 import { readUrlAction, UrlAction } from "./action";
 import { challengeAction } from "./actions/challenge";
 import { customThemeAction } from "./actions/custom-theme";
+import { dailyQuoteAction } from "./actions/daily-quote";
 import { discordTokenAction } from "./actions/discord-oauth";
 import { testSettingsAction } from "./actions/test-settings";
 
@@ -17,11 +18,12 @@ type UrlParts = {
 };
 
 // applied in order, each once the one before it is done: a challenge
-// overrides test settings
+// overrides test settings, the daily quote overrides both
 const URL_ACTIONS: UrlAction[] = [
   customThemeAction,
   testSettingsAction,
   challengeAction,
+  dailyQuoteAction,
   discordTokenAction,
 ];
 

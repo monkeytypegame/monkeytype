@@ -13,6 +13,7 @@ import PresetsCommands from "./lists/presets";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands from "./lists/load-challenge";
+import DailyQuoteCommands from "./lists/daily-quote";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
@@ -211,6 +212,7 @@ export const commands: CommandsSubgroup = {
 
     //other
     ...LoadChallengeCommands,
+    ...DailyQuoteCommands,
     ...NavigationCommands,
     {
       id: "importSettingsJSON",

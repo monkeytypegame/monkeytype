@@ -5,6 +5,7 @@ import { getConfig } from "../../../../config/store";
 import { getIsScreenshotting } from "../../../../states/core";
 import { showModal } from "../../../../states/modals";
 import { showNoticeNotification } from "../../../../states/notifications";
+import { copyShareText, getDailyResult } from "../../../../test/daily-quote";
 import {
   captureAndCopyToClipboard,
   captureAndDownload,
@@ -36,6 +37,15 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
           getIsScreenshotting() && "hidden",
         )}
       >
+        <Show when={getDailyResult() !== null}>
+          <ResultButton
+            id="copyDailyQuoteResultButton"
+            class="max-sm:col-span-2"
+            text="Copy daily quote result"
+            fa={{ icon: "fa-share-alt" }}
+            onClick={() => void copyShareText()}
+          />
+        </Show>
         <ResultButton
           data-ui-element="restartTestButton"
           class="max-sm:col-span-2"
