@@ -449,6 +449,8 @@ export const LanguageSchema = z.enum(
     "lao",
     "code_6502_assembly",
     "english_legal",
+    "english_urban",
+    "english_urban_1k",
     "sindhi",
   ],
   {
