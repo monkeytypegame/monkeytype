@@ -14,6 +14,22 @@ vi.mock("../../../src/ts/test/test-logic", () => ({
   restartTest: vi.fn(),
 }));
 
+vi.mock("../../../src/ts/utils/lyrics-provider", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("../../../src/ts/utils/lyrics-provider")
+  >()),
+  searchTracks: vi.fn(async () => [
+    {
+      id: "1",
+      title: "Song",
+      artist: "Artist",
+      album: "Album",
+      lyrics: "[Chorus]\nhello world\nfoo bar",
+    },
+  ]),
+  fetchTrackInfo: vi.fn(async () => null),
+}));
+
 // The test state module fetches the input/keymap layout on module load and
 // the word filter modal fetches the language data, so stub the static files.
 vi.stubGlobal(
@@ -89,6 +105,16 @@ describe("components/modals/CustomTextModal.tsx", () => {
       throw new Error(`no <${selector}> ancestor for text "${text}"`);
     }
     fireEvent.click(el);
+  }
+
+  /** searches for the mocked song in the lyrics modal and opens it */
+  async function openMockedSong(): Promise<void> {
+    const searchInput = await screen.findByPlaceholderText(
+      "search by song, artist or album and press enter",
+    );
+    fireEvent.input(searchInput, { target: { value: "song" } });
+    fireEvent.keyDown(searchInput, { key: "Enter" });
+    fireEvent.click(await screen.findByText("Song"));
   }
 
   function submitSaveDialog(): void {
@@ -205,5 +231,63 @@ describe("components/modals/CustomTextModal.tsx", () => {
       "e",
     ]);
     expect(CustomText.getCustomTextIsPipeDelimiter("book", true)).toBe(true);
+  });
+
+  it("fills the text with lyrics chosen from the lyrics search instead of starting a test", async () => {
+    const { restartTest } = await import("../../../src/ts/test/test-logic");
+    vi.mocked(restartTest).mockClear();
+
+    showModal("CustomText");
+    render(() => <CustomTextModal />);
+
+    fireEvent.input(screen.getByPlaceholderText(textareaPlaceholder), {
+      target: { value: "old text" },
+    });
+
+    fireEvent.click(screen.getByText("load lyrics"));
+    await openMockedSong();
+    fireEvent.click(await screen.findByText("use lyrics"));
+
+    // back in the custom text modal, with the cleaned up lyrics in the textarea
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(textareaPlaceholder)).toHaveValue(
+        "hello world foo bar",
+      );
+    });
+    expect(restartTest).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText("ok"));
+
+    await waitFor(() => {
+      expect(CustomText.getText()).toStrictEqual([
+        "hello",
+        "world",
+        "foo",
+        "bar",
+      ]);
+    });
+    expect(CustomText.getPipeDelimiter()).toBe(false);
+    expect(CustomText.getLimitValue()).toBe(4);
+  });
+
+  it("starts the test right away when the lyrics search is opened on its own", async () => {
+    const { restartTest } = await import("../../../src/ts/test/test-logic");
+    vi.mocked(restartTest).mockClear();
+
+    showModal("LyricsSearch");
+    render(() => <CustomTextModal />);
+
+    await openMockedSong();
+    fireEvent.click(await screen.findByText("start typing"));
+
+    await waitFor(() => {
+      expect(CustomText.getText()).toStrictEqual([
+        "hello",
+        "world",
+        "foo",
+        "bar",
+      ]);
+    });
+    expect(restartTest).toHaveBeenCalled();
   });
 });
