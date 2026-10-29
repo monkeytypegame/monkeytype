@@ -18,6 +18,7 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
+import { getDailyNumber, getDailyResult } from "../../../../test/daily-quote";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
@@ -94,6 +95,7 @@ export function TestResult(): JSXElement {
                 />
               </div>
               <ResultSecondaryStats result={test().result} />
+              <DailyQuoteAttempt />
               <ResultWordsHistory eventLog={test().eventLog} />
               <ResultReplay />
               <RetrySavingButton />
@@ -107,6 +109,19 @@ export function TestResult(): JSXElement {
       </Show>
       <ResultAds />
     </div>
+  );
+}
+
+function DailyQuoteAttempt(): JSXElement {
+  return (
+    <Show when={getDailyResult()}>
+      {(result) => (
+        <div class="mb-4 text-center text-sub">
+          <Fa icon="fa-calendar-day" /> daily quote #{getDailyNumber()}: attempt{" "}
+          <span class="text-main">{result().attempt}</span> today
+        </div>
+      )}
+    </Show>
   );
 }
 

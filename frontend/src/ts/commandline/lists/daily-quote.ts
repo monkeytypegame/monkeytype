@@ -15,6 +15,16 @@ const commands: Command[] = [
     },
   },
   {
+    id: "exitDailyQuote",
+    display: "Exit daily quote",
+    fa: { icon: "fa-calendar-day" },
+    exec: (): void => {
+      DailyQuote.exitDailyQuote();
+      void TestLogic.restartTest();
+    },
+    available: () => DailyQuote.isDailyActive(),
+  },
+  {
     id: "copyDailyQuoteResult",
     display: "Copy daily quote result",
     fa: { icon: "fa-share-alt" },

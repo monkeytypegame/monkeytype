@@ -45,44 +45,57 @@ describe("daily-quote", () => {
     expect(DailyQuote.getDailyNumber()).toBe(2);
   });
 
-  it("allows one attempt per day", async () => {
+  it("counts every attempt", async () => {
     expect(await DailyQuote.setupDailyQuote()).toBe(true);
     expect(DailyQuote.isDailyActive()).toBe(true);
     expect(Config.mode).toBe("quote");
     expect(Config.language).toBe("english");
 
+    // restarting before starting isn't an attempt
+    DailyQuote.onRestart();
+    expect(DailyQuote.getTodaysAttempts()).toBe(0);
+
+    // abandoned
+    DailyQuote.onTestStart();
+    DailyQuote.onRestart();
+    expect(DailyQuote.isDailyActive()).toBe(true);
+    expect(Config.mode).toBe("quote");
+
     DailyQuote.onTestStart();
     DailyQuote.onTestFinish(finishedTest);
-    expect(DailyQuote.isDailyActive()).toBe(false);
-
     const result = DailyQuote.getDailyResult();
-    expect(result).toEqual({ wpm: 102, acc: 97, errors: [0, 0, 1, 0, 3, 0] });
+    expect(result).toEqual({
+      wpm: 102,
+      acc: 97,
+      errors: [0, 0, 1, 0, 3, 0],
+      attempt: 2,
+    });
     expect(result && DailyQuote.getShareText(result)).toBe(
-      `Monkeytype daily quote #2\n⌨️ 102 wpm · 🎯 97% acc\n🟩🟩🟨🟩🟥🟩\n${location.origin}/?daily`,
+      `Monkeytype daily quote #2 (2 attempts)\n⌨️ 102 wpm · 🎯 97% acc\n🟩🟩🟨🟩🟥🟩\n${location.origin}/?daily`,
     );
 
+    // still on the daily quote after finishing
     DailyQuote.onRestart();
+    expect(DailyQuote.getDailyResult()).toBe(null);
+    expect(DailyQuote.isDailyActive()).toBe(true);
+
+    vi.setSystemTime(Date.UTC(2026, 9, 31, 1));
+    expect(DailyQuote.getTodaysAttempts()).toBe(0);
+  });
+
+  it("restores the settings on exit", async () => {
+    await DailyQuote.setupDailyQuote();
+    DailyQuote.onTestStart();
+    DailyQuote.exitDailyQuote();
+    DailyQuote.onRestart();
+    expect(DailyQuote.isDailyActive()).toBe(false);
     expect(Config.mode).toBe("time");
     expect(Config.language).toBe("german");
     expect(Config.quoteLength).toEqual([1]);
 
-    expect(await DailyQuote.setupDailyQuote()).toBe(false);
-
-    vi.setSystemTime(Date.UTC(2026, 9, 31, 1));
+    // the attempts are kept
     expect(await DailyQuote.setupDailyQuote()).toBe(true);
-  });
-
-  it("uses up the attempt when abandoned", async () => {
-    await DailyQuote.setupDailyQuote();
-    // restarting before starting keeps the daily quote
-    DailyQuote.onRestart();
-    expect(DailyQuote.isDailyActive()).toBe(true);
-
-    DailyQuote.onTestStart();
-    DailyQuote.onRestart();
-    expect(DailyQuote.isDailyActive()).toBe(false);
-    expect(Config.mode).toBe("time");
-    expect(await DailyQuote.setupDailyQuote()).toBe(false);
+    expect(DailyQuote.getTodaysAttempts()).toBe(1);
   });
 
   it("refuses with funboxes", async () => {

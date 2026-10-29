@@ -14,8 +14,13 @@ import {
   wordsHaveNewline,
   wordsHaveTab,
 } from "../../../../states/test";
-import { getDailyNumber, isDailyActive } from "../../../../test/daily-quote";
+import {
+  exitDailyQuote,
+  getDailyNumber,
+  isDailyActive,
+} from "../../../../test/daily-quote";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
+import { restartTest } from "../../../../test/test-logic";
 import { cn } from "../../../../utils/cn";
 import {
   getLanguageDisplayString,
@@ -143,7 +148,11 @@ function DailyQuote() {
       when={isDailyActive()}
       icon="fa-calendar-day"
       class="text-main"
-      text={`daily quote #${getDailyNumber()} (one attempt)`}
+      text={`daily quote #${getDailyNumber()} (click to exit)`}
+      onClick={() => {
+        exitDailyQuote();
+        void restartTest();
+      }}
     />
   );
 }

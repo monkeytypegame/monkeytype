@@ -1,5 +1,6 @@
-// Daily quote: the same english quote for everyone each utc day, one attempt
-// per day, with a shareable score. Attempts are only tracked in localStorage.
+// Daily quote: the same english quote for everyone each utc day, with a
+// shareable score that counts the day's attempts. Attempts are only tracked in
+// localStorage.
 
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import {
@@ -15,7 +16,6 @@ import QuotesController from "../controllers/quotes-controller";
 import { configEvent } from "../events/config";
 import {
   showErrorNotification,
-  showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
 import { setSelectedQuoteId } from "../states/test";
@@ -27,29 +27,24 @@ const QUOTE_GROUP = 1;
 // daily #1
 const FIRST_DAY = Date.UTC(2026, 9, 29);
 
-const DailyResultSchema = z.object({
-  wpm: z.number(),
-  acc: z.number(),
+export type DailyResult = {
+  wpm: number;
+  acc: number;
   // errors per chunk of the test, see getErrorChunks
-  errors: z.array(z.number()),
-});
-type DailyResult = z.infer<typeof DailyResultSchema>;
+  errors: number[];
+  /** which of the day's attempts it was, from 1 */
+  attempt: number;
+};
 
-const attemptLS = new LocalStorageWithSchema({
-  key: "dailyQuoteAttempt",
-  schema: z
-    .object({
-      day: z.number(),
-      // undefined: started but not finished
-      result: DailyResultSchema.optional(),
-    })
-    .nullable(),
+const attemptsLS = new LocalStorageWithSchema({
+  key: "dailyQuoteAttempts",
+  schema: z.object({ day: z.number(), count: z.number().int() }).nullable(),
   fallback: null,
 });
 
 type Before = Pick<typeof Config, "mode" | "language" | "quoteLength">;
 
-/** The settings to restore once the daily test is over. */
+/** The settings to restore once the daily quote is exited. */
 let before: Before | null = null;
 let configuring = false;
 
@@ -64,9 +59,10 @@ export function getDailyNumber(): number {
   );
 }
 
-function getTodaysAttempt(): { result?: DailyResult } | null {
-  const attempt = attemptLS.get();
-  return attempt?.day === getCurrentDayTimestamp() ? attempt : null;
+/** Started tests of today's daily quote, finished or not. */
+export function getTodaysAttempts(): number {
+  const attempts = attemptsLS.get();
+  return attempts?.day === getCurrentDayTimestamp() ? attempts.count : 0;
 }
 
 /** Deterministic, so every client picks the same quote for the day. */
@@ -88,22 +84,10 @@ function hashDay(day: number): number {
 }
 
 /**
- * Sets up today's daily quote. Returns false if it was already attempted
- * today or can't be played, the caller then shouldn't restart the test.
+ * Sets up today's daily quote. Returns false if it can't be played, the
+ * caller then shouldn't restart the test.
  */
 export async function setupDailyQuote(): Promise<boolean> {
-  const attempt = getTodaysAttempt();
-  if (attempt !== null) {
-    const message =
-      attempt.result === undefined
-        ? "You already attempted today's daily quote."
-        : `You already played today's daily quote: ${attempt.result.wpm} wpm, ${attempt.result.acc}% acc.`;
-    showNoticeNotification(`${message} Come back tomorrow!`, {
-      important: true,
-    });
-    return false;
-  }
-
   if (Config.funbox.length > 0) {
     showErrorNotification("Disable all funboxes to play the daily quote");
     return false;
@@ -128,47 +112,48 @@ export async function setupDailyQuote(): Promise<boolean> {
   setConfig("language", LANGUAGE, { nosave: true });
   configuring = false;
 
-  showSuccessNotification(
-    `Daily quote #${getDailyNumber()} loaded. You only get one attempt, good luck!`,
-    { important: true },
-  );
+  const attempts = getTodaysAttempts();
+  const soFar = attempts > 0 ? ` (${attempts} attempts so far)` : "";
+  showSuccessNotification(`Daily quote #${getDailyNumber()} loaded${soFar}`, {
+    important: true,
+  });
   return true;
 }
 
-/** Starting the test uses up today's attempt. */
+/**
+ * Goes back to the settings from before the daily quote on the next
+ * restart.
+ */
+export function exitDailyQuote(): void {
+  setDailyActive(false);
+}
+
+/** Every started test counts as an attempt. */
 export function onTestStart(): void {
   if (!isDailyActive()) return;
-  attemptLS.set({ day: getCurrentDayTimestamp() });
+  attemptsLS.set({
+    day: getCurrentDayTimestamp(),
+    count: getTodaysAttempts() + 1,
+  });
 }
 
 export function onTestFinish(result: CompletedEvent): void {
   if (!isDailyActive()) return;
-  setDailyActive(false);
-
-  const dailyResult: DailyResult = {
+  setDailyResult({
     wpm: Math.round(result.wpm),
     acc: Math.floor(result.acc),
     errors:
       result.chartData === "toolong"
         ? []
         : getErrorChunks(result.chartData.err),
-  };
-  attemptLS.set({ day: getCurrentDayTimestamp(), result: dailyResult });
-  setDailyResult(dailyResult);
+    attempt: getTodaysAttempts(),
+  });
 }
 
 /** Call while restarting, before the new words are generated. */
 export function onRestart(): void {
   setDailyResult(null);
-  if (isDailyActive()) {
-    // just set up, about to be played
-    if (getTodaysAttempt() === null) return;
-    showNoticeNotification("Daily quote abandoned. Come back tomorrow!", {
-      important: true,
-    });
-    setDailyActive(false);
-  }
-  restoreSettings();
+  if (!isDailyActive()) restoreSettings();
 }
 
 function restoreSettings(): void {
@@ -198,8 +183,10 @@ export function getShareText(result: DailyResult): string {
   const grid = result.errors
     .map((errors) => (errors === 0 ? "🟩" : errors === 1 ? "🟨" : "🟥"))
     .join("");
+  const attempts =
+    result.attempt === 1 ? "1 attempt" : `${result.attempt} attempts`;
   return [
-    `Monkeytype daily quote #${getDailyNumber()}`,
+    `Monkeytype daily quote #${getDailyNumber()} (${attempts})`,
     `⌨️ ${result.wpm} wpm · 🎯 ${result.acc}% acc`,
     grid,
     `${location.origin}/?daily`,
@@ -219,8 +206,7 @@ export async function copyShareText(): Promise<void> {
   }
 }
 
-// changing the daily settings before starting gives up on the daily quote,
-// but keeps the attempt
+// changing the daily settings exits the daily quote, keeping the new settings
 configEvent.subscribe(({ key }) => {
   if (configuring || !isDailyActive()) return;
   if (
