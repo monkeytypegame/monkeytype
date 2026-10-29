@@ -21,6 +21,11 @@ const finishedTest = {
   chartData: { wpm: [], burst: [], err: [0, 0, 1, 0, 3, 0] },
 } as unknown as CompletedEvent;
 
+function label(): string | null {
+  const score = DailyQuote.getDailyScore();
+  return score && DailyQuote.getAttemptLabel(score);
+}
+
 describe("daily-quote", () => {
   beforeEach(async () => {
     localStorage.clear();
@@ -62,21 +67,39 @@ describe("daily-quote", () => {
     expect(Config.mode).toBe("quote");
 
     DailyQuote.onTestStart();
-    DailyQuote.onTestFinish(finishedTest);
-    const result = DailyQuote.getDailyResult();
-    expect(result).toEqual({
-      wpm: 102,
-      acc: 97,
-      errors: [0, 0, 1, 0, 3, 0],
-      attempt: 2,
+    DailyQuote.onTestFinish(finishedTest, false);
+    // best on the latest attempt
+    expect(DailyQuote.getDailyScore()).toEqual({
+      best: { wpm: 102, acc: 97, errors: [0, 0, 1, 0, 3, 0], attempt: 2 },
+      attempts: 2,
     });
-    expect(result && DailyQuote.getShareText(result)).toBe(
-      `Monkeytype daily quote #2 (2 attempts)\n⌨️ 102 wpm · 🎯 97% acc\n🟩🟩🟨🟩🟥🟩\n${location.origin}/?daily`,
+    const score = DailyQuote.getDailyScore();
+    expect(score && DailyQuote.getShareText(score)).toBe(
+      `Monkeytype daily quote #2 (2nd attempt)\n⌨️ 102 wpm · 🎯 97% acc\n🟩🟩🟨🟩🟥🟩\n${location.origin}/?daily`,
     );
+
+    // slower: the best stays
+    DailyQuote.onRestart();
+    DailyQuote.onTestStart();
+    DailyQuote.onTestFinish({ ...finishedTest, wpm: 80 }, false);
+    expect(DailyQuote.getDailyScore()?.best.wpm).toBe(102);
+    expect(label()).toBe("best out of 3 attempts");
+
+    // invalid: can't be the best
+    DailyQuote.onRestart();
+    DailyQuote.onTestStart();
+    DailyQuote.onTestFinish({ ...finishedTest, wpm: 200 }, true);
+    expect(DailyQuote.getDailyScore()?.best.wpm).toBe(102);
+
+    // new best
+    DailyQuote.onRestart();
+    DailyQuote.onTestStart();
+    DailyQuote.onTestFinish({ ...finishedTest, wpm: 110 }, false);
+    expect(label()).toBe("5th attempt");
 
     // still on the daily quote after finishing
     DailyQuote.onRestart();
-    expect(DailyQuote.getDailyResult()).toBe(null);
+    expect(DailyQuote.getDailyScore()).toBe(null);
     expect(DailyQuote.isDailyActive()).toBe(true);
 
     vi.setSystemTime(Date.UTC(2026, 9, 31, 1));

@@ -27,18 +27,28 @@ const QUOTE_GROUP = 1;
 // daily #1
 const FIRST_DAY = Date.UTC(2026, 9, 29);
 
-export type DailyResult = {
-  wpm: number;
-  acc: number;
+const DailyResultSchema = z.object({
+  wpm: z.number(),
+  acc: z.number(),
   // errors per chunk of the test, see getErrorChunks
-  errors: number[];
+  errors: z.array(z.number()),
   /** which of the day's attempts it was, from 1 */
-  attempt: number;
-};
+  attempt: z.number().int(),
+});
+type DailyResult = z.infer<typeof DailyResultSchema>;
+
+/** The day's best result, and how many attempts were made. */
+export type DailyScore = { best: DailyResult; attempts: number };
 
 const attemptsLS = new LocalStorageWithSchema({
   key: "dailyQuoteAttempts",
-  schema: z.object({ day: z.number(), count: z.number().int() }).nullable(),
+  schema: z
+    .object({
+      day: z.number(),
+      count: z.number().int(),
+      best: DailyResultSchema.optional(),
+    })
+    .nullable(),
   fallback: null,
 });
 
@@ -49,9 +59,9 @@ let before: Before | null = null;
 let configuring = false;
 
 const [isDailyActive, setDailyActive] = createSignal(false);
-/** The daily result shown on the result screen. */
-const [getDailyResult, setDailyResult] = createSignal<DailyResult | null>(null);
-export { isDailyActive, getDailyResult };
+/** The daily score shown on the result screen. */
+const [getDailyScore, setDailyScore] = createSignal<DailyScore | null>(null);
+export { isDailyActive, getDailyScore };
 
 export function getDailyNumber(): number {
   return (
@@ -59,10 +69,14 @@ export function getDailyNumber(): number {
   );
 }
 
+function getToday(): { count: number; best?: DailyResult } {
+  const today = attemptsLS.get();
+  return today?.day === getCurrentDayTimestamp() ? today : { count: 0 };
+}
+
 /** Started tests of today's daily quote, finished or not. */
 export function getTodaysAttempts(): number {
-  const attempts = attemptsLS.get();
-  return attempts?.day === getCurrentDayTimestamp() ? attempts.count : 0;
+  return getToday().count;
 }
 
 /** Deterministic, so every client picks the same quote for the day. */
@@ -131,28 +145,64 @@ export function exitDailyQuote(): void {
 /** Every started test counts as an attempt. */
 export function onTestStart(): void {
   if (!isDailyActive()) return;
+  const today = getToday();
   attemptsLS.set({
+    ...today,
     day: getCurrentDayTimestamp(),
-    count: getTodaysAttempts() + 1,
+    count: today.count + 1,
   });
 }
 
-export function onTestFinish(result: CompletedEvent): void {
+/** Invalid results count as attempts, but can't be the best. */
+export function onTestFinish(result: CompletedEvent, invalid: boolean): void {
   if (!isDailyActive()) return;
-  setDailyResult({
-    wpm: Math.round(result.wpm),
-    acc: Math.floor(result.acc),
-    errors:
-      result.chartData === "toolong"
-        ? []
-        : getErrorChunks(result.chartData.err),
-    attempt: getTodaysAttempts(),
-  });
+  const today = getToday();
+  let best = today.best;
+
+  if (!invalid && !result.bailedOut) {
+    const current: DailyResult = {
+      wpm: Math.round(result.wpm),
+      acc: Math.floor(result.acc),
+      errors:
+        result.chartData === "toolong"
+          ? []
+          : getErrorChunks(result.chartData.err),
+      attempt: today.count,
+    };
+    if (best === undefined || isBetter(current, best)) {
+      best = current;
+      attemptsLS.set({ ...today, day: getCurrentDayTimestamp(), best });
+    }
+  }
+
+  setDailyScore(best === undefined ? null : { best, attempts: today.count });
+}
+
+function isBetter(a: DailyResult, b: DailyResult): boolean {
+  return a.wpm !== b.wpm ? a.wpm > b.wpm : a.acc > b.acc;
+}
+
+/**
+ * "3rd attempt" when the best came from the latest attempt, else "best out
+ * of 5 attempts".
+ */
+export function getAttemptLabel({ best, attempts }: DailyScore): string {
+  if (best.attempt === attempts) return `${ordinal(attempts)} attempt`;
+  return `best out of ${attempts} attempts`;
+}
+
+function ordinal(n: number): string {
+  const t = n % 10;
+  const h = n % 100;
+  if (t === 1 && h !== 11) return `${n}st`;
+  if (t === 2 && h !== 12) return `${n}nd`;
+  if (t === 3 && h !== 13) return `${n}rd`;
+  return `${n}th`;
 }
 
 /** Call while restarting, before the new words are generated. */
 export function onRestart(): void {
-  setDailyResult(null);
+  setDailyScore(null);
   if (!isDailyActive()) restoreSettings();
 }
 
@@ -179,15 +229,14 @@ function getErrorChunks(errPerSecond: number[]): number[] {
   return chunks;
 }
 
-export function getShareText(result: DailyResult): string {
-  const grid = result.errors
+export function getShareText(score: DailyScore): string {
+  const { best } = score;
+  const grid = best.errors
     .map((errors) => (errors === 0 ? "🟩" : errors === 1 ? "🟨" : "🟥"))
     .join("");
-  const attempts =
-    result.attempt === 1 ? "1 attempt" : `${result.attempt} attempts`;
   return [
-    `Monkeytype daily quote #${getDailyNumber()} (${attempts})`,
-    `⌨️ ${result.wpm} wpm · 🎯 ${result.acc}% acc`,
+    `Monkeytype daily quote #${getDailyNumber()} (${getAttemptLabel(score)})`,
+    `⌨️ ${best.wpm} wpm · 🎯 ${best.acc}% acc`,
     grid,
     `${location.origin}/?daily`,
   ]
@@ -196,10 +245,10 @@ export function getShareText(result: DailyResult): string {
 }
 
 export async function copyShareText(): Promise<void> {
-  const result = getDailyResult();
-  if (result === null) return;
+  const score = getDailyScore();
+  if (score === null) return;
   try {
-    await navigator.clipboard.writeText(getShareText(result));
+    await navigator.clipboard.writeText(getShareText(score));
     showSuccessNotification("Copied to clipboard");
   } catch (e) {
     showErrorNotification("Failed to copy to clipboard");

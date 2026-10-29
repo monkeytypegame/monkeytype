@@ -929,8 +929,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setLastResult(structuredClone(completedEvent));
   });
 
-  DailyQuote.onTestFinish(completedEvent);
-
   ///////// completed event ready
 
   //afk check
@@ -1026,6 +1024,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  DailyQuote.onTestFinish(completedEvent, dontSave);
 
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {

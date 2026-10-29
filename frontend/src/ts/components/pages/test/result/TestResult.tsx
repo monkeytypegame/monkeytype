@@ -18,7 +18,11 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getSnapshot } from "../../../../states/snapshot";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { getDailyNumber, getDailyResult } from "../../../../test/daily-quote";
+import {
+  getAttemptLabel,
+  getDailyNumber,
+  getDailyScore,
+} from "../../../../test/daily-quote";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
@@ -114,11 +118,14 @@ export function TestResult(): JSXElement {
 
 function DailyQuoteAttempt(): JSXElement {
   return (
-    <Show when={getDailyResult()}>
-      {(result) => (
+    <Show when={getDailyScore()}>
+      {(score) => (
         <div class="mb-4 text-center text-sub">
-          <Fa icon="fa-calendar-day" /> daily quote #{getDailyNumber()}: attempt{" "}
-          <span class="text-main">{result().attempt}</span> today
+          <Fa icon="fa-calendar-day" /> daily quote #{getDailyNumber()}:{" "}
+          <span class="text-main">
+            {score().best.wpm} wpm {score().best.acc}% acc
+          </span>{" "}
+          ({getAttemptLabel(score())})
         </div>
       )}
     </Show>

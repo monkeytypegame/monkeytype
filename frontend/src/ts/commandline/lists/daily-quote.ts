@@ -29,7 +29,7 @@ const commands: Command[] = [
     display: "Copy daily quote result",
     fa: { icon: "fa-share-alt" },
     exec: (): void => void DailyQuote.copyShareText(),
-    available: () => DailyQuote.getDailyResult() !== null,
+    available: () => DailyQuote.getDailyScore() !== null,
   },
 ];
 
