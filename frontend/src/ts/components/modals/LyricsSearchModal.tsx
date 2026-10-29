@@ -5,13 +5,18 @@ import {
   For,
   JSXElement,
   onCleanup,
+  Setter,
   Show,
   untrack,
 } from "solid-js";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { hideModalAndClearChain } from "../../states/modals";
+import {
+  hideModal,
+  hideModalAndClearChain,
+  isModalInStack,
+} from "../../states/modals";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -49,6 +54,17 @@ const inputClass = cn(
   "w-full rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
   "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
 );
+
+type CustomTextIncomingData =
+  | ({
+      set?: boolean;
+      long?: boolean;
+      pipeDelimiter?: boolean;
+    } & (
+      | { text: string; splitText?: never }
+      | { text?: never; splitText: string[] }
+    ))
+  | null;
 
 function lrclibProblemText(error: unknown): string {
   return error instanceof RateLimitError
@@ -103,7 +119,9 @@ function Choice<T extends string>(props: {
   );
 }
 
-export function LyricsSearchModal(): JSXElement {
+export function LyricsSearchModal(props: {
+  setChainedData: Setter<CustomTextIncomingData>;
+}): JSXElement {
   const [searchText, setSearchText] = createSignal("");
   const [tracks, setTracks] = createSignal<LyricsTrack[]>([]);
   const [hasSearched, setHasSearched] = createSignal(false);
@@ -252,12 +270,25 @@ export function LyricsSearchModal(): JSXElement {
     });
   };
 
+  const isOpenedFromCustomText = (): boolean => isModalInStack("CustomText");
+
   const startTest = (): void => {
     const raw = lyrics();
     if (raw === null) return;
     const words = lyricsToWords(raw, options());
     if (words.length === 0) {
       showNoticeNotification("Nothing left to type with the current filters");
+      return;
+    }
+
+    if (isOpenedFromCustomText()) {
+      // hand the text over to the custom text modal, so it can still be
+      // edited and the mode and limit can be chosen there
+      props.setChainedData({
+        text: filterLyrics(raw, options()).replace(/^ +/gm, ""),
+        pipeDelimiter: false,
+      });
+      hideModal("LyricsSearch");
       return;
     }
 
@@ -519,8 +550,11 @@ export function LyricsSearchModal(): JSXElement {
         </div>
         <Show when={selected()}>
           <Button
-            fa={{ icon: "fa-play", fixedWidth: true }}
-            text="start typing"
+            fa={{
+              icon: isOpenedFromCustomText() ? "fa-check" : "fa-play",
+              fixedWidth: true,
+            }}
+            text={isOpenedFromCustomText() ? "use lyrics" : "start typing"}
             disabled={wordCount() === 0}
             onClick={startTest}
           />
