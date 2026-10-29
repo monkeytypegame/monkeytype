@@ -18,7 +18,7 @@ export function envConfig(options: {
     name: "virtual-env-config",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
@@ -51,7 +51,7 @@ export function envConfig(options: {
           export const envConfig = ${JSON.stringify(envConfig)};
         `;
       }
-      return;
+      return undefined;
     },
   };
 }

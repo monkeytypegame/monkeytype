@@ -8,7 +8,7 @@ import {
   removeNotification,
   clearAllNotifications,
 } from "../../../states/notifications";
-import { getFocus } from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { Anime } from "../../common/anime/Anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";
@@ -66,7 +66,7 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
     <div
       class={cn(
         "transition-opacity duration-125",
-        getFocus() &&
+        isFocusMode() &&
           !props.notification.important &&
           "pointer-events-none hidden",
       )}
@@ -111,7 +111,7 @@ function NotificationItem(props: { notification: Notification }): JSXElement {
 
 export function Notifications(): JSXElement {
   const stickyCount = (): number => {
-    const focus = getFocus();
+    const focus = isFocusMode();
     return getNotifications().filter(
       (n) => n.durationMs === 0 && (!focus || n.important),
     ).length;

@@ -1,7 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
 import { getTestInitError } from "../../../states/test";
-import { restart } from "../../../test/test-logic";
+import { restartTest } from "../../../test/test-logic";
 import { Button } from "../../common/Button";
 
 export function TestInitFailed(): JSXElement {
@@ -20,7 +20,7 @@ export function TestInitFailed(): JSXElement {
           active
           fa={{ icon: "fa-redo-alt", fixedWidth: true }}
           text="Restart"
-          onClick={() => void restart()}
+          onClick={() => void restartTest()}
         />
       </div>
     </div>

@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { canSetConfigWithCurrentFunboxes } from "../../../src/ts/config/funbox-validation";
+import {
+  canSetConfigWithCurrentFunboxes,
+  getFunboxUnsupportedReason,
+} from "../../../src/ts/config/funbox-validation";
 
 import { FunboxName } from "@monkeytype/schemas/configs";
 describe("funbox-validation", () => {
@@ -70,5 +73,23 @@ describe("funbox-validation", () => {
         ).toBe(expected);
       },
     );
+  });
+  describe("getFunboxUnsupportedReason", () => {
+    const safari165 =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15";
+    const safari17 =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15";
+    const chrome =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+    it("blocks crt on Safari 16.5 or earlier", () => {
+      expect(getFunboxUnsupportedReason("crt", safari165)).toBeDefined();
+    });
+    it.each([safari17, chrome])("allows crt on %s", (userAgent) => {
+      expect(getFunboxUnsupportedReason("crt", userAgent)).toBeUndefined();
+    });
+    it("allows other funboxes on Safari 16.5", () => {
+      expect(getFunboxUnsupportedReason("nausea", safari165)).toBeUndefined();
+    });
   });
 });

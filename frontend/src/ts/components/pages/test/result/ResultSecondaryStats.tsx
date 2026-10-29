@@ -1,9 +1,9 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { isSafeNumber, roundTo2 } from "@monkeytype/util/numbers";
+import { Link } from "@tanstack/solid-router";
 import {
   createMemo,
   createResource,
-  createSignal,
   For,
   JSXElement,
   Show,
@@ -16,8 +16,8 @@ import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import { navigate } from "../../../../controllers/route-controller";
 import * as DB from "../../../../db";
+import { createTrigger } from "../../../../hooks/createTrigger";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -159,24 +159,28 @@ export function ResultSecondaryStats(props: Props): JSXElement {
         class="max-w-52 whitespace-nowrap"
       >
         <div class="text-sub">daily leaderboard</div>
-        <Balloon
-          data-ui-element="resultStatValue"
-          text="Show daily leaderboard"
-          class={cn(
-            "text-[2em] leading-[1em] text-main",
-            mobileBalloonClass,
-            "cursor-pointer",
-          )}
-          onClick={() => {
-            void navigate(
-              `/leaderboards?type=daily&language=${props.result.language}&mode2=${props.result.mode2}&goToUserPage=true`,
-            );
+        <Link
+          to="/leaderboards"
+          search={{
+            type: "daily",
+            language: props.result.language,
+            mode2: props.result.mode2,
+            goToUserPage: true,
           }}
         >
-          {format().rank(resultState.dailyLeaderboardRank, {
-            fallback: "",
-          })}
-        </Balloon>
+          <Balloon
+            data-ui-element="resultStatValue"
+            text="Show daily leaderboard"
+            class={cn(
+              "block text-[2em] leading-[1em] text-main",
+              mobileBalloonClass,
+            )}
+          >
+            {format().rank(resultState.dailyLeaderboardRank, {
+              fallback: "",
+            })}
+          </Balloon>
+        </Link>
       </AnimeShow>
 
       <Show when={resultState.details?.quote}>
@@ -278,10 +282,10 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the non-reactive DB snapshot, bumped after each toggle
-  const [favoritesVersion, setFavoritesVersion] = createSignal(0);
+  // favorites live in the non-reactive DB snapshot, refreshed after each toggle
+  const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
-    favoritesVersion();
+    trackFavorites();
     return QuotesController.isQuoteFavorite(props.quote);
   };
   // fills quoteStats() in states/quote-rate, which the rate modal also updates
@@ -331,7 +335,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
       dbSnapshot.favoriteQuotes[language] ??= [];
       dbSnapshot.favoriteQuotes[language]?.push(quoteId);
     }
-    setFavoritesVersion((v) => v + 1);
+    refreshFavorites();
   };
 
   return (

@@ -1,45 +1,39 @@
 import { JSXElement, onCleanup, onMount, Show } from "solid-js";
+import { debounce } from "throttle-debounce";
 
-import { getConfig } from "../../../config/store";
-import { updateFooterAndVerticalAds } from "../../../controllers/ad-controller";
-import {
-  isInputElementFocused,
-  registerInputElement,
-} from "../../../input/input-element";
-import { initInputListeners } from "../../../input/listeners";
+import { Config, getConfig } from "../../../config/store";
+import { getCustomTextIndicator } from "../../../states/core";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { getShowResult } from "../../../states/result";
+import { isResultShown } from "../../../states/result";
 import {
-  getFocus,
+  isFocusMode,
   getLayoutfluidTimerText,
-  getResultVisible,
-  isErrorBorderDisabled,
-  isJoiningScript,
-  isLanguageRightToLeft,
   isLayoutfluidTimerVisible,
-  isReadAheadDisabled,
   isResultLoading,
+  isTestActive,
+  isTestFinished,
   isTestInitFailed,
   isTypingTestHidden,
-  isWordsHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
   setTestFocusState,
-  showOutOfFocusWarning,
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
+import * as CustomText from "../../../test/custom-text";
 import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
   onRestartButtonClick,
-  restart,
+  restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
 import * as TestUI from "../../../test/test-ui";
 import { cn } from "../../../utils/cn";
 import { ElementWithUtils } from "../../../utils/dom";
+import * as Misc from "../../../utils/misc";
+import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -57,14 +51,8 @@ import { Premid } from "./Premid";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
-
-function prefixedClass(
-  prefix: string,
-  value: string | null,
-): Record<string, boolean> {
-  if (value === null) return {};
-  return { [`${prefix}-${value.replaceAll("_", "-")}`]: true };
-}
+import { Words, wordsModeClasses } from "./Words";
+import { WordsInput } from "./WordsInput";
 
 /**
  * The test page. Internals are still vanilla - this owns the markup and hands
@@ -72,16 +60,15 @@ function prefixedClass(
  * Mounting starts a fresh test.
  */
 export function TestPage(): JSXElement {
-  // page-controller ends the test as soon as a navigation away starts. This
-  // also ends it when the page unmounts without one
+  // the router ends the test as soon as a navigation away starts (see
+  // createAppRouter). This also ends it when the page unmounts without one,
+  // eg. the loading page covering it while user data downloads after sign in
   onCleanup(leaveTestPage);
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let wordsRef: HTMLDivElement | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
-  let inputRef: HTMLTextAreaElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -92,44 +79,37 @@ export function TestPage(): JSXElement {
     if (
       typingTestRef === undefined ||
       wordsWrapperRef === undefined ||
-      wordsRef === undefined ||
       caretRef === undefined ||
-      paceCaretRef === undefined ||
-      inputRef === undefined
+      paceCaretRef === undefined
     ) {
       throw new Error("TestPage refs not set");
     }
 
-    // input first - the listeners and test-ui read it via getInputElement()
-    registerInputElement(inputRef, signal);
-
-    const words = new ElementWithUtils(wordsRef);
     const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
     Caret.initElement(
-      { caret: new ElementWithUtils(caretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(caretRef), wordsWrapper },
       signal,
     );
     PaceCaret.initElement(
-      { caret: new ElementWithUtils(paceCaretRef), words, wordsWrapper },
+      { caret: new ElementWithUtils(paceCaretRef), wordsWrapper },
       signal,
     );
 
-    initInputListeners(signal);
     TestUI.init(
-      { words, wordsWrapper, typingTest: new ElementWithUtils(typingTestRef) },
+      {
+        typingTest: new ElementWithUtils(typingTestRef),
+      },
       signal,
     );
     listenForModifierKeys(signal);
     listenForMonkeyKeys(signal);
     // any previously rendered words are gone, start a fresh test
-    void restart({ noAnim: true });
+    void restartTest({ noAnim: true });
 
-    updateFooterAndVerticalAds(false);
     resetIncompleteTests();
     // registered last so it runs after the modules above have unbound
     signal.addEventListener("abort", () => {
       void Funbox.clear();
-      updateFooterAndVerticalAds(true);
     });
 
     window.addEventListener(
@@ -138,6 +118,37 @@ export function TestPage(): JSXElement {
       { signal },
     );
     window.addEventListener("focus", restartIfNotStarted, { signal });
+    // confirm leaving mid test, unless it's quick to redo
+    window.addEventListener(
+      "beforeunload",
+      (event) => {
+        if (!isTestActive()) return;
+        if (
+          canQuickRestart(
+            Config.mode,
+            Config.words,
+            Config.time,
+            CustomText.getData(),
+            getCustomTextIndicator()?.isLong ?? false,
+          )
+        ) {
+          return;
+        }
+        event.preventDefault();
+        // Included for legacy support, e.g. Chrome/Edge < 119
+        // oxlint-disable-next-line no-deprecated
+        event.returnValue = "";
+      },
+      { signal },
+    );
+    // before the test, keeps it in view. During one, Words keeps the active
+    // line in view
+    const keepTestInView = debounce(250, () => {
+      if (isTestActive() || isTestFinished()) return;
+      Misc.scrollToCenterOrTop(typingTestRef ?? null);
+    });
+    window.addEventListener("resize", keepTestInView, { signal });
+    signal.addEventListener("abort", () => keepTestInView.cancel());
     // little roadblock for basic cheating
     document.addEventListener(
       "visibilitychange",
@@ -155,14 +166,6 @@ export function TestPage(): JSXElement {
   const isFullWidth = (): boolean =>
     getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
   const fontSize = (): string => `${getConfig.fontSize}rem`;
-  // classes shared by #words and #wordsWrapper
-  const modeClasses = (): Record<string, boolean> => ({
-    tape: getConfig.tapeMode !== "off",
-    blind: getConfig.blindMode,
-    indicateTyposBelow:
-      getConfig.indicateTypos === "below" || getConfig.indicateTypos === "both",
-    hideExtraLetters: getConfig.hideExtraLetters,
-  });
 
   return (
     <>
@@ -205,7 +208,7 @@ export function TestPage(): JSXElement {
         <div
           id="wordsWrapper"
           ref={(el) => (wordsWrapperRef = el)}
-          class={cn("content-grid full-width", modeClasses(), {
+          class={cn("content-grid full-width", wordsModeClasses(), {
             hidden: isWordsWrapperHidden(),
           })}
           translate="no"
@@ -213,39 +216,7 @@ export function TestPage(): JSXElement {
             TestUI.focusWords();
           }}
         >
-          <textarea
-            id="wordsInput"
-            ref={(el) => (inputRef = el)}
-            class="full-width"
-            autocomplete="off"
-            // oxlint-disable-next-line react/no-unknown-property
-            autocapitalize="off"
-            // oxlint-disable-next-line react/no-unknown-property
-            autocorrect="off"
-            data-gramm="false"
-            data-gramm_editor="false"
-            data-enable-grammarly="false"
-            data-bwignore=""
-            data-1p-ignore=""
-            data-lpignore="true"
-            data-form-type="other"
-            // oxlint-disable-next-line react/no-unknown-property
-            spellcheck={false}
-            style={{ "font-size": fontSize() }}
-            onFocus={() => {
-              if (!isInputElementFocused()) return;
-              if (!getResultVisible() && getConfig.showOutOfFocusWarning) {
-                setTestFocusState("focused");
-              }
-              Caret.show(true);
-            }}
-            onBlur={() => {
-              if (!isInputElementFocused()) {
-                setTestFocusState("unfocused");
-              }
-              Caret.hide();
-            }}
-          ></textarea>
+          <WordsInput />
           <div class="contents">
             <OutOfFocusWarning />
           </div>
@@ -261,24 +232,7 @@ export function TestPage(): JSXElement {
             class="full-width default"
             style={{ "font-size": fontSize() }}
           ></div>
-          <div
-            id="words"
-            ref={(el) => (wordsRef = el)}
-            class={cn("full-width", {
-              ...modeClasses(),
-              flipped: getConfig.flipTestColors,
-              colorfulMode: getConfig.colorfulMode,
-              rightToLeftTest: isLanguageRightToLeft(),
-              ...prefixedClass("highlight", getConfig.highlightMode),
-              ...prefixedClass("typed-effect", getConfig.typedEffect),
-              blurred: showOutOfFocusWarning(),
-              hidden: isWordsHidden(),
-              read_ahead_disabled: isReadAheadDisabled(),
-              noErrorBorder: isErrorBorderDisabled(),
-              joiningScript: isJoiningScript(),
-            })}
-            style={{ transition: showOutOfFocusWarning() ? "0.25s" : "none" }}
-          ></div>
+          <Words wordsWrapperRef={() => wordsWrapperRef} />
         </div>
 
         <div>
@@ -299,7 +253,7 @@ export function TestPage(): JSXElement {
             "focus:opacity-100 focus:transition-none",
             getConfig.quickRestart !== "off" && "hidden",
             "pointer-coarse:block", //always show the button if using a pointer-coarse device
-            getFocus() && "opacity-0", //always hide if we are focused
+            isFocusMode() && "opacity-0", //always hide if we are focused
           )}
           balloon={{
             text: "Restart Test",
@@ -326,7 +280,7 @@ export function TestPage(): JSXElement {
           <LoadingCircle />
         </div>
       </Show>
-      <Show when={getShowResult()}>
+      <Show when={isResultShown()}>
         <TestResult />
       </Show>
     </>

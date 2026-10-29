@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/solid-query";
+import { noop, useQuery } from "@tanstack/solid-query";
 import {
   createEffect,
   createSignal,
@@ -15,17 +15,7 @@ import {
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { isAuthenticated } from "../../../states/core";
-import {
-  getGoToUserPage,
-  getPage,
-  getSelection,
-  pageSize,
-  Selection,
-  setGoToUserPage,
-  setPage,
-  setSelection,
-  updateGetParameters,
-} from "../../../states/leaderboard-selection";
+import { pageSize, Selection } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";
@@ -36,10 +26,18 @@ import { NextUpdate } from "./NextUpdate";
 import { Sidebar } from "./Sidebar";
 import { Table } from "./Table";
 import { Title } from "./Title";
+import { useLeaderboardSearch } from "./useLeaderboardSearch";
 import { UserRank } from "./UserRank";
 
 export function LeaderboardPage(): JSXElement {
   const [scrollToUser, setScrollToUser] = createSignal(false);
+  const {
+    selection: getSelection,
+    page: getPage,
+    goToUserPage,
+    setSelection,
+    setPage,
+  } = useLeaderboardSearch();
 
   //invalidate cache for daily and weekly lb on close
   onCleanup(() => {
@@ -53,19 +51,24 @@ export function LeaderboardPage(): JSXElement {
 
   //prefetch next page
   createEffect(() => {
-    void queryClient.prefetchQuery(
-      getLeaderboardQueryOptions({
-        ...getSelection(),
-        page: getPage() + 1,
-      }),
-    );
+    void queryClient
+      .query({
+        ...getLeaderboardQueryOptions({
+          ...getSelection(),
+          page: getPage() + 1,
+        }),
+      })
+      .catch(noop);
   });
 
-  //update url after the data is loaded
+  //go to the last page if the current page is past it
   createEffect(() => {
-    if (entriesQuery.isSuccess) {
-      updateGetParameters(getSelection(), getPage());
+    const data = entriesQuery.data;
+    if (data === undefined || data.entries.length > 0 || getPage() === 0) {
+      return;
     }
+    const lastPage = Math.max(0, Math.ceil(data.count / pageSize) - 1);
+    if (lastPage !== getPage()) setPage(lastPage);
   });
 
   //update lb memory after the rank is loaded
@@ -77,13 +80,10 @@ export function LeaderboardPage(): JSXElement {
 
   //handle goToUserPage url param once rank is loaded
   createEffect(() => {
-    if (getGoToUserPage() && rankQuery.isSuccess) {
-      setGoToUserPage(false);
-      const page = userPage();
-      if (page !== undefined) {
-        setPage(page);
-        setScrollToUser(true);
-      }
+    if (goToUserPage() && rankQuery.isSuccess) {
+      // setting the page clears goToUserPage
+      setPage(userPage() ?? getPage());
+      setScrollToUser(userPage() !== undefined);
     }
   });
 
@@ -99,11 +99,6 @@ export function LeaderboardPage(): JSXElement {
   const serverConfigurationQuery = useQuery(() =>
     getServerConfigurationQueryOptions(),
   );
-
-  const onSelectionChange = (newSelection: Selection) => {
-    setSelection(newSelection);
-    setPage(0);
-  };
 
   /**
    * the page that contains the user
@@ -165,7 +160,7 @@ export function LeaderboardPage(): JSXElement {
           {({ serverConfigurationQueryData }) => (
             <Sidebar
               selection={getSelection}
-              onSelect={onSelectionChange}
+              onSelect={setSelection}
               validModeRules={
                 serverConfigurationQueryData().dailyLeaderboards
                   .validModeRules ?? []
@@ -182,7 +177,10 @@ export function LeaderboardPage(): JSXElement {
         <Title
           selection={getSelection()}
           onPreviousSelect={() =>
-            setSelection((old) => ({ ...old, previous: !old.previous }))
+            setSelection({
+              ...getSelection(),
+              previous: !getSelection().previous,
+            })
           }
         />
 
@@ -272,7 +270,6 @@ export function LeaderboardPage(): JSXElement {
                   entries={entriesQueryData()?.entries ?? []}
                   friendsOnly={getSelection().friendsOnly}
                   scrollToUser={scrollToUser}
-                  onScrolledToUser={() => setScrollToUser(false)}
                 />
               </div>
 

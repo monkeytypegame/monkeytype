@@ -1,13 +1,16 @@
+import { createRoot } from "solid-js";
 import { Config } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 import { getCurrentInput } from "./events/data";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
   getActiveWordIndex,
+  getCompositionData,
+  isFocusMode,
 } from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
-import * as CompositionState from "../legacy-states/composition";
 import { ElementWithUtils } from "../utils/dom";
 
 export function stopAnimation(): void {
@@ -37,7 +40,7 @@ export function resetPosition(): void {
 export function updatePosition(noAnim = false): void {
   caret?.goTo({
     wordIndex: getActiveWordIndex(),
-    letterIndex: getCurrentInput().length + CompositionState.getData().length,
+    letterIndex: getCurrentInput().length + getCompositionData().length,
     isLanguageRightToLeft: isLanguageRightToLeft(),
     isDirectionReversed: isDirectionReversed(),
     animate: Config.smoothCaret !== "off" && !noAnim,
@@ -50,7 +53,6 @@ export let caret: Caret | undefined;
 export function initElement(
   refs: {
     caret: ElementWithUtils;
-    words: ElementWithUtils;
     wordsWrapper: ElementWithUtils;
   },
   signal: AbortSignal,
@@ -62,6 +64,15 @@ export function initElement(
     if (caret === created) caret = undefined;
   });
 }
+
+// the caret stops blinking in focus mode
+createRoot(() => {
+  createEffectOn(
+    isFocusMode,
+    (focused) => (focused ? stopAnimation() : startAnimation()),
+    { defer: true },
+  );
+});
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {

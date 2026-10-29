@@ -1,5 +1,5 @@
 import { createKeyHold } from "@tanstack/solid-hotkeys";
-import { JSXElement, Show } from "solid-js";
+import { JSXElement, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { getIsScreenshotting } from "../../../../states/core";
@@ -9,7 +9,7 @@ import {
   captureAndCopyToClipboard,
   captureAndDownload,
 } from "../../../../test/screenshot";
-import { repeatTest, restart } from "../../../../test/test-logic";
+import { repeatTest, restartTest } from "../../../../test/test-logic";
 import { toggleResultWords } from "../../../../test/words-history";
 import { FaObject } from "../../../../types/font-awesome";
 import { cn } from "../../../../utils/cn";
@@ -19,11 +19,14 @@ import { toggleReplayDisplay } from "./replay";
 
 export function ResultButtons(props: { glarses: boolean }): JSXElement {
   const isShiftHeld = createKeyHold("Shift");
+  let prefocusRef: HTMLDivElement | undefined;
+
+  onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
   return (
     <>
       <div
-        id="resultButtonsPrefocusTarget"
+        ref={(el) => (prefocusRef = el)}
         class="focus:outline-none focus-visible:outline-none"
         tabIndex="-1"
       ></div>
@@ -38,7 +41,7 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
           class="max-sm:col-span-2"
           text="Next test"
           fa={{ icon: "fa-chevron-right" }}
-          onClick={() => void restart()}
+          onClick={() => void restartTest()}
         />
         <ResultButton
           data-ui-element="restartTestButtonWithSameWordset"
