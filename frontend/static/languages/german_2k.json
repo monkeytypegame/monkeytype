@@ -1,5 +1,8 @@
 {
   "name": "german_2k",
+  "rightToLeft": false,
+  "joiningScript": false,
+  "orderedByFrequency": false,
   "bcp47": "de-DE",
   "additionalAccents": [
     ["ä", "ae"],
