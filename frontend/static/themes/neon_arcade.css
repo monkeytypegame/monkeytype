@@ -1,0 +1,36 @@
+/* Neon Arcade - nav item accent colors */
+
+[data-nav-item="test"] {
+  color: #ff4fd8;
+  &:hover {
+    color: color-mix(in srgb, #ff4fd8 75%, black 25%);
+  }
+}
+
+[data-nav-item="leaderboards"] {
+  color: #3df5ff;
+  &:hover {
+    color: color-mix(in srgb, #3df5ff 75%, black 25%);
+  }
+}
+
+[data-nav-item="about"] {
+  color: #7dffb2;
+  &:hover {
+    color: color-mix(in srgb, #7dffb2 75%, black 25%);
+  }
+}
+
+[data-nav-item="settings"] {
+  color: #ffd93d;
+  &:hover {
+    color: color-mix(in srgb, #ffd93d 75%, black 25%);
+  }
+}
+
+[data-nav-item="alerts"] {
+  --themable-button-text: #ff9f5a;
+  &:hover {
+    --themable-button-text: color-mix(in srgb, #ff9f5a 75%, black 25%);
+  }
+}
