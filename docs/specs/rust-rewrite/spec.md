@@ -1,4 +1,4 @@
-Status: settled — ready for ticketing
+Status: settled — ready for ticketing (planned in [#8545](https://github.com/monkeytypegame/monkeytype/pull/8545))
 
 # Spec: the Rust + WebAssembly rewrite
 
