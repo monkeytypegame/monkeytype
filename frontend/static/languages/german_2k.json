@@ -1,1 +1,14 @@
-
+{
+  "name": "German 2K",
+  "rightToLeft": false,
+  "joiningScript": false,
+  "orderedByFrequency": true,
+  "bcp47": "de",
+  "preferredFont": "",
+  "words": [
+    "und",
+    "der",
+    "die",
+    "das"
+  ]
+}
