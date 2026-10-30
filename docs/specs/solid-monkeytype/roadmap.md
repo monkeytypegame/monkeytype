@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: superseded by `rust-rewrite` — do not start further steps here
 
 # Roadmap: getting to the fully-Solid frontend
 
