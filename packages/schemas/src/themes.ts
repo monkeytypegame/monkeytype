@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
-export const ThemeNameSchema = z.enum(
-  [
+export const ThemeNameSchema = z.enum([
+  "galaxybash",
+]);
+
     "8008",
     "80s_after_dark",
     "9009",
@@ -190,6 +192,7 @@ export const ThemeNameSchema = z.enum(
     "witch_girl",
     "pale_nimbus",
     "spiderman",
+    "galaxybash",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a known theme"),
