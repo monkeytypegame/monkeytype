@@ -12,15 +12,13 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: {
-    text: "Sub Section",
-    fa: { icon: "fa-cog", variant: "solid" },
-  },
+  render: () => (
+    <H3 text="Sub Section" fa={{ icon: "fa-cog", variant: "solid" }} />
+  ),
 });
 
 export const WithDifferentIcon = meta.story({
-  args: {
-    text: "Appearance",
-    fa: { icon: "fa-paint-brush", variant: "solid" },
-  },
+  render: () => (
+    <H3 text="Appearance" fa={{ icon: "fa-paint-brush", variant: "solid" }} />
+  ),
 });

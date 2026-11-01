@@ -31,6 +31,13 @@ export const ToggleBanResponseSchema = responseWithData(
 ).strict();
 export type ToggleBanResponse = z.infer<typeof ToggleBanResponseSchema>;
 
+export const DeleteUserRequestSchema = z
+  .object({
+    uid: IdSchema,
+  })
+  .strict();
+export type DeleteUserRequest = z.infer<typeof DeleteUserRequestSchema>;
+
 export const AcceptReportsRequestSchema = z
   .object({
     reports: z.array(z.object({ reportId: z.string() }).strict()).nonempty(),
@@ -88,6 +95,17 @@ export const adminContract = c.router(
       method: "POST",
       path: "/clearStreakHourOffset",
       body: ClearStreakHourOffsetRequestSchema,
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+    },
+    deleteUser: {
+      summary: "delete user",
+      description:
+        "Delete the account of the given user, including all their data.",
+      method: "POST",
+      path: "/deleteUser",
+      body: DeleteUserRequestSchema,
       responses: {
         200: MonkeyResponseSchema,
       },

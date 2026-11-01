@@ -1,4 +1,4 @@
-FROM node:24.11.0-alpine3.22 AS builder
+FROM node:24.22.1-alpine3.23 AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY packages packages
 COPY backend backend
 
 #gimme pnpm + build
-RUN npm i -g pnpm@10.28.1 && \
+RUN npm i -g pnpm@11.21.0 && \
     pnpm i --frozen-lockfile && \
     npm run build
 
@@ -18,7 +18,7 @@ RUN pnpm deploy --legacy --filter backend --prod /prod/backend
 #---------------------------------
 
 ## target image
-FROM node:24.11.0-alpine3.22
+FROM node:24.22.1-alpine3.23
 
 ## get server_version from build-arg, default to UNKNOWN
 ARG server_version=UNKNOWN

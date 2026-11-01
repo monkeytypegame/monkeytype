@@ -1,39 +1,34 @@
-import { navigate } from "../../controllers/route-controller";
+import { getChallenges } from "@monkeytype/challenges";
 import * as ChallengeController from "../../controllers/challenge-controller";
+import { navigate } from "../../router/navigate";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
-import { Challenge } from "@monkeytype/schemas/challenges";
 
 const subgroup: CommandsSubgroup = {
   title: "Load challenge...",
-  list: [],
+  list: getChallenges()
+    .filter((it) => it.settings !== undefined)
+    .map((challenge) => ({
+      id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
+      display: challenge.display,
+      exec: async (): Promise<void> => {
+        await navigate({ to: "/" });
+        await ChallengeController.setup(challenge.name);
+        void TestLogic.restartTest({
+          nosave: true,
+        });
+      },
+    })),
 };
 
 const commands: Command[] = [
   {
     id: "loadChallenge",
     display: "Load challenge...",
-    icon: "fa-award",
+    fa: { icon: "fa-award" },
     subgroup,
   },
 ];
 
-function update(challenges: Challenge[]): void {
-  challenges.forEach((challenge) => {
-    subgroup.list.push({
-      id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
-      display: challenge.display,
-      exec: async (): Promise<void> => {
-        await navigate("/");
-        await ChallengeController.setup(challenge.name);
-        TestLogic.restart({
-          nosave: true,
-        });
-      },
-    });
-  });
-}
-
 export default commands;
-export { update };

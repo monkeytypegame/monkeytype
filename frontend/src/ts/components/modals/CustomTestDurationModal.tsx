@@ -3,9 +3,9 @@ import { JSXElement } from "solid-js";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
+import { restartTest } from "../../test/test-logic";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
@@ -24,7 +24,7 @@ export function CustomTestDurationModal(): JSXElement {
       }
 
       setConfig("time", val);
-      restartTestEvent.dispatch();
+      void restartTest();
 
       if (val >= 1800) {
         showNoticeNotification("Stay safe and take breaks!");
@@ -57,6 +57,7 @@ export function CustomTestDurationModal(): JSXElement {
     <AnimatedModal
       id="TestDuration"
       title="Test Duration"
+      focusFirstInput="focusAndSelect"
       beforeShow={() => {
         form.reset({ duration: getConfig.time.toString() });
       }}
@@ -98,7 +99,7 @@ export function CustomTestDurationModal(): JSXElement {
           form={form}
           variant="button"
           text="apply"
-          skipDirtyCheck
+          skipUnchangedCheck
         />
       </form>
     </AnimatedModal>

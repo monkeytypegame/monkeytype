@@ -29,6 +29,8 @@
               "innerHTML",
               "onScrollEnd",
               "router-link",
+              "on:click",
+              "for",
             ],
           },
         ],

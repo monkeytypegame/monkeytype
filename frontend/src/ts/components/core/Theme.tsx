@@ -1,12 +1,14 @@
 import { Link, Meta, MetaProvider, Style } from "@solidjs/meta";
-import { createEffect, createMemo, JSXElement } from "solid-js";
+import { createEffect, createMemo, JSXElement, Show } from "solid-js";
 
 import { themes } from "../../constants/themes";
 import { createDebouncedEffectOn } from "../../hooks/effects";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
-import { getTheme } from "../../states/theme";
+import { getTheme, getThemeColorsCss } from "../../states/theme";
+import { isColorDark } from "../../utils/colors";
 import { FavIcon } from "./FavIcon";
 
 export function Theme(): JSXElement {
@@ -37,42 +39,45 @@ export function Theme(): JSXElement {
   };
 
   createDebouncedEffectOn(125, getTheme, (colors) => {
-    styleEl()?.setHtml(`
-:root {
-    --bg-color: ${colors.bg};
-    --main-color: ${colors.main};
-    --caret-color: ${colors.caret};
-    --sub-color: ${colors.sub};
-    --sub-alt-color: ${colors.subAlt};
-    --text-color: ${colors.text};
-    --error-color: ${colors.error};
-    --error-extra-color: ${colors.errorExtra};
-    --colorful-error-color: ${colors.colorfulError};
-    --colorful-error-extra-color: ${colors.colorfulErrorExtra};
-}`);
+    styleEl()?.setHtml(getThemeColorsCss(colors));
   });
+
+  const isThemeWithCss = () => {
+    const name = getThemeName();
+    return name !== "custom" && (themes[name]?.hasCss ?? false);
+  };
 
   createEffect(() => {
     const name = getThemeName();
-    const hasCss = name !== "custom" && (themes[name].hasCss ?? false);
+    const hasCss = isThemeWithCss();
+
     console.debug(
       `Theme component ${hasCss ? "loading style" : "removing style"} for theme ${name}`,
     );
-    if (hasCss) showLoaderBar();
+    if (hasCss) {
+      showLoaderBar();
+    } else {
+      hideLoaderBar();
+    }
     linkEl()?.setAttribute("href", hasCss ? `/themes/${name}.css` : "");
   });
+
+  // tailwind's dark: variant
+  useBodyClasses(() => ({ darkMode: isColorDark(getTheme().bg) }));
 
   return (
     <MetaProvider>
       <Style id="theme" ref={styleRef} />
-      <Link
-        ref={linkRef}
-        rel="stylesheet"
-        id="currentTheme"
-        data-name={getTheme().name}
-        onError={onError}
-        onLoad={onLoad}
-      />
+      <Show when={isThemeWithCss()}>
+        <Link
+          ref={linkRef}
+          rel="stylesheet"
+          id="currentTheme"
+          data-name={getTheme().name}
+          onError={onError}
+          onLoad={onLoad}
+        />
+      </Show>
       <Meta id="metaThemeColor" name="theme-color" content={getTheme().bg} />
       <FavIcon theme={getTheme()} />
     </MetaProvider>

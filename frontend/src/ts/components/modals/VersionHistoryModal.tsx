@@ -1,3 +1,4 @@
+import { LiteDebouncer } from "@tanstack/pacer-lite/lite-debouncer";
 import { useInfiniteQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show } from "solid-js";
 
@@ -15,16 +16,23 @@ export function VersionHistoryModal(): JSXElement {
     enabled: isOpen(),
   }));
 
+  const debouncedFetch = new LiteDebouncer(
+    (callback: () => void) => callback(),
+    { wait: 150 },
+  );
+
   const fetchMoreVersions = (e: Event): void => {
     const element = e.target as HTMLElement;
 
-    if (
-      element.scrollHeight - element.scrollTop - element.clientHeight < 10 &&
-      releases.hasNextPage &&
-      !releases.isLoading
-    ) {
-      void releases.fetchNextPage();
-    }
+    debouncedFetch.maybeExecute(() => {
+      if (
+        element.scrollHeight - element.scrollTop - element.clientHeight < 10 &&
+        releases.hasNextPage &&
+        !releases.isLoading
+      ) {
+        void releases.fetchNextPage();
+      }
+    });
   };
 
   return (
@@ -34,13 +42,13 @@ export function VersionHistoryModal(): JSXElement {
       onScroll={fetchMoreVersions}
     >
       <AsyncContent
-        query={releases}
+        queries={{ releases }}
         errorMessage="Failed to load version history"
       >
-        {(data) => (
+        {({ releasesData }) => (
           <>
             <div class="releases">
-              <For each={data.pages.flatMap((it) => it.releases)}>
+              <For each={releasesData().pages.flatMap((it) => it.releases)}>
                 {(release) => <ReleaseItem {...release} />}
               </For>
             </div>

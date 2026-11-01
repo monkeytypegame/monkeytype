@@ -122,5 +122,14 @@ export function replaceLegacyValues(result: DBResult): DBResult {
     };
   }
 
+  if (typeof result.mode2 === "number") {
+    result.mode2 = (result.mode2 as number).toString();
+  }
+
+  //legacy value for english_1k
+  if ((result.language as string) === "english_expanded") {
+    result.language = "english_1k";
+  }
+
   return result;
 }

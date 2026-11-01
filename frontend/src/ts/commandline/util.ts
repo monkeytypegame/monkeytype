@@ -1,52 +1,43 @@
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import { ConfigMetadata, configMetadata } from "../config/metadata";
+import {
+  CommandlineConfigKey,
+  CommandlineInputMetadata,
+  CommandlineMetadata,
+  CommandlineSubgroupMetadata,
+  ConfigMetadata,
+  configMetadata,
+  OptionMetadata,
+  optionLabel,
+} from "../config/metadata";
 import { capitalizeFirstLetter } from "../utils/strings";
 import {
-  CommandlineConfigMetadata,
-  commandlineConfigMetadata,
-  CommandlineConfigMetadataObject,
-  InputProps,
-  SubgroupProps,
-} from "./commandline-metadata";
+  CommandlineConfigActions,
+  commandlineConfigActions,
+} from "./config-actions";
 import { Command } from "./types";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import { z, ZodSchema, ZodFirstPartySchemaTypes } from "zod";
-
-function getOptions<T extends ZodSchema>(schema: T): undefined | z.infer<T>[] {
-  if (schema instanceof z.ZodLiteral) {
-    return [schema.value] as z.infer<T>[];
-  } else if (schema instanceof z.ZodEnum) {
-    return schema.options as z.infer<T>[];
-  } else if (schema instanceof z.ZodBoolean) {
-    return [true, false] as z.infer<T>[];
-  } else if (schema instanceof z.ZodUnion) {
-    return (schema.options as ZodSchema[])
-      .flatMap(getOptions)
-      .filter((it) => it !== undefined) as z.infer<T>[];
-  }
-  return undefined;
-}
+import { ZodSchema, ZodFirstPartySchemaTypes } from "zod";
+import { getOptions } from "../utils/zod";
 
 export function buildCommandForConfigKey<
-  K extends keyof CommandlineConfigMetadataObject,
+  // oxlint-disable-next-line no-unnecessary-type-parameters -- keeps key and its metadata types correlated
+  K extends CommandlineConfigKey,
 >(key: K): Command {
   const configMeta = configMetadata[key];
-  const commandMeta = commandlineConfigMetadata[key];
+  const actions = commandlineConfigActions[key];
   const schema = ConfigSchemas.ConfigSchema.shape[key];
 
-  return _buildCommandForConfigKey(key, configMeta, commandMeta, schema);
+  return _buildCommandForConfigKey(key, configMeta, actions, schema);
 }
-function _buildCommandForConfigKey<
-  K extends keyof CommandlineConfigMetadataObject,
->(
+function _buildCommandForConfigKey<K extends keyof ConfigSchemas.Config>(
   key: K,
   configMeta: ConfigMetadata<K>,
-  commandMeta:
-    | CommandlineConfigMetadata<K, keyof ConfigSchemas.Config>
-    | undefined,
+  actions: CommandlineConfigActions<K> | undefined,
   schema: ZodSchema,
 ): Command {
+  const commandMeta: CommandlineMetadata<K> | null | undefined =
+    configMeta.commandline;
   if (commandMeta === undefined || commandMeta === null) {
     throw new Error(`No commandline metadata found for config key "${key}".`);
   }
@@ -59,6 +50,7 @@ function _buildCommandForConfigKey<
       commandMeta.display,
       commandMeta.alias,
       commandMeta.subgroup,
+      actions?.subgroup,
       configMeta,
       schema,
     );
@@ -70,7 +62,10 @@ function _buildCommandForConfigKey<
     const inputCommand = buildInputCommand({
       key: "secondKey" in inputProps ? inputProps.secondKey : key,
       isPartOfSubgroup: "subgroup" in commandMeta,
-      inputProps: inputProps as InputProps<keyof ConfigSchemas.Config>,
+      inputProps: inputProps as CommandlineInputMetadata<
+        keyof ConfigSchemas.Config
+      >,
+      inputActions: actions?.input,
       configMeta: configMeta as unknown as ConfigMetadata<
         keyof ConfigSchemas.Config
       >,
@@ -99,7 +94,8 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   key: K,
   rootDisplay: string | undefined,
   rootAlias: string | undefined,
-  subgroupProps: SubgroupProps<K>,
+  subgroupProps: CommandlineSubgroupMetadata<K>,
+  subgroupActions: CommandlineConfigActions<K>["subgroup"],
   configMeta: ConfigMetadata<K>,
   schema: ZodSchema,
 ): Command {
@@ -124,7 +120,15 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
     );
   }
   const list = values.map((value) =>
-    buildSubgroupCommand<K>(key, value, subgroupProps),
+    buildSubgroupCommand<K>(
+      key,
+      value,
+      subgroupProps,
+      subgroupActions,
+      (
+        configMeta.optionsMetadata as Record<string, OptionMetadata> | undefined
+      )?.[String(value)],
+    ),
   );
 
   list.sort((a, b) => {
@@ -136,7 +140,7 @@ function buildCommandWithSubgroup<K extends keyof ConfigSchemas.Config>(
   return {
     id: `change${capitalizeFirstLetter(key)}`,
     display: display,
-    icon: configMeta?.fa?.icon ?? "fa-cog",
+    fa: configMeta?.fa ?? { icon: "fa-cog" },
     subgroup: {
       title: display,
       configKey: key,
@@ -150,29 +154,21 @@ function buildSubgroupCommand<K extends keyof ConfigSchemas.Config>(
   key: keyof ConfigSchemas.Config,
   value: ConfigSchemas.Config[K],
   {
-    afterExec,
-    hover,
     display: commandDisplay,
     alias: commandAlias,
     configValueMode: commandConfigValueMode,
     isVisible: isCommandVisible,
     isAvailable: isCommandAvailable,
     customData: commandCustomData,
-  }: SubgroupProps<K>,
+  }: CommandlineSubgroupMetadata<K>,
+  { afterExec, hover }: CommandlineConfigActions<K>["subgroup"] = {},
+  optionMeta?: OptionMetadata,
 ): Command {
   const val = value;
 
-  let displayString = commandDisplay?.(value);
-
-  if (displayString === undefined) {
-    if (value === true) {
-      displayString = "on";
-    } else if (value === false) {
-      displayString = "off";
-    } else {
-      displayString = value.toString();
-    }
-  }
+  // same label as the settings page unless the commandline overrides it
+  const displayString =
+    commandDisplay?.(value) ?? optionLabel(optionMeta, value);
 
   return {
     id: `set${capitalizeFirstLetter(key)}${capitalizeFirstLetter(
@@ -202,12 +198,14 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   key,
   isPartOfSubgroup,
   inputProps,
+  inputActions,
   configMeta,
   schema,
 }: {
   key: K;
   isPartOfSubgroup: boolean;
-  inputProps?: InputProps<K>;
+  inputProps?: CommandlineInputMetadata<K>;
+  inputActions?: CommandlineConfigActions<K>["input"];
   configMeta: ConfigMetadata<K>;
   schema?: ZodSchema;
 }): Command {
@@ -230,15 +228,15 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
     display: displayString,
     alias: inputProps?.alias ?? undefined,
     input: true,
-    icon: configMeta?.fa?.icon ?? "fa-cog",
+    fa: configMeta?.fa ?? { icon: "fa-cog" },
 
     //@ts-expect-error this is fine
     exec: ({ input }): void => {
       if (input === undefined) return;
       setConfig(key, input as ConfigSchemas.Config[K]);
-      inputProps?.afterExec?.(input as ConfigSchemas.Config[K]);
+      inputActions?.afterExec?.();
     },
-    hover: inputProps?.hover,
+    hover: inputActions?.hover,
   };
 
   if (inputProps?.inputValueConvert !== undefined) {

@@ -8,6 +8,7 @@ import {
   fieldMandatory,
   type ValidationResult,
 } from "../../../../src/ts/components/ui/form/utils";
+import { AnyFieldApi } from "@tanstack/solid-form";
 
 describe("fromSchema", () => {
   const schema = z.string().min(3, "too short").max(10, "too long");
@@ -34,9 +35,9 @@ describe("fromSchema", () => {
 describe("handleResult", () => {
   const mockSetMeta = vi.fn();
 
-  function makeField() {
+  function makeField(): AnyFieldApi {
     mockSetMeta.mockClear();
-    return { setMeta: mockSetMeta } as any;
+    return { setMeta: mockSetMeta } as unknown as AnyFieldApi;
   }
 
   it("returns undefined for undefined results", () => {
@@ -68,7 +69,9 @@ describe("handleResult", () => {
     expect(result).toBeUndefined();
     expect(mockSetMeta).toHaveBeenCalledOnce();
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const updater = mockSetMeta.mock.calls[0]![0];
+    // oxlint-disable-next-line typescript/no-unsafe-call
     const newMeta = updater({ existing: true });
     expect(newMeta).toEqual({
       existing: true,

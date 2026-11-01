@@ -7,27 +7,37 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { ttsEvent } from "../../events/tts";
+import * as TTS from "../tts";
 import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
-import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
-import { highlight } from "../../events/keymap";
-import * as MemoryTimer from "./memory-funbox-timer";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
-import * as TestState from "../test-state";
+import {
+  getActiveWordIndex,
+  setReadAheadDisabled,
+  setWordsHidden,
+  setWordsWrapperHidden,
+  setLayoutfluidTimerText,
+  setLayoutfluidTimerVisible,
+  setMemoryTimerDuration,
+  highlightKeymapKey,
+} from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { qs } from "../../utils/dom";
+
+/** Typed input, passed in so funboxes never read the EventLog. */
+export type FunboxInput = {
+  current: () => string;
+  forWord: (wordIndex: number) => string;
+};
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -35,40 +45,47 @@ export type FunboxFunctions = {
   withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
-  applyGlobalCSS?: () => void;
-  clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
-  handleSpace?: () => void;
+  handleSpace?: (input: FunboxInput) => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
-  handleKeydown?: (event: KeyboardEvent) => Promise<void>;
+  handleKeydown?: (event: KeyboardEvent, input: FunboxInput) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
-async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
-  const wordCurrentChar = TestWords.words
-    .getCurrent()
-    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+async function readAheadHandleKeydown(
+  event: KeyboardEvent,
+  input: FunboxInput,
+): Promise<void> {
+  const currentInput = input.current();
+  const currentWord = TestWords.words.getCurrent();
+
+  if (!currentWord) {
+    return;
+  }
+
+  const inputCurrentChar = currentInput.slice(-1);
+  const wordCurrentChar = currentWord.display.slice(
+    currentInput.length - 1,
+    currentInput.length,
+  );
   const isCorrect = inputCurrentChar === wordCurrentChar;
 
   if (
     event.key === "Backspace" &&
     !isCorrect &&
-    (TestInput.input.current !== "" ||
-      TestInput.input.getHistory(TestState.activeWordIndex - 1) !==
-        TestWords.words.get(TestState.activeWordIndex - 1) ||
+    (currentInput !== "" ||
+      input.forWord(getActiveWordIndex() - 1) !==
+        TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
-    qs("#words")?.addClass("read_ahead_disabled");
+    setReadAheadDisabled(true);
   } else if (event.key === " ") {
-    qs("#words")?.removeClass("read_ahead_disabled");
+    setReadAheadDisabled(false);
   }
 }
 
@@ -234,7 +251,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
+      if (params[0] !== undefined) void TTS.speak(params[0]);
     },
   },
   arrows: {
@@ -259,66 +276,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === "a" ||
-          char === "ArrowLeft" ||
-          char === "j" ||
-          char === "←") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === "s" ||
-          char === "ArrowDown" ||
-          char === "k" ||
-          char === "↓") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === "w" || char === "ArrowUp" || char === "i" || char === "↑") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === "d" ||
-          char === "ArrowRight" ||
-          char === "l" ||
-          char === "→") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
-    },
-    getWordHtml(char: string, letterTag?: boolean): string {
-      let retval = "";
-      if (char === "↑") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-up"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "↓") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-down"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "←") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-left"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "→") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-right"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      return retval;
     },
   },
   rAnDoMcAsE: {
@@ -419,40 +376,43 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save("layout", Config.layout);
       save("keymapLayout", Config.keymapLayout);
     },
-    handleSpace(): void {
+    handleSpace(input): void {
       if (Config.mode !== "time") {
         const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
-        const index = Math.floor(
-          (TestInput.input.getHistory().length + 1) / wordsPerLayout,
-        );
+        const index = Math.floor((getActiveWordIndex() + 1) / wordsPerLayout);
         const mod =
-          wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
+          wordsPerLayout - ((getActiveWordIndex() + 1) % wordsPerLayout);
 
         if (layouts[index] as string) {
           if (mod <= 3 && (layouts[index + 1] as string)) {
-            LayoutfluidFunboxTimer.show();
-            LayoutfluidFunboxTimer.updateWords(
-              mod,
-              layouts[index + 1] as string,
+            const nextLayout = Strings.capitalizeFirstLetter(
+              (layouts[index + 1] as string).replace(/_/g, " "),
             );
+            setLayoutfluidTimerText(
+              mod === 1
+                ? `${nextLayout} starting next word`
+                : `${nextLayout} in: ${mod} words`,
+            );
+            setLayoutfluidTimerVisible(true);
           } else {
-            LayoutfluidFunboxTimer.hide();
+            setLayoutfluidTimerVisible(false);
           }
           if (mod === wordsPerLayout) {
             setConfig("layout", layouts[index] as Layout);
             setConfig("keymapLayout", layouts[index] as KeymapLayout);
             if (mod > 3) {
-              LayoutfluidFunboxTimer.hide();
+              setLayoutfluidTimerVisible(false);
             }
           }
         } else {
-          LayoutfluidFunboxTimer.hide();
+          setLayoutfluidTimerVisible(false);
         }
         setTimeout(() => {
-          highlight(
-            TestWords.words.getCurrent().charAt(TestInput.input.current.length),
+          highlightKeymapKey(
+            TestWords.words.getCurrent()?.text.charAt(input.current().length) ??
+              "",
           );
         }, 1);
       }
@@ -480,29 +440,29 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead_hard: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   memory: {
     applyConfig(): void {
-      qs("#wordsWrapper")?.hide();
+      setWordsWrapperHidden(true);
       setConfig("showAllLines", true, {
         nosave: true,
       });
@@ -520,12 +480,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     start(): void {
-      MemoryTimer.reset();
-      qs("#words")?.hide();
+      setMemoryTimerDuration(null);
+      setWordsHidden(true);
     },
     restart(): void {
-      MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
-      qs("#words")?.show();
+      setMemoryTimerDuration(Math.round(Math.pow(TestWords.words.length, 1.2)));
+      setWordsHidden(false);
       if (Config.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }
@@ -635,43 +595,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   underscore_spaces: {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
-      return word + "_";
-    },
-  },
-  crt: {
-    applyGlobalCSS(): void {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(
-        navigator.userAgent,
-      );
-      if (isSafari) {
-        //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
-          navigator.userAgent,
-        );
-        const mainVersion =
-          versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
-        const minorVersion =
-          versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
-        if (mainVersion <= 16 && minorVersion <= 5) {
-          showNoticeNotification(
-            "CRT is not available on Safari 16.5 or earlier.",
-            {
-              durationMs: 5000,
-            },
-          );
-          toggleFunbox("crt");
-          return;
-        }
-      }
-      qs("#scanline")?.remove();
-      qs("body")?.appendHtml('<div id="scanline" />');
-      qs("body")?.addClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
-    },
-    clearGlobal(): void {
-      qs("#scanline")?.remove();
-      qs("body")?.removeClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
+      return `${word}_`;
     },
   },
   ALL_CAPS: {
@@ -745,7 +669,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           lang.name,
           {
             noLazyMode: lang.noLazyMode,
-            ligatures: lang.ligatures,
+            joiningScript: lang.joiningScript,
             rightToLeft: lang.rightToLeft,
             additionalAccents: lang.additionalAccents,
           },

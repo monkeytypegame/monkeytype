@@ -2,18 +2,18 @@
 @import "core.scss";
 
 @font-face {
-  font-family: Roboto Mono;
+  font-family: "Roboto Mono";
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url(/webfonts/RobotoMono-Regular.woff2) format("woff2");
+  src: url("/webfonts/RobotoMono-Regular.woff2") format("woff2");
 }
 @font-face {
-  font-family: Lexend Deca;
+  font-family: "Lexend Deca";
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url(/webfonts/LexendDeca-Regular.woff2) format("woff2");
+  src: url("/webfonts/LexendDeca-Regular.woff2") format("woff2");
 }
 
 :root {
@@ -43,7 +43,6 @@ header {
   z-index: 3;
   align-items: center;
   gap: 0.5rem;
-  -webkit-user-select: none;
   user-select: none;
 
   #logo {
@@ -92,7 +91,6 @@ header {
       margin-top: -0.23em;
     }
     white-space: nowrap;
-    -webkit-user-select: none;
     user-select: none;
   }
 }

@@ -114,7 +114,7 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const regex = /\bfa-[a-z0-9-]+\b/g;
 
   for (const file of allFiles) {
-    const fileContent = fs.readFileSync("./" + file).toString();
+    const fileContent = fs.readFileSync(`./${file}`).toString();
     const matches = fileContent.match(regex);
 
     if (matches) {
@@ -139,7 +139,7 @@ function getFontawesomeConfig(debug = false): FontawesomeConfig {
   );
   if (leftOvers.length !== 0) {
     throw new Error(
-      "Fontawesome failed with unknown icons: " + leftOvers.toString(),
+      `Fontawesome failed with unknown icons: ${leftOvers.toString()}`,
     );
   }
 

@@ -83,15 +83,21 @@ describe("Theme component", () => {
   });
 
   it("removes CSS when theme has no CSS", async () => {
-    themeSignalMock.mockImplementation(() => ({ name: "light" }) as any);
+    setThemeSignal((prev) => ({
+      ...prev,
+      name: "light" as ThemeWithName["name"],
+    }));
     const { css } = renderComponent();
-    expect(css.getAttribute("href")).toBe("");
+    expect(css).not.toBeInTheDocument();
   });
 
   it("removes CSS when theme is custom", async () => {
-    themeSignalMock.mockImplementation(() => ({ name: "custom" }) as any);
+    setThemeSignal((prev) => ({
+      ...prev,
+      name: "custom" as ThemeWithName["name"],
+    }));
     const { css } = renderComponent();
-    expect(css.getAttribute("href")).toBe("");
+    expect(css).not.toBeInTheDocument();
   });
 
   it("handles CSS load error", () => {
@@ -107,6 +113,14 @@ describe("Theme component", () => {
 
     expect(favIcon).toBeInTheDocument();
     expect(favIcon).toBeEmptyDOMElement(); //mocked
+  });
+
+  it("marks the body dark for a dark background", () => {
+    renderComponent();
+    expect(document.body).toHaveClass("darkMode");
+
+    setThemeSignal((prev) => ({ ...prev, bg: "#fff" }));
+    expect(document.body).not.toHaveClass("darkMode");
   });
 
   function renderComponent(): {

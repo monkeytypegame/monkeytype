@@ -28,21 +28,25 @@ export function NextUpdate(props: {
     const now = new Date(tick());
     if (props.type === "daily") {
       const diff = differenceInSeconds(endOfDay(new UTCDateMini()), now);
-      return "Next reset in: " + secondsToString(diff, true);
+      return `Next reset in: ${secondsToString(diff, true)}`;
     } else if (props.type === "allTime") {
       const minutesToNextUpdate = 14 - (now.getMinutes() % 15);
       const secondsToNextUpdate = 60 - now.getSeconds();
       const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
-      return "Next update in: " + secondsToString(totalSeconds, true);
+      return `Next update in: ${secondsToString(totalSeconds, true)}`;
     } else if (props.type === "weekly") {
       const nextWeekTimestamp = endOfWeek(new UTCDateMini(), {
         weekStartsOn: 1,
       });
       const totalSeconds = differenceInSeconds(nextWeekTimestamp, now);
-      return (
-        "Next reset in: " +
-        secondsToString(totalSeconds, true, true, ":", true, true)
-      );
+      return `Next reset in: ${secondsToString(
+        totalSeconds,
+        true,
+        true,
+        ":",
+        true,
+        true,
+      )}`;
     }
     return "";
   });

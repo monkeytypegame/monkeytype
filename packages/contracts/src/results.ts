@@ -4,7 +4,6 @@ import {
   CommonResponses,
   meta,
   MonkeyClientError,
-  MonkeyResponseSchema,
   responseWithData,
 } from "./util/api";
 import {
@@ -159,22 +158,6 @@ export const resultsContract = c.router(
       },
       metadata: meta({
         rateLimit: "resultsTagsUpdate",
-      }),
-    },
-    deleteAll: {
-      summary: "delete all results",
-      description: "Delete all results for the current user",
-      method: "DELETE",
-      path: "",
-      body: c.noBody(),
-      responses: {
-        200: MonkeyResponseSchema,
-      },
-      metadata: meta({
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
-        rateLimit: "resultsDeleteAll",
       }),
     },
     getLast: {

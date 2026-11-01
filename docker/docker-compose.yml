@@ -1,15 +1,58 @@
-version: "3.8"
-
 services:
-  monkeytype-frontend:
-    container_name: monkeytype-frontend
-    image: monkeytype/monkeytype-frontend:latest
-    ports:
-      - "${HTTP_PORT:-8080}:80"
+  monkeytype-proxy:
+    container_name: monkeytype-proxy
+    image: traefik:v3.7
     restart: on-failure
     depends_on:
       monkeytype-backend:
         condition: service_healthy
+      monkeytype-frontend:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      #Dashboard disabled for security (uncomment only for debugging behind VPN)
+      #- "8080:8080"
+    networks:
+      - public
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # enable for HTTPS
+      #- "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      #- "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      #- "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      #- "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      #- "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      # for debugging only
+      #- "--api.insecure=true"
+      #- "--log.level=DEBUG"
+
+  monkeytype-frontend:
+    container_name: monkeytype-frontend
+    image: monkeytype/monkeytype-frontend:latest
+    #uncomment if you want to expose the frontend server directly (not recommended)
+    #ports:
+    #  - "${FRONTEND_PORT:-8080}:80"
+    restart: on-failure
+    networks:
+      - public
+    labels:
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web,websecure"
+      - "traefik.http.routers.frontend.priority=25"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      # enable for HTTPS
+      #- "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+      #- "traefik.http.routers.frontend.tls=true"
+      #- "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      #- "traefik.http.routers.frontend.tls.domains[0].main=${DOMAIN}"
     env_file:
       - path: ./.env
         required: true
@@ -20,20 +63,30 @@ services:
       - FIREBASE_STORAGEBUCKET=${FIREBASE_STORAGEBUCKET:-}
       - FIREBASE_MESSAGINGSENDERID=${FIREBASE_MESSAGINGSENDERID:-}
       - FIREBASE_APPID=${FIREBASE_APPID:-}
-      - MONKEYTYPE_BACKENDURL=${MONKEYTYPE_BACKENDURL}
+      - MONKEYTYPE_BACKENDURL=${BASE_URL:-http://localhost}/api
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "80"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 5s
 
   monkeytype-backend:
     container_name: monkeytype-backend
     image: monkeytype/monkeytype-backend:latest
-    ports:
-      - "${BACKEND_PORT:-5005}:5005"
+    #uncomment if you want to expose the backend server (not recommended)
+    #ports:
+    #  - "${BACKEND_PORT:-5005}:5005"
+    networks:
+      - public # access to the internet, e.g. google firebase
+      - isolated # access to the databases
     restart: on-failure
     environment:
       - DB_NAME=monkeytype
       - DB_URI=mongodb://monkeytype-mongodb:27017
       - REDIS_URI=redis://monkeytype-redis:6379
-      - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
+      - FRONTEND_URL=${BASE_URL:-http://localhost}
       - RECAPTCHA_SECRET=${RECAPTCHA_SECRET:-}
       - EMAIL_HOST=${EMAIL_HOST:-}
       - EMAIL_PORT=${EMAIL_PORT:-}
@@ -56,18 +109,32 @@ services:
       monkeytype-mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "nc", "-z", "-v", "localhost", "5005"]
+      test: ["CMD", "nc", "-z", "localhost", "5005"]
       interval: 5s
       timeout: 10s
       retries: 15
       start_period: 5s
+    labels:
+      - "traefik.http.middlewares.backend-prefix.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.backend-headers.headers.customrequestheaders.CF-Connecting-IP="
+      - "traefik.http.routers.backend.middlewares=backend-prefix,backend-headers"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.priority=100"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=5005"
+      - "traefik.enable=true"
+      - "traefik.docker.network=monkeytype-public"
 
   monkeytype-redis:
     container_name: monkeytype-redis
     image: redis:6.2.6
-    #uncomment if you want to expose the redis server
+    #uncomment if you want to expose the redis server (not recommended)
     #ports:
     #  - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - isolated
+      #uncomment if you want to expose the redis server (not recommended)
+      #- public
     restart: on-failure
     volumes:
       - redis-data:/data
@@ -84,9 +151,13 @@ services:
     restart: on-failure
     volumes:
       - mongo-data:/data/db
-    #uncomment if you want to expose the mongodb server
+    #uncomment if you want to expose the mongodb server (not recommended)
     #ports:
     #  - "${MONGO_PORT:-27017}:27017"
+    networks:
+      - isolated
+      #uncomment if you want to expose the mongodb server (not recommended)
+      #- public
     healthcheck:
       test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
       interval: 5s
@@ -99,3 +170,10 @@ volumes:
     name: monkeytype_mongo_data
   redis-data:
     name: monkeytype_redis_data
+
+networks:
+  isolated:
+    name: monkeytype-isolated
+    internal: true
+  public:
+    name: monkeytype-public

@@ -31,7 +31,7 @@ export class LocalStorageWithSchema<T> {
 
   public get(): T {
     if (this.cache !== undefined) {
-      console.debug(`LS ${this.key} Got cached value:`, this.cache);
+      //console.debug(`LS ${this.key} Got cached value:`, this.cache);
       return structuredClone(this.cache);
     }
 
@@ -45,7 +45,7 @@ export class LocalStorageWithSchema<T> {
     }
 
     let migrated = false;
-    const { data: parsed, error } = tryCatchSync(() =>
+    let { data: parsed, error } = tryCatchSync(() =>
       parseJsonWithSchema(value, this.schema, {
         fallback: this.fallback,
         migrate: (oldData, zodIssues) => {
@@ -83,8 +83,17 @@ export class LocalStorageWithSchema<T> {
     }
 
     console.debug(`LS ${this.key} Got value:`, parsed);
-    this.cache = parsed;
+    this.cache = parsed as T;
     return structuredClone(this.cache);
+  }
+
+  /**
+   * Deletes the entry, making subsequent reads return the fallback value.
+   */
+  public remove(): void {
+    console.debug(`LS ${this.key} Removing from localStorage`);
+    window.localStorage.removeItem(this.key);
+    this.cache = undefined;
   }
 
   public set(data: T): boolean {

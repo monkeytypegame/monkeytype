@@ -7,6 +7,7 @@ export type ModalId =
   | "Commandline"
   | "DevOptions"
   | "DevInboxPicker"
+  | "EventLogViewer"
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"
@@ -23,7 +24,22 @@ export type ModalId =
   | "TestDuration"
   | "ShareTestSettings"
   | "CustomWordAmount"
-  | "MobileTestConfig";
+  | "MobileTestConfig"
+  | "PbTables"
+  | "PractiseWords"
+  | "MiniResultChartModal"
+  | "Cookies"
+  | "AddPresetModal"
+  | "EditPresetModal"
+  | "EditProfile"
+  | "ViewApeKey"
+  | "LastSignedOutResult"
+  | "StreakHourOffset"
+  | "GoogleSignup"
+  | "ForgotPassword"
+  | "UserReport"
+  | "EditResultTags"
+  | "TheRest";
 
 export type ModalVisibility = {
   visible: boolean;
@@ -116,6 +132,11 @@ export function hideModalAndClearChain(id: ModalId): void {
   setModalState("openModals", id, { visible: false, chained: false });
 }
 
+/** Forget the chain, so the pending modal still shows but nothing is returned to once it closes. */
+export function clearModalStack(): void {
+  setModalState("modalStack", []);
+}
+
 export function hideCurrentModalAndClearChain(): void {
   const currentlyOpenModal = getCurrentlyOpenModal();
   if (currentlyOpenModal !== null) {
@@ -129,6 +150,10 @@ export function getModalVisibility(id: ModalId): ModalVisibility | null {
 
 export function isModalOpen(id: ModalId): boolean {
   return modalState.openModals[id]?.visible === true;
+}
+
+export function isModalInStack(id: ModalId): boolean {
+  return modalState.modalStack.includes(id);
 }
 
 export function isModalChained(id: ModalId): boolean {

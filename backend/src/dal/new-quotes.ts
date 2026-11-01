@@ -159,10 +159,12 @@ export async function approve(
     );
   }
   const language = targetQuote.language;
+
+  const approvedText = editQuote ?? targetQuote.text;
   const quote: ApproveQuote = {
-    text: editQuote ?? targetQuote.text,
+    text: approvedText,
     source: editSource ?? targetQuote.source,
-    length: targetQuote.text.length,
+    length: approvedText.length,
     approvedBy: name,
     id: -1,
   };

@@ -1,7 +1,6 @@
 {
   "name": "code_typst",
   "noLazyMode": true,
-  "ligatures": false,
   "words": [
     "#use",
     "#set par(justify: true)",

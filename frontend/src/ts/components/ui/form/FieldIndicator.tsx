@@ -8,6 +8,7 @@ import { LoadingCircle } from "../../common/LoadingCircle";
 
 export type FieldIndicatorProps = {
   field: AnyFieldApi;
+  alwaysShow?: boolean;
 };
 
 export function FieldIndicator(props: FieldIndicatorProps) {
@@ -16,7 +17,7 @@ export function FieldIndicator(props: FieldIndicatorProps) {
   //@ts-expect-error custom meta attributes
   const getWarnings = () => props.field.getMeta().warnings as string[];
   return (
-    <div class="col-start-1 row-start-1 self-center justify-self-end pr-[0.40em]">
+    <div class="col-start-1 row-start-1 mr-[0.40em] self-center justify-self-end">
       <Switch>
         <Match when={props.field.state.meta.isValidating}>
           <LoadingCircle />
@@ -45,9 +46,10 @@ export function FieldIndicator(props: FieldIndicatorProps) {
         </Match>
         <Match
           when={
-            props.field.state.meta.isTouched &&
             props.field.state.meta.isValid &&
-            !props.field.state.meta.isDefaultValue
+            (props.alwaysShow === true ||
+              (props.field.state.meta.isTouched &&
+                !props.field.state.meta.isDefaultValue))
           }
         >
           <Fa icon="fa-check" class="text-main" fixedWidth />

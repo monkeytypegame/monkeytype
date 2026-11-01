@@ -1,9 +1,10 @@
-import preview from "#.storybook/preview";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/solid-query";
+
+import preview from "#.storybook/preview";
 
 import AsyncContent from "../../src/ts/components/common/AsyncContent";
 
@@ -13,8 +14,7 @@ const queryClient = new QueryClient({
 
 const meta = preview.meta({
   title: "Common/AsyncContent",
-  // oxlint-disable-next-line typescript/no-unsafe-assignment -- generic component
-  component: AsyncContent as unknown as () => ReturnType<typeof AsyncContent>,
+  component: AsyncContent<Record<string, unknown>>,
   parameters: {
     layout: "centered",
   },
@@ -35,7 +35,9 @@ function LoadingExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query}>{(data) => <div>{data}</div>}</AsyncContent>
+    <AsyncContent queries={{ query }}>
+      {({ queryData }) => <div>{queryData()}</div>}
+    </AsyncContent>
   );
 }
 
@@ -46,8 +48,10 @@ function SuccessExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query}>
-      {(data) => <div style={{ color: "var(--text-color)" }}>{data}</div>}
+    <AsyncContent queries={{ query }}>
+      {({ queryData }) => (
+        <div style={{ color: "var(--text-color)" }}>{queryData()}</div>
+      )}
     </AsyncContent>
   );
 }
@@ -61,7 +65,7 @@ function ErrorExample(): ReturnType<typeof AsyncContent> {
   }));
 
   return (
-    <AsyncContent query={query} errorMessage="Could not load data">
+    <AsyncContent queries={{ query }} errorMessage="Could not load data">
       {() => <div>This won't render</div>}
     </AsyncContent>
   );

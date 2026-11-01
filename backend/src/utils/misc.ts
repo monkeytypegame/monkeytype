@@ -1,5 +1,6 @@
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
+export { sanitizeString } from "@monkeytype/util/strings";
 import uaparser from "ua-parser-js";
 import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
@@ -113,18 +114,6 @@ export function flattenObjectDeep(
   });
 
   return result;
-}
-
-export function sanitizeString(str: string | undefined): string | undefined {
-  if (str === undefined || str === "") {
-    return str;
-  }
-
-  return str
-    .replace(/[\u0300-\u036F]/g, "")
-    .trim()
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/\s{3,}/g, "  ");
 }
 
 const suffixes = ["th", "st", "nd", "rd"];

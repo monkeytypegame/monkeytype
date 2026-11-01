@@ -6,7 +6,7 @@ import {
   PartialConfigSchema,
 } from "./configs";
 
-export const PresetNameSchema = nameWithSeparators().max(16);
+export const PresetNameSchema = nameWithSeparators().max(16).min(1);
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
 export const PresetTypeSchema = z.enum(["full", "partial"]);

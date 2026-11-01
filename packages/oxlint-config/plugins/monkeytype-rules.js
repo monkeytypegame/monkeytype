@@ -83,6 +83,50 @@ const plugin = {
         };
       },
     }),
+    "no-non-reactive-access-in-components": defineRule({
+      createOnce(context) {
+        const getComponentAncestor = (node) => {
+          let current = node.parent;
+          while (current) {
+            // function Foo() { return <...> }
+            if (
+              current.type === "FunctionDeclaration" &&
+              containsJSXReturn(current.body)
+            ) {
+              return current.id?.name ?? "component";
+            }
+            // const Foo = () => { return <...> } or const Foo = function() { return <...> }
+            if (
+              (current.type === "ArrowFunctionExpression" ||
+                current.type === "FunctionExpression") &&
+              containsJSXReturn(current.body ?? current) &&
+              current.parent?.type === "VariableDeclarator"
+            ) {
+              return current.parent.id?.name ?? "component";
+            }
+            current = current.parent;
+          }
+          return null;
+        };
+
+        return {
+          MemberExpression(node) {
+            if (
+              node.property?.name === "__nonReactive" ||
+              node.object?.name === "__nonReactive"
+            ) {
+              const componentName = getComponentAncestor(node);
+              if (componentName) {
+                context.report({
+                  node,
+                  message: `__nonReactive should not be accessed in component \`${componentName}\`.`,
+                });
+              }
+            }
+          },
+        };
+      },
+    }),
     "prefer-arrow-in-component": defineRule({
       meta: {
         hasSuggestions: true,
@@ -285,6 +329,101 @@ const plugin = {
                 message: `Component \`${name}\` should be PascalCase.`,
               });
             }
+          },
+        };
+      },
+    }),
+    "no-module-scope-dom-query": defineRule({
+      createOnce(context) {
+        const QS_FUNCTIONS = new Set(["qs", "qsr", "qsa"]);
+        const DOCUMENT_METHODS = new Set([
+          "querySelector",
+          "querySelectorAll",
+          "getElementById",
+          "getElementsByClassName",
+          "getElementsByTagName",
+        ]);
+        // callbacks of these run right away, even at module scope
+        const IMMEDIATE_CALLERS = new Set([
+          "createEffect",
+          "createEffectOn",
+          "createRenderEffect",
+          "createComputed",
+          "createMemo",
+        ]);
+        // elements in index.html, present before any module runs
+        const STATIC_SELECTOR = /^(html|head|body)\b/;
+
+        const isDomQuery = (node) => {
+          const callee = node.callee;
+          if (callee?.type === "Identifier") {
+            return QS_FUNCTIONS.has(callee.name);
+          }
+          return (
+            callee?.type === "MemberExpression" &&
+            callee.object?.type === "Identifier" &&
+            callee.object.name === "document" &&
+            DOCUMENT_METHODS.has(callee.property?.name)
+          );
+        };
+
+        const isFunction = (node) =>
+          node.type === "FunctionDeclaration" ||
+          node.type === "FunctionExpression" ||
+          node.type === "ArrowFunctionExpression";
+
+        // whether the function runs as soon as its enclosing scope runs
+        const runsImmediately = (fn) => {
+          const parent = fn.parent;
+          if (parent?.type !== "CallExpression") return false;
+          // IIFE
+          if (parent.callee === fn) return true;
+          return (
+            parent.callee?.type === "Identifier" &&
+            IMMEDIATE_CALLERS.has(parent.callee.name)
+          );
+        };
+
+        const runsAtModuleLoad = (node) => {
+          let current = node.parent;
+          while (current) {
+            if (isFunction(current) && !runsImmediately(current)) return false;
+            current = current.parent;
+          }
+          return true;
+        };
+
+        return {
+          CallExpression(node) {
+            if (!isDomQuery(node)) return;
+            const selector = node.arguments[0];
+            if (
+              selector?.type === "Literal" &&
+              typeof selector.value === "string" &&
+              STATIC_SELECTOR.test(selector.value)
+            ) {
+              return;
+            }
+            if (!runsAtModuleLoad(node)) return;
+            context.report({
+              node,
+              message:
+                "DOM query runs when the module loads, before Solid renders the app. Query inside a function called after render (an init function, an event handler, a component).",
+            });
+          },
+        };
+      },
+    }),
+    "no-classlist": defineRule({
+      createOnce(context) {
+        return {
+          JSXAttribute(node) {
+            if (node.name?.name !== "classList") return;
+            context.report({
+              node,
+              message:
+                'Use `class={cn(...)}` instead of `classList`, e.g. `class={cn("base", { active: isActive() })}`.',
+            });
           },
         };
       },

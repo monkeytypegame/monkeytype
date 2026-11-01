@@ -239,6 +239,9 @@ export const LayoutNameSchema = z.enum(
     "GralmakS",
     "vitrimak",
     "miligram",
+    "nokwts",
+    "vylet_v4",
+    "armenian_hm_qwerty",
   ],
   {
     errorMap: customEnumErrorHandler("Must be a supported layout"),
@@ -247,8 +250,8 @@ export const LayoutNameSchema = z.enum(
 
 export type LayoutName = z.infer<typeof LayoutNameSchema>;
 
-const charDefinitionSchema = z.array(z.string().length(1)).min(1).max(4);
-const row5CharDefinitionSchema = z.array(z.string().length(1)).min(1).max(4);
+const KeyLegendsSchema = z.array(z.string().length(1)).min(1).max(4);
+export type KeyLegends = z.infer<typeof KeyLegendsSchema>;
 
 const commonLayoutSchema = z
   .object({
@@ -262,11 +265,11 @@ const ansiLayoutSchema = commonLayoutSchema
     type: z.literal("ansi"),
     keys: z
       .object({
-        row1: z.array(charDefinitionSchema).length(13),
-        row2: z.array(charDefinitionSchema).length(13),
-        row3: z.array(charDefinitionSchema).length(11),
-        row4: z.array(charDefinitionSchema).length(10),
-        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+        row1: z.array(KeyLegendsSchema).length(13),
+        row2: z.array(KeyLegendsSchema).length(13),
+        row3: z.array(KeyLegendsSchema).length(11),
+        row4: z.array(KeyLegendsSchema).length(10),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
       })
       .strict(),
   })
@@ -277,32 +280,16 @@ const isoLayoutSchema = commonLayoutSchema
     type: z.literal("iso"),
     keys: z
       .object({
-        row1: z.array(charDefinitionSchema).length(13),
-        row2: z.array(charDefinitionSchema).length(12),
-        row3: z.array(charDefinitionSchema).length(12),
-        row4: z.array(charDefinitionSchema).length(11),
-        row5: z.array(row5CharDefinitionSchema).min(1).max(2),
+        row1: z.array(KeyLegendsSchema).length(13),
+        row2: z.array(KeyLegendsSchema).length(12),
+        row3: z.array(KeyLegendsSchema).length(12),
+        row4: z.array(KeyLegendsSchema).length(11),
+        row5: z.array(KeyLegendsSchema).min(1).max(2),
       })
       .strict(),
   })
   .strict();
 
-const matrixLayoutSchema = commonLayoutSchema
-  .extend({
-    type: z.literal("matrix"),
-    keys: z
-      .object({
-        row1: z.array(charDefinitionSchema).length(0),
-        row2: z.array(charDefinitionSchema).length(10),
-        row3: z.array(charDefinitionSchema).length(10),
-        row4: z.array(charDefinitionSchema).length(4),
-        row5: z.array(row5CharDefinitionSchema).length(0),
-      })
-      .strict(),
-  })
-  .strict();
+export const LayoutObjectSchema = ansiLayoutSchema.or(isoLayoutSchema);
 
-export const LayoutObjectSchema = ansiLayoutSchema
-  .or(isoLayoutSchema)
-  .or(matrixLayoutSchema);
 export type LayoutObject = z.infer<typeof LayoutObjectSchema>;

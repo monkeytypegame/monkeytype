@@ -7,5 +7,5 @@ export async function cleanupKeys(prefix: string): Promise<void> {
   // oxlint-disable-next-line no-non-null-assertion
   const connection = getConnection()!;
   const keys = await connection.keys(`${prefix}*`);
-  await Promise.all(keys?.map((it) => connection.del(it)));
+  await Promise.all(keys?.map(async (it) => connection.del(it)));
 }

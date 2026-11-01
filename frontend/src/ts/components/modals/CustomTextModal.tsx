@@ -7,8 +7,10 @@ import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import {
+  getCustomTextIndicator,
+  setCustomTextIndicator,
+} from "../../states/core";
 import { hideModalAndClearChain, showModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -17,6 +19,7 @@ import {
 import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
+import { restartTest } from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -31,7 +34,11 @@ import { SavedTextsModal } from "./SavedTextsModal";
 import { WordFilterModal } from "./WordFilterModal";
 
 export type CustomTextIncomingData =
-  | ({ set?: boolean; long?: boolean } & (
+  | ({
+      set?: boolean;
+      long?: boolean;
+      pipeDelimiter?: boolean;
+    } & (
       | { text: string; splitText?: never }
       | { text?: never; splitText: string[] }
     ))
@@ -58,7 +65,13 @@ export function CustomTextModal(): JSXElement {
   const [incomingChainedData, setIncomingChainedData] =
     createSignal<CustomTextIncomingData>(null);
 
-  const [textToSave, setTextToSave] = createSignal<string[]>([]);
+  const [textToSave, setTextToSave] = createSignal<{
+    words: string[];
+    isPipeDelimiter: boolean;
+  }>({
+    words: [],
+    isPipeDelimiter: false,
+  });
 
   // oxlint-disable-next-line no-unassigned-vars -- assigned via SolidJS ref
   let fileInputRef!: HTMLInputElement;
@@ -155,7 +168,7 @@ export function CustomTextModal(): JSXElement {
         setConfig("mode", "custom");
       }
       PractiseWords.resetBefore();
-      restartTestEvent.dispatch();
+      void restartTest();
       hideModalAndClearChain("CustomText");
     },
   }));
@@ -218,10 +231,18 @@ export function CustomTextModal(): JSXElement {
 
   const handleDelimiterChange = (newPipeDelimiter: boolean) => {
     const currentPipeDelimiter = form.getFieldValue("pipeDelimiter");
-    let newtext = form
-      .getFieldValue("text")
-      .split(currentPipeDelimiter ? "|" : " ")
-      .join(newPipeDelimiter ? "|" : " ");
+    let newtext = form.getFieldValue("text");
+
+    if (currentPipeDelimiter && !newPipeDelimiter) {
+      // pipe -> space: flatten sections into words
+      newtext = newtext.split("|").join(" ");
+    } else if (!currentPipeDelimiter && newPipeDelimiter) {
+      // space -> pipe: only convert when there are no pipes yet, so that
+      // pasted/inserted text that already uses pipes keeps its sections
+      if (!newtext.includes("|")) {
+        newtext = newtext.split(" ").join("|");
+      }
+    }
     newtext = newtext.replace(/\n /g, "\n");
 
     batch(() => {
@@ -232,6 +253,9 @@ export function CustomTextModal(): JSXElement {
       }
       if (!newPipeDelimiter && form.getFieldValue("limitSection") !== "") {
         form.setFieldValue("limitSection", "");
+      }
+      if (!newPipeDelimiter && form.getFieldValue("limitWord") !== "") {
+        form.setFieldValue("limitWord", "");
       }
     });
   };
@@ -276,7 +300,7 @@ export function CustomTextModal(): JSXElement {
       });
     });
 
-    setLongTextWarning(CustomTextState.isCustomTextLong() ?? false);
+    setLongTextWarning(getCustomTextIndicator()?.isLong ?? false);
     setChallengeWarning(getLoadedChallenge() !== null);
   };
 
@@ -285,8 +309,8 @@ export function CustomTextModal(): JSXElement {
     if (data === null) return;
     setIncomingChainedData(null);
 
-    if (data.long !== true && CustomTextState.isCustomTextLong()) {
-      CustomTextState.setCustomTextName("", undefined);
+    if (data.long !== true && getCustomTextIndicator()?.isLong) {
+      setCustomTextIndicator(undefined);
       showNoticeNotification("Disabled long custom text progress tracking", {
         durationMs: 5000,
       });
@@ -297,17 +321,23 @@ export function CustomTextModal(): JSXElement {
       setLongTextWarning(true);
     }
 
+    const incomingDelimiter =
+      data.pipeDelimiter ?? form.getFieldValue("pipeDelimiter");
+
     const incomingText =
       data.splitText !== undefined
-        ? data.splitText.join(form.getFieldValue("pipeDelimiter") ? "|" : " ")
+        ? data.splitText.join(incomingDelimiter ? "|" : " ")
         : data.text;
 
     const newText =
       (data.set ?? true)
         ? incomingText
-        : form.getFieldValue("text") + " " + incomingText;
+        : `${form.getFieldValue("text")} ${incomingText}`;
     untrack(() => {
       batch(() => {
+        if (data.pipeDelimiter !== undefined) {
+          form.setFieldValue("pipeDelimiter", data.pipeDelimiter);
+        }
         form.setFieldValue("text", newText);
         form.setFieldValue("mode", "simple");
         form.setFieldValue("limitWord", `${cleanUpText().length}`);
@@ -344,8 +374,7 @@ export function CustomTextModal(): JSXElement {
       const area = e.currentTarget as HTMLTextAreaElement;
       const start = area.selectionStart;
       const end = area.selectionEnd;
-      area.value =
-        area.value.substring(0, start) + "\t" + area.value.substring(end);
+      area.value = `${area.value.substring(0, start)}\t${area.value.substring(end)}`;
       area.selectionStart = area.selectionEnd = start + 1;
       form.setFieldValue("text", area.value);
     }
@@ -359,11 +388,8 @@ export function CustomTextModal(): JSXElement {
     if (e.code === "Enter" && e.ctrlKey) {
       void form.handleSubmit();
     }
-    if (
-      CustomTextState.isCustomTextLong() &&
-      CustomTextState.getCustomTextName() !== ""
-    ) {
-      CustomTextState.setCustomTextName("", undefined);
+    if (getCustomTextIndicator()?.isLong) {
+      setCustomTextIndicator(undefined);
       setLongTextWarning(false);
       showNoticeNotification("Disabled long custom text progress tracking", {
         durationMs: 5000,
@@ -382,9 +408,12 @@ export function CustomTextModal(): JSXElement {
         form.setFieldValue("limitSection", "");
       } else if (previousMode === "simple") {
         const text = cleanUpText();
-        form.setFieldValue("limitWord", `${text.length}`);
         form.setFieldValue("limitTime", "");
-        form.setFieldValue("limitSection", `${text.length}`);
+        if (form.getFieldValue("pipeDelimiter")) {
+          form.setFieldValue("limitSection", `${text.length}`);
+        } else {
+          form.setFieldValue("limitWord", `${text.length}`);
+        }
       }
     });
   };
@@ -428,7 +457,11 @@ export function CustomTextModal(): JSXElement {
                 fa={{ icon: "fa-save" }}
                 text="save"
                 onClick={() => {
-                  setTextToSave(cleanUpText());
+                  const words = cleanUpText();
+                  setTextToSave({
+                    words,
+                    isPipeDelimiter: form.getFieldValue("pipeDelimiter"),
+                  });
                   showModal("SaveCustomText");
                 }}
               />
@@ -491,7 +524,7 @@ export function CustomTextModal(): JSXElement {
             </div>
             <SubmitButton
               form={form}
-              skipDirtyCheck
+              skipUnchangedCheck
               variant="button"
               text="ok"
               class="lg:col-start-1"

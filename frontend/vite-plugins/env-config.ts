@@ -2,7 +2,7 @@ import { Plugin } from "vite";
 import { EnvConfig } from "virtual:env-config";
 
 const virtualModuleId = "virtual:env-config";
-const resolvedVirtualModuleId = "\0" + virtualModuleId;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
 function fallback(value: string | undefined | null, fallback: string): string {
   if (value === null || value === undefined || value === "") return fallback;
@@ -18,7 +18,7 @@ export function envConfig(options: {
     name: "virtual-env-config",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
@@ -51,7 +51,7 @@ export function envConfig(options: {
           export const envConfig = ${JSON.stringify(envConfig)};
         `;
       }
-      return;
+      return undefined;
     },
   };
 }

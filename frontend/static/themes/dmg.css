@@ -34,8 +34,8 @@ body.crtmode {
       0 0 3px;
   }
 
-  & header[data-focused] [data-nav-item],
-  & [data-nav-item]:hover {
+  & [data-nav-item]:hover,
+  & header[data-focused] [data-nav-item] {
     box-shadow: none;
   }
 

@@ -4,7 +4,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/solid-query";
-import { JSXElement, Show } from "solid-js";
+import { JSXElement, Show, Suspense } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import AsyncContent, {
@@ -142,7 +142,7 @@ describe("AsyncContent", () => {
       query: {
         result: string | Error;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<Props<{ result: string }>, "queries" | "children">,
     ): {
       container: HTMLElement;
     } {
@@ -160,12 +160,18 @@ describe("AsyncContent", () => {
         }));
 
         return (
-          <AsyncContent query={myQuery} {...(options as Props<string>)}>
-            {(data: string | undefined) => (
+          <AsyncContent
+            queries={{ result: myQuery }}
+            {...(options as Props<{ result: string | undefined }>)}
+          >
+            {({ resultData }) => (
               <>
                 static content
-                <Show when={data !== undefined} fallback={<div>no data</div>}>
-                  <div data-testid="content">{data}</div>
+                <Show
+                  when={resultData() !== undefined}
+                  fallback={<div>no data</div>}
+                >
+                  <div data-testid="content">{resultData()}</div>
                 </Show>
               </>
             )}
@@ -318,7 +324,10 @@ describe("AsyncContent", () => {
         first: string | Error | undefined;
         second: string | Error | undefined;
       },
-      options?: Omit<Props<unknown>, "query" | "queries" | "children">,
+      options?: Omit<
+        Props<{ first: string; second: string }>,
+        "queries" | "children"
+      >,
     ): {
       container: HTMLElement;
     } {
@@ -347,24 +356,20 @@ describe("AsyncContent", () => {
         }));
 
         type Q = { first: string | undefined; second: string | undefined };
+
         return (
           <AsyncContent
             queries={{ first: firstQuery, second: secondQuery }}
             {...(options as Props<Q>)}
           >
-            {(results: {
-              first: string | undefined;
-              second: string | undefined;
-            }) => (
+            {({ firstData, secondData }) => (
               <>
                 <Show
-                  when={
-                    results.first !== undefined && results.second !== undefined
-                  }
+                  when={firstData() !== undefined && secondData() !== undefined}
                   fallback={<div>no data</div>}
                 >
-                  <div data-testid="first">{results.first}</div>
-                  <div data-testid="second">{results.second}</div>
+                  <div data-testid="first">{firstData()}</div>
+                  <div data-testid="second">{secondData()}</div>
                 </Show>
               </>
             )}
@@ -380,6 +385,95 @@ describe("AsyncContent", () => {
       return {
         container,
       };
+    }
+  });
+
+  describe("inside a surrounding Suspense", () => {
+    const queryClient = new QueryClient();
+
+    it("shows its own loader without suspending the surrounding boundary", async () => {
+      const { container } = renderInSuspense({ result: "Test Data" });
+
+      expect(screen.queryByText("outer fallback")).not.toBeInTheDocument();
+      expect(screen.getByText("sibling")).toBeInTheDocument();
+      expect(container.querySelector(".preloader")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("content")).toHaveTextContent("Test Data");
+      });
+      expect(container.querySelector(".preloader")).not.toBeInTheDocument();
+      expect(screen.getByText("sibling")).toBeInTheDocument();
+    });
+
+    it("shows content without data while pending if alwaysShowContent", async () => {
+      const { container } = renderInSuspense(
+        { result: "Test Data" },
+        { alwaysShowContent: true },
+      );
+
+      expect(screen.queryByText("outer fallback")).not.toBeInTheDocument();
+      expect(container.querySelector(".preloader")).not.toBeInTheDocument();
+      expect(screen.getByText("no data")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("content")).toHaveTextContent("Test Data");
+      });
+    });
+
+    it("renders the error message on fail", async () => {
+      const error = new Error("Test error");
+      renderInSuspense({ result: error }, { errorMessage: "Custom error" });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Custom error/)).toBeInTheDocument();
+      });
+      expect(screen.queryByText("outer fallback")).not.toBeInTheDocument();
+      expect(notifyErrorMock).toHaveBeenCalledWith("Custom error", { error });
+    });
+
+    function renderInSuspense(
+      query: { result: string | Error },
+      options?: Omit<Props<{ result: string }>, "queries" | "children">,
+    ): { container: HTMLElement } {
+      const wrapper = (): JSXElement => {
+        const myQuery = useQuery(() => ({
+          queryKey: ["suspense", Math.random() * 1000],
+          queryFn: async () => {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            if (query.result instanceof Error) {
+              throw query.result;
+            }
+            return query.result;
+          },
+          retry: 0,
+        }));
+
+        return (
+          <>
+            <div>sibling</div>
+            <AsyncContent
+              queries={{ result: myQuery }}
+              {...(options as Props<{ result: string | undefined }>)}
+            >
+              {({ resultData }) => (
+                <Show
+                  when={resultData() !== undefined}
+                  fallback={<div>no data</div>}
+                >
+                  <div data-testid="content">{resultData()}</div>
+                </Show>
+              )}
+            </AsyncContent>
+          </>
+        );
+      };
+      const { container } = render(() => (
+        <QueryClientProvider client={queryClient}>
+          <Suspense fallback={<div>outer fallback</div>}>{wrapper()}</Suspense>
+        </QueryClientProvider>
+      ));
+
+      return { container };
     }
   });
 });

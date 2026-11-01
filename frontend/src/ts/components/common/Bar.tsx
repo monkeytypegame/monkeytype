@@ -28,13 +28,13 @@ export function Bar(props: Props): JSXElement {
       {...((props.showPercentageOnHover ?? false)
         ? {
             "data-balloon-pos": "up",
-            "aria-label": props.percent.toFixed(2) + "%",
+            "aria-label": `${props.percent.toFixed(2)}%`,
           }
         : {})}
     >
       <Anime
         animation={{
-          width: props.percent + "%",
+          width: `${props.percent}%`,
           duration: props.animationDuration ?? 0,
           ease: props.animationEase ?? "out(2)",
         }}

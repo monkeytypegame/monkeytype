@@ -1,7 +1,6 @@
 {
   "name": "serbian_latin_10k",
   "rightToLeft": false,
-  "ligatures": false,
   "bcp47": "sr-Latn",
   "additionalAccents": [["đ", "dj"]],
   "words": [

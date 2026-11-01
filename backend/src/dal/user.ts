@@ -493,17 +493,14 @@ export async function checkIfPb(
 
   if (!pb.isPb) return false;
 
-  await getUsersCollection().updateOne(
-    { uid },
-    { $set: { personalBests: pb.personalBests } },
-  );
-
+  const setFields: Record<string, unknown> = {
+    personalBests: pb.personalBests,
+  };
   if (pb.lbPersonalBests) {
-    await getUsersCollection().updateOne(
-      { uid },
-      { $set: { lbPersonalBests: pb.lbPersonalBests } },
-    );
+    setFields["lbPersonalBests"] = pb.lbPersonalBests;
   }
+
+  await getUsersCollection().updateOne({ uid }, { $set: setFields });
   return true;
 }
 

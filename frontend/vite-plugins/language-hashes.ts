@@ -4,11 +4,11 @@ import { TextEncoder } from "util";
 import { createHash } from "crypto";
 
 const virtualModuleId = "virtual:language-hashes";
-const resolvedVirtualModuleId = "\0" + virtualModuleId;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
 function calcHash(file: string): string {
   const currentLanguage = JSON.stringify(
-    JSON.parse(readFileSync("./static/languages/" + file).toString()),
+    JSON.parse(readFileSync(`./static/languages/${file}`).toString()),
     null,
     0,
   );
@@ -40,7 +40,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
     name: "virtual-language-hashes",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
@@ -53,7 +53,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
           export const languageHashes = ${JSON.stringify(hashes)};
         `;
       }
-      return;
+      return undefined;
     },
   };
 }

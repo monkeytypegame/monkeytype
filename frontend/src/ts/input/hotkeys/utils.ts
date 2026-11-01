@@ -1,3 +1,4 @@
+import { getCompositionData } from "../../states/test";
 import {
   CreateHotkeyOptions,
   Hotkey,
@@ -50,7 +51,8 @@ function isInteractiveElementFocused(): boolean {
     document.activeElement?.tagName === "SELECT" ||
     document.activeElement?.tagName === "BUTTON" ||
     document.activeElement?.classList.contains("button") === true ||
-    document.activeElement?.classList.contains("textButton") === true
+    document.activeElement?.classList.contains("textButton") === true ||
+    document.activeElement?.classList.contains("modal") === true
   );
 }
 
@@ -65,6 +67,13 @@ function handleHotkeyOnInteractiveElement(
     return true;
   } else if (hotkey === "Escape" && isAnyPopupVisible()) {
     return true;
+  } else if (
+    hotkey === "Escape" &&
+    isInputElementFocused() &&
+    getCompositionData() !== ""
+  ) {
+    return true;
   }
+
   return false;
 }

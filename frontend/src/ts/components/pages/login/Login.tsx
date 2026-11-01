@@ -3,16 +3,16 @@ import { JSXElement } from "solid-js";
 
 import {
   AuthResult,
+  getAuthMethodDisplay,
   signIn,
-  signInWithGitHub,
-  signInWithGoogle,
+  signInWithProvider,
 } from "../../../auth";
-import * as ForgotPasswordModal from "../../../modals/forgot-password";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
 } from "../../../states/login";
+import { showModal } from "../../../states/modals";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -75,8 +75,11 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-google", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGoogle(form.getFieldValue("rememberMe")),
-              "Google",
+              async () =>
+                signInWithProvider("google", {
+                  rememberMe: form.getFieldValue("rememberMe"),
+                }),
+              getAuthMethodDisplay("google"),
             )
           }
           disabled={!getLoginPageInputsEnabled()}
@@ -85,8 +88,11 @@ export function Login(): JSXElement {
           fa={{ icon: "fa-github", variant: "brand" }}
           onClick={() =>
             void trySignIn(
-              async () => signInWithGitHub(form.getFieldValue("rememberMe")),
-              "GitHub",
+              async () =>
+                signInWithProvider("github", {
+                  rememberMe: form.getFieldValue("rememberMe"),
+                }),
+              getAuthMethodDisplay("github"),
             )
           }
           disabled={!getLoginPageInputsEnabled()}
@@ -147,7 +153,7 @@ export function Login(): JSXElement {
         text="forgot password?"
         variant="text"
         class="text justify-end text-xs"
-        onClick={() => ForgotPasswordModal.show()}
+        onClick={() => showModal("ForgotPassword")}
         disabled={!getLoginPageInputsEnabled()}
       />
     </div>

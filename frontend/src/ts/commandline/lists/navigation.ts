@@ -1,43 +1,46 @@
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import { isAuthenticated } from "../../states/core";
 import { toggleFullscreen } from "../../utils/misc";
-import { Command } from "../types";
+import { Command, withValidation } from "../types";
+import { remoteValidation } from "../../utils/remote-validation";
+import { UserNameWithoutFilterSchema } from "@monkeytype/schemas/users";
+import Ape from "../../ape";
 
 const commands: Command[] = [
   {
     id: "viewTypingPage",
     display: "View Typing Page",
     alias: "navigate go to start begin type test",
-    icon: "fa-keyboard",
+    fa: { icon: "fa-keyboard" },
     exec: (): void => {
-      void navigate("/");
+      void navigate({ to: "/" });
     },
   },
   {
     id: "viewLeaderboards",
     display: "View Leaderboards",
     alias: "navigate go to",
-    icon: "fa-crown",
+    fa: { icon: "fa-crown" },
     exec: (): void => {
-      void navigate("/leaderboards");
+      void navigate({ to: "/leaderboards" });
     },
   },
   {
     id: "viewAbout",
     display: "View About Page",
     alias: "navigate go to",
-    icon: "fa-info",
+    fa: { icon: "fa-info" },
     exec: (): void => {
-      void navigate("/about");
+      void navigate({ to: "/about" });
     },
   },
   {
     id: "viewSettings",
     display: "View Settings Page",
     alias: "navigate go to",
-    icon: "fa-cog",
+    fa: { icon: "fa-cog" },
     exec: (): void => {
-      void navigate("/settings");
+      void navigate({ to: "/settings" });
     },
   },
 
@@ -45,15 +48,39 @@ const commands: Command[] = [
     id: "viewAccount",
     display: "View Account Page",
     alias: "navigate go to stats",
-    icon: "fa-user",
+    fa: { icon: "fa-user" },
     exec: (): void => {
-      isAuthenticated() ? void navigate("/account") : void navigate("/login");
+      void navigate({ to: isAuthenticated() ? "/account" : "/login" });
     },
   },
+  withValidation({
+    id: "searchProfile",
+    display: "Search for a profile",
+    alias: "profile user search find lookup",
+    fa: { icon: "fa-search" },
+    input: true,
+    validation: {
+      schema: UserNameWithoutFilterSchema,
+      debounceDelay: 1000,
+      isValid: remoteValidation(
+        async (name) => Ape.users.getProfile({ params: { uidOrName: name } }),
+        {
+          on4xx: () => "Unknown user",
+        },
+      ),
+    },
+    exec: ({ input }): void => {
+      if (input === undefined) return;
+      void navigate({
+        to: "/profile/$uidOrName",
+        params: { uidOrName: input },
+      });
+    },
+  }),
   {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",
-    icon: "fa-expand",
+    fa: { icon: "fa-expand" },
     exec: (): void => {
       toggleFullscreen();
     },

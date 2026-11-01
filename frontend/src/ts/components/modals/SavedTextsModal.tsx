@@ -1,15 +1,25 @@
 import { createSignal, For, Index, JSXElement, Setter, Show } from "solid-js";
 
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { createTrigger } from "../../hooks/createTrigger";
+import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../states/notifications";
 import { showSimpleModal } from "../../states/simple-modal";
 import * as CustomText from "../../test/custom-text";
+import { download } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
 
 type CustomTextIncomingData =
-  | ({ set?: boolean; long?: boolean } & (
+  | ({
+      set?: boolean;
+      long?: boolean;
+      pipeDelimiter?: boolean;
+    } & (
       | { text: string; splitText?: never }
       | { text?: never; splitText: string[] }
     ))
@@ -20,7 +30,9 @@ function getSavedText(name: string, long: boolean): string {
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  return text.join(" ");
+  return text.join(
+    CustomText.getCustomTextIsPipeDelimiter(name, long) ? "|" : " ",
+  );
 }
 
 export function SavedTextsModal(props: {
@@ -31,18 +43,22 @@ export function SavedTextsModal(props: {
 
   // because the progress is stored in local storage,
   // we need to trigger a refresh when it changes to update the reset button state
-  const [version, setVersion] = createSignal(0);
+  const [trackProgress, refreshProgress] = createTrigger();
 
   const refresh = () => {
     setNames(CustomText.getCustomTextNames(false));
     setLongNames(CustomText.getCustomTextNames(true));
-    setVersion((v) => v + 1);
+    refreshProgress();
   };
 
   const handleNameClick = (name: string, long: boolean) => {
-    CustomTextState.setCustomTextName(name, long);
+    setCustomTextIndicator({ name, isLong: long });
     const text = getSavedText(name, long);
-    props.setChainedData({ text, long });
+    props.setChainedData({
+      text,
+      long,
+      pipeDelimiter: CustomText.getCustomTextIsPipeDelimiter(name, long),
+    });
     hideModal("SavedTexts");
   };
 
@@ -53,7 +69,7 @@ export function SavedTextsModal(props: {
       buttonText: "delete",
       execFn: async () => {
         CustomText.deleteCustomText(name, long);
-        CustomTextState.setCustomTextName("", undefined);
+        setCustomTextIndicator(undefined);
         refresh();
         return {
           status: "success",
@@ -71,6 +87,9 @@ export function SavedTextsModal(props: {
       execFn: async () => {
         CustomText.setCustomTextLongProgress(name, 0);
         const text = CustomText.getCustomText(name, true);
+        CustomText.setPipeDelimiter(
+          CustomText.getCustomTextIsPipeDelimiter(name, true),
+        );
         CustomText.setText(text);
         refresh();
         return {
@@ -79,6 +98,25 @@ export function SavedTextsModal(props: {
         };
       },
     });
+  };
+
+  const handleDownload = (name: string, long: boolean) => {
+    const text = CustomText.getCustomText(name, long);
+
+    try {
+      const data = new Blob(
+        [
+          text.join(
+            CustomText.getCustomTextIsPipeDelimiter(name, long) ? "|" : " ",
+          ),
+        ],
+        { type: "text/plain" },
+      );
+      download({ filename: `${name}.txt`, data });
+      showSuccessNotification("custom text downloaded");
+    } catch (e) {
+      showErrorNotification(`failed to download custom text: ${e}`);
+    }
   };
 
   return (
@@ -104,7 +142,14 @@ export function SavedTextsModal(props: {
                 />
                 <Button
                   variant="button"
+                  balloon={{ text: "download" }}
+                  fa={{ icon: "fa-file-download", fixedWidth: true }}
+                  onClick={() => handleDownload(name, false)}
+                />
+                <Button
+                  variant="button"
                   fa={{ icon: "fa-trash", fixedWidth: true }}
+                  balloon={{ text: "delete" }}
                   onClick={() => handleDelete(name, false)}
                 />
               </div>
@@ -125,7 +170,7 @@ export function SavedTextsModal(props: {
           <Index each={longNames()}>
             {(name) => {
               const hasProgress = () => {
-                version();
+                trackProgress();
                 return CustomText.getCustomTextLongProgress(name()) > 0;
               };
               return (
@@ -144,7 +189,14 @@ export function SavedTextsModal(props: {
                   />
                   <Button
                     variant="button"
+                    balloon={{ text: "download" }}
+                    fa={{ icon: "fa-file-download", fixedWidth: true }}
+                    onClick={() => handleDownload(name(), true)}
+                  />
+                  <Button
+                    variant="button"
                     fa={{ icon: "fa-trash", fixedWidth: true }}
+                    balloon={{ text: "delete" }}
                     onClick={() => handleDelete(name(), true)}
                   />
                 </div>
@@ -156,7 +208,7 @@ export function SavedTextsModal(props: {
 
       <Separator />
 
-      <div class="text-em-xs text-sub">
+      <div class="text-em-xs text-error">
         Heads up! These texts are only stored locally. If you switch devices or
         clear your local browser data they will be lost.
       </div>

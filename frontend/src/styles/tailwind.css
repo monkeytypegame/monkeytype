@@ -42,6 +42,15 @@
       transform: translateX(100%) scaleX(0);
     }
   }
+
+  @keyframes ring-flash {
+    0% {
+      box-shadow: 0 0 0 var(--em-spacing) var(--main-color);
+    }
+    100% {
+      box-shadow: 0 0 0 var(--em-spacing) transparent;
+    }
+  }
 }
 
 @utility rounded-double {
@@ -50,6 +59,25 @@
 
 @utility rounded-half {
   border-radius: calc(var(--roundness) / 2);
+}
+
+/* a theme's bg pill with its main, sub and text color bubbles, in one
+   element (rendered for every theme: settings, commandline) */
+@utility theme-bubbles {
+  width: calc(3em + 1rem);
+  height: calc(1em + 0.5rem);
+  border-radius: 9999px;
+  background-color: var(--bubble-bg);
+  background-image:
+    radial-gradient(circle closest-side, var(--bubble-main) 97%, transparent),
+    radial-gradient(circle closest-side, var(--bubble-sub) 97%, transparent),
+    radial-gradient(circle closest-side, var(--bubble-text) 97%, transparent);
+  background-size: 1em 1em;
+  background-repeat: no-repeat;
+  background-position:
+    0.25rem 50%,
+    calc(0.5rem + 1em) 50%,
+    calc(0.75rem + 2em) 50%;
 }
 
 @utility debug {
@@ -99,6 +127,20 @@
     @apply border-none  font-(--font) caret-(--text-color) font-[inherit];
     outline: 0.15em solid var(--main-color);
     -webkit-text-fill-color: var(--text-color);
-    -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+    box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  }
+  .settings-highlight {
+    animation: ring-flash 4s ease-in forwards;
+  }
+
+  .darkMode {
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.1s ease-in-out infinite;
   }
 }

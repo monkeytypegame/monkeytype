@@ -1,6 +1,6 @@
 import { TypingSpeedUnit } from "@monkeytype/schemas/configs";
 
-type TypingSpeedUnitSettings = {
+export type TypingSpeedUnitSettings = {
   fromWpm: (number: number) => number;
   toWpm: (number: number) => number;
   fullUnitString: string;

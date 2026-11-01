@@ -2,7 +2,7 @@ import { createForm } from "@tanstack/solid-form";
 import { Accessor, JSXElement } from "solid-js";
 import { z } from "zod";
 
-import * as CustomTextState from "../../legacy-states/custom-text-name";
+import { setCustomTextIndicator } from "../../states/core";
 import { hideModal } from "../../states/modals";
 import {
   showNoticeNotification,
@@ -26,7 +26,10 @@ const nameSchema = z
   );
 
 export function SaveCustomTextModal(props: {
-  textToSave: Accessor<string[]>;
+  textToSave: Accessor<{
+    words: string[];
+    isPipeDelimiter: boolean;
+  }>;
 }): JSXElement {
   const form = createForm(() => ({
     defaultValues: {
@@ -34,15 +37,20 @@ export function SaveCustomTextModal(props: {
       isLong: false,
     },
     onSubmit: ({ value }) => {
-      const text = props.textToSave();
-      if (text.length === 0) {
+      const { words, isPipeDelimiter } = props.textToSave();
+      if (words.length === 0) {
         showNoticeNotification("Custom text can't be empty");
         return;
       }
 
-      const saved = CustomText.setCustomText(value.name, text, value.isLong);
+      const saved = CustomText.setCustomText(
+        value.name,
+        words,
+        value.isLong,
+        isPipeDelimiter,
+      );
       if (saved) {
-        CustomTextState.setCustomTextName(value.name, value.isLong);
+        setCustomTextIndicator(value);
         showSuccessNotification("Custom text saved");
         hideModal("SaveCustomText");
       } else {

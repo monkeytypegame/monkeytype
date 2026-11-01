@@ -1,20 +1,25 @@
 import { JSXElement, Setter, Show } from "solid-js";
+import { z } from "zod";
 
-import { setPage } from "../../../states/leaderboard-selection";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
+
 export function Navigation(props: {
   lastPage: number;
   userPage?: number;
   currentPage: number;
-  onPageChange: Setter<number>;
+  onPageChange: (page: number) => void;
   onScrollToUser: Setter<boolean>;
   isLoading?: boolean;
   class?: string;
 }): JSXElement {
   const buttonClass = "px-3 sm:px-4 text-em-base";
+  const changePage = (page: number, options?: { scrollToUser?: boolean }) => {
+    props.onPageChange(page);
+    props.onScrollToUser(options?.scrollToUser ?? false);
+  };
 
   return (
     <div
@@ -27,17 +32,16 @@ export function Navigation(props: {
         <LoadingCircle color="sub" class="text-2xl" />
       </Show>
       <Button
-        onClick={() => props.onPageChange(0)}
+        onClick={() => changePage(0)}
         fa={{ icon: "fa-crown", fixedWidth: true }}
         disabled={props.currentPage === 0}
         class={buttonClass}
       />
       <Show when={props.userPage !== undefined}>
         <Button
-          onClick={() => {
-            props.onPageChange(props.userPage as number);
-            props.onScrollToUser(true);
-          }}
+          onClick={() =>
+            changePage(props.userPage as number, { scrollToUser: true })
+          }
           fa={{ icon: "fa-user", fixedWidth: true }}
           disabled={
             props.userPage === undefined || props.currentPage === props.userPage
@@ -47,8 +51,11 @@ export function Navigation(props: {
       </Show>
       <Button
         onClick={() => {
-          const lastPage = props.lastPage;
-          props.onPageChange((old) => Math.max(0, Math.min(old, lastPage) - 1));
+          const newPage = Math.max(
+            0,
+            Math.min(props.currentPage, props.lastPage) - 1,
+          );
+          changePage(newPage);
         }}
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
@@ -58,22 +65,21 @@ export function Navigation(props: {
         onClick={() =>
           showSimpleModal({
             title: "Go to page",
-            inputs: [
-              {
+            schema: z.object({
+              //not using PageNumberSchema because we don't allow zero here
+              pageNumber: z.number().int().safe().min(1),
+            }),
+            inputs: {
+              pageNumber: {
                 type: "number",
                 placeholder: "Page number",
               },
-            ],
+            },
             buttonText: "Go",
-            execFn: async (pageNumber) => {
-              const page = parseInt(pageNumber, 10);
-              if (isNaN(page) || page < 1) {
-                return { status: "notice", message: "Invalid page number" };
-              }
-              setPage(page - 1);
+            execFn: async ({ pageNumber }) => {
+              changePage(pageNumber - 1);
               return {
                 status: "success",
-                message: "Navigating to page " + page,
                 showNotification: false,
               };
             },
@@ -82,9 +88,12 @@ export function Navigation(props: {
         fa={{ icon: "fa-hashtag", fixedWidth: true }}
         class={buttonClass}
         disabled={props.lastPage <= 1}
-      />
+      >
+        {" "}
+        {props.currentPage + 1}
+      </Button>
       <Button
-        onClick={() => props.onPageChange((old) => old + 1)}
+        onClick={() => changePage(props.currentPage + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
         disabled={props.currentPage + 1 >= props.lastPage}
         class={buttonClass}

@@ -1,9 +1,8 @@
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { toHex } from "./strings";
 import { languageHashes } from "virtual:language-hashes";
 import { isDevEnvironment } from "./env";
+import { toHex } from "./strings";
 
 //pin implementation
 const fetch = window.fetch;
@@ -28,7 +27,7 @@ async function fetchJson<T>(url: string): Promise<T> {
       throw new Error(`${res.status} ${res.statusText}`);
     }
   } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
+    console.error(`Error fetching JSON: ${url}`, e);
     throw e;
   }
 }
@@ -42,17 +41,17 @@ async function fetchJson<T>(url: string): Promise<T> {
  * @param getKey Optional function to compute a cache key from the function arguments. If omitted, the first argument is used as the key.
  * @returns A memoized version of the async function with the same signature.
  */
-export function memoizeAsync<P, Args extends unknown[], R>(
+export function memoizeAsync<Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
-  getKey?: (...args: Args) => P,
+  getKey?: (...args: Args) => unknown,
 ): (...args: Args) => Promise<R> {
-  const cache = new Map<P, Promise<R>>();
+  const cache = new Map<unknown, Promise<R>>();
 
   return async (...args: Args): Promise<R> => {
-    const key = getKey ? getKey(...args) : (args[0] as P);
+    const key = getKey ? getKey(...args) : args[0];
 
     const cached = cache.get(key);
-    if (cached) {
+    if (cached !== undefined) {
       return cached;
     }
 
@@ -82,7 +81,7 @@ export async function getLayout(layoutName: string): Promise<LayoutObject> {
 // used for polyglot wordset language-specific properties
 export type LanguageProperties = Pick<
   LanguageObject,
-  "noLazyMode" | "ligatures" | "rightToLeft" | "additionalAccents"
+  "noLazyMode" | "joiningScript" | "rightToLeft" | "additionalAccents"
 >;
 
 let currentLanguage: LanguageObject;
@@ -153,15 +152,6 @@ export class Section {
 }
 
 export type FunboxWordOrder = "normal" | "reverse";
-
-/**
- * Fetches the list of challenges from the server.
- * @returns A promise that resolves to the list of challenges.
- */
-export async function getChallengeList(): Promise<Challenge[]> {
-  const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
-  return data;
-}
 
 /**
  * Fetches the list of supporters from the server.
@@ -235,7 +225,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
   const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
   );
-  if (releases[0] === undefined || releases[0].name === undefined) {
+  if (releases[0]?.name === undefined) {
     throw new Error("No release found");
   }
   return releases[0].name;

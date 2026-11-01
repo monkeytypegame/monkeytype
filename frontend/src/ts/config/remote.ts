@@ -4,7 +4,7 @@ import { migrateConfig } from "./utils";
 import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";
 import Ape from "../ape";
-import { SnapshotInitError } from "../db";
+import { SnapshotInitError } from "../utils/snapshot-init-error";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";
 

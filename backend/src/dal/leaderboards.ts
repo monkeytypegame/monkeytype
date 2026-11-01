@@ -115,15 +115,16 @@ export async function getCount(
       cachedCounts.set(key, count);
       return count;
     } else {
-      return (
-        await aggregateWithAcceptedConnections(
-          {
-            collectionName: getCollectionName({ language, mode, mode2 }),
-            uid,
-          },
-          [{ $project: { _id: true } }],
-        )
-      ).length;
+      const result = await aggregateWithAcceptedConnections<{
+        total: number;
+      }>(
+        {
+          collectionName: getCollectionName({ language, mode, mode2 }),
+          uid,
+        },
+        [{ $count: "total" }],
+      );
+      return result[0]?.total ?? 0;
     }
   }
 }

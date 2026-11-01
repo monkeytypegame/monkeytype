@@ -26,7 +26,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
 
       //WHEN
@@ -56,7 +56,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -78,7 +78,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const email2 = `${name}@otherdomain.com`;
       await BlacklistDal.add({ name, email });
@@ -114,9 +114,9 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
-      const name2 = "user" + new ObjectId().toHexString();
+      const name2 = `user${new ObjectId().toHexString()}`;
       await BlacklistDal.add({ name, email });
 
       //WHEN
@@ -136,8 +136,8 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = "user" + new ObjectId().toHexString();
-      const name2 = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
+      const name2 = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -160,7 +160,7 @@ describe("BlocklistDal", () => {
   describe("contains", () => {
     it("contains user", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -229,7 +229,7 @@ describe("BlocklistDal", () => {
   describe("remove", () => {
     it("removes existing username", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -251,7 +251,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing email", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -273,7 +273,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing discordId", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -304,7 +304,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing username,email and discordId", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -336,7 +336,7 @@ describe("BlocklistDal", () => {
 
     it("does not remove for empty user", async () => {
       //GIVEN
-      const name = "user" + new ObjectId().toHexString();
+      const name = `user${new ObjectId().toHexString()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });

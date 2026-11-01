@@ -12,14 +12,11 @@ const metaH2 = preview.meta({
 });
 
 export const Default = metaH2.story({
-  args: {
-    text: "Section Header",
-  },
+  render: () => <H2 text="Section Header" />,
 });
 
 export const WithIcon = metaH2.story({
-  args: {
-    text: "Settings",
-    fa: { icon: "fa-cog", variant: "solid" },
-  },
+  render: () => (
+    <H2 text="Settings" fa={{ icon: "fa-cog", variant: "solid" }} />
+  ),
 });

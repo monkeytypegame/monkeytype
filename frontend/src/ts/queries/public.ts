@@ -146,13 +146,12 @@ async function fetchTypingStats(): Promise<{
 
   const result = {
     timeTyping: {
-      label:
-        numberWithSpaces(Math.round(typingSecondsRounded / 3600)) + " hours",
+      label: `${numberWithSpaces(Math.round(typingSecondsRounded / 3600))} hours`,
       text: typingDuration.years?.toString() ?? "",
       subText: "years",
     },
     testsStarted: {
-      label: numberWithSpaces(data.testsStarted) + " tests",
+      label: `${numberWithSpaces(data.testsStarted)} tests`,
       text:
         startedWithMagnitude.rounded < 10
           ? startedWithMagnitude.roundedTo2.toString()
@@ -160,7 +159,7 @@ async function fetchTypingStats(): Promise<{
       subText: startedWithMagnitude.orderOfMagnitude,
     },
     testsCompleted: {
-      label: numberWithSpaces(data.testsCompleted) + " tests",
+      label: `${numberWithSpaces(data.testsCompleted)} tests`,
       text:
         completedWithMagnitude.rounded < 10
           ? completedWithMagnitude.roundedTo2.toString()

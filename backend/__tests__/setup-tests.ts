@@ -9,7 +9,7 @@ beforeAll(async () => {
   //don't add any configuration here, add to global-setup.ts instead.
 
   vi.mock("../src/init/configuration", async (importOriginal) => {
-    const orig = (await importOriginal()) as { __testing: typeof __testing };
+    const orig = (await importOriginal()) as any;
 
     return {
       __testing: orig.__testing,

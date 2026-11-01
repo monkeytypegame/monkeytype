@@ -1,5 +1,5 @@
 import { TestActivity } from "@monkeytype/schemas/users";
-import { createSignal, JSXElement, onMount, Show } from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
 import { getSnapshot, getTestActivityCalendar } from "../../../db";
@@ -24,38 +24,43 @@ export function ActivityCalendar(props: {
 
   let calendar: TestActivityCalendar | undefined;
 
-  const sync = () => {
-    if (props.testActivity === undefined || element() === undefined) {
-      calendar = undefined;
-      clearTestActivity(element()?.native);
-      return;
-    }
+  createEffect(() =>
+    (() => {
+      if (
+        (!props.isAccountPage && props.testActivity === undefined) ||
+        (props.isAccountPage && getSnapshot()?.testActivity === undefined) ||
+        element() === undefined
+      ) {
+        calendar = undefined;
+        clearTestActivity(element()?.native);
+        return;
+      }
 
-    if (props.isAccountPage) {
-      //signals cannot store classes, use the testActivity from the snapshot for now
-      calendar = getSnapshot()?.testActivity;
-    } else {
-      calendar = new TestActivityCalendar(
-        props.testActivity.testsByDays,
-        new Date(props.testActivity.lastDay),
-        firstDayOfTheWeek,
+      if (props.isAccountPage) {
+        //signals cannot store classes, use the testActivity from the snapshot for now
+        calendar = getSnapshot()?.testActivity;
+      } else {
+        const testActivity = props.testActivity as TestActivity;
+        calendar = new TestActivityCalendar(
+          testActivity.testsByDays,
+          new Date(testActivity.lastDay),
+          firstDayOfTheWeek,
+        );
+      }
+
+      initTestActivity(
+        // oxlint-disable-next-line typescript/no-non-null-assertion
+        element()!.native,
+        calendar,
       );
-    }
 
-    initTestActivity(
-      // oxlint-disable-next-line typescript/no-non-null-assertion
-      element()!.native,
-      calendar,
-    );
-
-    if (!props.isAccountPage) {
-      // oxlint-disable-next-line typescript/no-non-null-assertion
-      const title = element()!.qsr(".top .title");
-      title.appendHtml(" last 12 months");
-    }
-  };
-
-  onMount(() => sync());
+      if (!props.isAccountPage) {
+        // oxlint-disable-next-line typescript/no-non-null-assertion
+        const title = element()!.qsr(".top .title");
+        title.appendHtml(" last 12 months");
+      }
+    })(),
+  );
 
   const yearOptions = () => {
     const startYear =

@@ -64,3 +64,10 @@ export function customEnumErrorHandler(message: string): ZodErrorMap {
         : (issue.message ?? "Required"),
   });
 }
+
+export const PageNumberSchema = z
+  .number()
+  .int()
+  .safe()
+  .nonnegative()
+  .default(0);

@@ -9,7 +9,7 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setCustomBackgroundBlur",
       display: "blur...",
-      icon: "fa-image",
+      fa: { icon: "fa-image" },
       input: true,
       defaultValue: (): string => {
         return Config.customBackgroundFilter[0].toString();
@@ -24,7 +24,7 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setCustomBackgroundBrightness",
       display: "brightness...",
-      icon: "fa-image",
+      fa: { icon: "fa-image" },
       input: true,
       defaultValue: (): string => {
         return Config.customBackgroundFilter[1].toString();
@@ -39,7 +39,7 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setCustomBackgroundSaturation",
       display: "saturation...",
-      icon: "fa-image",
+      fa: { icon: "fa-image" },
       input: true,
       defaultValue: (): string => {
         return Config.customBackgroundFilter[2].toString();
@@ -54,7 +54,7 @@ const subgroup: CommandsSubgroup = {
     {
       id: "setCustomBackgroundOpacity",
       display: "opacity...",
-      icon: "fa-image",
+      fa: { icon: "fa-image" },
       input: true,
       defaultValue: (): string => {
         return Config.customBackgroundFilter[3].toString();
@@ -73,7 +73,7 @@ const commands: Command[] = [
   {
     id: "setCustomBackgroundFilter",
     display: "Custom background filter...",
-    icon: "fa-image",
+    fa: { icon: "fa-image" },
     subgroup,
   },
 ];

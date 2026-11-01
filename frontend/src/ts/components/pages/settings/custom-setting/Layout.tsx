@@ -1,0 +1,36 @@
+import { Layout as LayoutSchema } from "@monkeytype/schemas/configs";
+import { JSXElement } from "solid-js";
+
+import { configMetadata } from "../../../../config/metadata";
+import { setConfig } from "../../../../config/setters";
+import { getConfig } from "../../../../config/store";
+import { LayoutsList } from "../../../../constants/layouts";
+import SlimSelect from "../../../ui/SlimSelect";
+import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const layoutOptions = LayoutsList.map((layout) => ({
+  text: layout.replace(/_/g, " "),
+  value: layout,
+}));
+
+export function Layout(): JSXElement {
+  return (
+    <SearchableSetting
+      key="layout"
+      title="layout"
+      description={configMetadata.layout.description}
+      fa={configMetadata.layout.fa}
+      inputs={
+        <SlimSelect
+          options={layoutOptions}
+          selected={getConfig.layout}
+          onChange={(val) => {
+            if (getConfig.layout === (val as LayoutSchema)) return;
+            setConfig("layout", val as LayoutSchema);
+          }}
+        />
+      }
+    />
+  );
+}

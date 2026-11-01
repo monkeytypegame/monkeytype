@@ -1,6 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
+import { showCommandline } from "../../../states/commandline";
 import { getIsScreenshotting } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
@@ -13,6 +14,7 @@ import { FpsCounter } from "./FpsCounter";
 import { LoaderBar } from "./LoaderBar";
 import { MediaQueryDebugger } from "./MediaQueryDebugger";
 import { Notifications } from "./Notifications";
+import { SkillIssueFix } from "./SkillIssueFix";
 
 export function Overlays(): JSXElement {
   return (
@@ -28,7 +30,7 @@ export function Overlays(): JSXElement {
           },
         )}
         onClick={() => {
-          showModal("Commandline");
+          showCommandline();
         }}
         tabIndex="-1"
       >
@@ -39,6 +41,7 @@ export function Overlays(): JSXElement {
       <MediaQueryDebugger />
       <LoaderBar />
       <FpsCounter />
+      <SkillIssueFix />
       <Show when={isDevEnvironment()}>
         <DevButtons />
       </Show>

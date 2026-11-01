@@ -42,11 +42,9 @@ function getIPCidr(
       }
     }
   }
-  return (
-    addr.map((a) => a.toString(base)).join(separator) +
-    "/" +
-    maskSize.toString()
-  );
+  return `${addr
+    .map((a) => a.toString(base))
+    .join(separator)}/${maskSize.toString()}`;
 }
 
 export function getRandomIPv4address(): string {
@@ -135,7 +133,7 @@ export function compressIpv6(ip: string): string {
 
   if (ipPortSplit.length > 1) {
     // The IP has a port. Add it back
-    newIp += "/" + ipPortSplit[1];
+    newIp += `/${ipPortSplit[1]}`;
   }
 
   return newIp;

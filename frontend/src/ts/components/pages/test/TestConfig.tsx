@@ -3,23 +3,27 @@ import { ComponentProps, For, JSXElement, Show } from "solid-js";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { getResultVisible, getFocus } from "../../../states/test";
+import {
+  isTestFinished,
+  isFocusMode,
+  isTestRestarting,
+} from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
-import { Anime, AnimeShow } from "../../common/anime";
+import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
 const variables = cn(
-  "[--card-gap:0.25em] [--font-size:0.6em] [--horizontal-padding:0.4em] [--vertical-padding:0.7rem]",
-  "md:[--card-gap:1em] md:[--font-size:0.7em] md:[--horizontal-padding:0.45em]",
-  "lg:[--card-gap:1em] lg:[--font-size:0.75em] lg:[--horizontal-padding:0.75em]",
-  "xl:[--card-gap:2em] xl:[--font-size:0.75em] xl:[--horizontal-padding:1em]",
+  "[--card-gap:0.25em] [--font-size:0.5em] [--horizontal-padding:0.4em] [--vertical-padding:0.5rem]",
+  "md:[--card-gap:1em] md:[--font-size:0.6em] md:[--horizontal-padding:0.45em] md:[--vertical-padding:0.75rem]",
+  "lg:[--card-gap:1em] lg:[--font-size:0.75em] lg:[--horizontal-padding:0.5em] lg:[--vertical-padding:0.75rem]",
+  "xl:[--card-gap:2em] xl:[--font-size:0.75em] xl:[--horizontal-padding:1em] xl:[--vertical-padding:0.75rem]",
 );
 const buttonClass = "px-(--horizontal-padding) py-(--vertical-padding)";
 const cardClass =
@@ -32,9 +36,9 @@ export function TestConfig(): JSXElement {
       <div
         class={cn(
           variables,
-          "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] sm:grid",
+          "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || getResultVisible()
+          isFocusMode() || isTestFinished()
             ? "pointer-events-none opacity-0"
             : "",
         )}
@@ -46,7 +50,7 @@ export function TestConfig(): JSXElement {
       </div>
       <Button
         class={cn(
-          "mx-auto flex place-self-center px-4 py-2 text-sub sm:hidden",
+          "mx-auto flex place-self-center px-4 py-2 text-sub md:hidden",
         )}
         variant="button"
         onClick={() => {
@@ -76,8 +80,11 @@ function TCButton(props: {
       fa={props.fa ? { ...props.fa, fixedWidth: true } : undefined}
       text={props.text}
       active={props.active}
-      onClick={props.onClick}
-      disabled={getFocus() || getResultVisible() || props.disabled}
+      onClick={() => {
+        if (isTestRestarting()) return;
+        props.onClick();
+      }}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }
@@ -94,26 +101,22 @@ function PuncAndNum(): JSXElement {
         duration: durationMs,
       }}
     >
-      <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
-        <div class={cardClass}>
-          <For each={buttons}>
-            {(configKey) => (
-              <TCButton
-                fa={configMetadata[configKey].fa}
-                text={configMetadata[configKey].displayString ?? configKey}
-                active={getConfig[configKey]}
-                disabled={
-                  getConfig.mode === "zen" || getConfig.mode === "quote"
-                }
-                onClick={() => {
-                  setConfig(configKey, !getConfig[configKey]);
-                  restartTestEvent.dispatch();
-                }}
-              />
-            )}
-          </For>
-        </div>
-      </AnimeShow>
+      <div class={cardClass}>
+        <For each={buttons}>
+          {(configKey) => (
+            <TCButton
+              fa={configMetadata[configKey].fa}
+              text={configMetadata[configKey].displayString ?? configKey}
+              active={getConfig[configKey]}
+              disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
+              onClick={() => {
+                setConfig(configKey, !getConfig[configKey]);
+                void restartTest();
+              }}
+            />
+          )}
+        </For>
+      </div>
     </Anime>
   );
 }
@@ -137,7 +140,7 @@ function Mode(): JSXElement {
             active={getConfig.mode === modeOption}
             onClick={() => {
               setConfig("mode", modeOption);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -191,7 +194,7 @@ function Mode2(): JSXElement {
       const newWidth = next?.getOuterWidth() ?? 0;
 
       void wrapperEl.promiseAnimate({
-        width: [previousWidth + "px", newWidth + "px"],
+        width: [`${previousWidth}px`, `${newWidth}px`],
         duration: durationMs,
         onComplete: () => {
           wrapperEl.setStyle({
@@ -252,7 +255,7 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
             active={getConfig.time === time}
             onClick={() => {
               setConfig("time", time);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -282,7 +285,7 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
             active={getConfig.words === count}
             onClick={() => {
               setConfig("words", count);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -317,7 +320,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         active={areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3])}
         onClick={() => {
           setQuoteLengthAll();
-          restartTestEvent.dispatch();
+          void restartTest();
         }}
       />
       <For each={quoteLengths}>
@@ -327,7 +330,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
             active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
             onClick={() => {
               setConfig("quoteLength", [length]);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -340,7 +343,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           active={areUnsortedArraysEqual(getConfig.quoteLength, [-3])}
           onClick={() => {
             setConfig("quoteLength", [-3]);
-            restartTestEvent.dispatch();
+            void restartTest();
           }}
         />
       </Show>
@@ -348,6 +351,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         fa={{
           icon: "fa-search",
         }}
+        active={areUnsortedArraysEqual(getConfig.quoteLength, [-2])}
         onClick={() => {
           showModal("QuoteSearch");
         }}

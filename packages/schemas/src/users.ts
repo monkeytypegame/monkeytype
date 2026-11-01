@@ -15,10 +15,12 @@ import { CustomThemeColorsSchema, FunboxNameSchema } from "./configs";
 import { doesNotContainDisallowedWords } from "./validation/validation";
 import { ConnectionSchema } from "./connections";
 
+export const ResultFilterPresetNameSchema = slug().max(16);
+
 const NoneFilterSchema = z.literal("none");
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
-  name: slug().max(16),
+  name: ResultFilterPresetNameSchema,
   pb: z
     .object({
       no: z.boolean(),
@@ -56,6 +58,7 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(FunboxNameSchema.or(NoneFilterSchema), z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+export type ResultFiltersKeys = keyof Omit<ResultFilters, "_id" | "name">;
 
 export const StreakHourOffsetSchema = z.number().min(-11).max(12).step(0.5);
 export type StreakHourOffset = z.infer<typeof StreakHourOffsetSchema>;
@@ -89,7 +92,7 @@ function profileDetailsBase(
     .transform((value) => (value === null ? undefined : value));
 }
 
-export const TwitterProfileSchema = profileDetailsBase(slug().max(20)).or(
+export const TwitterProfileSchema = profileDetailsBase(slug().max(15)).or(
   z.literal(""),
 );
 
@@ -232,9 +235,18 @@ export const FavoriteQuotesSchema = z.record(
 export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
 
 export const UserEmailSchema = z.string().email();
+
+/**
+ * username schema without profanity check
+ */
+export const UserNameWithoutFilterSchema = slug().min(1).max(16);
+
+/**
+ * username schema with profanity check
+ */
 export const UserNameSchema = doesNotContainDisallowedWords(
   "substring",
-  slug().min(1).max(16),
+  UserNameWithoutFilterSchema,
 );
 
 export const UserSchema = z.object({
@@ -353,7 +365,8 @@ export const ReportUserReasonSchema = z.enum([
 ]);
 export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
 
-export const PasswordSchema = z
+// stricter schema used while password creation
+export const NewPasswordSchema = z
   .string()
   .min(8, { message: "must be at least 8 characters" })
   .max(64, { message: "must be at most 64 characters" })
@@ -362,6 +375,10 @@ export const PasswordSchema = z
   .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
     message: "must contain at least one special character",
   });
+export type NewPassword = z.infer<typeof NewPasswordSchema>;
+
+// lenient schema for existing passwords
+export const PasswordSchema = z.string().min(1, "Required");
 export type Password = z.infer<typeof PasswordSchema>;
 
 export const FriendSchema = UserSchema.pick({
@@ -382,7 +399,7 @@ export const FriendSchema = UserSchema.pick({
     top60: PersonalBestSchema.optional(),
     badgeId: z.number().int().optional(),
     isPremium: z.boolean().optional(),
-    streak: UserStreakSchema.pick({ length: true, maxLength: true }),
+    streak: UserStreakSchema.pick({ length: true, maxLength: true }).optional(),
   })
   .merge(ConnectionSchema.pick({ lastModified: true }).partial());
 

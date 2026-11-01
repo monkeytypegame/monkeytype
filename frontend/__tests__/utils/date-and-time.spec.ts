@@ -35,7 +35,7 @@ describe("date-and-time", () => {
         //GIVEN
         languageMock.mockReturnValue(locale);
         localeMock.mockImplementation(function (this: any) {
-          return { weekInfo: { firstDay: firstDayOfWeek } } as any;
+          return { weekInfo: { firstDay: firstDayOfWeek } };
         });
 
         //WHEN/THEN
@@ -47,7 +47,7 @@ describe("date-and-time", () => {
       it("with getWeekInfo on monday", () => {
         languageMock.mockReturnValue("en-US");
         localeMock.mockImplementationOnce(function (this: any) {
-          return { getWeekInfo: () => ({ firstDay: 1 }) } as any;
+          return { getWeekInfo: () => ({ firstDay: 1 }) };
         });
 
         //WHEN/THEN
@@ -56,7 +56,7 @@ describe("date-and-time", () => {
       it("with getWeekInfo on sunday", () => {
         languageMock.mockReturnValue("en-US");
         localeMock.mockImplementationOnce(function (this: any) {
-          return { getWeekInfo: () => ({ firstDay: 7 }) } as any;
+          return { getWeekInfo: () => ({ firstDay: 7 }) };
         });
 
         //WHEN/THEN
@@ -67,7 +67,7 @@ describe("date-and-time", () => {
     describe("without weekInfo (firefox)", () => {
       beforeEach(() => {
         localeMock.mockImplementation(function (this: any) {
-          return {} as any;
+          return {};
         });
       });
 

@@ -46,7 +46,7 @@
 }
 [data-ui-element="logoSubtext"],
 [data-ui-element="logo"]:hover h1,
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {
@@ -68,7 +68,13 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   --untyped-letter-animation: aurora 5s linear infinite;
 }
 
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: aurora 5s linear infinite;
+}
+
 #words .word.typed letter.correct,
+#words.blind .word.typed letter,
 #words.highlight-word .word.typed letter,
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,
@@ -78,9 +84,4 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 
 #words.flipped .word.typed letter {
   animation: none;
-}
-
-#words.highlight-off .word letter,
-#words.highlight-off .word.typed letter {
-  animation: aurora 5s linear infinite;
 }

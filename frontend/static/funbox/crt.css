@@ -63,37 +63,6 @@ body.crtmode #bannerCenter .banner {
     0 0 3px;
 }
 
-body.crtmode #testModesNotice {
-  text-shadow: none;
-}
-
-body.crtmode #testModesNotice .textButton {
-  text-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow),
-    0 0 3px;
-}
-
-body.crtmode #testModesNotice .textButton:hover {
-  text-shadow:
-    3px 0 1px var(--crt-text-color-glow),
-    -3px 0 var(--crt-text-color-glow),
-    0 0 3px;
-}
-
-body.crtmode #testModesNotice .textButton.active {
-  text-shadow:
-    3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow),
-    0 0 3px;
-}
-
-body.crtmode #testModesNotice .row {
-  box-shadow:
-    3px 0 1px var(--crt-sub-alt-color-glow),
-    -3px 0 var(--crt-sub-alt-color-glow);
-}
-
 body.crtmode #caret {
   box-shadow:
     3px 0 1px var(--crt-caret-color-glow),
@@ -101,7 +70,7 @@ body.crtmode #caret {
 }
 
 body.crtmode #paceCaret,
-body.crtmode key,
+body.crtmode kbd,
 body.crtmode #bannerCenter .banner {
   box-shadow:
     3px 0 1px var(--crt-sub-color-glow),
@@ -162,16 +131,9 @@ body.crtmode .scrollToTopButton:hover {
     0 0 3px;
 }
 
-body.crtmode #keymap .keymapKey {
+body.crtmode [data-ui-element="keymap"] > div > div > div {
   box-shadow:
-    3px 0 1px var(--crt-sub-color-glow),
-    -3px 0 var(--crt-sub-color-glow),
-    0 0 3px;
-}
-
-body.crtmode #keymap .keymapKey.activeKey {
-  box-shadow:
-    3px 0 1px var(--crt-main-color-glow),
-    -3px 0 var(--crt-main-color-glow),
-    0 0 3px;
+    3px 0 1px var(--crt-sub-alt-color-glow),
+    -3px 0 var(--crt-sub-alt-color-glow),
+    0 0 3px var(--crt-sub-alt-color-glow);
 }

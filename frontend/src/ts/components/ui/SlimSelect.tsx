@@ -23,6 +23,7 @@ function updateSlimSelectData(
 
 export type SlimSelectProps = {
   options?: Pick<Option, "value" | "text">[];
+  optionGroups?: Optgroup[];
   values?: string[]; // Simple string array where value === text
   settings?: Config["settings"] & {
     scrollToTop?: boolean;
@@ -33,6 +34,7 @@ export type SlimSelectProps = {
   children?: JSX.Element;
   ref?: (instance: SlimSelectCore | null) => void;
   disabled?: boolean;
+  appendTo?: "body" | "container";
 } & (
   | {
       multiple?: never;
@@ -55,11 +57,13 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   const [isInitialMount, setIsInitialMount] = createSignal(true);
   const [isInitializing, setIsInitializing] = createSignal(true);
 
-  const getSelected = () =>
+  // always a copy - a multiple `selected` can be a store array that is
+  // mutated in place, which would make comparisons against it always match
+  const getSelected = (): string[] =>
     props.selected === undefined
       ? []
       : props.multiple
-        ? props.selected
+        ? [...props.selected]
         : [props.selected];
 
   // Since currentSelected is a plain let used for comparison (not reactive state), this is intentional.
@@ -80,6 +84,26 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       return props.values.map((v) => ({ value: v, text: v }));
     }
     return [];
+  };
+
+  // the selection is part of the initial data so slim-select renders it
+  // straight away - selecting afterwards rebuilds every option
+  const getInitialData = (): (Partial<Option> | Partial<Optgroup>)[] => {
+    if (props.optionGroups) {
+      // without a selected prop, the groups carry their own selection
+      if (props.selected === undefined) return props.optionGroups;
+      const selectedSet = new Set(getSelected());
+      return props.optionGroups.map((group) => ({
+        // oxlint-disable-next-line no-misused-spread -- slim-select accepts plain option data
+        ...group,
+        options: group.options?.map((option) => ({
+          // oxlint-disable-next-line no-misused-spread -- slim-select accepts plain option data
+          ...option,
+          selected: selectedSet.has(option.value),
+        })),
+      }));
+    }
+    return getDataWithAll(buildData(getOptions(), getSelected()));
   };
 
   // Build option data with selection state
@@ -160,14 +184,16 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   const handleAllSelection = (
     selectedOptions: Option[],
     oldSelectedOptions: Option[],
-  ): false | undefined => {
-    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) return;
+  ): boolean => {
+    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) {
+      return true;
+    }
 
     const includesAllNow = selectedOptions.some((o) => o.value === "all");
     const includedAllBefore = oldSelectedOptions.some((o) => o.value === "all");
 
     // No "all" option involvement, skip special handling
-    if (!includesAllNow && !includedAllBefore) return;
+    if (!includesAllNow && !includedAllBefore) return true;
 
     const data = slimSelect.store.getData();
     const allValues = getAllOptionValues(data);
@@ -180,8 +206,8 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         props.onChange &&
         !areUnsortedArraysEqual(allValues, currentSelected)
       ) {
-        props.onChange(allValues);
         currentSelected = allValues;
+        props.onChange(allValues);
       }
       return false;
     }
@@ -214,8 +240,8 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
         props.onChange &&
         !areUnsortedArraysEqual(newSelection, currentSelected)
       ) {
-        props.onChange(newSelection);
         currentSelected = newSelection;
+        props.onChange(newSelection);
       }
       return false;
     }
@@ -229,12 +255,12 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       updateSlimSelectData(slimSelect, data, true);
 
       if (props.onChange && currentSelected.length > 0) {
-        props.onChange([]);
         currentSelected = [];
+        props.onChange([]);
       }
       return false;
     }
-    return;
+    return true;
   };
 
   onMount(() => {
@@ -244,10 +270,12 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
     const config: Config = {
       select: selectRef,
-      data: getDataWithAll(buildData(getOptions(), getSelected())) as Option[],
+      data: getInitialData() as Option[],
       settings: {
         ...props.settings,
-        contentLocation: containerRef,
+        ...(props.appendTo === "container" && {
+          contentLocation: containerRef,
+        }),
       },
       ...(props.cssClasses && { cssClasses: props.cssClasses }),
       events: {
@@ -259,13 +287,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             return false;
           }
 
-          const result = handleAllSelection(
-            selectedOptions,
-            oldSelectedOptions,
-          );
-          if (result !== undefined) return result;
-
-          return true;
+          return handleAllSelection(selectedOptions, oldSelectedOptions);
         },
         afterChange: (newVal) => {
           if (!slimSelect) return;
@@ -303,13 +325,15 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             valueChanged &&
             (currentValueExists || newValueIsValid)
           ) {
+            // set before onChange - it can update the selected prop
+            // synchronously, which would otherwise re-select the same value
+            currentSelected = newValue;
+
             if (props.multiple) {
               props.onChange(newValue);
             } else {
               props.onChange(newValue[0] ?? "");
             }
-
-            currentSelected = newValue;
           }
 
           ogAfterChange?.(newVal);
@@ -348,15 +372,14 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       slimSelect.disable();
     }
 
-    if (props.selected !== undefined) {
-      syncSelectedToSlimSelect(getSelected(), false);
-    }
-
     setIsInitialMount(false);
 
-    // Initialize with selected values
+    // Initialize currentSelected from data without firing onChange
     requestAnimationFrame(() => {
-      if (!props.onChange || (!props.options && !props.values) || !slimSelect) {
+      if (
+        (!props.options && !props.values && !props.optionGroups) ||
+        !slimSelect
+      ) {
         setIsInitializing(false);
         return;
       }
@@ -377,13 +400,6 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
           }
         }
 
-        if (initialValue.length > 0 && props.onChange !== undefined) {
-          if (props.multiple) {
-            props.onChange(initialValue);
-          } else {
-            props.onChange(initialValue[0] ?? "");
-          }
-        }
         currentSelected = initialValue;
       }
 
@@ -406,7 +422,18 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       return;
     }
 
+    // When using optionGroups without selected prop, selection is embedded in the data
+    if (props.selected === undefined) return;
+
     if (slimSelect && selected !== undefined) {
+      // already shown - from the initial data, or the user just picked it.
+      // "all" still needs its display state rendered
+      if (
+        !(props.settings?.addAllOption && props.multiple) &&
+        areUnsortedArraysEqual(selected, currentSelected)
+      ) {
+        return;
+      }
       currentSelected = selected;
 
       // Handle "all" selection rendering
@@ -480,7 +507,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   return (
     <div
       ref={(el) => (containerRef = el)}
-      class="relative [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!"
+      class={`relative${props.appendTo === "container" ? " [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!" : ""}`}
     >
       <select ref={(el) => (selectRef = el)} multiple={props.multiple}>
         {props.children}
