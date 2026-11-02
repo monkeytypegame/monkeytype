@@ -266,6 +266,12 @@ From config (C1):
 - A key that fails to apply during a whole-config apply holds its default in the store (it used to hold the rejected value).
 - A single setting change runs store effects before config event listeners. A whole-config apply runs them once, before failed keys are re-saved and before full-config-change finished (they used to run after it).
 
+From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
+
+- Renamed commands: Minimum speed → Min speed, Minimum accuracy → Min accuracy (both get a "minimum" alias), Sound on click/error → Play sound on click/error, Pace caret mode → Pace caret, Live progress color/opacity → Timer color/opacity (a "progress" alias), Key tips → Show key tips, Out of focus warning → Show out of focus warning.
+- Renamed options: key tips, out of focus warning and caps lock warning show/hide (were on/off); error sound 4 "missed punch" (was "punch miss"); layout "default" (was "off"); random theme "favorite" (was "fav"); pace caret "tag pb" (was "tagPb").
+- Kept commandline labels: blind mode on/off (settings shows a blank "on" for button height), quote length, sound volume, font family and keymap layout (no settings label of their own to share).
+
 ## Settled decisions (grilling, 2026-10-24)
 
 | # | Decision |

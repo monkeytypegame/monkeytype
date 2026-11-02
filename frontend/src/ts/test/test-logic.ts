@@ -199,7 +199,7 @@ function recordIncompleteTest(): void {
   TestTimer.clear(true);
   const liveEventLog = buildEventLog();
   const tt = getIncompleteTestSeconds(liveEventLog);
-  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy() ?? 100);
   pushIncompleteTest({ acc, seconds: tt });
 }
 
@@ -814,7 +814,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     ),
     charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
     charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage),
+    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage ?? 0),
     language: language,
     testDuration: duration,
     lastKeyToEnd: getLastKeypressToEndMs(eventLog),
