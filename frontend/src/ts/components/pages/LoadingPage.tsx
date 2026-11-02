@@ -72,7 +72,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
   return (
-    <div class="grid h-full w-full content-center items-center gap-4 place-self-center text-center">
+    <div class="row-span-full grid w-full content-center items-center gap-4 place-self-center text-center">
       <div class={spinnerClass()}>
         <Fa icon="fa-circle-notch" fixedWidth spin />
       </div>
