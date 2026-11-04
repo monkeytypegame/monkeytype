@@ -18,7 +18,7 @@
 }
 
 [data-ui-element="words"] [data-ui-element="letter"],
-[data-ui-element="words"][data-joining-script]
+[data-ui-element="words"][data-ui-joining-script]
   [data-ui-element="word"]
   [data-ui-element="letter"] {
   display: inline-block;

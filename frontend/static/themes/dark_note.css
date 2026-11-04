@@ -51,7 +51,7 @@ body::before {
 }
 
 [data-ui-element="words"] {
-  &[data-colorful] {
+  &[data-ui-colorful] {
     --current-color: var(--main-color);
   }
 
@@ -61,13 +61,13 @@ body::before {
     text-shadow: none;
   }
 
-  &:not([data-blind])
+  &:not([data-ui-blind])
     [data-ui-element="word"]
     [data-ui-element="letter"]:is(
       [data-ui-state="incorrect"],
       [data-ui-state="extra"]
     ),
-  &:not([data-blind])[data-colorful]
+  &:not([data-ui-blind])[data-ui-colorful]
     [data-ui-element="word"]
     [data-ui-element="letter"]:is(
       [data-ui-state="incorrect"],
@@ -78,16 +78,16 @@ body::before {
     text-decoration-thickness: 2px;
   }
 
-  &:not([data-blind])
+  &:not([data-ui-blind])
     [data-ui-element="word"]
     [data-ui-element="letter"][data-ui-state="incorrect"],
-  &:not([data-blind])[data-colorful]
+  &:not([data-ui-blind])[data-ui-colorful]
     [data-ui-element="word"]
     [data-ui-element="letter"][data-ui-state="incorrect"] {
     color: var(--current-color);
   }
 
-  &:not([data-blind])
+  &:not([data-ui-blind])
     [data-ui-element="word"][data-ui-state="typedIncorrectly"]
     [data-ui-element="letter"]:is(
       [data-ui-state="untyped"],

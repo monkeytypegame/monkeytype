@@ -76,12 +76,12 @@ export function Words(props: {
       id="words"
       ref={(el) => (wordsRef = el)}
       data-ui-element="words"
-      data-word-highlight={getConfig.highlightMode.replaceAll("_", "-")}
-      data-blind={getConfig.blindMode ? "" : undefined}
-      data-flipped={getConfig.flipTestColors ? "" : undefined}
-      data-colorful={getConfig.colorfulMode ? "" : undefined}
-      data-joining-script={isJoiningScript() ? "" : undefined}
-      data-rtl={isLanguageRightToLeft() ? "" : undefined}
+      data-ui-word-highlight={getConfig.highlightMode.replaceAll("_", "-")}
+      data-ui-blind={getConfig.blindMode ? "" : undefined}
+      data-ui-flipped={getConfig.flipTestColors ? "" : undefined}
+      data-ui-colorful={getConfig.colorfulMode ? "" : undefined}
+      data-ui-joining-script={isJoiningScript() ? "" : undefined}
+      data-ui-rtl={isLanguageRightToLeft() ? "" : undefined}
       class={cn("full-width", {
         ...wordsModeClasses(),
         flipped: getConfig.flipTestColors,

@@ -19,23 +19,23 @@ describe("letterAttributes", () => {
     expect(letterAttributes(letter)).toEqual({
       "data-ui-element": "letter",
       "data-ui-state": state,
-      "data-corrected": corrected,
-      "data-extra-corrected": undefined,
+      "data-ui-corrected": corrected,
+      "data-ui-extra-corrected": undefined,
     });
   });
 
   it("marks both corrections", () => {
     expect(
       letterAttributes({ state: "corrected", extraCorrected: true }),
-    ).toMatchObject({ "data-corrected": "", "data-extra-corrected": "" });
+    ).toMatchObject({ "data-ui-corrected": "", "data-ui-extra-corrected": "" });
   });
 
   it("marks extra letters typed after a letter and deleted", () => {
     expect(
       letterAttributes({ state: "incorrect", extraCorrected: true }),
     ).toMatchObject({
-      "data-corrected": undefined,
-      "data-extra-corrected": "",
+      "data-ui-corrected": undefined,
+      "data-ui-extra-corrected": "",
     });
   });
 });

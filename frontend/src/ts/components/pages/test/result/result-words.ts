@@ -39,14 +39,14 @@ function letterStatus(letter: ResultLetter): ResultLetterStatus {
 export function letterAttributes(letter: ResultLetter): {
   "data-ui-element": "letter";
   "data-ui-state": ResultLetterStatus;
-  "data-corrected": "" | undefined;
-  "data-extra-corrected": "" | undefined;
+  "data-ui-corrected": "" | undefined;
+  "data-ui-extra-corrected": "" | undefined;
 } {
   return {
     "data-ui-element": "letter",
     "data-ui-state": letterStatus(letter),
-    "data-corrected": letter.state === "corrected" ? "" : undefined,
-    "data-extra-corrected": letter.extraCorrected ? "" : undefined,
+    "data-ui-corrected": letter.state === "corrected" ? "" : undefined,
+    "data-ui-extra-corrected": letter.extraCorrected ? "" : undefined,
   };
 }
 
