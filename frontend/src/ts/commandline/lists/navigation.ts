@@ -11,7 +11,7 @@ const commands: Command[] = [
     id: "viewTypingPage",
     display: "View Typing Page",
     alias: "navigate go to start begin type test",
-    icon: "fa-keyboard",
+    fa: { icon: "fa-keyboard" },
     exec: (): void => {
       void navigate({ to: "/" });
     },
@@ -20,7 +20,7 @@ const commands: Command[] = [
     id: "viewLeaderboards",
     display: "View Leaderboards",
     alias: "navigate go to",
-    icon: "fa-crown",
+    fa: { icon: "fa-crown" },
     exec: (): void => {
       void navigate({ to: "/leaderboards" });
     },
@@ -29,7 +29,7 @@ const commands: Command[] = [
     id: "viewAbout",
     display: "View About Page",
     alias: "navigate go to",
-    icon: "fa-info",
+    fa: { icon: "fa-info" },
     exec: (): void => {
       void navigate({ to: "/about" });
     },
@@ -38,7 +38,7 @@ const commands: Command[] = [
     id: "viewSettings",
     display: "View Settings Page",
     alias: "navigate go to",
-    icon: "fa-cog",
+    fa: { icon: "fa-cog" },
     exec: (): void => {
       void navigate({ to: "/settings" });
     },
@@ -48,7 +48,7 @@ const commands: Command[] = [
     id: "viewAccount",
     display: "View Account Page",
     alias: "navigate go to stats",
-    icon: "fa-user",
+    fa: { icon: "fa-user" },
     exec: (): void => {
       void navigate({ to: isAuthenticated() ? "/account" : "/login" });
     },
@@ -57,7 +57,7 @@ const commands: Command[] = [
     id: "searchProfile",
     display: "Search for a profile",
     alias: "profile user search find lookup",
-    icon: "fa-search",
+    fa: { icon: "fa-search" },
     input: true,
     validation: {
       schema: UserNameWithoutFilterSchema,
@@ -80,7 +80,7 @@ const commands: Command[] = [
   {
     id: "toggleFullscreen",
     display: "Toggle Fullscreen",
-    icon: "fa-expand",
+    fa: { icon: "fa-expand" },
     exec: (): void => {
       toggleFullscreen();
     },
