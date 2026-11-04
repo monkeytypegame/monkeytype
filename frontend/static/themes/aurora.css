@@ -61,16 +61,16 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 [data-ui-element="words"] {
   --correct-letter-animation: aurora 5s linear infinite;
 
-  &[data-ui-variant~="flipped"] {
+  &[data-flipped] {
     --untyped-letter-color: var(--sub-color);
     --correct-letter-animation: none;
     --untyped-letter-animation: aurora 5s linear infinite;
   }
 
-  &[data-ui-variant~="highlight-off"]
+  &[data-word-highlight="off"]
     [data-ui-element="word"]
     [data-ui-element="letter"],
-  &[data-ui-variant~="highlight-off"]
+  &[data-word-highlight="off"]
     [data-ui-element="word"]:is(
       [data-ui-state="typed"],
       [data-ui-state="typedIncorrectly"]
@@ -89,11 +89,11 @@ a:not(.button):not([data-ui-variant="button"]):hover {
       [data-ui-state="deadCorrect"]
     ),
   &:is(
-      [data-ui-variant~="blind"],
-      [data-ui-variant~="highlight-word"],
-      [data-ui-variant~="highlight-next-word"],
-      [data-ui-variant~="highlight-next-two-words"],
-      [data-ui-variant~="highlight-next-three-words"]
+      [data-blind],
+      [data-word-highlight="word"],
+      [data-word-highlight="next-word"],
+      [data-word-highlight="next-two-words"],
+      [data-word-highlight="next-three-words"]
     )
     [data-ui-element="word"]:is(
       [data-ui-state="typed"],
@@ -103,7 +103,7 @@ a:not(.button):not([data-ui-variant="button"]):hover {
     animation: aurora 5s linear infinite;
   }
 
-  &[data-ui-variant~="flipped"]
+  &[data-flipped]
     [data-ui-element="word"]:is(
       [data-ui-state="typed"],
       [data-ui-state="typedIncorrectly"]

@@ -108,7 +108,7 @@ header [data-nav-item="account"]:hover [data-ui-element="navAvatar"] svg path {
 [data-ui-element="words"] {
   --correct-letter-animation: rgb 5s linear infinite;
 
-  &[data-ui-variant~="flipped"] {
+  &[data-flipped] {
     --correct-letter-animation: none;
     --untyped-letter-animation: rgb 5s linear infinite;
 

@@ -360,7 +360,7 @@ describe("Words", () => {
       ]);
     });
 
-    it("lists the words modes in data-ui-variant", () => {
+    it("exposes the words modes as attributes", () => {
       setConfigStore("highlightMode", "next_two_words");
       setConfigStore("blindMode", true);
       setConfigStore("flipTestColors", true);
@@ -371,8 +371,12 @@ describe("Words", () => {
 
       expect(attrs(container)).toEqual({
         "data-ui-element": "words",
-        "data-ui-variant":
-          "highlight-next-two-words blind flipped colorful joiningScript rtl",
+        "data-ui-variant": "colorful joiningScript rtl",
+      });
+      expect(container.dataset).toMatchObject({
+        wordHighlight: "next-two-words",
+        blind: "",
+        flipped: "",
       });
     });
   });
