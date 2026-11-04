@@ -13,7 +13,7 @@ if (fromMeta.subgroup) {
   fromMeta.subgroup.list.push({
     id: "customFont",
     display: "Custom font...",
-    icon: "fa-font",
+    fa: { icon: "fa-font" },
     alias: "custom font options",
     subgroup: {
       title: "Custom font...",
@@ -21,7 +21,7 @@ if (fromMeta.subgroup) {
         withValidation({
           id: "customFontName",
           display: "Custom name...",
-          icon: "fa-font",
+          fa: { icon: "fa-font" },
           alias: "custom font name",
           input: true,
           validation: {
@@ -39,7 +39,7 @@ if (fromMeta.subgroup) {
         {
           id: "customLocalFont",
           display: "Local font...",
-          icon: "fa-file-import fa-fw",
+          fa: { icon: "fa-file-import" },
           alias: "upload font",
           available: async (): Promise<boolean> => {
             return !(await FileStorage.hasFile("LocalFontFamilyFile"));
@@ -95,7 +95,7 @@ if (fromMeta.subgroup) {
         {
           id: "removeLocalFont",
           display: "Remove local font",
-          icon: "fa-trash",
+          fa: { icon: "fa-trash" },
           alias: "remove font",
           available: async (): Promise<boolean> => {
             return await FileStorage.hasFile("LocalFontFamilyFile");
