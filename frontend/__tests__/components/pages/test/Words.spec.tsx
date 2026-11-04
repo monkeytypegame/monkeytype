@@ -371,12 +371,14 @@ describe("Words", () => {
 
       expect(attrs(container)).toEqual({
         "data-ui-element": "words",
-        "data-ui-variant": "colorful joiningScript rtl",
       });
       expect(container.dataset).toMatchObject({
         wordHighlight: "next-two-words",
         blind: "",
         flipped: "",
+        colorful: "",
+        joiningScript: "",
+        rtl: "",
       });
     });
   });

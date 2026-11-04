@@ -35,23 +35,18 @@ function letterStatus(letter: ResultLetter): ResultLetterStatus {
   return "untyped";
 }
 
-function letterCorrections(letter: ResultLetter): string | undefined {
-  const corrections = [];
-  if (letter.state === "corrected") corrections.push("corrected");
-  if (letter.extraCorrected) corrections.push("extraCorrected");
-  return corrections.length > 0 ? corrections.join(" ") : undefined;
-}
-
-/** The theme-facing data-ui-* attributes of a result letter. */
+/** The theme-facing attributes of a result letter. */
 export function letterAttributes(letter: ResultLetter): {
   "data-ui-element": "letter";
   "data-ui-state": ResultLetterStatus;
-  "data-ui-corrections": string | undefined;
+  "data-corrected": "" | undefined;
+  "data-extra-corrected": "" | undefined;
 } {
   return {
     "data-ui-element": "letter",
     "data-ui-state": letterStatus(letter),
-    "data-ui-corrections": letterCorrections(letter),
+    "data-corrected": letter.state === "corrected" ? "" : undefined,
+    "data-extra-corrected": letter.extraCorrected ? "" : undefined,
   };
 }
 

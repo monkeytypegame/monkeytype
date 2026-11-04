@@ -51,7 +51,7 @@ body::before {
 }
 
 [data-ui-element="words"] {
-  &[data-ui-variant~="colorful"] {
+  &[data-colorful] {
     --current-color: var(--main-color);
   }
 
@@ -67,7 +67,7 @@ body::before {
       [data-ui-state="incorrect"],
       [data-ui-state="extra"]
     ),
-  &:not([data-blind])[data-ui-variant~="colorful"]
+  &:not([data-blind])[data-colorful]
     [data-ui-element="word"]
     [data-ui-element="letter"]:is(
       [data-ui-state="incorrect"],
@@ -81,7 +81,7 @@ body::before {
   &:not([data-blind])
     [data-ui-element="word"]
     [data-ui-element="letter"][data-ui-state="incorrect"],
-  &:not([data-blind])[data-ui-variant~="colorful"]
+  &:not([data-blind])[data-colorful]
     [data-ui-element="word"]
     [data-ui-element="letter"][data-ui-state="incorrect"] {
     color: var(--current-color);

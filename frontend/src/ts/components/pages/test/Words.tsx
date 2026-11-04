@@ -49,15 +49,6 @@ export function wordsModeClasses(): Record<string, boolean> {
   };
 }
 
-/** The theme-facing modes of #words, as data-ui-variant tokens. */
-function wordsVariant(): string {
-  const variants: string[] = [];
-  if (getConfig.colorfulMode) variants.push("colorful");
-  if (isJoiningScript()) variants.push("joiningScript");
-  if (isLanguageRightToLeft()) variants.push("rtl");
-  return variants.join(" ");
-}
-
 /** Renders #words with the test words, and lays them out. */
 export function Words(props: {
   wordsWrapperRef?: () => HTMLElement | undefined;
@@ -85,10 +76,12 @@ export function Words(props: {
       id="words"
       ref={(el) => (wordsRef = el)}
       data-ui-element="words"
-      data-ui-variant={wordsVariant() || undefined}
       data-word-highlight={getConfig.highlightMode.replaceAll("_", "-")}
       data-blind={getConfig.blindMode ? "" : undefined}
       data-flipped={getConfig.flipTestColors ? "" : undefined}
+      data-colorful={getConfig.colorfulMode ? "" : undefined}
+      data-joining-script={isJoiningScript() ? "" : undefined}
+      data-rtl={isLanguageRightToLeft() ? "" : undefined}
       class={cn("full-width", {
         ...wordsModeClasses(),
         flipped: getConfig.flipTestColors,

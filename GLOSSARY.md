@@ -100,5 +100,5 @@ _Avoid_: restarting setting, test-affecting config
 ## Theming
 
 **Theme attributes**:
-The `data-ui-element`, `data-ui-state` and `data-ui-variant` attributes on themeable parts of the site, which themes and custom CSS target, plus the boolean or list attributes for facts independent of the state (`data-ui-active`, `data-ui-corrections`, `data-word-highlight`, `data-blind`, `data-flipped`). Ids and class names are not part of them and can change.
+The `data-ui-element`, `data-ui-state` and `data-ui-variant` attributes on themeable parts of the site, which themes and custom CSS target, plus one attribute per fact independent of the state (eg. `data-ui-active`, `data-word-highlight`, `data-blind`, `data-corrected`). Ids and class names are not part of them and can change.
 _Avoid_: theme selectors, theme classes, theme hooks

@@ -12,31 +12,31 @@ describe("letterAttributes", () => {
     [{}, "untyped", undefined],
     [{ state: "" as const }, "untyped", undefined],
     [{ state: "correct" as const }, "correct", undefined],
-    [{ state: "corrected" as const }, "correct", "corrected"],
+    [{ state: "corrected" as const }, "correct", ""],
     [{ state: "incorrect" as const }, "incorrect", undefined],
     [{ state: "incorrect" as const, extra: true }, "extra", undefined],
-  ])("maps %o to state %s", (letter, state, corrections) => {
+  ])("maps %o to state %s", (letter, state, corrected) => {
     expect(letterAttributes(letter)).toEqual({
       "data-ui-element": "letter",
       "data-ui-state": state,
-      "data-ui-corrections": corrections,
+      "data-corrected": corrected,
+      "data-extra-corrected": undefined,
     });
   });
 
-  it("lists both corrections", () => {
+  it("marks both corrections", () => {
     expect(
-      letterAttributes({ state: "corrected", extraCorrected: true })[
-        "data-ui-corrections"
-      ],
-    ).toBe("corrected extraCorrected");
+      letterAttributes({ state: "corrected", extraCorrected: true }),
+    ).toMatchObject({ "data-corrected": "", "data-extra-corrected": "" });
   });
 
   it("marks extra letters typed after a letter and deleted", () => {
     expect(
-      letterAttributes({ state: "incorrect", extraCorrected: true })[
-        "data-ui-corrections"
-      ],
-    ).toBe("extraCorrected");
+      letterAttributes({ state: "incorrect", extraCorrected: true }),
+    ).toMatchObject({
+      "data-corrected": undefined,
+      "data-extra-corrected": "",
+    });
   });
 });
 
