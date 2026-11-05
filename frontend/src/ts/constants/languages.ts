@@ -27,7 +27,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "french_600k",
     "french_bitoduc",
   ],
-  german: ["german", "german_1k", "german_10k", "german_250k"],
+  german: ["german", "german_1k", "german_2k", "german_10k", "german_250k"],
   swiss_german: ["swiss_german", "swiss_german_1k", "swiss_german_2k"],
   portuguese: [
     "portuguese",
