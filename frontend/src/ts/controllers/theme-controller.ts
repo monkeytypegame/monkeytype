@@ -13,12 +13,13 @@ import { Theme, themes, ThemesList } from "../constants/themes";
 import { setThemeIndicator } from "../states/core";
 import {
   cacheThemeColors,
+  getRandomTheme,
   getTheme,
+  setRandomTheme,
   setTheme,
   ThemeIdentifier,
 } from "../states/theme";
 
-export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -79,9 +80,10 @@ async function apply(
 }
 
 function updateThemeIndicator(nameOverride?: string): void {
+  const randomTheme = getRandomTheme()?.name;
+
   //text
-  let str: string = Config.theme;
-  if (randomTheme !== null) str = randomTheme;
+  let str: string = randomTheme ?? Config.theme;
 
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
@@ -150,8 +152,9 @@ export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     if (applyTheme) {
+      const randomTheme = getRandomTheme();
       if (randomTheme !== null) {
-        await apply(randomTheme);
+        await apply(randomTheme.name, randomTheme.colors);
       } else if (Config.customTheme) {
         await apply("custom");
       } else {
@@ -191,15 +194,18 @@ export async function randomizeTheme(): Promise<void> {
   }
 
   // before picking: the configured theme effect clears the random theme
-  setConfig("customTheme", false, {
-    nosave: true,
-  });
+  if (Config.customTheme) {
+    setConfig("customTheme", false, {
+      nosave: true,
+    });
+  }
 
   let filter = (_: string): boolean => true;
   if (Config.randomTheme === "auto") {
     filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
   }
 
+  let randomTheme: ThemeIdentifier;
   let nextTheme = null;
   do {
     randomTheme = themesList[randomThemeIndex] as ThemeIdentifier;
@@ -219,7 +225,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  await apply(randomTheme, colorsOverride);
+  setRandomTheme({ name: randomTheme, colors: colorsOverride });
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -229,18 +235,6 @@ export async function randomizeTheme(): Promise<void> {
       ).replace(/_/g, " ");
     }
     showNoticeNotification(name);
-  }
-}
-
-// theme pickers call this: re-picking the configured theme changes no config
-// value, so the configured theme effect does not run to clear it
-export async function clearRandom(): Promise<void> {
-  if (randomTheme === null) return;
-  randomTheme = null;
-  if (Config.customTheme) {
-    await apply("custom");
-  } else {
-    await apply(Config.theme);
   }
 }
 
@@ -271,9 +265,21 @@ createRoot(() => {
     ([theme]) => {
       // not awaited: they apply synchronously, so randomizeTheme applying
       // right after its customTheme write is not overwritten a tick later
-      void clearRandom();
+      setRandomTheme(null);
       void clearPreview(false);
       void set(theme, getConfig.autoSwitchTheme);
+    },
+    { defer: true },
+  );
+
+  createEffectOn(
+    getRandomTheme,
+    (randomTheme) => {
+      if (randomTheme !== null) {
+        void apply(randomTheme.name, randomTheme.colors);
+      } else {
+        void set(getConfiguredTheme(), getConfig.autoSwitchTheme);
+      }
     },
     { defer: true },
   );
@@ -282,7 +288,7 @@ createRoot(() => {
     () => getConfig.randomTheme,
     (value) => {
       void changeThemeList();
-      if (value === "off") void clearRandom();
+      if (value === "off") setRandomTheme(null);
     },
     { defer: true },
   );

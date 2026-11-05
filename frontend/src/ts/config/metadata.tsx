@@ -10,6 +10,7 @@ import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { isAuthenticated } from "../states/core";
 import { showNoticeNotification } from "../states/notifications";
+import { setRandomTheme } from "../states/theme";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
 import { areUnsortedArraysEqual } from "../utils/arrays";
@@ -1743,7 +1744,9 @@ const configMetadataEntries = {
     group: "theme",
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
-    overrideConfig: ({ currentConfig }) => {
+    overrideConfig: ({ value, currentConfig }) => {
+      // re-picking changes nothing, so the theme controller can't react to it
+      if (value === currentConfig.theme) setRandomTheme(null);
       // turning the custom theme off disables auto switch itself, so the
       // notice isn't shown twice
       if (currentConfig.customTheme) return { customTheme: false };
@@ -1758,11 +1761,14 @@ const configMetadataEntries = {
     displayString: "custom theme",
     changeRequiresRestart: false,
     group: "theme",
-    // only a change: randomizeTheme rewrites the current value (nosave)
-    overrideConfig: ({ value, currentConfig }) =>
-      value === currentConfig.customTheme
-        ? {}
-        : disableAutoSwitchTheme(currentConfig),
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value !== currentConfig.customTheme) {
+        return disableAutoSwitchTheme(currentConfig);
+      }
+      // re-picking changes nothing, so the theme controller can't react to it
+      setRandomTheme(null);
+      return {};
+    },
     commandline: {
       subgroup: {
         options: "fromSchema",

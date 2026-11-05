@@ -3,7 +3,7 @@ import { Config, setConfigStore } from "../../../src/ts/config/store";
 import commands from "../../../src/ts/commandline/lists/themes";
 import * as ThemeController from "../../../src/ts/controllers/theme-controller";
 import { __testing } from "../../../src/ts/config/testing";
-import { getTheme } from "../../../src/ts/states/theme";
+import { getRandomTheme, getTheme } from "../../../src/ts/states/theme";
 
 describe("themes commandline list config effects", () => {
   const firstTheme = (): string | undefined =>
@@ -22,13 +22,13 @@ describe("themes commandline list config effects", () => {
   it("drops the random theme when the configured theme is re-picked", async () => {
     __testing.replaceConfig({ theme: "serika_dark", randomTheme: "on" });
     await ThemeController.randomizeTheme();
-    expect(ThemeController.randomTheme).not.toBeNull();
+    expect(getRandomTheme()).not.toBeNull();
 
     commands[0]?.subgroup?.list
       .find((command) => command.configValue === "serika_dark")
       ?.exec?.({});
 
-    expect(ThemeController.randomTheme).toBeNull();
+    expect(getRandomTheme()).toBeNull();
     expect(getTheme().name).toBe("serika_dark");
   });
 });

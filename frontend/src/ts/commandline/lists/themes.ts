@@ -34,7 +34,6 @@ const createThemeCommand = (theme: ThemeWithName): Command => {
       ThemeController.preview(theme.name);
     },
     exec: (): void => {
-      void ThemeController.clearRandom();
       setConfig("theme", theme.name);
     },
   };
