@@ -5,7 +5,9 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
+import { createRoot } from "solid-js";
 import Ape from "../ape";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { tempId } from "./utils/misc";
@@ -45,6 +47,17 @@ const customThemesCollection = createCollection(
       }
       return response.body.data;
     },
+  }),
+);
+
+// Its query is created disabled: startSync runs at module load, before the
+// auth state resolves, and the query never re-evaluates `enabled` on its own.
+// Kick the download when the user signs in, like the other user collections.
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (hasUser) {
+      void customThemesCollection.utils.refetch();
+    }
   }),
 );
 

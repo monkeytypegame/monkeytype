@@ -51,7 +51,11 @@ function renderWord(text: string): HTMLElement {
 }
 
 function hintsOf(container: HTMLElement): HTMLElement[] {
-  return [...container.querySelectorAll<HTMLElement>(".word > .hints > hint")];
+  return [
+    ...container.querySelectorAll<HTMLElement>(
+      '.word > .hints > [data-ui-element="typoHint"]',
+    ),
+  ];
 }
 
 beforeEach(() => {
