@@ -117,6 +117,8 @@ export const LanguageGroups: Record<string, Language[]> = {
     "greek_5k",
     "greek_10k",
     "greek_25k",
+    "greek_250k",
+    "greek_450k",
     "greek_koine",
   ],
   greeklish: [
