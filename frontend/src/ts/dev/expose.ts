@@ -12,7 +12,7 @@ import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/events/data";
 import { restartTest } from "../test/test-logic";
-import { quickLogin } from "./quick-login";
+import { quickLogin, signOut } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
 
@@ -241,8 +241,13 @@ const mt = {
   checkLayout,
   runCommand,
   setCustomText,
-  /** Signs in with the QUICK_LOGIN_* account from the frontend .env. */
+  /**
+   * Signs in with the QUICK_LOGIN_* account from the frontend .env; resolves
+   * once the account data is loaded.
+   */
   quickLogin,
+  /** Signs out the current session; resolves once the snapshot clears. */
+  signOut,
   /**
    * Modules hot-updated since the page loaded. Not empty: the page may hold
    * stale module state, reload before measuring.
