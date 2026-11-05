@@ -54,6 +54,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `runCommand(id, input?)` | run a commandline command through the commandline: opens it, waits for the out of focus blur, executes, closes. `setConfig` skips that blur, so reproduce commandline bugs with this. Ids: `set<ConfigKey>Custom` inputs (`setFontSizeCustom`), `set<ConfigKey><Value>` (booleans `True`/`False`: `setPunctuationFalse`), `applyPreset<presetId>` |
 | `hotUpdates()` | modules hot-updated since the page loaded; must be `[]` before measuring |
 | `quickLogin()` | sign in with the `QUICK_LOGIN_*` account from the frontend `.env` (same as the DevOptions modal button). Use it whenever a check needs an account: presets, tags, results, sync |
+| `signOut()` | sign out the current session (no-op when there is no session). Pairs with `quickLogin` for checks that span signed-in and signed-out states |
 | `setCustomText(text)` | start a custom test with `text` (newlines become line breaks), as the custom text modal's simple mode |
 | `setPreloading(enabled)` | turn intent preloading (hovered/focused links run the next page's guards and loaders) off or back on, no rebuild; resets on reload. Permanent switch: `INTENT_PRELOADING` in `router/create-router.ts` |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
