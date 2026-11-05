@@ -1,3 +1,4 @@
+import { createRoot } from "solid-js";
 import { showCommandline } from "../../states/commandline";
 import { hotkeys } from "../../states/hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
@@ -8,5 +9,5 @@ function openCommandline(): void {
   showCommandline();
 }
 
-createHotkey(() => hotkeys.commandline, openCommandline);
-createHotkey("Mod+Shift+P", openCommandline);
+createRoot(() => createHotkey(() => hotkeys.commandline, openCommandline));
+createRoot(() => createHotkey("Mod+Shift+P", openCommandline));

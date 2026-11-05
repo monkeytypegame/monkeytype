@@ -291,7 +291,9 @@ function Key(
       }}
     >
       <Show
-        when={props.isLayoutIndicator}
+        when={
+          props.isLayoutIndicator && getConfig.keymapLegendStyle !== "blank"
+        }
         fallback={
           <>
             {props.label}

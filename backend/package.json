@@ -5,7 +5,6 @@
   "license": "GPL-3.0",
   "scripts": {
     "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint .",
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",

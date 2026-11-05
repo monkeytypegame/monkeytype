@@ -509,6 +509,7 @@ function addLayoutKeys(
   count: number,
   options?: { start?: number },
 ): LayoutKey[] {
+  // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type
   return new Array<LayoutKey>(count).fill({}).map((it, index) => {
     return {
       ...it,

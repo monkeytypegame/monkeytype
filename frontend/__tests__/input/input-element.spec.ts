@@ -6,10 +6,9 @@ import {
 
 describe("input-element", () => {
   it("blurring after the test page unmounted does nothing", () => {
-    const controller = new AbortController();
-    registerInputElement(document.createElement("textarea"), controller.signal);
-    // the typing test unregisters its input before TestPage's cleanup blurs it
-    controller.abort();
+    const unregister = registerInputElement(document.createElement("textarea"));
+    // WordsInput unregisters its input before TestPage's cleanup blurs it
+    unregister();
 
     expect(() => blurInputElement()).not.toThrow();
   });

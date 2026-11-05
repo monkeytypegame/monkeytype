@@ -11,7 +11,6 @@ import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { showNoticeNotification } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
-import { applyFontFamily } from "../../../../ui";
 import FileStorage from "../../../../utils/file-storage";
 import { normalizeName } from "../../../../utils/strings";
 import { getOptions } from "../../../../utils/zod";
@@ -67,7 +66,6 @@ export function FontFamily(): JSXElement {
                   onClick={() => {
                     void FileStorage.deleteFile("LocalFontFamilyFile").then(
                       () => {
-                        void applyFontFamily();
                         void refetch();
                       },
                     );
@@ -103,8 +101,6 @@ export function FontFamily(): JSXElement {
 
                     const dataUrl = await readFileAsDataURL(file);
                     await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
-
-                    await applyFontFamily();
                     void refetch();
 
                     fileInput.value = "";

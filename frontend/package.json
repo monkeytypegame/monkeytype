@@ -5,16 +5,15 @@
   "type": "module",
   "scripts": {
     "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint .",
     "lint-styles": "stylelint \"**/*.{scss,css}\"",
     "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
     "lint-json": "eslint static/**/*.json",
     "check-assets": "tsx ./scripts/check-assets.ts",
     "audit": "vite-bundle-visualizer",
-    "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
+    "dep-graph": "madge -c --extensions ts,tsx -i \"dep-graph.png\" ./src/ts",
     "ts-check": "tsc --noEmit",
     "build": "npm run madge && vite build",
-    "madge": " madge --circular --extensions ts ./src",
+    "madge": " madge --circular --extensions ts,tsx ./src",
     "start": "vite preview --port 3000",
     "dev": "vite dev",
     "test": "vitest run",
@@ -39,11 +38,12 @@
     "@solid-primitives/transition-group": "1.1.2",
     "@solidjs/meta": "0.29.4",
     "@tanstack/pacer-lite": "0.2.2",
-    "@tanstack/query-db-collection": "1.0.40",
-    "@tanstack/solid-db": "0.2.22",
+    "@tanstack/query-db-collection": "1.4.8",
+    "@tanstack/solid-db": "0.3.12",
     "@tanstack/solid-form": "1.33.0",
     "@tanstack/solid-hotkeys": "0.10.0",
-    "@tanstack/solid-query": "5.101.0",
+    "@tanstack/solid-query": "5.104.5",
+    "@tanstack/solid-router": "1.170.38",
     "@tanstack/solid-table": "8.21.3",
     "@ts-rest/core": "3.52.1",
     "animejs": "4.2.2",
@@ -68,8 +68,7 @@
     "stemmer": "2.0.1",
     "tailwind-merge": "3.6.0",
     "throttle-debounce": "5.0.2",
-    "zod": "3.23.8",
-    "zod-urlsearchparams": "0.0.16"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@actions/core": "3.0.1",
@@ -81,9 +80,9 @@
     "@solidjs/testing-library": "0.8.10",
     "@tailwindcss/vite": "4.3.2",
     "@tanstack/eslint-plugin-query": "5.101.0",
-    "@tanstack/solid-devtools": "0.8.5",
+    "@tanstack/solid-devtools": "0.8.13",
     "@tanstack/solid-hotkeys-devtools": "0.7.0",
-    "@tanstack/solid-query-devtools": "5.101.0",
+    "@tanstack/solid-query-devtools": "5.104.5",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/user-event": "14.6.1",
@@ -134,7 +133,8 @@
       "oxfmt --no-error-on-unmatched-pattern -c ../.oxfmtrc.json"
     ],
     "*.{ts,js,tsx}": [
-      "oxlint --type-aware --type-check"
+      "oxlint --type-aware --type-check",
+      "vitest related --run --passWithNoTests"
     ]
   },
   "browserslist": [

@@ -84,7 +84,7 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   try {
     if (!isAuthenticated()) return false;
 
-    const [userData] = await Promise.all([fetchUserFromApi()]);
+    const userData = await fetchUserFromApi();
 
     if (userData === null || userData === undefined) {
       throw new SnapshotInitError(

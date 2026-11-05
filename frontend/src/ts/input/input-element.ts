@@ -1,15 +1,13 @@
-// #wordsInput is rendered by TestPage and registered here on every mount
+// #wordsInput is rendered by WordsInput and registered here on every mount
 let el: HTMLTextAreaElement | undefined;
 
-export function registerInputElement(
-  element: HTMLTextAreaElement,
-  signal: AbortSignal,
-): void {
+/** Returns the unregister. */
+export function registerInputElement(element: HTMLTextAreaElement): () => void {
   el = element;
-  signal.addEventListener("abort", () => {
+  return () => {
     // a remount may have registered a new element already
     if (el === element) el = undefined;
-  });
+  };
 }
 
 export function getInputElement(): HTMLTextAreaElement {
@@ -57,8 +55,8 @@ export function focusInputElement(preventScroll = false): void {
   });
 }
 
-// no-op once unmounted: TestPage's cleanup blurs after the typing test
-// unregistered its input
+// no-op once unmounted: TestPage's cleanup blurs after WordsInput unregistered
+// its input
 export function blurInputElement(): void {
   el?.blur();
 }

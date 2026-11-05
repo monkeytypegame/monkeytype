@@ -1,3 +1,4 @@
+import { getCompositionData } from "../../states/test";
 import {
   CreateHotkeyOptions,
   Hotkey,
@@ -7,7 +8,6 @@ import {
 } from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isInputElementFocused } from "../input-element";
-import * as CompositionState from "../../legacy-states/composition";
 
 export const NoKey = "" as Hotkey;
 
@@ -70,7 +70,7 @@ function handleHotkeyOnInteractiveElement(
   } else if (
     hotkey === "Escape" &&
     isInputElementFocused() &&
-    CompositionState.getData() !== ""
+    getCompositionData() !== ""
   ) {
     return true;
   }

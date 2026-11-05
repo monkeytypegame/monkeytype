@@ -3,47 +3,30 @@ import {
   moveInputElementCaretToTheEnd,
 } from "../input-element";
 
-export function init(signal: AbortSignal): void {
+export function onFocus(): void {
+  moveInputElementCaretToTheEnd();
+}
+
+/** copy, paste, select, selectstart */
+export function preventDefault(event: Event): void {
+  event.preventDefault();
+}
+
+export function onSelectionChange(event: Event): void {
   const inputEl = getInputElement();
+  const selection = window.getSelection();
 
-  inputEl.addEventListener(
-    "focus",
-    () => {
-      moveInputElementCaretToTheEnd();
-    },
-    { signal },
-  );
+  console.debug("wordsInput event selectionchange", {
+    event,
+    selection: selection?.toString(),
+    isCollapsed: selection?.isCollapsed,
+    selectionStart: inputEl.selectionStart,
+    selectionEnd: inputEl.selectionEnd,
+  });
 
-  // native addEventListener takes one event type per call
-  for (const type of ["copy", "paste", "select", "selectstart"]) {
-    inputEl.addEventListener(
-      type,
-      (event) => {
-        event.preventDefault();
-      },
-      { signal },
-    );
+  const hasSelectedText = inputEl.selectionStart !== inputEl.selectionEnd;
+  const isCursorAtEnd = inputEl.selectionStart === inputEl.value.length;
+  if (hasSelectedText || !isCursorAtEnd) {
+    moveInputElementCaretToTheEnd();
   }
-
-  inputEl.addEventListener(
-    "selectionchange",
-    (event) => {
-      const selection = window.getSelection();
-
-      console.debug("wordsInput event selectionchange", {
-        event,
-        selection: selection?.toString(),
-        isCollapsed: selection?.isCollapsed,
-        selectionStart: inputEl.selectionStart,
-        selectionEnd: inputEl.selectionEnd,
-      });
-
-      const hasSelectedText = inputEl.selectionStart !== inputEl.selectionEnd;
-      const isCursorAtEnd = inputEl.selectionStart === inputEl.value.length;
-      if (hasSelectedText || !isCursorAtEnd) {
-        moveInputElementCaretToTheEnd();
-      }
-    },
-    { signal },
-  );
 }

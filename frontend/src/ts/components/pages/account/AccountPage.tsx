@@ -7,10 +7,10 @@ import {
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { SnapshotResult } from "../../../constants/default-snapshot";
+import { createTrigger } from "../../../hooks/createTrigger";
 import { isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
-import { qs } from "../../../utils/dom";
 import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
@@ -42,6 +42,8 @@ export function AccountPage(): JSXElement {
   const [selectedResultId, setSelectedResultId] = createSignal<null | string>(
     null,
   );
+  const [scrollToSelectedResult, requestScrollToSelectedResult] =
+    createTrigger();
   const [isExporting, setIsExporting] = createSignal(false);
 
   const resultsQuery = useResultsLiveQuery({
@@ -77,14 +79,7 @@ export function AccountPage(): JSXElement {
                 setLimit(newLimit);
               }
               setSelectedResultId(_id);
-
-              requestAnimationFrame(() => {
-                qs(
-                  `#resultList tbody tr:nth-child(${index + 1})`,
-                )?.scrollIntoView({
-                  block: "center",
-                });
-              });
+              requestScrollToSelectedResult();
             }}
           />
           <TestStats queryState={queryState} />
@@ -121,6 +116,7 @@ export function AccountPage(): JSXElement {
                   data={resultsQueryData().slice(0, limit())}
                   onSortingChange={(val) => setSorting(val)}
                   selectedRowId={selectedResultId}
+                  scrollToSelectedRow={scrollToSelectedResult}
                 />
                 <Button
                   text="load more"

@@ -1,3 +1,4 @@
+import { createRoot } from "solid-js";
 import { GetUserResponse } from "@monkeytype/contracts/users";
 import Ape from ".";
 import { createEffectOn } from "../hooks/effects";
@@ -47,8 +48,10 @@ function reset(): void {
 }
 
 // clear cache + reset promise on logout
-createEffectOn(isAuthenticated, (isAuthenticated) => {
-  if (!isAuthenticated) {
-    reset();
-  }
-});
+createRoot(() =>
+  createEffectOn(isAuthenticated, (isAuthenticated) => {
+    if (!isAuthenticated) {
+      reset();
+    }
+  }),
+);

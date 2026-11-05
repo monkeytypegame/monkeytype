@@ -3,13 +3,17 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 /**
- * Minifies all json files in the `dist` directory
+ * Minifies all json files in the build output directory
  * @returns
  */
 export function minifyJson(): Plugin {
+  let outDir = "";
   return {
     name: "minify-json",
     apply: "build",
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
     generateBundle() {
       let totalOriginalSize = 0;
       let totalMinifiedSize = 0;
@@ -49,7 +53,7 @@ export function minifyJson(): Plugin {
       // console.log("\n\x1b[1mMinifying JSON files...\x1b[0m\n");
       const start = performance.now();
 
-      minifyJsonFiles("./dist");
+      minifyJsonFiles(outDir);
 
       const end = performance.now();
       const totalSavings =

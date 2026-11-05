@@ -13,7 +13,7 @@ const commands: Command[] = [
   {
     id: "addQuoteToFavorite",
     display: "Add current quote to favorite",
-    icon: "fa-heart",
+    fa: { icon: "fa-heart" },
     available: (): boolean => {
       const quote = getCurrentQuote();
       return (
@@ -41,7 +41,7 @@ const commands: Command[] = [
   {
     id: "removeQuoteFromFavorite",
     display: "Remove current quote from favorite",
-    icon: "fa-heart-broken",
+    fa: { icon: "fa-heart-broken" },
     available: (): boolean => {
       const quote = getCurrentQuote();
       return (

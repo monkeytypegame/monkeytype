@@ -1,5 +1,5 @@
 import { createEffectOn } from "../hooks/effects";
-import { createSignal } from "solid-js";
+import { createSignal, createRoot } from "solid-js";
 import { keycodeToKeyboardSide } from "../utils/key-converter";
 import { Keycode } from "../constants/keys";
 import { getConfig } from "../config/store";
@@ -16,7 +16,7 @@ function resetMonkeyState(): void {
   setMonkeyState({ left: false, right: false });
 }
 
-createEffectOn(() => getConfig.monkey, resetMonkeyState);
+createRoot(() => createEffectOn(() => getConfig.monkey, resetMonkeyState));
 
 /** Tracks the typing hands. Called by TestPage on mount. */
 export function listenForMonkeyKeys(signal: AbortSignal): void {

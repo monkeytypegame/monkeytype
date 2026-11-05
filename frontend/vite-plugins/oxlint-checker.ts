@@ -165,7 +165,10 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
     sendLintResult({ running: true });
 
     // First pass: fast oxlint without type checking
-    const { code, output } = await runLintProcess([]);
+    const { code, output } = await runLintProcess([
+      "-c",
+      ".oxlintrc.core.json",
+    ]);
 
     // Check if we were superseded by a newer run
     if (runId !== currentRunId) {
@@ -275,7 +278,7 @@ export function oxlintChecker(options: OxlintCheckerOptions = {}): Plugin {
       console.log("\n\x1b[1mRunning oxlint...\x1b[0m");
 
       try {
-        const commands = ["npx oxlint ."];
+        const commands = ["npx oxlint . -c .oxlintrc.core.json"];
         if (typeAware) {
           commands.push("npx oxlint . --type-aware --type-check");
         }

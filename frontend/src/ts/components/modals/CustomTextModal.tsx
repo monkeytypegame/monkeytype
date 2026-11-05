@@ -7,7 +7,6 @@ import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import {
   getCustomTextIndicator,
   setCustomTextIndicator,
@@ -20,6 +19,7 @@ import {
 import { getLoadedChallenge, setLoadedChallenge } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
 import * as PractiseWords from "../../test/practise-words";
+import { restartTest } from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -34,7 +34,11 @@ import { SavedTextsModal } from "./SavedTextsModal";
 import { WordFilterModal } from "./WordFilterModal";
 
 export type CustomTextIncomingData =
-  | ({ set?: boolean; long?: boolean } & (
+  | ({
+      set?: boolean;
+      long?: boolean;
+      pipeDelimiter?: boolean;
+    } & (
       | { text: string; splitText?: never }
       | { text?: never; splitText: string[] }
     ))
@@ -61,7 +65,13 @@ export function CustomTextModal(): JSXElement {
   const [incomingChainedData, setIncomingChainedData] =
     createSignal<CustomTextIncomingData>(null);
 
-  const [textToSave, setTextToSave] = createSignal<string[]>([]);
+  const [textToSave, setTextToSave] = createSignal<{
+    words: string[];
+    isPipeDelimiter: boolean;
+  }>({
+    words: [],
+    isPipeDelimiter: false,
+  });
 
   // oxlint-disable-next-line no-unassigned-vars -- assigned via SolidJS ref
   let fileInputRef!: HTMLInputElement;
@@ -158,7 +168,7 @@ export function CustomTextModal(): JSXElement {
         setConfig("mode", "custom");
       }
       PractiseWords.resetBefore();
-      restartTestEvent.dispatch();
+      void restartTest();
       hideModalAndClearChain("CustomText");
     },
   }));
@@ -221,10 +231,18 @@ export function CustomTextModal(): JSXElement {
 
   const handleDelimiterChange = (newPipeDelimiter: boolean) => {
     const currentPipeDelimiter = form.getFieldValue("pipeDelimiter");
-    let newtext = form
-      .getFieldValue("text")
-      .split(currentPipeDelimiter ? "|" : " ")
-      .join(newPipeDelimiter ? "|" : " ");
+    let newtext = form.getFieldValue("text");
+
+    if (currentPipeDelimiter && !newPipeDelimiter) {
+      // pipe -> space: flatten sections into words
+      newtext = newtext.split("|").join(" ");
+    } else if (!currentPipeDelimiter && newPipeDelimiter) {
+      // space -> pipe: only convert when there are no pipes yet, so that
+      // pasted/inserted text that already uses pipes keeps its sections
+      if (!newtext.includes("|")) {
+        newtext = newtext.split(" ").join("|");
+      }
+    }
     newtext = newtext.replace(/\n /g, "\n");
 
     batch(() => {
@@ -235,6 +253,9 @@ export function CustomTextModal(): JSXElement {
       }
       if (!newPipeDelimiter && form.getFieldValue("limitSection") !== "") {
         form.setFieldValue("limitSection", "");
+      }
+      if (!newPipeDelimiter && form.getFieldValue("limitWord") !== "") {
+        form.setFieldValue("limitWord", "");
       }
     });
   };
@@ -300,9 +321,12 @@ export function CustomTextModal(): JSXElement {
       setLongTextWarning(true);
     }
 
+    const incomingDelimiter =
+      data.pipeDelimiter ?? form.getFieldValue("pipeDelimiter");
+
     const incomingText =
       data.splitText !== undefined
-        ? data.splitText.join(form.getFieldValue("pipeDelimiter") ? "|" : " ")
+        ? data.splitText.join(incomingDelimiter ? "|" : " ")
         : data.text;
 
     const newText =
@@ -311,6 +335,9 @@ export function CustomTextModal(): JSXElement {
         : `${form.getFieldValue("text")} ${incomingText}`;
     untrack(() => {
       batch(() => {
+        if (data.pipeDelimiter !== undefined) {
+          form.setFieldValue("pipeDelimiter", data.pipeDelimiter);
+        }
         form.setFieldValue("text", newText);
         form.setFieldValue("mode", "simple");
         form.setFieldValue("limitWord", `${cleanUpText().length}`);
@@ -430,7 +457,11 @@ export function CustomTextModal(): JSXElement {
                 fa={{ icon: "fa-save" }}
                 text="save"
                 onClick={() => {
-                  setTextToSave(cleanUpText());
+                  const words = cleanUpText();
+                  setTextToSave({
+                    words,
+                    isPipeDelimiter: form.getFieldValue("pipeDelimiter"),
+                  });
                   showModal("SaveCustomText");
                 }}
               />

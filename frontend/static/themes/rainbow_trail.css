@@ -77,14 +77,16 @@ footer button:hover > .relative > i,
 }
 
 #words .word.typed letter.correct,
+#words.blind .word.typed letter,
 #words.highlight-word .word.typed letter,
 #words.highlight-next-word .word.typed letter,
 #words.highlight-next-two-words .word.typed letter,
-#words.highlight-next-three-words .word.typed letter {
+#words.highlight-next-three-words .word.typed letter,
+#replayWords .word .text-text {
   animation: rainbow 7.5s ease-in-out forwards;
 }
 
-#words .word.error {
+#words:not(.blind) .word.error {
   animation: rainbow-error 7.5s ease-in-out forwards;
 }
 

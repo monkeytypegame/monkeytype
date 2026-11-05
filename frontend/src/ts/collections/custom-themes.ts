@@ -8,7 +8,7 @@ import {
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -43,7 +43,7 @@ const customThemesCollection = createCollection(
           `Error fetching custom themes: ${response.body.message}`,
         );
       }
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
   }),
 );
@@ -84,7 +84,7 @@ const actions = {
         throw new Error("Failed to add custom theme: No data returned");
       }
 
-      customThemesCollection.utils.writeInsert({
+      await customThemesCollection.utils.writeInsert({
         _id: response.body.data._id,
         name,
         colors,
@@ -108,7 +108,7 @@ const actions = {
         );
       }
 
-      customThemesCollection.utils.writeUpdate({
+      await customThemesCollection.utils.writeUpdate({
         _id: themeId,
         name,
         colors,
@@ -128,7 +128,7 @@ const actions = {
           `Failed to delete custom theme: ${response.body.message}`,
         );
       }
-      customThemesCollection.utils.writeDelete(themeId);
+      await customThemesCollection.utils.writeDelete(themeId);
     },
   }),
 };
@@ -149,21 +149,21 @@ export async function addCustomTheme(
   params: ActionType["addCustomTheme"],
 ): Promise<void> {
   const transaction = actions.addCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function editCustomTheme(
   params: ActionType["editCustomTheme"],
 ): Promise<void> {
   const transaction = actions.editCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function deleteCustomTheme(
   params: ActionType["deleteCustomTheme"],
 ): Promise<void> {
   const transaction = actions.deleteCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 /**

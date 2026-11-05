@@ -27,6 +27,8 @@ export function Table<M extends Mode>(props: {
   data: SnapshotResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
   selectedRowId: Accessor<string | null>;
+  /** Tracked: each change scrolls the selected row into view */
+  scrollToSelectedRow: () => void;
 }): JSXElement {
   const [selectedResult, setSelectedResult] = createSignal<string | undefined>(
     undefined,
@@ -71,6 +73,7 @@ export function Table<M extends Mode>(props: {
         rowSelection={{
           getRowId: (row) => row._id,
           activeRow: props.selectedRowId,
+          scrollToActiveRow: props.scrollToSelectedRow,
           class: cn(
             "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
             "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",

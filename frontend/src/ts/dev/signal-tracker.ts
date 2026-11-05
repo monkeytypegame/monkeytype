@@ -1,4 +1,5 @@
 import { createSignal, DEV } from "solid-js";
+import { DEV as STORE_DEV } from "solid-js/store";
 import { isProfilerMode } from "../utils/profiler-mode";
 
 export type TrackedSignal = {
@@ -53,9 +54,6 @@ function getCallerInfo(): { isUserCode: boolean; source: string } {
     );
     const source =
       urlMatch !== null ? `${urlMatch[1]}${urlMatch[2]}` : frame.trim();
-    if (source.includes("AnimePresence")) {
-      console.log(source, frames);
-    }
     return { isUserCode, source };
   }
   return { isUserCode: false, source: "" };
@@ -90,6 +88,14 @@ function formatInitialValue(value: unknown): string {
   try {
     const str = JSON.stringify(value);
     return str.length > 80 ? `${str.slice(0, 80)}...` : str;
+  } catch {
+    return `[${typeof value}]`;
+  }
+}
+
+function snapshotValue(value: unknown): string {
+  try {
+    return JSON.stringify(value) ?? "undefined";
   } catch {
     return `[${typeof value}]`;
   }
@@ -139,11 +145,36 @@ if (DEV && !isProfilerMode()) {
     }
   };
 
-  const mirrors = new Map<
-    TrackedSignal,
-    { node: SolidNode; set: (v: unknown) => void }
-  >();
+  type Mirror = {
+    node: SolidNode;
+    set: (v: unknown) => void;
+    /** stores only: serialized value from the last sync */
+    snapshot?: string;
+  };
+  const mirrors = new Map<TrackedSignal, Mirror>();
   let isFlushQueued = false;
+
+  // stores mutate in place, so their node value keeps the same reference -
+  // mark any store write and compare snapshots on the next sync instead
+  let isStoreDirty = false;
+  if (STORE_DEV !== undefined) {
+    type StoreHook = NonNullable<typeof STORE_DEV.hooks.onStoreNodeUpdate>;
+    // solid-devtools assigns this hook on load without chaining, so keep ours
+    // in front of whatever gets assigned later
+    let otherHook = STORE_DEV.hooks.onStoreNodeUpdate ?? null;
+    const hook: StoreHook = (...args) => {
+      isStoreDirty = true;
+      otherHook?.(...args);
+    };
+    Object.defineProperty(STORE_DEV.hooks, "onStoreNodeUpdate", {
+      configurable: true,
+      enumerable: true,
+      get: () => hook,
+      set: (fn: StoreHook | null) => {
+        otherHook = fn;
+      },
+    });
+  }
 
   const flush = (): void => {
     isFlushQueued = false;
@@ -157,7 +188,13 @@ if (DEV && !isProfilerMode()) {
         if (stale !== undefined) mirrors.delete(stale);
       }
 
-      const [get, set] = createSignal(node.value);
+      const isStore = info.type === "store";
+      // `equals: undefined` would drop the default comparator, so only pass
+      // options for stores
+      const [get, set] = createSignal(
+        node.value,
+        isStore ? { equals: false } : undefined,
+      );
       const tracked: TrackedSignal = {
         name: info.name,
         type: info.type,
@@ -171,14 +208,29 @@ if (DEV && !isProfilerMode()) {
         getObserverCount: () => node.observers?.length ?? 0,
       };
       trackedSignals.push(tracked);
-      mirrors.set(tracked, { node, set });
+      mirrors.set(tracked, {
+        node,
+        set,
+        snapshot: isStore ? snapshotValue(node.value) : undefined,
+      });
     }
     pendingNodes.clear();
   };
 
   // sync node values to the reactive mirrors, only while the tab is visible
   const syncLoop = (): void => {
-    for (const { node, set } of mirrors.values()) {
+    const syncStores = isStoreDirty;
+    isStoreDirty = false;
+    for (const mirror of mirrors.values()) {
+      const { node, set } = mirror;
+      if (mirror.snapshot === undefined) {
+        set(() => node.value);
+        continue;
+      }
+      if (!syncStores) continue;
+      const snapshot = snapshotValue(node.value);
+      if (snapshot === mirror.snapshot) continue;
+      mirror.snapshot = snapshot;
       set(() => node.value);
     }
     requestAnimationFrame(syncLoop);

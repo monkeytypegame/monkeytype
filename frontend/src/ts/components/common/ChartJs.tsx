@@ -23,7 +23,13 @@ import {
 import "chartjs-adapter-date-fns";
 import chartAnnotation from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
-import { createDeferred, JSXElement, onCleanup, onMount } from "solid-js";
+import {
+  createDeferred,
+  JSXElement,
+  onCleanup,
+  onMount,
+  createRoot,
+} from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { Theme } from "../../constants/themes";
@@ -55,11 +61,13 @@ Chart.register(
 Chart.defaults.elements.line.tension = 0.5;
 Chart.defaults.elements.line.fill = "origin";
 
-createEffectOn(
-  () => getConfig.fontFamily,
-  (font) => {
-    Chart.defaults.font.family = font.replace(/_/g, " ");
-  },
+createRoot(() =>
+  createEffectOn(
+    () => getConfig.fontFamily,
+    (font) => {
+      Chart.defaults.font.family = font.replace(/_/g, " ");
+    },
+  ),
 );
 
 type ChartJSProps<

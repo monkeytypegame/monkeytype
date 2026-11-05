@@ -52,52 +52,6 @@ export function convertNumberToHindi(numString: string): string {
   return ret;
 }
 
-export function findGetParameter(
-  parameterName: string,
-  getOverride?: string,
-): string | null {
-  let result = null;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) {
-        result = decodeURIComponent(tmp[1] as string);
-      }
-    });
-  return result;
-}
-
-export function checkIfGetParameterExists(
-  parameterName: string,
-  getOverride?: string,
-): boolean {
-  let result = false;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = true;
-    });
-  return result;
-}
-
 export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>,
 ): string {
@@ -185,7 +139,7 @@ export async function swapElements(
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   },
-): Promise<boolean | undefined> {
+): Promise<void> {
   if (el1 === null || el2 === null) {
     return;
   }
@@ -199,7 +153,7 @@ export async function swapElements(
     if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
-      return false;
+      return;
     }
 
     el1.show();
@@ -230,8 +184,6 @@ export async function swapElements(
     await middleCallback();
     await callback();
   }
-
-  return;
 }
 
 export function getMode2<M extends keyof PersonalBests>(

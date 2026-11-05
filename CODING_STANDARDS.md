@@ -29,3 +29,7 @@ Missing either → modal never shows.
 ## Solid migration
 
 - When migrating a module, convert its importers to named imports too, and rename overly generic exports (`getState` → `getClientState`) so named imports stay readable.
+
+## Comments
+
+- A diff that changes behaviour updates the comments describing it: search comments for every name the diff removes or renames (functions, components, files, docs).

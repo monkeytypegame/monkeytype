@@ -94,8 +94,10 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       if (props.selected === undefined) return props.optionGroups;
       const selectedSet = new Set(getSelected());
       return props.optionGroups.map((group) => ({
+        // oxlint-disable-next-line no-misused-spread -- slim-select accepts plain option data
         ...group,
         options: group.options?.map((option) => ({
+          // oxlint-disable-next-line no-misused-spread -- slim-select accepts plain option data
           ...option,
           selected: selectedSet.has(option.value),
         })),
@@ -182,14 +184,16 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
   const handleAllSelection = (
     selectedOptions: Option[],
     oldSelectedOptions: Option[],
-  ): false | undefined => {
-    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) return;
+  ): boolean => {
+    if (!props.settings?.addAllOption || !props.multiple || !slimSelect) {
+      return true;
+    }
 
     const includesAllNow = selectedOptions.some((o) => o.value === "all");
     const includedAllBefore = oldSelectedOptions.some((o) => o.value === "all");
 
     // No "all" option involvement, skip special handling
-    if (!includesAllNow && !includedAllBefore) return;
+    if (!includesAllNow && !includedAllBefore) return true;
 
     const data = slimSelect.store.getData();
     const allValues = getAllOptionValues(data);
@@ -256,7 +260,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       }
       return false;
     }
-    return;
+    return true;
   };
 
   onMount(() => {
@@ -283,13 +287,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
             return false;
           }
 
-          const result = handleAllSelection(
-            selectedOptions,
-            oldSelectedOptions,
-          );
-          if (result !== undefined) return result;
-
-          return true;
+          return handleAllSelection(selectedOptions, oldSelectedOptions);
         },
         afterChange: (newVal) => {
           if (!slimSelect) return;

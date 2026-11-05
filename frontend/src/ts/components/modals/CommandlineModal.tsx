@@ -25,7 +25,7 @@ import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
 } from "../../states/commandline";
-import { getActivePage } from "../../states/core";
+import { setFontPreview } from "../../states/font";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   clearModalStack,
@@ -35,11 +35,10 @@ import {
   hideModalAndClearChain as storeClearChain,
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
-import { setTestFocusState } from "../../states/test";
-import * as Focus from "../../test/focus";
+import { getRoutePage } from "../../states/router";
+import { setFocusMode, setTestFocusState } from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
-import { clearFontPreview } from "../../ui";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -57,11 +56,6 @@ const MODAL_ID = "Commandline";
 const MAX_RENDERED_COMMANDS = 1000;
 
 type CommandlineMode = "search" | "input";
-
-/** `Command.icon` and `Command.iconType` are plain strings, so they need widening to the `Fa` props union. */
-function faProps(icon: string, variant?: "regular" | "solid"): FaObject {
-  return { icon, variant } as FaObject;
-}
 
 function isCommandActive(
   command: Command,
@@ -117,9 +111,6 @@ function CommandIcon(props: {
       props.command.configValue !== undefined) ||
       props.command.active !== undefined);
 
-  const icon = (): string => props.command.icon ?? "";
-  const isTextIcon = (): boolean => icon() !== "" && !icon().startsWith("fa-");
-
   return (
     <Show
       when={!useConfigIcon()}
@@ -130,28 +121,11 @@ function CommandIcon(props: {
         />
       }
     >
-      <Show
-        when={isTextIcon()}
-        fallback={
-          <Fa
-            {...faProps(
-              icon() === "" ? "fa-chevron-right" : icon(),
-              props.command.iconType,
-            )}
-            fixedWidth
-            class={cn("mr-2", props.colorClass)}
-          />
-        }
-      >
-        <div
-          class={cn(
-            "mr-2 inline-block w-[1.25em] text-center font-black tracking-[-0.1rem]",
-            props.colorClass,
-          )}
-        >
-          {icon()}
-        </div>
-      </Show>
+      <Fa
+        {...(props.command.fa ?? { icon: "fa-chevron-right" })}
+        fixedWidth
+        class={cn("mr-2", props.colorClass)}
+      />
     </Show>
   );
 }
@@ -196,7 +170,7 @@ export function CommandlineModal(): JSXElement {
   const [inputPlaceholder, setInputPlaceholder] = createSignal<string | null>(
     null,
   );
-  const [inputIcon, setInputIcon] = createSignal<string | null>(null);
+  const [inputIcon, setInputIcon] = createSignal<FaObject | null>(null);
   const [warning, setWarning] = createSignal<string | null>(null);
   const [isChecking, setIsChecking] = createSignal(false);
   const [hiddenCount, setHiddenCount] = createSignal(0);
@@ -393,7 +367,7 @@ export function CommandlineModal(): JSXElement {
     setMode("input");
     setInputCommand(command);
     setInputPlaceholder(command.display);
-    setInputIcon(command.icon ?? "fa-chevron-right");
+    setInputIcon(command.fa ?? { icon: "fa-chevron-right" });
     validation = undefined;
     createValidationHandler(command);
     applyInputValue(command.defaultValue?.() ?? "", true);
@@ -412,7 +386,7 @@ export function CommandlineModal(): JSXElement {
   };
 
   const clearPreviewsAndLock = (): void => {
-    clearFontPreview();
+    setFontPreview(null);
     void ThemeController.clearPreview();
     isAnimating = true;
   };
@@ -665,7 +639,7 @@ export function CommandlineModal(): JSXElement {
       setUsingSingleList(Config.singleListCommandLine === "on");
     }
 
-    Focus.set(false);
+    setFocusMode(false);
     CommandlineLists.setStackToDefault();
     applyInputValue("");
     await refresh();
@@ -691,7 +665,7 @@ export function CommandlineModal(): JSXElement {
     setWarning(null);
     hideCheckingIcon();
     addCommandlineBackground();
-    if (getActivePage() !== "test") {
+    if (getRoutePage() !== "test") {
       (document.activeElement as HTMLElement | undefined)?.blur();
     }
     isAnimating = false;
@@ -707,7 +681,7 @@ export function CommandlineModal(): JSXElement {
     const command = activeCommand();
     if (isAnimating) return;
 
-    clearFontPreview();
+    setFontPreview(null);
 
     if (
       command !== undefined &&
@@ -779,11 +753,9 @@ export function CommandlineModal(): JSXElement {
             when={isChecking()}
             fallback={
               <Fa
-                {...faProps(
-                  mode() === "input"
-                    ? (inputIcon() ?? "fa-chevron-right")
-                    : "fa-search",
-                )}
+                {...(mode() === "input"
+                  ? (inputIcon() ?? { icon: "fa-chevron-right" })
+                  : { icon: "fa-search" })}
                 fixedWidth
                 class="col-[1/2] row-[1/2] mx-4 mt-px text-sub"
               />

@@ -12,7 +12,7 @@ import {
   setApeKeysDenied,
   setLastGeneratedApeKey,
 } from "../states/account-settings";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId } from "./utils/misc";
 import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { showSuccessNotification } from "../states/notifications";
 import {
@@ -58,16 +58,14 @@ const apeKeysCollection = createCollection(
         throw new Error(`Error fetching ape keys: ${response.body.message}`);
       }
 
-      const dataArray = typedEntries(response.body.data)
-        .map(
-          ([_id, data]) =>
-            ({
-              ...data,
-              _id,
-              name: replaceUnderscoresWithSpaces(data.name),
-            }) satisfies ApeKeyEntry,
-        )
-        .map(applyIdWorkaround);
+      const dataArray = typedEntries(response.body.data).map(
+        ([_id, data]) =>
+          ({
+            ...data,
+            _id,
+            name: replaceUnderscoresWithSpaces(data.name),
+          }) satisfies ApeKeyEntry,
+      );
 
       return dataArray;
     },
@@ -108,7 +106,7 @@ const actions = {
         name: replaceUnderscoresWithSpaces(name),
       };
 
-      apeKeysCollection.utils.writeInsert(newKey);
+      await apeKeysCollection.utils.writeInsert(newKey);
 
       setLastGeneratedApeKey(response.body.data.apeKey);
     },
@@ -129,7 +127,7 @@ const actions = {
         throw new Error(`Failed to update key: ${response.body.message}`);
       }
 
-      apeKeysCollection.utils.writeUpdate({ _id: apeKeyId, enabled });
+      await apeKeysCollection.utils.writeUpdate({ _id: apeKeyId, enabled });
 
       showSuccessNotification(`Key ${enabled ? "active" : "inactive"}`);
     },
@@ -150,7 +148,7 @@ const actions = {
         throw new Error(`Failed to update key: ${response.body.message}`);
       }
 
-      apeKeysCollection.utils.writeUpdate({
+      await apeKeysCollection.utils.writeUpdate({
         _id: apeKeyId,
         name: replaceUnderscoresWithSpaces(name),
       });
@@ -166,7 +164,7 @@ const actions = {
         throw new Error(`Failed to delete key: ${response.body.message}`);
       }
 
-      apeKeysCollection.utils.writeDelete(apeKeyId);
+      await apeKeysCollection.utils.writeDelete(apeKeyId);
     },
   }),
 };
@@ -175,26 +173,26 @@ export async function insertApeKey(
   params: ActionType["insertKey"],
 ): Promise<void> {
   const transaction = actions.insertKey(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function updateApeKeyEnabled(
   params: ActionType["setEnabled"],
 ): Promise<void> {
   const transaction = actions.setEnabled(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function renameApeKey(
   params: ActionType["rename"],
 ): Promise<void> {
   const transaction = actions.rename(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function removeApeKey(
   params: ActionType["remove"],
 ): Promise<void> {
   const transaction = actions.remove(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }

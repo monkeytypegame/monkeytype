@@ -1,6 +1,7 @@
 {
   "ignorePatterns": ["node_modules", "dist", "coverage", ".firebase", ".turbo"],
   "extends": [
+    ".oxlintrc.core.json",
     "../packages/oxlint-config/index.jsonc",
     "../packages/oxlint-config/plugin.jsonc"
     // "@monkeytype/oxlint-config"
@@ -11,24 +12,9 @@
   },
   "overrides": [
     {
-      "files": ["**/*.ts"],
-      "rules": {
-        //
-      }
-    },
-    {
       "files": ["src/**/*.ts", "src/**/*.tsx"],
       "rules": {
         "monkeytype-rules/no-module-scope-dom-query": "error"
-      }
-    },
-    {
-      "files": ["storybook/**/*.tsx"],
-      "rules": {
-        "explicit-function-return-type": "off",
-        "no-explicit-any": "off",
-        "no-unsafe-assignment": "off",
-        "no-empty-function": "off"
       }
     },
     {

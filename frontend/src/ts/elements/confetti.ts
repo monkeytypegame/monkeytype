@@ -1,9 +1,8 @@
+import { isSlowTimer } from "../states/test";
 import confetti from "canvas-confetti";
 
-import * as SlowTimer from "../legacy-states/slow-timer";
-
 export function showConfetti(): void {
-  if (SlowTimer.get()) return;
+  if (isSlowTimer()) return;
   const style = getComputedStyle(document.body);
   const colors = [
     style.getPropertyValue("--main-color"),

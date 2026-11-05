@@ -1,32 +1,32 @@
+import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
-import { restartTestEvent } from "../../../events/test";
-import { getActivePage } from "../../../states/core";
-import { getFocus } from "../../../states/test";
+import { getRoutePage } from "../../../states/router";
+import { isFocusMode } from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 
 export function Logo(): JSXElement {
   return (
-    <a
-      href={`${location.origin}/`}
+    <Link
+      to="/"
       class="-m-2 flex h-6 w-max gap-2 rounded-[0.8rem] p-2 focus-visible:**:data-[ui-element='logoSubtext']:text-transparent"
       aria-label="Monkeytype Home"
-      router-link
       style={{
         "box-sizing": "content-box",
         "font-family": "Lexend Deca ,sans-serif",
       }}
       data-ui-element="logo"
       onClick={() => {
-        if (getActivePage() === "test") restartTestEvent.dispatch();
+        if (getRoutePage() === "test") void restartTest();
       }}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="-680 -1030 300 180"
         class={cn("h-full fill-[currentColor] text-main transition-colors", {
-          "text-sub": getFocus(),
+          "text-sub": isFocusMode(),
         })}
       >
         <g>
@@ -46,7 +46,7 @@ export function Logo(): JSXElement {
           class={cn(
             "-mt-[1.65em] hidden pl-[0.5em] text-[0.315em] leading-0 text-sub transition-colors duration-125 lg:block",
             {
-              "text-transparent": getFocus(),
+              "text-transparent": isFocusMode(),
             },
           )}
           data-ui-element="logoSubtext"
@@ -55,13 +55,13 @@ export function Logo(): JSXElement {
         </div>
         <h1
           class={cn("-mt-[0.11em] text-text transition-colors duration-250", {
-            "text-sub": getFocus(),
+            "text-sub": isFocusMode(),
           })}
           data-ui-element="logoText"
         >
           monkeytype
         </h1>
       </div>
-    </a>
+    </Link>
   );
 }

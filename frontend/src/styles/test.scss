@@ -148,22 +148,6 @@
         opacity: 0.5;
       }
     }
-    & .hints hint {
-      position: absolute;
-      bottom: -1.1em;
-      color: var(--correct-letter-color);
-      animation: var(--correct-letter-animation);
-      line-height: initial;
-      font-size: 0.75em;
-      text-shadow: none;
-      padding: 1px;
-      left: 0;
-      opacity: 0.5;
-      text-align: center;
-      display: grid;
-      justify-content: center;
-      transform: translate(-50%);
-    }
   }
 
   &.tape {
@@ -190,10 +174,6 @@
       overflow-wrap: anywhere;
       padding-bottom: 0.05em; // compensate for letter border
 
-      .hints {
-        overflow-wrap: initial;
-      }
-
       letter {
         display: inline;
       }
@@ -217,13 +197,16 @@
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
       }
-      & .hints hint {
-        display: none;
-      }
-
       &.error {
         border-bottom: 2px solid transparent;
+        text-shadow: none;
       }
+    }
+    // typed words don't reveal missed letters. :where keeps the specificity
+    // low, so the highlight modes below still win for typed words
+    &:where(:not(.highlight-off)) .word.typed letter {
+      color: var(--correct-letter-color);
+      animation: var(--correct-letter-animation);
     }
     // &.highlight-word {
     //   .word.typed.error,
@@ -527,31 +510,6 @@
 #words.flipped.colorfulMode .word.error,
 #words.colorfulMode .word.error {
   border-bottom: 2px solid var(--colorful-error-color);
-}
-
-#wordsInput {
-  width: 0;
-  font-size: 1em;
-  height: 1em;
-  opacity: 0;
-  padding: 0;
-  margin: 0 auto;
-  border: none;
-  outline: none;
-  display: block;
-  resize: none;
-  position: absolute;
-  z-index: -1;
-  cursor: default;
-  pointer-events: none;
-  border-radius: 0;
-  caret-color: transparent;
-  overflow: hidden;
-  // if the text wraps, ctrl backspace will not work on firefox >:|
-  // and holy shit do not use white-space: nowrap here because the hellspawn that is safari
-  // is TRIMMING the value on focus when using that (and the input system relies on a leading space)
-  text-wrap-mode: nowrap;
-  contain: strict;
 }
 
 .pageTest {

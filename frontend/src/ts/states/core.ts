@@ -1,9 +1,7 @@
-import { createMemo, createSignal } from "solid-js";
-import { PageName } from "../pages/page";
+import { createMemo, createSignal, createRoot } from "solid-js";
 import { Formatting } from "../utils/format";
 import { getConfig } from "../config/store";
 
-export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
   text: string;
   isNew: boolean;
@@ -25,23 +23,23 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
 });
 
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
+// #app stays hidden until the config and auth are loaded (see ready.ts)
+export const [isAppReady, setAppReady] = createSignal(false);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
 export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [isUserVerified, setUserVerified] = createSignal(false);
 
-export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
-  string | undefined
->(undefined);
-
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);
 
-export const getFormatting = createMemo(() => {
-  return new Formatting({
-    alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-    typingSpeedUnit: getConfig.typingSpeedUnit,
-  });
-});
+export const getFormatting = createRoot(() =>
+  createMemo(() => {
+    return new Formatting({
+      alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
+      typingSpeedUnit: getConfig.typingSpeedUnit,
+    });
+  }),
+);

@@ -34,6 +34,7 @@ a:not(.button):not([data-ui-variant="button"]):hover {
 }
 
 #typingTest .word letter.correct,
+#typingTest #words.blind:where(:not(.highlight-off)) .word.typed letter,
 #typingTest #words.highlight-word .word.typed letter.correct,
 #typingTest #words.highlight-next-word .word.typed letter.correct,
 #typingTest #words.highlight-next-two-words .word.typed letter.correct,

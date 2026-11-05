@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/solid-query";
+import { useParams } from "@tanstack/solid-router";
 import { JSXElement, Show } from "solid-js";
 
 import { getUserProfile } from "../../../queries/profile";
-import { getSelectedProfileName } from "../../../states/core";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 import { UserProfile } from "./UserProfile";
 
 export function ProfilePage(): JSXElement {
-  const profileQuery = useQuery(() => ({
-    ...getUserProfile(getSelectedProfileName() as string),
-    enabled: getSelectedProfileName() !== undefined,
-  }));
+  const params = useParams({ from: "/userData/profile/$uidOrName" });
+  const profileQuery = useQuery(() => getUserProfile(params().uidOrName));
 
   return (
     <div class="flex h-full items-center justify-center text-lg">
@@ -21,7 +19,7 @@ export function ProfilePage(): JSXElement {
       <Show when={profileQuery.isError}>
         <div class="flex items-baseline gap-2 text-error">
           <Fa icon="fa-times" />
-          <span>User {getSelectedProfileName()} not found</span>
+          <span>User {params().uidOrName} not found</span>
         </div>
       </Show>
     </div>

@@ -11,7 +11,6 @@ import {
 } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import { applyCustomBackground } from "../../../../controllers/theme-controller";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { showNoticeNotification } from "../../../../states/notifications";
 import FileStorage from "../../../../utils/file-storage";
@@ -83,11 +82,7 @@ export function CustomBackground(): JSXElement {
                   fa={{ icon: "fa-trash" }}
                   text="remove local background"
                   onClick={() => {
-                    void FileStorage.deleteFile("LocalBackgroundFile").then(
-                      () => {
-                        void applyCustomBackground();
-                      },
-                    );
+                    void FileStorage.deleteFile("LocalBackgroundFile");
                   }}
                 />
               }
@@ -115,8 +110,6 @@ export function CustomBackground(): JSXElement {
 
                     const dataUrl = await readFileAsDataURL(file);
                     await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
-
-                    void applyCustomBackground();
 
                     fileInput.value = "";
                   }}

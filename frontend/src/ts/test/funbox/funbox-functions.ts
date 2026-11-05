@@ -7,15 +7,13 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { ttsEvent } from "../../events/tts";
+import * as TTS from "../tts";
 import {
   showNoticeNotification,
   showErrorNotification,
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
 import * as TestWords from "../test-words";
-import { getCurrentInput, getInputForWord } from "../events/data";
-import { highlight } from "../../events/keymap";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
@@ -29,11 +27,17 @@ import {
   setLayoutfluidTimerText,
   setLayoutfluidTimerVisible,
   setMemoryTimerDuration,
+  highlightKeymapKey,
 } from "../../states/test";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
-import { qs } from "../../utils/dom";
+
+/** Typed input, passed in so funboxes never read the EventLog. */
+export type FunboxInput = {
+  current: () => string;
+  forWord: (wordIndex: number) => string;
+};
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -41,23 +45,23 @@ export type FunboxFunctions = {
   withWords?: (words?: string[]) => Promise<Wordset | PolyglotWordset>;
   alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
-  applyGlobalCSS?: () => void;
-  clearGlobal?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
   pullSection?: (language?: Language) => Promise<JSONData.Section | false>;
-  handleSpace?: () => void;
+  handleSpace?: (input: FunboxInput) => void;
   getEmulatedChar?: (event: KeyboardEvent) => string | null;
-  handleKeydown?: (event: KeyboardEvent) => Promise<void>;
+  handleKeydown?: (event: KeyboardEvent, input: FunboxInput) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;
   restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
   getWordsFrequencyMode?: () => FunboxWordsFrequency;
 };
 
-async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
-  const currentInput = getCurrentInput();
+async function readAheadHandleKeydown(
+  event: KeyboardEvent,
+  input: FunboxInput,
+): Promise<void> {
+  const currentInput = input.current();
   const currentWord = TestWords.words.getCurrent();
 
   if (!currentWord) {
@@ -75,7 +79,7 @@ async function readAheadHandleKeydown(event: KeyboardEvent): Promise<void> {
     event.key === "Backspace" &&
     !isCorrect &&
     (currentInput !== "" ||
-      getInputForWord(getActiveWordIndex() - 1) !==
+      input.forWord(getActiveWordIndex() - 1) !==
         TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
       Config.freedomMode)
   ) {
@@ -247,7 +251,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         showErrorNotification("Failed to load text-to-speech script");
         return;
       }
-      if (params[0] !== undefined) ttsEvent.dispatch(params[0]);
+      if (params[0] !== undefined) void TTS.speak(params[0]);
     },
   },
   arrows: {
@@ -272,30 +276,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         return "→";
       }
       return null;
-    },
-    getWordHtml(char: string, letterTag?: boolean): string {
-      let retval = "";
-      if (char === "↑") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-up"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "↓") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-down"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "←") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-left"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "→") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-right"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      return retval;
     },
   },
   rAnDoMcAsE: {
@@ -396,7 +376,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       save("layout", Config.layout);
       save("keymapLayout", Config.keymapLayout);
     },
-    handleSpace(): void {
+    handleSpace(input): void {
       if (Config.mode !== "time") {
         const layouts = Config.customLayoutfluid;
         const outOf: number = TestWords.words.length;
@@ -430,10 +410,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           setLayoutfluidTimerVisible(false);
         }
         setTimeout(() => {
-          highlight(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
+          highlightKeymapKey(
+            TestWords.words.getCurrent()?.text.charAt(input.current().length) ??
+              "",
           );
         }, 1);
       }
@@ -461,24 +440,24 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   read_ahead_hard: {
     rememberSettings(): void {
       save("highlightMode", Config.highlightMode);
     },
-    async handleKeydown(event): Promise<void> {
-      await readAheadHandleKeydown(event);
+    async handleKeydown(event, input): Promise<void> {
+      await readAheadHandleKeydown(event, input);
     },
   },
   memory: {
@@ -617,42 +596,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     alterText(word: string, wordIndex: number, limit: number): string {
       if (wordIndex === limit - 1) return word; // don't add underscore to the last word
       return `${word}_`;
-    },
-  },
-  crt: {
-    applyGlobalCSS(): void {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(
-        navigator.userAgent,
-      );
-      if (isSafari) {
-        //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-        const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(
-          navigator.userAgent,
-        );
-        const mainVersion =
-          versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
-        const minorVersion =
-          versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
-        if (mainVersion <= 16 && minorVersion <= 5) {
-          showNoticeNotification(
-            "CRT is not available on Safari 16.5 or earlier.",
-            {
-              durationMs: 5000,
-            },
-          );
-          toggleFunbox("crt");
-          return;
-        }
-      }
-      qs("#scanline")?.remove();
-      qs("body")?.appendHtml('<div id="scanline" />');
-      qs("body")?.addClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", `funbox/crt.css`);
-    },
-    clearGlobal(): void {
-      qs("#scanline")?.remove();
-      qs("body")?.removeClass("crtmode");
-      qs("#globalFunBoxTheme")?.setAttribute("href", ``);
     },
   },
   ALL_CAPS: {

@@ -8,23 +8,19 @@ import {
 } from "solid-js";
 
 import { usePendingConnectionsQuery } from "../../../collections/connections";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import {
-  prefetchAboutPage,
-  prefetchLeaderboardPage,
-} from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
   setAnimatedLevel,
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
+import { getRoutePage } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
-import { getFocus } from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { Anime } from "../../common/anime";
@@ -53,7 +49,7 @@ export function Nav(): JSXElement {
 
   const buttonClass = () =>
     cn("aspect-square", {
-      "opacity-(--nav-focus-opacity)": getFocus(),
+      "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
   createEffectOn(getSnapshot, (snapshot) => {
@@ -87,14 +83,13 @@ export function Nav(): JSXElement {
           icon: "fa-keyboard",
           fixedWidth: true,
         }}
-        router-link
-        href="/"
+        to="/"
         class={buttonClass()}
         dataset={{
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") restartTestEvent.dispatch();
+          if (getRoutePage() === "test") void restartTest();
         }}
       />
       <Button
@@ -103,15 +98,11 @@ export function Nav(): JSXElement {
           icon: "fa-crown",
           fixedWidth: true,
         }}
-        router-link
         dataset={{
           "data-nav-item": "leaderboards",
         }}
         class={buttonClass()}
-        href="/leaderboards"
-        onMouseEnter={() => {
-          prefetchLeaderboardPage();
-        }}
+        to="/leaderboards"
       />
       <Button
         variant="text"
@@ -123,11 +114,7 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "about",
         }}
-        href="/about"
-        router-link
-        onMouseEnter={() => {
-          prefetchAboutPage();
-        }}
+        to="/about"
       />
       <Button
         variant="text"
@@ -136,11 +123,10 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         class={buttonClass()}
-        href="/settings"
+        to="/settings"
         dataset={{
           "data-nav-item": "settings",
         }}
-        router-link
       />
       <div class="grow"></div>
       <Button
@@ -174,7 +160,7 @@ export function Nav(): JSXElement {
               <Show when={showLoginButton()}>
                 <Button
                   variant="text"
-                  href="/login"
+                  to="/login"
                   dataset={{
                     "data-nav-item": "login",
                   }}
@@ -183,7 +169,6 @@ export function Nav(): JSXElement {
                     variant: "regular",
                     fixedWidth: true,
                   }}
-                  router-link
                   class={buttonClass()}
                 />
               </Show>
@@ -200,7 +185,7 @@ export function Nav(): JSXElement {
                 ref={accountMenuRef}
                 class={cn(
                   "relative",
-                  !getFocus() &&
+                  !isFocusMode() &&
                     "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
                   "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
                   getAccountMenuOpen() &&
@@ -224,10 +209,9 @@ export function Nav(): JSXElement {
                   class={cn(
                     "h-full",
                     "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",
-                    { "opacity-(--nav-focus-opacity)": getFocus() },
+                    { "opacity-(--nav-focus-opacity)": isFocusMode() },
                   )}
-                  href="/account"
-                  router-link
+                  to="/account"
                   dataset={{
                     "data-nav-item": "account",
                   }}

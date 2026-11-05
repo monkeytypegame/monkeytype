@@ -78,6 +78,7 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
   }, {}) as Record<RateLimiterId, RateLimitRequestHandler>;
 }
 
+// oxlint-disable-next-line typescript/consistent-return all the cases are covered
 function convertWindowToMs(window: Window): number {
   if (typeof window === "number") return window;
   switch (window) {

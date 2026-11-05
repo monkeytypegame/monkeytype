@@ -41,7 +41,7 @@ export async function apply(_id: string): Promise<void> {
       saveActiveToLocalStorage();
     }
   }
-  void TestLogic.restart();
+  void TestLogic.restartTest();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
 }
