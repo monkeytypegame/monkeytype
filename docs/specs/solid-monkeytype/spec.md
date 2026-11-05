@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: superseded by `rust-rewrite` — the SolidJS migration is abandoned; its target architecture and user stories are inherited as reference, but no further Solid work happens
 
 # Spec: the frontend's final, fully-Solid state
 
