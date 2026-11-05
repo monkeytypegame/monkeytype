@@ -12,11 +12,13 @@ createRoot(() =>
       // On sign out, drop every user-scoped query/collection so the next user
       // can't see the previous one's data.
       //
-      // Do NOT reset on sign in. Each collection already starts its own initial
-      // download once authenticated: live queries fetch on first subscribe, and
-      // the rest (presets, tags) are awaited via waitFor...Ready in the login
-      // flow. A reset here would race that download and fetch a second time
-      // (the duplicate connections fetch on the test page).
+      // Do NOT reset on sign in. Each collection already starts its own
+      // initial download once authenticated: live queries fetch on first
+      // subscribe, (presets, tags) are awaited via waitFor...Ready in the login
+      // flow, and the startSync'd ones (filter presets, custom themes)
+      // refetch themselves on sign in. A reset here would race that download
+      // and fetch a second time (the duplicate connections fetch on the test
+      // page).
       if (!isSignedIn) {
         void queryClient.resetQueries({ queryKey: ["user"] });
       }
