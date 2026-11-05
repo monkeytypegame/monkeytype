@@ -114,7 +114,6 @@ describe("loadUserData", () => {
 
   it("downloads the user into the row", async () => {
     clearUser();
-    setUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(
       ok({
         uid: "uid2",
@@ -130,6 +129,7 @@ describe("loadUserData", () => {
         testActivity: { testsByDays: [1], lastDay: LAST_DAY },
       }),
     );
+    setUserId("uid2");
 
     await loadUserData();
 
@@ -149,11 +149,11 @@ describe("loadUserData", () => {
   });
 
   it("leaves no user when the download fails", async () => {
-    setUserId("uid3");
     vi.spyOn(Ape.users, "get").mockResolvedValue({
       status: 429,
       body: { message: "slow down" },
     } as never);
+    setUserId("uid3");
 
     await expect(loadUserData()).rejects.toBeInstanceOf(SnapshotInitError);
     expect(getUser()).toBeUndefined();
@@ -279,6 +279,22 @@ describe("optimistic actions", () => {
     await done;
 
     expect(getUser()).toMatchObject({ name: "carl", xp: 5 });
+  });
+
+  it("holds a direct write back until a pending action settles", async () => {
+    let respond = (_: unknown): void => undefined;
+    vi.spyOn(Ape.users, "updateName").mockReturnValue(
+      new Promise((resolve) => (respond = resolve)) as never,
+    );
+
+    const done = updateName("carl");
+    addXp(5);
+    expect(getUser()?.xp).toBe(0);
+    expect(getXpBarData()).toMatchObject({ addedXp: 5, resultingXp: 5 });
+
+    respond(ok());
+    await done;
+    expect(getUser()?.xp).toBe(5);
   });
 
   it("keeps a direct write made while a failing action was pending", async () => {

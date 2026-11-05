@@ -13,10 +13,8 @@ import {
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
-import {
-  createCollection,
-  localOnlyCollectionOptions,
-} from "@tanstack/solid-db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection, createOptimisticAction } from "@tanstack/solid-db";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
 import { createStore, reconcile } from "solid-js/store";
 
@@ -24,19 +22,45 @@ import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
+import { queryClient } from "../queries";
+import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { setXpBarData } from "../states/header";
 import { SnapshotInitError } from "../utils/snapshot-init-error";
 import { DeepReadonly } from "../utils/types";
 
+type UserData = NonNullable<Awaited<ReturnType<typeof fetchUserFromApi>>>;
+
+let loadError: Error | undefined;
+
+const queryKeys = {
+  root: () => [...baseKey("userData", { isUserSpecific: true })],
+};
+
 /**
- * The signed-in user's data, a single row keyed by uid. Local only: the auth
- * flow loads it, sign-out clears it.
+ * The signed-in user's data, a single row keyed by uid, loaded from the cached
+ * user response while signed in.
  */
 const userCollection = createCollection(
-  localOnlyCollectionOptions<Snapshot, string>({
-    id: "user",
-    getKey: (it) => it.uid,
+  queryCollectionOptions({
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryKey: queryKeys.root(),
+    queryClient,
+    enabled: isAuthenticated,
+    getKey: (it: Snapshot) => it.uid,
+    // never throws: a failed first load would put the collection in its
+    // error state, which refuses writes. `loadUserData` rethrows instead.
+    queryFn: async () => {
+      loadError = undefined;
+      try {
+        const userData = await fetchUserFromApi();
+        return userData === undefined ? [] : [toRow(userData)];
+      } catch (e) {
+        loadError = e instanceof Error ? e : new Error(String(e));
+        return [];
+      }
+    },
   }),
 );
 
@@ -77,9 +101,49 @@ export function getUser(): DeepReadonly<Snapshot> | undefined {
 
 // --- Loading ---
 
+function toRow(userData: UserData): Snapshot {
+  const personalBests = userData.personalBests ?? {};
+  for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
+    personalBests[mode] ??= {};
+  }
+
+  return {
+    uid: userData.uid,
+    email: userData.email,
+    name: userData.name,
+    addedAt: userData.addedAt,
+    personalBests,
+    banned: userData.banned,
+    lbOptOut: userData.lbOptOut,
+    verified: userData.verified,
+    discordId: userData.discordId,
+    discordAvatar: userData.discordAvatar,
+    needsToChangeName: userData.needsToChangeName,
+    typingStats: {
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
+    },
+    quoteMod: userData.quoteMod,
+    favoriteQuotes: userData.favoriteQuotes ?? {},
+    quoteRatings: userData.quoteRatings,
+    details: userData.profileDetails,
+    inventory: userData.inventory,
+    xp: userData.xp ?? 0,
+    inboxUnreadSize: userData.inboxUnreadSize ?? 0,
+    streak: userData.streak?.length ?? 0,
+    maxStreak: userData.streak?.maxLength ?? 0,
+    streakHourOffset: userData.streak?.hourOffset ?? undefined,
+    isPremium: userData.isPremium ?? false,
+    allTimeLbs: userData.allTimeLbs,
+    testActivity: userData.testActivity,
+    lbMemory: userData.lbMemory,
+  };
+}
+
 /**
- * Downloads the user and replaces the row. Throws `SnapshotInitError` if the
- * request fails, leaving no user.
+ * Waits for the user to be in the row (fetching if needed). Throws
+ * `SnapshotInitError` if the request fails, leaving no user.
  */
 export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
   await configurationPromise;
@@ -90,75 +154,45 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
     );
   }
 
-  try {
-    const userData = await fetchUserFromApi();
+  await userCollection.utils.refetch({ throwOnError: true });
+  if (loadError !== undefined) throw loadError;
 
-    if (userData === null || userData === undefined) {
-      throw new SnapshotInitError(
-        `Request was successful but user data is null/undefined`,
-        200,
-      );
-    }
-
-    const personalBests = userData.personalBests ?? {};
-    for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
-      personalBests[mode] ??= {};
-    }
-
-    const row: Snapshot = {
-      uid: userData.uid,
-      email: userData.email,
-      name: userData.name,
-      addedAt: userData.addedAt,
-      personalBests,
-      banned: userData.banned,
-      lbOptOut: userData.lbOptOut,
-      verified: userData.verified,
-      discordId: userData.discordId,
-      discordAvatar: userData.discordAvatar,
-      needsToChangeName: userData.needsToChangeName,
-      typingStats: {
-        timeTyping: userData.timeTyping ?? 0,
-        startedTests: userData.startedTests ?? 0,
-        completedTests: userData.completedTests ?? 0,
-      },
-      quoteMod: userData.quoteMod,
-      favoriteQuotes: userData.favoriteQuotes ?? {},
-      quoteRatings: userData.quoteRatings,
-      details: userData.profileDetails,
-      inventory: userData.inventory,
-      xp: userData.xp ?? 0,
-      inboxUnreadSize: userData.inboxUnreadSize ?? 0,
-      streak: userData.streak?.length ?? 0,
-      maxStreak: userData.streak?.maxLength ?? 0,
-      streakHourOffset: userData.streak?.hourOffset ?? undefined,
-      isPremium: userData.isPremium ?? false,
-      allTimeLbs: userData.allTimeLbs,
-      testActivity: userData.testActivity,
-      lbMemory: userData.lbMemory,
-    };
-
-    clearUser();
-    userCollection.insert(row);
-  } catch (e) {
-    clearUser();
-    throw e;
+  const user = getUser();
+  if (user === undefined) {
+    throw new SnapshotInitError(
+      `Request was successful but user data is null/undefined`,
+      200,
+    );
   }
-
-  return getUser() as DeepReadonly<Snapshot>;
+  return user;
 }
 
 export function clearUser(): void {
   const keys = [...userCollection.keys()];
-  if (keys.length > 0) userCollection.delete(keys);
+  if (keys.length > 0) void userCollection.utils.writeDelete(keys);
 }
 
 // --- Direct writes: mirror what the server already did ---
 
+/**
+ * Applies `recipe` to a copy of the row and writes the top-level fields it
+ * changed to the synced row (no API call). Fields only a pending optimistic
+ * action changed are left alone.
+ */
 function write(recipe: (user: Snapshot) => void): void {
-  const uid = userCollection.toArray[0]?.uid;
-  if (uid === undefined) return;
-  userCollection.update(uid, recipe);
+  const before = copyRow();
+  if (before === undefined) return;
+  const after = structuredClone(before);
+  recipe(after);
+  const changed = Object.fromEntries(
+    (Object.keys(after) as (keyof Snapshot)[])
+      .filter(
+        (key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]),
+      )
+      .map((key) => [key, after[key]]),
+  ) as Partial<Snapshot>;
+  if (Object.keys(changed).length === 0) return;
+  void userCollection.utils.writeUpdate({ uid: before.uid, ...changed });
 }
 
 export function recordResult(
@@ -182,15 +216,13 @@ export function recordResult(
 }
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
-  if (getUser() === undefined) return;
+  const current = getUser()?.xp;
+  if (current === undefined) return;
   write((user) => {
     user.xp += xp;
   });
-  setXpBarData({
-    addedXp: xp,
-    resultingXp: getUser()?.xp ?? 0,
-    breakdown,
-  });
+  // not read back: a pending optimistic action holds direct writes back
+  setXpBarData({ addedXp: xp, resultingXp: current + xp, breakdown });
 }
 
 export function setStreak(streak: number): void {
@@ -270,46 +302,21 @@ export async function updateLbMemory<M extends Mode>(
 
 // --- Optimistic actions: user changes, rolled back if the request fails ---
 
-/**
- * An action that applies `recipe` at once and sends `request`, which resolves
- * to the values to keep (the server may change them); the recipe is applied
- * again with those. On failure the fields the recipe changed are rolled back,
- * except those changed again since (by a direct write or another action),
- * which keep the newer value. Both are direct writes, not a TanStack
- * optimistic action: while one of those is pending, direct writes (eg.
- * `addXp`) are held back and hidden from it, so it would drop them when
- * keeping its row. The recipe must be idempotent.
- */
-function optimisticAction<T>(
-  recipe: (user: Snapshot, vars: T) => void,
-  request: (vars: T) => Promise<T>,
-): (vars: T) => Promise<void> {
-  return async (vars) => {
-    const before = copyRow();
-    if (before === undefined) throw new Error("Not signed in");
-    write((user) => recipe(user, vars));
-    const written = copyRow() ?? before;
-    const same = (a: unknown, b: unknown): boolean =>
-      JSON.stringify(a) === JSON.stringify(b);
-    const changed = (
-      Object.keys({ ...before, ...written }) as (keyof Snapshot)[]
-    ).filter((key) => !same(before[key], written[key]));
+type QuoteRating = { language: Language; quoteId: number; rating: number };
+type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
+type ProfileUpdate = {
+  details: UserProfileDetails;
+  selectedBadgeId: number;
+};
 
-    let kept: T;
-    try {
-      kept = await request(vars);
-    } catch (e) {
-      write((user) => {
-        for (const key of changed) {
-          if (!same(user[key], written[key])) continue;
-          (user as Record<string, unknown>)[key] = before[key];
-        }
-      });
-      throw e;
-    }
-    write((user) => recipe(user, kept));
-  };
-}
+type ActionType = {
+  updateName: { name: string };
+  unlinkDiscord: Record<string, never>;
+  setStreakHourOffset: { hourOffset: number };
+  rateQuote: QuoteRating;
+  setQuoteFavorite: QuoteFavorite;
+  updateProfile: ProfileUpdate;
+};
 
 function throwIfFailed(response: {
   status: number;
@@ -318,120 +325,140 @@ function throwIfFailed(response: {
   if (response.status !== 200) throw new Error(response.body.message);
 }
 
-const updateNameAction = optimisticAction<{ name: string }>(
-  (user, { name }) => {
-    user.name = name;
-  },
-  async (vars) => {
-    throwIfFailed(await Ape.users.updateName({ body: { name: vars.name } }));
-    return vars;
-  },
-);
-
-export async function updateName(name: string): Promise<void> {
-  await updateNameAction({ name });
+/**
+ * Applies `patch` optimistically; on success writes it to the synced row (the
+ * request may return changed values), on failure TanStack drops it. Direct
+ * writes made meanwhile are kept either way.
+ */
+function userAction<T>(
+  patch: (user: Snapshot, vars: T) => Partial<Snapshot>,
+  request: (vars: T) => Promise<T>,
+): (vars: T) => Promise<void> {
+  const action = createOptimisticAction<T>({
+    onMutate: (vars) => {
+      const user = copyRow();
+      if (user === undefined) return;
+      const changes = patch(user, vars);
+      userCollection.update(user.uid, (draft) => {
+        Object.assign(draft, changes);
+      });
+    },
+    mutationFn: async (vars) => {
+      const kept = await request(vars);
+      const user = copyRow();
+      if (user === undefined) return;
+      await userCollection.utils.writeUpdate({
+        uid: user.uid,
+        ...patch(user, kept),
+      });
+    },
+  });
+  return async (vars) => {
+    if (getUser() === undefined) throw new Error("Not signed in");
+    await action(vars).when("settled");
+  };
 }
 
-const unlinkDiscordAction = optimisticAction<undefined>(
-  (user) => {
-    user.discordId = undefined;
-    user.discordAvatar = undefined;
-  },
-  async () => {
-    throwIfFailed(await Ape.users.unlinkDiscord());
-    return undefined;
-  },
-);
-
-export async function unlinkDiscord(): Promise<void> {
-  await unlinkDiscordAction(undefined);
-}
-
-const setStreakHourOffsetAction = optimisticAction<{ hourOffset: number }>(
-  (user, { hourOffset }) => {
-    user.streakHourOffset = hourOffset;
-  },
-  async (vars) => {
-    throwIfFailed(await Ape.users.setStreakHourOffset({ body: vars }));
-    return vars;
-  },
-);
-
-export async function setStreakHourOffset(hourOffset: number): Promise<void> {
-  await setStreakHourOffsetAction({ hourOffset });
-}
-
-type QuoteRating = { language: Language; quoteId: number; rating: number };
-
-const rateQuoteAction = optimisticAction<QuoteRating>(
-  (user, { language, quoteId, rating }) => {
-    user.quoteRatings ??= {};
-    user.quoteRatings[language] ??= {};
-    user.quoteRatings[language][quoteId] = rating;
-  },
-  async (vars) => {
-    throwIfFailed(await Ape.quotes.addRating({ body: vars }));
-    return vars;
-  },
-);
-
-export async function rateQuote(rating: QuoteRating): Promise<void> {
-  await rateQuoteAction(rating);
-}
-
-type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
-
-const setQuoteFavoriteAction = optimisticAction<QuoteFavorite>(
-  (user, { language, quoteId, favorite }) => {
-    const list = user.favoriteQuotes?.[language] ?? [];
-    const without = list.filter((id) => id !== quoteId);
-    user.favoriteQuotes ??= {};
-    user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
-  },
-  async (vars) => {
-    const body = { language: vars.language, quoteId: vars.quoteId };
-    throwIfFailed(
-      vars.favorite
-        ? await Ape.users.addQuoteToFavorites({ body })
-        : await Ape.users.removeQuoteFromFavorites({ body }),
-    );
-    return vars;
-  },
-);
-
-export async function setQuoteFavorite(favorite: QuoteFavorite): Promise<void> {
-  await setQuoteFavoriteAction(favorite);
-}
-
-type ProfileUpdate = {
-  details: UserProfileDetails;
-  selectedBadgeId: number;
+const actions = {
+  updateName: userAction<ActionType["updateName"]>(
+    (_, { name }) => ({ name }),
+    async (vars) => {
+      throwIfFailed(await Ape.users.updateName({ body: { name: vars.name } }));
+      return vars;
+    },
+  ),
+  unlinkDiscord: userAction<ActionType["unlinkDiscord"]>(
+    () => ({ discordId: undefined, discordAvatar: undefined }),
+    async (vars) => {
+      throwIfFailed(await Ape.users.unlinkDiscord());
+      return vars;
+    },
+  ),
+  setStreakHourOffset: userAction<ActionType["setStreakHourOffset"]>(
+    (_, { hourOffset }) => ({ streakHourOffset: hourOffset }),
+    async (vars) => {
+      throwIfFailed(await Ape.users.setStreakHourOffset({ body: vars }));
+      return vars;
+    },
+  ),
+  rateQuote: userAction<ActionType["rateQuote"]>(
+    (user, { language, quoteId, rating }) => {
+      const ratings = user.quoteRatings ?? {};
+      ratings[language] = { ...ratings[language], [quoteId]: rating };
+      return { quoteRatings: ratings };
+    },
+    async (vars) => {
+      throwIfFailed(await Ape.quotes.addRating({ body: vars }));
+      return vars;
+    },
+  ),
+  setQuoteFavorite: userAction<ActionType["setQuoteFavorite"]>(
+    (user, { language, quoteId, favorite }) => {
+      const list = user.favoriteQuotes?.[language] ?? [];
+      const without = list.filter((id) => id !== quoteId);
+      return {
+        favoriteQuotes: {
+          ...user.favoriteQuotes,
+          [language]: favorite ? [...without, quoteId] : without,
+        },
+      };
+    },
+    async (vars) => {
+      const body = { language: vars.language, quoteId: vars.quoteId };
+      throwIfFailed(
+        vars.favorite
+          ? await Ape.users.addQuoteToFavorites({ body })
+          : await Ape.users.removeQuoteFromFavorites({ body }),
+      );
+      return vars;
+    },
+  ),
+  updateProfile: userAction<ActionType["updateProfile"]>(
+    (user, { details, selectedBadgeId }) => ({
+      details,
+      ...(user.inventory !== undefined && {
+        inventory: {
+          ...user.inventory,
+          badges: user.inventory.badges.map((badge) => ({
+            ...badge,
+            selected: badge.id === selectedBadgeId,
+          })),
+        },
+      }),
+    }),
+    async (update) => {
+      const response = await Ape.users.updateProfile({
+        body: { ...update.details, selectedBadgeId: update.selectedBadgeId },
+      });
+      if (response.status !== 200) throw new Error(response.body.message);
+      // the server sanitizes the details
+      return { ...update, details: response.body.data ?? update.details };
+    },
+  ),
 };
 
-function applyProfile(
-  user: Snapshot,
-  { details, selectedBadgeId }: ProfileUpdate,
-): void {
-  user.details = details;
-  for (const badge of user.inventory?.badges ?? []) {
-    badge.selected = badge.id === selectedBadgeId;
-  }
+export async function updateName(name: string): Promise<void> {
+  await actions.updateName({ name });
 }
 
-const updateProfileAction = optimisticAction<ProfileUpdate>(
-  applyProfile,
-  async (update) => {
-    const response = await Ape.users.updateProfile({
-      body: { ...update.details, selectedBadgeId: update.selectedBadgeId },
-    });
-    if (response.status !== 200) throw new Error(response.body.message);
-    // the server sanitizes the details
-    return { ...update, details: response.body.data ?? update.details };
-  },
-);
+export async function unlinkDiscord(): Promise<void> {
+  await actions.unlinkDiscord({});
+}
+
+export async function setStreakHourOffset(hourOffset: number): Promise<void> {
+  await actions.setStreakHourOffset({ hourOffset });
+}
+
+export async function rateQuote(rating: QuoteRating): Promise<void> {
+  await actions.rateQuote(rating);
+}
+
+export async function setQuoteFavorite(favorite: QuoteFavorite): Promise<void> {
+  await actions.setQuoteFavorite(favorite);
+}
 
 export async function updateProfile(update: ProfileUpdate): Promise<void> {
-  await updateProfileAction(update);
+  await actions.updateProfile(update);
 }
 
 // --- Helpers ---
@@ -505,6 +532,6 @@ export const __testing = {
   /** Replaces the row without a download, for tests. */
   setUser(user: Snapshot | undefined): void {
     clearUser();
-    if (user !== undefined) userCollection.insert(user);
+    if (user !== undefined) void userCollection.utils.writeInsert(user);
   },
 };
