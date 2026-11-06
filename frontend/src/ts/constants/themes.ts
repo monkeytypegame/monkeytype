@@ -2320,6 +2320,18 @@ export const themes: Record<ThemeName, Theme> = {
     colorfulError: "#b29a91",
     colorfulErrorExtra: "#b29a91",
   },
+  dusty_plum: {
+    bg: "#41283d",
+    caret: "#f2a6c6",
+    main: "#f2a6c6",
+    sub: "#9a6f92",
+    subAlt: "#392234",
+    text: "#fbeaf3",
+    error: "#ff7a90",
+    errorExtra: "#b8455c",
+    colorfulError: "#ffb86b",
+    colorfulErrorExtra: "#c48a4c",
+  },
 };
 
 export type ThemeWithName = Theme & { name: ThemeName };
