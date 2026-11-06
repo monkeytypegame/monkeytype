@@ -190,7 +190,7 @@ export function cleanTypographySymbols(textToClean: string): string {
     "᾽": "'",
   };
   return textToClean.replace(
-    /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
+    /[“”„’‘᾽—,…«»–\u2007\u202F\u00A0]/g,
     (char) => specials[char as keyof typeof specials] || "",
   );
 }
