@@ -1,11 +1,11 @@
-#words {
+[data-ui-element="words"] {
   direction: rtl;
 }
 
-#words.rightToLeftTest {
+[data-ui-element="words"][data-ui-rtl] {
   direction: ltr;
 }
 
-#words.joiningScript .word {
+[data-ui-element="words"][data-ui-joining-script] [data-ui-element="word"] {
   unicode-bidi: bidi-override;
 }
