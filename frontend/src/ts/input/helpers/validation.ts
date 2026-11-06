@@ -57,9 +57,12 @@ export function shouldGoToNextWord(options: {
 
   //strict space: a leading separator on empty input must not skip the word.
   //nospace commits (final letter of a 1-letter word) are legitimate here.
+
+  const separatorCompletesWord = inputValue + data === targetWord;
   if (
     inputValue.length === 0 &&
     commitType === "separator" &&
+    !separatorCompletesWord &&
     (Config.strictSpace || Config.difficulty !== "normal")
   ) {
     return false;
