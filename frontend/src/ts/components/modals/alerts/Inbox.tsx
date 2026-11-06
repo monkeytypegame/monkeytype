@@ -9,7 +9,7 @@ import {
   mutateInboxItem,
   useInboxQuery,
 } from "../../../collections/inbox";
-import { updateInboxUnreadSize } from "../../../db";
+import { setInboxUnreadSize } from "../../../collections/user";
 import { getModalVisibility } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
@@ -29,7 +29,7 @@ export function Inbox(): JSXElement {
     const count = items.filter(
       (it) => it.status === "unclaimed" || it.status === "unread",
     ).length;
-    updateInboxUnreadSize(count);
+    setInboxUnreadSize(count);
   });
 
   const inboxSize = () => inboxQuery().length;

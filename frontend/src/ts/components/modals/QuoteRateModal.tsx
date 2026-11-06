@@ -1,7 +1,7 @@
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { JSXElement, createSignal, For } from "solid-js";
 
-import Ape from "../../ape";
+import { rateQuote } from "../../collections/user";
 import * as DB from "../../db";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
@@ -62,27 +62,27 @@ export function QuoteRateModal(): JSXElement {
 
     hideModalAndClearChain("QuoteRate");
 
-    showLoaderBar();
-    const response = await Ape.quotes.addRating({
-      body: { quoteId: quote.id, language: quote.language, rating: rating() },
-    });
-    hideLoaderBar();
+    const oldRating =
+      DB.getSnapshot()?.quoteRatings?.[quote.language]?.[quote.id];
 
-    if (response.status !== 200) {
-      showErrorNotification("Failed to submit quote rating", { response });
+    showLoaderBar();
+    try {
+      await rateQuote({
+        language: quote.language,
+        quoteId: quote.id,
+        rating: rating(),
+      });
+    } catch (error) {
+      hideLoaderBar();
+      showErrorNotification("Failed to submit quote rating", { error });
       return;
     }
+    hideLoaderBar();
 
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
-    const quoteRatings = snapshot.quoteRatings ?? {};
-    const languageRatings = quoteRatings?.[quote.language] ?? {};
     const stats = quoteStats() ?? {};
 
-    if (isSafeNumber(languageRatings?.[quote.id])) {
-      const oldRating = quoteRatings[quote.language]?.[quote.id] as number;
+    if (isSafeNumber(oldRating)) {
       const diff = rating() - oldRating;
-      languageRatings[quote.id] = rating();
       const newStats = {
         ratings: stats?.ratings,
         totalRating: isNaN(stats?.totalRating as number)
@@ -94,7 +94,6 @@ export function QuoteRateModal(): JSXElement {
       updateQuoteStats(newStats);
       showSuccessNotification("Rating updated");
     } else {
-      languageRatings[quote.id] = rating();
       if (isSafeNumber(stats?.ratings) && isSafeNumber(stats.totalRating)) {
         const newStats = {
           ratings: stats.ratings + 1,
@@ -113,9 +112,6 @@ export function QuoteRateModal(): JSXElement {
       }
       showSuccessNotification("Rating submitted");
     }
-
-    snapshot.quoteRatings = quoteRatings;
-    DB.setSnapshot(snapshot);
 
     const currentStats = quoteStats();
     if (currentStats) {

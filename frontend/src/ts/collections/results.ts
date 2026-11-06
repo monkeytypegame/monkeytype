@@ -28,7 +28,7 @@ import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
-import { getLastResult, setLastResult } from "../states/snapshot";
+import { getLastResult, setLastResult } from "../states/last-result";
 import {
   getActiveTagsOnce,
   getTagsOnce,

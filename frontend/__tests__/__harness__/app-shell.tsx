@@ -87,10 +87,10 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
+import { __testing as userTesting } from "../../src/ts/collections/user";
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
-import { setSnapshot } from "../../src/ts/db";
 import {
   AppRouter,
   createAppRouter,
@@ -342,9 +342,7 @@ export function createFakeAuth(
   function setSignedIn(signedIn: boolean, userData?: UserDataDownload): void {
     isSignedIn = signedIn;
     // the account route checks the user data downloaded
-    setSnapshot(signedIn ? getDefaultSnapshot() : undefined, {
-      dispatchEvent: false,
-    });
+    userTesting.setUser(signedIn ? getDefaultSnapshot() : undefined);
     auth.stateChanged(userData);
   }
 
@@ -568,9 +566,9 @@ export function renderApp(options: RenderAppOptions = {}): App {
   blockingData.friends.collection = createDownloadCollection("friends");
   blockingData.friendsRefresh.set(options.friendsRefresh !== "pending");
   // the account route checks the user data downloaded
-  setSnapshot(options.auth === "signedIn" ? getDefaultSnapshot() : undefined, {
-    dispatchEvent: false,
-  });
+  userTesting.setUser(
+    options.auth === "signedIn" ? getDefaultSnapshot() : undefined,
+  );
   for (const [name, content] of Object.entries(options.pageContent ?? {})) {
     pageContent.set(name, content);
   }
@@ -725,7 +723,7 @@ export function cleanupApp(): void {
   setIsTestRestarting(false);
   setResultCalculating(false);
   configTesting.replaceConfig({});
-  setSnapshot(undefined, { dispatchEvent: false });
+  userTesting.setUser(undefined);
   for (const name of ["results", "friends"] as const) {
     void blockingData[name].collection?.cleanup();
     blockingData[name].collection = undefined;

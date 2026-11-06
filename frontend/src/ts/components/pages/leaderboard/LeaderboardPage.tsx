@@ -7,7 +7,8 @@ import {
   Show,
 } from "solid-js";
 
-import { getSnapshot, updateLbMemory } from "../../../db";
+import { updateLbMemory } from "../../../collections/user";
+import { getSnapshot } from "../../../db";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,

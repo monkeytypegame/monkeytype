@@ -10,13 +10,12 @@ import {
   Suspense,
 } from "solid-js";
 
-import Ape from "../../../../ape";
 import { useTagsLiveQuery } from "../../../../collections/tags";
+import { getUser, setQuoteFavorite } from "../../../../collections/user";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import * as DB from "../../../../db";
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
@@ -29,7 +28,6 @@ import {
 } from "../../../../states/quote-rate";
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
-import { getSnapshot } from "../../../../states/snapshot";
 import { CompletedResult } from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
@@ -298,7 +296,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
 
   const isRated = (): boolean =>
     isSafeNumber(
-      getSnapshot()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
+      getUser()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
     );
 
   const rating = (): string => {
@@ -307,34 +305,27 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
 
   const toggleFavorite = async (): Promise<void> => {
-    const dbSnapshot = DB.getSnapshot();
-    if (!dbSnapshot) return;
-    const language = props.quote.language;
-    const quoteId = props.quote.id.toString();
+    if (getUser() === undefined) return;
     const remove = isFavorite();
 
     showLoaderBar();
-    const response = remove
-      ? await Ape.users.removeQuoteFromFavorites({
-          body: { language, quoteId },
-        })
-      : await Ape.users.addQuoteToFavorites({ body: { language, quoteId } });
-    hideLoaderBar();
-
-    addNotificationWithLevel(
-      response.body.message,
-      response.status === 200 ? "success" : "error",
-    );
-    if (response.status !== 200) return;
-
-    if (remove) {
-      const list = dbSnapshot.favoriteQuotes?.[language];
-      list?.splice(list.indexOf(quoteId), 1);
-    } else {
-      dbSnapshot.favoriteQuotes ??= {};
-      dbSnapshot.favoriteQuotes[language] ??= [];
-      dbSnapshot.favoriteQuotes[language]?.push(quoteId);
+    try {
+      await setQuoteFavorite({
+        language: props.quote.language,
+        quoteId: props.quote.id.toString(),
+        favorite: !remove,
+      });
+      addNotificationWithLevel(
+        remove ? "Quote removed from favorites" : "Quote added to favorites",
+        "success",
+      );
+    } catch (error) {
+      addNotificationWithLevel(
+        error instanceof Error ? error.message : String(error),
+        "error",
+      );
     }
+    hideLoaderBar();
     refreshFavorites();
   };
 

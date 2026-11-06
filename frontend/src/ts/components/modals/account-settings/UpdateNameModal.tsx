@@ -7,7 +7,8 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import { setSnapshot, getSnapshot } from "../../../db";
+import { updateName } from "../../../collections/user";
+import { getSnapshot } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
@@ -57,20 +58,15 @@ export function showUpdateNameModal(): void {
         };
       }
 
-      const response = await Ape.users.updateName({
-        body: { name: newName },
-      });
-      if (response.status !== 200) {
+      try {
+        await updateName(newName);
+      } catch (error) {
         return {
           status: "error",
           message: "Failed to update name",
-          notificationOptions: { response },
+          notificationOptions: { error },
         };
       }
-
-      snapshot.name = newName;
-
-      setSnapshot(snapshot);
 
       return {
         status: "success",

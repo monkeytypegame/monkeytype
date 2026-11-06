@@ -1,12 +1,12 @@
-import { User, UserProfileDetails } from "@monkeytype/schemas/users";
+import {
+  TestActivity,
+  User,
+  UserProfileDetails,
+} from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Result } from "@monkeytype/schemas/results";
 import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
-import {
-  ModifiableTestActivityCalendar,
-  TestActivityCalendar,
-} from "../elements/test-activity-calendar";
 import { Language } from "@monkeytype/schemas/languages";
 
 export type SnapshotResult<M extends Mode> = Omit<
@@ -69,9 +69,7 @@ export type Snapshot = Omit<
   isPremium: boolean;
   streakHourOffset?: number;
   xp: number;
-  testActivity?: ModifiableTestActivityCalendar;
-  testActivityByYear?: { [key: string]: TestActivityCalendar };
-  isMiniSnapshot?: never;
+  testActivity?: TestActivity;
 };
 
 const defaultSnap = {

@@ -8,6 +8,7 @@ import {
 } from "solid-js";
 
 import { usePendingConnectionsQuery } from "../../../collections/connections";
+import { getUser } from "../../../collections/user";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
@@ -18,7 +19,6 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
-import { getSnapshot } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
@@ -52,7 +52,7 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getSnapshot, (snapshot) => {
+  createEffectOn(getUser, (snapshot) => {
     if (snapshot === undefined) {
       setAnimatedLevel(0);
       return;
@@ -65,7 +65,7 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const snapshot = getSnapshot();
+    const snapshot = getUser();
     if (snapshot === undefined) return false;
 
     return snapshot.inboxUnreadSize > 0;
@@ -150,7 +150,7 @@ export function Nav(): JSXElement {
       </Button>
       <AnimePresence exitBeforeEnter>
         <Show
-          when={getSnapshot()}
+          when={getUser()}
           fallback={
             <Anime
               initial={{ opacity: 0 }}
