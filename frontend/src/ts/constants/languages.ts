@@ -18,6 +18,11 @@ export const LanguageGroups: Record<string, Language[]> = {
     "english_medical",
     "english_legal",
   ],
+  english_shavian: [
+    "english_shavian",
+    "english_shavian_1k",
+    "english_shavian_5k",
+  ],
   spanish: ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"],
   french: [
     "french",
