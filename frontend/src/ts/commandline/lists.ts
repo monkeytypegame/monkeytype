@@ -73,6 +73,15 @@ export const commands: CommandsSubgroup = {
       },
       shouldFocusTestUI: false,
     },
+    {
+      id: "viewLyricsSearchPopup",
+      display: "Search for lyrics",
+      fa: { icon: "fa-music" },
+      exec: (): void => {
+        showModal("LyricsSearch");
+      },
+      shouldFocusTestUI: false,
+    },
     ...QuoteFavoriteCommands,
     ...BailOutCommands,
     {
