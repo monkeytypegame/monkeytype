@@ -1,3 +1,6 @@
+/** Selects rendered letters (test words, words history, replay). */
+export const LETTER_SELECTOR = '[data-ui-element="letter"]';
+
 /**
  * Rendered word elements by word index, registered by the Word component
  * while mounted. Lets imperative code (caret, layout) find a word without

@@ -76,9 +76,20 @@ function letterClass(letter: RenderedLetter): string {
   return cls.slice(1);
 }
 
+function letterVariant(text: string): string | undefined {
+  if (text === "\t") return "tab";
+  if (text === "\n") return "newline";
+  return undefined;
+}
+
 export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
   return (
-    <letter class={letterClass(props.letter)}>
+    <letter
+      class={letterClass(props.letter)}
+      data-ui-element="letter"
+      data-ui-state={props.letter.status}
+      data-ui-variant={letterVariant(props.letter.text)}
+    >
       <Show
         when={getCharIconProps(props.letter.text)}
         fallback={props.letter.text}

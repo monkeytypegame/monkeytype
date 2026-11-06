@@ -1,8 +1,15 @@
 import { createSignal } from "solid-js";
 import { ColorName, Theme } from "../constants/themes";
-import { ThemeName } from "@monkeytype/schemas/configs";
+import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 
 export type ThemeIdentifier = ThemeName | "custom";
+
+// shown over the configured theme while set. the theme controller applies it
+export const [getRandomTheme, setRandomTheme] = createSignal<{
+  name: ThemeIdentifier;
+  colors?: CustomThemeColors;
+} | null>(null);
+
 const defaultTheme: Theme & { name: ThemeIdentifier } = {
   name: "serika_dark",
   bg: "#323437",
