@@ -5,7 +5,11 @@ import { BreakpointKey } from "../states/breakpoints";
 declare module "@tanstack/solid-table" {
   //This needs to be an interface
   // oxlint-disable-next-line typescript/consistent-type-definitions
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<
+    in out TFeatures extends TableFeatures,
+    in out TData extends RowData,
+    TValue extends CellData = CellData,
+  > {
     /**
      * define minimal breakpoint for the column to be visible.
      * If not set, the column is always visible
