@@ -156,6 +156,7 @@ export const ThemeNameSchema = z.enum(
     "shadow",
     "shoko",
     "slambook",
+    "sakura",
     "snes",
     "soaring_skies",
     "solarized_dark",
