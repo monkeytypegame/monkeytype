@@ -131,7 +131,7 @@ export function EditPresetModal(): JSXElement {
   );
 
   const isUpdateConfig = () => {
-    const formValues = form.useStore((s) => s.values);
+    const formValues = form.useSelector((s) => s.values);
     return formValues().updateConfig;
   };
 
