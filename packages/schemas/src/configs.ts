@@ -378,7 +378,7 @@ export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 export const LayoutSchema = z.literal("default").or(Layouts.LayoutNameSchema);
 export type Layout = z.infer<typeof LayoutSchema>;
 
-export const FontSizeSchema = z.number().positive();
+export const FontSizeSchema = z.number().positive().max(20);
 export type FontSize = z.infer<typeof FontSizeSchema>;
 
 export const MaxLineWidthSchema = z.number().min(20).max(1000).or(z.literal(0));
