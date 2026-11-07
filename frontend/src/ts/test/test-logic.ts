@@ -528,6 +528,8 @@ async function init(): Promise<boolean> {
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
+  let wordsHaveNumbers = false;
+  let wordsKoreanStatus = false;
   let allRightToLeft: boolean | undefined = undefined;
   let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
@@ -538,6 +540,8 @@ async function init(): Promise<boolean> {
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
+    wordsHaveNumbers = gen.hasNumbers;
+    wordsKoreanStatus = gen.koreanStatus;
     ({ allRightToLeft, allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
@@ -561,28 +565,10 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  setWordsHaveNumbers(hasNumbers);
+  setWordsHaveNumbers(wordsHaveNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
-
-  if (
-    generatedWords
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    setKoreanStatus(true);
-  }
+  setKoreanStatus(wordsKoreanStatus);
 
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(
