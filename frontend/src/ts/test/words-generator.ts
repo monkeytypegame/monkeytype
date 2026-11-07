@@ -627,7 +627,7 @@ export function getTestWordFacts(wordLists: string[][]): TestWordFacts {
   return {
     hasTab: text.includes("\t"),
     hasNewline: text.includes("\n"),
-    hasNumbers: /\d/.test(text),
+    hasNumbers: /\p{N}/u.test(text),
     koreanStatus: koreanRegex.test(text),
   };
 }

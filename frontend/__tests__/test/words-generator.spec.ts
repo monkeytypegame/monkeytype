@@ -18,6 +18,8 @@ describe("words-generator", () => {
       ["a tab", "a\tb", { hasTab: true }],
       ["a newline", "end\n", { hasNewline: true }],
       ["a digit", "abc1", { hasNumbers: true }],
+      ["an Arabic-Indic digit", "٣", { hasNumbers: true }],
+      ["a Devanagari digit", "३", { hasNumbers: true }],
       ["a Hangul syllable", "안녕", { koreanStatus: true }],
       ["decomposed Hangul", "안녕".normalize("NFD"), { koreanStatus: true }],
       ["compatibility jamo", "ㅎ", { koreanStatus: true }],
