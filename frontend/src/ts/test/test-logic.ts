@@ -216,7 +216,6 @@ function resetTestState(): void {
   clearQuoteStats();
   setComposing(false);
   setCompositionData("");
-  Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
 }
@@ -526,11 +525,14 @@ async function init(): Promise<boolean> {
     currentQuote: getCurrentQuote(),
   });
 
+  // words resolve their direction from these as they're pushed
+  setIsLanguageRightToLeft(language.rightToLeft ?? false);
+  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
+
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
   let wordsHaveNumbers = false;
   let wordsKoreanStatus = false;
-  let allRightToLeft: boolean | undefined = undefined;
   let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
@@ -542,7 +544,7 @@ async function init(): Promise<boolean> {
     wordsHaveNewline = gen.hasNewline;
     wordsHaveNumbers = gen.hasNumbers;
     wordsKoreanStatus = gen.koreanStatus;
-    ({ allRightToLeft, allJoiningScript } = gen);
+    ({ allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -599,10 +601,6 @@ async function init(): Promise<boolean> {
       Config.mode === "zen",
   );
 
-  const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  setIsLanguageRightToLeft(isLanguageRTL);
-  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
-
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
@@ -614,7 +612,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    appendRenderedWord("");
+    appendRenderedWord({ display: "" });
     return;
   }
 
@@ -665,7 +663,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        appendRenderedWord(newWord.display);
+        appendRenderedWord(newWord);
       }
     }
   }
@@ -682,7 +680,7 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    appendRenderedWord(newWord.display);
+    appendRenderedWord(newWord);
   } catch (e) {
     fail("word generation error");
     showErrorNotification(

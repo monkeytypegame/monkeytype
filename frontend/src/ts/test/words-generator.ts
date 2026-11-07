@@ -611,7 +611,6 @@ type TestWordFacts = {
 type GenerateWordsReturn = TestWordFacts & {
   words: string[];
   sectionIndexes: number[];
-  allRightToLeft?: boolean;
   allJoiningScript?: boolean;
 };
 
@@ -655,7 +654,6 @@ export async function generateWords(
     hasNewline: false,
     hasNumbers: false,
     koreanStatus: false,
-    allRightToLeft: language.rightToLeft,
     allJoiningScript: language.joiningScript ?? false,
   };
 

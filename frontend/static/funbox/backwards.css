@@ -5,7 +5,3 @@
 [data-ui-element="words"][data-ui-rtl] {
   direction: ltr;
 }
-
-[data-ui-element="words"][data-ui-joining-script] [data-ui-element="word"] {
-  unicode-bidi: bidi-override;
-}

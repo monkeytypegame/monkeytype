@@ -12,9 +12,8 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
   getActiveWordIndex,
+  getTestDirection,
   getCurrentQuote,
   isTestFinished,
   isPaceRepeat,
@@ -74,8 +73,7 @@ export function resetCaretPosition(): void {
   caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: isLanguageRightToLeft(),
-    isDirectionReversed: isDirectionReversed(),
+    testDirection: getTestDirection(),
     animate: false,
   });
 }
@@ -158,8 +156,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret?.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: isLanguageRightToLeft(),
-      isDirectionReversed: isDirectionReversed(),
+      testDirection: getTestDirection(),
       animate: true,
       animationOptions: {
         duration,
