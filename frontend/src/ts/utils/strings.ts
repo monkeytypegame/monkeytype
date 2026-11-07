@@ -1,4 +1,5 @@
 import { Language } from "@monkeytype/schemas/languages";
+import { STRONG_RTL_CHARACTER } from "./direction-regex";
 
 /**
  * Removes accents from a string.
@@ -288,6 +289,33 @@ export function isWordRightToLeft(
   return reverseDirection
     ? [!result[0], false]
     : [result[0], result[1] === word.length];
+}
+
+export type Direction = "ltr" | "rtl";
+
+const FIRST_STRONG_CHARACTER = new RegExp(
+  `${STRONG_RTL_CHARACTER.source}|\\p{L}`,
+  "u",
+);
+
+/**
+ * The direction of the word's first strongly directional character. Without
+ * one, numerals read left to right and anything else (punctuation, symbols,
+ * emoji, an empty word) takes `fallback`.
+ */
+export function getWordDirection(
+  word = "",
+  fallback: Direction = "ltr",
+): Direction {
+  const firstStrong = FIRST_STRONG_CHARACTER.exec(word)?.[0];
+  if (firstStrong !== undefined) {
+    return STRONG_RTL_CHARACTER.test(firstStrong) ? "rtl" : "ltr";
+  }
+  return /\p{N}/u.test(word) ? "ltr" : fallback;
+}
+
+export function reverseDirection(direction: Direction): Direction {
+  return direction === "ltr" ? "rtl" : "ltr";
 }
 
 export const CHAR_EQUIVALENCE_SETS = [

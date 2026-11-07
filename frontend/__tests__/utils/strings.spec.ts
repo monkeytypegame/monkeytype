@@ -217,6 +217,73 @@ describe("string utils", () => {
     );
   });
 
+  describe("getWordDirection", () => {
+    it.each([
+      ["ltr", "hello", "Latin"],
+      ["ltr", "world123", "Latin with numbers"],
+      ["ltr", "test!", "Latin with punctuation"],
+      ["ltr", "Здравствуй", "Cyrillic"],
+      ["ltr", "Καλημέρα", "Greek"],
+      ["ltr", "こんにちは", "Hiragana"],
+      ["ltr", "你好", "Chinese"],
+      ["ltr", "안녕하세요", "Korean"],
+      ["ltr", "𝕳𝖊𝖑𝖑𝖔", "mathematical letters"],
+      ["rtl", "مرحبا", "Arabic"],
+      ["rtl", "שלום", "Hebrew"],
+      ["rtl", "فارسی", "Persian"],
+      ["rtl", "ܫܠܡܐ", "Syriac"],
+      ["rtl", "ߒߞߏ", "N'Ko"],
+      ["ltr", "hello مرحبا", "LTR first"],
+      ["ltr", "test سلام!", "LTR first, with punctuation"],
+      ["ltr", "hello؟", "Latin with Arabic punctuation"],
+      ["rtl", "مرحبا hello", "RTL first"],
+      ["rtl", "مرحبا123", "Arabic with numbers"],
+      ["rtl", "123 שלום", "numbers before Hebrew"],
+      ["rtl", "؟مرحبا؟", "Arabic inside Arabic punctuation"],
+      ["rtl", "؟", "Arabic question mark, strong in Unicode"],
+    ] as const)(
+      "is %s for '%s' (%s)",
+      (expected: Strings.Direction, word: string, _description: string) => {
+        // the fallback only applies without a strong character or numeral
+        expect(Strings.getWordDirection(word, "ltr")).toBe(expected);
+        expect(Strings.getWordDirection(word, "rtl")).toBe(expected);
+      },
+    );
+
+    it.each([
+      ["0123456789", "digits"],
+      ["٠١٢٣٤٥٦٧٨٩", "Arabic-Indic digits"],
+      ["۱۲۳", "Persian digits"],
+      ["١٢٣!", "digits with punctuation"],
+    ])("numerals read left to right: '%s' (%s)", (word) => {
+      expect(Strings.getWordDirection(word, "rtl")).toBe("ltr");
+    });
+
+    it.each([
+      ["", "empty"],
+      ["!!!", "punctuation"],
+      ["،", "Arabic comma"],
+      ["   ", "whitespace"],
+      ["🌍🌎🌏", "emoji"],
+      ["\n", "a newline"],
+    ])("uses the fallback for '%s' (%s)", (word) => {
+      expect(Strings.getWordDirection(word, "ltr")).toBe("ltr");
+      expect(Strings.getWordDirection(word, "rtl")).toBe("rtl");
+    });
+
+    it("falls back to the given direction for no word, ltr by default", () => {
+      expect(Strings.getWordDirection(undefined, "rtl")).toBe("rtl");
+      expect(Strings.getWordDirection()).toBe("ltr");
+    });
+  });
+
+  describe("reverseDirection", () => {
+    it("swaps the direction", () => {
+      expect(Strings.reverseDirection("ltr")).toBe("rtl");
+      expect(Strings.reverseDirection("rtl")).toBe("ltr");
+    });
+  });
+
   describe("hasRTLCharacters", () => {
     it.each([
       // LTR characters should return false
