@@ -21,7 +21,6 @@ import {
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
-import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
@@ -107,10 +106,6 @@ export function TestPage(): JSXElement {
     void restartTest({ noAnim: true });
 
     resetIncompleteTests();
-    // registered last so it runs after the modules above have unbound
-    signal.addEventListener("abort", () => {
-      void Funbox.clear();
-    });
 
     window.addEventListener(
       "blur",
