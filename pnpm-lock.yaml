@@ -331,8 +331,8 @@ importers:
         specifier: 0.3.12
         version: 0.3.12(solid-js@1.9.13)(typescript@7.0.2)
       '@tanstack/solid-form':
-        specifier: 1.33.0
-        version: 1.33.0(solid-js@1.9.13)
+        specifier: 1.33.5
+        version: 1.33.5(solid-js@1.9.13)
       '@tanstack/solid-hotkeys':
         specifier: 0.17.0
         version: 0.17.0(solid-js@1.9.13)
@@ -343,8 +343,8 @@ importers:
         specifier: 1.170.38
         version: 1.170.38(solid-js@1.9.13)
       '@tanstack/solid-table':
-        specifier: 8.21.3
-        version: 8.21.3(solid-js@1.9.13)
+        specifier: 9.3.1
+        version: 9.3.1(solid-js@1.9.13)
       '@ts-rest/core':
         specifier: 3.52.1
         version: 3.52.1(@types/node@24.9.1)(zod@3.23.8)
@@ -4676,8 +4676,8 @@ packages:
       typescript:
         optional: true
 
-  '@tanstack/form-core@1.33.0':
-    resolution: {integrity: sha512-AV4Pw9Dk4orFsuPBcDssfWMJFs+yMYBae7zZ4oTqrCf4ftNGQKxvrQRZeqKHG6A4TkiLeSvf2kzIjcVkrW7E6w==}
+  '@tanstack/form-core@1.33.5':
+    resolution: {integrity: sha512-3dfx9MBP0aq5sXKteikG629X9oviptrQj0IFRk9YGcb+lB7Kv5x8S17oOSk1wUWgjQZ4xVJEMbKwOAODymocgA==}
 
   '@tanstack/history@1.162.4':
     resolution: {integrity: sha512-utTS5L2OkeYUzXGohL1Z8sefu1GLNOJcxe8Hd6iIdc/Xo1K1nDB2JEp4iSFhvYh33xKC9V91TxrS8qfrpoKobQ==}
@@ -4736,8 +4736,8 @@ packages:
     peerDependencies:
       solid-js: '>=1.9.7'
 
-  '@tanstack/solid-form@1.33.0':
-    resolution: {integrity: sha512-+KXp+T/fD+nO5JarDj1W5GctEm4aFuz13DkHVJrdIHGo0evMXlFNWJT57n+TOyvoLoKehknKjM1o41rrKClSTQ==}
+  '@tanstack/solid-form@1.33.5':
+    resolution: {integrity: sha512-azYHYzNwop64bedJRKgjCpi5w9cHu7cNz+dAdSXzaqy9M6JO+GlKNQn54VFhCLYJo45sgNjcdrnz4eyTmgzJ/w==}
     peerDependencies:
       solid-js: '>=1.9.9'
 
@@ -4780,9 +4780,9 @@ packages:
     peerDependencies:
       solid-js: ^1.6.0
 
-  '@tanstack/solid-table@8.21.3':
-    resolution: {integrity: sha512-PmhfSLBxVKiFs01LtYOYrCRhCyTUjxmb4KlxRQiqcALtip8+DOJeeezQM4RSX/GUS0SMVHyH/dNboCpcO++k2A==}
-    engines: {node: '>=12'}
+  '@tanstack/solid-table@9.3.1':
+    resolution: {integrity: sha512-Y1qyK2R4Y65dUNS/flC9TpAcXx8EuN9eImi+QSmx7AyhyRv1xm7051FkmetCkKcpdK3aKOPxG+P1o4CpWsxoWw==}
+    engines: {node: '>=20'}
     peerDependencies:
       solid-js: '>=1.3'
 
@@ -4792,9 +4792,9 @@ packages:
   '@tanstack/store@0.11.2':
     resolution: {integrity: sha512-sJ4mjol8uQsHV0gOJzzjwXfh2Fwm+Sz0+8deqiTm4jGbMdjzNSW+xZCFm0kUa870uhd8yi+DpKnZb5Kc4apa0Q==}
 
-  '@tanstack/table-core@8.21.3':
-    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
-    engines: {node: '>=12'}
+  '@tanstack/table-core@9.3.1':
+    resolution: {integrity: sha512-zQvlxSNi2qGM3L4jh85Z6hqMfdIR5qOfD9KHOU32nuKFJGN0RlJ7UvV1lsPb1fPVhpFYI0VP3jJGxLdLDpTKjQ==}
+    engines: {node: '>=20'}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -16103,7 +16103,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/form-core@1.33.0':
+  '@tanstack/form-core@1.33.5':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
       '@tanstack/pacer-lite': 0.1.1
@@ -16192,9 +16192,9 @@ snapshots:
       - csstype
       - utf-8-validate
 
-  '@tanstack/solid-form@1.33.0(solid-js@1.9.13)':
+  '@tanstack/solid-form@1.33.5(solid-js@1.9.13)':
     dependencies:
-      '@tanstack/form-core': 1.33.0
+      '@tanstack/form-core': 1.33.5
       '@tanstack/solid-store': 0.11.0(solid-js@1.9.13)
       solid-js: 1.9.13
 
@@ -16251,16 +16251,19 @@ snapshots:
       '@tanstack/store': 0.11.2
       solid-js: 1.9.13
 
-  '@tanstack/solid-table@8.21.3(solid-js@1.9.13)':
+  '@tanstack/solid-table@9.3.1(solid-js@1.9.13)':
     dependencies:
-      '@tanstack/table-core': 8.21.3
+      '@tanstack/store': 0.11.2
+      '@tanstack/table-core': 9.3.1
       solid-js: 1.9.13
 
   '@tanstack/store@0.11.0': {}
 
   '@tanstack/store@0.11.2': {}
 
-  '@tanstack/table-core@8.21.3': {}
+  '@tanstack/table-core@9.3.1':
+    dependencies:
+      '@tanstack/store': 0.11.2
 
   '@testing-library/dom@10.4.1':
     dependencies:
