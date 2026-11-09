@@ -1,4 +1,4 @@
-.word.error {
+[data-ui-element="word"][data-ui-state="typedIncorrectly"] {
   border-bottom: dotted 2px var(--text-color);
 }
 
