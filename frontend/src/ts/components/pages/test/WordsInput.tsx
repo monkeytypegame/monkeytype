@@ -89,14 +89,14 @@ export function WordsInput(): JSXElement {
             setTestFocusState("focused");
           }
         }
-        setWordsInputFocused(isInputElementFocused());
+        setWordsInputFocused(true);
         onFocus();
       }}
       on:blur={() => {
         if (!isInputElementFocused()) {
           setTestFocusState("unfocused");
         }
-        setWordsInputFocused(isInputElementFocused());
+        setWordsInputFocused(false);
       }}
       on:compositionstart={onCompositionStart}
       on:compositionupdate={onCompositionUpdate}
