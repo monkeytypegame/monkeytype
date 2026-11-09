@@ -1,3 +1,4 @@
+import { CaretStyle } from "@monkeytype/schemas/configs";
 import { clsx } from "clsx";
 import {
   createMemo,
@@ -82,38 +83,29 @@ export function Words(props: {
       .filter((word) => isWordRendered(word.index) || word.endsLine),
   );
 
-  const caretFontSize = (): string => `${getConfig.fontSize}rem`;
-
   return (
     <>
-      <div
-        id="paceCaret"
+      <CaretElement
+        kind="paceCaret"
         ref={(el) => (paceCaretRef = el)}
-        data-ui-element="paceCaret"
-        // not cn: tailwind-merge drops a style class like block next to hidden
-        class={clsx("full-width", getConfig.paceCaretStyle, {
-          hidden: paceCaretTarget() === undefined,
-          debug: isCaretDebug(),
-        })}
-        style={{ "font-size": caretFontSize() }}
-      ></div>
-      <div
-        id="caret"
+        caretStyle={getConfig.paceCaretStyle}
+        hidden={paceCaretTarget() === undefined}
+        debug={isCaretDebug()}
+      />
+      <CaretElement
+        kind="caret"
         ref={(el) => (caretRef = el)}
-        data-ui-element="caret"
-        class={clsx("full-width", getConfig.caretStyle, {
-          hidden: !layout.isCaretShown(),
-        })}
-        style={{
-          "font-size": caretFontSize(),
-          // it stops blinking while typing
-          "animation-name": isFocusMode()
+        caretStyle={getConfig.caretStyle}
+        hidden={!layout.isCaretShown()}
+        // it stops blinking while typing
+        blink={
+          isFocusMode()
             ? "none"
             : getConfig.smoothCaret === "off"
               ? "caretFlashHard"
-              : "caretFlashSmooth",
-        }}
-      ></div>
+              : "caretFlashSmooth"
+        }
+      />
       <div
         id="words"
         ref={(el) => (wordsRef = el)}
@@ -159,6 +151,38 @@ export function Words(props: {
         </For>
       </div>
     </>
+  );
+}
+
+/**
+ * A caret element (#caret, #paceCaret). Words' layout moves it through its
+ * ref; this renders its style class, visibility and blinking.
+ */
+function CaretElement(props: {
+  kind: "caret" | "paceCaret";
+  ref: (el: HTMLDivElement) => void;
+  caretStyle: CaretStyle;
+  hidden: boolean;
+  /** outlined, dev options' caret debug */
+  debug?: boolean;
+  /** its blink animation, the stylesheet's when undefined */
+  blink?: "none" | "caretFlashHard" | "caretFlashSmooth";
+}): JSXElement {
+  return (
+    <div
+      id={props.kind}
+      ref={props.ref}
+      data-ui-element={props.kind}
+      // not cn: tailwind-merge drops a style class like block next to hidden
+      class={clsx("full-width", props.caretStyle, {
+        hidden: props.hidden,
+        debug: props.debug,
+      })}
+      style={{
+        "font-size": `${getConfig.fontSize}rem`,
+        "animation-name": props.blink,
+      }}
+    ></div>
   );
 }
 
