@@ -29,7 +29,10 @@ createRoot(() =>
   createHotkey(
     () => hotkeys.quickRestart,
     quickRestart,
-    () => ({ enabled: !isLongTest() || getConfig.quickRestart !== "enter" }),
+    () => ({
+      enabled: !isLongTest() || getConfig.quickRestart !== "enter",
+      conflictBehavior: "allow",
+    }),
   ),
 );
 
@@ -46,6 +49,7 @@ createRoot(() =>
         isLongTest() &&
         !(wordsHaveTab() && getConfig.quickRestart === "tab") &&
         !(wordsHaveNewline() && getConfig.quickRestart === "enter"),
+      conflictBehavior: "allow",
     }),
   ),
 );
