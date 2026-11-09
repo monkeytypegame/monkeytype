@@ -25,7 +25,7 @@ One architecture, described below as the final state:
 - **The typing test splits into three layers with one-way dependencies**:
   1. a DOM-free **test engine** (lifecycle phases, words, timer, EventLog, stats, funbox plugins) that owns its state and exposes commands and read-only signals,
   2. an **input layer** (the WordsInput component plus handlers) that turns browser input into engine commands and render-store writes, never rendering synchronously,
-  3. a **render layer** (TestPage, Words and the components around them) that owns every element it draws, including layout (line jump, tape scroll, break joining), drives both carets, and runs every fade.
+  3. a **render layer** (TestPage, Words and the components around them) that owns every element it draws, including layout (line jump, tape scroll), drives both carets, and runs every fade.
 - **Imperative DOM work survives only inside the component that owns the element** (measuring, animating, canvas, focus), started from that component's lifecycle. Document-level effects (body classes, head links) each belong to one dedicated component, like Theme and Font do today. Body classes go through the `useBodyClasses` hook (a `classList`-style record, removed on cleanup), never hand-rolled `document.body.classList` calls; each class has one owner.
 - **Theming targets a stable attribute API**, `data-ui-element` / `data-ui-state` / `data-ui-variant`, which navigation already uses. Ids and classes become internal.
 
@@ -183,7 +183,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 ### Typing test: render layer
 
 - The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints, including the typed input that layout and the caret position from.
-- **Words owns all layout**: after each flush it runs one layout pass: break joining, line jump, tape scroll, input positioning and caret updates. Break-joining state becomes a reactive class/style on Word. The word-element registry becomes private to Words; only the overflow check is exported.
+- **Words owns all layout**: after each flush it runs one layout pass: line jump, tape scroll, input positioning and caret updates. Joining-script dots (dots typed effect) are CSS only: letters stay inline, so nothing is measured and nothing writes into Word. The word-element registry becomes private to Words; only the overflow check is exported.
 - **Words keeps the active line in view** as part of that layout pass: during a test, when the words wrapper is taller than the window, it scrolls the window to the active word (down only while typing, both ways when recentering after a re-layout or on request). The focus flow asks for a recenter through a request signal. Before the test, TestPage keeps the test block in view.
 - **Carets: boundary fixed, internals decided during the caret rewrite.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Whether a caret animates through fully reactive props, imperative calls on a private handle, or a mix is decided during that step, based on what gets the movement looking right. Tribe carets follow whatever is chosen.
 - **TestPage runs all fades**, driven by the engine's phase: words fade out on finish; when the fade-out completes, the result fades in if the result signal has a value, otherwise a spinner fades in and is swapped for the result when it arrives. Restart fades follow the restart flow above.
@@ -265,6 +265,13 @@ From config (C1):
 - Config event listeners read the new value from the store, not the stale one.
 - A key that fails to apply during a whole-config apply holds its default in the store (it used to hold the rejected value).
 - A single setting change runs store effects before config event listeners. A whole-config apply runs them once, before failed keys are re-saved and before full-config-change finished (they used to run after it).
+
+From joining-script dots (T2): break joining is gone. With the dots typed effect, joining-script letters stay inline (joined) when typed, and each draws its own dot.
+
+- Typed words keep their joined width and wrap like untyped text; a word that wrapped mid-word gets its dots on every line.
+- Dots sit on their letter's glyph, `0.4em` as in other scripts (was a fixed `0.4em` slot per letter), so they can overlap on narrow letters.
+- The shrink animation matches other scripts but shows the letter's standalone form (a `::before` copy from the letter's new `data-char` attribute); the text stays joined before and after.
+- The `broken-joining` and `needs-wrap` word classes are gone.
 
 From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
 
