@@ -5,7 +5,7 @@ import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
-import { SnapshotResult } from "../../../constants/default-snapshot";
+import { UserResult } from "../../../constants/user-data";
 import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
@@ -19,12 +19,12 @@ import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
-  field: keyof SnapshotResult<Mode>;
+  field: keyof UserResult<Mode>;
   direction: "asc" | "desc";
 };
 
 export function Table<M extends Mode>(props: {
-  data: SnapshotResult<M>[];
+  data: UserResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
   selectedRowId: Accessor<string | null>;
   /** Tracked: each change scrolls the selected row into view */
@@ -59,7 +59,7 @@ export function Table<M extends Mode>(props: {
             props.onSortingChange({ field: "timestamp", direction: "desc" });
           } else {
             props.onSortingChange({
-              field: val[0]?.id as keyof SnapshotResult<Mode>,
+              field: val[0]?.id as keyof UserResult<Mode>,
               direction: val[0]?.desc ? "desc" : "asc",
             });
           }
@@ -92,8 +92,8 @@ function getColumns<M extends Mode>({
   format: Formatting;
   tags: TagItem[];
   onMiniResultChartSelected(val: string): void;
-}): DataTableColumnDef<SnapshotResult<M>>[] {
-  const defineColumn = createColumnHelper<SnapshotResult<M>>().accessor;
+}): DataTableColumnDef<UserResult<M>>[] {
+  const defineColumn = createColumnHelper<UserResult<M>>().accessor;
   const columns = [
     defineColumn("isPb", {
       header: "",

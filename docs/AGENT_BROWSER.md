@@ -61,7 +61,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 
 Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state.
 
-Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets and tags live in query collections, not `snapshot()`.
+Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `user`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets and tags live in query collections, not `user()`.
 
 ## Console
 

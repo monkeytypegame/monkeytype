@@ -13,7 +13,6 @@ import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import * as DB from "../../db";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { isAuthenticated } from "../../states/core";
@@ -30,6 +29,7 @@ import {
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import { setSelectedQuoteId } from "../../states/test";
+import { getUser } from "../../states/user";
 import * as TestLogic from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
@@ -235,7 +235,7 @@ export function QuoteSearchModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
   const isQuoteMod = (): boolean => {
-    const quoteMod = DB.getSnapshot()?.quoteMod;
+    const quoteMod = getUser()?.quoteMod;
     return (
       quoteMod !== undefined &&
       (quoteMod === true || (quoteMod as string) !== "")

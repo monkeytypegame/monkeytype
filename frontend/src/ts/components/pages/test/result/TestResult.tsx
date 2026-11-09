@@ -146,11 +146,11 @@ function Watermark(): JSXElement {
         return (
           <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
             <Show when={getUser()}>
-              {(snapshot) => (
+              {(user) => (
                 <>
                   <span>
-                    {snapshot().name}
-                    <UserFlags {...snapshot()} iconsOnly />
+                    {user().name}
+                    <UserFlags {...user()} iconsOnly />
                   </span>
                   <span>|</span>
                 </>

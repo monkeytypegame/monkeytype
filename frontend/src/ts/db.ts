@@ -9,7 +9,7 @@ import {
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
-import { SnapshotResult } from "./constants/default-snapshot";
+import { UserResult } from "./constants/user-data";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { insertLocalResult } from "./collections/results";
 import { addXp, getUser, recordResult, setStreak } from "./states/user";
@@ -19,9 +19,6 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 let testActivityByYear: Record<string, TestActivityCalendar> | undefined;
-
-/** Read-only shim over the user store, until readers use `getUser()`. */
-export const getSnapshot = getUser;
 
 export function getLocalPB<M extends Mode>(
   mode: M,
@@ -55,7 +52,7 @@ export type SaveLocalResultData = {
   xp?: number;
   xpBreakdown?: XpBreakdown;
   streak?: number;
-  result?: SnapshotResult<Mode>;
+  result?: UserResult<Mode>;
   isPb?: boolean;
 };
 

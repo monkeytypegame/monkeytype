@@ -7,14 +7,13 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
-import { getSnapshot } from "../../db";
 import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { updateProfile } from "../../states/user";
+import { getUser, updateProfile } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -26,20 +25,20 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const snapshot = getSnapshot();
-  if (snapshot === undefined) {
-    throw new Error("missing snapshot in EditProfile");
+  const user = getUser();
+  if (user === undefined) {
+    throw new Error("missing user in EditProfile");
   }
-  const badges = snapshot.inventory?.badges ?? [];
+  const badges = user.inventory?.badges ?? [];
   const form = createForm(() => ({
     defaultValues: {
-      bio: snapshot.details?.bio ?? "",
-      keyboard: snapshot.details?.keyboard ?? "",
-      github: snapshot.details?.socialProfiles?.github ?? "",
-      twitter: snapshot.details?.socialProfiles?.twitter ?? "",
-      website: snapshot.details?.socialProfiles?.website ?? "",
+      bio: user.details?.bio ?? "",
+      keyboard: user.details?.keyboard ?? "",
+      github: user.details?.socialProfiles?.github ?? "",
+      twitter: user.details?.socialProfiles?.twitter ?? "",
+      website: user.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        snapshot.details?.showActivityOnPublicProfile ?? true,
+        user.details?.showActivityOnPublicProfile ?? true,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
     },
     onSubmit: async ({ value }) => {

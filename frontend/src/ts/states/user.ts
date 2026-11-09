@@ -19,8 +19,8 @@ import { createStore, produce, reconcile, unwrap } from "solid-js/store";
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
-import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
-import { SnapshotInitError } from "../utils/snapshot-init-error";
+import { UserData, UserResult } from "../constants/user-data";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
 import { setXpBarData } from "./header";
@@ -29,12 +29,12 @@ import { setXpBarData } from "./header";
  * The signed-in user's data. The auth flow loads it, sign-out clears it.
  * Written only through the named functions below.
  */
-const [store, setStore] = createStore<{ value: Snapshot | undefined }>({
+const [store, setStore] = createStore<{ value: UserData | undefined }>({
   value: undefined,
 });
 
 /** A plain copy of the user, detached from the store. */
-function copyUser(): Snapshot | undefined {
+function copyUser(): UserData | undefined {
   const user = unwrap(store).value;
   return user === undefined ? undefined : structuredClone(user);
 }
@@ -43,22 +43,22 @@ function copyUser(): Snapshot | undefined {
  * The signed-in user, `undefined` while signed out, loading or after a failed
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
-export function getUser(): DeepReadonly<Snapshot> | undefined {
+export function getUser(): DeepReadonly<UserData> | undefined {
   return store.value;
 }
 
 // --- Loading ---
 
 /**
- * Downloads the user and replaces the stored one. Throws `SnapshotInitError` if the
+ * Downloads the user and replaces the stored one. Throws `UserDataLoadError` if the
  * request fails, leaving no user.
  */
-export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
+export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   await configurationPromise;
 
   if (!isAuthenticated()) {
     throw new Error(
-      "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
+      "User data didn't load due to lacking authentication even though user is authenticated",
     );
   }
 
@@ -66,7 +66,7 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
     const userData = await fetchUserFromApi();
 
     if (userData === null || userData === undefined) {
-      throw new SnapshotInitError(
+      throw new UserDataLoadError(
         `Request was successful but user data is null/undefined`,
         200,
       );
@@ -77,7 +77,7 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
       personalBests[mode] ??= {};
     }
 
-    const row: Snapshot = {
+    const row: UserData = {
       uid: userData.uid,
       email: userData.email,
       name: userData.name,
@@ -116,7 +116,7 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
     throw e;
   }
 
-  return getUser() as DeepReadonly<Snapshot>;
+  return getUser() as DeepReadonly<UserData>;
 }
 
 export function clearUser(): void {
@@ -125,7 +125,7 @@ export function clearUser(): void {
 
 // --- Direct writes: mirror what the server already did ---
 
-function write(recipe: (user: Snapshot) => void): void {
+function write(recipe: (user: UserData) => void): void {
   if (store.value === undefined) return;
   setStore(
     "value",
@@ -136,7 +136,7 @@ function write(recipe: (user: Snapshot) => void): void {
 }
 
 export function recordResult(
-  result: SnapshotResult<Mode>,
+  result: UserResult<Mode>,
   options: { isPb: boolean },
 ): void {
   write((user) => {
@@ -252,7 +252,7 @@ export async function updateLbMemory<M extends Mode>(
  * which keep the newer value. The recipe must be idempotent.
  */
 function optimisticAction<T>(
-  recipe: (user: Snapshot, vars: T) => void,
+  recipe: (user: UserData, vars: T) => void,
   request: (vars: T) => Promise<T>,
 ): (vars: T) => Promise<void> {
   return async (vars) => {
@@ -263,7 +263,7 @@ function optimisticAction<T>(
     const same = (a: unknown, b: unknown): boolean =>
       JSON.stringify(a) === JSON.stringify(b);
     const changed = (
-      Object.keys({ ...before, ...written }) as (keyof Snapshot)[]
+      Object.keys({ ...before, ...written }) as (keyof UserData)[]
     ).filter((key) => !same(before[key], written[key]));
 
     let kept: T;
@@ -380,7 +380,7 @@ type ProfileUpdate = {
 };
 
 function applyProfile(
-  user: Snapshot,
+  user: UserData,
   { details, selectedBadgeId }: ProfileUpdate,
 ): void {
   user.details = details;
@@ -426,10 +426,7 @@ function incrementTestActivity(
   }
 }
 
-function savePb(
-  personalBests: PersonalBests,
-  result: SnapshotResult<Mode>,
-): void {
+function savePb(personalBests: PersonalBests, result: UserResult<Mode>): void {
   const { mode, mode2, punctuation, numbers, language, difficulty } = result;
   const lazyMode = result.lazyMode;
   const pb = {
@@ -474,7 +471,7 @@ function matchesPb(
 
 export const __testing = {
   /** Replaces the user without a download, for tests. */
-  setUser(user: Snapshot | undefined): void {
+  setUser(user: UserData | undefined): void {
     setStore("value", user === undefined ? undefined : structuredClone(user));
   },
 };

@@ -1,7 +1,6 @@
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { JSXElement, createSignal, For } from "solid-js";
 
-import * as DB from "../../db";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
@@ -16,7 +15,7 @@ import {
   updateQuoteStats,
   getRatingAverage,
 } from "../../states/quote-rate";
-import { rateQuote } from "../../states/user";
+import { getUser, rateQuote } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -44,8 +43,8 @@ export function QuoteRateModal(): JSXElement {
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
-    const snapshot = DB.getSnapshot();
-    const alreadyRated = snapshot?.quoteRatings?.[quote.language]?.[quote.id];
+    const user = getUser();
+    const alreadyRated = user?.quoteRatings?.[quote.language]?.[quote.id];
     if (isSafeNumber(alreadyRated)) {
       setRating(alreadyRated);
     }
@@ -62,8 +61,7 @@ export function QuoteRateModal(): JSXElement {
 
     hideModalAndClearChain("QuoteRate");
 
-    const oldRating =
-      DB.getSnapshot()?.quoteRatings?.[quote.language]?.[quote.id];
+    const oldRating = getUser()?.quoteRatings?.[quote.language]?.[quote.id];
 
     showLoaderBar();
     try {

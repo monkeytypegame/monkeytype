@@ -48,8 +48,8 @@ import { clearUser, loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
+import { UserDataLoadError } from "./utils/user-data-load-error";
 
 type AuthMethodInfo = {
   display: string;
@@ -183,7 +183,7 @@ async function getDataAndInit(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof SnapshotInitError) {
+    if (error instanceof UserDataLoadError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -212,7 +212,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "userLoaded", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(

@@ -5,7 +5,7 @@ import { createMemo, JSX } from "solid-js";
 
 import Ape from "../../ape";
 import { getConfig } from "../../config/store";
-import { SnapshotResult } from "../../constants/default-snapshot";
+import { UserResult } from "../../constants/user-data";
 import { saveLocalResult, SaveLocalResultData } from "../../db";
 import { authEvent } from "../../events/auth";
 import { getAuthenticatedUser } from "../../firebase";
@@ -166,10 +166,8 @@ async function syncLastSignedOutResult(): Promise<void> {
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
-  const result = structuredClone(
-    updatedResult,
-  ) as unknown as SnapshotResult<Mode>;
+  // into a UserResult - might not cause issues but worth investigating
+  const result = structuredClone(updatedResult) as unknown as UserResult<Mode>;
 
   const dataToSave: SaveLocalResultData = {
     xp: response.body.data.xp,
@@ -202,7 +200,7 @@ export function updateUidAndHash(
 }
 
 authEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+  if (event.type === "userLoaded" && event.data.isInitial) {
     if (getLastSignedOutResult() !== null) {
       showModal(modalId);
     }

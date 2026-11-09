@@ -23,7 +23,7 @@ import {
 import { queryOptions } from "@tanstack/solid-query";
 import { Accessor, createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
-import { SnapshotResult } from "../constants/default-snapshot";
+import { UserResult } from "../constants/user-data";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
@@ -47,18 +47,18 @@ import { getCurrentQuote } from "../states/test";
 import { removeLanguageSize } from "../utils/strings";
 
 export type ResultsQueryState = {
-  difficulty: SnapshotResult<Mode>["difficulty"][];
-  pb: SnapshotResult<Mode>["isPb"][];
-  mode: SnapshotResult<Mode>["mode"][];
+  difficulty: UserResult<Mode>["difficulty"][];
+  pb: UserResult<Mode>["isPb"][];
+  mode: UserResult<Mode>["mode"][];
   words: ("10" | "25" | "50" | "100" | "custom")[];
   time: ("15" | "30" | "60" | "120" | "custom")[];
-  punctuation: SnapshotResult<Mode>["punctuation"][];
-  numbers: SnapshotResult<Mode>["numbers"][];
-  timestamp: SnapshotResult<Mode>["timestamp"];
-  quoteLength: SnapshotResult<Mode>["quoteLength"][];
-  tags: SnapshotResult<Mode>["tags"];
-  funbox: SnapshotResult<Mode>["funbox"];
-  language: SnapshotResult<Mode>["language"][];
+  punctuation: UserResult<Mode>["punctuation"][];
+  numbers: UserResult<Mode>["numbers"][];
+  timestamp: UserResult<Mode>["timestamp"];
+  quoteLength: UserResult<Mode>["quoteLength"][];
+  tags: UserResult<Mode>["tags"];
+  funbox: UserResult<Mode>["funbox"];
+  language: UserResult<Mode>["language"][];
 };
 
 const queryKeys = {
@@ -139,7 +139,7 @@ export function useResultStatsLiveQuery(
 export async function getResultsQueryOnce(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof UserResult<Mode>;
     direction: "asc" | "desc";
   }>;
 }) {
@@ -156,7 +156,7 @@ export async function getResultsQueryOnce(options: {
 }
 
 /**
- * get list of SnapshotResults for the current result selection
+ * get list of UserResult for the current result selection
  * @param queryState
  * @returns
  */
@@ -164,7 +164,7 @@ export async function getResultsQueryOnce(options: {
 export function useResultsLiveQuery(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof UserResult<Mode>;
     direction: "asc" | "desc";
   }>;
   limit: Accessor<number>;
@@ -184,9 +184,9 @@ export function useResultsLiveQuery(options: {
 }
 
 function normalizeResult(
-  result: ResultMinified | SnapshotResult<Mode>,
+  result: ResultMinified | UserResult<Mode>,
   knownTagIds?: Set<string>,
-): SnapshotResult<Mode> {
+): UserResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
   resultDate.setMinutes(0);
@@ -217,7 +217,7 @@ function normalizeResult(
     timeTyping: calcTimeTyping(result),
     words: Math.round((result.wpm / 60) * result.testDuration),
     dayTimestamp: resultDate.getTime(),
-  } as SnapshotResult<Mode>;
+  } as UserResult<Mode>;
 }
 
 const resultsCollection = createCollection(
@@ -270,7 +270,7 @@ type ActionType = {
     afterUpdate?: (params: { tagPbs: string[] }) => void;
   };
   insertLocalResult: {
-    result: SnapshotResult<Mode>;
+    result: UserResult<Mode>;
   };
   deleteLocalTag: {
     tagId: string;
@@ -728,7 +728,7 @@ createRoot(() =>
   }),
 );
 
-function getResults(): SnapshotResult<Mode>[] {
+function getResults(): UserResult<Mode>[] {
   return [...resultsCollection.values()];
 }
 /**

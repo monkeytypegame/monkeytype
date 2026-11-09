@@ -52,12 +52,12 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUser, (snapshot) => {
-    if (snapshot === undefined) {
+  createEffectOn(getUser, (user) => {
+    if (user === undefined) {
       setAnimatedLevel(0);
       return;
     }
-    setAnimatedLevel(getLevelFromTotalXp(snapshot.xp ?? 0));
+    setAnimatedLevel(getLevelFromTotalXp(user.xp ?? 0));
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
@@ -65,10 +65,10 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const snapshot = getUser();
-    if (snapshot === undefined) return false;
+    const user = getUser();
+    if (user === undefined) return false;
 
-    return snapshot.inboxUnreadSize > 0;
+    return user.inboxUnreadSize > 0;
   });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());

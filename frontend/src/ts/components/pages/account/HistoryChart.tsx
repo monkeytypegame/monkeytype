@@ -5,7 +5,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { SnapshotResult } from "../../../constants/default-snapshot";
+import { UserResult } from "../../../constants/user-data";
 import { getFormatting } from "../../../states/core";
 import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
@@ -20,7 +20,7 @@ export type HistoryChartClickEvent = {
   _id: string;
 };
 export function HistoryChart(props: {
-  results: SnapshotResult<Mode>[];
+  results: UserResult<Mode>[];
   beginAtZero: boolean;
   typingSpeedUnit: TypingSpeedUnitSettings;
   format: Formatting;
@@ -351,7 +351,7 @@ export function HistoryChart(props: {
   );
 }
 
-function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
+function Trend(props: { results: UserResult<Mode>[] }): JSXElement {
   const format = getFormatting;
 
   const trend = createMemo(() => {

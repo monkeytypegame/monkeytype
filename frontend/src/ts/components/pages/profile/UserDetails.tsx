@@ -15,7 +15,7 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
-import { Snapshot } from "../../../constants/default-snapshot";
+import { UserData } from "../../../constants/user-data";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
 import { getLastResult } from "../../../states/last-result";
@@ -217,7 +217,7 @@ function AvatarAndName(props: {
     const lastResult = getLastResult();
     if (lastResult === undefined) return "";
 
-    const streakOffset = (props.profile as Snapshot).streakHourOffset;
+    const streakOffset = (props.profile as UserData).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 

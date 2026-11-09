@@ -6,7 +6,7 @@ import {
   getResultsQueryOnce,
   useResultsLiveQuery,
 } from "../../../collections/results";
-import { SnapshotResult } from "../../../constants/default-snapshot";
+import { UserResult } from "../../../constants/user-data";
 import { createTrigger } from "../../../hooks/createTrigger";
 import { isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
@@ -26,7 +26,7 @@ export function AccountPage(): JSXElement {
   const [limit, setLimit] = createSignal(10);
 
   const [sorting, setSorting] = createSignal<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof UserResult<Mode>;
     direction: "asc" | "desc";
   }>({
     field: "timestamp",

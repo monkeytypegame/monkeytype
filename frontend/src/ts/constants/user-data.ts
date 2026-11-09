@@ -9,7 +9,7 @@ import { Result } from "@monkeytype/schemas/results";
 import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 
-export type SnapshotResult<M extends Mode> = Omit<
+export type UserResult<M extends Mode> = Omit<
   Result<M>,
   | "bailedOut"
   | "blindMode"
@@ -44,7 +44,7 @@ export type SnapshotResult<M extends Mode> = Omit<
   dayTimestamp: number;
 };
 
-export type Snapshot = Omit<
+export type UserData = Omit<
   User,
   | "timeTyping"
   | "startedTests"
@@ -108,8 +108,8 @@ const defaultSnap = {
       60: { english: { count: 0, rank: 0 } },
     },
   },
-} as Snapshot;
+} as UserData;
 
-export function getDefaultSnapshot(): Snapshot {
+export function getDefaultUserData(): UserData {
   return structuredClone(defaultSnap);
 }

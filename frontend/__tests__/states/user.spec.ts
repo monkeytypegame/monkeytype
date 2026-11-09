@@ -20,13 +20,13 @@ import {
   updateProfile,
 } from "../../src/ts/states/user";
 import {
-  getDefaultSnapshot,
-  Snapshot,
-  SnapshotResult,
-} from "../../src/ts/constants/default-snapshot";
+  getDefaultUserData,
+  UserData,
+  UserResult,
+} from "../../src/ts/constants/user-data";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
-import { SnapshotInitError } from "../../src/ts/utils/snapshot-init-error";
+import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 
 vi.mock(
   import("../../src/ts/ape/server-configuration"),
@@ -39,9 +39,9 @@ vi.mock(
 const DAY = 24 * 60 * 60 * 1000;
 const LAST_DAY = Date.UTC(2026, 9, 20, 12);
 
-function user(overrides: Partial<Snapshot> = {}): Snapshot {
+function user(overrides: Partial<UserData> = {}): UserData {
   return {
-    ...getDefaultSnapshot(),
+    ...getDefaultUserData(),
     uid: "uid1",
     name: "bob",
     testActivity: { testsByDays: [3, null, 2], lastDay: LAST_DAY },
@@ -56,8 +56,8 @@ function user(overrides: Partial<Snapshot> = {}): Snapshot {
 }
 
 function result(
-  overrides: Partial<SnapshotResult<"time">> = {},
-): SnapshotResult<"time"> {
+  overrides: Partial<UserResult<"time">> = {},
+): UserResult<"time"> {
   return {
     mode: "time",
     mode2: "15",
@@ -76,7 +76,7 @@ function result(
     afkDuration: 1,
     restartCount: 3,
     ...overrides,
-  } as SnapshotResult<"time">;
+  } as UserResult<"time">;
 }
 
 function ok<T>(data: T = null as T): never {
@@ -149,7 +149,7 @@ describe("loadUserData", () => {
       body: { message: "slow down" },
     } as never);
 
-    await expect(loadUserData()).rejects.toBeInstanceOf(SnapshotInitError);
+    await expect(loadUserData()).rejects.toBeInstanceOf(UserDataLoadError);
     expect(getUser()).toBeUndefined();
   });
 });

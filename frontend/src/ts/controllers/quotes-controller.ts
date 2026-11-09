@@ -2,8 +2,7 @@ import { removeLanguageSize } from "../utils/strings";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
 import { configEvent } from "../events/config";
-import * as DB from "../db";
-import { setQuoteFavorite } from "../states/user";
+import { getUser, setQuoteFavorite } from "../states/user";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import { QuoteData } from "@monkeytype/schemas/quotes";
@@ -146,14 +145,14 @@ class QuotesController {
   }
 
   getRandomFavoriteQuote(language: Language): Quote | null {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) {
+    const user = getUser();
+    if (!user) {
       return null;
     }
 
     const normalizedLanguage = removeLanguageSize(language);
     const quoteIds: string[] = [];
-    const { favoriteQuotes } = snapshot;
+    const { favoriteQuotes } = user;
 
     if (favoriteQuotes === undefined) {
       return null;
@@ -178,12 +177,12 @@ class QuotesController {
   }
 
   isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) {
+    const user = getUser();
+    if (!user) {
       return false;
     }
 
-    const { favoriteQuotes } = snapshot;
+    const { favoriteQuotes } = user;
 
     if (favoriteQuotes === undefined) {
       return false;

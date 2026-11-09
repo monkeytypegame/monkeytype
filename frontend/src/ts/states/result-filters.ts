@@ -29,11 +29,11 @@ function migrateFilterStorage(input: unknown): ResultFilters {
 export function updateTagsInFilterStorage(tagsIds: string[]): void {
   setFilters((filters) => {
     const result = mergeWithDefaultFilters(filters);
-    const snapshotTags = new Set(["none", ...tagsIds]);
+    const existingTags = new Set(["none", ...tagsIds]);
 
     //remove tags that no longer exist.
     let newTags = new Map(
-      Object.entries(result.tags).filter(([id]) => snapshotTags.has(id)),
+      Object.entries(result.tags).filter(([id]) => existingTags.has(id)),
     );
 
     //add new tags added

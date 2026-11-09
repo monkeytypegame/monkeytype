@@ -89,7 +89,7 @@ import { vi } from "vitest";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
+import { getDefaultUserData } from "../../src/ts/constants/user-data";
 import {
   AppRouter,
   createAppRouter,
@@ -342,7 +342,7 @@ export function createFakeAuth(
   function setSignedIn(signedIn: boolean, userData?: UserDataDownload): void {
     isSignedIn = signedIn;
     // the account route checks the user data downloaded
-    userTesting.setUser(signedIn ? getDefaultSnapshot() : undefined);
+    userTesting.setUser(signedIn ? getDefaultUserData() : undefined);
     auth.stateChanged(userData);
   }
 
@@ -567,7 +567,7 @@ export function renderApp(options: RenderAppOptions = {}): App {
   blockingData.friendsRefresh.set(options.friendsRefresh !== "pending");
   // the account route checks the user data downloaded
   userTesting.setUser(
-    options.auth === "signedIn" ? getDefaultSnapshot() : undefined,
+    options.auth === "signedIn" ? getDefaultUserData() : undefined,
   );
   for (const [name, content] of Object.entries(options.pageContent ?? {})) {
     pageContent.set(name, content);
