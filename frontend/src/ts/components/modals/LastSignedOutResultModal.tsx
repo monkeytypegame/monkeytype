@@ -203,7 +203,7 @@ export function updateUidAndHash(
 }
 
 authEvent.subscribe((event) => {
-  if (event.type === "userLoaded" && event.data.isInitial) {
+  if (event.type === "userDataLoaded" && event.data.isInitial) {
     if (getLastSignedOutResult() !== null) {
       showModal(modalId);
     }

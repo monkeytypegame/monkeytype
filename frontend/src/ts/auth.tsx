@@ -212,7 +212,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  authEvent.dispatch({ type: "userLoaded", data: { isInitial: true } });
+  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(

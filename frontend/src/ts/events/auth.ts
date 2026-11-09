@@ -1,6 +1,6 @@
 import { createEvent } from "../hooks/createEvent";
 
-export type AuthEvent =
+type AuthEvent =
   | {
       type: "authStateChanged";
       data: {
@@ -10,6 +10,6 @@ export type AuthEvent =
         reloadUserData: () => Promise<void>;
       };
     }
-  | { type: "userLoaded"; data: { isInitial: boolean } };
+  | { type: "userDataLoaded"; data: { isInitial: boolean } };
 
 export const authEvent = createEvent<AuthEvent>();
