@@ -55,7 +55,7 @@ async function applyDiscordToken(
 
   showSuccessNotification(response.body.message);
 
-  const snapshot = DB.getSnapshot();
+  const snapshot = DB.getUserData();
   if (!snapshot) return;
 
   const { discordId, discordAvatar } = response.body.data;

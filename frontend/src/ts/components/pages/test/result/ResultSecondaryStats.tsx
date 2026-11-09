@@ -29,7 +29,7 @@ import {
 } from "../../../../states/quote-rate";
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
-import { getSnapshot } from "../../../../states/snapshot";
+import { getUserData } from "../../../../states/snapshot";
 import { CompletedResult } from "../../../../states/test";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
@@ -298,7 +298,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
 
   const isRated = (): boolean =>
     isSafeNumber(
-      getSnapshot()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
+      getUserData()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
     );
 
   const rating = (): string => {
@@ -307,7 +307,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
 
   const toggleFavorite = async (): Promise<void> => {
-    const dbSnapshot = DB.getSnapshot();
+    const dbSnapshot = DB.getUserData();
     if (!dbSnapshot) return;
     const language = props.quote.language;
     const quoteId = props.quote.id.toString();

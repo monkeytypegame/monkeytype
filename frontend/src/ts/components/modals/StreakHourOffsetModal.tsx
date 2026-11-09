@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 
 import Ape from "../../ape";
 import { Snapshot } from "../../constants/default-snapshot";
-import { getSnapshot, setSnapshot } from "../../db";
+import { getUserData, setSnapshot } from "../../db";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
 import {
@@ -45,7 +45,7 @@ export function StreakHourOffsetModal() {
         return;
       }
       showSuccessNotification("Streak hour offset set");
-      const snap = getSnapshot() as Snapshot;
+      const snap = getUserData() as Snapshot;
 
       snap.streakHourOffset = hourOffset;
       setSnapshot(snap);

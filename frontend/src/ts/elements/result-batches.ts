@@ -28,7 +28,7 @@ export async function update(): Promise<void> {
 
   enableButton();
 
-  const completedTests = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
+  const completedTests = DB.getUserData()?.typingStats?.completedTests ?? 0;
   const percentageDownloaded = Math.round(
     (results.length / completedTests) * 100,
   );
@@ -36,7 +36,7 @@ export async function update(): Promise<void> {
     regularUser: 0,
     premiumUser: 0,
   };
-  const currentLimit = DB.getSnapshot()?.isPremium
+  const currentLimit = DB.getUserData()?.isPremium
     ? limits.premiumUser
     : limits.regularUser;
   const percentageLimit = Math.round((results?.length / currentLimit) * 100);
@@ -109,13 +109,13 @@ export function updateButtonText(text: string): void {
 
 export function showOrHideIfNeeded(): void {
   //for now, just hide if not premium - will show this to everyone later
-  const isPremium = DB.getSnapshot()?.isPremium ?? false;
+  const isPremium = DB.getUserData()?.isPremium ?? false;
   if (!isPremium) {
     hide();
     return;
   }
 
-  const completed = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
+  const completed = DB.getUserData()?.typingStats?.completedTests ?? 0;
   const batchSize = ServerConfiguration.get()?.results.maxBatchSize ?? 0;
 
   //no matter if premium or not, if the user is below the initial batch, hide the element

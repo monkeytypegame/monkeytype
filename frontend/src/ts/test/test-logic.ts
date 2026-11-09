@@ -992,9 +992,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
-    (!DB.getSnapshot()?.lbOptOut &&
+    (!DB.getUserData()?.lbOptOut &&
       (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (DB.getSnapshot()?.lbOptOut === true &&
+    (DB.getUserData()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");

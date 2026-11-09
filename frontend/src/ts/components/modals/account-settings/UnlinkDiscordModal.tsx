@@ -1,5 +1,5 @@
 import Ape from "../../../ape";
-import { getSnapshot, setSnapshot } from "../../../db";
+import { getUserData, setSnapshot } from "../../../db";
 import { showSimpleModal } from "../../../states/simple-modal";
 
 export function showUnlinkDiscordModal(): void {
@@ -8,7 +8,7 @@ export function showUnlinkDiscordModal(): void {
     text: "Are you sure you want to unlink your Discord account?",
     buttonText: "unlink",
     execFn: async () => {
-      const snap = getSnapshot();
+      const snap = getUserData();
       if (!snap) {
         return {
           status: "error",
