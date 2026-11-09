@@ -125,7 +125,7 @@ export function clearUser(): void {
 
 // --- Direct writes: mirror what the server already did ---
 
-function updateUserStore(recipe: (user: UserData) => void): void {
+function update(recipe: (user: UserData) => void): void {
   if (store.value === undefined) return;
   setStore(
     "value",
@@ -139,7 +139,7 @@ export function recordResult(
   result: UserResult<Mode>,
   options: { isPb: boolean },
 ): void {
-  updateUserStore((user) => {
+  update((user) => {
     if (user.testActivity !== undefined) {
       incrementTestActivity(user.testActivity, result.timestamp);
     }
@@ -157,7 +157,7 @@ export function recordResult(
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
   if (getUser() === undefined) return;
-  updateUserStore((user) => {
+  update((user) => {
     user.xp += xp;
   });
   setXpBarData({
@@ -168,27 +168,27 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function setStreak(streak: number): void {
-  updateUserStore((user) => {
+  update((user) => {
     user.streak = streak;
     if (streak > user.maxStreak) user.maxStreak = streak;
   });
 }
 
 export function setInboxUnreadSize(size: number): void {
-  updateUserStore((user) => {
+  update((user) => {
     user.inboxUnreadSize = size;
   });
 }
 
 export function addBadge(badge: Badge): void {
-  updateUserStore((user) => {
+  update((user) => {
     user.inventory ??= { badges: [] };
     user.inventory.badges.push(badge);
   });
 }
 
 export function resetPersonalBests(): void {
-  updateUserStore((user) => {
+  update((user) => {
     user.personalBests = {
       time: {},
       words: {},
@@ -203,7 +203,7 @@ export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  updateUserStore((user) => {
+  update((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
@@ -228,7 +228,7 @@ export async function updateLbMemory<M extends Mode>(
   if (user === undefined) return;
 
   const current = user.lbMemory?.time?.[timeMode2]?.[language];
-  updateUserStore((user) => {
+  update((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };
     user.lbMemory.time[timeMode2] ??= {};
@@ -258,7 +258,7 @@ function optimisticAction<T>(
   return async (vars) => {
     const before = copyUser();
     if (before === undefined) throw new Error("Not signed in");
-    updateUserStore((user) => recipe(user, vars));
+    update((user) => recipe(user, vars));
     const written = copyUser() ?? before;
     const same = (a: unknown, b: unknown): boolean =>
       JSON.stringify(a) === JSON.stringify(b);
@@ -270,7 +270,7 @@ function optimisticAction<T>(
     try {
       kept = await request(vars);
     } catch (e) {
-      updateUserStore((user) => {
+      update((user) => {
         for (const key of changed) {
           if (!same(user[key], written[key])) continue;
           (user as Record<string, unknown>)[key] = before[key];
@@ -278,7 +278,7 @@ function optimisticAction<T>(
       });
       throw e;
     }
-    updateUserStore((user) => recipe(user, kept));
+    update((user) => recipe(user, kept));
   };
 }
 
