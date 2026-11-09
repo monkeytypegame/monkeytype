@@ -33,8 +33,8 @@ const queryKeys = {
   root: () => [...baseKey("tags", { isUserSpecific: true })],
 };
 
-const tagsCollection = createCollection(
-  queryCollectionOptions({
+const tagsCollection = createCollection({
+  ...queryCollectionOptions({
     staleTime: Infinity,
     gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
@@ -57,7 +57,11 @@ const tagsCollection = createCollection(
       return results;
     },
   }),
-);
+  // queryCollectionOptions only applies gcTime to the query cache. Without
+  // this the collection is cleaned up 5 min after its last subscriber and
+  // __nonReactive readers (commandline) get an empty list.
+  gcTime: Infinity, //remove when __nonReactive is removed
+});
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useTagsLiveQuery() {
