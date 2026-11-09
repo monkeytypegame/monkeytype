@@ -64,8 +64,8 @@ Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, 
 
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
-| [ ] | H1 | XS · merge | Merge **#8490** (app-shell test speed-up) | none | Faster harness for every later step; merge before TH1 if TH1 extends the app-shell harness |
-| [ ] | H2 | XS · close | Close **#8031** | none | Superseded by master's PractiseWordsModal |
+| [x] | H1 | XS · merge | Merge **#8490** (app-shell test speed-up) | none | Done in [#8490](https://github.com/monkeytypegame/monkeytype/pull/8490). Faster harness for every later step; merge before TH1 if TH1 extends the app-shell harness |
+| [x] | H2 | XS · close | Close **#8031** | none | Done: [#8031](https://github.com/monkeytypegame/monkeytype/pull/8031) closed. Superseded by master's PractiseWordsModal |
 | [ ] | H3 | XS · close | Close **#7373** and **#7717** | none | Superseded by the single-row user collection (U1) |
 | [ ] | H4 | XS · comment | Comment on **#7787** | none | To be redone as EP3 on top of the render store |
 | [x] | H5 | S · commit | Add glossary terms: test settings, restart-required setting, theme attributes, test mode, funbox, finish, fail, result, active tags, pace caret, focus mode | none | Test engine, render store and layout pass are code structure: defined in the spec, not the glossary |
@@ -82,7 +82,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by | Removes / unblocks |
 |---|---|---|---|---|---|
-| [ ] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects) | none | test-ui's layout calls |
+| [x] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects). Done in [#8507](https://github.com/monkeytypegame/monkeytype/pull/8507) | none | test-ui's layout calls |
 | [x] | T1 | L · PR | **Theme attributes on the test and result words**: words (one attribute per mode: `data-ui-word-highlight`, `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script`, `data-ui-rtl`), word (`WordStatus`, `data-ui-active`), letter (`LetterStatus`, tab/newline variant), typo hint; result `wordsHistory`/`replayWords`, word (`WordStatus`, typed = committed), letter (`ResultLetterStatus`, `data-ui-corrected`, `data-ui-extra-corrected`). `<letter>`/`<hint>` keep their tags and classes so old selectors keep working (spans in CL3); code finds letters by `LETTER_SELECTOR`. Bundled theme and funbox CSS moved over (computed styles unchanged across highlight/blind/flipped/colorful), adding the words `data-ui-rtl` and `wordsWrapper`; left: funbox `read_ahead_disabled`/`#wordsInput` (L2). Harness reads `data-ui-*` (`state` + `isActive`). Keystroke benchmark: no change | T0, TH1 | The made-up element; proves the theme attribute approach before the caret measures letters |
 | [ ] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes | T1, TH1 | The only outside writes into Word elements |
 | [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Caret and words layout read the typed input from the render store (input writes it alongside the EventLog), not the engine's `getCurrentInput()`. Decide the caret internals here (reactive, imperative handle, or a mix). Fix the tape offset for a word whose direction differs from the test's: after EP3 the caret is still up to ~105px off its letter (measured; ~194px seen in word tape), mixed custom text and polyglot only | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
