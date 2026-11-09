@@ -45,10 +45,6 @@ export function replaceInputElementLastValueChar(char: string): void {
   setInputElementValue(inputValue.slice(0, -1) + char);
 }
 
-export function isInputElementFocused(): boolean {
-  return el !== undefined && document.activeElement === el;
-}
-
 export function focusInputElement(preventScroll = false): void {
   getInputElement().focus({
     preventScroll,

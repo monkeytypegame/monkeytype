@@ -20,7 +20,6 @@ import { Config } from "../../config/store";
 import * as AnalyticsController from "../../controllers/analytics-controller";
 import * as ThemeController from "../../controllers/theme-controller";
 import { createInputEventHandler } from "../../elements/input-validation";
-import { isInputElementFocused } from "../../input/input-element";
 import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
@@ -36,7 +35,11 @@ import {
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { getRoutePage } from "../../states/router";
-import { setFocusMode, setTestFocusState } from "../../states/test";
+import {
+  isWordsInputFocused,
+  setFocusMode,
+  setTestFocusState,
+} from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -205,7 +208,7 @@ export function CommandlineModal(): JSXElement {
 
   const addCommandlineBackground = (): void => {
     setNoBackground(false);
-    if (!isInputElementFocused()) {
+    if (!isWordsInputFocused()) {
       setTestFocusState("unfocused");
     }
   };

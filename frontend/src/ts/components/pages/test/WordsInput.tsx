@@ -3,10 +3,7 @@
 import { JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import {
-  isInputElementFocused,
-  registerInputElement,
-} from "../../../input/input-element";
+import { registerInputElement } from "../../../input/input-element";
 import {
   onCompositionEnd,
   onCompositionStart,
@@ -84,19 +81,15 @@ export function WordsInput(): JSXElement {
             : `${wordsInputPosition().maxWidth}%`,
       }}
       on:focus={() => {
-        if (isInputElementFocused()) {
-          if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
-            setTestFocusState("focused");
-          }
+        if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
+          setTestFocusState("focused");
         }
         setWordsInputFocused(true);
         onFocus();
       }}
       on:blur={() => {
-        if (!isInputElementFocused()) {
-          setTestFocusState("unfocused");
-        }
         setWordsInputFocused(false);
+        setTestFocusState("unfocused");
       }}
       on:compositionstart={onCompositionStart}
       on:compositionupdate={onCompositionUpdate}

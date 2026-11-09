@@ -9,11 +9,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import {
-  blurInputElement,
-  focusInputElement,
-  isInputElementFocused,
-} from "../input/input-element";
+import { blurInputElement, focusInputElement } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -41,6 +37,7 @@ import {
   setWordsInputPosition,
   triggerScrollWindowToActiveWord,
   setFocusMode,
+  isWordsInputFocused,
 } from "../states/test";
 import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
@@ -317,7 +314,7 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 
-  if (isTestFinished() || isInputElementFocused()) return;
+  if (isTestFinished() || isWordsInputFocused()) return;
   // checked last, isAnyPopupVisible is a bit expensive
   if (
     ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||

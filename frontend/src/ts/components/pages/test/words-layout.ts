@@ -4,10 +4,7 @@ import { Accessor, createEffect, createSignal, on, onCleanup } from "solid-js";
 import { debounce, throttle } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
-import {
-  focusInputElement,
-  isInputElementFocused,
-} from "../../../input/input-element";
+import { focusInputElement } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
@@ -884,7 +881,7 @@ export function createWordsLayout(options: {
     invalidateTypoHintsLayout();
     updateCaret(true);
     positionWordsInput();
-    if (!isInputElementFocused()) setTestFocusState("unfocused");
+    if (!isWordsInputFocused()) setTestFocusState("unfocused");
   }
 
   /**
