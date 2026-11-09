@@ -9,7 +9,7 @@ import { Result } from "@monkeytype/schemas/results";
 import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 
-export type UserResult<M extends Mode> = Omit<
+export type LocalResult<M extends Mode> = Omit<
   Result<M>,
   | "bailedOut"
   | "blindMode"

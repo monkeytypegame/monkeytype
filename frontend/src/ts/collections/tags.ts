@@ -13,7 +13,7 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
-import { UserResult } from "../constants/user-data";
+import { LocalResult } from "../constants/user-data";
 import {
   Mode,
   Mode2,
@@ -492,7 +492,7 @@ export function reconcileLocalTagPB<M extends Mode>(
   language: Language,
   difficulty: Difficulty,
   lazyMode: boolean,
-  results: UserResult<Mode>[],
+  results: LocalResult<Mode>[],
 ): void {
   const tag = getTag(tagId);
   if (tag === undefined) return;

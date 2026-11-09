@@ -22,7 +22,7 @@ import {
 import {
   getDefaultUserData,
   UserData,
-  UserResult,
+  LocalResult,
 } from "../../src/ts/constants/user-data";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
@@ -56,8 +56,8 @@ function user(overrides: Partial<UserData> = {}): UserData {
 }
 
 function result(
-  overrides: Partial<UserResult<"time">> = {},
-): UserResult<"time"> {
+  overrides: Partial<LocalResult<"time">> = {},
+): LocalResult<"time"> {
   return {
     mode: "time",
     mode2: "15",
@@ -76,7 +76,7 @@ function result(
     afkDuration: 1,
     restartCount: 3,
     ...overrides,
-  } as UserResult<"time">;
+  } as LocalResult<"time">;
 }
 
 function ok<T>(data: T = null as T): never {

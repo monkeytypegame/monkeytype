@@ -108,7 +108,7 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { UserResult } from "../constants/user-data";
+import { LocalResult } from "../constants/user-data";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
@@ -1277,8 +1277,8 @@ async function saveResult(
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
-    // into a UserResult - might not cuase issues but worth investigating
-    const userResult = structuredClone(result) as unknown as UserResult<Mode>;
+    // into a LocalResult - might not cuase issues but worth investigating
+    const userResult = structuredClone(result) as unknown as LocalResult<Mode>;
     userResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
       userResult.isPb = true;
