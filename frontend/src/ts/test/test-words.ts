@@ -1,4 +1,13 @@
-import { getActiveWordIndex } from "../states/test";
+import {
+  getActiveWordIndex,
+  isDirectionReversed,
+  isLanguageRightToLeft,
+} from "../states/test";
+import {
+  type Direction,
+  getWordDirection,
+  reverseDirection,
+} from "../utils/strings";
 
 type CommitChar = " " | "\n" | "";
 
@@ -7,10 +16,21 @@ type Word = {
   textWithCommit: string;
   commit: CommitChar;
   display: string;
+  /** resolved: language fallback and reversal are already applied */
+  direction: Direction;
   sectionIndex: number;
 };
 
 const commitCharsToDisplay: Set<CommitChar> = new Set(["\n"]);
+
+/** Needs the language direction and reversal of this test to be set. */
+function resolveDirection(word: string): Direction {
+  const direction = getWordDirection(
+    word,
+    isLanguageRightToLeft() ? "rtl" : "ltr",
+  );
+  return isDirectionReversed() ? reverseDirection(direction) : direction;
+}
 
 class Words {
   private list: Word[];
@@ -39,6 +59,7 @@ class Words {
           commit: word.commit,
           display:
             text + (commitCharsToDisplay.has(word.commit) ? word.commit : ""),
+          direction: word.direction,
           sectionIndex: word.sectionIndex,
         };
       } else {
@@ -63,6 +84,7 @@ class Words {
       textWithCommit: word + commit,
       commit,
       display: word + (commitCharsToDisplay.has(commit) ? commit : ""),
+      direction: resolveDirection(word),
       sectionIndex,
     };
     this.list.push(wordObj);

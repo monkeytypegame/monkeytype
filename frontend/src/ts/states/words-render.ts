@@ -2,6 +2,7 @@ import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createFrameBuffer } from "../utils/frame-buffer";
+import type { Direction } from "../utils/strings";
 
 /**
  * Display state of the test words (#words). A view cache: the event log stays
@@ -18,9 +19,14 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  * path (font, resize, layout).
  */
 
+/** What rendering needs from a test word. */
+export type WordToRender = { display: string; direction?: Direction };
+
 export type RenderedWord = {
   index: number;
   text: string;
+  /** undefined in zen: its letters come from the input and can mix directions */
+  direction: Direction | undefined;
   input: string;
   /** in-progress IME composition, active word only */
   composition: string;
@@ -50,11 +56,6 @@ type WordsRenderState = {
    * mode change doesn't re-render the current words before the restart
    */
   rendersLettersFromInput: boolean;
-  /**
-   * fully right-to-left words get the wordRtl class (bidi override). Off when
-   * direction is checked per letter or reversed. Fixed per test at reset
-   */
-  marksRtlWords: boolean;
 };
 
 const [store, setStore] = createStore<WordsRenderState>(emptyState());
@@ -77,7 +78,7 @@ export function invalidateTypoHintsLayout(): void {
 
 type Buffer = {
   truncateTo: number | undefined;
-  appended: string[];
+  appended: WordToRender[];
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
   /** last write wins */
@@ -121,10 +122,12 @@ export function onWordsFlushed(
   };
 }
 
-function createRenderedWord(index: number, text: string): RenderedWord {
+function createRenderedWord(index: number, word: WordToRender): RenderedWord {
+  const text = word.display;
   return {
     index,
     text,
+    direction: word.direction,
     input: "",
     composition: "",
     isTyped: false,
@@ -143,8 +146,8 @@ function applyBuffer(b: Buffer): void {
         if (b.truncateTo !== undefined && b.truncateTo < words.length) {
           words.length = b.truncateTo;
         }
-        for (const text of b.appended) {
-          const word = createRenderedWord(words.length, text);
+        for (const appended of b.appended) {
+          const word = createRenderedWord(words.length, appended);
           endsLine ||= word.endsLine;
           words.push(word);
         }
@@ -189,8 +192,8 @@ export function getPendingWordInput(index: number): string | undefined {
   return buffer.peek().inputs.get(index)?.input;
 }
 
-export function appendRenderedWord(text: string): void {
-  buffer.write((b) => b.appended.push(text));
+export function appendRenderedWord(word: WordToRender): void {
+  buffer.write((b) => b.appended.push(word));
 }
 
 export function setWordInput(
@@ -274,9 +277,7 @@ export function truncateWords(length: number): void {
   });
 }
 
-function emptyState(
-  options: { zen?: boolean; marksRtlWords?: boolean } = {},
-): WordsRenderState {
+function emptyState(options: { zen?: boolean } = {}): WordsRenderState {
   return {
     words: [],
     firstRenderedWordIndex: 0,
@@ -284,7 +285,6 @@ function emptyState(
     keepsLineBreaks: false,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
-    marksRtlWords: options.marksRtlWords ?? false,
   };
 }
 
@@ -295,19 +295,18 @@ function emptyState(
  * updates until those end, and the hook would measure the old words.
  */
 export function replaceWords(
-  words: string[],
+  words: WordToRender[],
   options: {
     activeWordIndex: number;
     /** letters come from the input */
     zen?: boolean;
-    marksRtlWords?: boolean;
   },
 ): void {
   buffer.clear();
   batch(() => {
     setStore(emptyState(options));
-    const rendered = words.map((text, index) =>
-      createRenderedWord(index, text),
+    const rendered = words.map((word, index) =>
+      createRenderedWord(index, word),
     );
     setStore({
       words: rendered,

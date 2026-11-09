@@ -436,12 +436,12 @@ function countCharsForWordIndex(
   simulatedInput = [...simulatedInput]
     .map((c) => (isSpace(c) ? " " : c))
     .join("");
-  if (eventLog.context.koreanStatus) {
+  if (eventLog.context.hasKorean) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
   let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
-  if (eventLog.context.koreanStatus) {
+  if (eventLog.context.hasKorean) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 

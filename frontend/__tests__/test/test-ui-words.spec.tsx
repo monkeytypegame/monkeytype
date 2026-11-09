@@ -181,7 +181,7 @@ describe("test-ui words rendering", () => {
 
   it("renders a word change only in the next frame, then lays out against the new active word", () => {
     const { words, input } = mount();
-    for (let i = 0; i < 10; i++) appendRenderedWord("word");
+    for (let i = 0; i < 10; i++) appendRenderedWord({ display: "word" });
     setActiveWord(0);
     runFrames();
     // to the last word of the first line
@@ -216,7 +216,7 @@ describe("test-ui words rendering", () => {
 
   it("marks the previous word typed and a bad word as error on the next frame", () => {
     const { words } = mount();
-    for (let i = 0; i < 3; i++) appendRenderedWord("word");
+    for (let i = 0; i < 3; i++) appendRenderedWord({ display: "word" });
     setActiveWord(0);
     runFrames();
 
@@ -239,9 +239,9 @@ describe("test-ui words rendering", () => {
   it("removes the word left behind when going back in zen mode", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
-    replaceWords([""], { activeWordIndex: 0, zen: true });
+    replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
-    appendRenderedWord("");
+    appendRenderedWord({ display: "" });
     void TestUI.afterTestWordChange("forward");
     runFrames();
     expect(words.querySelectorAll(".word")).toHaveLength(2);
@@ -259,7 +259,10 @@ describe("test-ui words rendering", () => {
   it("breaks the joining of every word passed within one frame", () => {
     const { words } = mount();
     // new words: lays out the first active word
-    replaceWords(Array<string>(5).fill("word"), { activeWordIndex: 0 });
+    replaceWords(
+      Array.from({ length: 5 }, () => ({ display: "word" })),
+      { activeWordIndex: 0 },
+    );
     joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {
@@ -402,7 +405,9 @@ describe("test-ui words rendering", () => {
         dispose();
         wordsWrapper.remove();
       });
-      replaceWords(["a", "b", "c"], { activeWordIndex: 0 });
+      replaceWords([{ display: "a" }, { display: "b" }, { display: "c" }], {
+        activeWordIndex: 0,
+      });
       caretUpdatePosition.mockClear();
     }
 
@@ -436,7 +441,7 @@ describe("test-ui words rendering", () => {
   describe("overflow guard", () => {
     function mountTwoLetterWords(count: number): HTMLElement {
       const { words } = mount();
-      for (let i = 0; i < count; i++) appendRenderedWord("ab");
+      for (let i = 0; i < count; i++) appendRenderedWord({ display: "ab" });
       setActiveWord(0);
       runFrames();
       return words;
@@ -458,7 +463,7 @@ describe("test-ui words rendering", () => {
     it("blocks the extra letter while the active word isn't rendered yet", () => {
       mountTwoLetterWords(3);
       for (let i = 0; i < 3; i++) increaseActiveWordIndex();
-      appendRenderedWord("ab");
+      appendRenderedWord({ display: "ab" });
       void TestUI.afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
@@ -475,7 +480,7 @@ describe("test-ui words rendering", () => {
       });
       const { words } = mount();
       for (let i = 0; i < 15; i++) {
-        appendRenderedWord(i === 4 ? "word\n" : "word");
+        appendRenderedWord({ display: i === 4 ? "word\n" : "word" });
       }
       setActiveWord(0);
       runFrames();
@@ -496,7 +501,7 @@ describe("test-ui words rendering", () => {
         smoothLineScroll: false,
       });
       const { words } = mount();
-      for (let i = 0; i < 20; i++) appendRenderedWord("word");
+      for (let i = 0; i < 20; i++) appendRenderedWord({ display: "word" });
       setActiveWord(0);
       runFrames();
 
@@ -589,7 +594,7 @@ describe("test-ui words rendering", () => {
       it("stops rendering words scrolled off the left edge", async () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
-        for (let i = 0; i < 20; i++) appendRenderedWord("word");
+        for (let i = 0; i < 20; i++) appendRenderedWord({ display: "word" });
         setActiveWord(0);
         runFrames();
 
@@ -609,7 +614,7 @@ describe("test-ui words rendering", () => {
         const { words } = mount();
         fakeTapeLayout(words.parentElement as HTMLElement);
         for (let i = 0; i < 20; i++) {
-          appendRenderedWord(i === 2 ? "word\n" : "word");
+          appendRenderedWord({ display: i === 2 ? "word\n" : "word" });
         }
         setActiveWord(0);
         runFrames();
@@ -633,7 +638,9 @@ describe("test-ui words rendering", () => {
         fakeTapeLayout(words.parentElement as HTMLElement);
         // three rows: words 0-2, 3-6, 7-29
         for (let i = 0; i < 30; i++) {
-          appendRenderedWord(i === 2 || i === 6 ? "word\n" : "word");
+          appendRenderedWord({
+            display: i === 2 || i === 6 ? "word\n" : "word",
+          });
         }
         setActiveWord(0);
         runFrames();

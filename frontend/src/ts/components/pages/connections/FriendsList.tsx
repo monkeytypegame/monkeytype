@@ -28,7 +28,11 @@ import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 
 export function FriendsList() {
   const query = useQuery(() => getFriendsListQuery());
@@ -125,7 +129,7 @@ function getColumns({
 }: {
   format: Formatting;
 }): DataTableColumnDef<Friend>[] {
-  const defineColumn = createColumnHelper<Friend>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, Friend>().accessor;
   const cols = [
     defineColumn("name", {
       enableSorting: true,

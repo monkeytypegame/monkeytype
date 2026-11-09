@@ -1,8 +1,8 @@
 import { createRoot } from "solid-js";
-import { createHotkeySequence } from "@tanstack/solid-hotkeys";
+import { createHotkey } from "@tanstack/solid-hotkeys";
 
 createRoot(() =>
-  createHotkeySequence(
+  createHotkey(
     [
       "ArrowUp",
       "ArrowUp",

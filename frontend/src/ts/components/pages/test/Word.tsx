@@ -6,7 +6,6 @@ import {
   unregisterWordElement,
 } from "../../../states/word-elements";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
-import { isWordRightToLeft } from "../../../utils/strings";
 import { createLetters, createZenLetters } from "./letters";
 import { TypoHints } from "./TypoHints";
 import { WordLetter } from "./WordLetter";
@@ -27,12 +26,6 @@ export function Word(props: {
             getConfig.indicateTypos === "both",
           replaceComposition: getConfig.compositionDisplay === "replace",
         }),
-  );
-  // whole word right-to-left: bidi override keeps its letters in order
-  const isRtl = createMemo(
-    () =>
-      wordsRenderState.marksRtlWords &&
-      isWordRightToLeft(props.word.text, false)[1],
   );
   // committed input (trailing space stripped) differs from the word, same as
   // the commit check. Blind CSS hides it. Zen words have no text to compare
@@ -61,6 +54,7 @@ export function Word(props: {
       class="word"
       data-wordindex={props.word.index}
       data-ui-element="word"
+      dir={props.word.direction}
       data-ui-state={status()}
       data-ui-active={props.isActive(props.word.index) ? "" : undefined}
       // per-class toggles: classes and styles added imperatively
@@ -70,7 +64,8 @@ export function Word(props: {
         active: props.isActive(props.word.index),
         typed: props.word.isTyped,
         error: isIncorrect(),
-        wordRtl: isRtl(),
+        // letters run in the word's direction, so the caret can rely on it
+        "[unicode-bidi:bidi-override]": props.word.direction !== undefined,
       }}
     >
       <Index each={letters()}>
